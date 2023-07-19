@@ -27,8 +27,12 @@ public class MDMDefinitionOption {
   }
 
   public MDMEntryDescriptor addDefaultDescriptor(Class<?> clazz) {
+    return addDefaultDescriptor(clazz, clazz.getSimpleName());
+  }
+
+  public MDMEntryDescriptor addDefaultDescriptor(Class<?> clazz, String name) {
     MDMEntryDescriptor result =
-        new MDMEntryDescriptor().schema(definition.getName()).name(clazz.getSimpleName())
+        new MDMEntryDescriptor().schema(definition.getName()).name(name)
             .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
             .typeQualifiedName(clazz.getName());
     definition.putDescriptorsItem(result.getName(), result);

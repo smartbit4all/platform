@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -72,7 +73,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
    * The name of the default editor in the application. It is opened as editor if the editor view is
    * not set for the given entry.
    */
-  private String defaultEditorViewName;
+  private String defaultEditorViewName = MDMAdminPageApi.MDM_EDIT;
 
   /**
    * The page context is a useful object to encapsulate all the parameters necessary to execute the
@@ -248,6 +249,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     List<String> fields = objectDefinition.getProperties()
         .stream()
         .map(PropertyDefinitionData::getName)
+        .filter(Objects::nonNull)
+        .filter(propName -> !propName.endsWith(ObjectDefinition.URI_PROPERTY))
         .collect(toList());
     SmartLayoutDefinition layout = smartLayoutApi.createLayout(objectDefinition.getDefinitionData(),
         fields);

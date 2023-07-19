@@ -40,7 +40,6 @@ import javax.validation.Valid;
   MDMEntryDescriptor.NAME,
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
-  MDMEntryDescriptor.INLINE_VALUE_SET,
   MDMEntryDescriptor.PUBLISH_IN_LIST,
   MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
   MDMEntryDescriptor.PUBLISH_IN_MAP,
@@ -51,7 +50,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.BRANCH_STRATEGY,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
   MDMEntryDescriptor.EVENT_HANDLERS_BEFORE_SAVE,
-  MDMEntryDescriptor.STATE
+  MDMEntryDescriptor.STATE,
+  MDMEntryDescriptor.IS_VALUE_SET
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -63,10 +63,7 @@ public class MDMEntryDescriptor {
   private String adminGroupName;
 
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
-  private String typeQualifiedName = "org.smartbit4all.api.value.bean.Value";
-
-  public static final String INLINE_VALUE_SET = "inlineValueSet";
-  private Boolean inlineValueSet = true;
+  private String typeQualifiedName = "org.smartbit4all.api.value.bean.GenericValue";
 
   public static final String PUBLISH_IN_LIST = "publishInList";
   private Boolean publishInList = true;
@@ -136,6 +133,9 @@ public class MDMEntryDescriptor {
   public static final String STATE = "state";
   private URI state;
 
+  public static final String IS_VALUE_SET = "isValueSet";
+  private Boolean isValueSet = false;
+
   public MDMEntryDescriptor() { 
   }
 
@@ -200,11 +200,11 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the Value object is used that can be inline or reference also because it has uri and code also. 
+   * The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the GenericValue object is used. 
    * @return typeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the Value object is used that can be inline or reference also because it has uri and code also. ")
+  @ApiModelProperty(value = "The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the GenericValue object is used. ")
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,33 +217,6 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeQualifiedName(String typeQualifiedName) {
     this.typeQualifiedName = typeQualifiedName;
-  }
-
-
-  public MDMEntryDescriptor inlineValueSet(Boolean inlineValueSet) {
-    
-    this.inlineValueSet = inlineValueSet;
-    return this;
-  }
-
-   /**
-   * If it is true then the values are stored directly in the ValueSetDefinition object list. In this case the Value object doesn&#39;t have any URI till it is not an individually stored object. If it is false then the editor will save all the objects as individual stored object with URI. 
-   * @return inlineValueSet
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "If it is true then the values are stored directly in the ValueSetDefinition object list. In this case the Value object doesn't have any URI till it is not an individually stored object. If it is false then the editor will save all the objects as individual stored object with URI. ")
-  @JsonProperty(INLINE_VALUE_SET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getInlineValueSet() {
-    return inlineValueSet;
-  }
-
-
-  @JsonProperty(INLINE_VALUE_SET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInlineValueSet(Boolean inlineValueSet) {
-    this.inlineValueSet = inlineValueSet;
   }
 
 
@@ -571,6 +544,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor isValueSet(Boolean isValueSet) {
+    
+    this.isValueSet = isValueSet;
+    return this;
+  }
+
+   /**
+   * Indicates if this entry is treated as a generic value set (it&#39;s not necessary for the type  to be a GenericValue, but usually it will be) 
+   * @return isValueSet
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Indicates if this entry is treated as a generic value set (it's not necessary for the type  to be a GenericValue, but usually it will be) ")
+  @JsonProperty(IS_VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsValueSet() {
+    return isValueSet;
+  }
+
+
+  @JsonProperty(IS_VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsValueSet(Boolean isValueSet) {
+    this.isValueSet = isValueSet;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -583,7 +583,6 @@ public class MDMEntryDescriptor {
     return Objects.equals(this.name, mdMEntryDescriptor.name) &&
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
-        Objects.equals(this.inlineValueSet, mdMEntryDescriptor.inlineValueSet) &&
         Objects.equals(this.publishInList, mdMEntryDescriptor.publishInList) &&
         Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
         Objects.equals(this.publishInMap, mdMEntryDescriptor.publishInMap) &&
@@ -594,12 +593,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.branchStrategy, mdMEntryDescriptor.branchStrategy) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
         Objects.equals(this.eventHandlersBeforeSave, mdMEntryDescriptor.eventHandlersBeforeSave) &&
-        Objects.equals(this.state, mdMEntryDescriptor.state);
+        Objects.equals(this.state, mdMEntryDescriptor.state) &&
+        Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
   }
 
   @Override
@@ -609,7 +609,6 @@ public class MDMEntryDescriptor {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
-    sb.append("    inlineValueSet: ").append(toIndentedString(inlineValueSet)).append("\n");
     sb.append("    publishInList: ").append(toIndentedString(publishInList)).append("\n");
     sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
     sb.append("    publishInMap: ").append(toIndentedString(publishInMap)).append("\n");
@@ -621,6 +620,7 @@ public class MDMEntryDescriptor {
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");
     sb.append("    eventHandlersBeforeSave: ").append(toIndentedString(eventHandlersBeforeSave)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    isValueSet: ").append(toIndentedString(isValueSet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

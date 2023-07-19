@@ -60,17 +60,10 @@ components:
             entry. The security group of the entry is named like mdm.definition.entry.
         typeQualifiedName:
           type: string
-          default: "org.smartbit4all.api.value.bean.Value"
+          default: "org.smartbit4all.api.value.bean.GenericValue"
           description: |
             The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
-            Value object is used that can be inline or reference also because it has uri and code also.
-        inlineValueSet:
-          type: boolean
-          default: true
-          description: |
-            If it is true then the values are stored directly in the ValueSetDefinition object list. In this case the Value object doesn't have any
-            URI till it is not an individually stored object. If it is false then the editor will save all the objects as individual stored object with
-            URI.
+            GenericValue object is used.
         publishInList:
           type: boolean
           default: true
@@ -123,6 +116,12 @@ components:
           type: string
           format: uri
           description: The reference to the current state of the given entry. It contains the necessary runtime informations.
+        isValueSet:
+          type: boolean
+          default: false
+          description: |
+            Indicates if this entry is treated as a generic value set (it's not necessary for the type 
+            to be a GenericValue, but usually it will be)
     MDMTableColumnDescriptor:
       type: object
       description: |

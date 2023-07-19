@@ -175,3 +175,20 @@ components:
           $ref: '#/components/schemas/ValueSetExpression'
     ValueSetOperation:
       enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]
+    GenericValue:
+      type: object
+      required: []
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri the value.
+        code:
+          type: string
+          description: The logical code of the value.
+        caption: 
+          type: string
+          description: The value as it is.
+        icon:
+          type: string
+          description: The code of icon that can be associatied with this value. It may be a uri.

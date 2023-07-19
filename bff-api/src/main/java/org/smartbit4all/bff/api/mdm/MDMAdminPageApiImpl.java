@@ -4,16 +4,20 @@ import static java.util.stream.Collectors.toList;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements MDMAdminPageApi {
+
+  protected static final String OPEN_LIST_PREFIX = ACTION_OPEN_LIST + StringConstant.UNDERLINE;
 
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
@@ -65,10 +69,15 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
   public MDMDefinition initModel(View view) {
     PageContext context = getContextByView(view);
     view.actions(context.definition.getDescriptors().values().stream()
+        .filter(this::filterDescriptor)
         .map(e -> new UiAction()
-            .code(ACTION_OPEN_LIST + "-" + e.getName()))
+            .code(OPEN_LIST_PREFIX + e.getName()))
         .collect(toList()));
     return context.definition;
+  }
+
+  protected boolean filterDescriptor(MDMEntryDescriptor entryDescriptor) {
+    return true;
   }
 
   @Override
@@ -77,21 +86,23 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
     if (Strings.isNullOrEmpty(code)) {
       throw new IllegalArgumentException("Missing code");
     }
-    if (!code.startsWith(ACTION_OPEN_LIST + "-")) {
+    if (!code.startsWith(OPEN_LIST_PREFIX)) {
       throw new IllegalArgumentException("Invalid code");
     }
 
-    String descriptorName = code.substring((ACTION_OPEN_LIST + "-").length());
+    String descriptorName = code.substring(OPEN_LIST_PREFIX.length());
 
     PageContext ctx = getContextByViewUUID(viewUuid);
     MDMDefinition definition = ctx.definition;
 
-    View querySetView = new View().viewName(MDM_LIST)
+    View listView = new View().viewName(getListViewName())
         .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
         .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
             .getEntryDescriptor(definition, descriptorName));
+    viewApi.showView(listView);
+  }
 
-    viewApi.showView(querySetView);
-
+  protected String getListViewName() {
+    return MDM_LIST;
   }
 }
