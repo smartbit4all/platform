@@ -281,7 +281,7 @@ public class Invocations {
    * @param parameter
    */
   public static void resolveParam(ObjectMapper objectMapper, InvocationParameter parameter) {
-    if (parameter.getTypeClass() == null) {
+    if (parameter.getTypeClass() == null || "void".equals(parameter.getTypeClass())) {
       return;
     }
     try {

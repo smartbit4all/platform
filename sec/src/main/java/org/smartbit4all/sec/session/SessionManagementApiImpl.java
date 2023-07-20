@@ -362,8 +362,8 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {
-      log.warn("Technical session user is overwritten,"
-          + "because an authentication was already present"
+      log.warn("Technical session user is overwritten, "
+          + "because an authentication was already present "
           + "in the security context!");
     }
 
