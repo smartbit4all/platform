@@ -70,6 +70,10 @@ components:
           description: |
             The published objects can be seen in this list that can be accessed by the CollectionApi.list(). The name of the list will be
             the nameList.
+        publishedListName:
+          type: string
+          description: |
+            Name of Collection.list in which published entries will be stored.
         uniqueIdentifierPath:
           type: array
           description: |
@@ -77,12 +81,10 @@ components:
             element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar.
           items:
             type: string
-        publishInMap:
-          type: boolean
-          default: true
+        publishedMapName:
+          type: string
           description: |
-            The published objects can be seen in this map that can be accessed by the CollectionApi.map(). The name of the map will be
-            the nameMap. It works if and only if we have uniqueIdentifierPath set. 
+            Name of Collection.map in which published entries will be stored.
         tableColumns:
           type: array
           description: |

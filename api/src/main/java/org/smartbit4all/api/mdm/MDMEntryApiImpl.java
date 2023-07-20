@@ -123,7 +123,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public Map<String, URI> getPublishedMap() {
-    return collectionApi.map(descriptor.getSchema(), getPublishedMapName()).uris();
+    return getPublishedStoredMap().uris();
   }
 
   @Override
@@ -158,7 +158,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     Map<String, Object> objectToSave = fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
     URI uri =
         objectApi.save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave));
-    StoredMap storedMap = collectionApi.map(descriptor.getSchema(), getPublishedMapName());
+    StoredMap storedMap = getPublishedStoredMap();
     storedMap.put(getId(objectToSave), uri);
     updatePublishedList(storedMap.uris());
     return uri;
@@ -351,11 +351,16 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return result;
   }
 
+  private boolean isList(MDMEntryDescriptor descriptor) {
+    return Boolean.TRUE.equals(descriptor.getPublishInList());
+  }
+
   private final void replaceInPublished(Map<URI, URI> toPublishByLatest) {
     if (toPublishByLatest == null || toPublishByLatest.isEmpty()) {
       return;
     }
-    collectionApi.map(descriptor.getSchema(), getPublishedMapName()).update(map -> {
+
+    getPublishedStoredMap().update(map -> {
       map.putAll(map.entrySet().stream()
           .filter(e -> toPublishByLatest.containsKey(objectApi.getLatestUri(e.getValue())))
           .collect(toMap(Entry::getKey,
@@ -365,11 +370,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     });
   }
 
+  private StoredMap getPublishedStoredMap() {
+    return collectionApi.map(descriptor.getSchema(), getPublishedMapName());
+  }
+
   private final void addNewToPublished(Map<String, URI> toPublish) {
     if (toPublish == null || toPublish.isEmpty()) {
       return;
     }
-    collectionApi.map(descriptor.getSchema(), getPublishedMapName()).update(map -> {
+    getPublishedStoredMap().update(map -> {
       map.putAll(toPublish);
       updatePublishedList(map);
       return map;
@@ -380,7 +389,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (toDelete == null || toDelete.isEmpty()) {
       return;
     }
-    collectionApi.map(descriptor.getSchema(), getPublishedMapName()).update(map -> {
+    getPublishedStoredMap().update(map -> {
       map.entrySet().removeIf(e -> toDelete.contains(objectApi.getLatestUri(e.getValue())));
       updatePublishedList(map);
       return map;
@@ -474,15 +483,19 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   private String getPublishedMapName() {
-    return descriptor.getName() + "Map";
+    return descriptor.getPublishedMapName() != null
+        ? descriptor.getPublishedMapName()
+        : descriptor.getName() + "Map";
   }
 
   public final String getPublishedListName() {
-    return descriptor.getName() + "List";
+    return descriptor.getPublishedListName() != null
+        ? descriptor.getPublishedListName()
+        : descriptor.getName() + "List";
   }
 
   private final void updatePublishedList(Map<String, URI> uris) {
-    if (Boolean.TRUE.equals(descriptor.getPublishInList())) {
+    if (isList(descriptor)) {
       collectionApi.list(descriptor.getSchema(), getPublishedListName()).update(l -> {
         return uris.values().stream().collect(toList());
       });
@@ -491,7 +504,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public StoredList getPublishedList() {
-    if (Boolean.TRUE.equals(descriptor.getPublishInList())) {
+    if (isList(descriptor)) {
       return collectionApi.list(descriptor.getSchema(), getPublishedListName());
     }
     return null;
@@ -501,7 +514,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (refreshValueSetDefinition) {
       refreshValueSetDefinition = false;
       ObjectDefinition<?> definition = objectApi.definition(descriptor.getTypeQualifiedName());
-      if (Boolean.TRUE.equals(descriptor.getPublishInList())) {
+      if (isList(descriptor)) {
         String publishedListName = getPublishedListName();
         valueSetApi.save(descriptor.getSchema(),
             new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)

@@ -186,9 +186,12 @@ components:
         code:
           type: string
           description: The logical code of the value.
-        caption: 
+        name: 
           type: string
           description: The value as it is.
         icon:
           type: string
           description: The code of icon that can be associatied with this value. It may be a uri.
+        inactive:
+          type: boolean
+          description: Indicates if this value is inactive.

@@ -41,8 +41,9 @@ import javax.validation.Valid;
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.PUBLISH_IN_LIST,
+  MDMEntryDescriptor.PUBLISHED_LIST_NAME,
   MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
-  MDMEntryDescriptor.PUBLISH_IN_MAP,
+  MDMEntryDescriptor.PUBLISHED_MAP_NAME,
   MDMEntryDescriptor.TABLE_COLUMNS,
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
   MDMEntryDescriptor.SEARCH_INDEX_FOR_ENTRIES,
@@ -68,11 +69,14 @@ public class MDMEntryDescriptor {
   public static final String PUBLISH_IN_LIST = "publishInList";
   private Boolean publishInList = true;
 
+  public static final String PUBLISHED_LIST_NAME = "publishedListName";
+  private String publishedListName;
+
   public static final String UNIQUE_IDENTIFIER_PATH = "uniqueIdentifierPath";
   private List<String> uniqueIdentifierPath = null;
 
-  public static final String PUBLISH_IN_MAP = "publishInMap";
-  private Boolean publishInMap = true;
+  public static final String PUBLISHED_MAP_NAME = "publishedMapName";
+  private String publishedMapName;
 
   public static final String TABLE_COLUMNS = "tableColumns";
   private List<MDMTableColumnDescriptor> tableColumns = new ArrayList<>();
@@ -247,6 +251,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor publishedListName(String publishedListName) {
+    
+    this.publishedListName = publishedListName;
+    return this;
+  }
+
+   /**
+   * Name of Collection.list in which published entries will be stored. 
+   * @return publishedListName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Name of Collection.list in which published entries will be stored. ")
+  @JsonProperty(PUBLISHED_LIST_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPublishedListName() {
+    return publishedListName;
+  }
+
+
+  @JsonProperty(PUBLISHED_LIST_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPublishedListName(String publishedListName) {
+    this.publishedListName = publishedListName;
+  }
+
+
   public MDMEntryDescriptor uniqueIdentifierPath(List<String> uniqueIdentifierPath) {
     
     this.uniqueIdentifierPath = uniqueIdentifierPath;
@@ -282,30 +313,30 @@ public class MDMEntryDescriptor {
   }
 
 
-  public MDMEntryDescriptor publishInMap(Boolean publishInMap) {
+  public MDMEntryDescriptor publishedMapName(String publishedMapName) {
     
-    this.publishInMap = publishInMap;
+    this.publishedMapName = publishedMapName;
     return this;
   }
 
    /**
-   * The published objects can be seen in this map that can be accessed by the CollectionApi.map(). The name of the map will be the nameMap. It works if and only if we have uniqueIdentifierPath set.  
-   * @return publishInMap
+   * Name of Collection.map in which published entries will be stored. 
+   * @return publishedMapName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The published objects can be seen in this map that can be accessed by the CollectionApi.map(). The name of the map will be the nameMap. It works if and only if we have uniqueIdentifierPath set.  ")
-  @JsonProperty(PUBLISH_IN_MAP)
+  @ApiModelProperty(value = "Name of Collection.map in which published entries will be stored. ")
+  @JsonProperty(PUBLISHED_MAP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Boolean getPublishInMap() {
-    return publishInMap;
+  public String getPublishedMapName() {
+    return publishedMapName;
   }
 
 
-  @JsonProperty(PUBLISH_IN_MAP)
+  @JsonProperty(PUBLISHED_MAP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPublishInMap(Boolean publishInMap) {
-    this.publishInMap = publishInMap;
+  public void setPublishedMapName(String publishedMapName) {
+    this.publishedMapName = publishedMapName;
   }
 
 
@@ -584,8 +615,9 @@ public class MDMEntryDescriptor {
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.publishInList, mdMEntryDescriptor.publishInList) &&
+        Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
         Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
-        Objects.equals(this.publishInMap, mdMEntryDescriptor.publishInMap) &&
+        Objects.equals(this.publishedMapName, mdMEntryDescriptor.publishedMapName) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
         Objects.equals(this.searchIndexForEntries, mdMEntryDescriptor.searchIndexForEntries) &&
@@ -599,7 +631,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishInList, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
   }
 
   @Override
@@ -610,8 +642,9 @@ public class MDMEntryDescriptor {
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    publishInList: ").append(toIndentedString(publishInList)).append("\n");
+    sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
     sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
-    sb.append("    publishInMap: ").append(toIndentedString(publishInMap)).append("\n");
+    sb.append("    publishedMapName: ").append(toIndentedString(publishedMapName)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
     sb.append("    searchIndexForEntries: ").append(toIndentedString(searchIndexForEntries)).append("\n");

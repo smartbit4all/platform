@@ -34,8 +34,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   GenericValue.URI,
   GenericValue.CODE,
-  GenericValue.CAPTION,
-  GenericValue.ICON
+  GenericValue.NAME,
+  GenericValue.ICON,
+  GenericValue.INACTIVE
 })
 @JsonTypeName("GenericValue")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,11 +47,14 @@ public class GenericValue {
   public static final String CODE = "code";
   private String code;
 
-  public static final String CAPTION = "caption";
-  private String caption;
+  public static final String NAME = "name";
+  private String name;
 
   public static final String ICON = "icon";
   private String icon;
+
+  public static final String INACTIVE = "inactive";
+  private Boolean inactive;
 
   public GenericValue() { 
   }
@@ -110,30 +114,30 @@ public class GenericValue {
   }
 
 
-  public GenericValue caption(String caption) {
+  public GenericValue name(String name) {
     
-    this.caption = caption;
+    this.name = name;
     return this;
   }
 
    /**
    * The value as it is.
-   * @return caption
+   * @return name
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "The value as it is.")
-  @JsonProperty(CAPTION)
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getCaption() {
-    return caption;
+  public String getName() {
+    return name;
   }
 
 
-  @JsonProperty(CAPTION)
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCaption(String caption) {
-    this.caption = caption;
+  public void setName(String name) {
+    this.name = name;
   }
 
 
@@ -164,6 +168,33 @@ public class GenericValue {
   }
 
 
+  public GenericValue inactive(Boolean inactive) {
+    
+    this.inactive = inactive;
+    return this;
+  }
+
+   /**
+   * Indicates if this value is inactive.
+   * @return inactive
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Indicates if this value is inactive.")
+  @JsonProperty(INACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getInactive() {
+    return inactive;
+  }
+
+
+  @JsonProperty(INACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInactive(Boolean inactive) {
+    this.inactive = inactive;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -175,13 +206,14 @@ public class GenericValue {
     GenericValue genericValue = (GenericValue) o;
     return Objects.equals(this.uri, genericValue.uri) &&
         Objects.equals(this.code, genericValue.code) &&
-        Objects.equals(this.caption, genericValue.caption) &&
-        Objects.equals(this.icon, genericValue.icon);
+        Objects.equals(this.name, genericValue.name) &&
+        Objects.equals(this.icon, genericValue.icon) &&
+        Objects.equals(this.inactive, genericValue.inactive);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, caption, icon);
+    return Objects.hash(uri, code, name, icon, inactive);
   }
 
   @Override
@@ -190,8 +222,9 @@ public class GenericValue {
     sb.append("class GenericValue {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    inactive: ").append(toIndentedString(inactive)).append("\n");
     sb.append("}");
     return sb.toString();
   }

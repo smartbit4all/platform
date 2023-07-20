@@ -35,7 +35,7 @@ public class MDMDefinitionOption {
         new MDMEntryDescriptor().schema(definition.getName()).name(name)
             .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
             .typeQualifiedName(clazz.getName());
-    definition.putDescriptorsItem(result.getName(), result);
+    addDescriptor(result);
     return result;
   }
 
@@ -58,8 +58,17 @@ public class MDMDefinitionOption {
                 .name(ObjectDefinitionProvidedApi.class.getName())
                 .addParametersItem(new InvocationParameter().name("objectDefinitionNode")
                     .typeClass(ObjectDefinitionData.class.getName())));
-    definition.putDescriptorsItem(result.getName(), result);
+    addDescriptor(result);
     return result;
+  }
+
+  public void addDescriptor(MDMEntryDescriptor descriptor) {
+    if (definition.getDescriptors().containsKey(descriptor.getName())) {
+      throw new IllegalArgumentException(
+          "descriptor already registered (" + definition.getName()
+              + "." + descriptor.getName() + ")");
+    }
+    definition.putDescriptorsItem(descriptor.getName(), descriptor);
   }
 
   public final MDMDefinition getDefinition() {
