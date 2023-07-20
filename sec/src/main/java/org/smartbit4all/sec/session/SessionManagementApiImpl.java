@@ -372,8 +372,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       throw new IllegalArgumentException("The given technical user does not exist!");
     }
 
+
+    OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
     Session session = new Session();
     session.putParametersItem("sessionKind", TECHNICAL);
+    session.setExpiration(expiration);
     session.setUser(technicalUserUri);
     AccountInfo accountInfo =
         SecurityContextUtility.getDefaultAccountInfoProvider(orgApi).apply(technicalUser,
@@ -381,8 +384,12 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     accountInfo.addRolesItem("ROLE_technical");
     accountInfo.setKind(TECHNICAL);
     session.addAuthenticationsItem(accountInfo);
-    storage.get().saveAsNew(session);
+    URI sessionUri = storage.get().saveAsNew(session);
     log.debug("Technical session saved!\n{}", session);
+
+    String sid = createSid(sessionUri, expiration);
+    storage.get().update(sessionUri, Session.class,
+        s -> s.putParametersItem(SessionInfoData.SID, sid));
 
     SessionAuthToken authToken = SessionAuthToken.create(session);
     SecurityContextHolder.getContext().setAuthentication(authToken);
