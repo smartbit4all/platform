@@ -26,16 +26,19 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.domain.application.TestApplicationRuntime;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {})
+@MockBean(SessionApi.class)
 public class InvocationApiPrimaryApiRegisterRestclientTests {
 
   private static final URI REMOTE_API_URI = ProviderApiInvocationHandler
