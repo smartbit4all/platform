@@ -106,7 +106,9 @@ public interface BranchApi {
    * We have to process all the branched objects let it be explicitly or implicitly branched.
    * Starting from one branched object we traverse all the accessible branched objects via the
    * references, lists and maps of the actual object. We construct the ObjectNode with the proper
-   * ObjectReference list, map and so on. If we have an object with a list of uri to process and
+   * ObjectReference list, map and so on. If we have an object with a list of uri to process (a
+   * detail list) then all the objects in the list will be examined if it is branched or not. If
+   * branched (modified / new / deleted) then we make the modification on the list in a proper way.
    * 
    * @param branchUri The uri of the branch.
    * @return
