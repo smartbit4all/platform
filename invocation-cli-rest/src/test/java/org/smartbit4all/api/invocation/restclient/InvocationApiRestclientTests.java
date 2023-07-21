@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation.restclient;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import java.io.IOException;
@@ -24,18 +26,19 @@ import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.domain.application.TestApplicationRuntime;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiRestclientTestConfig.class}, properties = {})
+@MockBean(SessionApi.class)
 public class InvocationApiRestclientTests {
 
   private MockServerClient mockServerClient;
