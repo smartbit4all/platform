@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -19,8 +21,15 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
  */
 public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl implements StoredMap {
 
-  public StoredMapStorageImpl(Storage storage, URI uri, String name) {
+  private ObjectApi objectApi;
+
+  private BranchApi branchApi;
+
+  StoredMapStorageImpl(Storage storage, URI uri, String name, ObjectApi objectApi,
+      BranchApi branchApi) {
     super(storage, uri, name);
+    this.objectApi = objectApi;
+    this.branchApi = branchApi;
   }
 
   @Override
@@ -133,5 +142,10 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
     return data == null || data.getUris() == null ? new HashMap<>() : data.getUris();
   }
 
+  @Override
+  public StoredMap branch(URI branchUri) {
+    this.branchUri = branchUri;
+    return this;
+  }
 
 }

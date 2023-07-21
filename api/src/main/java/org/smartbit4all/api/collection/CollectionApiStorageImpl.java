@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -37,6 +38,9 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   private ObjectApi objectApi;
 
   @Autowired
+  private BranchApi branchApi;
+
+  @Autowired
   private StorageSequenceApi sequenceApi;
 
   /**
@@ -57,28 +61,32 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public StoredMap map(String logicalSchema, String mapName) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredMapStorageImpl(getStorage(schema),
-        constructGlobalUri(schema, mapName, STOREDMAP), mapName);
+        constructGlobalUri(schema, mapName, STOREDMAP), mapName, objectApi,
+        branchApi);
   }
 
   @Override
   public StoredMap map(URI scopeObjectUri, String logicalSchema, String mapName) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredMapStorageImpl(getStorage(schema), constructScopedUri(schema,
-        mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), mapName);
+        mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), mapName,
+        objectApi,
+        branchApi);
   }
 
   @Override
   public StoredList list(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(getStorage(schema),
-        constructGlobalUri(schema, name, STOREDLIST), name);
+        constructGlobalUri(schema, name, STOREDLIST), name, objectApi, branchApi);
   }
 
   @Override
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(getStorage(schema), constructScopedUri(schema,
-        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name);
+        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name, objectApi,
+        branchApi);
   }
 
   @Override

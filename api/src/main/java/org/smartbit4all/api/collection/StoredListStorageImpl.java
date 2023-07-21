@@ -8,6 +8,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredListData;
+import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -17,8 +19,15 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
 
-  public StoredListStorageImpl(Storage storage, URI uri, String name) {
+  private ObjectApi objectApi;
+
+  private BranchApi branchApi;
+
+  StoredListStorageImpl(Storage storage, URI uri, String name, ObjectApi objectApi,
+      BranchApi branchApi) {
     super(storage, uri, name);
+    this.objectApi = objectApi;
+    this.branchApi = branchApi;
   }
 
   @Override
@@ -128,6 +137,12 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
       }
       return l;
     });
+  }
+
+  @Override
+  public StoredList branch(URI branchUri) {
+    this.branchUri = branchUri;
+    return this;
   }
 
 }

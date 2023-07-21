@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.smartbit4all.api.object.bean.BranchEntry;
@@ -10,6 +11,7 @@ import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * The branch api is responsible for creating branches for objects. The branch is represented by the
@@ -97,5 +99,18 @@ public interface BranchApi {
    *         {@link BranchingStateEnum#MODIFIED}.
    */
   boolean deleteObject(URI branchUri, URI objectUri);
+
+  /**
+   * The merge constructs the object nodes for the objects of the branch necessary to update.
+   * 
+   * We have to process all the branched objects let it be explicitly or implicitly branched.
+   * Starting from one branched object we traverse all the accessible branched objects via the
+   * references, lists and maps of the actual object. We construct the ObjectNode with the proper
+   * ObjectReference list, map and so on. If we have an object with a list of uri to process and
+   * 
+   * @param branchUri The uri of the branch.
+   * @return
+   */
+  List<ObjectNode> merge(URI branchUri);
 
 }
