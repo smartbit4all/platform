@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SQLIdentifierService implements IdentifierService {
@@ -30,6 +31,7 @@ public class SQLIdentifierService implements IdentifierService {
    * 
    * @param jdbcTemplate the {@link JdbcTemplate} used access the database, not null
    */
+  @Autowired
   public SQLIdentifierService(JdbcTemplate jdbcTemplate) {
     this(jdbcTemplate, () -> new SQLNextIdentifierOracle(jdbcTemplate));
   }
