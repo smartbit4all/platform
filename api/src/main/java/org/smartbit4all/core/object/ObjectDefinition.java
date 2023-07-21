@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -16,12 +17,11 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
  * class itself, the URI accessor / mutator and the serializing methods.
- * 
+ *
  * @author Peter Boros
  */
 public final class ObjectDefinition<T> {
@@ -354,7 +354,7 @@ public final class ObjectDefinition<T> {
    * The qualified name is the globally unique name of the given object. The namespace and the name
    * looks like a Java class name. If we need to change the format to use as a path or similar then
    * we can have more then one accessor.
-   * 
+   *
    * @return
    */
   public final String getQualifiedName() {
@@ -444,6 +444,23 @@ public final class ObjectDefinition<T> {
 
   final void setPropertiesByNameDirty(boolean propertiesByNameDirty) {
     this.propertiesByNameDirty = propertiesByNameDirty;
+  }
+
+  public T newInstance() {
+    Object object;
+    try {
+      object = clazz.newInstance();
+    } catch (IllegalAccessException | InstantiationException e) {
+      object = new Object();
+    }
+    return (T) object;
+  }
+
+  public Map<String, Object> newInstanceAsMap() {
+    if (clazz != null) {
+      return toMap(newInstance());
+    }
+    return new HashMap<>();
   }
 
 }

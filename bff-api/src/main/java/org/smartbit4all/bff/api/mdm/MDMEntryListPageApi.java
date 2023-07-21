@@ -170,23 +170,14 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**
-   * This callback function is responsible for saving a new object into the MDM entry list we are
-   * working on currently.
-   *
-   * @param viewUuid The list view instance
-   * @param editingObject The object or map value of the newly create object.
-   */
-  void saveNewObject(UUID viewUuid, Object editingObject);
-
-  /**
-   * This callback function is responsible for saving a new object into the MDM entry list we are
+   * This callback function is responsible for saving an object into the MDM entry list we are
    * working on currently.
    *
    * @param viewUuid The list view instance
    * @param editingObject The object or map value of the newly create object.
    * @param branchedObjectEntry The branching information about the given entry.
    */
-  void saveModificationObject(UUID viewUuid, Object editingObject,
+  void saveObject(UUID viewUuid, Object editingObject,
       BranchedObjectEntry branchedObjectEntry);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);

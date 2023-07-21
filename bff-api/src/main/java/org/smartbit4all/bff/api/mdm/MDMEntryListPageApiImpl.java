@@ -207,23 +207,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   private final Map<String, Object> createNewObject(MDMEntryDescriptor entryDescriptor) {
-    Class<?> clazz;
-    try {
-      clazz = Class.forName(entryDescriptor.getTypeQualifiedName());
-    } catch (ClassNotFoundException e1) {
-      clazz = Object.class;
-    }
-    Object modelObject;
-    try {
-      modelObject = clazz.newInstance();
-    } catch (IllegalAccessException | InstantiationException e) {
-      modelObject = new Object();
-    }
-    ObjectNode model = objectApi.create(entryDescriptor.getSchema(), modelObject);
-    return model.getObjectAsMap();
+    ObjectDefinition<?> definition = objectApi.definition(entryDescriptor.getTypeQualifiedName());
+    return definition.newInstanceAsMap();
   }
-
-
 
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
@@ -297,24 +283,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   @Override
-  public void saveNewObject(UUID viewUuid, Object editingObject) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
-    context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
-    refreshGrid(context);
-  }
-
-  @Override
-  public void saveModificationObject(UUID viewUuid, Object editingObject,
+  public void saveObject(UUID viewUuid, Object editingObject,
       BranchedObjectEntry branchedObjectEntry) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
-    if (branchedObjectEntry.getBranchUri() != null) {
-      ObjectNode branchedNode = objectApi.loadLatest(branchedObjectEntry.getBranchUri());
-      branchedNode.setValues(objectDefinition.toMap(editingObject));
-      objectApi.save(branchedNode);
-    } else {
+    if (branchedObjectEntry == null) {
+      // create new object
       context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+    } else {
+      // update obejct
+      if (branchedObjectEntry.getBranchUri() != null) {
+        ObjectNode branchedNode = objectApi.loadLatest(branchedObjectEntry.getBranchUri());
+        branchedNode.setValues(objectDefinition.toMap(editingObject));
+        objectApi.save(branchedNode);
+      } else {
+        context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+      }
     }
     refreshGrid(context);
   }
