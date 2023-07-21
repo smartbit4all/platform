@@ -12,6 +12,8 @@ abstract class AbstractStoredContainerStorageImpl {
 
   protected String name;
 
+  protected URI branchUri;
+
   protected AbstractStoredContainerStorageImpl(Storage storage, URI uri, String name) {
     super();
     storageRef = new WeakReference<>(storage);

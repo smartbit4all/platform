@@ -233,6 +233,26 @@ public interface ObjectApi {
     return save(node, null);
   }
 
+  /**
+   * The merge constructs and object node for the uri in the parameter. The uri can be the uri of
+   * the branched object but also the uri of the source object. The merge will identify both. The
+   * result is an {@link ObjectNode} that represents the changed new version of the original source
+   * uri object.
+   * 
+   * @param uri The uri to merge let it be the source uri or the branched one.
+   * @param branchUri The uri of the branch.
+   * @return The ObjectNode that contains the merged state of the object. If the given object is not
+   *         new and not changed then it will be unmodified at all.
+   */
+  ObjectNode merge(URI uri, URI branchUri);
+
+  /**
+   * Constructs the latest uri version from the uri.
+   * 
+   * @param uri The uri.
+   * @return If the uri is already the latest (it doesn't have any version segment) then returns the
+   *         uri parameter. If the uri contains version then
+   */
   URI getLatestUri(URI uri);
 
   default URI saveAsNew(String storageScheme, Object object, URI branchUri) {

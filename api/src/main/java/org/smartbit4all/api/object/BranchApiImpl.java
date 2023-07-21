@@ -1,10 +1,10 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -21,6 +21,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -162,6 +163,20 @@ public class BranchApiImpl implements BranchApi {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public List<ObjectNode> merge(URI branchUri) {
+    BranchEntry branchEntry = objectApi.read(objectApi.getLatestUri(branchUri), BranchEntry.class);
+    // We have to process all the branched objects let it be explicitly or implicitly branched.
+    // Starting from one branched object we traverse all the accessible branched objects via the
+    // references, lists and maps of the actual object. We construct the ObjectNode with the proper
+    // ObjectReference list, map and so on.
+    // If we have an object with a list of uri to process and
+
+    // branchEntry.getBranchedObjects()
+
+    return null;
   }
 
 }
