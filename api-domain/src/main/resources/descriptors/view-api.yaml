@@ -592,6 +592,21 @@ components:
           default: true
         valueSet:
           type: ValueSetData
+    UiActionConstraint:
+      type: object
+      description: |
+        The UiAction constraint is responsible for the constraints belong to a given action (button, menu option etc.) on the view. The UI
+        must identify the action by the dataName that is a path of the data name separated by dot like dataSheet.field.
+      properties:
+        path:
+          type: string
+          description: The path format is the following - dataSheet.actionCode.  
+        visible:
+          type: boolean
+          default: true
+        enabled:
+          type: boolean
+          default: true
     ViewState:
       type: string
       enum:
