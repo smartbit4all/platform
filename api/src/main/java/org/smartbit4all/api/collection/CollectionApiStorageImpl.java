@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
@@ -87,6 +88,12 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     return new StoredListStorageImpl(getStorage(schema), constructScopedUri(schema,
         name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name, objectApi,
         branchApi);
+  }
+
+  @Override
+  public StoredList list(StoredCollectionDescriptor descriptor) {
+    return descriptor.getScopeUri() == null ? list(descriptor.getSchema(), descriptor.getName())
+        : list(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
   }
 
   @Override
