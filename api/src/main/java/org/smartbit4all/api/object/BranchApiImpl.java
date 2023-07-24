@@ -118,12 +118,13 @@ public class BranchApiImpl implements BranchApi {
 
   }
 
-  public BranchReferenceApi listOf(StoredCollectionDescriptor collection) {
-
+  public BranchListApi listOf(StoredCollectionDescriptor collection) {
+    return new BranchListApi(objectApi, collectionApi).storedList(collectionApi.list(collection));
   }
 
-  public BranchListApi listOf(URI objectUri, String... path) {
-
+  public BranchListApi listOf(ObjectNode containerObject, String... path) {
+    return new BranchListApi(objectApi, collectionApi).containerObjectNode(containerObject)
+        .path(path);
   }
 
   public BranchReferenceApi mapOf(StoredCollectionDescriptor collection) {
