@@ -1,6 +1,7 @@
 package org.smartbit4all.api.object;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
@@ -36,6 +39,9 @@ public class BranchApiImpl implements BranchApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -104,6 +110,30 @@ public class BranchApiImpl implements BranchApi {
     objectApi.save(objectNode);
   }
 
+  public BranchReferenceApi referenceOf(StoredCollectionDescriptor collection) {
+
+  }
+
+  public BranchReferenceApi referenceOf(URI objectUri, String... path) {
+
+  }
+
+  public BranchReferenceApi listOf(StoredCollectionDescriptor collection) {
+
+  }
+
+  public BranchListApi listOf(URI objectUri, String... path) {
+
+  }
+
+  public BranchReferenceApi mapOf(StoredCollectionDescriptor collection) {
+
+  }
+
+  public BranchReferenceApi mapOf(URI objectUri, String... path) {
+
+  }
+
   @Override
   public BranchedObjectEntry removeBranchedObject(URI branchUri, URI branchedObjectUri) {
     return removeBranchedObject(branchUri, branchedObjectUri, false);
@@ -165,18 +195,37 @@ public class BranchApiImpl implements BranchApi {
     return false;
   }
 
+  private final class BranchedObjectProcessingEntry {
+
+    private BranchedObject branchedObject;
+
+    private boolean processed = false;
+
+    BranchedObjectProcessingEntry(BranchedObject branchedObject) {
+      super();
+      this.branchedObject = branchedObject;
+    }
+
+  }
+
   @Override
   public List<ObjectNode> merge(URI branchUri) {
     BranchEntry branchEntry = objectApi.read(objectApi.getLatestUri(branchUri), BranchEntry.class);
-    // We have to process all the branched objects let it be explicitly or implicitly branched.
-    // Starting from one branched object we traverse all the accessible branched objects via the
-    // references, lists and maps of the actual object. We construct the ObjectNode with the proper
-    // ObjectReference list, map and so on.
-    // If we have an object with a list of uri to process and
+    // We process the modifications and all the new / deleted object will be reached from these
+    // modified objects. The modifications can be collection api collections like StoredList and
+    // StoredMap.
+    Map<String, BranchedObjectProcessingEntry> modifiedObjects =
+        branchEntry.getBranchedObjects().entrySet().stream()
+            .collect(toMap(Entry::getKey, e -> new BranchedObjectProcessingEntry(e.getValue())));
+    Map<String, BranchedObjectProcessingEntry> newObjects =
+        branchEntry.getNewObjects().entrySet().stream()
+            .collect(toMap(Entry::getKey, e -> new BranchedObjectProcessingEntry(e.getValue())));
 
-    // branchEntry.getBranchedObjects()
+    List<ObjectNode> result = new ArrayList<>();
 
-    return null;
+    // TODO The modification should be ordered?
+
+    return result;
   }
 
 }
