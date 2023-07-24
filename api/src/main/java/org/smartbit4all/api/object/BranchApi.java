@@ -111,7 +111,8 @@ public interface BranchApi {
    * branched (modified / new / deleted) then we make the modification on the list in a proper way.
    * 
    * @param branchUri The uri of the branch.
-   * @return
+   * @return The modified {@link ObjectNode} list that can be saved in this order to apply the merge
+   *         into the storage.
    */
   List<ObjectNode> merge(URI branchUri);
 

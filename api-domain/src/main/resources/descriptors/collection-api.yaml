@@ -89,3 +89,6 @@ components:
           type: string
         schema:
           type: string
+        scopeUri:
+          type: string
+          format: uri
