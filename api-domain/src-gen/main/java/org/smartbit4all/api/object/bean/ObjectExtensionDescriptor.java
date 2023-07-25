@@ -35,9 +35,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder.  
+ * The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. 
  */
-@ApiModel(description = "The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder.  ")
+@ApiModel(description = "The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. ")
 @JsonPropertyOrder({
   ObjectExtensionDescriptor.URI,
   ObjectExtensionDescriptor.NAME,

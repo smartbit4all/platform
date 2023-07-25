@@ -35,12 +35,12 @@ components:
           type: string
           description: |
             The name of the uri property that is the referential resource identifier for the object instances. Normally it is the
-            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
+            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.
         keyProperty:
           type: string
           description: |
             The name of the business identifier property that identifies the object instances. Normally it is the
-            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
+            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.
         properties:
           type: array
           items:
@@ -71,7 +71,7 @@ components:
           description: |
             The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then
             we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on
-            its own then it is a complex type with inner properties as well. 
+            its own then it is a complex type with inner properties as well.
         referredType:
           type: string
           description: |
@@ -81,7 +81,7 @@ components:
           description: |
             If the given property is mapped to a referred property then this is the name of the referred property inside the referred type.
             If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the
-            URI else it is the 
+            URI else it is the
         defaultValue:
           type: object
           description: The default value that must be the same type as the property itself.
@@ -102,7 +102,7 @@ components:
         The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one
         outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not
         enough to identify an incoming reference.
-      required: [uri, sourceObjectName, propertyPath, aggregation, multiplicity] 
+      required: [uri, sourceObjectName, propertyPath, aggregation, multiplicity]
       properties:
         uri:
           type: string
@@ -119,7 +119,7 @@ components:
           type: string
           description: The qualified name of the source object.
         propertyPath:
-          description:  |
+          description: |
             The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to
             identify the property in the object or in its contained objects. The path can be "parent" if the parent property is directly a property inside the
             object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to 
@@ -152,7 +152,8 @@ components:
       description: |
         This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains 
         an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification.
-      required: [qualifiedName, versionNr, state, objectAsMap, references, referenceLists, referenceMaps] 
+      required:
+        [qualifiedName, versionNr, state, objectAsMap, references, referenceLists, referenceMaps]
       properties:
         objectUri:
           type: string
@@ -229,8 +230,8 @@ components:
           $ref: '#/components/schemas/SnapshotData'
     SnapshotData:
       type: object
-      description: 
-      required: [references, referenceLists, referenceMaps] 
+      description:
+      required: [references, referenceLists, referenceMaps]
       properties:
         objectUri:
           type: string
@@ -268,7 +269,7 @@ components:
             The object URI after an ObjectApi.save. It can be used to read the result Uri after save.
     SnapshotDataRef:
       type: object
-      description: 
+      description:
       properties:
         objectUri:
           type: string
@@ -308,7 +309,7 @@ components:
         oldValue:
           type: object
         newValue:
-          type: object          
+          type: object
     ReferenceChangeData:
       type: object
       description: |
@@ -471,7 +472,7 @@ components:
             The init, rebase and merge operations of the branched object. The init is the original construction
             of the branched object. The rebase is accepting the new version from the source and the merge is the 
             publishing the branched version as a new source version.
-          items: 
+          items:
             $ref: '#/components/schemas/BranchOperation'
     BranchOperation:
       type: object
@@ -534,13 +535,13 @@ components:
           description: |
             The qualified name of object the property belongs to. If it not an extension then we can use it to extend the given object. Otherwise it is the
             object that owns the given proporty.
-          type: string                   
+          type: string
     ObjectExtensionDescriptor:
       type: object
       description: |
         The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in
         or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the
-        page. The extension contains the constraint and rule definitions for the given object let it be document or folder. 
+        page. The extension contains the constraint and rule definitions for the given object let it be document or folder.
       required: [uri, name, layouts, properties]
       properties:
         uri:
@@ -584,6 +585,13 @@ components:
           type: string
           description: |
             The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object.
+        contexts:
+          $ref: '#/components/schemas/ObjectPropertyResolverContext'
+          description: ''
+        predicates:
+          type: array
+          items:
+            type: InvocationRequestDefinition # (resolver, List<URI>) => boolean
         componentConstraints:
           type: array
           description: The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.
@@ -596,6 +604,6 @@ components:
             type: UiActionConstraint
         validationRules:
           type: array
-          description: The validation rules must be checked before an editing is finalized. The validation result is part of the view. 
+          description: The validation rules must be checked before an editing is finalized. The validation result is part of the view.
           items:
             type: string

@@ -24,6 +24,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,6 +40,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectConstraintDescriptor.WHEN,
   ObjectConstraintDescriptor.CONDITION,
+  ObjectConstraintDescriptor.CONTEXTS,
+  ObjectConstraintDescriptor.PREDICATES,
   ObjectConstraintDescriptor.COMPONENT_CONSTRAINTS,
   ObjectConstraintDescriptor.ACTION_CONSTRAINTS,
   ObjectConstraintDescriptor.VALIDATION_RULES
@@ -85,6 +89,12 @@ public class ObjectConstraintDescriptor {
 
   public static final String CONDITION = "condition";
   private String condition;
+
+  public static final String CONTEXTS = "contexts";
+  private ObjectPropertyResolverContext contexts;
+
+  public static final String PREDICATES = "predicates";
+  private List<InvocationRequestDefinition> predicates = null;
 
   public static final String COMPONENT_CONSTRAINTS = "componentConstraints";
   private List<ComponentConstraint> componentConstraints = null;
@@ -149,6 +159,70 @@ public class ObjectConstraintDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCondition(String condition) {
     this.condition = condition;
+  }
+
+
+  public ObjectConstraintDescriptor contexts(ObjectPropertyResolverContext contexts) {
+    
+    this.contexts = contexts;
+    return this;
+  }
+
+   /**
+   * Get contexts
+   * @return contexts
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONTEXTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ObjectPropertyResolverContext getContexts() {
+    return contexts;
+  }
+
+
+  @JsonProperty(CONTEXTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContexts(ObjectPropertyResolverContext contexts) {
+    this.contexts = contexts;
+  }
+
+
+  public ObjectConstraintDescriptor predicates(List<InvocationRequestDefinition> predicates) {
+    
+    this.predicates = predicates;
+    return this;
+  }
+
+  public ObjectConstraintDescriptor addPredicatesItem(InvocationRequestDefinition predicatesItem) {
+    if (this.predicates == null) {
+      this.predicates = new ArrayList<>();
+    }
+    this.predicates.add(predicatesItem);
+    return this;
+  }
+
+   /**
+   * Get predicates
+   * @return predicates
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(PREDICATES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<InvocationRequestDefinition> getPredicates() {
+    return predicates;
+  }
+
+
+  @JsonProperty(PREDICATES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPredicates(List<InvocationRequestDefinition> predicates) {
+    this.predicates = predicates;
   }
 
 
@@ -270,6 +344,8 @@ public class ObjectConstraintDescriptor {
     ObjectConstraintDescriptor objectConstraintDescriptor = (ObjectConstraintDescriptor) o;
     return Objects.equals(this.when, objectConstraintDescriptor.when) &&
         Objects.equals(this.condition, objectConstraintDescriptor.condition) &&
+        Objects.equals(this.contexts, objectConstraintDescriptor.contexts) &&
+        Objects.equals(this.predicates, objectConstraintDescriptor.predicates) &&
         Objects.equals(this.componentConstraints, objectConstraintDescriptor.componentConstraints) &&
         Objects.equals(this.actionConstraints, objectConstraintDescriptor.actionConstraints) &&
         Objects.equals(this.validationRules, objectConstraintDescriptor.validationRules);
@@ -277,7 +353,7 @@ public class ObjectConstraintDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(when, condition, componentConstraints, actionConstraints, validationRules);
+    return Objects.hash(when, condition, contexts, predicates, componentConstraints, actionConstraints, validationRules);
   }
 
   @Override
@@ -286,6 +362,8 @@ public class ObjectConstraintDescriptor {
     sb.append("class ObjectConstraintDescriptor {\n");
     sb.append("    when: ").append(toIndentedString(when)).append("\n");
     sb.append("    condition: ").append(toIndentedString(condition)).append("\n");
+    sb.append("    contexts: ").append(toIndentedString(contexts)).append("\n");
+    sb.append("    predicates: ").append(toIndentedString(predicates)).append("\n");
     sb.append("    componentConstraints: ").append(toIndentedString(componentConstraints)).append("\n");
     sb.append("    actionConstraints: ").append(toIndentedString(actionConstraints)).append("\n");
     sb.append("    validationRules: ").append(toIndentedString(validationRules)).append("\n");

@@ -1,5 +1,8 @@
 package org.smartbit4all.api.object;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -12,20 +15,27 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ObjectContainer;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.object.ObjectExtensionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectRepresentationApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -38,6 +48,12 @@ class ObjectApiTest {
 
   @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
+
+  @Autowired
+  private ObjectExtensionApi objectExtensionApi;
+
+  @Autowired
+  private ObjectRepresentationApi objectRepresentationApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -255,6 +271,39 @@ class ObjectApiTest {
           (List<SampleCategoryType>) mapHelper.getMap().get("listWithMap");
       org.assertj.core.api.Assertions.assertThat(require).containsSequence(listFromMap);
     }
+
+  }
+
+  @Test
+  void extendingAnObjectWithCustomLayoutWorks() {
+
+    ObjectContainer testObject1 = new ObjectContainer().data("testObject1");
+    URI testObject1Uri = objectApi.saveAsNew("test", testObject1);
+
+    final String extensionName = "ObjectContainerExtension";
+    testObject1Uri = objectExtensionApi.create()
+        .name(extensionName)
+        .layout("str-display", new SmartLayoutDefinition()
+            .addWidgetsItem(new SmartWidgetDefinition()
+                .key("data")
+                .type(SmartFormWidgetType.TEXT_BOX)
+                .showLabel(true)
+                .label("My Data:")))
+        .constraint()
+        .componentConstraints(List.of(new ComponentConstraint()
+            .dataName("data")
+            .enabled(false)
+            .visible(true)
+            .mandatory(false)))
+        .predicates(List.of(new InvocationRequestDefinition()
+            .request(null)
+            .addResolversItem(new InvocationParameterResolver()
+                .position(0)
+                .propertyUri(URI.create("obj:/#data")))))
+        .and()
+        .build();
+
+    assertThat(objectExtensionApi.findObjectExtensionDescriptorByName(extensionName)).isPresent();
 
   }
 
