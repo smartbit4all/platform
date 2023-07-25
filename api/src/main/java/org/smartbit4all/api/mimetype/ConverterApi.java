@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ConverterApi {
 
-  @Autowired
+  @Autowired(required = false)
   private List<Converter> converters;
 
   public ConverterApi() {}
@@ -23,10 +23,11 @@ public class ConverterApi {
     if (from.equals(to)) {
       return null;
     }
-
-    for (Converter converter : converters) {
-      if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
-        return converter;
+    if (converters != null) {
+      for (Converter converter : converters) {
+        if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
+          return converter;
+        }
       }
     }
     return null;
@@ -34,9 +35,11 @@ public class ConverterApi {
 
   public List<Converter> getAllFrom(String from) {
     List<Converter> foundConverters = new ArrayList<>();
-    for (Converter converter : converters) {
-      if (converter.getFrom().equals(from)) {
-        foundConverters.add(converter);
+    if (converters != null) {
+      for (Converter converter : converters) {
+        if (converter.getFrom().equals(from)) {
+          foundConverters.add(converter);
+        }
       }
     }
     return foundConverters;
@@ -47,9 +50,11 @@ public class ConverterApi {
       return content;
     }
 
-    for (Converter converter : converters) {
-      if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
-        return converter.convert(content);
+    if (converters != null) {
+      for (Converter converter : converters) {
+        if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
+          return converter.convert(content);
+        }
       }
     }
     return null;
