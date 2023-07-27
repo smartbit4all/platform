@@ -28,8 +28,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectExtensionApi;
 import org.smartbit4all.core.object.ObjectExtensionApiImpl;
-import org.smartbit4all.core.object.ObjectRepresentationApi;
-import org.smartbit4all.core.object.ObjectRepresentationApiImpl;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.context.annotation.Bean;
@@ -55,11 +53,6 @@ public class CoreServiceConfig {
   }
 
   @Bean
-  ObjectRepresentationApi objectRepresentationApi() {
-    return new ObjectRepresentationApiImpl();
-  }
-
-  @Bean
   public ObjectDefinitionApi objectDefinitionApi() {
     return new ObjectDefinitionApiImpl();
   }
@@ -68,8 +61,6 @@ public class CoreServiceConfig {
   public ObjectSerializer objectMapperSerializer() {
     return new ObjectSerializerByObjectMapper();
   }
-
-
 
   @Bean
   public ObjectDefinition<BinaryDataObject> binaryDataDefinition() {
