@@ -31,7 +31,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectExtensionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
-import org.smartbit4all.core.object.ObjectRepresentationApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,9 +50,6 @@ class ObjectApiTest {
 
   @Autowired
   private ObjectExtensionApi objectExtensionApi;
-
-  @Autowired
-  private ObjectRepresentationApi objectRepresentationApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -299,7 +295,7 @@ class ObjectApiTest {
             .request(null)
             .addResolversItem(new InvocationParameterResolver()
                 .position(0)
-                .propertyUri(URI.create("obj:/#data")))))
+                .propertyUri(URI.create("this:/#data")))))
         .and()
         .build();
 
