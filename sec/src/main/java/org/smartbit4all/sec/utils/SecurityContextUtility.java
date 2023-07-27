@@ -61,8 +61,8 @@ public class SecurityContextUtility {
     }
     Session session = sessionManagementApi.initCurrentSession(URI.create(sessionUriTxt));
     if (session != null) {
-      log.debug("Session found to set in security context: {}", session);
-      log.debug("Looking for a SessionBasedAuthTokenProvider matching the session.");
+      log.trace("Session found to set in security context: {}", session);
+      log.trace("Looking for a SessionBasedAuthTokenProvider matching the session.");
 
       SessionBasedAuthTokenProvider tokenProvider = tokenProviders.stream()
           .filter(p -> p.supports(session))
@@ -71,9 +71,14 @@ public class SecurityContextUtility {
 
       AbstractAuthenticationToken authentication = null;
       if (tokenProvider == null) {
-        log.debug(
-            "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token! session:\n{}",
-            session);
+        if (log.isTraceEnabled()) {
+          log.trace(
+              "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token! session:\n{}",
+              session);
+        } else {
+          log.debug(
+              "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token!");
+        }
         authentication = anonymousAuthTokenProvider.apply(session);
       } else {
         authentication = tokenProvider.getToken(session);
@@ -82,7 +87,7 @@ public class SecurityContextUtility {
       Objects.requireNonNull(authentication,
           "The provided authentication token can not be null!");
 
-      log.debug("AuthenticationToken has been created for the session with type [{}]",
+      log.trace("AuthenticationToken has been created for the session with type [{}]",
           authentication.getClass().getName());
 
       authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
