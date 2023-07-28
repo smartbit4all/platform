@@ -4,12 +4,14 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -139,9 +141,18 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     });
   }
 
+
   @Override
-  public StoredList branch(URI branchUri) {
+  public StoredList makeBranch(URI branchUri) {
     this.branchUri = branchUri;
+    Lock lock = objectApi.getLock(uri);
+    lock.lock();
+    try {
+      ObjectNode storedListNode = objectApi.loadLatest(uri);
+      objectApi.save(storedListNode, branchUri);
+    } finally {
+      lock.unlock();
+    }
     return this;
   }
 

@@ -26,7 +26,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.object.bean.BranchedContainerReference;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,8 +43,7 @@ import javax.validation.Valid;
   BranchEntry.CREATED,
   BranchEntry.LOCKED_BY,
   BranchEntry.BRANCHED_OBJECTS,
-  BranchEntry.NEW_OBJECTS,
-  BranchEntry.CONTAINER_REFERENCES
+  BranchEntry.NEW_OBJECTS
 })
 @JsonTypeName("BranchEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -67,9 +65,6 @@ public class BranchEntry {
 
   public static final String NEW_OBJECTS = "newObjects";
   private Map<String, BranchedObject> newObjects = new HashMap<>();
-
-  public static final String CONTAINER_REFERENCES = "containerReferences";
-  private Map<String, BranchedContainerReference> containerReferences = null;
 
   public BranchEntry() { 
   }
@@ -255,42 +250,6 @@ public class BranchEntry {
   }
 
 
-  public BranchEntry containerReferences(Map<String, BranchedContainerReference> containerReferences) {
-    
-    this.containerReferences = containerReferences;
-    return this;
-  }
-
-  public BranchEntry putContainerReferencesItem(String key, BranchedContainerReference containerReferencesItem) {
-    if (this.containerReferences == null) {
-      this.containerReferences = new HashMap<>();
-    }
-    this.containerReferences.put(key, containerReferencesItem);
-    return this;
-  }
-
-   /**
-   * The branched references identified by the unique identifier of the reference.
-   * @return containerReferences
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The branched references identified by the unique identifier of the reference.")
-  @JsonProperty(CONTAINER_REFERENCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Map<String, BranchedContainerReference> getContainerReferences() {
-    return containerReferences;
-  }
-
-
-  @JsonProperty(CONTAINER_REFERENCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContainerReferences(Map<String, BranchedContainerReference> containerReferences) {
-    this.containerReferences = containerReferences;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -305,13 +264,12 @@ public class BranchEntry {
         Objects.equals(this.created, branchEntry.created) &&
         Objects.equals(this.lockedBy, branchEntry.lockedBy) &&
         Objects.equals(this.branchedObjects, branchEntry.branchedObjects) &&
-        Objects.equals(this.newObjects, branchEntry.newObjects) &&
-        Objects.equals(this.containerReferences, branchEntry.containerReferences);
+        Objects.equals(this.newObjects, branchEntry.newObjects);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, caption, created, lockedBy, branchedObjects, newObjects, containerReferences);
+    return Objects.hash(uri, caption, created, lockedBy, branchedObjects, newObjects);
   }
 
   @Override
@@ -324,7 +282,6 @@ public class BranchEntry {
     sb.append("    lockedBy: ").append(toIndentedString(lockedBy)).append("\n");
     sb.append("    branchedObjects: ").append(toIndentedString(branchedObjects)).append("\n");
     sb.append("    newObjects: ").append(toIndentedString(newObjects)).append("\n");
-    sb.append("    containerReferences: ").append(toIndentedString(containerReferences)).append("\n");
     sb.append("}");
     return sb.toString();
   }

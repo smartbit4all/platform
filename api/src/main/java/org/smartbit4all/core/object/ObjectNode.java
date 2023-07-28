@@ -151,6 +151,16 @@ public class ObjectNode {
   }
 
   /**
+   * Special possibility to load an object and save it as a new version of another object.
+   * 
+   * @param objectUri The object uri is
+   */
+  public final void overwriteObject(URI objectUri) {
+    data.setObjectUri(objectUri);
+    setModified();
+  }
+
+  /**
    * @return The {@link ObjectDefinition} for the given object.
    */
   public final ObjectDefinition<?> getDefinition() {
