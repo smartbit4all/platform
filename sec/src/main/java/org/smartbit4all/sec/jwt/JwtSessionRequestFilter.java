@@ -98,10 +98,12 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
      */
 
     if (callWithoutSessionToken(request)) {
+      log.debug("skipping {}: {}", request.getMethod(), request.getServletPath());
       // let through the specified requests without jwt validation
       filterChain.doFilter(request, response);
       return;
     }
+    log.debug("processing {}: {}", request.getMethod(), request.getServletPath());
 
     String jwt = jwtUtil.getJwtTokenFromRequest(request);
 
