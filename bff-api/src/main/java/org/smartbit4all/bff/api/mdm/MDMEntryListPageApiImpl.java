@@ -3,10 +3,12 @@ package org.smartbit4all.bff.api.mdm;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import org.slf4j.Logger;
@@ -155,9 +157,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
     view.actions(uiActions);
 
+    Set<String> propertiesToRemove = new HashSet<>(
+        Arrays.asList(BranchedObjectEntry.ORIGINAL_URI, BranchedObjectEntry.BRANCH_URI));
+
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             context.searchIndexAdmin.getDefinition().getDefinition().allProperties().stream()
+                .filter(p -> !propertiesToRemove.contains(p.getName()))
                 .map(Property::getName).collect(toList()),
             context.definition.getName(), context.entryDescriptor.getName());
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
