@@ -1,18 +1,13 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +22,6 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
-import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.value.ValueSetApi;
@@ -38,6 +32,9 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management api. The basic feature is that if we
@@ -190,29 +187,17 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     BranchEntry branchEntry = getOrCreateBranchEntry();
     if (branchEntry == null) {
       throw new IllegalStateException(
-          "Unable to save draft because the branch can not be identify.");
+          "Unable to save draft because the branch can not be identified.");
     }
     URI publishedUri = getPublishedMap().get(getId(objectAsMap));
+    Map<String, Object> objectToSave = objectAsMap;
     if (publishedUri != null) {
-      Map<URI, Supplier<URI>> map = Stream.of(publishedUri).collect(toMap(u -> u, u -> {
-        return () -> {
-          Map<String, Object> objectToSave =
-              fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
-          return objectApi
-              .save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave));
-        };
-      }));
-      Map<URI, BranchOperation> branchedObjects =
-          branchApi.initBranchedObjects(branchEntry.getUri(), map);
-      return branchedObjects.get(publishedUri).getTargetUri();
-    } else {
-      // Construct a new object on the branch
-      URI newDraftUri = objectApi
-          .save(objectApi.create(descriptor.getSchema(), objectDefinition, objectAsMap));
-      branchApi.addNewBranchedObjects(branchEntry.getUri(),
-          Arrays.asList(newDraftUri));
-      return newDraftUri;
+      objectToSave =
+          fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
     }
+    return objectApi
+        .save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave),
+            branchEntry.getUri());
   }
 
   @Override
@@ -221,13 +206,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       // Simply remove the draft from the branch.
       URI branchEntryUri = getCurrentBranchEntryUri();
       if (branchEntryUri != null) {
-        URI latestUri = objectApi.getLatestUri(draftUri);
-        BranchedObjectEntry removeBranchedObject =
-            branchApi.removeBranchedObject(branchEntryUri, latestUri);
-        if (removeBranchedObject != null
-            && removeBranchedObject.getBranchingState() != BranchingStateEnum.NOP) {
-          return true;
-        }
+        branchApi.removeBranchedObject(branchEntryUri, draftUri);
+        return true;
       }
     }
     return false;
@@ -385,17 +365,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     });
   }
 
-  private final void deleteToPublished(Set<URI> toDelete) {
-    if (toDelete == null || toDelete.isEmpty()) {
-      return;
-    }
-    getPublishedStoredMap().update(map -> {
-      map.entrySet().removeIf(e -> toDelete.contains(objectApi.getLatestUri(e.getValue())));
-      updatePublishedList(map);
-      return map;
-    });
-  }
-
   @Override
   public List<BranchedObjectEntry> getDraftEntries() {
     URI branchEntryUri = getCurrentBranchEntryUri();
@@ -435,6 +404,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
           objectApi.save(objectNode);
           return branch;
         }
+        getPublishedList().makeBranch(branchUri);
         return objectApi.read(branchUri, BranchEntry.class);
       } finally {
         lockState.unlock();

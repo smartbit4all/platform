@@ -427,53 +427,6 @@ components:
           description: The branched objects are identified by the latest URI of the new branch object.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
-        containerReferences:
-          type: string
-          description: The branched references identified by the unique identifier of the reference.
-          additionalProperties:
-            $ref: '#/components/schemas/BranchedContainerReference'
-    BranchedContainerReference:
-      type: object
-      description: |
-        The branched reference stands for a collection let it be collection api or objet ref / list or map. If we have a reference to
-        a bunch of other objects then we can modify the references on the given branch. A references is alwaysa a copy so retrieving the
-        proper objects on the branch is not a great challenge. But to know how what are the changes on the branch we need to know the
-        reference operations. We can have new, deleted references and a referrred object can be modified also. If the given reference is new
-        then we have to know if it is really a new object on the branch or not. The deleted means nothing from the perspective of the merge and
-        the modification is implemented with a replace even if we refer the version or the latest. The uri of the branched objects is different
-        they are copy of the source.
-      required: [containerType, referenceKind, identifier, deletedObjects]
-      properties:
-        containerType:
-          enum: [COLLECTION, OBJECT]
-        referenceKind:
-          $ref: '#/components/schemas/ReferencePropertyKind'
-        identifier:
-          type: string
-          description: |
-            This identifier looks like a special uri that identifies the references. It can be directly a collection api object that is easy to
-            identify. But it can be URI of an object with the fragment that refers to the referencing container. For example the
-        newObjects:
-          type: object
-          description: |
-            The objects that are new in the given reference. The new can be a modified in the branch! It is new here but we add a reference to this
-            on this branch. 
-          additionalProperties:
-            $ref: '#/components/schemas/BranchedObjectReference'
-        modifiedObjects:
-          type: object
-          description: |
-            The objects that are modiefied in the given reference. These can be modified objects on its own but also it can be a contained object or a value. 
-          additionalProperties:
-            $ref: '#/components/schemas/BranchedObjectReference'
-        deletedObjects:
-          type: object
-          description: |
-            The objects that are removed from the given container reference. It is important to know to be able to produce the full list of
-            BranchedObjectEntry. There must be deleted BranchedObjectEntry also. But during the merge the deletion is not a special operation we simply forget the
-            reference.
-          additionalProperties:
-            $ref: '#/components/schemas/BranchedObjectReference'
     BranchedObjectReference:
       type: object
       description: |

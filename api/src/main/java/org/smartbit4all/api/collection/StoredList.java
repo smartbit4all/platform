@@ -50,6 +50,6 @@ public interface StoredList {
    * @param branchUri The branch uri.
    * @return As a builder method it returns this.
    */
-  StoredList branch(URI branchUri);
+  StoredList makeBranch(URI branchUri);
 
 }
