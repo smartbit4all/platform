@@ -16,7 +16,7 @@ public interface GroupDashboardPageApi extends PageApi<Object> {
   public static final List<String> orderedColumns =
       Arrays.asList(Group.TITLE, Group.KIND_CODE, Group.DESCRIPTION);
 
-  public static final String GROUP_GRID = "USER_GRID";
+  public static final String GROUP_GRID = "GROUP_GRID";
 
   public static final String OPEN_GROUP_EDITOR = "OPEN_USER_EDITOR";
 

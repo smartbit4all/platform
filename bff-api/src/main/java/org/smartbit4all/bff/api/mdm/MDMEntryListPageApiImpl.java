@@ -152,7 +152,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
         .addIf(ACTION_NEW_ENTRY, isAdmin)
         .addIf(ACTION_FINALIZE_CHANGES, isAdmin)
         .addIf(ACTION_CANCEL_CHANGES, isAdmin)
-        .addIf(ACTION_NEW_ENTRY, isAdmin)
         .build();
 
     view.actions(uiActions);

@@ -46,11 +46,11 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     GroupEditingModel pageModel =
         objectApi.asType(GroupEditingModel.class, request.getParams().get("formModel"));
 
-
-    if (orgApi.getAllGroups().stream().map(Group::getUri).collect(Collectors.toList())
-        .contains(pageModel.getGroup().getUri())) {
+    if (orgApi.getAllGroups().stream().map(Group::getName).collect(Collectors.toList())
+        .contains(pageModel.getGroup().getName())) {
       orgApi.updateGroup(pageModel.getGroup());
     } else {
+      pageModel.getGroup().name("user-create-group." + viewUuid);
       orgApi.saveGroup(pageModel.getGroup());
     }
 
@@ -59,6 +59,8 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
 
     pageModel.getChildGroups().stream()
         .forEach(g -> orgApi.addChildGroup(pageModel.getGroup(), orgApi.getGroup(g)));
+
+    viewApi.showView(new View().viewName(OrgViewNames.GROUP_DASHBOARD_PAGE));
 
   }
 

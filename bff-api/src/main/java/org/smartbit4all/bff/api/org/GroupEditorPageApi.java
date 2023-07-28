@@ -12,12 +12,12 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 public interface GroupEditorPageApi extends PageApi<GroupEditingModel> {
 
 
-  public static final String SAVE_GROUP = "SAVE_USER";
-  public static final String CANCEL_GROUP_EDIT = "CANCEL_USER_EDIT";
+  public static final String SAVE_GROUP = "SAVE_GROUP";
+  public static final String CANCEL_GROUP = "CANCEL_GROUP";
 
   List<UiAction> ADMIN_ACTIONS =
       Arrays.asList(new UiAction().code(SAVE_GROUP),
-          new UiAction().code(CANCEL_GROUP_EDIT));
+          new UiAction().code(CANCEL_GROUP));
 
   @ActionHandler(SAVE_GROUP)
   void saveGroup(UUID viewUuid, UiActionRequest request);

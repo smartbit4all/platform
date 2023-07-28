@@ -2,12 +2,12 @@ package org.smartbit4all.bff.api.org;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
@@ -45,25 +45,9 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
     view.actions(ADMIN_ACTIONS);
 
-    List<Group> notBuiltInGroups = new ArrayList<>();
 
-
-    orgApi.getAllGroups().stream().forEach(g -> {
-      if (Boolean.FALSE.equals(g.getBuiltIn())) {
-        notBuiltInGroups.add(g);
-      } else {
-        return;
-      }
-    });
-
-    if (!notBuiltInGroups.isEmpty()) {
-
-      gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
-          notBuiltInGroups.stream().map(Group::getUri));
-    } else {
-      gridModelApi.setData(view.getUuid(), GROUP_GRID,
-          groupSearch.createEmptyTableData());
-    }
+    gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
+        orgApi.getAllGroups().stream().map(Group::getUri));
 
     return pageModel;
 
@@ -72,13 +56,12 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
   @Override
   public Object createPageModel(View view) {
 
-    Object pageModel = new Object();
+    GroupEditingModel pageModel = new GroupEditingModel();
 
     GridModel groupGridModel = gridModelApi.createGridModel(
         groupSearch.getDefinition().getDefinition(), orderedColumns, Group.class.getSimpleName());
 
     gridModelApi.initGridInView(view.getUuid(), GROUP_GRID, groupGridModel);
-
 
     gridModelApi.addGridPageCallback(view.getUuid(), GROUP_GRID,
         invocationApi.builder(GroupDashboardPageApi.class)
@@ -95,7 +78,15 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
     if (page.getRows() != null) {
       for (GridRow row : page.getRows()) {
-        row.actions(GRID_ACTIONS);
+
+        Boolean isBuiltIn =
+            objectApi.asType(Boolean.class, GridModels.getValueFromGridRow(row, "builtIn"));
+
+        if (!isBuiltIn.booleanValue()) {
+          row.actions(GRID_ACTIONS);
+        } else {
+          row.actions(new ArrayList<>());
+        }
       }
     }
 

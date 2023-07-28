@@ -31,6 +31,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     view.actions(ADMIN_ACTIONS);
 
+
     UserEditingModel pageModel = new UserEditingModel();
 
 

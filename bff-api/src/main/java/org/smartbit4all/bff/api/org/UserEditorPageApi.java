@@ -13,11 +13,11 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 public interface UserEditorPageApi extends PageApi<UserEditingModel> {
 
   public static final String SAVE_USER = "SAVE_USER";
-  public static final String CANCEL_USER_EDIT = "CANCEL_USER_EDIT";
+  public static final String CANCEL_USER = "CANCEL_USER";
 
   List<UiAction> ADMIN_ACTIONS =
       Arrays.asList(new UiAction().code(SAVE_USER),
-          new UiAction().code(CANCEL_USER_EDIT));
+          new UiAction().code(CANCEL_USER));
 
   @ActionHandler(SAVE_USER)
   void saveUser(UUID viewUuid, UiActionRequest request);
