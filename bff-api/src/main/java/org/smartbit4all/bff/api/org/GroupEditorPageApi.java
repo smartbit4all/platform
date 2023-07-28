@@ -22,7 +22,7 @@ public interface GroupEditorPageApi extends PageApi<GroupEditingModel> {
   @ActionHandler(SAVE_GROUP)
   void saveGroup(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(CANCEL_GROUP_EDIT)
+  @ActionHandler(CANCEL_GROUP)
   void cancelGroupEdit(UUID viewUuid, UiActionRequest request);
 
 }

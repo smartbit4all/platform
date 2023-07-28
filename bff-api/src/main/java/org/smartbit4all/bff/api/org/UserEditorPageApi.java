@@ -22,7 +22,7 @@ public interface UserEditorPageApi extends PageApi<UserEditingModel> {
   @ActionHandler(SAVE_USER)
   void saveUser(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(CANCEL_USER_EDIT)
+  @ActionHandler(CANCEL_USER)
   void cancelUserEdit(UUID viewUuid, UiActionRequest request);
 
 }
