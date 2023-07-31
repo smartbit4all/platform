@@ -20,14 +20,14 @@ public interface GroupDashboardPageApi extends PageApi<Object> {
 
   public static final String OPEN_GROUP_EDITOR = "OPEN_USER_EDITOR";
 
-  public static final String OPEN_GROUP_EDITOR_DIALOG = "OPEN_GROUP_EDITOR_DIALOG";
+  public static final String ADD_GROUP = "ADD_GROUP";
 
 
   List<UiAction> GRID_ACTIONS = Arrays.asList(
       new UiAction().code(OPEN_GROUP_EDITOR));
 
   List<UiAction> ADMIN_ACTIONS = Arrays.asList(
-      new UiAction().code(OPEN_GROUP_EDITOR_DIALOG));
+      new UiAction().code(ADD_GROUP));
 
   Object createPageModel(View view);
 
@@ -37,7 +37,7 @@ public interface GroupDashboardPageApi extends PageApi<Object> {
   void openGroupEditor(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request);
 
-  @ActionHandler(OPEN_GROUP_EDITOR_DIALOG)
+  @ActionHandler(ADD_GROUP)
   void openAddGroupDialog(UUID viewUuid,
       UiActionRequest request);
 

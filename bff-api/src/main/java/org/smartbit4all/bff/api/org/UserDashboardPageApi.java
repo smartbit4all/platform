@@ -19,26 +19,26 @@ public interface UserDashboardPageApi extends PageApi<Object> {
 
   public static final String USER_GRID = "USER_GRID";
 
-  public static final String OPEN_USER_EDITOR = "OPEN_USER_EDITOR";
+  public static final String OPEN_USER_EDITOR_PAGE = "OPEN_USER_EDITOR_PAGE";
 
-  public static final String OPEN_USER_EDITOR_DIALOG = "OPEN_USER_EDITOR_DIALOG";
+  public static final String ADD_USER = "ADD_USER";
 
 
   List<UiAction> GRID_ACTIONS = Arrays.asList(
-      new UiAction().code(OPEN_USER_EDITOR));
+      new UiAction().code(OPEN_USER_EDITOR_PAGE));
 
   List<UiAction> ADMIN_ACTIONS = Arrays.asList(
-      new UiAction().code(OPEN_USER_EDITOR_DIALOG));
+      new UiAction().code(ADD_USER));
 
   Object createPageModel(View view);
 
   GridPage extendPageData(GridPage page);
 
-  @WidgetActionHandler(value = OPEN_USER_EDITOR, widget = USER_GRID)
+  @WidgetActionHandler(value = OPEN_USER_EDITOR_PAGE, widget = USER_GRID)
   void openUserEditor(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request);
 
-  @ActionHandler(OPEN_USER_EDITOR_DIALOG)
+  @ActionHandler(ADD_USER)
   void openAddUserDialog(UUID viewUuid,
       UiActionRequest request);
 
