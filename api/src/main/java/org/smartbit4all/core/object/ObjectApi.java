@@ -234,19 +234,6 @@ public interface ObjectApi {
   }
 
   /**
-   * The merge constructs and object node for the uri in the parameter. The uri can be the uri of
-   * the branched object but also the uri of the source object. The merge will identify both. The
-   * result is an {@link ObjectNode} that represents the changed new version of the original source
-   * uri object.
-   * 
-   * @param uri The uri to merge let it be the source uri or the branched one.
-   * @param branchUri The uri of the branch.
-   * @return The ObjectNode that contains the merged state of the object. If the given object is not
-   *         new and not changed then it will be unmodified at all.
-   */
-  ObjectNode merge(URI uri, URI branchUri);
-
-  /**
    * Constructs the latest uri version from the uri.
    * 
    * @param uri The uri.
@@ -315,5 +302,24 @@ public interface ObjectApi {
    * @return The cache entry.
    */
   <T> ObjectCacheEntry<T> getCacheEntry(Class<T> clazz);
+
+  /**
+   * Perform a quick check for existence of a given uri.
+   * 
+   * @param uri The object uri to check.
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri);
+
+  /**
+   * Perform a quick check for existence of a given uri on the given branch.
+   * 
+   * @param uri The object uri to check.
+   * @param branchUri The branch uri
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri, URI branchUri);
 
 }

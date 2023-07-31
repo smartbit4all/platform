@@ -180,16 +180,6 @@ public class ObjectApiImpl implements ObjectApi {
     return result;
   }
 
-  @Override
-  public ObjectNode merge(URI uri, URI branchUri) {
-    BranchEntry branchEntry = getBranchEntry(branchUri);
-    if (branchEntry == null) {
-      return loadLatest(uri);
-    }
-
-    return null;
-  }
-
   // ObjectNode stateNode = objectApi.loadLatest(descriptor.getState());
   // URI branchUri = stateNode.getValue(URI.class, MDMEntryDescriptorState.BRANCH);
   // if (branchUri != null) {
@@ -475,6 +465,16 @@ public class ObjectApiImpl implements ObjectApi {
     } catch (ExecutionException e) {
       throw new IllegalArgumentException("Unable to initiate cache for the " + clazz);
     }
+  }
+
+  @Override
+  public boolean exists(URI uri) {
+    return retrievalApi.exists(uri, null);
+  }
+
+  @Override
+  public boolean exists(URI uri, URI branchUri) {
+    return retrievalApi.exists(branchUri, getBranchEntry(branchUri));
   }
 
 }

@@ -10,10 +10,8 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageObjectLock;
 
 /**
  * @author Peter Boros
@@ -21,23 +19,19 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
  */
 public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl implements StoredMap {
 
-  private ObjectApi objectApi;
-
-  private BranchApi branchApi;
-
-  StoredMapStorageImpl(Storage storage, URI uri, String name, ObjectApi objectApi,
+  StoredMapStorageImpl(String storageSchema, URI uri, String name, ObjectApi objectApi,
       BranchApi branchApi) {
-    super(storage, uri, name);
+    super(storageSchema, uri, name);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
   }
 
   @Override
   public Map<String, URI> uris() {
-    Storage storage = storageRef.get();
     try {
-      StoredMapData mapData = storage.read(uri, StoredMapData.class);
-      return mapData.getUris();
+      ObjectNode objectNode = objectApi.loadLatest(uri, branchUri);
+      StoredMapData data = objectNode.getObject(StoredMapData.class);
+      return data.getUris();
     } catch (ObjectNotFoundException e) {
       return Collections.emptyMap();
     }
@@ -57,27 +51,14 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
 
   @Override
   public void put(Stream<StoredMapEntry> values) {
-    // TODO This could be a storage basic service getOrCreate
-    Storage storage = storageRef.get();
-    StorageObjectLock lock = storage.getLock(uri);
-    lock.lock();
-    try {
-      try {
-        StorageObject<StoredMapData> so = storage.load(uri, StoredMapData.class).asMap();
-        StoredMapData mapData = so.getObject();
+    modifyOnBranch(on -> {
+      on.modify(StoredMapData.class, data -> {
         values.forEach(v -> {
-          mapData.putUrisItem(v.getKey(), v.getValue());
+          data.putUrisItem(v.getKey(), v.getValue());
         });
-        so.setObject(mapData);
-        storage.save(so);
-      } catch (ObjectNotFoundException e) {
-        StoredMapData mapData = new StoredMapData().name(name).uri(uri);
-        values.forEach(v -> mapData.putUrisItem(v.getKey(), v.getValue()));
-        storage.saveAsNewObject(mapData);
-      }
-    } finally {
-      lock.unlock();
-    }
+        return data;
+      });
+    });
   }
 
   @Override
@@ -96,45 +77,25 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
 
   @Override
   public void remove(Stream<String> keys) {
-    Storage storage = storageRef.get();
-    StorageObjectLock lock = storage.getLock(uri);
-    lock.lock();
-    try {
-      try {
-        StorageObject<StoredMapData> so = storage.load(uri, StoredMapData.class).asMap();
-        StoredMapData mapData = so.getObject();
-        keys.forEach(k -> {
-          mapData.getUris().remove(k);
+    modifyOnBranch(on -> {
+      on.modify(StoredMapData.class, data -> {
+        keys.forEach(v -> {
+          data.getUris().remove(v);
         });
-        so.setObject(mapData);
-        storage.save(so);
-      } catch (ObjectNotFoundException e) {
-        // NOP. Removing from a not existing map...
-      }
-    } finally {
-      lock.unlock();
-    }
+        return data;
+      });
+    });
   }
 
   @Override
   public Map<String, URI> update(UnaryOperator<Map<String, URI>> update) {
-    Storage storage = storageRef.get();
-    StorageObjectLock objectLock = storage.getLock(uri);
     Map<String, URI> result = new HashMap<>();
-    objectLock.lock();
-    try {
-      if (storage.exists(uri)) {
-        storage.update(uri, StoredMapData.class, r -> {
-          result.putAll(update.apply(getFromData(r)));
-          return r.uris(result);
-        });
-      } else {
-        result.putAll(update.apply(new HashMap<>()));
-        storage.saveAsNew(new StoredMapData().uri(uri).name(name).uris(result));
-      }
-    } finally {
-      objectLock.unlock();
-    }
+    modifyOnBranch(on -> {
+      on.modify(StoredMapData.class, data -> {
+        result.putAll(update.apply(getFromData(data)));
+        return data.uris(result);
+      });
+    });
     return result;
   }
 
@@ -143,9 +104,8 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
   }
 
   @Override
-  public StoredMap branch(URI branchUri) {
-    this.branchUri = branchUri;
-    return this;
+  protected ObjectNode constructNew(URI uri) {
+    return objectApi.create(storageSchema, new StoredMapData().uri(uri).name(name));
   }
 
 }

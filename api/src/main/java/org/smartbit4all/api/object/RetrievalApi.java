@@ -63,4 +63,16 @@ public interface RetrievalApi {
    */
   Long getLastModified(URI uri);
 
+  /**
+   * Perform a quick check for existence of a given uri on the given branch.
+   * 
+   * @param uri The object uri to check.
+   * @param branchEntry The branch entry if the retrieve is performed on the branch.
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri, BranchEntry branchEntry);
+
+
+
 }

@@ -150,12 +150,26 @@ public final class RetrievalApiImpl implements RetrievalApi {
   private ObjectNodeData readDataByUri(RetrievalRequest objRequest, URI uri,
       BranchEntry branchEntry) {
 
+    URI readUri = getUriToRead(uri, objRequest.isLoadLatest(), branchEntry);
+
+    StorageObject<?> storageObject = storageApi.load(readUri);
+    ObjectVersion version = storageObject.getVersion();
+    return new ObjectNodeData()
+        .objectUri(storageObject.getVersionUri())
+        .qualifiedName(storageObject.definition().getQualifiedName())
+        .storageSchema(storageObject.getStorage().getScheme())
+        .objectAsMap(storageObject.getObjectAsMap())
+        .versionNr(version == null ? null : version.getSerialNoData())
+        .lastModified(storageObject.getLastModified());
+  }
+
+  private final URI getUriToRead(URI uri, boolean loadLatest, BranchEntry branchEntry) {
     URI readUri;
 
     if (branchEntry != null) {
       // We identify the uri to read if we are reading on the branch.
       Long uriVersion = ObjectStorageImpl.getUriVersion(uri);
-      if (objRequest.isLoadLatest() || uriVersion == null) {
+      if (loadLatest || uriVersion == null) {
         readUri = ObjectStorageImpl.getUriWithoutVersion(uri);
         BranchedObject branchedObject = branchEntry.getBranchedObjects().get(readUri.toString());
         // We have a branched object for the given object on the branch so we use that instead of
@@ -202,18 +216,9 @@ public final class RetrievalApiImpl implements RetrievalApi {
         }
       }
     } else {
-      readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+      readUri = loadLatest ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     }
-
-    StorageObject<?> storageObject = storageApi.load(readUri);
-    ObjectVersion version = storageObject.getVersion();
-    return new ObjectNodeData()
-        .objectUri(storageObject.getVersionUri())
-        .qualifiedName(storageObject.definition().getQualifiedName())
-        .storageSchema(storageObject.getStorage().getScheme())
-        .objectAsMap(storageObject.getObjectAsMap())
-        .versionNr(version == null ? null : version.getSerialNoData())
-        .lastModified(storageObject.getLastModified());
+    return readUri;
   }
 
   @Override
@@ -237,4 +242,11 @@ public final class RetrievalApiImpl implements RetrievalApi {
   public Long getLastModified(URI uri) {
     return storageApi.getDefaultObjectStorage().lastModified(uri);
   }
+
+  @Override
+  public boolean exists(URI uri, BranchEntry branchEntry) {
+    URI uriToRead = getUriToRead(uri, true, branchEntry);
+    return storageApi.getDefaultObjectStorage().exists(uriToRead);
+  }
+
 }

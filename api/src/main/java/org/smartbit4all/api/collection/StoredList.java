@@ -43,13 +43,10 @@ public interface StoredList {
   void addOrMoveFirst(URI uri, int maxSize, boolean assumeLatestUri);
 
   /**
-   * Set the branch uri for this collection. If we set this then the change will create a new
-   * instance from the collection and the new collection will saved into the branch. So we know the
-   * original collection and the branched collection also.
+   * If we set this branch then we access the branched object if it exists.
    * 
-   * @param branchUri The branch uri.
-   * @return As a builder method it returns this.
+   * @param branchUri
    */
-  StoredList makeBranch(URI branchUri);
+  void branch(URI branchUri);
 
 }

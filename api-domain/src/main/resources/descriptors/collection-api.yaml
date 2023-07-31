@@ -22,7 +22,7 @@ components:
       type: object
       description: |
         The contained storage object for the StoredMap that contains the data as a map of URI mapped by string.
-      required: [uri, name, objects]
+      required: [uri, name, uris]
       properties:
         uri:
           type: string

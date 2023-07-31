@@ -224,9 +224,9 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   public boolean deleteObject(URI objectUri) {
     // If we already have an editing branch
     BranchEntry currentBranchEntry = getOrCreateBranchEntry();
-    if (currentBranchEntry != null) {
-      return branchApi.deleteObject(currentBranchEntry.getUri(), objectUri);
-    }
+    // if (currentBranchEntry != null) {
+    // return branchApi.deleteObject(currentBranchEntry.getUri(), objectUri);
+    // }
     return false;
   }
 
@@ -279,8 +279,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
               .map(bo -> objectApi.load(bo.getBranchedObjectLatestUri()))
               .collect(toMap(this::getIdFromNode, ObjectNode::getObjectUri)));
           // Delete the object that are signed to be deleted.
-          deleteToPublished(branchEntry.getDeletedObjects().values().stream()
-              .collect(toSet()));
+          // deleteToPublished(branchEntry.getDeletedObjects().values().stream()
+          // .collect(toSet()));
 
           stateNode.modify(MDMEntryDescriptorState.class, s -> s.branch(null));
           objectApi.save(stateNode);
@@ -379,10 +379,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       Stream<BranchedObjectEntry> newStream = branchEntry.getNewObjects().values().stream()
           .map(bo -> new BranchedObjectEntry().branchUri(bo.getBranchedObjectLatestUri())
               .branchingState(BranchingStateEnum.NEW));
-      Stream<BranchedObjectEntry> deletedStream = branchEntry.getDeletedObjects().values().stream()
-          .map(u -> new BranchedObjectEntry().originalUri(u)
-              .branchingState(BranchingStateEnum.DELETED));
-      return Stream.concat(Stream.concat(changedStream, newStream), deletedStream)
+      // Stream<BranchedObjectEntry> deletedStream =
+      // branchEntry.getDeletedObjects().values().stream()
+      // .map(u -> new BranchedObjectEntry().originalUri(u)
+      // .branchingState(BranchingStateEnum.DELETED));
+      // return Stream.concat(Stream.concat(changedStream, newStream), deletedStream)
+      // .collect(toList());
+      return Stream.concat(changedStream, newStream)
           .collect(toList());
     }
     return new ArrayList<>();
@@ -404,7 +407,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
           objectApi.save(objectNode);
           return branch;
         }
-        getPublishedList().makeBranch(branchUri);
+        // getPublishedList().makeBranch(branchUri);
         return objectApi.read(branchUri, BranchEntry.class);
       } finally {
         lockState.unlock();

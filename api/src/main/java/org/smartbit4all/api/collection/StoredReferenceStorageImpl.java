@@ -4,20 +4,24 @@ import java.net.URI;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
+import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageObjectLock;
 
 public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorageImpl
     implements StoredReference<T> {
 
   private ObjectDefinition<T> def;
 
-  protected StoredReferenceStorageImpl(Storage storage, URI uri, String name,
-      ObjectDefinition<T> def) {
-    super(storage, uri, name);
+  protected StoredReferenceStorageImpl(String storageSchema, URI uri, String name,
+      ObjectDefinition<T> def, ObjectApi objectApi,
+      BranchApi branchApi) {
+    super(storageSchema, uri, name);
     this.def = def;
+    this.objectApi = objectApi;
+    this.branchApi = branchApi;
   }
 
   @Override
@@ -26,29 +30,25 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
   }
 
   @Override
+  protected ObjectNode constructNew(URI uri) {
+    return objectApi.create(storageSchema, new StoredReferenceData().uri(uri));
+  }
+
+  @Override
   public void update(UnaryOperator<T> update) {
-    Storage storage = storageRef.get();
-    StorageObjectLock objectLock = storage.getLock(uri);
-    objectLock.lock();
-    try {
-      if (storage.exists(uri)) {
-        storage.update(uri, StoredReferenceData.class, r -> {
-          return r.refObject(update.apply(getFromData(r)));
-        });
-      } else {
-        storage.saveAsNew(new StoredReferenceData().uri(uri).refObject(update.apply(null)));
-      }
-    } finally {
-      objectLock.unlock();
-    }
+    modifyOnBranch(on -> {
+      on.modify(StoredReferenceData.class, data -> {
+        return data.refObject(update.apply(getFromData(data)));
+      });
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public T get() {
-    Storage storage = storageRef.get();
+    ObjectNode objectNode = objectApi.loadLatest(uri, branchUri);
     try {
-      return getFromData(storage.read(uri, StoredReferenceData.class));
+      return getFromData(objectNode.getObject(StoredReferenceData.class));
     } catch (ObjectNotFoundException e) {
       return null;
     }
@@ -56,8 +56,7 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   @Override
   public boolean exists() {
-    Storage storage = storageRef.get();
-    return storage.exists(uri);
+    return objectApi.exists(getUri(), branchUri);
   }
 
   private T getFromData(StoredReferenceData referenceData) {
