@@ -180,38 +180,6 @@ public class ObjectApiImpl implements ObjectApi {
     return result;
   }
 
-  // ObjectNode stateNode = objectApi.loadLatest(descriptor.getState());
-  // URI branchUri = stateNode.getValue(URI.class, MDMEntryDescriptorState.BRANCH);
-  // if (branchUri != null) {
-  // BranchEntry branchEntry =
-  // objectApi.read(objectApi.getLatestUri(branchUri), BranchEntry.class);
-  // if (branchEntry != null) {
-  // // Check the uniqueness of the objects.
-  // Map<URI, ObjectNode> toSaveBySourceUri =
-  // branchEntry.getBranchedObjects().entrySet().stream().collect(
-  // toMap(e -> URI.create(e.getKey()),
-  // e -> objectApi.load(e.getValue().getBranchedObjectLatestUri())));
-  // // Now set the new URIs in the published map and list.
-  // replaceInPublished(
-  // toSaveBySourceUri.entrySet().stream().collect(toMap(Entry::getKey, e -> {
-  // ObjectNode objectNode = objectApi.loadLatest(e.getKey());
-  // objectNode.setValues(e.getValue().getObjectAsMap());
-  // return objectApi.save(objectNode);
-  // })));
-  // // The new objects coming from the draft can be registered directly.
-  // addNewToPublished(branchEntry.getNewObjects().values().stream()
-  // .map(bo -> objectApi.load(bo.getBranchedObjectLatestUri()))
-  // .collect(toMap(this::getIdFromNode, ObjectNode::getObjectUri)));
-  // // Delete the object that are signed to be deleted.
-  // deleteToPublished(branchEntry.getDeletedObjects().values().stream()
-  // .collect(toSet()));
-  //
-  // stateNode.modify(MDMEntryDescriptorState.class, s -> s.branch(null));
-  // objectApi.save(stateNode);
-  // result.set(branchEntry);
-  // }
-  //
-  // }
 
   @Override
   public URI getLatestUri(URI uri) {
