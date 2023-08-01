@@ -307,4 +307,60 @@ public interface ViewApiDelegate {
 
     }
 
+    /**
+     * POST /component/{uuid}/upload
+     * Performs an upload UI action. 
+     *
+     * @param uuid  (required)
+     * @param uiActionRequest Stringify-d UiActionRequest. (optional)
+     * @param param Parameter name to use when converting uploaded file to BinaryData. (optional)
+     * @param content  (optional)
+     * @return  (status code 200)
+     * @see ViewApi#uploadAction
+     */
+    default ResponseEntity<ViewContextChange> uploadAction(UUID uuid,
+        String uiActionRequest,
+        String param,
+        MultipartFile content) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"changes\" : [ { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" }, { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" } ], \"viewContext\" : { \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } ] } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /component/{uuid}/uploadMultiple
+     * Performs a generic UI action. 
+     *
+     * @param uuid  (required)
+     * @param uiActionRequest Stringify-d UiActionRequest. (optional)
+     * @param param Parameter name to use when converting uploaded file to BinaryData. (optional)
+     * @param contents  (optional)
+     * @return  (status code 200)
+     * @see ViewApi#uploadMultipleAction
+     */
+    default ResponseEntity<ViewContextChange> uploadMultipleAction(UUID uuid,
+        String uiActionRequest,
+        String param,
+        List<MultipartFile> contents) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"changes\" : [ { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" }, { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" } ], \"viewContext\" : { \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } ] } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 }
