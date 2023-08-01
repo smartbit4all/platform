@@ -442,7 +442,7 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public boolean exists(URI uri, URI branchUri) {
-    return retrievalApi.exists(branchUri, getBranchEntry(branchUri));
+    return retrievalApi.exists(uri, getBranchEntry(branchUri));
   }
 
 }
