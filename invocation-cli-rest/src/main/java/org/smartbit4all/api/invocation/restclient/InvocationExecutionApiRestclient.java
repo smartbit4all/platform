@@ -45,10 +45,12 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
     ApplicationRuntime applicationRuntime = applicationRuntimeApi.get(runtime);
     String ipAddress = applicationRuntime.getIpAddress();
+    String baseUrl = applicationRuntime.getBaseUrl();
     int serverPort = applicationRuntime.getServerPort();
 
     // TODO url összeállítása
-    String url = "http://" + ipAddress + ":" + serverPort + "/invokeApi";
+    String url =
+        baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort + "/invokeApi";
 
     HttpHeaders headers = new HttpHeaders();
     String sessionToken = getSessionToken();

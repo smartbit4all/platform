@@ -55,7 +55,9 @@ public class EventPublisher<P, S> {
     }
 
     Map<String, List<InvocationRequest>> requestsByChannel = new HashMap<>();
-    for (EventSubscriptionData sub : api.getApiData().getEventSubscriptions()) {
+    List<EventSubscriptionData> eventSubscriptions =
+        invocationRegisterApi.getSubscriptions(api.getApiData().getInterfaceName());
+    for (EventSubscriptionData sub : eventSubscriptions) {
       if (event.equals(sub.getEvent())) {
         List<InvocationRequest> channelRequests =
             requestsByChannel.computeIfAbsent(sub.getChannel(), c -> new ArrayList<>());

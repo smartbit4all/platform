@@ -8,6 +8,7 @@ import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncChannelScheduledInvocationList;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.core.object.ObjectNode;
@@ -81,5 +82,13 @@ public interface InvocationRegisterApi {
    * @param result
    */
   void saveAsyncInvocationResult(AsyncInvocationRequestEntry request, InvocationResult result);
+
+  /**
+   * Return all the subscriptions for the given interface
+   * 
+   * @param interfaceName
+   * @return
+   */
+  List<EventSubscriptionData> getSubscriptions(String interfaceName);
 
 }
