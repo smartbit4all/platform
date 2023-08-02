@@ -46,10 +46,11 @@ public class OrgUtils {
 
   public static Boolean securityPredicate(OrgApi orgApi, Supplier<User> currentUserProvider,
       SessionApi sessionApi, SecurityGroup securityGroup, URI userUri) {
-    if (sessionApi != null) {
-      return securityPredicate(sessionApi, securityGroup);
-    }
     if (userUri == null) {
+      if (sessionApi != null) {
+        return securityPredicate(sessionApi, securityGroup);
+      }
+
       if (currentUserProvider == null || currentUserProvider.get() == null) {
         return false;
       }
