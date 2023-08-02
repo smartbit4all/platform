@@ -913,6 +913,28 @@ components:
           $ref: '#/components/schemas/UiActionFeedbackType'
         feedbackText:
           type: string
+        upload:
+          $ref: '#/components/schemas/UiActionUploadDescriptor'
+    UiActionUploadDescriptor:
+      type: object
+      description: |
+        Describes the look of an upload component that is related to a specific UiAction.
+      required: [title, actionButton, cancelButton]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        maxSize:
+          type: string
+        formats:
+          type: string
+        uploadButtonTitle:
+          type: string
+        backgroundColour:
+          type: string
+        textColour:
+          type: string
     UiActionDialogDescriptor:
       type: object
       description: |
