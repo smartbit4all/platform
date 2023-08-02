@@ -37,7 +37,7 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   @Autowired
   private ObjectMapper objectMapper;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -50,8 +50,7 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
     // TODO url összeállítása
     String url =
-        baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort + "/invokeApi";
-
+        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + "/invokeApi";
     HttpHeaders headers = new HttpHeaders();
     String sessionToken = getSessionToken();
     if (!ObjectUtils.isEmpty(sessionToken)) {
@@ -75,7 +74,9 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   }
 
   private String getSessionToken() {
-    return sessionApi.getParameter(SessionInfoData.SID);
+    return sessionApi != null
+        ? sessionApi.getParameter(SessionInfoData.SID)
+        : null;
   }
 
 }
