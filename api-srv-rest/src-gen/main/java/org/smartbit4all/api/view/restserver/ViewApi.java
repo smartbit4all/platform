@@ -451,4 +451,76 @@ public interface ViewApi {
         return getDelegate().updateViewContext(viewContextUpdate);
     }
 
+
+    /**
+     * POST /component/{uuid}/upload
+     * Performs an upload UI action. 
+     *
+     * @param uuid  (required)
+     * @param uiActionRequest Stringify-d UiActionRequest. (optional)
+     * @param param Parameter name to use when converting uploaded file to BinaryData. (optional)
+     * @param content  (optional)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "uploadAction",
+        notes = "Performs an upload UI action. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/upload",
+        produces = { "application/json" },
+        consumes = { "multipart/form-data" }
+    )
+    default ResponseEntity<ViewContextChange> uploadAction(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "Stringify-d UiActionRequest.") @Valid @RequestPart(value = "uiActionRequest", required = false) String uiActionRequest,
+        @ApiParam(value = "Parameter name to use when converting uploaded file to BinaryData.") @Valid @RequestPart(value = "param", required = false) String param,
+        @ApiParam(value = "") @RequestPart(value = "content", required = false) MultipartFile content
+    ) throws Exception {
+        return getDelegate().uploadAction(uuid, uiActionRequest, param, content);
+    }
+
+
+    /**
+     * POST /component/{uuid}/uploadMultiple
+     * Performs a generic UI action. 
+     *
+     * @param uuid  (required)
+     * @param uiActionRequest Stringify-d UiActionRequest. (optional)
+     * @param param Parameter name to use when converting uploaded file to BinaryData. (optional)
+     * @param contents  (optional)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "uploadMultipleAction",
+        notes = "Performs a generic UI action. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/uploadMultiple",
+        produces = { "application/json" },
+        consumes = { "multipart/form-data" }
+    )
+    default ResponseEntity<ViewContextChange> uploadMultipleAction(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "Stringify-d UiActionRequest.") @Valid @RequestPart(value = "uiActionRequest", required = false) String uiActionRequest,
+        @ApiParam(value = "Parameter name to use when converting uploaded file to BinaryData.") @Valid @RequestPart(value = "param", required = false) String param,
+        @ApiParam(value = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
+    ) throws Exception {
+        return getDelegate().uploadMultipleAction(uuid, uiActionRequest, param, contents);
+    }
+
 }

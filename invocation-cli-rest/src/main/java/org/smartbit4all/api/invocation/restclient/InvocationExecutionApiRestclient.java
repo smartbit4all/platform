@@ -37,7 +37,7 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   @Autowired
   private ObjectMapper objectMapper;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -45,11 +45,12 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
     ApplicationRuntime applicationRuntime = applicationRuntimeApi.get(runtime);
     String ipAddress = applicationRuntime.getIpAddress();
+    String baseUrl = applicationRuntime.getBaseUrl();
     int serverPort = applicationRuntime.getServerPort();
 
     // TODO url összeállítása
-    String url = "http://" + ipAddress + ":" + serverPort + "/invokeApi";
-
+    String url =
+        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + "/invokeApi";
     HttpHeaders headers = new HttpHeaders();
     String sessionToken = getSessionToken();
     if (!ObjectUtils.isEmpty(sessionToken)) {
@@ -73,7 +74,9 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   }
 
   private String getSessionToken() {
-    return sessionApi.getParameter(SessionInfoData.SID);
+    return sessionApi != null
+        ? sessionApi.getParameter(SessionInfoData.SID)
+        : null;
   }
 
 }

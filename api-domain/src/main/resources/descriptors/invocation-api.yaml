@@ -514,6 +514,9 @@ components:
         ipAddress:
           type: string
           description: The ip address of the runtime.
+        baseUrl:
+          type: string
+          description: The base url of the runtime.
         serverPort:
           type: integer
           format: int32

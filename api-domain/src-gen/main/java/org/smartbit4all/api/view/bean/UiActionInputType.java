@@ -34,7 +34,11 @@ public enum UiActionInputType {
   
   TEXTAREA("textarea"),
   
-  USER_SELECT("user_select");
+  USER_SELECT("user_select"),
+  
+  FILE("file"),
+  
+  MULTIPLE_FILES("multiple_files");
 
   private String value;
 

@@ -131,6 +131,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   private Map<URI, List<UUID>> runtimesByApis = new HashMap<>();
 
+  private Map<String, List<EventSubscriptionData>> eventSubscriptionsByApis = new HashMap<>();
+
   /**
    * Prevent from accessing the registry before the first maintain cycle.
    */
@@ -217,18 +219,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         // TODO A quick win to resolve the subscriptions inside one runtime first. Here we add the
         // published events also...
         Map<ProviderApiInvocationHandler<?>, ApiData> apiDataMap = new HashMap<>();
-        Map<String, List<EventSubscriptionData>> subscriptionsByApi = new HashMap<>();
         for (ProviderApiInvocationHandler<?> apiHandler : providedApis) {
           ApiData apiData = apiHandler.getData();
           apiDataMap.put(apiHandler, apiData);
-          for (EventSubscriptionData s : apiData.getEventSubscriptions()) {
-            subscriptionsByApi.computeIfAbsent(s.getApi(), apiName -> new ArrayList<>()).add(s);
-          }
         }
-
-        apiDataMap.values()
-            .forEach(a -> a.eventSubscriptions(
-                subscriptionsByApi.getOrDefault(a.getInterfaceName(), Collections.emptyList())));
 
         for (Entry<ProviderApiInvocationHandler<?>, ApiData> entry : apiDataMap.entrySet()) {
           ApiData apiData = entry.getValue();
@@ -237,6 +231,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             if (!r.getApiList().contains(apiData.getUri())) {
               r.addApiListItem(apiData.getUri());
             }
+          } else {
+            storage.get().update(apiData.getUri(), ApiData.class, a -> apiData);
           }
           apis.add(apiData.getUri());
           addToApiRegister(apiData);
@@ -564,6 +560,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     if (apisByName.isEmpty()) {
       apiRegister.remove(apiData.getInterfaceName());
+      for (EventSubscriptionData subscription : apiData.getEventSubscriptions()) {
+        List<EventSubscriptionData> subscriptions =
+            eventSubscriptionsByApis.get(subscription.getApi());
+        subscriptions.remove(subscription);
+      }
     }
   }
 
@@ -583,6 +584,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         apiRegister.computeIfAbsent(apiData.getInterfaceName(), n -> new HashMap<>());
     ApiDescriptor apiDescriptor =
         apisByName.computeIfAbsent(apiData.getName(), n -> new ApiDescriptor(apiData));
+    for (EventSubscriptionData subscription : apiData.getEventSubscriptions()) {
+      List<EventSubscriptionData> subscriptionsByApi =
+          eventSubscriptionsByApis.computeIfAbsent(subscription.getApi(), n -> new ArrayList<>());
+      subscriptionsByApi.add(subscription);
+    }
+
     return apiDescriptor;
   }
 
@@ -643,6 +650,16 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
 
     return null;
+  }
+
+  @Override
+  public List<EventSubscriptionData> getSubscriptions(String interfaceName) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
+    return eventSubscriptionsByApis.getOrDefault(interfaceName, Collections.emptyList());
   }
 
   @Override

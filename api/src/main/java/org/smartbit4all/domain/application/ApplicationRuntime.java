@@ -47,6 +47,13 @@ public class ApplicationRuntime {
   }
 
   /**
+   * @return The base url of the given application instance.
+   */
+  public final String getBaseUrl() {
+    return data.getBaseUrl();
+  }
+
+  /**
    * @return The port for the incoming service requests.
    */
   public final int getServerPort() {

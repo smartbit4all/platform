@@ -149,9 +149,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     long currentTimeMillis = System.currentTimeMillis();
     if (self.isDone()) {
       // The application runtime is already exists and must be updated in the storage.
-      storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
-        return r.lastTouchTime(currentTimeMillis);
-      });
+        storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
+          return r.lastTouchTime(currentTimeMillis);
+        });
       self.get().getData().setLastTouchTime(currentTimeMillis);
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
@@ -192,9 +192,17 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     storageCluster = storageApi.get(CLUSTER);
     storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
-        .ipAddress(InetAddress.getLocalHost().getHostAddress()).serverPort(getPort())
-        .uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
+        .baseUrl(getBaseUrl()).ipAddress(InetAddress.getLocalHost().getHostAddress())
+        .serverPort(getPort()).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
     myRuntime = new ApplicationRuntime(runtimeData);
+  }
+
+  private String getBaseUrl() {
+    String baseUrl = environment.getProperty("runtime.base-url");
+    if (Strings.isNotEmpty(baseUrl)) {
+      return baseUrl;
+    }
+    return null;
   }
 
   private final int getPort() {

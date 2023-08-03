@@ -148,6 +148,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ViewContextChange'
+  /component/{uuid}/upload:
+    post:
+      tags:
+      - View
+      description: |
+        Performs an upload UI action.
+      operationId: 'uploadAction'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uiActionRequest:
+                  description: Stringify-d UiActionRequest.
+                  type: string
+                param:
+                  description: Parameter name to use when converting uploaded file to BinaryData.
+                  type: string
+                content:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
+  /component/{uuid}/uploadMultiple:
+    post:
+      tags:
+      - View
+      description: |
+        Performs a generic UI action.
+      operationId: 'uploadMultipleAction'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uiActionRequest:
+                  description: Stringify-d UiActionRequest.
+                  type: string
+                param:
+                  description: Parameter name to use when converting uploaded file to BinaryData.
+                  type: string
+                contents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
   /component/{uuid}/{widgetId}/action:
     post:
       tags:
@@ -767,6 +843,8 @@ components:
         - textfield
         - textarea
         - user_select
+        - file
+        - multiple_files
     UiActionRequest:
       type: object
       description: 
@@ -834,6 +912,28 @@ components:
         feedbackType:
           $ref: '#/components/schemas/UiActionFeedbackType'
         feedbackText:
+          type: string
+        upload:
+          $ref: '#/components/schemas/UiActionUploadDescriptor'
+    UiActionUploadDescriptor:
+      type: object
+      description: |
+        Describes the look of an upload component that is related to a specific UiAction.
+      required: [title, actionButton, cancelButton]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        maxSize:
+          type: string
+        formats:
+          type: string
+        uploadButtonTitle:
+          type: string
+        backgroundColour:
+          type: string
+        textColour:
           type: string
     UiActionDialogDescriptor:
       type: object
@@ -941,3 +1041,15 @@ components:
       - WIDGET
       - SELECTION
       - LOOKUP
+    UploadedFile:
+      type: object
+      description: |
+        Information about uploaded file.
+      properties:
+        filename:
+          type: string
+        size:
+          type: integer
+          format: int64
+        data:
+          type: BinaryData
