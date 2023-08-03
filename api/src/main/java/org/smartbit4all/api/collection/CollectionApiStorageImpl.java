@@ -62,7 +62,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public StoredMap map(String logicalSchema, String mapName) {
     return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
         constructGlobalUri(constructCollectionShemaName(logicalSchema), mapName, STOREDMAP),
-        mapName, objectApi,
+        mapName, null, objectApi,
         branchApi);
   }
 
@@ -71,7 +71,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
         constructScopedUri(constructCollectionShemaName(logicalSchema),
             mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP),
-        mapName,
+        mapName, scopeObjectUri,
         objectApi,
         branchApi);
   }
@@ -80,7 +80,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public StoredList list(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(schema, constructGlobalUri(schema, name, STOREDLIST),
-        name, objectApi,
+        name, null, objectApi,
         branchApi);
   }
 
@@ -88,7 +88,8 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(schema, constructScopedUri(schema,
-        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name, objectApi,
+        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name,
+        scopeObjectUri, objectApi,
         branchApi);
   }
 
@@ -102,7 +103,8 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public <T> StoredReference<T> reference(String logicalSchema, String name, Class<T> clazz) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredReferenceStorageImpl<>(schema,
-        constructGlobalUri(schema, name, STOREDREF), name, objectApi.definition(clazz), objectApi,
+        constructGlobalUri(schema, name, STOREDREF), name, null, objectApi.definition(clazz),
+        objectApi,
         branchApi);
   }
 
@@ -113,7 +115,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     return new StoredReferenceStorageImpl<>(schema,
         constructScopedUri(schema,
             name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF),
-        name, objectApi.definition(clazz), objectApi, branchApi);
+        name, scopeObjectUri, objectApi.definition(clazz), objectApi, branchApi);
   }
 
   @Override
@@ -123,7 +125,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredReferenceStorageImpl<>(schema,
         refUri,
-        null, objectApi.definition(clazz), objectApi, branchApi);
+        null, null, objectApi.definition(clazz), objectApi, branchApi);
   }
 
   @Override

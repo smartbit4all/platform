@@ -35,6 +35,7 @@ smartbit4all {
   		"InvocationRequestDefinition": "org.smartbit4all.api.invocation.bean.InvocationRequestDefinition",
   		"BranchedObjectEntry": "org.smartbit4all.api.object.bean.BranchedObjectEntry",
   		"GridView": "org.smartbit4all.api.grid.bean.GridView",
+  		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
   	]
   }
 }

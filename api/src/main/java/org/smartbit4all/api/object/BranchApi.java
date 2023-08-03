@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
@@ -71,6 +72,9 @@ public interface BranchApi {
   Map<URI, BranchOperation> initBranchedObjects(URI branchUri,
       Map<URI, Supplier<URI>> brachedObjects);
 
+  void registerCollection(URI branchUri, URI storedListUri, URI storedListBranchedUri,
+      StoredCollectionDescriptor descriptor);
+
   void addNewBranchedObjects(URI branchUri,
       Collection<URI> newObjects);
 
@@ -115,5 +119,7 @@ public interface BranchApi {
    * @return The ordered list of the {@link BranchedObjectEntry}.
    */
   List<BranchedObjectEntry> compareListByUri(URI branchUri, URI objectUri, String... path);
+
+  String toStringBranchedObjectEntry(BranchedObjectEntry bo, String... path);
 
 }

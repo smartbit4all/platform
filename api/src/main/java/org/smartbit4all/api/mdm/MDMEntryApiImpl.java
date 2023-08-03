@@ -37,9 +37,12 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * The base implementation of the master data management api. The basic feature is that if we
- * configure an api like this into the spring context than it will be domain api for the given
- * object.
+ * The base implementation of the master data management entry api. The implementation is based on
+ * the branching features of the {@link ObjectApi} and the {@link BranchApi}. The branching is
+ * operated on a
+ * {@link CollectionApi#list(org.smartbit4all.api.collection.bean.StoredCollectionDescriptor)} where
+ * the branching is managed by this api. Most of the functionality is accessible also on the direct
+ * apis.
  *
  * @author Peter Boros
  *
@@ -119,11 +122,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public Map<String, URI> getPublishedMap() {
-    return getPublishedStoredMap().uris();
-  }
-
-  @Override
   public URI saveAsNewPublished(Object object) {
     if (object == null) {
       return null;
@@ -155,9 +153,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     Map<String, Object> objectToSave = fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
     URI uri =
         objectApi.save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave));
-    StoredMap storedMap = getPublishedStoredMap();
-    storedMap.put(getId(objectToSave), uri);
-    updatePublishedList(storedMap.uris());
+    getPublishedList().add(uri);
     return uri;
   }
 
@@ -262,26 +258,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         BranchEntry branchEntry =
             objectApi.read(objectApi.getLatestUri(branchUri), BranchEntry.class);
         if (branchEntry != null) {
-          // Check the uniqueness of the objects.
-          Map<URI, ObjectNode> toSaveBySourceUri =
-              branchEntry.getBranchedObjects().entrySet().stream().collect(
-                  toMap(e -> URI.create(e.getKey()),
-                      e -> objectApi.load(e.getValue().getBranchedObjectLatestUri())));
-          // Now set the new URIs in the published map and list.
-          replaceInPublished(
-              toSaveBySourceUri.entrySet().stream().collect(toMap(Entry::getKey, e -> {
-                ObjectNode objectNode = objectApi.loadLatest(e.getKey());
-                objectNode.setValues(e.getValue().getObjectAsMap());
-                return objectApi.save(objectNode);
-              })));
-          // The new objects coming from the draft can be registered directly.
-          addNewToPublished(branchEntry.getNewObjects().values().stream()
-              .map(bo -> objectApi.load(bo.getBranchedObjectLatestUri()))
-              .collect(toMap(this::getIdFromNode, ObjectNode::getObjectUri)));
-          // Delete the object that are signed to be deleted.
-          // deleteToPublished(branchEntry.getDeletedObjects().values().stream()
-          // .collect(toSet()));
-
+          branchApi.merge(branchUri);
           stateNode.modify(MDMEntryDescriptorState.class, s -> s.branch(null));
           objectApi.save(stateNode);
           result.set(branchEntry);
@@ -329,10 +306,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       }
     }
     return result;
-  }
-
-  private boolean isList(MDMEntryDescriptor descriptor) {
-    return Boolean.TRUE.equals(descriptor.getPublishInList());
   }
 
   private final void replaceInPublished(Map<URI, URI> toPublishByLatest) {
@@ -468,40 +441,26 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   private final void updatePublishedList(Map<String, URI> uris) {
-    if (isList(descriptor)) {
-      collectionApi.list(descriptor.getSchema(), getPublishedListName()).update(l -> {
-        return uris.values().stream().collect(toList());
-      });
-    }
+    collectionApi.list(descriptor.getSchema(), getPublishedListName()).update(l -> {
+      return uris.values().stream().collect(toList());
+    });
   }
 
   @Override
   public StoredList getPublishedList() {
-    if (isList(descriptor)) {
-      return collectionApi.list(descriptor.getSchema(), getPublishedListName());
-    }
-    return null;
+    return collectionApi.list(descriptor.getSchema(), getPublishedListName());
   }
 
   public final void refreshValueSetDefinition() {
     if (refreshValueSetDefinition) {
       refreshValueSetDefinition = false;
       ObjectDefinition<?> definition = objectApi.definition(descriptor.getTypeQualifiedName());
-      if (isList(descriptor)) {
-        String publishedListName = getPublishedListName();
-        valueSetApi.save(descriptor.getSchema(),
-            new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)
-                .storageSchema(descriptor.getSchema()).containerName(publishedListName)
-                .objectDefinition(ObjectDefinition.uriOf(descriptor.getTypeQualifiedName()))
-                .qualifiedName(publishedListName));
-      } else {
-        String publishedMapName = getPublishedMapName();
-        valueSetApi.save(descriptor.getSchema(),
-            new ValueSetDefinitionData().kind(ValueSetDefinitionKind.MAP)
-                .storageSchema(descriptor.getSchema()).containerName(publishedMapName)
-                .objectDefinition(ObjectDefinition.uriOf(descriptor.getTypeQualifiedName()))
-                .qualifiedName(publishedMapName));
-      }
+      String publishedListName = getPublishedListName();
+      valueSetApi.save(descriptor.getSchema(),
+          new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)
+              .storageSchema(descriptor.getSchema()).containerName(publishedListName)
+              .objectDefinition(ObjectDefinition.uriOf(descriptor.getTypeQualifiedName()))
+              .qualifiedName(publishedListName));
     }
   }
 

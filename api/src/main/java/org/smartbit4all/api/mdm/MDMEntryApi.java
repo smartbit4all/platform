@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.object.bean.BranchEntry;
@@ -43,19 +44,14 @@ public interface MDMEntryApi {
   String getId(Object object);
 
   /**
-   * @return Returns the version URI of the currently published objects.
-   */
-  Map<String, URI> getPublishedMap();
-
-  /**
-   * @return Return all the published objects loaded.
-   */
-  Map<String, ObjectNode> getPublishedObjects();
-
-  /**
    * @return Return the published {@link StoredList} if the published list name was set.
    */
   StoredList getPublishedList();
+
+  /**
+   * @return Returns the version URI of the currently published objects.
+   */
+  StoredMap getPublishedMap();
 
   /**
    * Save the given object as published.
@@ -75,30 +71,21 @@ public interface MDMEntryApi {
   URI saveAsNewPublished(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap);
 
   /**
-   * Save the given object as draft. To be able to identify the published version of the draft
-   * object we need to have a unique business identifier for the object that can identify the given
-   * object in the published list.
+   * Save a new object according to the current state of the branch entry. If a branch is initiated
+   * then the save will appear on the branch. If no branch exists the the
    *
-   * @param object The object to save.
+   * @param objectNode The object node to save as draft. We check if this object is a totally new
+   *        one, a an object to modify and now we have to make the branched object also. Or the
+   *        given object is already included in the branch.
    * @return The URI of the currently saved draft version.
    */
-  URI saveAsDraft(Object object);
+  URI save(ObjectNode objectNode);
 
   /**
-   * Save the given object as draft. To be able to identify the published version of the draft
-   * object we need to have a unique business identifier for the object that can identify the given
-   * object in the published list.
-   *
-   * @param objectDefinition The object definition of the entry.
-   * @param objectAsMap The map value of the given object. It is important to use map to avoid
-   *        loosing property values by converting to typed object.
-   * @return The URI of the currently saved draft version.
-   */
-  URI saveAsDraft(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap);
-
-  /**
-   * The draft object is removed from the current editing branch. It won't be seen any more in the
-   * {@link #getAllEntries()} or {@link #getDraftEntries()} list.
+   * The draft object is removed from the base list. If it was a totally new object then we simply
+   * remove it from the branched list. If it is a modified object then we undo the modification of
+   * the object and replace it with the source uri. The branched object won't be removed from the
+   * branch. It will be skipped if every reference is removed from the branched objects.
    * 
    * @param draftUri If the given uri is a branched object let is be {@link BranchingStateEnum#NEW}
    *        or {@link BranchingStateEnum#MODIFIED} then it is going to be removed from the branch.
@@ -111,8 +98,8 @@ public interface MDMEntryApi {
   boolean cancelDraft(URI draftUri);
 
   /**
-   * The delete will initiate a editing branch of it doesn't exist. Register the given object to
-   * delete if it is a published object. If it is a branched object with
+   * If we already have a The delete will initiate a editing branch of it doesn't exist. Register
+   * the given object to delete if it is a published object. If it is a branched object with
    * {@link BranchingStateEnum#NEW} then it is equivalent to canceling the draft object. If the
    * state is {@link BranchingStateEnum#MODIFIED} then the branched object is canceled first and
    * then the original uri will be registered to delete.

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -19,9 +21,11 @@ import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
  */
 public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl implements StoredMap {
 
-  StoredMapStorageImpl(String storageSchema, URI uri, String name, ObjectApi objectApi,
+  StoredMapStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+      ObjectApi objectApi,
       BranchApi branchApi) {
-    super(storageSchema, uri, name);
+    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+        .collectionType(CollectionTypeEnum.MAP), uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
   }
@@ -105,7 +109,8 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
 
   @Override
   protected ObjectNode constructNew(URI uri) {
-    return objectApi.create(storageSchema, new StoredMapData().uri(uri).name(name));
+    return objectApi.create(descriptor.getSchema(),
+        new StoredMapData().uri(uri).name(descriptor.getName()));
   }
 
 }

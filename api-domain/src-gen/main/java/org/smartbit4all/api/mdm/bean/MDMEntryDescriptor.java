@@ -40,7 +40,6 @@ import javax.validation.Valid;
   MDMEntryDescriptor.NAME,
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
-  MDMEntryDescriptor.PUBLISH_IN_LIST,
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
   MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
   MDMEntryDescriptor.PUBLISHED_MAP_NAME,
@@ -65,9 +64,6 @@ public class MDMEntryDescriptor {
 
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
   private String typeQualifiedName = "org.smartbit4all.api.value.bean.GenericValue";
-
-  public static final String PUBLISH_IN_LIST = "publishInList";
-  private Boolean publishInList = true;
 
   public static final String PUBLISHED_LIST_NAME = "publishedListName";
   private String publishedListName;
@@ -224,33 +220,6 @@ public class MDMEntryDescriptor {
   }
 
 
-  public MDMEntryDescriptor publishInList(Boolean publishInList) {
-    
-    this.publishInList = publishInList;
-    return this;
-  }
-
-   /**
-   * The published objects can be seen in this list that can be accessed by the CollectionApi.list(). The name of the list will be the nameList. 
-   * @return publishInList
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The published objects can be seen in this list that can be accessed by the CollectionApi.list(). The name of the list will be the nameList. ")
-  @JsonProperty(PUBLISH_IN_LIST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getPublishInList() {
-    return publishInList;
-  }
-
-
-  @JsonProperty(PUBLISH_IN_LIST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPublishInList(Boolean publishInList) {
-    this.publishInList = publishInList;
-  }
-
-
   public MDMEntryDescriptor publishedListName(String publishedListName) {
     
     this.publishedListName = publishedListName;
@@ -293,11 +262,11 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. 
+   * The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list.  
    * @return uniqueIdentifierPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. ")
+  @ApiModelProperty(value = "The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list.  ")
   @JsonProperty(UNIQUE_IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -614,7 +583,6 @@ public class MDMEntryDescriptor {
     return Objects.equals(this.name, mdMEntryDescriptor.name) &&
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
-        Objects.equals(this.publishInList, mdMEntryDescriptor.publishInList) &&
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
         Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
         Objects.equals(this.publishedMapName, mdMEntryDescriptor.publishedMapName) &&
@@ -631,7 +599,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishInList, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
   }
 
   @Override
@@ -641,7 +609,6 @@ public class MDMEntryDescriptor {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
-    sb.append("    publishInList: ").append(toIndentedString(publishInList)).append("\n");
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
     sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
     sb.append("    publishedMapName: ").append(toIndentedString(publishedMapName)).append("\n");

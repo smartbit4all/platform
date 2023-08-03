@@ -33,7 +33,7 @@ public class MDMDefinitionOption {
   public MDMEntryDescriptor addDefaultDescriptor(Class<?> clazz, String name) {
     MDMEntryDescriptor result =
         new MDMEntryDescriptor().schema(definition.getName()).name(name)
-            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
+            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL)
             .typeQualifiedName(clazz.getName());
     addDescriptor(result);
     return result;
@@ -44,7 +44,7 @@ public class MDMDefinitionOption {
         new MDMEntryDescriptor().schema(definition.getName())
             .name(ObjectDefinitionData.class.getSimpleName())
             .addUniqueIdentifierPathItem(ObjectDefinitionData.QUALIFIED_NAME)
-            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
+            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL)
             .typeQualifiedName(ObjectDefinitionData.class.getName())
             .uriConstructor(new InvocationRequest()
                 .interfaceClass(ObjectDefinitionProvidedApi.class.getName())

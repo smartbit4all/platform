@@ -401,6 +401,17 @@ public class ObjectNode {
     return this;
   }
 
+  /**
+   * Set the state to modified if the state is {@link ObjectNodeState#NOP} else the state remains
+   * the same. Be careful! It can be used only if you know what you are doing! --> Constructs a new
+   * version even if it is not necessary. It can be useful when we create a branched object with the
+   * same values.
+   */
+  public final ObjectNode ensureSave() {
+    setModified();
+    return this;
+  }
+
   public ObjectNodeReference ref(String... paths) {
     ObjectNodeReference result = getValueAs(ObjectNodeReference.class, paths);
     if (result == null) {

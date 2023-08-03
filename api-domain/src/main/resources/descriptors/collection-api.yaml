@@ -92,3 +92,5 @@ components:
         scopeUri:
           type: string
           format: uri
+        collectionType:
+          enum: [LIST, MAP, REFERENCE]

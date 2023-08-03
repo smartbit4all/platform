@@ -35,7 +35,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   StoredCollectionDescriptor.NAME,
   StoredCollectionDescriptor.SCHEMA,
-  StoredCollectionDescriptor.SCOPE_URI
+  StoredCollectionDescriptor.SCOPE_URI,
+  StoredCollectionDescriptor.COLLECTION_TYPE
 })
 @JsonTypeName("StoredCollectionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +49,46 @@ public class StoredCollectionDescriptor {
 
   public static final String SCOPE_URI = "scopeUri";
   private URI scopeUri;
+
+  /**
+   * Gets or Sets collectionType
+   */
+  public enum CollectionTypeEnum {
+    LIST("LIST"),
+    
+    MAP("MAP"),
+    
+    REFERENCE("REFERENCE");
+
+    private String value;
+
+    CollectionTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static CollectionTypeEnum fromValue(String value) {
+      for (CollectionTypeEnum b : CollectionTypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String COLLECTION_TYPE = "collectionType";
+  private CollectionTypeEnum collectionType;
 
   public StoredCollectionDescriptor() { 
   }
@@ -135,6 +176,33 @@ public class StoredCollectionDescriptor {
   }
 
 
+  public StoredCollectionDescriptor collectionType(CollectionTypeEnum collectionType) {
+    
+    this.collectionType = collectionType;
+    return this;
+  }
+
+   /**
+   * Get collectionType
+   * @return collectionType
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(COLLECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public CollectionTypeEnum getCollectionType() {
+    return collectionType;
+  }
+
+
+  @JsonProperty(COLLECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCollectionType(CollectionTypeEnum collectionType) {
+    this.collectionType = collectionType;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -146,12 +214,13 @@ public class StoredCollectionDescriptor {
     StoredCollectionDescriptor storedCollectionDescriptor = (StoredCollectionDescriptor) o;
     return Objects.equals(this.name, storedCollectionDescriptor.name) &&
         Objects.equals(this.schema, storedCollectionDescriptor.schema) &&
-        Objects.equals(this.scopeUri, storedCollectionDescriptor.scopeUri);
+        Objects.equals(this.scopeUri, storedCollectionDescriptor.scopeUri) &&
+        Objects.equals(this.collectionType, storedCollectionDescriptor.collectionType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, schema, scopeUri);
+    return Objects.hash(name, schema, scopeUri, collectionType);
   }
 
   @Override
@@ -161,6 +230,7 @@ public class StoredCollectionDescriptor {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
     sb.append("    scopeUri: ").append(toIndentedString(scopeUri)).append("\n");
+    sb.append("    collectionType: ").append(toIndentedString(collectionType)).append("\n");
     sb.append("}");
     return sb.toString();
   }

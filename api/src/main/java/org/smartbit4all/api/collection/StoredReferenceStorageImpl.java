@@ -3,6 +3,8 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.Map;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -15,10 +17,11 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   private ObjectDefinition<T> def;
 
-  protected StoredReferenceStorageImpl(String storageSchema, URI uri, String name,
+  protected StoredReferenceStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
       ObjectDefinition<T> def, ObjectApi objectApi,
       BranchApi branchApi) {
-    super(storageSchema, uri, name);
+    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+        .collectionType(CollectionTypeEnum.REFERENCE), uri);
     this.def = def;
     this.objectApi = objectApi;
     this.branchApi = branchApi;
@@ -31,7 +34,7 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   @Override
   protected ObjectNode constructNew(URI uri) {
-    return objectApi.create(storageSchema, new StoredReferenceData().uri(uri));
+    return objectApi.create(descriptor.getSchema(), new StoredReferenceData().uri(uri));
   }
 
   @Override

@@ -175,10 +175,13 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     if (branchEntry != null) {
       // We should add this new object to new object of the branch entry.
       URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(result);
+      URI sourceLatestUri = ObjectStorageImpl.getUriWithoutVersion(sourceUri);
       branchEntry.putBranchedObjectsItem(
-          ObjectStorageImpl.getUriWithoutVersion(sourceUri).toString(),
-          new BranchedObject().branchedObjectLatestUri(uriWithoutVersion).addOperationsItem(
-              new BranchOperation().operationType(OperationTypeEnum.INIT).sourceUri(sourceUri)));
+          sourceLatestUri.toString(),
+          new BranchedObject().sourceObjectLatestUri(sourceLatestUri)
+              .branchedObjectLatestUri(uriWithoutVersion).addOperationsItem(
+                  new BranchOperation().operationType(OperationTypeEnum.INIT)
+                      .sourceUri(sourceUri).targetUri(result)));
     }
   }
 

@@ -30,6 +30,8 @@ public class StringConstant {
 
   public static final String ARROW = "->";
 
+  public static final String ARROW_SPACE = "-> ";
+
   public static final String ASTERISK = "*";
 
   public static final String AT = "@";
@@ -118,6 +120,8 @@ public class StringConstant {
   public static final String SLASH = "/";
 
   public static final String SPACE = " ";
+
+  public static final String SPACE_ARROW_SPACE = " -> ";
 
   public static final String SPACE_HYPHEN_SPACE = " - ";
 

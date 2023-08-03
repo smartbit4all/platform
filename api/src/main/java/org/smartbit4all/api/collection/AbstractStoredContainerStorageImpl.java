@@ -3,31 +3,30 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.UriUtils;
 
 abstract class AbstractStoredContainerStorageImpl {
 
   protected URI uri;
 
-  protected String name;
-
   protected URI branchUri;
-
-  protected String storageSchema;
 
   protected BranchApi branchApi;
 
   protected ObjectApi objectApi;
 
-  protected AbstractStoredContainerStorageImpl(String storageSchema, URI uri, String name) {
+  protected StoredCollectionDescriptor descriptor;
+
+  protected AbstractStoredContainerStorageImpl(StoredCollectionDescriptor descriptor, URI uri) {
     super();
     this.uri = uri;
-    this.name = name;
-    this.storageSchema = storageSchema;
+    this.descriptor = descriptor;
   }
 
   public final URI getUri() {
@@ -60,14 +59,19 @@ abstract class AbstractStoredContainerStorageImpl {
     BranchedObject branchedObject = branchEntry.getBranchedObjects().get(uri.toString());
     if (branchedObject == null) {
       ObjectNode storedItemNode = objectApi.loadLatest(uri);
-      return objectApi.save(storedItemNode, branchUri);
+      // Construct a special uri for the collection.
+      URI branchedUri =
+          UriUtils.createUri(uri.getScheme(), null, branchUri.getPath() + uri.getPath(), null);
+      storedItemNode.setValue(branchedUri, "uri");
+      branchApi.registerCollection(branchUri, getUri(), branchedUri, descriptor);
+      return objectApi.save(storedItemNode);
     } else {
       return branchedObject.getBranchedObjectLatestUri();
     }
   }
 
   public void branch(URI branchUri) {
-    this.branchUri = branchUri;
+    this.branchUri = objectApi.getLatestUri(branchUri);
   }
 
 }

@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -18,9 +21,11 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
 
-  StoredListStorageImpl(String storageSchema, URI uri, String name, ObjectApi objectApi,
+  StoredListStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+      ObjectApi objectApi,
       BranchApi branchApi) {
-    super(storageSchema, uri, name);
+    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+        .collectionType(CollectionTypeEnum.LIST), uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
   }
@@ -120,7 +125,13 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   @Override
   protected ObjectNode constructNew(URI uri) {
-    return objectApi.create(storageSchema, new StoredListData().uri(uri).name(name));
+    return objectApi.create(descriptor.getSchema(),
+        new StoredListData().uri(uri).name(descriptor.getName()));
+  }
+
+  @Override
+  public List<BranchedObjectEntry> compareWithBranch(URI branchUri) {
+    return branchApi.compareListByUri(branchUri, getUri(), StoredListData.URIS);
   }
 
 }

@@ -171,7 +171,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
       Long uriVersion = ObjectStorageImpl.getUriVersion(uri);
       if (loadLatest || uriVersion == null) {
         readUri = ObjectStorageImpl.getUriWithoutVersion(uri);
-        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(readUri.toString());
+        BranchedObject branchedObject = getBranchedObject(branchEntry, readUri);
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
@@ -180,7 +180,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
       } else {
         // In this case we must check the version also.
         URI latestUri = ObjectStorageImpl.getUriWithoutVersion(uri);
-        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(latestUri.toString());
+        BranchedObject branchedObject = getBranchedObject(branchEntry, latestUri);
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
@@ -219,6 +219,10 @@ public final class RetrievalApiImpl implements RetrievalApi {
       readUri = loadLatest ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     }
     return readUri;
+  }
+
+  private final BranchedObject getBranchedObject(BranchEntry branchEntry, URI readUri) {
+    return branchEntry.getBranchedObjects().get(readUri.toString());
   }
 
   @Override

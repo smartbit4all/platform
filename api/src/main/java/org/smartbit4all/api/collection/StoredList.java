@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 
 /**
  * This list can be used to store a list of uri globally or scoped for an object.
@@ -48,5 +49,7 @@ public interface StoredList {
    * @param branchUri
    */
   void branch(URI branchUri);
+
+  List<BranchedObjectEntry> compareWithBranch(URI branchUri);
 
 }

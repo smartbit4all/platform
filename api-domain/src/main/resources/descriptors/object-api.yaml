@@ -399,7 +399,7 @@ components:
         The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and 
         saved without any operation. If the original object is saved on this branch then the operation is registered into 
         this object and executed directly.
-      required: [uri, created, branchedObjects, newObjects, deletedObjects]
+      required: [uri, created, branchedObjects, newObjects, collectionLists]
       properties:
         uri:
           type: string
@@ -460,6 +460,11 @@ components:
           type: string
           description: The latest uri of the branched object.
           format: uri
+        collectionDescriptor:
+          type: StoredCollectionDescriptor
+          description: |
+            if the branched object is a collection api managed stored collection then we save the descriptor into the stored object
+            for further processing.
         operations:
           type: array
           description: |
