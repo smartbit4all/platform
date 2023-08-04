@@ -58,6 +58,9 @@ abstract class AbstractStoredContainerStorageImpl {
     BranchEntry branchEntry = objectApi.loadLatest(branchUri).getObject(BranchEntry.class);
     BranchedObject branchedObject = branchEntry.getBranchedObjects().get(uri.toString());
     if (branchedObject == null) {
+      if (!objectApi.exists(uri)) {
+        objectApi.save(constructNew(uri));
+      }
       ObjectNode storedItemNode = objectApi.loadLatest(uri);
       // Construct a special uri for the collection.
       URI branchedUri =

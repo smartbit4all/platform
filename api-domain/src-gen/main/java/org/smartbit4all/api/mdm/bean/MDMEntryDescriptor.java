@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -47,10 +46,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
   MDMEntryDescriptor.SEARCH_INDEX_FOR_ENTRIES,
   MDMEntryDescriptor.SCHEMA,
-  MDMEntryDescriptor.BRANCH_STRATEGY,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
   MDMEntryDescriptor.EVENT_HANDLERS_BEFORE_SAVE,
-  MDMEntryDescriptor.STATE,
   MDMEntryDescriptor.IS_VALUE_SET
 })
 @JsonTypeName("MDMEntryDescriptor")
@@ -86,52 +83,11 @@ public class MDMEntryDescriptor {
   public static final String SCHEMA = "schema";
   private String schema;
 
-  /**
-   * Gets or Sets branchStrategy
-   */
-  public enum BranchStrategyEnum {
-    GLOBAL("global"),
-    
-    ENTRYLEVEL("entryLevel");
-
-    private String value;
-
-    BranchStrategyEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static BranchStrategyEnum fromValue(String value) {
-      for (BranchStrategyEnum b : BranchStrategyEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String BRANCH_STRATEGY = "branchStrategy";
-  private BranchStrategyEnum branchStrategy;
-
   public static final String URI_CONSTRUCTOR = "uriConstructor";
   private InvocationRequest uriConstructor = null;
 
   public static final String EVENT_HANDLERS_BEFORE_SAVE = "eventHandlersBeforeSave";
   private List<InvocationRequest> eventHandlersBeforeSave = null;
-
-  public static final String STATE = "state";
-  private URI state;
 
   public static final String IS_VALUE_SET = "isValueSet";
   private Boolean isValueSet = false;
@@ -424,33 +380,6 @@ public class MDMEntryDescriptor {
   }
 
 
-  public MDMEntryDescriptor branchStrategy(BranchStrategyEnum branchStrategy) {
-    
-    this.branchStrategy = branchStrategy;
-    return this;
-  }
-
-   /**
-   * Get branchStrategy
-   * @return branchStrategy
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(BRANCH_STRATEGY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public BranchStrategyEnum getBranchStrategy() {
-    return branchStrategy;
-  }
-
-
-  @JsonProperty(BRANCH_STRATEGY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBranchStrategy(BranchStrategyEnum branchStrategy) {
-    this.branchStrategy = branchStrategy;
-  }
-
-
   public MDMEntryDescriptor uriConstructor(InvocationRequest uriConstructor) {
     
     this.uriConstructor = uriConstructor;
@@ -515,35 +444,6 @@ public class MDMEntryDescriptor {
   }
 
 
-  public MDMEntryDescriptor state(URI state) {
-    
-    this.state = state;
-    return this;
-  }
-
-   /**
-   * The reference to the current state of the given entry. It contains the necessary runtime informations.
-   * @return state
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "The reference to the current state of the given entry. It contains the necessary runtime informations.")
-  @JsonProperty(STATE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public URI getState() {
-    return state;
-  }
-
-
-  @JsonProperty(STATE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setState(URI state) {
-    this.state = state;
-  }
-
-
   public MDMEntryDescriptor isValueSet(Boolean isValueSet) {
     
     this.isValueSet = isValueSet;
@@ -590,16 +490,14 @@ public class MDMEntryDescriptor {
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
         Objects.equals(this.searchIndexForEntries, mdMEntryDescriptor.searchIndexForEntries) &&
         Objects.equals(this.schema, mdMEntryDescriptor.schema) &&
-        Objects.equals(this.branchStrategy, mdMEntryDescriptor.branchStrategy) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
         Objects.equals(this.eventHandlersBeforeSave, mdMEntryDescriptor.eventHandlersBeforeSave) &&
-        Objects.equals(this.state, mdMEntryDescriptor.state) &&
         Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state, isValueSet);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet);
   }
 
   @Override
@@ -616,10 +514,8 @@ public class MDMEntryDescriptor {
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
     sb.append("    searchIndexForEntries: ").append(toIndentedString(searchIndexForEntries)).append("\n");
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
-    sb.append("    branchStrategy: ").append(toIndentedString(branchStrategy)).append("\n");
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");
     sb.append("    eventHandlersBeforeSave: ").append(toIndentedString(eventHandlersBeforeSave)).append("\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    isValueSet: ").append(toIndentedString(isValueSet)).append("\n");
     sb.append("}");
     return sb.toString();

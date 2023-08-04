@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -174,10 +175,11 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * working on currently.
    *
    * @param viewUuid The list view instance
+   * @param objectUri The uri of the edited object.
    * @param editingObject The object or map value of the newly create object.
    * @param branchedObjectEntry The branching information about the given entry.
    */
-  void saveObject(UUID viewUuid, Object editingObject,
+  void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
       BranchedObjectEntry branchedObjectEntry);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);

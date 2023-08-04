@@ -1,13 +1,14 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -19,7 +20,6 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -45,6 +45,8 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -105,9 +107,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public MDMEntryApi getApi(String definition, String name) {
 
-    MDMEntryDescriptor descriptor = getEntryDescriptor(getDefinition(definition), name);
+    MDMDefinition mdmDefinition = getDefinition(definition);
+    MDMEntryDescriptor descriptor = getEntryDescriptor(mdmDefinition, name);
 
-    return new MDMEntryApiImpl(self, descriptor, objectApi, collectionApi, invocationApi, branchApi,
+    return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
+        invocationApi, branchApi,
         valueSetApi);
 
   }
@@ -174,8 +178,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             // We create a new definition and its state and add to the map.
             o.getDefinition()
                 .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
-                    .collect(toMap(Entry::getKey, e -> e.getValue()
-                        .state(objectApi.saveAsNew(SCHEMA, new MDMEntryDescriptorState())))));
+                    .collect(toMap(Entry::getKey, e -> e.getValue())));
             uri = objectApi.saveAsNew(SCHEMA,
                 o.getDefinition().state(objectApi.saveAsNew(SCHEMA, new MDMDefinitionState())));
           } else {
@@ -184,21 +187,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
             URI stateUri = definitionNode.ref(MDMDefinition.STATE).getObjectUri();
 
-            Map<String, URI> statesByName =
-                definitionNode.getValueAsMap(MDMEntryDescriptor.class, MDMDefinition.DESCRIPTORS)
-                    .values().stream()
-                    .collect(toMap(desc -> desc.getName(),
-                        desc -> desc.getState()));
             definitionNode.modify(MDMDefinition.class, def -> {
               o.getDefinition()
                   .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
                       .collect(toMap(Entry::getKey, e -> {
-                        URI currentState = statesByName.get(e.getValue().getName());
-                        if (currentState == null) {
-                          currentState = objectApi.saveAsNew(SCHEMA, new MDMEntryDescriptorState());
-                        }
-                        return e.getValue()
-                            .state(currentState);
+                        return e.getValue();
                       })));
               return o.getDefinition().state(stateUri);
             });
@@ -525,6 +518,72 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
     return descriptor.getName() + "List";
+  }
+
+  @Override
+  public URI initiateGlobalBranch(String definitionName, String branchCaption) {
+    return modifyDefinitionState(definitionName, state -> {
+      return state
+          .globalBranch(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri()));
+    }, state -> {
+      if (state.getGlobalBranch() != null) {
+        throw new IllegalStateException(MessageFormat.format(
+            localeSettingApi.get("mdm.globalbranch.alreadyexists"),
+            definitionName));
+      }
+    }, state -> {
+      if (state.getBranchForEntries() != null && !state.getBranchForEntries().isEmpty()) {
+        throw new IllegalStateException(MessageFormat.format(
+            localeSettingApi.get("mdm.entriesbranch.notempty"),
+            definitionName));
+      }
+    }).getUri();
+  }
+
+  @Override
+  public URI initiateBranchForEntry(String definition, String title, String entryName) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void mergeGlobal(String definitionName) {
+    modifyDefinitionState(definitionName, state -> {
+      branchApi.merge(state.getGlobalBranch());
+      return state
+          .globalBranch(null);
+    }, state -> {
+      if (state.getGlobalBranch() == null) {
+        throw new IllegalStateException(MessageFormat.format(
+            localeSettingApi.get("mdm.globalbranch.empty"),
+            definitionName));
+      }
+    });
+  }
+
+  @SafeVarargs
+  private final MDMDefinitionState modifyDefinitionState(String definitionName,
+      UnaryOperator<MDMDefinitionState> modification, Consumer<MDMDefinitionState>... validations) {
+    MDMDefinition definition = getDefinition(definitionName);
+    Lock lock = objectApi.getLock(definition.getUri());
+    lock.lock();
+    try {
+      URI stateUri =
+          objectApi.loadLatest(definition.getUri()).ref(MDMDefinition.STATE).getObjectUri();
+      ObjectNode stateNode = objectApi.loadLatest(stateUri);
+      MDMDefinitionState state = stateNode.getObject(MDMDefinitionState.class);
+      if (validations != null) {
+        for (int i = 0; i < validations.length; i++) {
+          validations[i].accept(state);
+        }
+      }
+      stateNode.modify(MDMDefinitionState.class,
+          modification);
+      objectApi.save(stateNode);
+      return stateNode.getObject(MDMDefinitionState.class);
+    } finally {
+      lock.unlock();
+    }
   }
 
 }

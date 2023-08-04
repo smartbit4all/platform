@@ -24,8 +24,6 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
@@ -374,11 +372,6 @@ public class PlatformApiConfig {
         .ref(MDMDefinition.class,
             MDMDefinition.STATE,
             MDMDefinitionState.class,
-            ReferencePropertyKind.REFERENCE,
-            AggregationKind.NONE)
-        .ref(MDMEntryDescriptor.class,
-            MDMEntryDescriptor.STATE,
-            MDMEntryDescriptorState.class,
             ReferencePropertyKind.REFERENCE,
             AggregationKind.NONE);
   }

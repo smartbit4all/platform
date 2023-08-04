@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,6 +20,7 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMEntryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -41,6 +41,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     implements MDMEntryListPageApi {
@@ -179,15 +180,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
     if (ctx.checkAdmin()) {
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexAdmin.executeSearchOnNodes(ctx.entryApi.getAllEntries().stream().map(i -> {
-            ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
-            return objectApi.create(ctx.definition.getName(), objectDefinition,
-                objectDefinition.toMap(i));
-          }), null));
+          ctx.searchIndexAdmin
+              .executeSearchOnNodes(ctx.entryApi.getBranchingList().stream().map(i -> {
+                ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
+                return objectApi.create(ctx.definition.getName(), objectDefinition,
+                    objectDefinition.toMap(i));
+              }), null));
 
     } else {
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexPublished.executeSearchOn(ctx.entryApi.getPublishedList().uris().stream(),
+          ctx.searchIndexPublished.executeSearchOn(ctx.entryApi.getList().uris().stream(),
               null));
     }
 
@@ -202,7 +204,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    context.entryApi.cancelCurrentModifications();
+    context.entryApi.cancelAll();
     refreshGrid(context);
   }
 
@@ -219,7 +221,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    context.entryApi.publishCurrentModifications();
+    masterDataManagementApi.mergeGlobal(context.definition.getName());
     refreshGrid(context);
   }
 
@@ -274,7 +276,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId,
         (u, ctx) -> {
-          ctx.entryApi.deleteObject(u);
+          ctx.entryApi.remove(u);
         });
     refreshGrid(context);
   }
@@ -283,28 +285,20 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, (u, ctx) -> ctx.entryApi.cancelDraft(u));
+    performActionOnEntry(context, gridId, rowId, (u, ctx) -> ctx.entryApi.cancel(u));
     refreshGrid(context);
   }
 
   @Override
-  public void saveObject(UUID viewUuid, Object editingObject,
+  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
       BranchedObjectEntry branchedObjectEntry) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
-    if (branchedObjectEntry == null) {
-      // create new object
-      context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
-    } else {
-      // update obejct
-      if (branchedObjectEntry.getBranchUri() != null) {
-        ObjectNode branchedNode = objectApi.loadLatest(branchedObjectEntry.getBranchUri());
-        branchedNode.setValues(objectDefinition.toMap(editingObject));
-        objectApi.save(branchedNode);
-      } else {
-        context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
-      }
-    }
+    Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
+    ObjectNode objectNode = objectApi
+        .load(objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0])));
+    objectNode.setValues(editingObjectAsMap);
+    context.entryApi.save(objectNode);
     refreshGrid(context);
   }
 

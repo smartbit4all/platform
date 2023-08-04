@@ -6,12 +6,9 @@ import java.util.Map;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
-import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 
 /**
@@ -46,29 +43,12 @@ public interface MDMEntryApi {
   /**
    * @return Return the published {@link StoredList} if the published list name was set.
    */
-  StoredList getPublishedList();
+  StoredList getList();
 
   /**
    * @return Returns the version URI of the currently published objects.
    */
-  StoredMap getPublishedMap();
-
-  /**
-   * Save the given object as published.
-   *
-   * @param object The object to save.
-   * @return The URI of the currently saved draft version.
-   */
-  URI saveAsNewPublished(Object object);
-
-  /**
-   * Save the given object as published.
-   * 
-   * @param objectDefinition The object definition of the entry.
-   * @param objectAsMap The object as map.
-   * @return
-   */
-  URI saveAsNewPublished(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap);
+  StoredMap getMap();
 
   /**
    * Save a new object according to the current state of the branch entry. If a branch is initiated
@@ -82,7 +62,7 @@ public interface MDMEntryApi {
   URI save(ObjectNode objectNode);
 
   /**
-   * The draft object is removed from the base list. If it was a totally new object then we simply
+   * We try to cancel the editing of the object. If it was a totally new object then we simply
    * remove it from the branched list. If it is a modified object then we undo the modification of
    * the object and replace it with the source uri. The branched object won't be removed from the
    * branch. It will be skipped if every reference is removed from the branched objects.
@@ -90,49 +70,26 @@ public interface MDMEntryApi {
    * @param draftUri If the given uri is a branched object let is be {@link BranchingStateEnum#NEW}
    *        or {@link BranchingStateEnum#MODIFIED} then it is going to be removed from the branch.
    *        In case of modification this operation restore the original object version. In case of
-   *        new the given object disappear from the {@link #getAllEntries()} result. If we cancel an
-   *        already deleted object then we remove it from the deleted object list. So it will be
-   *        included in the {@link #getAllEntries()} list as {@link BranchingStateEnum#NOP} again.
+   *        new the given object disappear from the {@link #getBranchingList()} result. If we cancel
+   *        an already deleted object then we remove it from the deleted object list. So it will be
+   *        included in the {@link #getBranchingList()} list as {@link BranchingStateEnum#NOP}
+   *        again.
    * @return If the canceling modified the state of the MDM entry at all.
    */
-  boolean cancelDraft(URI draftUri);
+  boolean cancel(URI draftUri);
 
   /**
-   * If we already have a The delete will initiate a editing branch of it doesn't exist. Register
-   * the given object to delete if it is a published object. If it is a branched object with
-   * {@link BranchingStateEnum#NEW} then it is equivalent to canceling the draft object. If the
-   * state is {@link BranchingStateEnum#MODIFIED} then the branched object is canceled first and
-   * then the original uri will be registered to delete.
+   * This will restore the original list but do not remove the modified objects from the branch.
+   */
+  void cancelAll();
+
+  /**
+   * If we already have a branch then we remove the given object from the branch. Else we remove it
+   * from the list of the main branch.
    * 
    * @param objectUri
    */
-  boolean deleteObject(URI objectUri);
-
-  /**
-   * This will discard all the modified draft objects of the given given master data list.
-   */
-  void cancelCurrentModifications();
-
-  /**
-   * The current editing branch will be committed to be published. From that moment the
-   * {@link #getAllEntries()} return a {@link BranchedObjectEntry} list with
-   * {@link BranchingStateEnum#NOP} for all object. The previous local editing branch is finished
-   * and removed from the {@link BranchEntry}.
-   * 
-   * @return The {@link BranchEntry} that has been finalized during the operation.
-   */
-  BranchEntry publishCurrentModifications();
-
-  /**
-   * Collect all the new and modified entries from the branch if there is any.
-   * 
-   * @return Returns BranchedObjectEntry for every new or branched object. The
-   *         {@link BranchedObjectEntry#ORIGINAL_URI} points to the version uri of the original
-   *         object if it is a {@link BranchingStateEnum#MODIFIED} object. The
-   *         {@link BranchedObjectEntry#BRANCH_URI} points to the version uri of the branched object
-   *         or to the new object.
-   */
-  List<BranchedObjectEntry> getDraftEntries();
+  boolean remove(URI objectUri);
 
   /**
    * Returns all the {@link BranchedObjectEntry} currently seen be an editor of the given MDM Entry.
@@ -140,15 +97,6 @@ public interface MDMEntryApi {
    * 
    * @return Return all the published objects loaded.
    */
-  List<BranchedObjectEntry> getAllEntries();
-
-  /**
-   * @return The branching strategy of the given entry that can be
-   *         {@link BranchStrategyEnum#ENTRYLEVEL} if the draft management of the given entry
-   *         defines a local private branch for the given entry. Or it can be
-   *         {@link BranchStrategyEnum#GLOBAL} if modification of the given entry joins to a global
-   *         branch.
-   */
-  BranchStrategyEnum getBranchStrategy();
+  List<BranchedObjectEntry> getBranchingList();
 
 }

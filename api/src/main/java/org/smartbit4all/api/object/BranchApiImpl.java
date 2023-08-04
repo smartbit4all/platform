@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -50,9 +49,6 @@ public class BranchApiImpl implements BranchApi {
 
   @Autowired
   private ObjectApi objectApi;
-
-  @Autowired
-  private CollectionApi collectionApi;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -318,73 +314,73 @@ public class BranchApiImpl implements BranchApi {
 
   @Override
   public List<BranchedObjectEntry> compareListByUri(URI branchUri, URI objectUri, String... path) {
-    Objects.requireNonNull(branchUri);
     if (objectUri == null) {
       return Collections.emptyList();
     }
-    ObjectCacheEntry<BranchEntry> cacheEntry = objectApi.getCacheEntry(BranchEntry.class);
-    BranchEntry branchEntry = cacheEntry.get(branchUri);
-    Map<URI, BranchedObject> branchMap = branchEntry.getBranchedObjects().values().stream()
-        .collect(toMap(bo -> bo.getBranchedObjectLatestUri(), bo -> bo));
-    BranchedObject branchedObject =
-        branchEntry.getBranchedObjects().values().stream()
-            .filter(bo -> objectApi.equalsIgnoreVersion(objectUri, bo.getSourceObjectLatestUri()))
-            .findFirst().orElse(null);
-    if (branchedObject != null) {
-      // Load the source and the target object too.
-      // TODO Use the last operation to identify the exact source object version.
-      ObjectNode sourceNode = objectApi.load(branchedObject.getSourceObjectLatestUri());
-      ObjectNode branchedNode = objectApi.load(branchedObject.getBranchedObjectLatestUri());
-      List<URI> branchedList = branchedNode.getValueAsList(URI.class, path);
-      // Implementing a merge sort. If we find a deleted object in the source then insert them
-      // immediately.
-      List<BranchedObjectEntry> result = new ArrayList<>();
-      int branchedIndex = 0;
-      List<URI> sourceMap =
-          sourceNode.getValueAsList(URI.class, path).stream().map(u -> objectApi.getLatestUri(u))
-              .collect(toList());
-      while (branchedIndex < branchedList.size()) {
-        URI branchedNodeReference = branchedList.get(branchedIndex);
-        BranchedObjectEntry newEntry = null;
-        BranchedObject branchedReference =
-            branchMap.get(objectApi.getLatestUri(branchedNodeReference));
-        if (branchedReference != null) {
-          // This is a branched object so set the given entry to modified.
-          newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.MODIFIED)
-              .originalUri(branchedReference.getSourceObjectLatestUri())
-              .branchUri(branchedReference.getBranchedObjectLatestUri());
-          sourceMap.remove(branchedReference.getSourceObjectLatestUri());
-        } else {
-          // Examine if it is a new object in the list or it is deleted. Or if we have the same
-          // reference then it remained the same with nop.
-          if (sourceMap.remove(objectApi.getLatestUri(branchedNodeReference))) {
-            newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.NOP)
-                .originalUri(branchedNodeReference);
+    if (branchUri != null) {
+      ObjectCacheEntry<BranchEntry> cacheEntry = objectApi.getCacheEntry(BranchEntry.class);
+      BranchEntry branchEntry = cacheEntry.get(branchUri);
+      Map<URI, BranchedObject> branchMap = branchEntry.getBranchedObjects().values().stream()
+          .collect(toMap(bo -> bo.getBranchedObjectLatestUri(), bo -> bo));
+      BranchedObject branchedObject =
+          branchEntry.getBranchedObjects().values().stream()
+              .filter(bo -> objectApi.equalsIgnoreVersion(objectUri, bo.getSourceObjectLatestUri()))
+              .findFirst().orElse(null);
+      if (branchedObject != null) {
+        // Load the source and the target object too.
+        // TODO Use the last operation to identify the exact source object version.
+        ObjectNode sourceNode = objectApi.load(branchedObject.getSourceObjectLatestUri());
+        ObjectNode branchedNode = objectApi.load(branchedObject.getBranchedObjectLatestUri());
+        List<URI> branchedList = branchedNode.getValueAsList(URI.class, path);
+        // Implementing a merge sort. If we find a deleted object in the source then insert them
+        // immediately.
+        List<BranchedObjectEntry> result = new ArrayList<>();
+        int branchedIndex = 0;
+        List<URI> sourceMap =
+            sourceNode.getValueAsList(URI.class, path).stream().map(u -> objectApi.getLatestUri(u))
+                .collect(toList());
+        while (branchedIndex < branchedList.size()) {
+          URI branchedNodeReference = branchedList.get(branchedIndex);
+          BranchedObjectEntry newEntry = null;
+          BranchedObject branchedReference =
+              branchMap.get(objectApi.getLatestUri(branchedNodeReference));
+          if (branchedReference != null) {
+            // This is a branched object so set the given entry to modified.
+            newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.MODIFIED)
+                .originalUri(branchedReference.getSourceObjectLatestUri())
+                .branchUri(branchedReference.getBranchedObjectLatestUri());
+            sourceMap.remove(branchedReference.getSourceObjectLatestUri());
           } else {
-            newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW)
-                .branchUri(branchedNodeReference);
+            // Examine if it is a new object in the list or it is deleted. Or if we have the same
+            // reference then it remained the same with nop.
+            if (sourceMap.remove(objectApi.getLatestUri(branchedNodeReference))) {
+              newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.NOP)
+                  .originalUri(branchedNodeReference);
+            } else {
+              newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW)
+                  .branchUri(branchedNodeReference);
+            }
           }
+          result.add(newEntry);
+          branchedIndex++;
         }
-        result.add(newEntry);
-        branchedIndex++;
-      }
-      // Now add all the items from the original list as deleted.
-      List<BranchedObjectEntry> deletedList = sourceMap.stream()
-          .map(uri -> new BranchedObjectEntry().originalUri(uri)
-              .branchingState(BranchingStateEnum.DELETED))
-          .collect(toList());
+        // Now add all the items from the original list as deleted.
+        List<BranchedObjectEntry> deletedList = sourceMap.stream()
+            .map(uri -> new BranchedObjectEntry().originalUri(uri)
+                .branchingState(BranchingStateEnum.DELETED))
+            .collect(toList());
 
-      result.addAll(deletedList);
-      return result;
-    } else {
-      // We load the object node by the object uri directly and produce the result with nop.
-      ObjectNode objectNode = objectApi.loadLatest(objectUri);
-      List<URI> list = objectNode.getValueAsList(URI.class, path);
-      return list.stream()
-          .map(uri -> new BranchedObjectEntry().branchingState(BranchingStateEnum.NOP)
-              .originalUri(uri))
-          .collect(toList());
+        result.addAll(deletedList);
+        return result;
+      }
     }
+    // We load the object node by the object uri directly and produce the result with nop.
+    ObjectNode objectNode = objectApi.loadLatest(objectUri);
+    List<URI> list = objectNode.getValueAsList(URI.class, path);
+    return list.stream()
+        .map(uri -> new BranchedObjectEntry().branchingState(BranchingStateEnum.NOP)
+            .originalUri(uri))
+        .collect(toList());
   }
 
   @Override

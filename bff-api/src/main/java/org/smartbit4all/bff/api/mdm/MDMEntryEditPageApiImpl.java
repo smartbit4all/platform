@@ -44,7 +44,7 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
     BranchedObjectEntry branchedObjectEntry = parameters(view)
         .get(MDMEntryListPageApi.PARAM_BRANCHED_OBJECT_ENTRY, BranchedObjectEntry.class);
     view.setModel(request.getParams().get(UiActions.MODEL));
-    listPageApi.saveObject(parentUUID, view.getModel(), branchedObjectEntry);
+    listPageApi.saveObject(parentUUID, view.getObjectUri(), view.getModel(), branchedObjectEntry);
     viewApi.closeView(viewUuid);
   }
 

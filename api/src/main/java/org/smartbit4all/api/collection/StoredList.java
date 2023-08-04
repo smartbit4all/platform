@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This list can be used to store a list of uri globally or scoped for an object.
@@ -15,6 +16,8 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 public interface StoredList {
 
   List<URI> uris();
+
+  Stream<ObjectNode> nodes();
 
   void add(URI uri);
 
