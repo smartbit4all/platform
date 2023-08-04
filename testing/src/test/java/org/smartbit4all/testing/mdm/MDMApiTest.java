@@ -624,7 +624,8 @@ class MDMApiTest {
   private <O> Map<String, O> getPublishedObjects(MDMEntryApi typeApi, Class<O> clazz,
       String... keyPropertyPath) {
     return typeApi.getList().nodes()
-        .collect(toMap(n -> n.getValueAsString(keyPropertyPath), n -> n.getObject(clazz)));
+        .collect(
+            toMap(n -> n.getValue(URI.class, keyPropertyPath).toString(), n -> n.getObject(clazz)));
   }
 
   @Test
@@ -653,29 +654,33 @@ class MDMApiTest {
     masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
 
     Map<String, PropertyDefinitionData> publishedProperties =
-        getPublishedObjects(propertyDefinitionMDMApi, PropertyDefinitionData.class);
+        getPublishedObjects(propertyDefinitionMDMApi, PropertyDefinitionData.class,
+            PropertyDefinitionData.URI);
     URI appleDefUri = objectDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new ObjectDefinitionData()
+            .uri(ObjectDefinition.uriOf(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
             .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
                 publishedProperties
-                    .get(objectApi.getLatestUri(draftString).toString()))
+                    .get(draftString.toString()))
             .addPropertiesItem(
                 publishedProperties
-                    .get(objectApi.getLatestUri(draftLong).toString()))
+                    .get(draftLong.toString()))
             .addPropertiesItem(
                 publishedProperties
-                    .get(objectApi.getLatestUri(draftCategoryUri).toString()))));
+                    .get(draftCategoryUri.toString()))));
+
 
     ObjectDefinitionData definitionData = objectApi
-        .loadLatest(objectDefinitionMDMApi.getMap().uris().get(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
+        .loadLatest(objectDefinitionMDMApi.getList().uris().stream()
+            .filter(u -> objectApi.equalsIgnoreVersion(u, appleDefUri)).findFirst().get())
         .getObject(ObjectDefinitionData.class);
 
     ObjectDefinition<?> defApple = objectApi.definition(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
 
     defApple.reloadDefinitionData();
 
-    Assertions.assertThat(objectDefinitionMDMApi.getMap().uris())
-        .containsKeys(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
+    Assertions.assertThat(objectDefinitionMDMApi.getList().uris())
+        .contains(appleDefUri);
 
     Assertions
         .assertThat(objectDefinitionMDMApi.getList().uris().stream()
