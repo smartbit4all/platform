@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +24,6 @@ import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -576,7 +576,7 @@ public class ObjectNode {
         "Map item not found by index: " + "(" + key + ")");
   }
 
-  public Object getVersionNr() {
+  public Long getVersionNr() {
     return data.getVersionNr();
   }
 
