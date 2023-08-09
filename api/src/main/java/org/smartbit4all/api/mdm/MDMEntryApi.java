@@ -99,4 +99,11 @@ public interface MDMEntryApi {
    */
   List<BranchedObjectEntry> getBranchingList();
 
+  /**
+   * Returns if the given MDM Entry is in edit mode on a global or entry level Branch
+   * 
+   * @return
+   */
+  boolean hasActiveBranch();
+
 }

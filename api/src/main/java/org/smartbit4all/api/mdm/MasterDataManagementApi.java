@@ -63,4 +63,13 @@ public interface MasterDataManagementApi {
    */
   void mergeGlobal(String definitionName);
 
+  /**
+   * The current editing branch will be finished and the changes won't be merged into the main
+   * branch.
+   * 
+   * @param definitionName The name of the definition.
+   * 
+   */
+  void dropGlobal(String definitionName);
+
 }

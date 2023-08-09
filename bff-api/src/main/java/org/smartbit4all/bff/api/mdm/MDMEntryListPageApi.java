@@ -2,7 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.net.URI;
 import java.util.UUID;
-import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -48,6 +48,12 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * Run the query and update the content of the grid.
    */
   static final String ACTION_DO_QUERY = "DO_QUERY";
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action start an editing phase for the entries.
+   */
+  static final String ACTION_START_EDITING = "START_EDITING";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -100,6 +106,16 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    */
   @ActionHandler(ACTION_DO_QUERY)
   void performDoQuery(UUID viewUuid, UiActionRequest request);
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action start an editing phase for the entries.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @ActionHandler(ACTION_START_EDITING)
+  void startEditing(UUID viewUuid, UiActionRequest request);
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -182,6 +198,6 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
       BranchedObjectEntry branchedObjectEntry);
 
-  GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
+  GridRow addWidgetEntryGridActions(GridRow page, UUID viewUuid);
 
 }

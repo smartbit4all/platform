@@ -1,5 +1,8 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,9 +35,6 @@ import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -375,6 +375,11 @@ public class BranchApiImpl implements BranchApi {
       }
     }
     // We load the object node by the object uri directly and produce the result with nop.
+
+    // if no element has been added to the StoredList, then the object does not exist yet
+    if (!objectApi.exists(objectUri)) {
+      return Collections.emptyList();
+    }
     ObjectNode objectNode = objectApi.loadLatest(objectUri);
     List<URI> list = objectNode.getValueAsList(URI.class, path);
     return list.stream()

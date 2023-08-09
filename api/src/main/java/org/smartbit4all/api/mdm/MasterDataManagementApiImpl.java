@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -45,8 +47,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -552,13 +552,23 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       branchApi.merge(state.getGlobalBranch());
       return state
           .globalBranch(null);
-    }, state -> {
-      if (state.getGlobalBranch() == null) {
-        throw new IllegalStateException(MessageFormat.format(
-            localeSettingApi.get("mdm.globalbranch.empty"),
-            definitionName));
-      }
-    });
+    }, state -> noGlobalBranchValidation(definitionName, state));
+  }
+
+  @Override
+  public void dropGlobal(String definitionName) {
+    modifyDefinitionState(definitionName, state -> {
+      return state
+          .globalBranch(null);
+    }, state -> noGlobalBranchValidation(definitionName, state));
+  }
+
+  private void noGlobalBranchValidation(String definitionName, MDMDefinitionState state) {
+    if (state.getGlobalBranch() == null) {
+      throw new IllegalStateException(MessageFormat.format(
+          localeSettingApi.get("mdm.globalbranch.empty"),
+          definitionName));
+    }
   }
 
   @SafeVarargs

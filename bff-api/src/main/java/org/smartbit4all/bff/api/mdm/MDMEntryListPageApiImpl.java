@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,7 +17,6 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
-import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
@@ -41,7 +41,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     implements MDMEntryListPageApi {
@@ -147,15 +146,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public MDMEntryDescriptor initModel(View view) {
     PageContext context = getContextByView(view);
-    boolean isAdmin = context.checkAdmin();
-    List<UiAction> uiActions = UiActions.builder()
-        .add(ACTION_DO_QUERY)
-        .addIf(ACTION_NEW_ENTRY, isAdmin)
-        .addIf(ACTION_FINALIZE_CHANGES, isAdmin)
-        .addIf(ACTION_CANCEL_CHANGES, isAdmin)
-        .build();
-
-    view.actions(uiActions);
+    refreshActions(view, context);
 
     Set<String> propertiesToRemove = new HashSet<>(
         Arrays.asList(BranchedObjectEntry.ORIGINAL_URI, BranchedObjectEntry.BRANCH_URI));
@@ -167,7 +158,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
                 .map(Property::getName).collect(toList()),
             context.definition.getName(), context.entryDescriptor.getName());
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
-    gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
+    gridModelApi.addGridRowCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
 
@@ -176,9 +167,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     return context.entryDescriptor;
   }
 
+  private void refreshActions(View view, PageContext context) {
+    boolean isAdmin = context.checkAdmin();
+    List<UiAction> uiActions = UiActions.builder()
+        .add(ACTION_DO_QUERY)
+        .addIf(ACTION_NEW_ENTRY, isAdmin)
+        .addIf(ACTION_START_EDITING, isAdmin, !context.entryApi.hasActiveBranch())
+        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, context.entryApi.hasActiveBranch())
+        .addIf(ACTION_CANCEL_CHANGES, isAdmin, context.entryApi.hasActiveBranch())
+        .build();
+
+    view.actions(uiActions);
+  }
+
   private final void refreshGrid(PageContext ctx) {
 
-    if (ctx.checkAdmin()) {
+    if (ctx.checkAdmin() && ctx.entryApi.hasActiveBranch()) {
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
           ctx.searchIndexAdmin
               .executeSearchOnNodes(ctx.entryApi.getBranchingList().stream().map(i -> {
@@ -202,9 +206,19 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   @Override
+  public void startEditing(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    masterDataManagementApi.initiateGlobalBranch(context.definition.getName(),
+        String.valueOf(System.currentTimeMillis()));
+    refreshActions(context.view, context);
+    refreshGrid(context);
+  }
+
+  @Override
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    context.entryApi.cancelAll();
+    masterDataManagementApi.dropGlobal(context.definition.getName());
+    refreshActions(context.view, context);
     refreshGrid(context);
   }
 
@@ -223,6 +237,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.mergeGlobal(context.definition.getName());
     refreshGrid(context);
+    refreshActions(context.view, context);
   }
 
   @Override
@@ -274,7 +289,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId,
+    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.ORIGINAL_URI,
         (u, ctx) -> {
           ctx.entryApi.remove(u);
         });
@@ -285,7 +300,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, (u, ctx) -> ctx.entryApi.cancel(u));
+    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.BRANCH_URI,
+        (u, ctx) -> ctx.entryApi.cancel(u));
     refreshGrid(context);
   }
 
@@ -295,10 +311,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
-    ObjectNode objectNode = objectApi
-        .load(objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0])));
-    objectNode.setValues(editingObjectAsMap);
-    context.entryApi.save(objectNode);
+    URI uri = objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0]));
+    if (uri == null) {
+      context.entryApi.save(objectApi.create(context.entryApi.getDescriptor().getSchema(),
+          objectDefinition, editingObjectAsMap));
+    } else {
+      ObjectNode objectNode = objectApi
+          .load(uri);
+      objectNode.setValues(editingObjectAsMap);
+      context.entryApi.save(objectNode);
+    }
     refreshGrid(context);
   }
 
@@ -311,10 +333,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   private final void performActionOnEntry(PageContext context, String gridId, String rowId,
-      BiConsumer<URI, PageContext> action) {
+      String uriProperty, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
       Object valueFromGridRow =
-          GridModels.getValueFromGridRow(r, PROPERTY_URI);
+          GridModels.getValueFromGridRow(r, uriProperty);
       URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
           : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
 
@@ -326,7 +348,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
     Object valueFromGridRow =
-        GridModels.getValueFromGridRow(gridModel, rowId, PROPERTY_URI);
+        GridModels.getValueFromGridRow(gridModel, rowId, uriProperty);
     URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
         : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
 
@@ -346,15 +368,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   @Override
-  public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
+  public GridRow addWidgetEntryGridActions(GridRow row, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
     if (ctx.checkAdmin()) {
-      page.getRows().forEach(row -> row
-          .addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
-          .addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY)) // TODO check if draft..
-          .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY)));
+      row.addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
+          .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY));
+      if (ctx.entryApi.hasActiveBranch()) {
+        row.addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY));
+      }
     }
-    return page;
+    return row;
   }
 
 }
