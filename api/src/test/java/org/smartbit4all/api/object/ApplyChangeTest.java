@@ -1,8 +1,16 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -21,16 +29,10 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -576,6 +578,52 @@ class ApplyChangeTest {
     assertFalse(objectApi.equalsIgnoreVersion(uri1_0, uri2_0));
 
   }
+
+
+  @Test
+  void testObjectApiObjectHistory() {
+
+    // init test objects: one SampleCategory object with 10 versions, counting in the name
+    String name = "category";
+    SampleCategory category = new SampleCategory().name(name + "0");
+    URI fistUri = objectApi.saveAsNew(MY_SCHEME, category);
+    URI uri = fistUri;
+    for (int i = 1; i <= 10; i++) {
+      ObjectNode node = objectApi.loadLatest(uri);
+      node.setValue(name + i, SampleCategory.NAME);
+      uri = objectApi.save(node);
+    }
+
+    // test objectApi.objectHistory
+    Iterator<ObjectNode> historyIter = objectApi.objectHistory(uri);
+    int counter = 0;
+    while (historyIter.hasNext()) {
+      ObjectNode currentNode = historyIter.next();
+      assertEquals(name + counter++, currentNode.getValue(SampleCategory.NAME));
+    }
+    assertEquals(11, counter);
+
+    // test objectApi.objectHistoryReverse
+    Iterator<ObjectNode> historyIterRev = objectApi.objectHistoryReverse(uri);
+    while (historyIterRev.hasNext()) {
+      ObjectNode currentNode = historyIterRev.next();
+      assertEquals(name + --counter, currentNode.getValue(SampleCategory.NAME));
+    }
+    assertEquals(0, counter);
+
+
+    // check with an uri from a middle version: it still iterates from the beginning to the end
+    uri = ObjectStorageImpl.getUriWithVersion(uri, 5);
+    historyIter = objectApi.objectHistory(uri);
+    while (historyIter.hasNext()) {
+      ObjectNode currentNode = historyIter.next();
+      assertEquals(name + counter++, currentNode.getValue(SampleCategory.NAME));
+    }
+    assertEquals(11, counter);
+
+  }
+
+
 
   @Test
   void testSetValueWithMap() {

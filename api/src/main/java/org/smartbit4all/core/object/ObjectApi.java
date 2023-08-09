@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -241,6 +242,38 @@ public interface ObjectApi {
    *         uri parameter. If the uri contains version then
    */
   URI getLatestUri(URI uri);
+
+  /**
+   * @see #objectHistory(URI)
+   */
+  Iterator<ObjectNode> objectHistory(URI objectUri, URI branchUri);
+
+  /**
+   * Returns an iterator of the given object's version list. The returned iterator iterates from the
+   * very first object to the last.
+   * 
+   * @param objectUri The Unified Resource Identifier of the object we want the history of.
+   * @return An iterator of the object versions from the first one.
+   */
+  default Iterator<ObjectNode> objectHistory(URI objectUri) {
+    return objectHistory(objectUri, null);
+  }
+
+  /**
+   * @see ObjectApi#objectHistoryReverse(URI)
+   */
+  Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri);
+
+  /**
+   * Returns an iterator of the given object's version list. The returned iterator iterates from the
+   * very last version to the beginning of the list.
+   * 
+   * @param objectUri The Unified Resource Identifier of the object we want the history of.
+   * @return An iterator of the object versions from the last one.
+   */
+  default Iterator<ObjectNode> objectHistoryReverse(URI objectUri) {
+    return objectHistoryReverse(objectUri, null);
+  }
 
   default URI saveAsNew(String storageScheme, Object object, URI branchUri) {
     ObjectNode node = create(storageScheme, object);

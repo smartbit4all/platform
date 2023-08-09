@@ -101,9 +101,21 @@ components:
           type: array
           items:
             type: Value
+        childrenComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmartWidgetDefinition'
         selection:
           description: Selection definition used for this widget.
           $ref: '#/components/schemas/SelectionDefinition'
+        direction:
+          description: The direction inside a container.
+          $ref: '#/components/schemas/SmartFormWidgetDirection'
+    SmartFormWidgetDirection:
+      type: string
+      enum:
+        - COL
+        - ROW
     SelectionDefinition:
       type: object
       required: [valueSetName,type,mapping]

@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -9,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -33,8 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -187,6 +189,68 @@ public class ObjectApiImpl implements ObjectApi {
       return null;
     }
     return ObjectStorageImpl.getUriWithoutVersion(uri);
+  }
+
+  @Override
+  public Iterator<ObjectNode> objectHistory(URI objectUri, URI branchUri) {
+    java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
+
+    URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(objectUri);
+
+    ObjectNode lastObject = loadLatest(uriWithoutVersion);
+    long lastVersion = lastObject.getVersionNr();
+
+    return new Iterator<ObjectNode>() {
+
+      private long i = -1;
+
+      @Override
+      public ObjectNode next() {
+        i++;
+        if (i > lastVersion) {
+          throw new NoSuchElementException(
+              "There is no object with version greater than " + lastVersion);
+        }
+        URI currentObjectUri = ObjectStorageImpl.getUriWithVersion(uriWithoutVersion, i);
+        return load(currentObjectUri, branchUri);
+      }
+
+      @Override
+      public boolean hasNext() {
+        return i < lastVersion;
+      }
+    };
+  }
+
+  @Override
+  public Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri) {
+    java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
+
+    URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(objectUri);
+
+    ObjectNode lastObject = loadLatest(uriWithoutVersion);
+    long lastVersion = lastObject.getVersionNr();
+
+    return new Iterator<ObjectNode>() {
+
+      private long i = lastVersion + 1;
+
+      @Override
+      public ObjectNode next() {
+        i--;
+        if (i < 0) {
+          throw new NoSuchElementException(
+              "There is no older object verions");
+        }
+        URI currentObjectUri = ObjectStorageImpl.getUriWithVersion(uriWithoutVersion, i);
+        return load(currentObjectUri, branchUri);
+      }
+
+      @Override
+      public boolean hasNext() {
+        return i > 0;
+      }
+    };
   }
 
   @Override
