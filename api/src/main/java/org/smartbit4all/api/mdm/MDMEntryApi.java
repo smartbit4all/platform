@@ -104,6 +104,6 @@ public interface MDMEntryApi {
    * 
    * @return
    */
-  boolean hasActiveBranch();
+  boolean hasBranch();
 
 }

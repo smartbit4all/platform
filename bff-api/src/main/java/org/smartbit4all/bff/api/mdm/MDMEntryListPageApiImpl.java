@@ -169,12 +169,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
   private void refreshActions(View view, PageContext context) {
     boolean isAdmin = context.checkAdmin();
+    boolean hasBranch = context.entryApi.hasBranch();
     List<UiAction> uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY)
         .addIf(ACTION_NEW_ENTRY, isAdmin)
-        .addIf(ACTION_START_EDITING, isAdmin, !context.entryApi.hasActiveBranch())
-        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, context.entryApi.hasActiveBranch())
-        .addIf(ACTION_CANCEL_CHANGES, isAdmin, context.entryApi.hasActiveBranch())
+        .addIf(ACTION_START_EDITING, isAdmin, !hasBranch)
+        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, hasBranch)
+        .addIf(ACTION_CANCEL_CHANGES, isAdmin, hasBranch)
         .build();
 
     view.actions(uiActions);
@@ -182,7 +183,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
   private final void refreshGrid(PageContext ctx) {
 
-    if (ctx.checkAdmin() && ctx.entryApi.hasActiveBranch()) {
+    if (ctx.checkAdmin() && ctx.entryApi.hasBranch()) {
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
           ctx.searchIndexAdmin
               .executeSearchOnNodes(ctx.entryApi.getBranchingList().stream().map(i -> {
@@ -373,7 +374,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     if (ctx.checkAdmin()) {
       row.addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
           .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY));
-      if (ctx.entryApi.hasActiveBranch()) {
+      if (ctx.entryApi.hasBranch()) {
         row.addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY));
       }
     }

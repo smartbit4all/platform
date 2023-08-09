@@ -331,7 +331,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public boolean hasActiveBranch() {
+  public boolean hasBranch() {
     return getBranchUri() != null;
   }
 
