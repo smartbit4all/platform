@@ -1,0 +1,67 @@
+openapi: 3.0.1
+info:
+  title: Form layout definition
+  description: Contains form layout definition objects.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: FormLayoutDefinition
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    SmartComponentLayoutDefinition:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ComponentType'
+        expandable:
+          type: boolean
+        direction:
+          $ref: '#/components/schemas/LayoutDirection'
+        parentComponent:
+          type: object
+          description: This is a placeholder for SmartComponentApiClient. You might want to describe this further.
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmartComponentLayoutDefinition'
+        widget:
+          $ref: '#/components/schemas/SmartComponentWidgetDefinition'
+        form:
+          type: array
+          items:
+            description: This is a placeholder for SmartWidgetDefinition. You might want to describe this further.
+    SmartComponentWidgetDefinition:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ComponentWidgetType'
+        gridIdentifier:
+          type: string
+    LayoutDirection:
+      type: string
+      enum:
+        - horizontal
+        - vertical
+    ComponentType:
+      type: string
+      enum:
+        - container
+        - form
+        - widget
+    ComponentWidgetType:
+      type: string
+      enum:
+        - grid
