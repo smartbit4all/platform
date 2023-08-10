@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.lang.NonNull;
-import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Strings;
 
 /**
  * The object property resolver is the central logic that can help to access the values in an
@@ -246,10 +247,23 @@ public final class ObjectPropertyResolver {
       fillLanguagePlaceholder(routeParts, language);
       targetNode = objectNode.ref(routeParts).get();
     }
+
+    if (targetNode == null) {
+      return null;
+    }
+
     // read the acquired node's property:
-    final String[] fieldParts = propertyPath.field.split(StringConstant.SLASH);
-    fillLanguagePlaceholder(fieldParts, language);
-    final Object foundValue = targetNode.getValue(fieldParts);
+    final Object foundValue;
+    if (Strings.isNullOrEmpty(propertyPath.field)) {
+      // the thing we are looking for is the target node:
+      foundValue = targetNode.getObject();
+    } else {
+      // the thing we are looking for is an inline sub-element of the target node:
+      final String[] fieldParts = propertyPath.field.split(StringConstant.SLASH);
+      fillLanguagePlaceholder(fieldParts, language);
+      foundValue = targetNode.getValue(fieldParts);
+    }
+
     if (propertyPath.strat == null || !propertyPath.strat.startsWith("redirect")) {
       return foundValue;
     }
