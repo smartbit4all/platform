@@ -1,12 +1,15 @@
 package org.smartbit4all.bff.api.org;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,7 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
 
   @Override
   public GroupEditingModel initModel(View view) {
-    view.actions(ADMIN_ACTIONS);
+    view.actions(getGroupEditorActions());
 
     GroupEditingModel pageModel = new GroupEditingModel();
     Group groupToEdit;
@@ -73,6 +76,9 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     return OrgViewNames.GROUP_DASHBOARD_PAGE;
   }
 
-
+  protected List<UiAction> getGroupEditorActions() {
+    return Arrays.asList(new UiAction().code(SAVE_GROUP),
+        new UiAction().code(CANCEL_GROUP));
+  }
 
 }
