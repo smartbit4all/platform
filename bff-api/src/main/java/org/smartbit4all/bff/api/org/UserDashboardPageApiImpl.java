@@ -31,11 +31,9 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   @Autowired
   OrgApi orgApi;
 
-
   public UserDashboardPageApiImpl() {
     super(Object.class);
   }
-
 
   @Override
   public Object initModel(View view) {
@@ -85,25 +83,24 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
 
   @Override
   public void openUserEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
-
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
-
 
     URI userUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
 
-
     viewApi
-        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE).objectUri(userUri));
-
-
+        .showView(new View().viewName(getUserEditorPageName()).objectUri(userUri));
   }
 
 
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE));
+        .showView(new View().viewName(getUserEditorPageName()));
+  }
+
+  protected String getUserEditorPageName() {
+    return OrgViewNames.USER_EDITOR_PAGE;
   }
 
 }

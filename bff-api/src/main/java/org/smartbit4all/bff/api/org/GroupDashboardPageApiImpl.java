@@ -33,11 +33,9 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
   @Autowired
   OrgApi orgApi;
 
-
   public GroupDashboardPageApiImpl() {
     super(Object.class);
   }
-
 
   @Override
   public Object initModel(View view) {
@@ -45,12 +43,10 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
     view.actions(ADMIN_ACTIONS);
 
-
     gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
         orgApi.getAllGroups().stream().map(Group::getUri));
 
     return pageModel;
-
   }
 
   @Override
@@ -75,14 +71,13 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
       return page;
     }
 
-
     if (page.getRows() != null) {
       for (GridRow row : page.getRows()) {
 
-        Boolean isBuiltIn =
+        boolean isBuiltIn =
             objectApi.asType(Boolean.class, GridModels.getValueFromGridRow(row, "builtIn"));
 
-        if (!isBuiltIn.booleanValue()) {
+        if (!isBuiltIn) {
           row.actions(GRID_ACTIONS);
         } else {
           row.actions(new ArrayList<>());
@@ -99,22 +94,22 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, GROUP_GRID);
 
-
     URI groupUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, Group.URI));
 
-
     viewApi
-        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE).objectUri(groupUri));
-
-
+        .showView(new View().viewName(getGroupEditorName()).objectUri(groupUri));
   }
 
 
   @Override
   public void openAddGroupDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE));
+        .showView(new View().viewName(getGroupEditorName()));
+  }
+
+  protected String getGroupEditorName() {
+    return OrgViewNames.GROUP_EDITOR_PAGE;
   }
 
 }

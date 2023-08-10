@@ -31,13 +31,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     view.actions(ADMIN_ACTIONS);
 
-
     UserEditingModel pageModel = new UserEditingModel();
-
 
     URI userUri = view.getObjectUri();
 
-    User user;
     if (view.getObjectUri() != null) {
       pageModel.user(orgApi.getUser(userUri));
       pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(g -> g.getUri())
@@ -45,13 +42,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     } else {
       pageModel.user(new User().name("").email("").username(""));
       pageModel.actualGroups(new ArrayList<>());
-
     }
 
     pageModel.getUser().password("");
-
     pageModel.possibleGroups(orgApi.getAllGroups());
-
 
     return pageModel;
   }
@@ -68,31 +62,27 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     if (orgApi.getActiveUsers().stream().map(User::getUri).collect(Collectors.toList())
         .contains(user.getUri())) {
-
       orgApi.updateUser(user);
-
-    }
-
-    else {
+    } else {
       orgApi.saveUser(user);
     }
 
     pageModel.getPossibleGroups().stream()
         .forEach(g -> orgApi.removeUserFromGroup(user.getUri(), g.getUri()));
 
-
     pageModel.getActualGroups().stream()
         .forEach(g -> orgApi.addUserToGroup(user.getUri(), g));
 
-
-
-    viewApi.showView(new View().viewName(OrgViewNames.USER_DASHBOARD_PAGE));
-
+    viewApi.showView(new View().viewName(getUserListName()));
   }
 
   @Override
   public void cancelUserEdit(UUID viewUuid, UiActionRequest request) {
-    viewApi.showView(new View().viewName(OrgViewNames.USER_DASHBOARD_PAGE));
+    viewApi.showView(new View().viewName(getUserListName()));
+  }
+
+  protected String getUserListName() {
+    return OrgViewNames.USER_DASHBOARD_PAGE;
   }
 
 }
