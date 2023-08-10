@@ -26,6 +26,8 @@ components:
           $ref: '#/components/schemas/ComponentType'
         expandable:
           type: boolean
+        expandableSectionLabel:
+          type: string
         direction:
           $ref: '#/components/schemas/LayoutDirection'
         parentComponent:
