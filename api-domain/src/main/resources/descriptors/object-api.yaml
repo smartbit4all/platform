@@ -399,7 +399,7 @@ components:
         The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and 
         saved without any operation. If the original object is saved on this branch then the operation is registered into 
         this object and executed directly.
-      required: [uri, created, branchedObjects, newObjects, deletedObjects]
+      required: [uri, created, branchedObjects, newObjects, collectionLists]
       properties:
         uri:
           type: string
@@ -416,7 +416,10 @@ components:
           type: UserActivityLog
         branchedObjects:
           type: object
-          description: The branched objects are identified by the latest URI of the source object.
+          description: |
+            The branched objects are identified by the latest URI of the source object. These are the objects that are modified
+            on the branch. It is important to know them because during the merge their uri references should be replaced with
+            the merged uri of the source branch.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
         newObjects:
@@ -424,17 +427,24 @@ components:
           description: The branched objects are identified by the latest URI of the new branch object.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
-        deletedObjects:
+    BranchedObjectReference:
+      type: object
+      description: |
+        The branched object reference is a reference to an object. It always has an identifier that is the uri if the object is saved on
+        its own. In case of the contained objects it can be a property of the object and if it is a value as a value then the identifier is 
+        the value itself.
+      required: [containerType, referenceKind, identifier, deletedObjects]
+      properties:
+        identifier:
+          type: string
+          description: The stringified version of the identifier.
+        referenceType:
+          enum: [URI_BASED, CONTAINED_OBJECT, CONTAINED_VALUE]
+        objectAsValue:
           type: object
           description: |
-            The version uri of the deleted object identified by the latest URI. The version uri is important to
-            be able check if we still have the same version when merging. The deletion on a branch is a global option. 
-            So if we have multiple references to the deleted object then the ObjectApi will hide the deleted object from a 
-            referring list. But we have to make the modification before the merge or during the merge to commit the deletionm of the
-            the given object!
-          additionalProperties:
-            type: string
-            format: uri
+            If the reference is an object then we store the object as is in this value. It is necessary because the object is
+            contained so it is the only way to access a deleted object for example.
     BranchedObject:
       type: object
       description: |
@@ -450,6 +460,11 @@ components:
           type: string
           description: The latest uri of the branched object.
           format: uri
+        collectionDescriptor:
+          type: StoredCollectionDescriptor
+          description: |
+            if the branched object is a collection api managed stored collection then we save the descriptor into the stored object
+            for further processing.
         operations:
           type: array
           description: |
@@ -492,6 +507,7 @@ components:
         branchUri:
           type: string
           format: uri
+
     ObjectPropertyDescriptor:
       type: object
       description: |

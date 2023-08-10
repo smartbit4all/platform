@@ -182,6 +182,7 @@ public class ObjectApiImpl implements ObjectApi {
     return result;
   }
 
+
   @Override
   public URI getLatestUri(URI uri) {
     if (uri == null) {
@@ -496,6 +497,16 @@ public class ObjectApiImpl implements ObjectApi {
     } catch (ExecutionException e) {
       throw new IllegalArgumentException("Unable to initiate cache for the " + clazz);
     }
+  }
+
+  @Override
+  public boolean exists(URI uri) {
+    return retrievalApi.exists(uri, null);
+  }
+
+  @Override
+  public boolean exists(URI uri, URI branchUri) {
+    return retrievalApi.exists(uri, getBranchEntry(branchUri));
   }
 
 }

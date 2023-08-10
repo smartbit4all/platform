@@ -37,6 +37,8 @@ components:
           type: string
           format: uri
           description: The reference to the current state of the definition. It contains the necessary runtime informations.
+        branchStrategy:
+          enum: [global, entryLevel]
         descriptors:
           type: object
           additionalProperties:
@@ -64,12 +66,6 @@ components:
           description: |
             The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
             GenericValue object is used.
-        publishInList:
-          type: boolean
-          default: true
-          description: |
-            The published objects can be seen in this list that can be accessed by the CollectionApi.list(). The name of the list will be
-            the nameList.
         publishedListName:
           type: string
           description: |
@@ -79,6 +75,7 @@ components:
           description: |
             The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String
             element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar.
+            If this property is set then a map is generated for the published list. 
           items:
             type: string
         publishedMapName:
@@ -102,8 +99,6 @@ components:
           type: string
           description: |
             The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used.
-        branchStrategy:
-          enum: [global, entryLevel]
         uriConstructor:
           type: InvocationRequest
           description: |
@@ -114,10 +109,6 @@ components:
             These functions are event handlers to manage the save before event about the given object.
           items:
             type: InvocationRequest
-        state:
-          type: string
-          format: uri
-          description: The reference to the current state of the given entry. It contains the necessary runtime informations.
         isValueSet:
           type: boolean
           default: false
@@ -146,7 +137,7 @@ components:
         This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
         application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
         CollectionApi.reference to be able to identify by name.
-      required: [uri, created, objects]
+      required: [uri, branchForEntries]
       properties:
         uri:
           type: string
@@ -156,32 +147,11 @@ components:
           type: string
           format: uri
           description: The uri of the global branch if any.
-    MDMEntryDescriptorState:
-      type: object
-      description: |
-        The entry state is responsible for storing the current editing state of the given entry.
-      required: [uri, created, objects]
-      properties:
-        uri:
+        branchForEntries:
           type: string
-          format: uri
-          description: The uri of the object.
-        deletedObjects:
-          type: array
-          description: |
-            If we start an editing on an entry then we can delete objects from the collection of published object. The issue is to
-            have a specific list for entry that conttains the object to delete from the list.
-          items:
+          additionalProperties:
             type: string
             format: uri
-        branch:
-          type: string
-          format: uri
-          description: |
-            The uri of the branch currently active for the given object. It could be the globalBranch if
-            the policy is that we are working on the same branch for given object. There can be objects that
-            can be edited in local branch but we can have global modifications where we would like to initiate a global
-            modification package and publish tha whole at once.
     MDMEntryEditingObject:
       type: object
       description: |

@@ -3,8 +3,8 @@ package org.smartbit4all.api.mdm;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMDefinition.BranchStrategyEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
 
@@ -24,6 +24,9 @@ public class MDMDefinitionOption {
   public MDMDefinitionOption(MDMDefinition definition) {
     super();
     this.definition = definition;
+    if (definition.getBranchStrategy() == null) {
+      definition.setBranchStrategy(BranchStrategyEnum.GLOBAL);
+    }
   }
 
   public MDMEntryDescriptor addDefaultDescriptor(Class<?> clazz) {
@@ -33,7 +36,6 @@ public class MDMDefinitionOption {
   public MDMEntryDescriptor addDefaultDescriptor(Class<?> clazz, String name) {
     MDMEntryDescriptor result =
         new MDMEntryDescriptor().schema(definition.getName()).name(name)
-            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
             .typeQualifiedName(clazz.getName());
     addDescriptor(result);
     return result;
@@ -44,7 +46,6 @@ public class MDMDefinitionOption {
         new MDMEntryDescriptor().schema(definition.getName())
             .name(ObjectDefinitionData.class.getSimpleName())
             .addUniqueIdentifierPathItem(ObjectDefinitionData.QUALIFIED_NAME)
-            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
             .typeQualifiedName(ObjectDefinitionData.class.getName())
             .uriConstructor(new InvocationRequest()
                 .interfaceClass(ObjectDefinitionProvidedApi.class.getName())

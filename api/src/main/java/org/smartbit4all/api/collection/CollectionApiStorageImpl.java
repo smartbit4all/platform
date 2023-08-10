@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -37,6 +39,9 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   private ObjectApi objectApi;
 
   @Autowired
+  private BranchApi branchApi;
+
+  @Autowired
   private StorageSequenceApi sequenceApi;
 
   /**
@@ -55,55 +60,72 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Override
   public StoredMap map(String logicalSchema, String mapName) {
-    String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredMapStorageImpl(getStorage(schema),
-        constructGlobalUri(schema, mapName, STOREDMAP), mapName);
+    return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
+        constructGlobalUri(constructCollectionShemaName(logicalSchema), mapName, STOREDMAP),
+        mapName, null, objectApi,
+        branchApi);
   }
 
   @Override
   public StoredMap map(URI scopeObjectUri, String logicalSchema, String mapName) {
-    String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredMapStorageImpl(getStorage(schema), constructScopedUri(schema,
-        mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), mapName);
+    return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
+        constructScopedUri(constructCollectionShemaName(logicalSchema),
+            mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP),
+        mapName, scopeObjectUri,
+        objectApi,
+        branchApi);
   }
 
   @Override
   public StoredList list(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredListStorageImpl(getStorage(schema),
-        constructGlobalUri(schema, name, STOREDLIST), name);
+    return new StoredListStorageImpl(schema, constructGlobalUri(schema, name, STOREDLIST),
+        name, null, objectApi,
+        branchApi);
   }
 
   @Override
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredListStorageImpl(getStorage(schema), constructScopedUri(schema,
-        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name);
+    return new StoredListStorageImpl(schema, constructScopedUri(schema,
+        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name,
+        scopeObjectUri, objectApi,
+        branchApi);
+  }
+
+  @Override
+  public StoredList list(StoredCollectionDescriptor descriptor) {
+    return descriptor.getScopeUri() == null ? list(descriptor.getSchema(), descriptor.getName())
+        : list(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
   }
 
   @Override
   public <T> StoredReference<T> reference(String logicalSchema, String name, Class<T> clazz) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredReferenceStorageImpl<>(getStorage(schema),
-        constructGlobalUri(schema, name, STOREDREF), name, objectApi.definition(clazz));
+    return new StoredReferenceStorageImpl<>(schema,
+        constructGlobalUri(schema, name, STOREDREF), name, null, objectApi.definition(clazz),
+        objectApi,
+        branchApi);
   }
 
   @Override
   public <T> StoredReference<T> reference(URI scopeObjectUri, String logicalSchema, String name,
       Class<T> clazz) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredReferenceStorageImpl<>(getStorage(schema),
+    return new StoredReferenceStorageImpl<>(schema,
         constructScopedUri(schema,
             name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF),
-        name, objectApi.definition(clazz));
+        name, scopeObjectUri, objectApi.definition(clazz), objectApi, branchApi);
   }
 
   @Override
   public <T> StoredReference<T> reference(URI refUri, Class<T> clazz) {
     Storage storage = storageApi.getStorage(refUri);
-    return new StoredReferenceStorageImpl<>(storage,
+    String logicalSchema = storage.getScheme();
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredReferenceStorageImpl<>(schema,
         refUri,
-        null, objectApi.definition(clazz));
+        null, null, objectApi.definition(clazz), objectApi, branchApi);
   }
 
   @Override
@@ -137,8 +159,8 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public StoredSequence sequence(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredSequenceStorageImpl(getStorage(schema),
-        constructGlobalUri(schema, name, STOREDSEQ), name, sequenceApi);
+    return new StoredSequenceStorageImpl(constructGlobalUri(schema, name, STOREDSEQ), name,
+        sequenceApi);
   }
 
   /**
@@ -148,7 +170,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
    * @param logicalSchema
    * @return
    */
-  private final synchronized Storage getStorage(String logicalSchema) {
+  private final synchronized Storage setupStorage(String logicalSchema) {
     return storagesBySchema.computeIfAbsent(logicalSchema,
         s -> storageApi.get(s).setVersionPolicy(VersionPolicy.SINGLEVERSION));
   }
@@ -171,7 +193,9 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   }
 
   private final String constructCollectionShemaName(String logicalShema) {
-    return logicalShema + StringConstant.MINUS_SIGN + "collections";
+    String result = logicalShema + StringConstant.MINUS_SIGN + "collections";
+    setupStorage(result);
+    return result;
   }
 
   @Override

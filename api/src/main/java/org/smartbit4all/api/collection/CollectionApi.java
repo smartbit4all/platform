@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import java.net.URI;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.core.object.ObjectNodeReference;
 
 /**
@@ -58,6 +59,14 @@ public interface CollectionApi {
    * @return The StoredList.
    */
   StoredList list(URI scopeObjectUri, String logicalSchema, String name);
+
+  /**
+   * A common problem to store object uri list.
+   * 
+   * @param descriptor The parameters of the list.
+   * @return The StoredList.
+   */
+  StoredList list(StoredCollectionDescriptor descriptor);
 
   /**
    * This function will return a {@link StoredReference} that can contains one object.

@@ -5,7 +5,6 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
@@ -37,6 +36,7 @@ import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -48,7 +48,9 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -112,6 +114,12 @@ class MDMApiTest {
   CollectionApi collectionApi;
 
   @Autowired
+  BranchApi branchApi;
+
+  @Autowired
+  SessionApi sessionApi;
+
+  @Autowired
   ValueSetApi valueSetApi;
 
   @Autowired
@@ -163,64 +171,64 @@ class MDMApiTest {
 
     authService.login(admin, "asd");
 
+    List<AccountInfo> authentications = sessionApi.getAuthentications();
+
     MDMEntryApi typeApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         SampleCategoryType.class.getSimpleName());
 
     MDMDefinition mdmDefinition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
-    typeApi.saveAsNewPublished(new SampleCategoryType().code("TYPE1").name("Type one")
-        .description("This is the first category type."));
+    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE1").name("Type one")
+        .description("This is the first category type.")));
     SampleCategoryType second = new SampleCategoryType().code("TYPE2").name("Type two")
         .description("This is the second category type.");
-    URI publishedSecond = typeApi.saveAsNewPublished(second);
-    typeApi.saveAsNewPublished(new SampleCategoryType().code("TYPE3").name("Type three")
-        .description("This is the third category type."));
+    URI publishedSecond = typeApi.save(objectApi.create(SCHEMA, second));
+    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type three")
+        .description("This is the third category type.")));
     URI publishedToDelete = typeApi
-        .saveAsNewPublished(new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
-            .description("This is the category type to delete."));
+        .save(objectApi.create(SCHEMA,
+            new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
+                .description("This is the category type to delete.")));
 
-    Map<String, SampleCategoryType> publishedObjects =
-        getPublishedObjects(typeApi, SampleCategoryType.class);
-    Assertions.assertThat(publishedObjects.values().stream().map(sct -> sct.getName()))
+
+    Assertions
+        .assertThat(typeApi.getList().nodes().map(n -> n.getValueAsString(SampleCategoryType.NAME)))
         .containsExactlyInAnyOrder("Type one", "Type two", "Type three", "Type to delete");
 
-    URI draft = typeApi.saveAsDraft(second.name("Type two v1"));
+    // Initiate a branch for the given entry.
+    masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing session 1");
 
-    URI draftNew = typeApi.saveAsDraft(new SampleCategoryType().code("TYPE4").name("Type four")
-        .description("This is the fourth category type."));
+    URI draft = typeApi.save(objectApi.loadLatest(publishedSecond).modify(SampleCategoryType.class,
+        t -> t.name("Type two v1")));
+
+    URI draftNew = typeApi
+        .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
+            .description("This is the fourth category type.")));
 
     URI draftNewToDelete =
-        typeApi.saveAsDraft(new SampleCategoryType().code("TYPE5").name("Type five")
-            .description("This is the fifth category type."));
+        typeApi
+            .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE5").name("Type five")
+                .description("This is the fifth category type.")));
 
     ObjectNode objectNode = objectApi.load(draft).setValue("This is the second category type v2.",
         SampleCategoryType.DESCRIPTION);
 
-    typeApi.deleteObject(draftNewToDelete);
-    typeApi.deleteObject(publishedToDelete);
+    typeApi.remove(draftNewToDelete);
+    typeApi.remove(publishedToDelete);
 
     objectApi.save(objectNode);
 
     List<BranchedObjectEntry> publishedAndDraftObjects =
-        typeApi.getAllEntries();
+        typeApi.getBranchingList();
 
     Assertions
         .assertThat(publishedAndDraftObjects.stream()
-            .map(oe -> {
-              SampleCategoryType p = getPublishedObject(oe, SampleCategoryType.class);
-              SampleCategoryType d = getDraftObject(oe, SampleCategoryType.class);
-              return oe.getBranchingState() == BranchingStateEnum.DELETED
-                  ? StringConstant.MINUS_SIGN + p.getName()
-                  : p == null
-                      ? StringConstant.ARROW + d.getName()
-                      : (d != null
-                          ? p.getName()
-                              + StringConstant.ARROW
-                              + d.getName()
-                          : p.getName());
-            }))
-        .containsExactlyInAnyOrder("Type one", "Type two->Type two v1", "Type three",
-            "->Type four", "-Type to delete");
+            .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+        .containsExactlyInAnyOrder("NOP: Type one",
+            "MODIFIED: Type two -> Type two v1",
+            "NOP: Type three",
+            "NEW: Type four",
+            "DELETED: Type to delete");
 
     MDMEntryDescriptor descriptor = typeApi.getDescriptor();
 
@@ -230,7 +238,7 @@ class MDMApiTest {
             SampleCategoryType.class);
 
     TableData<?> tdAllEntries =
-        searchIndexEntries.executeSearchOnNodes(typeApi.getAllEntries().stream()
+        searchIndexEntries.executeSearchOnNodes(typeApi.getBranchingList().stream()
             .map(i -> {
               ObjectDefinition<?> definition =
                   objectApi.definition(
@@ -254,7 +262,7 @@ class MDMApiTest {
         BranchingStateEnum.NOP, BranchingStateEnum.NOP);
 
     // Now we can see the modifications as published
-    typeApi.publishCurrentModifications();
+    masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
 
     List<String> listOfDescription = collectionApi.list(MDMApiTestConfig.TEST,
         SampleCategoryType.class.getSimpleName() + "List").uris().stream()
@@ -276,8 +284,9 @@ class MDMApiTest {
             "This is the second category type v2.", "This is the third category type.",
             "This is the fourth category type.");
 
-    publishedObjects = getPublishedObjects(typeApi, SampleCategoryType.class);
-    Assertions.assertThat(publishedObjects.values().stream().map(sct -> sct.getDescription()))
+    Assertions
+        .assertThat(
+            typeApi.getList().nodes().map(n -> n.getValueAsString(SampleCategoryType.DESCRIPTION)))
         .containsExactlyInAnyOrder("This is the first category type.",
             "This is the second category type v2.", "This is the third category type.",
             "This is the fourth category type.");
@@ -294,7 +303,7 @@ class MDMApiTest {
                 .type(FilterExpressionDataType.STRING).valueAsString("Type two v1")));
 
     TableData<?> tableData =
-        searchIndex.executeSearchOn(typeApi.getPublishedMap().values().stream(), filters);
+        searchIndex.executeSearchOn(typeApi.getList().uris().stream(), filters);
 
     DataRow row = tableData.rows().get(0);
 
@@ -310,6 +319,8 @@ class MDMApiTest {
     viewContextUUID = viewContextService.createViewContext().getUuid();
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      List<AccountInfo> authentications = sessionApi.getAuthentications();
 
       MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
@@ -345,6 +356,9 @@ class MDMApiTest {
 
         rowIdTypeThree = getRowIdByPropertyValue(gridModel, SampleCategoryType.NAME, "Type three");
       }
+
+      // Initiate the global branch
+      masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Admin editing session.");
 
       // The admin delete an entry. It will be seen as deleted in the grid
       listPageApi.performDeleteEntry(uuid, MDMEntryListPageApi.WIDGET_ENTRY_GRID, rowIdTypeThree,
@@ -607,12 +621,11 @@ class MDMApiTest {
   }
 
 
-  private <O> Map<String, O> getPublishedObjects(MDMEntryApi typeApi, Class<O> clazz) {
-    Map<String, O> publishedObjects =
-        typeApi.getPublishedObjects().entrySet().stream().collect(
-            toMap(Entry::getKey,
-                e -> objectApi.read(e.getValue().getObjectUri(), clazz)));
-    return publishedObjects;
+  private <O> Map<String, O> getPublishedObjects(MDMEntryApi typeApi, Class<O> clazz,
+      String... keyPropertyPath) {
+    return typeApi.getList().nodes()
+        .collect(
+            toMap(n -> n.getValue(URI.class, keyPropertyPath).toString(), n -> n.getObject(clazz)));
   }
 
   @Test
@@ -623,47 +636,54 @@ class MDMApiTest {
     MDMEntryApi propertyDefinitionMDMApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         PropertyDefinitionData.class.getSimpleName());
 
+    masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing properties");
+
     // Save some property definition drafts
-    URI draftString = propertyDefinitionMDMApi.saveAsDraft(
+    URI draftString = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(PROPERTY_STRING).typeClass(String.class.getName())
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
-    URI draftLong = propertyDefinitionMDMApi.saveAsDraft(
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
+    URI draftLong = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(PROPERTY_LONG).typeClass(Long.class.getName())
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
-    URI draftCategoryUri = propertyDefinitionMDMApi.saveAsDraft(
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
+    URI draftCategoryUri = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(CATEGORY).typeClass(URI.class.getName())
             .referredType(SampleCategoryType.class.getName())
             .referredPropertyName(SampleCategoryType.URI)
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
 
-    propertyDefinitionMDMApi.publishCurrentModifications();
+    masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
 
     Map<String, PropertyDefinitionData> publishedProperties =
-        getPublishedObjects(propertyDefinitionMDMApi, PropertyDefinitionData.class);
-    URI appleDefUri = objectDefinitionMDMApi.saveAsNewPublished(new ObjectDefinitionData()
-        .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
-            publishedProperties
-                .get(objectApi.getLatestUri(draftString).toString()))
-        .addPropertiesItem(
-            publishedProperties
-                .get(objectApi.getLatestUri(draftLong).toString()))
-        .addPropertiesItem(
-            publishedProperties
-                .get(objectApi.getLatestUri(draftCategoryUri).toString())));
+        getPublishedObjects(propertyDefinitionMDMApi, PropertyDefinitionData.class,
+            PropertyDefinitionData.URI);
+    URI appleDefUri = objectDefinitionMDMApi.save(objectApi.create(SCHEMA,
+        new ObjectDefinitionData()
+            .uri(ObjectDefinition.uriOf(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
+            .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
+                publishedProperties
+                    .get(draftString.toString()))
+            .addPropertiesItem(
+                publishedProperties
+                    .get(draftLong.toString()))
+            .addPropertiesItem(
+                publishedProperties
+                    .get(draftCategoryUri.toString()))));
+
 
     ObjectDefinitionData definitionData = objectApi
-        .loadLatest(objectDefinitionMDMApi.getPublishedMap().get(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
+        .loadLatest(objectDefinitionMDMApi.getList().uris().stream()
+            .filter(u -> objectApi.equalsIgnoreVersion(u, appleDefUri)).findFirst().get())
         .getObject(ObjectDefinitionData.class);
 
     ObjectDefinition<?> defApple = objectApi.definition(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
 
     defApple.reloadDefinitionData();
 
-    Assertions.assertThat(objectDefinitionMDMApi.getPublishedMap())
-        .containsKeys(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
+    Assertions.assertThat(objectDefinitionMDMApi.getList().uris())
+        .contains(appleDefUri);
 
     Assertions
-        .assertThat(objectDefinitionMDMApi.getPublishedList().uris().stream()
+        .assertThat(objectDefinitionMDMApi.getList().uris().stream()
             .map(u -> objectApi.read(u, ObjectDefinitionData.class))
             .collect(toMap(ObjectDefinitionData::getQualifiedName, odd -> odd)))
         .containsKeys(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);

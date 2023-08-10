@@ -1,7 +1,11 @@
 package org.smartbit4all.api.mdm;
 
+import java.net.URI;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 
 /**
  * The global master data management api that is responsible for the master data of the application.
@@ -43,5 +47,29 @@ public interface MasterDataManagementApi {
   MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName);
 
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
+
+  URI initiateGlobalBranch(String definition, String title);
+
+  URI initiateBranchForEntry(String definition, String title, String entryName);
+
+  /**
+   * The current editing branch will be merged into be main branch. From that moment the
+   * getBranchingList() return a {@link BranchedObjectEntry} list with
+   * {@link BranchingStateEnum#NOP} for all object. The previous local editing branch is finished
+   * and removed from the {@link BranchEntry}.
+   * 
+   * @param definitionName The name of the definition.
+   * 
+   */
+  void mergeGlobal(String definitionName);
+
+  /**
+   * The current editing branch will be finished and the changes won't be merged into the main
+   * branch.
+   * 
+   * @param definitionName The name of the definition.
+   * 
+   */
+  void dropGlobal(String definitionName);
 
 }

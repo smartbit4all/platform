@@ -50,7 +50,7 @@ public class StoredMapData {
   private String name;
 
   public static final String URIS = "uris";
-  private Map<String, URI> uris = null;
+  private Map<String, URI> uris = new HashMap<>();
 
   public StoredMapData() { 
   }
@@ -119,9 +119,6 @@ public class StoredMapData {
   }
 
   public StoredMapData putUrisItem(String key, URI urisItem) {
-    if (this.uris == null) {
-      this.uris = new HashMap<>();
-    }
     this.uris.put(key, urisItem);
     return this;
   }
@@ -130,11 +127,12 @@ public class StoredMapData {
    * Get uris
    * @return uris
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(URIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, URI> getUris() {
     return uris;
@@ -142,7 +140,7 @@ public class StoredMapData {
 
 
   @JsonProperty(URIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUris(Map<String, URI> uris) {
     this.uris = uris;
   }

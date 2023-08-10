@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMDefinitionState.URI,
-  MDMDefinitionState.GLOBAL_BRANCH
+  MDMDefinitionState.GLOBAL_BRANCH,
+  MDMDefinitionState.BRANCH_FOR_ENTRIES
 })
 @JsonTypeName("MDMDefinitionState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -44,6 +48,9 @@ public class MDMDefinitionState {
 
   public static final String GLOBAL_BRANCH = "globalBranch";
   private URI globalBranch;
+
+  public static final String BRANCH_FOR_ENTRIES = "branchForEntries";
+  private Map<String, URI> branchForEntries = new HashMap<>();
 
   public MDMDefinitionState() { 
   }
@@ -105,6 +112,40 @@ public class MDMDefinitionState {
   }
 
 
+  public MDMDefinitionState branchForEntries(Map<String, URI> branchForEntries) {
+    
+    this.branchForEntries = branchForEntries;
+    return this;
+  }
+
+  public MDMDefinitionState putBranchForEntriesItem(String key, URI branchForEntriesItem) {
+    this.branchForEntries.put(key, branchForEntriesItem);
+    return this;
+  }
+
+   /**
+   * Get branchForEntries
+   * @return branchForEntries
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(BRANCH_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, URI> getBranchForEntries() {
+    return branchForEntries;
+  }
+
+
+  @JsonProperty(BRANCH_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setBranchForEntries(Map<String, URI> branchForEntries) {
+    this.branchForEntries = branchForEntries;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -115,12 +156,13 @@ public class MDMDefinitionState {
     }
     MDMDefinitionState mdMDefinitionState = (MDMDefinitionState) o;
     return Objects.equals(this.uri, mdMDefinitionState.uri) &&
-        Objects.equals(this.globalBranch, mdMDefinitionState.globalBranch);
+        Objects.equals(this.globalBranch, mdMDefinitionState.globalBranch) &&
+        Objects.equals(this.branchForEntries, mdMDefinitionState.branchForEntries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, globalBranch);
+    return Objects.hash(uri, globalBranch, branchForEntries);
   }
 
   @Override
@@ -129,6 +171,7 @@ public class MDMDefinitionState {
     sb.append("class MDMDefinitionState {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    globalBranch: ").append(toIndentedString(globalBranch)).append("\n");
+    sb.append("    branchForEntries: ").append(toIndentedString(branchForEntries)).append("\n");
     sb.append("}");
     return sb.toString();
   }

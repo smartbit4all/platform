@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   BranchedObject.SOURCE_OBJECT_LATEST_URI,
   BranchedObject.BRANCHED_OBJECT_LATEST_URI,
+  BranchedObject.COLLECTION_DESCRIPTOR,
   BranchedObject.OPERATIONS
 })
 @JsonTypeName("BranchedObject")
@@ -48,6 +50,9 @@ public class BranchedObject {
 
   public static final String BRANCHED_OBJECT_LATEST_URI = "branchedObjectLatestUri";
   private URI branchedObjectLatestUri;
+
+  public static final String COLLECTION_DESCRIPTOR = "collectionDescriptor";
+  private StoredCollectionDescriptor collectionDescriptor = null;
 
   public static final String OPERATIONS = "operations";
   private List<BranchOperation> operations = new ArrayList<>();
@@ -111,6 +116,34 @@ public class BranchedObject {
   }
 
 
+  public BranchedObject collectionDescriptor(StoredCollectionDescriptor collectionDescriptor) {
+    
+    this.collectionDescriptor = collectionDescriptor;
+    return this;
+  }
+
+   /**
+   * if the branched object is a collection api managed stored collection then we save the descriptor into the stored object for further processing. 
+   * @return collectionDescriptor
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "if the branched object is a collection api managed stored collection then we save the descriptor into the stored object for further processing. ")
+  @JsonProperty(COLLECTION_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StoredCollectionDescriptor getCollectionDescriptor() {
+    return collectionDescriptor;
+  }
+
+
+  @JsonProperty(COLLECTION_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCollectionDescriptor(StoredCollectionDescriptor collectionDescriptor) {
+    this.collectionDescriptor = collectionDescriptor;
+  }
+
+
   public BranchedObject operations(List<BranchOperation> operations) {
     
     this.operations = operations;
@@ -156,12 +189,13 @@ public class BranchedObject {
     BranchedObject branchedObject = (BranchedObject) o;
     return Objects.equals(this.sourceObjectLatestUri, branchedObject.sourceObjectLatestUri) &&
         Objects.equals(this.branchedObjectLatestUri, branchedObject.branchedObjectLatestUri) &&
+        Objects.equals(this.collectionDescriptor, branchedObject.collectionDescriptor) &&
         Objects.equals(this.operations, branchedObject.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceObjectLatestUri, branchedObjectLatestUri, operations);
+    return Objects.hash(sourceObjectLatestUri, branchedObjectLatestUri, collectionDescriptor, operations);
   }
 
   @Override
@@ -170,6 +204,7 @@ public class BranchedObject {
     sb.append("class BranchedObject {\n");
     sb.append("    sourceObjectLatestUri: ").append(toIndentedString(sourceObjectLatestUri)).append("\n");
     sb.append("    branchedObjectLatestUri: ").append(toIndentedString(branchedObjectLatestUri)).append("\n");
+    sb.append("    collectionDescriptor: ").append(toIndentedString(collectionDescriptor)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();

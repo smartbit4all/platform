@@ -41,6 +41,7 @@ import javax.validation.Valid;
   MDMDefinition.NAME,
   MDMDefinition.ADMIN_GROUP_NAME,
   MDMDefinition.STATE,
+  MDMDefinition.BRANCH_STRATEGY,
   MDMDefinition.DESCRIPTORS
 })
 @JsonTypeName("MDMDefinition")
@@ -57,6 +58,44 @@ public class MDMDefinition {
 
   public static final String STATE = "state";
   private URI state;
+
+  /**
+   * Gets or Sets branchStrategy
+   */
+  public enum BranchStrategyEnum {
+    GLOBAL("global"),
+    
+    ENTRYLEVEL("entryLevel");
+
+    private String value;
+
+    BranchStrategyEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static BranchStrategyEnum fromValue(String value) {
+      for (BranchStrategyEnum b : BranchStrategyEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String BRANCH_STRATEGY = "branchStrategy";
+  private BranchStrategyEnum branchStrategy;
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
@@ -175,6 +214,33 @@ public class MDMDefinition {
   }
 
 
+  public MDMDefinition branchStrategy(BranchStrategyEnum branchStrategy) {
+    
+    this.branchStrategy = branchStrategy;
+    return this;
+  }
+
+   /**
+   * Get branchStrategy
+   * @return branchStrategy
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(BRANCH_STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public BranchStrategyEnum getBranchStrategy() {
+    return branchStrategy;
+  }
+
+
+  @JsonProperty(BRANCH_STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBranchStrategy(BranchStrategyEnum branchStrategy) {
+    this.branchStrategy = branchStrategy;
+  }
+
+
   public MDMDefinition descriptors(Map<String, MDMEntryDescriptor> descriptors) {
     
     this.descriptors = descriptors;
@@ -222,12 +288,13 @@ public class MDMDefinition {
         Objects.equals(this.name, mdMDefinition.name) &&
         Objects.equals(this.adminGroupName, mdMDefinition.adminGroupName) &&
         Objects.equals(this.state, mdMDefinition.state) &&
+        Objects.equals(this.branchStrategy, mdMDefinition.branchStrategy) &&
         Objects.equals(this.descriptors, mdMDefinition.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, adminGroupName, state, descriptors);
+    return Objects.hash(uri, name, adminGroupName, state, branchStrategy, descriptors);
   }
 
   @Override
@@ -238,6 +305,7 @@ public class MDMDefinition {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    branchStrategy: ").append(toIndentedString(branchStrategy)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
     return sb.toString();

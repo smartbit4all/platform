@@ -150,14 +150,28 @@ public final class RetrievalApiImpl implements RetrievalApi {
   private ObjectNodeData readDataByUri(RetrievalRequest objRequest, URI uri,
       BranchEntry branchEntry) {
 
+    URI readUri = getUriToRead(uri, objRequest.isLoadLatest(), branchEntry);
+
+    StorageObject<?> storageObject = storageApi.load(readUri);
+    ObjectVersion version = storageObject.getVersion();
+    return new ObjectNodeData()
+        .objectUri(storageObject.getVersionUri())
+        .qualifiedName(storageObject.definition().getQualifiedName())
+        .storageSchema(storageObject.getStorage().getScheme())
+        .objectAsMap(storageObject.getObjectAsMap())
+        .versionNr(version == null ? null : version.getSerialNoData())
+        .lastModified(storageObject.getLastModified());
+  }
+
+  private final URI getUriToRead(URI uri, boolean loadLatest, BranchEntry branchEntry) {
     URI readUri;
 
     if (branchEntry != null) {
       // We identify the uri to read if we are reading on the branch.
       Long uriVersion = ObjectStorageImpl.getUriVersion(uri);
-      if (objRequest.isLoadLatest() || uriVersion == null) {
+      if (loadLatest || uriVersion == null) {
         readUri = ObjectStorageImpl.getUriWithoutVersion(uri);
-        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(readUri.toString());
+        BranchedObject branchedObject = getBranchedObject(branchEntry, readUri);
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
@@ -166,7 +180,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
       } else {
         // In this case we must check the version also.
         URI latestUri = ObjectStorageImpl.getUriWithoutVersion(uri);
-        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(latestUri.toString());
+        BranchedObject branchedObject = getBranchedObject(branchEntry, latestUri);
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
@@ -202,18 +216,13 @@ public final class RetrievalApiImpl implements RetrievalApi {
         }
       }
     } else {
-      readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+      readUri = loadLatest ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     }
+    return readUri;
+  }
 
-    StorageObject<?> storageObject = storageApi.load(readUri);
-    ObjectVersion version = storageObject.getVersion();
-    return new ObjectNodeData()
-        .objectUri(storageObject.getVersionUri())
-        .qualifiedName(storageObject.definition().getQualifiedName())
-        .storageSchema(storageObject.getStorage().getScheme())
-        .objectAsMap(storageObject.getObjectAsMap())
-        .versionNr(version == null ? null : version.getSerialNoData())
-        .lastModified(storageObject.getLastModified());
+  private final BranchedObject getBranchedObject(BranchEntry branchEntry, URI readUri) {
+    return branchEntry.getBranchedObjects().get(readUri.toString());
   }
 
   @Override
@@ -237,4 +246,11 @@ public final class RetrievalApiImpl implements RetrievalApi {
   public Long getLastModified(URI uri) {
     return storageApi.getDefaultObjectStorage().lastModified(uri);
   }
+
+  @Override
+  public boolean exists(URI uri, BranchEntry branchEntry) {
+    URI uriToRead = getUriToRead(uri, true, branchEntry);
+    return storageApi.getDefaultObjectStorage().exists(uriToRead);
+  }
+
 }

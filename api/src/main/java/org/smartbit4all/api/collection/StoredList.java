@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This list can be used to store a list of uri globally or scoped for an object.
@@ -14,6 +16,8 @@ import java.util.stream.Stream;
 public interface StoredList {
 
   List<URI> uris();
+
+  Stream<ObjectNode> nodes();
 
   void add(URI uri);
 
@@ -41,5 +45,14 @@ public interface StoredList {
    *        uri is passed.
    */
   void addOrMoveFirst(URI uri, int maxSize, boolean assumeLatestUri);
+
+  /**
+   * If we set this branch then we access the branched object if it exists.
+   * 
+   * @param branchUri
+   */
+  void branch(URI branchUri);
+
+  List<BranchedObjectEntry> compareWithBranch(URI branchUri);
 
 }

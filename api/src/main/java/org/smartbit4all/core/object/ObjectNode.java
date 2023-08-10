@@ -151,6 +151,16 @@ public class ObjectNode {
   }
 
   /**
+   * Special possibility to load an object and save it as a new version of another object.
+   * 
+   * @param objectUri The object uri is
+   */
+  public final void overwriteObject(URI objectUri) {
+    data.setObjectUri(objectUri);
+    setModified();
+  }
+
+  /**
    * @return The {@link ObjectDefinition} for the given object.
    */
   public final ObjectDefinition<?> getDefinition() {
@@ -388,6 +398,17 @@ public class ObjectNode {
     if (getState() == ObjectNodeState.NOP) {
       data.setState(ObjectNodeState.MODIFIED);
     }
+    return this;
+  }
+
+  /**
+   * Set the state to modified if the state is {@link ObjectNodeState#NOP} else the state remains
+   * the same. Be careful! It can be used only if you know what you are doing! --> Constructs a new
+   * version even if it is not necessary. It can be useful when we create a branched object with the
+   * same values.
+   */
+  public final ObjectNode ensureSave() {
+    setModified();
     return this;
   }
 

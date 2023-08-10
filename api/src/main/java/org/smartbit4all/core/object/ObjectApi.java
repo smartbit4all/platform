@@ -234,6 +234,13 @@ public interface ObjectApi {
     return save(node, null);
   }
 
+  /**
+   * Constructs the latest uri version from the uri.
+   * 
+   * @param uri The uri.
+   * @return If the uri is already the latest (it doesn't have any version segment) then returns the
+   *         uri parameter. If the uri contains version then
+   */
   URI getLatestUri(URI uri);
 
   /**
@@ -328,5 +335,24 @@ public interface ObjectApi {
    * @return The cache entry.
    */
   <T> ObjectCacheEntry<T> getCacheEntry(Class<T> clazz);
+
+  /**
+   * Perform a quick check for existence of a given uri.
+   * 
+   * @param uri The object uri to check.
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri);
+
+  /**
+   * Perform a quick check for existence of a given uri on the given branch.
+   * 
+   * @param uri The object uri to check.
+   * @param branchUri The branch uri
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri, URI branchUri);
 
 }
