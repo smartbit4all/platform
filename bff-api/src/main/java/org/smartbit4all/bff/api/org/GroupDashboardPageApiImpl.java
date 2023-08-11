@@ -2,6 +2,8 @@ package org.smartbit4all.bff.api.org;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -11,7 +13,9 @@ import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
@@ -38,19 +42,16 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
     super(Object.class);
   }
 
-
   @Override
   public Object initModel(View view) {
     Object pageModel = createPageModel(view);
 
-    view.actions(ADMIN_ACTIONS);
-
+    view.actions(getGroupListActions());
 
     gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
         orgApi.getAllGroups().stream().map(Group::getUri));
 
     return pageModel;
-
   }
 
   @Override
@@ -59,7 +60,7 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
     GroupEditingModel pageModel = new GroupEditingModel();
 
     GridModel groupGridModel = gridModelApi.createGridModel(
-        groupSearch.getDefinition().getDefinition(), orderedColumns, Group.class.getSimpleName());
+        groupSearch.getDefinition().getDefinition(), getGridColumns(), Group.class.getSimpleName());
 
     gridModelApi.initGridInView(view.getUuid(), GROUP_GRID, groupGridModel);
 
@@ -75,15 +76,14 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
       return page;
     }
 
-
     if (page.getRows() != null) {
       for (GridRow row : page.getRows()) {
 
-        Boolean isBuiltIn =
+        boolean isBuiltIn =
             objectApi.asType(Boolean.class, GridModels.getValueFromGridRow(row, "builtIn"));
 
-        if (!isBuiltIn.booleanValue()) {
-          row.actions(GRID_ACTIONS);
+        if (!isBuiltIn) {
+          addActionsToRow(row);
         } else {
           row.actions(new ArrayList<>());
         }
@@ -93,28 +93,49 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
     return page;
   }
 
+  protected void addActionsToRow(GridRow row) {
+    row.actions(getGroupRowActions());
+  }
+
 
   @Override
   public void openGroupEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
 
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, GROUP_GRID);
 
-
     URI groupUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, Group.URI));
 
-
     viewApi
-        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE).objectUri(groupUri));
-
-
+        .showView(new View().viewName(getGroupEditorName()).objectUri(groupUri));
   }
 
 
   @Override
   public void openAddGroupDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE));
+        .showView(new View().viewName(getGroupEditorName()));
+  }
+
+  protected String getGroupEditorName() {
+    return OrgViewNames.GROUP_EDITOR_PAGE;
+  }
+
+  /**
+   * @return the column names to show on ui in order
+   */
+  protected List<String> getGridColumns() {
+    return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
+  }
+
+  protected List<UiAction> getGroupRowActions() {
+    return Arrays.asList(
+        new UiAction().code(OPEN_GROUP_EDITOR));
+  }
+
+  protected List<UiAction> getGroupListActions() {
+    return Arrays.asList(
+        new UiAction().code(ADD_GROUP));
   }
 
 }
