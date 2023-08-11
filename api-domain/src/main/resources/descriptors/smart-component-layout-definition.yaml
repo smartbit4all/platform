@@ -52,6 +52,10 @@ components:
           $ref: '#/components/schemas/ComponentWidgetType'
         gridIdentifier:
           type: string
+        filterExpressionFieldList:
+          type: FilterExpressionFieldList
+        filterType:
+          type: SmartFilterType
     LayoutDirection:
       type: string
       enum:
@@ -67,3 +71,4 @@ components:
       type: string
       enum:
         - grid
+        - filter
