@@ -14,11 +14,10 @@ paths:
     post:
       summary: Placeholder for generation
       responses:
-        "200":
+        '200':
           description: nope
 components:
   schemas:
-        
     FilterExpressionList:
       type: object
       description: |
@@ -28,8 +27,8 @@ components:
         expressions:
           type: array
           items:
-            $ref: "#/components/schemas/FilterExpressionData"
-          
+            $ref: '#/components/schemas/FilterExpressionData'
+
     FilterExpressionOperandData:
       type: object
       description: |
@@ -47,7 +46,7 @@ components:
           items:
             type: string
         type:
-          $ref: "#/components/schemas/FilterExpressionDataType"
+          $ref: '#/components/schemas/FilterExpressionDataType'
 
     FilterExpressionData:
       type: object
@@ -56,22 +55,21 @@ components:
         we have embedded expressions.
       properties:
         operand1:
-          $ref: "#/components/schemas/FilterExpressionOperandData"
+          $ref: '#/components/schemas/FilterExpressionOperandData'
         operand2:
-          $ref: "#/components/schemas/FilterExpressionOperandData"
+          $ref: '#/components/schemas/FilterExpressionOperandData'
         operand3:
-          $ref: "#/components/schemas/FilterExpressionOperandData"
+          $ref: '#/components/schemas/FilterExpressionOperandData'
         currentOperation:
-          $ref: "#/components/schemas/FilterExpressionOperation"
+          $ref: '#/components/schemas/FilterExpressionOperation'
           default: 'EQUAL'
         modifier:
           type: string
         boolOperator:
-          $ref: "#/components/schemas/FilterExpressionBoolOperator"
+          $ref: '#/components/schemas/FilterExpressionBoolOperator'
           default: 'AND'
         subExpression:
-          $ref: "#/components/schemas/FilterExpressionList"
-      
+          $ref: '#/components/schemas/FilterExpressionList'
 
     FilterExpressionFieldList:
       type: object
@@ -88,8 +86,8 @@ components:
         filters:
           type: array
           items:
-            $ref: "#/components/schemas/FilterExpressionField"
-            
+            $ref: '#/components/schemas/FilterExpressionField'
+
     FilterExpressionField:
       type: object
       required: [label1, value1, data1, operations, boolOperator, type, possibleValues]
@@ -110,21 +108,21 @@ components:
         icon:
           type: string
         expressionData:
-          $ref: "#/components/schemas/FilterExpressionData"
+          $ref: '#/components/schemas/FilterExpressionData'
         possibleOperations:
           type: array
           items:
-            $ref: "#/components/schemas/FilterExpressionOperation"
+            $ref: '#/components/schemas/FilterExpressionOperation'
         filterFieldType:
-          $ref: "#/components/schemas/FilterExpressionDataType"
+          $ref: '#/components/schemas/FilterExpressionDataType'
         possibleValues:
           type: array
           items:
             type: Value
         widgetType:
-          $ref: "#/components/schemas/FilterExpressionFieldWidgetType"
+          $ref: '#/components/schemas/FilterExpressionFieldWidgetType'
         subFieldList:
-          $ref: "#/components/schemas/FilterExpressionFieldList"
+          $ref: '#/components/schemas/FilterExpressionFieldList'
 
     FilterExpressionBuilder:
       type: object
@@ -133,7 +131,7 @@ components:
           type: string
           format: uri
         data:
-          $ref: "#/components/schemas/FilterExpressionBuilderModel"
+          $ref: '#/components/schemas/FilterExpressionBuilderModel'
 
     FilterExpressionBuilderModel:
       type: object
@@ -148,16 +146,16 @@ components:
           type: array
           description: This is the group of filter expressions that can be involved to the workplace. This is a tree structure.
           items:
-            $ref: "#/components/schemas/FilterExpressionBuilderGroup"
+            $ref: '#/components/schemas/FilterExpressionBuilderGroup'
         exceptionalGroup:
-          $ref: "#/components/schemas/FilterExpressionBuilderGroup"
+          $ref: '#/components/schemas/FilterExpressionBuilderGroup'
         workplaceList:
           description: These are currently included filter fields.
-          $ref: "#/components/schemas/FilterExpressionFieldList"
+          $ref: '#/components/schemas/FilterExpressionFieldList'
         defaultFilters:
           description: These are the filters that can not be edited or modified by the user.
-          $ref: "#/components/schemas/FilterExpressionList"
-        
+          $ref: '#/components/schemas/FilterExpressionList'
+
     FilterExpressionBuilderGroup:
       type: object
       description: |
@@ -182,15 +180,15 @@ components:
         fields:
           type: array
           items:
-            $ref: "#/components/schemas/FilterExpressionBuilderField"
+            $ref: '#/components/schemas/FilterExpressionBuilderField'
         rootListId:
           type: string
           description: The unique identifier of the root list in the workplace.
         subGroups:
           type: array
           items:
-            $ref: "#/components/schemas/FilterExpressionBuilderGroup"
-        
+            $ref: '#/components/schemas/FilterExpressionBuilderGroup'
+
     FilterExpressionBuilderField:
       type: object
       description: |
@@ -200,7 +198,7 @@ components:
         label:
           type: string
         fieldTemplate:
-          $ref: "#/components/schemas/FilterExpressionField"
+          $ref: '#/components/schemas/FilterExpressionField'
         limitOfUsage:
           type: integer
           format: int32
@@ -212,7 +210,7 @@ components:
           description: The unique identifiers of fields initiated from this builder field in the workplace.
           items:
             type: string
-        
+
     FilterExpressionOrderBy:
       type: object
       description: |
@@ -227,53 +225,53 @@ components:
     FilterExpressionBoolOperator:
       type: string
       enum:
-      - AND
-      - OR
+        - AND
+        - OR
 
     FilterExpressionOperation:
       type: string
       enum:
-      - EXPRESSION
-      - EQUAL
-      - NOT_EQUAL
-      - LESS
-      - LESS_OR_EQUAL
-      - GREATER
-      - GREATER_OR_EQUAL
-      - LIKE
-      - NOT_LIKE
-      - BETWEEN
-      - NOT_BETWEEN
-      - IS_EMPTY
-      - IS_NOT_EMPTY
-      - EXISTS
-      - NOT_EXISTS
-      - IN
-      - NOT_IN
+        - EXPRESSION
+        - EQUAL
+        - NOT_EQUAL
+        - LESS
+        - LESS_OR_EQUAL
+        - GREATER
+        - GREATER_OR_EQUAL
+        - LIKE
+        - NOT_LIKE
+        - BETWEEN
+        - NOT_BETWEEN
+        - IS_EMPTY
+        - IS_NOT_EMPTY
+        - EXISTS
+        - NOT_EXISTS
+        - IN
+        - NOT_IN
 
     FilterExpressionDataType:
       type: string
       enum:
-      - STRING
-      - NUMBER
-      - DATE
-      - DATE_TIME
-      - BOOLEAN
+        - STRING
+        - NUMBER
+        - DATE
+        - DATE_TIME
+        - BOOLEAN
 
     FilterExpressionFieldWidgetType:
       type: string
       enum:
-      - TEXT_FIELD
-      - TEXT_FIELD_CHIPS
-      - TEXT_BOX
-      - SELECT
-      - SELECT_MULTIPLE
-      - DATE
-      - TIME
-      - DATE_TIME
-      - CHECK_BOX
-      - RADIO_BUTTON
-      - RANGE
+        - TEXT_FIELD
+        - TEXT_FIELD_CHIPS
+        - TEXT_BOX
+        - SELECT
+        - SELECT_MULTIPLE
+        - DATE
+        - TIME
+        - DATE_TIME
+        - CHECK_BOX
+        - RADIO_BUTTON
+        - RANGE
 
     SearchIndexResultPageConfig:
       type: object
@@ -288,8 +286,8 @@ components:
         filterModel:
           description: |
             This object describes the possible filter fields and also the included filters fields. It can be used in the FilterExpressionApi
-            to transform a FilterExpressionList for the search execution. 
-          $ref: "#/components/schemas/FilterExpressionBuilderModel"
+            to transform a FilterExpressionList for the search execution.
+          $ref: '#/components/schemas/FilterExpressionBuilderModel'
         searchIndexSchema:
           description: The schema name of the search index.
           type: string
@@ -303,3 +301,7 @@ components:
           type: array
           items:
             type: GridView
+
+    SmartFilterType:
+      type: string
+      enum: [SIMPLE, ADVANCED]
