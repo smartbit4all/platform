@@ -44,6 +44,7 @@ components:
         - DIVIDER
         - COMPONENT
         - RICH_TEXT
+        - SORTABLE
     SmartLayoutDefinition:
       type: object
       required: [widgets]

@@ -52,6 +52,8 @@ components:
           $ref: '#/components/schemas/ComponentWidgetType'
         gridIdentifier:
           type: string
+        treeIdentifier:
+          type: string
         filterExpressionFieldList:
           type: FilterExpressionFieldList
         filterType:
@@ -72,3 +74,4 @@ components:
       enum:
         - grid
         - filter
+        - tree
