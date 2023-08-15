@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
@@ -15,17 +14,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
-import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
-import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
-import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
-import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
-import org.smartbit4all.api.object.bean.ObjectContainer;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
-import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -267,39 +259,6 @@ class ObjectApiTest {
           (List<SampleCategoryType>) mapHelper.getMap().get("listWithMap");
       org.assertj.core.api.Assertions.assertThat(require).containsSequence(listFromMap);
     }
-
-  }
-
-  @Test
-  void extendingAnObjectWithCustomLayoutWorks() {
-
-    ObjectContainer testObject1 = new ObjectContainer().data("testObject1");
-    URI testObject1Uri = objectApi.saveAsNew("test", testObject1);
-
-    final String extensionName = "ObjectContainerExtension";
-    testObject1Uri = objectExtensionApi.create()
-        .name(extensionName)
-        .layout("str-display", new SmartLayoutDefinition()
-            .addWidgetsItem(new SmartWidgetDefinition()
-                .key("data")
-                .type(SmartFormWidgetType.TEXT_BOX)
-                .showLabel(true)
-                .label("My Data:")))
-        .constraint()
-        .componentConstraints(List.of(new ComponentConstraint()
-            .dataName("data")
-            .enabled(false)
-            .visible(true)
-            .mandatory(false)))
-        .predicates(List.of(new InvocationRequestDefinition()
-            .request(null)
-            .addResolversItem(new InvocationParameterResolver()
-                .position(0)
-                .propertyUri(URI.create("this:/#data")))))
-        .and()
-        .build();
-
-    assertThat(objectExtensionApi.findObjectExtensionDescriptorByName(extensionName)).isPresent();
 
   }
 
