@@ -137,12 +137,12 @@ public class PropertyDefinitionData {
   }
 
    /**
-   * The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well.  
+   * The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well. 
    * @return typeClass
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well.  ")
+  @ApiModelProperty(required = true, value = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well. ")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -192,11 +192,11 @@ public class PropertyDefinitionData {
   }
 
    /**
-   * If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the  
+   * If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the 
    * @return referredPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the  ")
+  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the ")
   @JsonProperty(REFERRED_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

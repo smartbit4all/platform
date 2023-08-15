@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -55,7 +55,7 @@ public class ObjectExtensionDescriptor {
   private String name;
 
   public static final String LAYOUTS = "layouts";
-  private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
+  private Map<String, SmartComponentLayoutDefinition> layouts = new HashMap<>();
 
   public static final String PROPERTIES = "properties";
   private Map<String, URI> properties = new HashMap<>();
@@ -123,13 +123,13 @@ public class ObjectExtensionDescriptor {
   }
 
 
-  public ObjectExtensionDescriptor layouts(Map<String, SmartLayoutDefinition> layouts) {
+  public ObjectExtensionDescriptor layouts(Map<String, SmartComponentLayoutDefinition> layouts) {
     
     this.layouts = layouts;
     return this;
   }
 
-  public ObjectExtensionDescriptor putLayoutsItem(String key, SmartLayoutDefinition layoutsItem) {
+  public ObjectExtensionDescriptor putLayoutsItem(String key, SmartComponentLayoutDefinition layoutsItem) {
     this.layouts.put(key, layoutsItem);
     return this;
   }
@@ -145,14 +145,14 @@ public class ObjectExtensionDescriptor {
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, SmartLayoutDefinition> getLayouts() {
+  public Map<String, SmartComponentLayoutDefinition> getLayouts() {
     return layouts;
   }
 
 
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLayouts(Map<String, SmartLayoutDefinition> layouts) {
+  public void setLayouts(Map<String, SmartComponentLayoutDefinition> layouts) {
     this.layouts = layouts;
   }
 

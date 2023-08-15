@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWidgetDefinition;
@@ -70,7 +71,7 @@ public class SmartComponentLayoutDefinition {
   private SmartComponentWidgetDefinition widget;
 
   public static final String FORM = "form";
-  private List<Object> form = null;
+  private List<SmartWidgetDefinition> form = null;
 
   public SmartComponentLayoutDefinition() { 
   }
@@ -277,13 +278,13 @@ public class SmartComponentLayoutDefinition {
   }
 
 
-  public SmartComponentLayoutDefinition form(List<Object> form) {
+  public SmartComponentLayoutDefinition form(List<SmartWidgetDefinition> form) {
     
     this.form = form;
     return this;
   }
 
-  public SmartComponentLayoutDefinition addFormItem(Object formItem) {
+  public SmartComponentLayoutDefinition addFormItem(SmartWidgetDefinition formItem) {
     if (this.form == null) {
       this.form = new ArrayList<>();
     }
@@ -296,18 +297,19 @@ public class SmartComponentLayoutDefinition {
    * @return form
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(FORM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<Object> getForm() {
+  public List<SmartWidgetDefinition> getForm() {
     return form;
   }
 
 
   @JsonProperty(FORM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setForm(List<Object> form) {
+  public void setForm(List<SmartWidgetDefinition> form) {
     this.form = form;
   }
 

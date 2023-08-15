@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
@@ -69,15 +68,13 @@ public final class ObjectExtensionBuilder {
   }
 
   /**
-   * Registers the specified layout with the given name in the extension descriptor
+   * Commences the establishment of a new component layout
    * 
    * @param name the desired {@code String} name of the layout definition, not null
-   * @param layoutDefinition the {@link SmartLayoutDefinition} describing the layout
-   * @return this instance
+   * @return a new {@code ObjectLayoutBuilder} instance
    */
-  public ObjectExtensionBuilder layout(String name, SmartLayoutDefinition layoutDefinition) {
-    descriptor.putLayoutsItem(name, layoutDefinition);
-    return this;
+  public ObjectLayoutBuilder layout(String name) {
+    return new ObjectLayoutBuilder(name);
   }
 
   /**
@@ -167,6 +164,15 @@ public final class ObjectExtensionBuilder {
           .saveAsNew(ObjectExtensionApi.SCHEMA, propertyDescriptor);
       ObjectExtensionBuilder.this.descriptor.putPropertiesItem(name, propertyDescriptorUri);
       return ObjectExtensionBuilder.this;
+    }
+  }
+
+  public final class ObjectLayoutBuilder {
+
+    private final String name;
+
+    private ObjectLayoutBuilder(String name) {
+      this.name = name;
     }
   }
 

@@ -558,7 +558,7 @@ components:
             The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify
             the position of the given layout on the view.
           additionalProperties:
-            type: SmartLayoutDefinition
+            type: SmartComponentLayoutDefinition
         properties:
           type: string
           description: |

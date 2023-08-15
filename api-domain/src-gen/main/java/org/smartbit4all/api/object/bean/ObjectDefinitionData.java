@@ -132,11 +132,11 @@ public class ObjectDefinitionData {
   }
 
    /**
-   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
    * @return uriProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
   @JsonProperty(URI_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -159,11 +159,11 @@ public class ObjectDefinitionData {
   }
 
    /**
-   * The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
    * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @ApiModelProperty(value = "The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -23,6 +22,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +112,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             : constraintDescriptor.getActionConstraints());
       }
     }
-    Map<String, SmartLayoutDefinition> layoutsByName = extensionDescriptor.getLayouts();
+    Map<String, SmartComponentLayoutDefinition> layoutsByName = extensionDescriptor.getLayouts();
     return new ObjectDisplay(layoutsByName, componentConstraints, uiActionConstraints);
   }
 

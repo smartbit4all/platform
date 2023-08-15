@@ -7,7 +7,7 @@ info:
     email: info@it4all.hu
   version: 1.0.0
 tags:
-- name: FormLayoutDefinition
+  - name: FormLayoutDefinition
 paths:
   /nope:
     post:
@@ -42,7 +42,7 @@ components:
         form:
           type: array
           items:
-            description: This is a placeholder for SmartWidgetDefinition. You might want to describe this further.
+            type: SmartWidgetDefinition
     SmartComponentWidgetDefinition:
       type: object
       required:

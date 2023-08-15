@@ -2,18 +2,17 @@ package org.smartbit4all.core.object;
 
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 
 public final class ObjectDisplay {
 
-  private final Map<String, SmartLayoutDefinition> layoutsByName;
+  private final Map<String, SmartComponentLayoutDefinition> layoutsByName;
   private final List<ComponentConstraint> componentConstraints;
   private final List<UiActionConstraint> uiActionConstraints;
 
-
-  public ObjectDisplay(Map<String, SmartLayoutDefinition> layoutsByName,
+  ObjectDisplay(Map<String, SmartComponentLayoutDefinition> layoutsByName,
       List<ComponentConstraint> componentConstraints,
       List<UiActionConstraint> uiActionConstraints) {
     this.layoutsByName = layoutsByName;
@@ -22,7 +21,7 @@ public final class ObjectDisplay {
   }
 
 
-  public Map<String, SmartLayoutDefinition> getLayoutsByName() {
+  public Map<String, SmartComponentLayoutDefinition> getLayoutsByName() {
     return layoutsByName;
   }
 
