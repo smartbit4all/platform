@@ -149,6 +149,8 @@ components:
           description: This is the group of filter expressions that can be involved to the workplace. This is a tree structure.
           items:
             $ref: "#/components/schemas/FilterExpressionBuilderGroup"
+        exceptionalGroup:
+          $ref: "#/components/schemas/FilterExpressionBuilderGroup"
         workplaceList:
           description: These are currently included filter fields.
           $ref: "#/components/schemas/FilterExpressionFieldList"

@@ -13,7 +13,6 @@ import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
-import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -125,7 +124,7 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
    * @return the column names to show on ui in order
    */
   protected List<String> getGridColumns() {
-    return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
+    return Arrays.asList(Group.TITLE, Group.KIND_CODE, Group.DESCRIPTION);
   }
 
   protected List<UiAction> getGroupRowActions() {

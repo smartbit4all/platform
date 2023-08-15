@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   FilterExpressionBuilderModel.LABEL,
   FilterExpressionBuilderModel.GROUPS,
+  FilterExpressionBuilderModel.EXCEPTIONAL_GROUP,
   FilterExpressionBuilderModel.WORKPLACE_LIST,
   FilterExpressionBuilderModel.DEFAULT_FILTERS
 })
@@ -50,6 +51,9 @@ public class FilterExpressionBuilderModel {
 
   public static final String GROUPS = "groups";
   private List<FilterExpressionBuilderGroup> groups = null;
+
+  public static final String EXCEPTIONAL_GROUP = "exceptionalGroup";
+  private FilterExpressionBuilderGroup exceptionalGroup;
 
   public static final String WORKPLACE_LIST = "workplaceList";
   private FilterExpressionFieldList workplaceList;
@@ -123,6 +127,34 @@ public class FilterExpressionBuilderModel {
   }
 
 
+  public FilterExpressionBuilderModel exceptionalGroup(FilterExpressionBuilderGroup exceptionalGroup) {
+    
+    this.exceptionalGroup = exceptionalGroup;
+    return this;
+  }
+
+   /**
+   * Get exceptionalGroup
+   * @return exceptionalGroup
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXCEPTIONAL_GROUP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionBuilderGroup getExceptionalGroup() {
+    return exceptionalGroup;
+  }
+
+
+  @JsonProperty(EXCEPTIONAL_GROUP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExceptionalGroup(FilterExpressionBuilderGroup exceptionalGroup) {
+    this.exceptionalGroup = exceptionalGroup;
+  }
+
+
   public FilterExpressionBuilderModel workplaceList(FilterExpressionFieldList workplaceList) {
     
     this.workplaceList = workplaceList;
@@ -190,13 +222,14 @@ public class FilterExpressionBuilderModel {
     FilterExpressionBuilderModel filterExpressionBuilderModel = (FilterExpressionBuilderModel) o;
     return Objects.equals(this.label, filterExpressionBuilderModel.label) &&
         Objects.equals(this.groups, filterExpressionBuilderModel.groups) &&
+        Objects.equals(this.exceptionalGroup, filterExpressionBuilderModel.exceptionalGroup) &&
         Objects.equals(this.workplaceList, filterExpressionBuilderModel.workplaceList) &&
         Objects.equals(this.defaultFilters, filterExpressionBuilderModel.defaultFilters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, groups, workplaceList, defaultFilters);
+    return Objects.hash(label, groups, exceptionalGroup, workplaceList, defaultFilters);
   }
 
   @Override
@@ -205,6 +238,7 @@ public class FilterExpressionBuilderModel {
     sb.append("class FilterExpressionBuilderModel {\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
+    sb.append("    exceptionalGroup: ").append(toIndentedString(exceptionalGroup)).append("\n");
     sb.append("    workplaceList: ").append(toIndentedString(workplaceList)).append("\n");
     sb.append("    defaultFilters: ").append(toIndentedString(defaultFilters)).append("\n");
     sb.append("}");
