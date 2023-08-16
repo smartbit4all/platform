@@ -108,6 +108,10 @@ public class ObjectNodeReference {
     return isPresent;
   }
 
+  public boolean isEmpty() {
+    return !isPresent;
+  }
+
   public boolean isLoaded() {
     return isLoaded;
   }
