@@ -66,3 +66,18 @@ components:
           items:
             type: string
             format: uri
+    UserSelfEditingModel:
+      type: object
+      properties:
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        oldPassword:
+          type: string
+        newPassword1:
+          type: string
+        newPassword2:
+          type: string

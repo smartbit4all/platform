@@ -95,15 +95,13 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
     URI userUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
 
-    viewApi
-        .showView(new View().viewName(getUserEditorPageName()).objectUri(userUri));
+    viewApi.showView(new View().viewName(getUserEditorPageName()).objectUri(userUri));
   }
 
 
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
-    viewApi
-        .showView(new View().viewName(getUserEditorPageName()));
+    viewApi.showView(new View().viewName(getUserEditorPageName()));
   }
 
   protected String getUserEditorPageName() {
