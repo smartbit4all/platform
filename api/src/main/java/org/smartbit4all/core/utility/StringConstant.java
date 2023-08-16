@@ -139,4 +139,12 @@ public class StringConstant {
     super();
   }
 
+  public static final String repeat(String s, int n) {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < n; i++) {
+      result.append(s);
+    }
+    return result.toString();
+  }
+
 }
