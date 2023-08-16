@@ -45,6 +45,7 @@ components:
         - COMPONENT
         - RICH_TEXT
         - SORTABLE
+        - MATRIX
     SmartLayoutDefinition:
       type: object
       required: [widgets]
@@ -152,3 +153,20 @@ components:
         selection:
           type: string
           description: Property name in the selection model. This will won't be saved here, we use it for selection.
+    SmartMatrixModel:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            type: string
+          description: The keys
+        columns:
+          type: array
+          items:
+            type: string
+          description: The possible values
+        data:
+          type: object
+          description: A map for key - values
+          additionalProperties: true # To indicate it can have any key-value pairs.
