@@ -84,7 +84,7 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   }
 
   protected void addActionsToRow(GridRow row) {
-    row.actions(getUserRowActions());
+    row.getActions().addAll(getUserRowActions());
   }
 
 
