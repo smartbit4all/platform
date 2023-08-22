@@ -74,7 +74,11 @@ public enum SmartFormWidgetType {
   
   COMPONENT("COMPONENT"),
   
-  RICH_TEXT("RICH_TEXT");
+  RICH_TEXT("RICH_TEXT"),
+  
+  SORTABLE("SORTABLE"),
+  
+  MATRIX("MATRIX");
 
   private String value;
 

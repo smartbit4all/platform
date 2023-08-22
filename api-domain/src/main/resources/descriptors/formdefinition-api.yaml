@@ -113,6 +113,9 @@ components:
         direction:
           description: The direction inside a container.
           $ref: '#/components/schemas/SmartFormWidgetDirection'
+        matrix:
+          description: Matrix model used for matrix widget
+          $ref: '#/components/schemas/SmartMatrixModel'
     SmartFormWidgetDirection:
       type: string
       enum:
