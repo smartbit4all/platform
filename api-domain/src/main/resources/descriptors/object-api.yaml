@@ -513,30 +513,65 @@ components:
       type: object
       description: |
         The object property is the descriptor of a property available for a management.
-      required: [uri, propertyDefinition, builtIn, extension, objectQualifiedName]
+      required: [uri, propertyName, propertyKind, propertyQualifiedName, propertyStructure]
       properties:
         uri:
           type: string
           format: uri
-        propertyDefinition:
-          description: The property definition of the given property.
-          type: PropertyDefinitionData
-        builtIn:
-          description: The built in property can not be deleted (removed).
-          type: boolean
-          default: true
-        extension:
+        propertyName:
+          type: string
           description: |
-            The extension property can be used for to construct extended object definition for the objectQualifiedName object. Like
-            we can use the given property to create extended DocumentType.
+            The string name of the property to be used to access it on its host object.
+        propertyKind:
+          type: string
+          enum: [INLINE, REFERENCE]
+          description: |
+            Denotes whether this property is a navigable storage reference or an inline value on the
+            host object.
+        propertyQualifiedName:
+          type: string
+          description: |
+            The class of the object denoted by this property. This is the actual type used, thus for
+            referential properties this value is likely "java.net.URI".
+        referencedTypeQualifiedName:
+          type: string
+          description: |
+            The class of the object referenced by the property. This shall have a value only, if
+            this property is a REFERENCE property kind
+        aggregation: # reuse this type, only interpreted if propertyKind == REFERENCE
+          $ref: '#/components/schemas/AggregationKind'
+        propertyStructure: # denotes the data structure to be used -> single object, List, Map
+          $ref: '#/components/schemas/ReferencePropertyKind'
+        valueSet:
+          type: string
+          format: uri
+          description: |
+            The ValueSet containing the valid objects eligible for this property (if any). The value
+            set shall contain objects with the applicable qualified name above. If this property may
+            have any value (such as free-form text), this value set is not interpreted.
+        valueSetName:
+          type: string
+          description: |
+            ...
+        widget:
+          type: SmartWidgetDefinition
+          description: |
+            The widget to use to render this property by default. If none are supplied during the
+            construction of this instance, this property may be initialised using heuristics.
+        defaultValue:
+          type: object
+          description: |
+            The value this property should hold when an object owning this property is initialised.
+        defaultConstraint:
+          $ref: '#/components/schemas/ObjectConstraintDescriptor'
+        builtIn:
           type: boolean
           default: false
-        objectQualifiedName:
           description: |
-            The qualified name of object the property belongs to. If it not an extension then we can use it to extend the given object. Otherwise it is the
-            object that owns the given proporty.
-          type: string
-    ObjectExtensionDescriptor:
+            Marks whether this property shall be treated as a 'built-in' quality of the host object.
+            Clients are not allowed to remove a 'built-in' property from an object descriptor.
+
+    ObjectDescriptor:
       type: object
       description: |
         The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in
@@ -552,6 +587,35 @@ components:
           description: |
             The extension name is a unique and unmodifiable identifier of the given extension. It is used to construct dynamic object
             definitions so it must match with the requirements of the an object name (ANSI characters with no white spaces)
+        definitionProperties:
+          type: string
+          description: |
+            The properties extracted from the relevant ObjectDefinition.
+          additionalProperties:
+            type: string
+            format: uri
+        extensionProperties:
+          type: string
+          description: |
+            The properties configured by extending the base ObjectDefinition
+          additionalProperties:
+            type: string
+            format: uri
+        layoutDescriptor:
+          $ref: '#/components/schemas/ObjectLayoutDescriptor'
+    ObjectLayoutDescriptor:
+      type: object
+      description: |
+        Defines the desired layout for displaying a particular object and the various constraints
+        to be enforced on it.
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          description: |
+            A unique string name for the layout descriptor to be used as a key in mappings.
+          type: string
         layouts:
           type: string
           description: |
@@ -559,19 +623,15 @@ components:
             the position of the given layout on the view.
           additionalProperties:
             type: SmartComponentLayoutDefinition
-        properties:
-          type: string
-          description: |
-            The extension refers to included properties via reference but we store the properties mapped by their name to have a quick view about the
-            available properties. If a property is included it appears in this list. If we place it into a layout then it is visible else it is invisible.
-          additionalProperties:
-            type: string
-            format: uri
         constraints:
           type: array
-          description: All the constraints that must be enforced the given object.
+          description: |
+            The constraints to be enforced for the object's layout.
+            The condition for the application of a certain constraint descriptor can be customised
+            by providing invocation request definitions to be used as predicates.
           items:
             $ref: '#/components/schemas/ObjectConstraintDescriptor'
+
     ObjectConstraintDescriptor:
       type: object
       description: |

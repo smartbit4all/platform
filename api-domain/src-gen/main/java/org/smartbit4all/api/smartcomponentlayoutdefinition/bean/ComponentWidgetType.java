@@ -30,7 +30,9 @@ public enum ComponentWidgetType {
   
   GRID("grid"),
   
-  FILTER("filter");
+  FILTER("filter"),
+  
+  TREE("tree");
 
   private String value;
 

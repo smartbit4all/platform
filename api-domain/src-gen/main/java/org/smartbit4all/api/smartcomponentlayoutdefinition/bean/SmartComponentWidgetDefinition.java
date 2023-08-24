@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SmartComponentWidgetDefinition.TYPE,
   SmartComponentWidgetDefinition.GRID_IDENTIFIER,
+  SmartComponentWidgetDefinition.TREE_IDENTIFIER,
   SmartComponentWidgetDefinition.FILTER_EXPRESSION_FIELD_LIST,
   SmartComponentWidgetDefinition.FILTER_TYPE
 })
@@ -47,6 +48,9 @@ public class SmartComponentWidgetDefinition {
 
   public static final String GRID_IDENTIFIER = "gridIdentifier";
   private String gridIdentifier;
+
+  public static final String TREE_IDENTIFIER = "treeIdentifier";
+  private String treeIdentifier;
 
   public static final String FILTER_EXPRESSION_FIELD_LIST = "filterExpressionFieldList";
   private FilterExpressionFieldList filterExpressionFieldList = null;
@@ -110,6 +114,33 @@ public class SmartComponentWidgetDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGridIdentifier(String gridIdentifier) {
     this.gridIdentifier = gridIdentifier;
+  }
+
+
+  public SmartComponentWidgetDefinition treeIdentifier(String treeIdentifier) {
+    
+    this.treeIdentifier = treeIdentifier;
+    return this;
+  }
+
+   /**
+   * Get treeIdentifier
+   * @return treeIdentifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TREE_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTreeIdentifier() {
+    return treeIdentifier;
+  }
+
+
+  @JsonProperty(TREE_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTreeIdentifier(String treeIdentifier) {
+    this.treeIdentifier = treeIdentifier;
   }
 
 
@@ -180,13 +211,14 @@ public class SmartComponentWidgetDefinition {
     SmartComponentWidgetDefinition smartComponentWidgetDefinition = (SmartComponentWidgetDefinition) o;
     return Objects.equals(this.type, smartComponentWidgetDefinition.type) &&
         Objects.equals(this.gridIdentifier, smartComponentWidgetDefinition.gridIdentifier) &&
+        Objects.equals(this.treeIdentifier, smartComponentWidgetDefinition.treeIdentifier) &&
         Objects.equals(this.filterExpressionFieldList, smartComponentWidgetDefinition.filterExpressionFieldList) &&
         Objects.equals(this.filterType, smartComponentWidgetDefinition.filterType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, gridIdentifier, filterExpressionFieldList, filterType);
+    return Objects.hash(type, gridIdentifier, treeIdentifier, filterExpressionFieldList, filterType);
   }
 
   @Override
@@ -195,6 +227,7 @@ public class SmartComponentWidgetDefinition {
     sb.append("class SmartComponentWidgetDefinition {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    gridIdentifier: ").append(toIndentedString(gridIdentifier)).append("\n");
+    sb.append("    treeIdentifier: ").append(toIndentedString(treeIdentifier)).append("\n");
     sb.append("    filterExpressionFieldList: ").append(toIndentedString(filterExpressionFieldList)).append("\n");
     sb.append("    filterType: ").append(toIndentedString(filterType)).append("\n");
     sb.append("}");

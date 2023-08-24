@@ -26,8 +26,8 @@ import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
-import org.smartbit4all.core.object.ObjectExtensionApi;
-import org.smartbit4all.core.object.ObjectExtensionApiImpl;
+import org.smartbit4all.core.object.ObjectLayoutApi;
+import org.smartbit4all.core.object.ObjectLayoutApiImpl;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +48,8 @@ public class CoreServiceConfig {
   }
 
   @Bean
-  ObjectExtensionApi objectExtensionApi() {
-    return new ObjectExtensionApiImpl();
+  ObjectLayoutApi objectLayoutApi() {
+    return new ObjectLayoutApiImpl();
   }
 
   @Bean
