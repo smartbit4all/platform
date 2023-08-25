@@ -116,7 +116,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
     countProperty = PropertySqlComputed.create(EntityDefinition.PROPERTY_COUNT_NAME, Long.class,
         dataConverterHelper, "COUNT(1)");
-    propertiesByName.put(countProperty.getName(), countProperty);
+    registerProperty(countProperty);
 
     for (Method method : entityDefClazz.getMethods()) {
       checkMultiplePropertyAnnotations(method);

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
@@ -20,10 +21,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
 
   @Autowired
-  OrgApi orgApi;
+  protected OrgApi orgApi;
 
   @Autowired(required = false)
-  private PasswordEncoder passwordEncoder;
+  protected PasswordEncoder passwordEncoder;
 
   public UserEditorPageApiImpl() {
     super(UserEditingModel.class);
@@ -38,9 +39,9 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     URI userUri = view.getObjectUri();
 
-    if (view.getObjectUri() != null) {
+    if (userUri != null) {
       pageModel.user(orgApi.getUser(userUri));
-      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(g -> g.getUri())
+      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(Group::getUri)
           .collect(Collectors.toList()));
     } else {
       pageModel.user(new User().name("").email("").username(""));
@@ -56,12 +57,13 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   @Override
   public void saveUser(UUID viewUuid, UiActionRequest request) {
 
-    UserEditingModel pageModel =
-        objectApi.asType(UserEditingModel.class, request.getParams().get("formModel"));
+    UserEditingModel pageModel = getModel(viewUuid);
 
     User user = pageModel.getUser();
 
-    user.password(passwordEncoder.encode(user.getPassword()));
+    String password =
+        passwordEncoder == null ? user.getPassword() : passwordEncoder.encode(user.getPassword());
+    user.password(password);
 
     if (orgApi.getActiveUsers().stream().map(User::getUri).collect(Collectors.toList())
         .contains(user.getUri())) {
@@ -70,18 +72,12 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       orgApi.saveUser(user);
     }
 
-    pageModel.getPossibleGroups().stream()
-        .forEach(g -> orgApi.removeUserFromGroup(user.getUri(), g.getUri()));
-
-    pageModel.getActualGroups().stream()
-        .forEach(g -> orgApi.addUserToGroup(user.getUri(), g));
-
-    viewApi.showView(new View().viewName(getUserListName()));
+    viewApi.closeView(viewUuid);
   }
 
   @Override
   public void cancelUserEdit(UUID viewUuid, UiActionRequest request) {
-    viewApi.showView(new View().viewName(getUserListName()));
+    viewApi.closeView(viewUuid);
   }
 
   protected String getUserListName() {

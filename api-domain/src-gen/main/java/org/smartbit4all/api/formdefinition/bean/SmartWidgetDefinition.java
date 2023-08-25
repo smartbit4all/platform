@@ -25,7 +25,9 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -51,7 +53,10 @@ import javax.validation.Valid;
   SmartWidgetDefinition.CSS_LABEL_CLASS,
   SmartWidgetDefinition.IS_PASSWORD,
   SmartWidgetDefinition.VALUES,
-  SmartWidgetDefinition.SELECTION
+  SmartWidgetDefinition.CHILDREN_COMPONENTS,
+  SmartWidgetDefinition.SELECTION,
+  SmartWidgetDefinition.DIRECTION,
+  SmartWidgetDefinition.MATRIX
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -98,8 +103,17 @@ public class SmartWidgetDefinition {
   public static final String VALUES = "values";
   private List<Value> values = null;
 
+  public static final String CHILDREN_COMPONENTS = "childrenComponents";
+  private List<SmartWidgetDefinition> childrenComponents = null;
+
   public static final String SELECTION = "selection";
   private SelectionDefinition selection;
+
+  public static final String DIRECTION = "direction";
+  private SmartFormWidgetDirection direction;
+
+  public static final String MATRIX = "matrix";
+  private SmartMatrixModel matrix;
 
   public SmartWidgetDefinition() { 
   }
@@ -495,6 +509,42 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition childrenComponents(List<SmartWidgetDefinition> childrenComponents) {
+    
+    this.childrenComponents = childrenComponents;
+    return this;
+  }
+
+  public SmartWidgetDefinition addChildrenComponentsItem(SmartWidgetDefinition childrenComponentsItem) {
+    if (this.childrenComponents == null) {
+      this.childrenComponents = new ArrayList<>();
+    }
+    this.childrenComponents.add(childrenComponentsItem);
+    return this;
+  }
+
+   /**
+   * Get childrenComponents
+   * @return childrenComponents
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CHILDREN_COMPONENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<SmartWidgetDefinition> getChildrenComponents() {
+    return childrenComponents;
+  }
+
+
+  @JsonProperty(CHILDREN_COMPONENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChildrenComponents(List<SmartWidgetDefinition> childrenComponents) {
+    this.childrenComponents = childrenComponents;
+  }
+
+
   public SmartWidgetDefinition selection(SelectionDefinition selection) {
     
     this.selection = selection;
@@ -523,6 +573,62 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition direction(SmartFormWidgetDirection direction) {
+    
+    this.direction = direction;
+    return this;
+  }
+
+   /**
+   * Get direction
+   * @return direction
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DIRECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SmartFormWidgetDirection getDirection() {
+    return direction;
+  }
+
+
+  @JsonProperty(DIRECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDirection(SmartFormWidgetDirection direction) {
+    this.direction = direction;
+  }
+
+
+  public SmartWidgetDefinition matrix(SmartMatrixModel matrix) {
+    
+    this.matrix = matrix;
+    return this;
+  }
+
+   /**
+   * Get matrix
+   * @return matrix
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MATRIX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SmartMatrixModel getMatrix() {
+    return matrix;
+  }
+
+
+  @JsonProperty(MATRIX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMatrix(SmartMatrixModel matrix) {
+    this.matrix = matrix;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -546,12 +652,15 @@ public class SmartWidgetDefinition {
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
         Objects.equals(this.isPassword, smartWidgetDefinition.isPassword) &&
         Objects.equals(this.values, smartWidgetDefinition.values) &&
-        Objects.equals(this.selection, smartWidgetDefinition.selection);
+        Objects.equals(this.childrenComponents, smartWidgetDefinition.childrenComponents) &&
+        Objects.equals(this.selection, smartWidgetDefinition.selection) &&
+        Objects.equals(this.direction, smartWidgetDefinition.direction) &&
+        Objects.equals(this.matrix, smartWidgetDefinition.matrix);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, selection);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix);
   }
 
   @Override
@@ -572,7 +681,10 @@ public class SmartWidgetDefinition {
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");
     sb.append("    isPassword: ").append(toIndentedString(isPassword)).append("\n");
     sb.append("    values: ").append(toIndentedString(values)).append("\n");
+    sb.append("    childrenComponents: ").append(toIndentedString(childrenComponents)).append("\n");
     sb.append("    selection: ").append(toIndentedString(selection)).append("\n");
+    sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
+    sb.append("    matrix: ").append(toIndentedString(matrix)).append("\n");
     sb.append("}");
     return sb.toString();
   }
