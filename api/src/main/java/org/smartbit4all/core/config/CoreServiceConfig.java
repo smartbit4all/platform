@@ -26,6 +26,8 @@ import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
+import org.smartbit4all.core.object.ObjectExtensionApi;
+import org.smartbit4all.core.object.ObjectExtensionApiImpl;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutApiImpl;
 import org.smartbit4all.core.object.ObjectSerializer;
@@ -50,6 +52,11 @@ public class CoreServiceConfig {
   @Bean
   ObjectLayoutApi objectLayoutApi() {
     return new ObjectLayoutApiImpl();
+  }
+
+  @Bean
+  ObjectExtensionApi objectExtensionApi() {
+    return new ObjectExtensionApiImpl();
   }
 
   @Bean

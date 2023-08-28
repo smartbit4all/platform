@@ -602,7 +602,11 @@ components:
             type: string
             format: uri
         layoutDescriptor:
-          $ref: '#/components/schemas/ObjectLayoutDescriptor'
+          type: string
+          format: uri #ref-to: ObjectLayoutDescriptor
+        objectDefinition:
+          type: string
+          format: uri
     ObjectLayoutDescriptor:
       type: object
       description: |

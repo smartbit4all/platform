@@ -21,7 +21,6 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
-import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +38,6 @@ class ObjectApiTest {
 
   @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
-
-  @Autowired
-  private ObjectLayoutApi objectLayoutApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {

@@ -106,10 +106,27 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition integralNumberField(String key, String label) {
+    return textfield(key, label).mask("9*");
+  }
+
+  public static SmartWidgetDefinition floatingPointNumberField(String key, String label) {
+    return textfield(key, label).mask("9*.9*");
+  }
+
   public static SmartWidgetDefinition combobox(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.SELECT)
+        .key(key)
+        .label(label)
+        .selection(selectionDefinition);
+  }
+
+  public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
+      SelectionDefinition selectionDefinition) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.SELECT_MULTIPLE)
         .key(key)
         .label(label)
         .selection(selectionDefinition);

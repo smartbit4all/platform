@@ -7,15 +7,15 @@ info:
     email: info@it4all.hu
   version: 1.0.0
 tags:
-- name: Value
+  - name: Value
 paths:
   /possibleValues/{objectUri}:
     get:
       tags:
-      - Value
+        - Value
       summary: Returns the possible value set for the given URI
       operationId: 'possibleValues'
-      parameters: 
+      parameters:
         - in: path
           name: objectUri
           schema:
@@ -44,7 +44,7 @@ components:
         code:
           type: string
           description: The logical code of the selectable value.
-        displayValue: 
+        displayValue:
           type: string
           description: 'The string value that can be shown on ui. It might be a label code or the exact label.'
         iconCode:
@@ -111,20 +111,20 @@ components:
         objectDefinition:
           type: string
           format: uri
-          description: The object definition of the value set. 
+          description: The object definition of the value set.
         typeClass:
           type: string
-          description: The fully qualified name of the type class. 
+          description: The fully qualified name of the type class.
         keyProperty:
           type: string
           description: |
             The name of the key property in the value. It will be the value that copied into the reference when a given
             item is selected from the value set. If it is not set then the default is the URI if it exists in the given object.
             Or it will be the code or id in this order.
-        storageSchema: 
+        storageSchema:
           type: string
-          description: The name of the storage schema. Necessary to access the objects or the container (list or map). 
-        containerName: 
+          description: The name of the storage schema. Necessary to access the objects or the container (list or map).
+        containerName:
           type: string
           description: The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.
         iconCode:
@@ -137,7 +137,7 @@ components:
             type: object
         keys:
           type: array
-          description: The list of keys. If we have this  
+          description: The list of keys. If we have this
           items:
             type: object
         expression:
@@ -156,7 +156,7 @@ components:
         operands:
           type: array
           items:
-            $ref: '#/components/schemas/ValueSetOperand'          
+            $ref: '#/components/schemas/ValueSetOperand'
     ValueSetOperand:
       type: object
       required: [namespace, name]
@@ -186,7 +186,7 @@ components:
         code:
           type: string
           description: The logical code of the value.
-        name: 
+        name:
           type: string
           description: The value as it is.
         icon:
@@ -195,3 +195,17 @@ components:
         inactive:
           type: boolean
           description: Indicates if this value is inactive.
+
+    ValueSetDefinitionIdentifier:
+      type: object
+      properties:
+        namespace:
+          type: string
+          description: |
+            The namespace containing an arbitrary number of value sets. If it's null, the identifier
+            refers to the global namespace.
+        qualifiedName:
+          type: string
+          description: |
+            The unique name of the value set within its namespace.
+      required: [qualifiedName]

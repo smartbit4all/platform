@@ -26,7 +26,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -41,7 +40,8 @@ import javax.validation.Valid;
   ObjectDescriptor.NAME,
   ObjectDescriptor.DEFINITION_PROPERTIES,
   ObjectDescriptor.EXTENSION_PROPERTIES,
-  ObjectDescriptor.LAYOUT_DESCRIPTOR
+  ObjectDescriptor.LAYOUT_DESCRIPTOR,
+  ObjectDescriptor.OBJECT_DEFINITION
 })
 @JsonTypeName("ObjectDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -59,7 +59,10 @@ public class ObjectDescriptor {
   private Map<String, URI> extensionProperties = null;
 
   public static final String LAYOUT_DESCRIPTOR = "layoutDescriptor";
-  private ObjectLayoutDescriptor layoutDescriptor;
+  private URI layoutDescriptor;
+
+  public static final String OBJECT_DEFINITION = "objectDefinition";
+  private URI objectDefinition;
 
   public ObjectDescriptor() { 
   }
@@ -193,7 +196,7 @@ public class ObjectDescriptor {
   }
 
 
-  public ObjectDescriptor layoutDescriptor(ObjectLayoutDescriptor layoutDescriptor) {
+  public ObjectDescriptor layoutDescriptor(URI layoutDescriptor) {
     
     this.layoutDescriptor = layoutDescriptor;
     return this;
@@ -209,15 +212,43 @@ public class ObjectDescriptor {
   @JsonProperty(LAYOUT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ObjectLayoutDescriptor getLayoutDescriptor() {
+  public URI getLayoutDescriptor() {
     return layoutDescriptor;
   }
 
 
   @JsonProperty(LAYOUT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLayoutDescriptor(ObjectLayoutDescriptor layoutDescriptor) {
+  public void setLayoutDescriptor(URI layoutDescriptor) {
     this.layoutDescriptor = layoutDescriptor;
+  }
+
+
+  public ObjectDescriptor objectDefinition(URI objectDefinition) {
+    
+    this.objectDefinition = objectDefinition;
+    return this;
+  }
+
+   /**
+   * Get objectDefinition
+   * @return objectDefinition
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OBJECT_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getObjectDefinition() {
+    return objectDefinition;
+  }
+
+
+  @JsonProperty(OBJECT_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectDefinition(URI objectDefinition) {
+    this.objectDefinition = objectDefinition;
   }
 
 
@@ -234,12 +265,13 @@ public class ObjectDescriptor {
         Objects.equals(this.name, objectDescriptor.name) &&
         Objects.equals(this.definitionProperties, objectDescriptor.definitionProperties) &&
         Objects.equals(this.extensionProperties, objectDescriptor.extensionProperties) &&
-        Objects.equals(this.layoutDescriptor, objectDescriptor.layoutDescriptor);
+        Objects.equals(this.layoutDescriptor, objectDescriptor.layoutDescriptor) &&
+        Objects.equals(this.objectDefinition, objectDescriptor.objectDefinition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, definitionProperties, extensionProperties, layoutDescriptor);
+    return Objects.hash(uri, name, definitionProperties, extensionProperties, layoutDescriptor, objectDefinition);
   }
 
   @Override
@@ -251,6 +283,7 @@ public class ObjectDescriptor {
     sb.append("    definitionProperties: ").append(toIndentedString(definitionProperties)).append("\n");
     sb.append("    extensionProperties: ").append(toIndentedString(extensionProperties)).append("\n");
     sb.append("    layoutDescriptor: ").append(toIndentedString(layoutDescriptor)).append("\n");
+    sb.append("    objectDefinition: ").append(toIndentedString(objectDefinition)).append("\n");
     sb.append("}");
     return sb.toString();
   }
