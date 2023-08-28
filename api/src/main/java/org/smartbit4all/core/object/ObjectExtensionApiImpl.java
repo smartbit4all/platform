@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
@@ -42,7 +43,7 @@ import com.google.common.base.Strings;
 public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   // TODO: We lose type information HERE!!!
-  private static final ObjectPropertyDescriptor inlinePropertyDescriptor(
+  private static ObjectPropertyDescriptor inlinePropertyDescriptor(
       PropertyDefinitionData propertyDefinitionData) {
     final ObjectPropertyDescriptor descriptor = new ObjectPropertyDescriptor()
         .propertyName(propertyDefinitionData.getName())
@@ -66,7 +67,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     return descriptor;
   }
 
-  private static final ObjectPropertyDescriptor refPropertyDescriptor(
+  private static ObjectPropertyDescriptor refPropertyDescriptor(
       ReferenceDefinition referenceDefinition) {
     return new ObjectPropertyDescriptor()
         .propertyName(referenceDefinition.getSourcePropertyPath())
@@ -295,11 +296,56 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     objectDescriptorNode.modify(ObjectDescriptor.class, d -> {
 
       Map<String, URI> definitionProperties = d.getDefinitionProperties();
-      extensionDescriptorsByName.keySet().forEach(definitionProperties::remove);
+      if (definitionProperties != null) {
+        extensionDescriptorsByName.keySet().forEach(definitionProperties::remove);
+      }
+
+      Map<String, URI> extensionProperties = d.getExtensionProperties();
+      if (extensionProperties == null) {
+        extensionProperties = new HashMap<>();
+      }
+      extensionProperties.putAll(savePropertyDescriptors(extensionDescriptorsByName.values()));
 
       return d;
     });
     return objectApi.save(objectDescriptorNode);
+  }
+
+  @Override
+  public ObjectLayoutDescriptor generateDefaultLayout(String definitionName) {
+    final boolean knownExtension = collectionApi
+        .map(SCHEMA, EXTENSION_MAP)
+        .uris()
+        .containsKey(definitionName);
+    if (!knownExtension) {
+      throw new IllegalArgumentException("Cannot evaluate the [ " + definitionName
+          + " ] object descriptor, for it does not exist! Try calling 'create()'!");
+    }
+
+    final ObjectDescriptor objectDescriptor = objectApi
+        .load(collectionApi
+            .map(SCHEMA, EXTENSION_MAP)
+            .uris()
+            .get(definitionName))
+        .getObject(ObjectDescriptor.class);
+    final List<ObjectPropertyDescriptor> propertyDescriptors = Stream
+        .concat(
+            objectDescriptor.getDefinitionProperties() == null
+                ? Stream.empty()
+                : objectDescriptor.getDefinitionProperties().values().stream(),
+            objectDescriptor.getExtensionProperties() == null
+                ? Stream.empty()
+                : objectDescriptor.getExtensionProperties().values().stream())
+        .map(objectApi::load)
+        .map(n -> n.getObject(ObjectPropertyDescriptor.class))
+        .collect(Collectors.toList());
+    final List<SmartLayoutItem> layoutElements = new PropertyDescriptorEvaluator(definitionName)
+        .evaluate(propertyDescriptors)
+        .layoutElements;
+
+    // TODO: this is horrendous, refactor to generate a layout without save is incoming!
+    final URI tempUri = createDefaultLayout("temp-layout", layoutElements);
+    return objectApi.loadLatest(tempUri).getObject(ObjectLayoutDescriptor.class);
   }
 
   private static final class PropertyDescriptorEvaluator {
@@ -322,7 +368,6 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
           PropertyDefinitionData propDefData = new PropertyDefinitionData()
               .name(propertyName)
               .typeClass(getInlinePropertyDefinitionTypeClass(opd));
-          // TODO: HANDLE LISTS AND MAPS HERE!
           propertyDefinitions.add(propDefData);
 
         } else if (PropertyKindEnum.REFERENCE == opd.getPropertyKind()) {
@@ -357,10 +402,17 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     }
 
     /**
-     * 
-     * @param definitionName
-     * @param propertyDescriptor
-     * @return
+     * Generates a default widget based on a property descriptor.
+     *
+     * <p>
+     * If the property descriptor is equipped with a widget definition already, it is returned. If
+     * there was no widget present, the most appropriate layout element is generated based on the
+     * type information available in the property descriptor
+     *
+     * @param propertyDescriptor the {@link ObjectPropertyDescriptor} to be examined, not null
+     * @return a {@link SmartLayoutItem} wrapping either a {@link SmartWidgetDefinition} for form
+     *         elements, a {@link SmartComponentLayoutDefinition} for more complex, component type
+     *         properties, or nothing if the described property cannot be interpreted as a widget.
      */
     private SmartLayoutItem createDefaultWidget(ObjectPropertyDescriptor propertyDescriptor) {
       Objects.requireNonNull(propertyDescriptor, "propertyDescriptor cannot be null!");
@@ -490,14 +542,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
     private boolean isPlainDateTimeProperty() {
       return inline
-          && Stream
-              .of(LocalDateTime.class.getName(), OffsetDateTime.class.getName())
-              .anyMatch(propertyDescriptor.getPropertyQualifiedName()::equals);
+          && Arrays.asList(LocalDateTime.class.getName(), OffsetDateTime.class.getName())
+          .contains(propertyDescriptor.getPropertyQualifiedName());
     }
 
-    @SafeVarargs
     @SuppressWarnings("rawtypes")
-    private final boolean isPlainPropertyOfType(Class type, Class... otherTypes) {
+    private boolean isPlainPropertyOfType(Class type, Class... otherTypes) {
       return inline && ((otherTypes == null || otherTypes.length == 0)
           ? Objects.equals(type.getName(), propertyDescriptor.getPropertyQualifiedName())
           : Stream.concat(Stream.of(type), Arrays.stream(otherTypes))

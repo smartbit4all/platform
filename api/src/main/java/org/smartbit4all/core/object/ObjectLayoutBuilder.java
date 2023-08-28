@@ -156,7 +156,7 @@ public final class ObjectLayoutBuilder {
   }
 
   public static String widgetKey(String... elements) {
-    return Arrays.stream(elements).collect(Collectors.joining(StringConstant.DOT));
+    return String.join(StringConstant.DOT, elements);
   }
 
   public static SelectionDefinition selectionDefinition(String valueSetName,
@@ -203,6 +203,10 @@ public final class ObjectLayoutBuilder {
     return (layoutDescriptor.getUri() != null)
         ? updateDescriptor(layoutDescriptor.getUri())
         : objectLayoutApi.saveNewLayoutDescriptor(layoutDescriptor);
+  }
+
+  ObjectLayoutDescriptor provide() {
+    return layoutDescriptor;
   }
 
   private URI updateDescriptor(URI descriptorUri) {
