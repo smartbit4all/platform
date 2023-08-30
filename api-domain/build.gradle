@@ -24,6 +24,7 @@ smartbit4all {
   		"Value": "org.smartbit4all.api.value.bean.Value",
   		"ValueSetData": "org.smartbit4all.api.value.bean.ValueSetData",
   		"ValueSet": "org.smartbit4all.api.view.bean.ValueSet",
+  		"ValueSetDefinitionIdentifier": "org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier",
   		"ComponentConstraint": "org.smartbit4all.api.view.bean.ComponentConstraint",
   		"UiActionConstraint": "org.smartbit4all.api.view.bean.UiActionConstraint",
   		"FilterExpressionFieldList": "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",

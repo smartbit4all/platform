@@ -388,7 +388,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       // This will be a new data file, first we create the StorageObjectData save it into a new
       // data file.
       storageObjectData = new StorageObjectData().uri(object.getUri())
-          .className(object.definition().getClazz().getName());
+          .className(object.definition().getQualifiedName());
     }
 
     // The version is updated with the information attached if it's not a modification without

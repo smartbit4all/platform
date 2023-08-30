@@ -2,6 +2,7 @@ package org.smartbit4all.core.object;
 
 import java.net.URI;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 
 /**
@@ -40,6 +41,9 @@ public interface ObjectDefinitionApi {
    *         ObjectDefinitionBuilder that will save the definition into the storage.
    */
   ObjectDefinition<?> definition(String className);
+
+
+  ObjectDefinition<PersistableObject> baseDefinition(String className);
 
   /**
    * @return The default serializer for the objects.

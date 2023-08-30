@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,12 @@ import java.util.function.Function;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.bean.StoredListData;
+import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -26,9 +31,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
 
@@ -43,6 +48,29 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   public static final String PROPERTIES = "propertyDefinitions";
 
   public static final String OBJECT_DEFINITIONS = "objectDefinitions";
+
+  static final Map<String, Class<?>> BUILT_IN_TYPES_BY_NAME;
+
+  static {
+    Map<String, Class<?>> m = new HashMap<>();
+    m.put("storedref", StoredReferenceData.class);
+    m.put("storedmap", StoredMapData.class);
+    m.put("storedlist", StoredListData.class);
+    BUILT_IN_TYPES_BY_NAME = m;
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  static void registerDefinition(ObjectDefinitionApi api, ObjectDefinition<?> definition) {
+    if (!(api instanceof ObjectDefinitionApiImpl)) {
+      return;
+    }
+    ObjectDefinitionApiImpl apiImpl = (ObjectDefinitionApiImpl) api;
+
+    apiImpl.initObjectDefinition(definition);
+    definition.getDefinitionData().setUriProperty("uri");
+    setupUri(definition);
+    apiImpl.definitionsByAlias.put(definition.getAlias(), definition);
+  }
 
   /**
    * We need at least one serializer to be able to start the module.
@@ -111,6 +139,10 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   private ReadWriteLock lock = new ReentrantReadWriteLock();
 
+  @Autowired
+  @Lazy
+  private ObjectExtensionApi objectExtensionApi;
+
   private static BeanMeta getMeta(Class<?> apiClass) {
     if (apiClass == null) {
       return null;
@@ -136,6 +168,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     defaultSerializer = serializersByName.get(defaultSerializerName);
     initObjectDefinitions();
     initObjectReferences();
+
+    // this.objectExtensionApi = context.getBean(ObjectExtensionApi.class);
   }
 
   private void initObjectReferences() {
@@ -239,7 +273,25 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     return definitionByAlias(getAliasFromClassName(className));
   }
 
+  @Override
+  public ObjectDefinition<PersistableObject> baseDefinition(String className) {
+    final ObjectDefinition<PersistableObject> objectDefinition =
+        constructDefinition(PersistableObject.class);
+
+    objectDefinition.setAlias(getAliasFromClassName(className));
+    objectDefinition.setQualifiedName(className);
+    objectDefinition.setObjectDefinitionApi(self);
+    objectDefinition.initDefinitionData();
+
+    return objectDefinition;
+  }
+
   private static final Class<?> getClassByName(String className) {
+    Class<?> clazz = BUILT_IN_TYPES_BY_NAME.get(className);
+    if (clazz != null) {
+      return clazz;
+    }
+
     try {
       return Class.forName(className);
     } catch (ClassNotFoundException e) {
@@ -256,16 +308,24 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
       lock.readLock().unlock();
     }
     if (objectDefinition == null) {
+      // The alias may refer to a phantom type managed by the object extension API. In that case,
+      // let it be assembled and registered, and we can return early:
+      String className = getClassNameFromAlias(alias);
+      Class<?> clazz = getClassByName(className);
+      if (objectExtensionApi != null && clazz == null) {
+        objectDefinition = objectExtensionApi.assemble(getClassNameFromAlias(alias));
+        if (objectDefinition != null) {
+          return objectDefinition;
+        }
+      }
       lock.writeLock().lock();
       try {
         objectDefinition = definitionsByAlias.get(alias);
         if (objectDefinition == null) {
-          String className = getClassNameFromAlias(alias);
-          Class<?> clazz = getClassByName(className);
           if (clazz == null) {
             // The class doesn't exist in the current runtime. In this case we use the Object as a
             // common ancestor of all the classes.
-            clazz = Object.class;
+            clazz = PersistableObject.class;
           }
           objectDefinition = constructDefinition(clazz);
           objectDefinition.setAlias(alias);

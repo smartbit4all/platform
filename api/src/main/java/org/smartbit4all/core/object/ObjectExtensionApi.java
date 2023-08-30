@@ -162,4 +162,24 @@ public interface ObjectExtensionApi {
    */
   ObjectLayoutDescriptor generateDefaultLayout(String definitionName);
 
+  /**
+   * 
+   * @param definitionName a unique {@code String} name of an existing {@link ObjectDescriptor}, not
+   *        null
+   * @param storageSchema the desired {@code String} schema where the new object shall be stored,
+   *        not null
+   * @return
+   */
+  ObjectNode newInstance(String definitionName, String storageSchema);
+
+  /**
+   * 
+   * @param objectDescriptorUri
+   * @param storageSchema
+   * @return
+   */
+  ObjectNode newInstance(URI objectDescriptorUri, String storageSchema);
+
+  ObjectDefinition<?> assemble(String definitionName);
+
 }

@@ -26,6 +26,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -101,6 +102,7 @@ class ObjectApiTest {
   }
 
   @Test
+  @DirtiesContext
   void extendExistingObjectDefinition() {
     ObjectDefinition<SampleCategory> definition = objectApi.definition(SampleCategory.class);
     List<String> propertyList = new ArrayList<>(Arrays.asList(SampleCategory.URI,
@@ -137,7 +139,8 @@ class ObjectApiTest {
             .definition(
                 SampleCategory.class.getPackage().getName() + StringConstant.DOT + "Extension");
     org.assertj.core.api.Assertions.assertThat(definition.getDefinitionData().getProperties())
-        .isEmpty();
+        .hasSize(1)
+        .allSatisfy(prop -> org.assertj.core.api.Assertions.assertThat(prop.getName()).isEqualTo("uri"));
     definition.builder().addProperty(ADDED_WITHTYPECLASS, String.class)
         .addProperty(ADDED_WITHTYPECLASSNAME, Long.class.getName()).commit();
 

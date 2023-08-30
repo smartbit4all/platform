@@ -23,7 +23,7 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
   public URI saveAsNew(ObjectDefinition<?> objectDefinition, String storageScheme,
       Map<String, Object> objectAsMap) {
     Storage storage = storageApi.get(storageScheme);
-    StorageObject<?> storageObject = storage.instanceOf(objectDefinition.getClazz());
+    StorageObject<?> storageObject = storage.fromDefinition(objectDefinition);
     storageObject.asMap().setObjectAsMap(objectAsMap);
     storage.save(storageObject);
     return storageObject.getVersionUri();

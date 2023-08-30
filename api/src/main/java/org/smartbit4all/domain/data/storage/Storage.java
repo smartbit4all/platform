@@ -131,17 +131,58 @@ public final class Storage {
   /**
    * Constructs a new instance of the given {@link Class}.
    *
-   * @param <T>
+   * @param <T> the Java type of the persisted object
    * @param clazz The class that represents a domain object.
+   * @param setName String
    * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
    *         without {@link StorageObject#setObject(Object)} then it will be an empty object but we
    *         can subscribe for it's events.
    */
   public <T> StorageObject<T> instanceOf(Class<T> clazz, String setName) {
     ObjectDefinition<T> objectDefinition = objectDefinitionApi.definition(clazz);
+    return fromDefinition(objectDefinition, setName);
+
+  }
+
+  /**
+   * Constructs a new {@link StorageObject} instance based on a given {@link ObjectDefinition}.
+   * 
+   * <p>
+   * Some domain objects may not have a corresponding Java class, if their definition is dynamically
+   * created/modified during runtime. Supplying an object definition directly ensures the storage
+   * mechanism may succeed for these objects as well.
+   * 
+   * @param <T> the Java type of the persisted object, if any
+   * @param objectDefinition the {@link ObjectDefinition} of the persisted domain object, not null
+   * @return a new {@link StorageObject} instance with an {@code URI}, but without any internal
+   *         object set
+   */
+  public <T> StorageObject<T> fromDefinition(ObjectDefinition<T> objectDefinition) {
+    return fromDefinition(objectDefinition, null);
+  }
+
+  /**
+   * Constructs a new {@link StorageObject} instance based on a given {@link ObjectDefinition}.
+   * 
+   * <p>
+   * Some domain objects may not have a corresponding Java class, if their definition is dynamically
+   * created/modified during runtime. Supplying an object definition directly ensures the storage
+   * mechanism may succeed for these objects as well.
+   * 
+   * <p>
+   * Persistence operations conducted through the returned instance operate on the set identified by
+   * the provided {@code setName}.
+   * 
+   * @param <T> the Java type of the persisted object, if any
+   * @param objectDefinition the {@link ObjectDefinition} of the persisted domain object, not null
+   * @param setName String
+   * @return a new {@link StorageObject} instance with an {@code URI}, but without any internal
+   *         object set
+   */
+  public <T> StorageObject<T> fromDefinition(ObjectDefinition<T> objectDefinition, String setName) {
     if (!objectDefinition.hasUri()) {
       throw new IllegalArgumentException(
-          "Unable to use the " + clazz
+          "Unable to use the " + objectDefinition.getQualifiedName()
               + " as domain object because the lack of URI property!");
     }
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, this);

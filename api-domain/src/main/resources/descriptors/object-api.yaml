@@ -543,16 +543,7 @@ components:
         propertyStructure: # denotes the data structure to be used -> single object, List, Map
           $ref: '#/components/schemas/ReferencePropertyKind'
         valueSet:
-          type: string
-          format: uri
-          description: |
-            The ValueSet containing the valid objects eligible for this property (if any). The value
-            set shall contain objects with the applicable qualified name above. If this property may
-            have any value (such as free-form text), this value set is not interpreted.
-        valueSetName:
-          type: string
-          description: |
-            ...
+          type: ValueSetDefinitionIdentifier
         widget:
           type: SmartWidgetDefinition
           description: |
@@ -671,3 +662,20 @@ components:
           description: The validation rules must be checked before an editing is finalized. The validation result is part of the view.
           items:
             type: string
+
+    PersistableObject:
+      description: |
+        Ancestor type for persistable objects.
+
+        The purpose of this class to offer a skeleton ObjectDefinition upon encountering an
+        unknown or dynamic type during storage saves and retrievals.
+      type: object
+      properties:
+        uri:
+          description: |
+            The unique identifier of this instance in persistent storage.
+
+            Ownership of this inline property is a requirement for storage implementations to
+            successfully save and load objects.
+          type: string
+          format: uri

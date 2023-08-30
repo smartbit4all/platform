@@ -114,6 +114,13 @@ public final class ObjectLayoutBuilder {
     return textfield(key, label).mask("9*.9*");
   }
 
+  public static SmartWidgetDefinition richTextEditor(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.RICH_TEXT)
+        .key(key)
+        .label(label);
+  }
+
   public static SmartWidgetDefinition combobox(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()

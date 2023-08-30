@@ -27,6 +27,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -45,7 +46,6 @@ import javax.validation.Valid;
   ObjectPropertyDescriptor.AGGREGATION,
   ObjectPropertyDescriptor.PROPERTY_STRUCTURE,
   ObjectPropertyDescriptor.VALUE_SET,
-  ObjectPropertyDescriptor.VALUE_SET_NAME,
   ObjectPropertyDescriptor.WIDGET,
   ObjectPropertyDescriptor.DEFAULT_VALUE,
   ObjectPropertyDescriptor.DEFAULT_CONSTRAINT,
@@ -111,10 +111,7 @@ public class ObjectPropertyDescriptor {
   private ReferencePropertyKind propertyStructure;
 
   public static final String VALUE_SET = "valueSet";
-  private URI valueSet;
-
-  public static final String VALUE_SET_NAME = "valueSetName";
-  private String valueSetName;
+  private ValueSetDefinitionIdentifier valueSet = null;
 
   public static final String WIDGET = "widget";
   private SmartWidgetDefinition widget = null;
@@ -328,58 +325,31 @@ public class ObjectPropertyDescriptor {
   }
 
 
-  public ObjectPropertyDescriptor valueSet(URI valueSet) {
+  public ObjectPropertyDescriptor valueSet(ValueSetDefinitionIdentifier valueSet) {
     
     this.valueSet = valueSet;
     return this;
   }
 
    /**
-   * The ValueSet containing the valid objects eligible for this property (if any). The value set shall contain objects with the applicable qualified name above. If this property may have any value (such as free-form text), this value set is not interpreted. 
+   * Get valueSet
    * @return valueSet
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The ValueSet containing the valid objects eligible for this property (if any). The value set shall contain objects with the applicable qualified name above. If this property may have any value (such as free-form text), this value set is not interpreted. ")
+  @ApiModelProperty(value = "")
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getValueSet() {
+  public ValueSetDefinitionIdentifier getValueSet() {
     return valueSet;
   }
 
 
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValueSet(URI valueSet) {
+  public void setValueSet(ValueSetDefinitionIdentifier valueSet) {
     this.valueSet = valueSet;
-  }
-
-
-  public ObjectPropertyDescriptor valueSetName(String valueSetName) {
-    
-    this.valueSetName = valueSetName;
-    return this;
-  }
-
-   /**
-   * ... 
-   * @return valueSetName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "... ")
-  @JsonProperty(VALUE_SET_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getValueSetName() {
-    return valueSetName;
-  }
-
-
-  @JsonProperty(VALUE_SET_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValueSetName(String valueSetName) {
-    this.valueSetName = valueSetName;
   }
 
 
@@ -510,7 +480,6 @@ public class ObjectPropertyDescriptor {
         Objects.equals(this.aggregation, objectPropertyDescriptor.aggregation) &&
         Objects.equals(this.propertyStructure, objectPropertyDescriptor.propertyStructure) &&
         Objects.equals(this.valueSet, objectPropertyDescriptor.valueSet) &&
-        Objects.equals(this.valueSetName, objectPropertyDescriptor.valueSetName) &&
         Objects.equals(this.widget, objectPropertyDescriptor.widget) &&
         Objects.equals(this.defaultValue, objectPropertyDescriptor.defaultValue) &&
         Objects.equals(this.defaultConstraint, objectPropertyDescriptor.defaultConstraint) &&
@@ -519,7 +488,7 @@ public class ObjectPropertyDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, propertyName, propertyKind, propertyQualifiedName, referencedTypeQualifiedName, aggregation, propertyStructure, valueSet, valueSetName, widget, defaultValue, defaultConstraint, builtIn);
+    return Objects.hash(uri, propertyName, propertyKind, propertyQualifiedName, referencedTypeQualifiedName, aggregation, propertyStructure, valueSet, widget, defaultValue, defaultConstraint, builtIn);
   }
 
   @Override
@@ -534,7 +503,6 @@ public class ObjectPropertyDescriptor {
     sb.append("    aggregation: ").append(toIndentedString(aggregation)).append("\n");
     sb.append("    propertyStructure: ").append(toIndentedString(propertyStructure)).append("\n");
     sb.append("    valueSet: ").append(toIndentedString(valueSet)).append("\n");
-    sb.append("    valueSetName: ").append(toIndentedString(valueSetName)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
     sb.append("    defaultValue: ").append(toIndentedString(defaultValue)).append("\n");
     sb.append("    defaultConstraint: ").append(toIndentedString(defaultConstraint)).append("\n");

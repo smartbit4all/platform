@@ -159,13 +159,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       return objectDefinitionApi.definition(clazz);
     }
     if (objectData != null && objectData.getClassName() != null) {
-      try {
-        Class<?> clazzByData = Class.forName(objectData.getClassName());
-        return objectDefinitionApi.definition(clazzByData);
-      } catch (ClassNotFoundException e) {
-        throw new IllegalArgumentException(
-            "Unable to initiate " + objectData.getClassName() + " class from " + uri + " URI.", e);
-      }
+      return objectDefinitionApi.definition(objectData.getClassName());
     }
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
       return null;

@@ -16,17 +16,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.ObjectDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnum;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
@@ -89,8 +94,10 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   @Override
   public URI create(String definitionName, List<ObjectPropertyDescriptor> propertyDescriptors) {
-    PropertyEvaluationResult evaluationResult = new PropertyDescriptorEvaluator(definitionName)
-        .evaluate(propertyDescriptors);
+    PropertyEvaluationResult evaluationResult = new PropertyDescriptorEvaluator(
+        objectDefinitionApi,
+        definitionName)
+            .evaluate(propertyDescriptors);
 
     updateObjectDefinition(definitionName, evaluationResult);
 
@@ -107,11 +114,23 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     ObjectDefinitionBuilder builder = objectDefinitionApi
         .definition(name)
         .builder();
-    builder.addAll(evaluationResult.propertyDefinitions)
+    builder.alias(ObjectDefinitionApiImpl.getAliasFromClassName(name));
+    registerObjectDefinition(name, builder, evaluationResult);
+  }
+
+  private ObjectDefinition<?> registerObjectDefinition(String name,
+      ObjectDefinitionBuilder definitionBuilder,
+      PropertyEvaluationResult evaluationResult) {
+    definitionBuilder
+        .addAll(evaluationResult.propertyDefinitions)
         .addAllOutgoingReference(evaluationResult.referenceDefinitions)
         .commit();
+    ObjectDefinition<?> definition = objectDefinitionApi.definition(name);
+    definition.getOutgoingReferences().values().forEach(r -> r.setSource(definition));
     // do we need to do things akin to
     // org.smartbit4all.core.object.ObjectDefinitionApiImpl.initObjectReferences()?
+    ObjectDefinitionApiImpl.registerDefinition(objectDefinitionApi, definition);
+    return definition;
   }
 
   private URI saveAndAddToGlobalMap(String definitionName, ObjectDescriptor objectDescriptor) {
@@ -256,8 +275,9 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     // the incoming extension descriptors override the base definition's values:
     propertyDescriptors.putAll(extensionProperties);
 
-    PropertyEvaluationResult evaluationResult = new PropertyDescriptorEvaluator(definitionName)
-        .evaluate(propertyDescriptors.values());
+    PropertyEvaluationResult evaluationResult =
+        new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
+            .evaluate(propertyDescriptors.values());
     updateObjectDefinition(definitionName, evaluationResult);
 
     ObjectDescriptor objectDescriptor = new ObjectDescriptor()
@@ -280,8 +300,9 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
           + " ] object descriptor, for it does not exist! Try calling 'create()'!");
     }
 
-    PropertyEvaluationResult evaluationResult = new PropertyDescriptorEvaluator(definitionName)
-        .evaluate(extensionDescriptors);
+    PropertyEvaluationResult evaluationResult =
+        new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
+            .evaluate(extensionDescriptors);
     updateObjectDefinition(definitionName, evaluationResult);
     // let's merge changes in the descriptor:
     Map<String, ObjectPropertyDescriptor> extensionDescriptorsByName = extensionDescriptors
@@ -328,7 +349,30 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             .uris()
             .get(definitionName))
         .getObject(ObjectDescriptor.class);
-    final List<ObjectPropertyDescriptor> propertyDescriptors = Stream
+    final List<ObjectPropertyDescriptor> propertyDescriptors = enumerateProps(objectDescriptor);
+    final List<SmartLayoutItem> layoutElements =
+        new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
+            .evaluate(propertyDescriptors).layoutElements;
+
+    // TODO: this is horrendous, refactor to generate a layout without save is incoming!
+    final URI tempUri = createDefaultLayout("temp-layout", layoutElements);
+    return objectApi.loadLatest(tempUri).getObject(ObjectLayoutDescriptor.class);
+  }
+
+  /**
+   * Enumerates all property descriptors available in the object descriptor.
+   * 
+   * <p>
+   * The final list is obtained by merging the contents of
+   * {@link ObjectDescriptor#getDefinitionProperties()} and
+   * {@link ObjectDescriptor#getExtensionProperties()}.
+   * 
+   * @param objectDescriptor an {@link ObjectDescriptor}
+   * @return a {@code List} of all available {@link ObjectPropertyDescriptor}s in the object
+   *         descriptor
+   */
+  private List<ObjectPropertyDescriptor> enumerateProps(final ObjectDescriptor objectDescriptor) {
+    return Stream
         .concat(
             objectDescriptor.getDefinitionProperties() == null
                 ? Stream.empty()
@@ -339,25 +383,66 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
         .map(objectApi::load)
         .map(n -> n.getObject(ObjectPropertyDescriptor.class))
         .collect(Collectors.toList());
-    final List<SmartLayoutItem> layoutElements = new PropertyDescriptorEvaluator(definitionName)
-        .evaluate(propertyDescriptors)
-        .layoutElements;
+  }
 
-    // TODO: this is horrendous, refactor to generate a layout without save is incoming!
-    final URI tempUri = createDefaultLayout("temp-layout", layoutElements);
-    return objectApi.loadLatest(tempUri).getObject(ObjectLayoutDescriptor.class);
+  @Override
+  public ObjectNode newInstance(String definitionName, String storageSchema) {
+    Objects.requireNonNull(definitionName, "definitionName cannot be null!");
+    Objects.requireNonNull(storageSchema, "storageSchema cannot be null!");
+
+    final ObjectDefinition<?> definition = objectDefinitionApi.definition(definitionName);
+
+    final ObjectNodeData data = new ObjectNodeData()
+        .objectUri(null)
+        .qualifiedName(definition.getQualifiedName())
+        .storageSchema(storageSchema)
+        .objectAsMap(new LinkedHashMap<>())
+        .state(ObjectNodeState.NEW)
+        .versionNr(null);
+
+    return new ObjectNode(objectApi, definition, data);
+  }
+
+  @Override
+  public ObjectNode newInstance(URI objectDescriptorUri, String storageSchema) {
+    Objects.requireNonNull(objectDescriptorUri, "objectDescriptorUri cannot be null!");
+    Objects.requireNonNull(storageSchema, "storageSchema cannot be null!");
+
+    return newInstance(
+        objectApi.load(objectDescriptorUri).getValueAsString(ObjectDescriptor.NAME),
+        storageSchema);
+  }
+
+  @Override
+  public ObjectDefinition<?> assemble(String definitionName) {
+    return Optional
+        .ofNullable(collectionApi.map(SCHEMA, EXTENSION_MAP))
+        .map(StoredMap::uris)
+        .map(m -> m.get(definitionName))
+        .map(objectApi::loadLatest)
+        .map(n -> n.getObject(ObjectDescriptor.class))
+        .map(this::enumerateProps)
+        .map(props -> new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
+            .evaluateWithoutLayout(props))
+        .map(res -> {
+          ObjectDefinition<?> definition = objectDefinitionApi.baseDefinition(definitionName);
+          return registerObjectDefinition(definitionName, definition.builder(), res);
+        })
+        .orElse(null);
   }
 
   private static final class PropertyDescriptorEvaluator {
-
+    private final ObjectDefinitionApi objectDefinitionApi;
     private final String definitionName;
 
-    private PropertyDescriptorEvaluator(String definitionName) {
+    private PropertyDescriptorEvaluator(ObjectDefinitionApi objectDefinitionApi,
+        String definitionName) {
+      this.objectDefinitionApi = objectDefinitionApi;
       this.definitionName = definitionName;
     }
 
     private PropertyEvaluationResult evaluate(
-        Collection<ObjectPropertyDescriptor> propertyDescriptors) {
+        Collection<ObjectPropertyDescriptor> propertyDescriptors, boolean layout) {
       final List<PropertyDefinitionData> propertyDefinitions = new ArrayList<>();
       final List<ReferenceDefinition> referenceDefinitions = new ArrayList<>();
       final List<SmartLayoutItem> layoutElements = new ArrayList<>();
@@ -371,21 +456,40 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
           propertyDefinitions.add(propDefData);
 
         } else if (PropertyKindEnum.REFERENCE == opd.getPropertyKind()) {
+          final String referencedTypeQualifiedName = opd.getReferencedTypeQualifiedName();
           ReferenceDefinition refDefinition = new ReferenceDefinition(new ReferenceDefinitionData()
               .sourceObjectName(definitionName)
               .propertyPath(propertyName)
               .propertyKind(opd.getPropertyStructure())
-              .targetObjectName(opd.getReferencedTypeQualifiedName())
+              .targetObjectName(referencedTypeQualifiedName)
               .aggregation(opd.getAggregation()));
+          refDefinition.setTarget(objectDefinitionApi.definition(referencedTypeQualifiedName));
           referenceDefinitions.add(refDefinition);
         }
-        layoutElements.add(createDefaultWidget(opd));
+
+        if (layout) {
+          final SmartLayoutItem widget = createDefaultWidget(opd);
+          layoutElements.add(widget);
+          if (widget.isFormElement() && opd.getWidget() == null) {
+            opd.setWidget(widget.formElement());
+          }
+        }
       }
 
       return new PropertyEvaluationResult(
           propertyDefinitions,
           referenceDefinitions,
           layoutElements);
+    }
+
+    private PropertyEvaluationResult evaluate(
+        Collection<ObjectPropertyDescriptor> propertyDescriptors) {
+      return evaluate(propertyDescriptors, true);
+    }
+
+    private PropertyEvaluationResult evaluateWithoutLayout(
+        Collection<ObjectPropertyDescriptor> propertyDescriptors) {
+      return evaluate(propertyDescriptors, false);
     }
 
     private String getInlinePropertyDefinitionTypeClass(ObjectPropertyDescriptor opd) {
@@ -457,7 +561,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
           Objects.requireNonNull(propertyDescriptor, "propertyDescriptor cannot be null!");;
 
       this.valueSetPresent = (propertyDescriptor.getValueSet() != null)
-          || (propertyDescriptor.getValueSetName() != null);
+          && (propertyDescriptor.getValueSet().getQualifiedName() != null);
       this.key = propertyDescriptor.getPropertyName();
       this.inline = PropertyKindEnum.INLINE == propertyDescriptor.getPropertyKind();
     }
@@ -504,7 +608,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
       if (valueSetPresent) {
         // TODO: Find a way to generalise this!
         final SelectionDefinition selectionDefinition = selectionDefinition(
-            propertyDescriptor.getValueSetName(),
+            propertyDescriptor.getValueSet().getQualifiedName(),
             GenericValue.NAME);
         switch (propertyDescriptor.getPropertyStructure()) {
           case REFERENCE:
@@ -543,7 +647,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     private boolean isPlainDateTimeProperty() {
       return inline
           && Arrays.asList(LocalDateTime.class.getName(), OffsetDateTime.class.getName())
-          .contains(propertyDescriptor.getPropertyQualifiedName());
+              .contains(propertyDescriptor.getPropertyQualifiedName());
     }
 
     @SuppressWarnings("rawtypes")
