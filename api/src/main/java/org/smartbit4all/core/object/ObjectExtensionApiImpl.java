@@ -111,25 +111,21 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
   }
 
   private void updateObjectDefinition(String name, PropertyEvaluationResult evaluationResult) {
-    ObjectDefinitionBuilder builder = objectDefinitionApi
-        .definition(name)
-        .builder();
-    builder.alias(ObjectDefinitionApiImpl.getAliasFromClassName(name));
-    registerObjectDefinition(name, builder, evaluationResult);
+    registerObjectDefinition(name, objectDefinitionApi.definition(name), evaluationResult);
   }
 
   private ObjectDefinition<?> registerObjectDefinition(String name,
-      ObjectDefinitionBuilder definitionBuilder,
+      ObjectDefinition<?> definition,
       PropertyEvaluationResult evaluationResult) {
-    definitionBuilder
+    definition.builder()
+        .alias(ObjectDefinitionApiImpl.getAliasFromClassName(name))
         .addAll(evaluationResult.propertyDefinitions)
         .addAllOutgoingReference(evaluationResult.referenceDefinitions)
         .commit();
-    ObjectDefinition<?> definition = objectDefinitionApi.definition(name);
+    ObjectDefinitionApiImpl.registerDefinition(objectDefinitionApi, definition);
     definition.getOutgoingReferences().values().forEach(r -> r.setSource(definition));
     // do we need to do things akin to
     // org.smartbit4all.core.object.ObjectDefinitionApiImpl.initObjectReferences()?
-    ObjectDefinitionApiImpl.registerDefinition(objectDefinitionApi, definition);
     return definition;
   }
 
@@ -426,7 +422,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             .evaluateWithoutLayout(props))
         .map(res -> {
           ObjectDefinition<?> definition = objectDefinitionApi.baseDefinition(definitionName);
-          return registerObjectDefinition(definitionName, definition.builder(), res);
+          return registerObjectDefinition(definitionName, definition, res);
         })
         .orElse(null);
   }
@@ -556,9 +552,16 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     private final boolean inline;
 
     private SmartWidgetConstructor(String idPrefix, ObjectPropertyDescriptor propertyDescriptor) {
-      this.idPrefix = Objects.requireNonNull(idPrefix, "idPrefix cannot be null!");;
-      this.propertyDescriptor =
-          Objects.requireNonNull(propertyDescriptor, "propertyDescriptor cannot be null!");;
+      Objects.requireNonNull(idPrefix, "idPrefix cannot be null!");
+      if (idPrefix.contains(StringConstant.DOT)) {
+        this.idPrefix = idPrefix.substring(idPrefix.lastIndexOf('.') + 1);
+      } else {
+        this.idPrefix = idPrefix;
+      }
+
+      this.propertyDescriptor = Objects.requireNonNull(
+          propertyDescriptor,
+          "propertyDescriptor cannot be null!");
 
       this.valueSetPresent = (propertyDescriptor.getValueSet() != null)
           && (propertyDescriptor.getValueSet().getQualifiedName() != null);
