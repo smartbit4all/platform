@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +19,13 @@ import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.api.object.bean.SnapshotDataRef;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -845,6 +847,44 @@ public class ObjectNode {
   public final ObjectNode branchUri(URI branchUri) {
     this.branchUri = branchUri;
     return this;
+  }
+
+  public final ObjectNodeAspects aspects() {
+    return new ObjectNodeAspects() {
+
+      @Override
+      public <T> void modify(String aspectName, Class<T> clazz, UnaryOperator<T> update) {
+        Map<String, ObjectAspect> currentAspects = data.getAspects();
+        T input = null;
+        ObjectDefinition<T> aspectDefinition = objectApi.definition(clazz);
+        if (currentAspects != null) {
+          ObjectAspect objectAspect = currentAspects.get(aspectName);
+          if (objectAspect != null) {
+            input = aspectDefinition.fromMap(objectAspect.getObjectAsMap());
+          }
+        }
+        T output = update.apply(input);
+        if (output != null) {
+          // We have to set this new value
+          if (currentAspects == null) {
+            currentAspects = new HashMap<>();
+            data.setAspects(currentAspects);
+          }
+          currentAspects.put(aspectName,
+              new ObjectAspect().typeQualifiedName(SampleInlineObject.class.getName())
+                  .objectAsMap(aspectDefinition
+                      .toMap(output)));
+        } else {
+          // We have to remove the given aspect.
+          if (currentAspects != null) {
+            currentAspects.remove(aspectName);
+            if (currentAspects.isEmpty()) {
+              data.setAspects(null);
+            }
+          }
+        }
+      }
+    };
   }
 
 }

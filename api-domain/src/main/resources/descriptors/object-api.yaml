@@ -187,6 +187,12 @@ components:
         objectAsMap:
           type: object
           additionalProperties: true
+        aspects:
+          type: object
+          description: |
+            The aspects are named objects attached to the given object version.
+          additionalProperties:
+            type: ObjectAspect
         references:
           type: ObjectNodeData
           additionalProperties:

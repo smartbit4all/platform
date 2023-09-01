@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -85,6 +86,11 @@ public final class StorageObject<T> {
    * call.
    */
   private Map<String, Object> objectAsMap;
+
+  /**
+   * The aspects are named objects attached to the given object version.
+   */
+  private Map<String, ObjectAspect> aspects;
 
   /**
    * The reference for the storage that is the logical schema for this object. All the related
@@ -601,6 +607,25 @@ public final class StorageObject<T> {
   public final StorageObject<T> lastModified(long lastModified) {
     this.lastModified = lastModified;
     return this;
+  }
+
+  public final Map<String, ObjectAspect> getOrCreateAspects() {
+    return getAspects(true);
+  }
+
+  public final Map<String, ObjectAspect> getAspects(boolean initiate) {
+    if (initiate && aspects == null) {
+      aspects = new HashMap<>();
+    }
+    return aspects;
+  }
+
+  public final Map<String, ObjectAspect> getAspects() {
+    return getAspects(false);
+  }
+
+  public final void setAspects(Map<String, ObjectAspect> aspects) {
+    this.aspects = aspects;
   }
 
 }

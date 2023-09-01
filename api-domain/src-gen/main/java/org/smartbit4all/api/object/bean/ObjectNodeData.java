@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -44,6 +45,7 @@ import javax.validation.Valid;
   ObjectNodeData.LAST_MODIFIED,
   ObjectNodeData.STATE,
   ObjectNodeData.OBJECT_AS_MAP,
+  ObjectNodeData.ASPECTS,
   ObjectNodeData.REFERENCES,
   ObjectNodeData.REFERENCE_LISTS,
   ObjectNodeData.REFERENCE_MAPS,
@@ -72,6 +74,9 @@ public class ObjectNodeData {
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
   private Map<String, Object> objectAsMap = new HashMap<>();
+
+  public static final String ASPECTS = "aspects";
+  private Map<String, ObjectAspect> aspects = null;
 
   public static final String REFERENCES = "references";
   private Map<String, ObjectNodeData> references = new HashMap<>();
@@ -288,6 +293,42 @@ public class ObjectNodeData {
   }
 
 
+  public ObjectNodeData aspects(Map<String, ObjectAspect> aspects) {
+    
+    this.aspects = aspects;
+    return this;
+  }
+
+  public ObjectNodeData putAspectsItem(String key, ObjectAspect aspectsItem) {
+    if (this.aspects == null) {
+      this.aspects = new HashMap<>();
+    }
+    this.aspects.put(key, aspectsItem);
+    return this;
+  }
+
+   /**
+   * The aspects are named objects attached to the given object version. 
+   * @return aspects
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The aspects are named objects attached to the given object version. ")
+  @JsonProperty(ASPECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, ObjectAspect> getAspects() {
+    return aspects;
+  }
+
+
+  @JsonProperty(ASPECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAspects(Map<String, ObjectAspect> aspects) {
+    this.aspects = aspects;
+  }
+
+
   public ObjectNodeData references(Map<String, ObjectNodeData> references) {
     
     this.references = references;
@@ -434,6 +475,7 @@ public class ObjectNodeData {
         Objects.equals(this.lastModified, objectNodeData.lastModified) &&
         Objects.equals(this.state, objectNodeData.state) &&
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
+        Objects.equals(this.aspects, objectNodeData.aspects) &&
         Objects.equals(this.references, objectNodeData.references) &&
         Objects.equals(this.referenceLists, objectNodeData.referenceLists) &&
         Objects.equals(this.referenceMaps, objectNodeData.referenceMaps) &&
@@ -442,7 +484,7 @@ public class ObjectNodeData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, lastModified, state, objectAsMap, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, lastModified, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -456,6 +498,7 @@ public class ObjectNodeData {
     sb.append("    lastModified: ").append(toIndentedString(lastModified)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
+    sb.append("    aspects: ").append(toIndentedString(aspects)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
     sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");

@@ -40,6 +40,7 @@ smartbit4all {
   		"SmartComponentLayoutDefinition": "org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition",
   		"GridView": "org.smartbit4all.api.grid.bean.GridView",
   		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
+  		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
   	]
   }
 }

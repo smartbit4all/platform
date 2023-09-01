@@ -159,6 +159,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .qualifiedName(storageObject.definition().getQualifiedName())
         .storageSchema(storageObject.getStorage().getScheme())
         .objectAsMap(storageObject.getObjectAsMap())
+        .aspects(storageObject.getAspects())
         .versionNr(version == null ? null : version.getSerialNoData())
         .lastModified(storageObject.getLastModified());
   }

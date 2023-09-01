@@ -26,11 +26,14 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -612,6 +615,37 @@ class StorageTest {
         storage.load(version1Uri, FSTestBean.class, StorageLoadOption.uriWithVersion(false));
     assertEquals(simpleUri, beanSo9.getObject().getUri());
     assertEquals(version1Uri, beanSo9.getVersionUri());
+
+  }
+
+  @Test
+  void aspectsTest() throws Exception {
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
+
+    URI uri = storage.saveAsNew(new FSTestBean("SucceedTest"));
+
+    StorageObject<?> storageObject = storage.load(uri);
+
+    ObjectDefinition<SampleInlineObject> sampleTypeDefinition =
+        objectApi.definition(SampleInlineObject.class);
+    storageObject.getOrCreateAspects().put("ACL",
+        new ObjectAspect().typeQualifiedName(SampleInlineObject.class.getName())
+            .objectAsMap(sampleTypeDefinition
+                .toMap(new SampleInlineObject().name("apple"))));
+
+    uri = storage.save(storageObject);
+
+    storageObject = storage.load(uri);
+
+    assertEquals(1, storageObject.getAspects().size());
+
+    org.assertj.core.api.Assertions.assertThat(storageObject.getAspects()).isNotNull()
+        .containsKey("ACL");
+
+    org.assertj.core.api.Assertions
+        .assertThat(storageObject.getAspects().values().stream()
+            .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap())))
+        .allMatch(s -> "apple".equals(s.getName()));
 
   }
 

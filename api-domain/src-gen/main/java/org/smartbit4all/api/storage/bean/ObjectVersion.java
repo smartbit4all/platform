@@ -24,6 +24,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -43,7 +47,8 @@ import javax.validation.Valid;
   ObjectVersion.OPERATION,
   ObjectVersion.REBASED_FROM_URI,
   ObjectVersion.COMMON_ANCESTOR_URI,
-  ObjectVersion.MERGED_WITH_URI
+  ObjectVersion.MERGED_WITH_URI,
+  ObjectVersion.ASPECTS
 })
 @JsonTypeName("ObjectVersion")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -77,6 +82,9 @@ public class ObjectVersion {
 
   public static final String MERGED_WITH_URI = "mergedWithUri";
   private URI mergedWithUri;
+
+  public static final String ASPECTS = "aspects";
+  private Map<String, ObjectAspect> aspects = null;
 
   public ObjectVersion() { 
   }
@@ -358,6 +366,42 @@ public class ObjectVersion {
   }
 
 
+  public ObjectVersion aspects(Map<String, ObjectAspect> aspects) {
+    
+    this.aspects = aspects;
+    return this;
+  }
+
+  public ObjectVersion putAspectsItem(String key, ObjectAspect aspectsItem) {
+    if (this.aspects == null) {
+      this.aspects = new HashMap<>();
+    }
+    this.aspects.put(key, aspectsItem);
+    return this;
+  }
+
+   /**
+   * The aspects are named objects attached to the given object version. 
+   * @return aspects
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The aspects are named objects attached to the given object version. ")
+  @JsonProperty(ASPECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, ObjectAspect> getAspects() {
+    return aspects;
+  }
+
+
+  @JsonProperty(ASPECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAspects(Map<String, ObjectAspect> aspects) {
+    this.aspects = aspects;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -376,12 +420,13 @@ public class ObjectVersion {
         Objects.equals(this.operation, objectVersion.operation) &&
         Objects.equals(this.rebasedFromUri, objectVersion.rebasedFromUri) &&
         Objects.equals(this.commonAncestorUri, objectVersion.commonAncestorUri) &&
-        Objects.equals(this.mergedWithUri, objectVersion.mergedWithUri);
+        Objects.equals(this.mergedWithUri, objectVersion.mergedWithUri) &&
+        Objects.equals(this.aspects, objectVersion.aspects);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation, rebasedFromUri, commonAncestorUri, mergedWithUri);
+    return Objects.hash(serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation, rebasedFromUri, commonAncestorUri, mergedWithUri, aspects);
   }
 
   @Override
@@ -398,6 +443,7 @@ public class ObjectVersion {
     sb.append("    rebasedFromUri: ").append(toIndentedString(rebasedFromUri)).append("\n");
     sb.append("    commonAncestorUri: ").append(toIndentedString(commonAncestorUri)).append("\n");
     sb.append("    mergedWithUri: ").append(toIndentedString(mergedWithUri)).append("\n");
+    sb.append("    aspects: ").append(toIndentedString(aspects)).append("\n");
     sb.append("}");
     return sb.toString();
   }

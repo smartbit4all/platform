@@ -219,6 +219,25 @@ components:
           description: |
             The reference of the object version the version is based on. In case of branching this is the URI of the source 
             object version.
+        aspects:
+          type: object
+          description: |
+            The aspects are named objects attached to the given object version.
+          additionalProperties:
+            $ref: '#/components/schemas/ObjectAspect'
+    ObjectAspect:
+      type: object
+      description: |
+        The instance of an aspect with the fully qualified name of the type. It can help to read the object of the aspect with
+        type information. 
+      required: [uri, uris]
+      properties:
+        typeQualifiedName:
+          type: string
+          description: The fully qualified name of the given object saved into this aspect.
+        objectAsMap:
+          type: object
+          additionalProperties: true
     ObjectList:
       type: object
       description: |

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
@@ -397,7 +398,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     newVersion.transactionId(object.getTransactionId().toString())
         .createdAt(OffsetDateTime.now());
     newVersion.setCreatedBy(versionCreatedBy.get());
-
+    Map<String, ObjectAspect> aspects = object.getAspects();
+    if (aspects != null) {
+      newVersion.setAspects(aspects);
+    }
     File objectVersionFile = null;
     if (object.getOperation() == StorageObjectOperation.MODIFY_WITHOUT_DATA) {
       // Set the new version data to the current version data there will be no new data version.
@@ -623,6 +627,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       storageObject =
           instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
               storageObjectData, objectVersion);
+      storageObject.setAspects(objectVersion.getAspects());
       // }
 
     } else {
