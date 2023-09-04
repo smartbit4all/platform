@@ -57,7 +57,7 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
   @Override
   public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, Object> uris) {
     Object uri = uris.get(value);
-    refererObj.getOrCreateObjectAsMap().put(definition.getSourcePropertyPath(), uri);
+    refererObj.getObjectAsMap().put(definition.getSourcePropertyPath(), uri);
   }
 
 }

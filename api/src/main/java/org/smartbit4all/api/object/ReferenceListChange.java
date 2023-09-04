@@ -74,7 +74,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
   @Override
   public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, Object> uris) {
     List<Object> list = uris.values().stream().collect(Collectors.toList());
-    refererObj.getOrCreateObjectAsMap().put(definition.getSourcePropertyPath(), list);
+    refererObj.getObjectAsMap().put(definition.getSourcePropertyPath(), list);
   }
 
 }

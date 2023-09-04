@@ -1,12 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +26,13 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -663,16 +663,19 @@ class ApplyChangeTest {
     SampleCategory rootContainer = new SampleCategory().name("root");
 
     ApplyChangeRequest applyChangeRequest = applyChangeApi.request(null);
-    ObjectChangeRequest ocrContainer = applyChangeRequest.createAsNew(MY_SCHEME, rootContainer);
+    ObjectChangeRequest ocrContainer =
+        applyChangeRequest.createAsNew(objectApi.create(MY_SCHEME, rootContainer));
     ReferenceListChange rlcItems = ocrContainer.referenceList(referenceToItems);
 
     int itemCounter = 5;
     for (int i = 0; i < itemCounter; i++) {
       SampleContainerItem item = new SampleContainerItem().name("item " + i);
-      ObjectChangeRequest ocrItem = applyChangeRequest.createAsNew(MY_SCHEME, item);
+      ObjectChangeRequest ocrItem =
+          applyChangeRequest.createAsNew(objectApi.create(MY_SCHEME, item));
 
       ObjectChangeRequest ocrDatasheet =
-          applyChangeRequest.createAsNew(MY_SCHEME, new SampleDataSheet().name("datasheet " + i));
+          applyChangeRequest.createAsNew(
+              objectApi.create(MY_SCHEME, new SampleDataSheet().name("datasheet " + i)));
       ReferenceValueChange referenceValue =
           ocrItem
               .referenceValue(SampleContainerItem.DATASHEET)
@@ -686,7 +689,8 @@ class ApplyChangeTest {
     int subCategoryCounter = 3;
     for (int i = 0; i < subCategoryCounter; i++) {
       SampleCategory subCategory = new SampleCategory().name("sub category " + i);
-      ObjectChangeRequest ocrSubCategory = applyChangeRequest.createAsNew(MY_SCHEME, subCategory);
+      ObjectChangeRequest ocrSubCategory =
+          applyChangeRequest.createAsNew(objectApi.create(MY_SCHEME, subCategory));
       rlcSubCategories.add(ocrSubCategory);
     }
 

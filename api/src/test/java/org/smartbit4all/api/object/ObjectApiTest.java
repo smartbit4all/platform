@@ -1,7 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,23 +14,29 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.org.bean.ACL;
+import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.annotation.DirtiesContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
 
   private static final String ADDED_WITHTYPECLASSNAME = "ADDED_WITHTYPECLASSNAME";
   private static final String ADDED_WITHTYPECLASS = "ADDED_WITHTYPECLASS";
+  private static final String SCHEMA_ASPECTS = "aspectTest";
 
   @Autowired
   private ObjectApi objectApi;
@@ -140,7 +144,8 @@ class ObjectApiTest {
                 SampleCategory.class.getPackage().getName() + StringConstant.DOT + "Extension");
     org.assertj.core.api.Assertions.assertThat(definition.getDefinitionData().getProperties())
         .hasSize(1)
-        .allSatisfy(prop -> org.assertj.core.api.Assertions.assertThat(prop.getName()).isEqualTo("uri"));
+        .allSatisfy(
+            prop -> org.assertj.core.api.Assertions.assertThat(prop.getName()).isEqualTo("uri"));
     definition.builder().addProperty(ADDED_WITHTYPECLASS, String.class)
         .addProperty(ADDED_WITHTYPECLASSNAME, Long.class.getName()).commit();
 
@@ -257,6 +262,28 @@ class ObjectApiTest {
       List<SampleCategoryType> listFromMap =
           (List<SampleCategoryType>) mapHelper.getMap().get("listWithMap");
       org.assertj.core.api.Assertions.assertThat(require).containsSequence(listFromMap);
+    }
+
+  }
+
+  @Test
+  void testAspects() {
+    URI rootUri = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("Root"));
+    {
+      ObjectNode rootNode = objectApi.load(rootUri);
+      org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNull();
+      rootNode.aspects().modify("ACL", ACL.class,
+          acl -> new ACL().addEntriesItem(new ACLEntry().subject("everybody")));
+      objectApi.save(rootNode);
+    }
+    {
+      // Now read the ACL again.
+      ObjectNode rootNode = objectApi.loadLatest(rootUri);
+      org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNotNull();
+      ACL aclConfig = rootNode.aspects().get("ACL", ACL.class);
+      org.assertj.core.api.Assertions
+          .assertThat(aclConfig.getEntries().stream().map(e -> e.getSubject()))
+          .contains("everybody");
     }
 
   }

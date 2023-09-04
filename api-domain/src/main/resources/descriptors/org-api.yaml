@@ -250,4 +250,31 @@ components:
         usersOfGroupCollection:
           type: array
           items:
-            $ref: '#/components/schemas/UsersOfGroup'  
+            $ref: '#/components/schemas/UsersOfGroup'
+
+    ACL:
+      type: object
+      description: |
+        The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects.
+        The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce
+        the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well.
+      required: [entries]
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLEntry'
+    ACLEntry:
+      type: object
+      description: |
+        The ACL entry refers to one subject and defines the operations available for the given subject.
+      required: [operations]
+      properties:
+        subject:
+          type: string
+          description: The unique identifier of the subject defined in the given application.
+        operations:
+          type: array
+          description: The unique identifiers of the operations defined in the given application.
+          items:
+            type: string

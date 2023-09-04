@@ -82,12 +82,12 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
       switch (objectChangeRequest.getOperation()) {
         case NEW:
         case UPDATE:
-          result = objectChangeRequest.getOrCreateObjectAsMap();
+          result = objectChangeRequest.getObjectAsMap();
           break;
         case DELETE:
           result = null;
         default:
-          result = objectChangeRequest.getOrCreateObjectAsMap();
+          result = objectChangeRequest.getObjectAsMap();
           break;
       }
     } else {
@@ -96,7 +96,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
           // The new object is created as new so we have to save the branch as the initiating branch
           // for the object. This object and all of its versions belong to this branch.
           result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
-              objectChangeRequest.getStorageScheme(), objectChangeRequest.getOrCreateObjectAsMap());
+              objectChangeRequest.getStorageScheme(), objectChangeRequest.getObjectNode());
           registerNewObjectToBranch(branchEntry, (URI) result);
           break;
 
@@ -121,19 +121,19 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
             if (alreadyExistingBranchedObject == null) {
               result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
                   objectChangeRequest.getStorageScheme(),
-                  objectChangeRequest.getOrCreateObjectAsMap());
+                  objectChangeRequest.getObjectNode());
               registerBranchedObjectToBranch(branchEntry, uriWithoutVersion, (URI) result);
             } else {
               // We modify the existing branched object whatever URI we have in the original
               // request.
               result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
                   alreadyExistingBranchedObject.getBranchedObjectLatestUri(),
-                  objectChangeRequest.getOrCreateObjectAsMap());
+                  objectChangeRequest.getObjectNode());
             }
           } else {
             result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
                 objectChangeRequest.getUri(),
-                objectChangeRequest.getOrCreateObjectAsMap());
+                objectChangeRequest.getObjectNode());
           }
           break;
 

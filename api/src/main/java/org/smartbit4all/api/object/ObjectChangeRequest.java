@@ -87,15 +87,9 @@ public class ObjectChangeRequest {
 
   /**
    * The object values of the request. The existing properties of the map are going to set during
-   * the save and the rest of the property value will remain the same. If the {@link #object} is set
-   * then we don't use this map!
+   * the save and the rest of the property value will remain the same.
    */
   private Map<String, Object> objectAsMap;
-
-  /**
-   * If we have the object the {@link #objectAsMap} is not used!
-   */
-  private Object object;
 
   /**
    * The reference changes for the object.
@@ -136,17 +130,6 @@ public class ObjectChangeRequest {
     return objectAsMap;
   }
 
-  public final Map<String, Object> getOrCreateObjectAsMap() {
-    if (objectAsMap == null) {
-      if (definition != null && object != null) {
-        objectAsMap = definition.toMap(object);
-      } else {
-        objectAsMap = new HashMap<>();
-      }
-    }
-    return objectAsMap;
-  }
-
   public final void setObjectAsMap(Map<String, Object> objectAsMap) {
     this.objectAsMap = objectAsMap;
   }
@@ -156,17 +139,8 @@ public class ObjectChangeRequest {
     return this;
   }
 
-  public final Object getObject() {
-    return object;
-  }
-
-  public final void setObject(Object object) {
-    this.object = object;
-  }
-
-  public final ObjectChangeRequest object(Object object) {
-    setObject(object);
-    return this;
+  public final ObjectNode getObjectNode() {
+    return objectNodeRef.get();
   }
 
   public final ObjectDefinition<?> getDefinition() {

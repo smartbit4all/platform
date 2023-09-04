@@ -1,9 +1,9 @@
 package org.smartbit4all.api.object;
 
 import java.net.URI;
-import java.util.Map;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * The modification operations and services for the domain objects.
@@ -13,9 +13,9 @@ import org.smartbit4all.core.object.ObjectDefinition;
 public interface ModifyApi extends PrimaryApi<ModifyContributionApi> {
 
   URI createNewObject(ObjectDefinition<?> objectDefinition, String storageScheme,
-      Map<String, Object> objMap);
+      ObjectNode objectNode);
 
   URI updateObject(ObjectDefinition<?> objectDefinition, URI objVersionUri,
-      Map<String, Object> objMap);
+      ObjectNode objectNode);
 
 }

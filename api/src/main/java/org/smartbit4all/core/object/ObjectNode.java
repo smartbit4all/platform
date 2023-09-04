@@ -849,42 +849,69 @@ public class ObjectNode {
     return this;
   }
 
-  public final ObjectNodeAspects aspects() {
-    return new ObjectNodeAspects() {
+  /**
+   * The aspects api instance for the node.
+   */
+  private final ObjectNodeAspects aspects = new ObjectNodeAspectsImpl();
 
-      @Override
-      public <T> void modify(String aspectName, Class<T> clazz, UnaryOperator<T> update) {
-        Map<String, ObjectAspect> currentAspects = data.getAspects();
-        T input = null;
-        ObjectDefinition<T> aspectDefinition = objectApi.definition(clazz);
-        if (currentAspects != null) {
-          ObjectAspect objectAspect = currentAspects.get(aspectName);
-          if (objectAspect != null) {
-            input = aspectDefinition.fromMap(objectAspect.getObjectAsMap());
-          }
+  /**
+   * @return The {@link ObjectNodeAspects} interface to manage the aspects of the
+   *         {@link ObjectNode}.
+   */
+  public final ObjectNodeAspects aspects() {
+    return aspects;
+  }
+
+  private final class ObjectNodeAspectsImpl implements ObjectNodeAspects {
+
+    @Override
+    public final <T> void modify(String aspectName, Class<T> clazz, UnaryOperator<T> update) {
+      ObjectDefinition<T> aspectDefinition = objectApi.definition(clazz);
+      T input = getAspectAsType(aspectName, aspectDefinition);
+      T output = update.apply(input);
+      if (output != null) {
+        // We have to set this new value
+        if (data.getAspects() == null) {
+          data.setAspects(new HashMap<>());
         }
-        T output = update.apply(input);
-        if (output != null) {
-          // We have to set this new value
-          if (currentAspects == null) {
-            currentAspects = new HashMap<>();
-            data.setAspects(currentAspects);
+        data.getAspects().put(aspectName,
+            new ObjectAspect().typeQualifiedName(SampleInlineObject.class.getName())
+                .objectAsMap(aspectDefinition
+                    .toMap(output)));
+        ensureSave();
+      } else {
+        // We have to remove the given aspect.
+        if (data.getAspects() != null) {
+          data.getAspects().remove(aspectName);
+          if (data.getAspects().isEmpty()) {
+            data.setAspects(null);
           }
-          currentAspects.put(aspectName,
-              new ObjectAspect().typeQualifiedName(SampleInlineObject.class.getName())
-                  .objectAsMap(aspectDefinition
-                      .toMap(output)));
-        } else {
-          // We have to remove the given aspect.
-          if (currentAspects != null) {
-            currentAspects.remove(aspectName);
-            if (currentAspects.isEmpty()) {
-              data.setAspects(null);
-            }
-          }
+          ensureSave();
         }
       }
-    };
+    }
+
+    private final <T> T getAspectAsType(String aspectName, ObjectDefinition<T> aspectDefinition) {
+      T input = null;
+      if (data.getAspects() != null) {
+        ObjectAspect objectAspect = data.getAspects().get(aspectName);
+        if (objectAspect != null) {
+          input = aspectDefinition.fromMap(objectAspect.getObjectAsMap());
+        }
+      }
+      return input;
+    }
+
+    @Override
+    public final <T> T get(String aspectName, Class<T> clazz) {
+      return getAspectAsType(aspectName, objectApi.definition(clazz));
+    }
+
+    @Override
+    public Map<String, ObjectAspect> get() {
+      return data.getAspects();
+    }
+
   }
 
 }
