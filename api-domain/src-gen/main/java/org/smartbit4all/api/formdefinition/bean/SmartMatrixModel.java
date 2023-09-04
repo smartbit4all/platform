@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -43,10 +44,10 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class SmartMatrixModel {
   public static final String ROWS = "rows";
-  private List<String> rows = null;
+  private List<Value> rows = null;
 
   public static final String COLUMNS = "columns";
-  private List<String> columns = null;
+  private List<Value> columns = null;
 
   public static final String DATA = "data";
   private Map<String, Object> data = null;
@@ -54,13 +55,13 @@ public class SmartMatrixModel {
   public SmartMatrixModel() { 
   }
 
-  public SmartMatrixModel rows(List<String> rows) {
+  public SmartMatrixModel rows(List<Value> rows) {
     
     this.rows = rows;
     return this;
   }
 
-  public SmartMatrixModel addRowsItem(String rowsItem) {
+  public SmartMatrixModel addRowsItem(Value rowsItem) {
     if (this.rows == null) {
       this.rows = new ArrayList<>();
     }
@@ -73,29 +74,30 @@ public class SmartMatrixModel {
    * @return rows
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "The keys")
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getRows() {
+  public List<Value> getRows() {
     return rows;
   }
 
 
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRows(List<String> rows) {
+  public void setRows(List<Value> rows) {
     this.rows = rows;
   }
 
 
-  public SmartMatrixModel columns(List<String> columns) {
+  public SmartMatrixModel columns(List<Value> columns) {
     
     this.columns = columns;
     return this;
   }
 
-  public SmartMatrixModel addColumnsItem(String columnsItem) {
+  public SmartMatrixModel addColumnsItem(Value columnsItem) {
     if (this.columns == null) {
       this.columns = new ArrayList<>();
     }
@@ -108,18 +110,19 @@ public class SmartMatrixModel {
    * @return columns
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "The possible values")
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getColumns() {
+  public List<Value> getColumns() {
     return columns;
   }
 
 
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setColumns(List<String> columns) {
+  public void setColumns(List<Value> columns) {
     this.columns = columns;
   }
 

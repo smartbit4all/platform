@@ -162,12 +162,12 @@ components:
         rows:
           type: array
           items:
-            type: string
+            type: Value
           description: The keys
         columns:
           type: array
           items:
-            type: string
+            type: Value
           description: The possible values
         data:
           type: object
