@@ -640,6 +640,8 @@ components:
         The values can be used to identify the situation when the given constraint must be applied.
       required: [name, layouts, properties]
       properties:
+        name:
+          type: string
         when:
           enum: [event, condition]
         condition:

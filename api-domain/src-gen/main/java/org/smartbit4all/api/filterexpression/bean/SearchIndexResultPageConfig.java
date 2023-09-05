@@ -59,7 +59,7 @@ public class SearchIndexResultPageConfig {
   private String searchIndexName;
 
   public static final String GRID_VIEW_OPTIONS = "gridViewOptions";
-  private List<GridView> gridViewOptions = null;
+  private List<GridView> gridViewOptions = new ArrayList<>();
 
   public SearchIndexResultPageConfig() { 
   }
@@ -181,9 +181,6 @@ public class SearchIndexResultPageConfig {
   }
 
   public SearchIndexResultPageConfig addGridViewOptionsItem(GridView gridViewOptionsItem) {
-    if (this.gridViewOptions == null) {
-      this.gridViewOptions = new ArrayList<>();
-    }
     this.gridViewOptions.add(gridViewOptionsItem);
     return this;
   }
@@ -192,11 +189,12 @@ public class SearchIndexResultPageConfig {
    * The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. 
    * @return gridViewOptions
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. ")
+  @ApiModelProperty(required = true, value = "The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. ")
   @JsonProperty(GRID_VIEW_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GridView> getGridViewOptions() {
     return gridViewOptions;
@@ -204,7 +202,7 @@ public class SearchIndexResultPageConfig {
 
 
   @JsonProperty(GRID_VIEW_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setGridViewOptions(List<GridView> gridViewOptions) {
     this.gridViewOptions = gridViewOptions;
   }

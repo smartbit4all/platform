@@ -2,9 +2,11 @@ package org.smartbit4all.bff.api.search;
 
 import java.util.UUID;
 import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 
 /**
@@ -41,6 +43,17 @@ public interface SearchIndexResultPageApi extends PageApi<SearchIndexResultPageC
    * callback view will be called with the selected rows.
    */
   static final String PARAM_SELECTION_CALLBACK = "SELECTION_CALLBACK";
+
+  /**
+   * The grid page rendering callback parameter.
+   * 
+   * <p>
+   * An {@link InvocationRequest} is expected to be passed under this parameter key. The request
+   * must accept a {@link GridPage} as its first parameter, and must return a non-null
+   * {@link GridPage}. The primary use of this invocation request is to set {@link UiAction}s for
+   * each of row of the View's grid.
+   */
+  static final String PARAM_GRID_PAGE_RENDER_CALLBACK = "GRID_PAGE_RENDER_CALLBACK";
 
   /**
    * The identifier of the grid that contains the result of the search index query.

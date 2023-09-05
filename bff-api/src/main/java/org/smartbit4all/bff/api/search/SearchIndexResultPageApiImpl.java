@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.search;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,6 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultPageConfig>
     implements SearchIndexResultPageApi {
@@ -45,20 +45,22 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
       view = viewApi.getView(viewUUID);
       ObjectMapHelper parameters = parameters(view);
       if (pageConfig == null) {
-        pageConfig =
-            objectApi.loadLatest(view.getObjectUri()).getObject(SearchIndexResultPageConfig.class);
+        pageConfig = objectApi
+            .loadLatest(view.getObjectUri())
+            .getObject(SearchIndexResultPageConfig.class);
       }
       searchIndex = collectionsApi.searchIndex(pageConfig.getSearchIndexSchema(),
           pageConfig.getSearchIndexName());
-      uris =
-          parameters.getAsList(PARAM_URI_LIST, URI.class);
+      uris = parameters.getAsList(PARAM_URI_LIST, URI.class);
       StoredCollectionDescriptor listDescriptor =
           parameters.get(PARAM_STORED_LIST, StoredCollectionDescriptor.class);
       if (listDescriptor != null) {
         list = collectionsApi.list(listDescriptor.getSchema(), listDescriptor.getName());
       }
-      selectionCallback =
-          parameters.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
+      selectionCallback = parameters.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
+      gridPageRenderCallback = parameters.get(
+          PARAM_GRID_PAGE_RENDER_CALLBACK,
+          InvocationRequest.class);
     }
 
     protected UUID viewUUID;
@@ -74,6 +76,8 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
     protected StoredList list;
 
     protected InvocationRequest selectionCallback;
+
+    protected InvocationRequest gridPageRenderCallback;
 
   }
 
@@ -98,6 +102,12 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
                 .map(Property::getName).collect(toList()),
             ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
     gridModelApi.initGridInView(ctx.viewUUID, WIDGET_RESULT_GRID, gridModel);
+    if (ctx.gridPageRenderCallback != null) {
+      gridModelApi.addGridPageCallback(
+          ctx.viewUUID,
+          WIDGET_RESULT_GRID,
+          ctx.gridPageRenderCallback);
+    }
 
     refreshGrid(ctx);
 

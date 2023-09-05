@@ -278,7 +278,7 @@ components:
       description: |
         This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter
         expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object.
-      required: []
+      required: [gridViewOptions, rowActions]
       properties:
         uri:
           type: string
