@@ -271,10 +271,72 @@ components:
       required: [operations]
       properties:
         subject:
-          type: string
-          description: The unique identifier of the subject defined in the given application.
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
         operations:
           type: array
           description: The unique identifiers of the operations defined in the given application.
           items:
             type: string
+    Subject:
+      type: object
+      description: |
+        The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a
+        inline object, part of the object that describes the given situation.
+      required: [type, ref, cond]
+      properties:
+        type:
+          type: string
+          description: |
+            The unique identifier of the type in the SubjectModel. The helps to evaluate if a given user is part of this subject. The subject model is
+            saved here it is managed by the code that uses this Subject. Like the ACL knows that the ACLSubjectModel is used to assign the access control
+            list for the given objects.
+        ref:
+          type: string
+          format: uri
+          description: |
+            The reference to the object referred by this subject. It can be the latest uri of a user, a group or whatever subject we have.
+        cond:
+          enum: [IN, NOTIN]
+          default: IN
+          description: |
+            If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse
+            situation then the condition is NOTIN.
+    SubjectModel:
+      type: object
+      description: |
+        The subject model consists of SubjectDescriptors that defines the available subject types. We can select from the available subjects
+        to compile a Subject instance object that defines a set of user at the end.
+      required: [uri, descriptors]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+          description: The name of the subject model that identifies it as a global identifier in an application tenant.
+        descriptors:
+          type: object
+          description: The subject descriptors identified by their unique name.
+          additionalProperties:
+            $ref: '#/components/schemas/SubjectTypeDescriptor'
+    SubjectTypeDescriptor:
+      type: object
+      description: |
+        The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex
+        to be able to select the given object. This type defines how get the unique identifier.
+      required: [uri, name, selectionConfig]
+      properties:
+        name:
+          type: string
+          description: The name of the subject type.
+        selectionConfig:
+          type: SearchIndexResultPageConfig
+          description: |
+            The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the
+            columns of the grid and the filter model.
+        apiName:
+          type: string
+          description: |
+            The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add 

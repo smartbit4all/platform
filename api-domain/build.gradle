@@ -41,6 +41,7 @@ smartbit4all {
   		"GridView": "org.smartbit4all.api.grid.bean.GridView",
   		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
   		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
+  		"SearchIndexResultPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig",
   	]
   }
 }

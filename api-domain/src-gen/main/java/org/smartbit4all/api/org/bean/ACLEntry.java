@@ -22,8 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -35,13 +37,17 @@ import javax.validation.Valid;
 @ApiModel(description = "The ACL entry refers to one subject and defines the operations available for the given subject. ")
 @JsonPropertyOrder({
   ACLEntry.SUBJECT,
+  ACLEntry.SUBJECT_TYPE,
   ACLEntry.OPERATIONS
 })
 @JsonTypeName("ACLEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ACLEntry {
   public static final String SUBJECT = "subject";
-  private String subject;
+  private Subject subject;
+
+  public static final String SUBJECT_TYPE = "subjectType";
+  private URI subjectType;
 
   public static final String OPERATIONS = "operations";
   private List<String> operations = new ArrayList<>();
@@ -49,30 +55,59 @@ public class ACLEntry {
   public ACLEntry() { 
   }
 
-  public ACLEntry subject(String subject) {
+  public ACLEntry subject(Subject subject) {
     
     this.subject = subject;
     return this;
   }
 
    /**
-   * The unique identifier of the subject defined in the given application.
+   * Get subject
    * @return subject
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the subject defined in the given application.")
+  @Valid
+  @ApiModelProperty(value = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getSubject() {
+  public Subject getSubject() {
     return subject;
   }
 
 
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubject(String subject) {
+  public void setSubject(Subject subject) {
     this.subject = subject;
+  }
+
+
+  public ACLEntry subjectType(URI subjectType) {
+    
+    this.subjectType = subjectType;
+    return this;
+  }
+
+   /**
+   * The reference to the subject type referred by the . 
+   * @return subjectType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The reference to the subject type referred by the . ")
+  @JsonProperty(SUBJECT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getSubjectType() {
+    return subjectType;
+  }
+
+
+  @JsonProperty(SUBJECT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubjectType(URI subjectType) {
+    this.subjectType = subjectType;
   }
 
 
@@ -119,12 +154,13 @@ public class ACLEntry {
     }
     ACLEntry acLEntry = (ACLEntry) o;
     return Objects.equals(this.subject, acLEntry.subject) &&
+        Objects.equals(this.subjectType, acLEntry.subjectType) &&
         Objects.equals(this.operations, acLEntry.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subject, operations);
+    return Objects.hash(subject, subjectType, operations);
   }
 
   @Override
@@ -132,6 +168,7 @@ public class ACLEntry {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLEntry {\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
+    sb.append("    subjectType: ").append(toIndentedString(subjectType)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();

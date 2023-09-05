@@ -14,8 +14,11 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
+import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.core.object.ObjectApi;
@@ -269,21 +272,24 @@ class ObjectApiTest {
   @Test
   void testAspects() {
     URI rootUri = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("Root"));
+    URI everybodyUri = objectApi.getLatestUri(
+        objectApi.saveAsNew(OrgApiStorageImpl.ORG_SCHEME, new Group().name("everybody")));
     {
       ObjectNode rootNode = objectApi.load(rootUri);
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNull();
       rootNode.aspects().modify("ACL", ACL.class,
-          acl -> new ACL().addEntriesItem(new ACLEntry().subject("everybody")));
+          acl -> new ACL().addEntriesItem(new ACLEntry().subject(new Subject().ref(everybodyUri))
+              .addOperationsItem("read").addOperationsItem("write")));
       objectApi.save(rootNode);
     }
     {
       // Now read the ACL again.
       ObjectNode rootNode = objectApi.loadLatest(rootUri);
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNotNull();
-      ACL aclConfig = rootNode.aspects().get("ACL", ACL.class);
+      ACL acl = rootNode.aspects().get("ACL", ACL.class);
       org.assertj.core.api.Assertions
-          .assertThat(aclConfig.getEntries().stream().map(e -> e.getSubject()))
-          .contains("everybody");
+          .assertThat(acl.getEntries().stream().map(e -> e.getSubject().getRef()))
+          .contains(everybodyUri);
     }
 
   }
