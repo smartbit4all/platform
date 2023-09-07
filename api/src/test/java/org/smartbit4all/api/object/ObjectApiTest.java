@@ -12,13 +12,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
+import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.core.object.ObjectApi;
@@ -37,15 +42,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
 
+  public static final String USER_CATEGORY = "USER_CATEGORY";
+  private static final String PASSWDCODE =
+      "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
+  private static final String PASSWD =
+      "asd";
+
   private static final String ADDED_WITHTYPECLASSNAME = "ADDED_WITHTYPECLASSNAME";
   private static final String ADDED_WITHTYPECLASS = "ADDED_WITHTYPECLASS";
-  private static final String SCHEMA_ASPECTS = "aspectTest";
+  public static final String SCHEMA_ASPECTS = "aspectTest";
 
   @Autowired
   private ObjectApi objectApi;
 
   @Autowired
+  private CollectionApi collectionApi;
+
+  @Autowired
+  private OrgApi orgApi;
+
+  @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
+
+  @Autowired
+  private SubjectManagementApi subjectManagementApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -292,6 +312,45 @@ class ObjectApiTest {
           .contains(everybodyUri);
     }
 
+  }
+
+  @Test
+  void testSubjects() {
+
+    // Contructs a sample category hierarchy and the users included by the category defined by the
+    // sub categories and theircontainer object.
+    ObjectNode rootNode = objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("Root"));
+
+    List<URI> admins = new ArrayList<>();
+    List<URI> normals = new ArrayList<>();
+
+    URI admin = orgApi.saveGroup(new Group().builtIn(true).name("admin"));
+    URI normal = orgApi.saveGroup(new Group().builtIn(true).name("normal"));
+
+    URI rootAdmin = createUser("root admin", "root admin", admin);
+
+    URI rootUri = objectApi.save(rootNode);
+
+    StoredMap map = collectionApi.map(SCHEMA_ASPECTS, USER_CATEGORY);
+    map.put(objectApi.getLatestUri(rootAdmin).toString(), rootUri);
+
+    List<Subject> subjectsOfUser =
+        subjectManagementApi.getSubjectsOfUser(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL, rootAdmin);
+
+    org.assertj.core.api.Assertions.assertThat(subjectsOfUser.stream().map(s -> s.getRef()))
+        .containsExactlyInAnyOrder(admin, rootAdmin, rootUri);
+
+  }
+
+  private URI createUser(String username, String fullname, URI... group) {
+    URI uri = orgApi.saveUser(new User().username(username)
+        .password(PASSWDCODE)
+        .name(fullname));
+    Arrays.asList(group).stream()
+        .forEach(g -> orgApi.addUserToGroup(
+            uri,
+            g));
+    return uri;
   }
 
 }

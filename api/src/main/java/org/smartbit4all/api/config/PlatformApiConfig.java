@@ -47,6 +47,11 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.org.SubjectContributionApi;
+import org.smartbit4all.api.org.SubjectContributionByGroup;
+import org.smartbit4all.api.org.SubjectContributionByUser;
+import org.smartbit4all.api.org.SubjectManagementApi;
+import org.smartbit4all.api.org.SubjectManagementApiImpl;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -263,6 +268,21 @@ public class PlatformApiConfig {
   @Bean
   public ObjectDefinitionProvidedApi objectDefinitionProvidedApi() {
     return new ObjectDefinitionProvidedApiImpl();
+  }
+
+  @Bean
+  public SubjectManagementApi subjectManagementApi() {
+    return new SubjectManagementApiImpl();
+  }
+
+  @Bean
+  public SubjectContributionApi SubjectContributionByGroup() {
+    return new SubjectContributionByGroup();
+  }
+
+  @Bean
+  public SubjectContributionApi SubjectContributionByUser() {
+    return new SubjectContributionByUser();
   }
 
   @Bean
