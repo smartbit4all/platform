@@ -279,6 +279,20 @@ components:
           description: The unique identifiers of the operations defined in the given application.
           items:
             type: string
+    SubjectList:
+      type: object
+      description: |
+        A list of subjects belongs to a given subject model.
+      required: [model, items]
+      properties:
+        model:
+          type: string
+          description: |
+            The name of the subject model.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
     Subject:
       type: object
       description: |

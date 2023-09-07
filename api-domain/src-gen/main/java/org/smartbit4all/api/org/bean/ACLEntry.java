@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Subject;
@@ -37,7 +36,6 @@ import javax.validation.Valid;
 @ApiModel(description = "The ACL entry refers to one subject and defines the operations available for the given subject. ")
 @JsonPropertyOrder({
   ACLEntry.SUBJECT,
-  ACLEntry.SUBJECT_TYPE,
   ACLEntry.OPERATIONS
 })
 @JsonTypeName("ACLEntry")
@@ -45,9 +43,6 @@ import javax.validation.Valid;
 public class ACLEntry {
   public static final String SUBJECT = "subject";
   private Subject subject;
-
-  public static final String SUBJECT_TYPE = "subjectType";
-  private URI subjectType;
 
   public static final String OPERATIONS = "operations";
   private List<String> operations = new ArrayList<>();
@@ -80,34 +75,6 @@ public class ACLEntry {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubject(Subject subject) {
     this.subject = subject;
-  }
-
-
-  public ACLEntry subjectType(URI subjectType) {
-    
-    this.subjectType = subjectType;
-    return this;
-  }
-
-   /**
-   * The reference to the subject type referred by the . 
-   * @return subjectType
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The reference to the subject type referred by the . ")
-  @JsonProperty(SUBJECT_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getSubjectType() {
-    return subjectType;
-  }
-
-
-  @JsonProperty(SUBJECT_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubjectType(URI subjectType) {
-    this.subjectType = subjectType;
   }
 
 
@@ -154,13 +121,12 @@ public class ACLEntry {
     }
     ACLEntry acLEntry = (ACLEntry) o;
     return Objects.equals(this.subject, acLEntry.subject) &&
-        Objects.equals(this.subjectType, acLEntry.subjectType) &&
         Objects.equals(this.operations, acLEntry.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subject, subjectType, operations);
+    return Objects.hash(subject, operations);
   }
 
   @Override
@@ -168,7 +134,6 @@ public class ACLEntry {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLEntry {\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
-    sb.append("    subjectType: ").append(toIndentedString(subjectType)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -1,13 +1,18 @@
 package org.smartbit4all.api.org;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectList;
 import org.smartbit4all.api.org.bean.SubjectModel;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
@@ -33,6 +38,9 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
 
   @Autowired
   CollectionApi collectionApi;
+
+  @Autowired(required = false)
+  SessionApi sessionApi;
 
   /**
    * A quick solution to ensure that we are saving the options only once.
@@ -75,6 +83,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
 
   @Override
   public SubjectModel getModel(String name) {
+    synchronizeModels();
     StoredMap map = collectionApi.map(SCHEMA, MAP_SUBJECT_MODELS);
     URI modelUri = map.uris().get(name);
     if (modelUri == null) {
@@ -90,6 +99,26 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
         .flatMap(
             e -> getContributionApi(e.getValue().getApiName()).getUserSubjects(userUri).stream())
         .collect(toList());
+  }
+
+  @Override
+  public List<Subject> getMySubjects(String modelName) {
+    if (sessionApi != null && !Strings.isEmpty(modelName)) {
+      URI sessionUri = sessionApi.getSessionUri();
+      URI userUri = sessionApi.getUserUri();
+      if (sessionUri != null && userUri != null) {
+        StoredReference<SubjectList> subjectListRef =
+            collectionApi.reference(sessionUri, SCHEMA, modelName, SubjectList.class);
+        if (!subjectListRef.exists()) {
+          List<Subject> subjectsOfUser = getSubjectsOfUser(modelName, userUri);
+          subjectListRef.set(new SubjectList().items(subjectsOfUser));
+          return subjectsOfUser;
+        } else {
+          return subjectListRef.get().getItems();
+        }
+      }
+    }
+    return Collections.emptyList();
   }
 
 }

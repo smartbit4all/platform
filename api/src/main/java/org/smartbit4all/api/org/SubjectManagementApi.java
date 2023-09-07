@@ -29,9 +29,19 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    * The get subjects of user computes the list of subjects the given user belongs to. It uses the
    * contribution api defined in the given {@link SubjectTypeDescriptor}s.
    * 
+   * @param modelName The name of the subject model.
    * @param userUri The uri of the user.
    * @return The list of subjects the user belongs to.
    */
   List<Subject> getSubjectsOfUser(String modelName, URI userUri);
+
+  /**
+   * The get subjects of current user in the session computes the list of subjects the given user
+   * belongs to. It uses the contribution api defined in the given {@link SubjectTypeDescriptor}s.
+   * 
+   * @param modelName The name of the subject model.
+   * @return The list of subjects the user belongs to.
+   */
+  List<Subject> getMySubjects(String modelName);
 
 }

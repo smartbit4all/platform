@@ -1,8 +1,12 @@
 package org.smartbit4all.sec.config;
 
+import java.util.List;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
+import org.smartbit4all.api.org.SecurityOption;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.sec.jwt.JwtUtil;
 import org.smartbit4all.sec.localauth.DefaultLocalAuthenticationConfig;
 import org.smartbit4all.sec.localauth.SessionLocalAuthenticationProvider;
@@ -26,9 +30,10 @@ public class SecurityLocalTestConfig extends DefaultLocalAuthenticationConfig {
   }
 
   @Bean
-  public OrgApiStorageImpl orgApi() {
-    return new OrgApiStorageImpl();
+  OrgApi orgApi(StorageApi storageApi, List<SecurityOption> securityOptions) throws Exception {
+    return new OrgApiStorageImpl(storageApi, securityOptions);
   }
+
 
   @Bean
   public SessionManagementApi sessionManagementApi() {
