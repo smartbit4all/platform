@@ -650,7 +650,6 @@ components:
             The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object.
         contexts:
           $ref: '#/components/schemas/ObjectPropertyResolverContext'
-          description: ''
         predicates:
           type: array
           items:
@@ -670,6 +669,40 @@ components:
           description: The validation rules must be checked before an editing is finalized. The validation result is part of the view.
           items:
             type: string
+
+    Association:
+      description: |
+        Wraps an object URI defining a qualified association between two domain objects.
+        
+        It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may
+        reference a link object, which is a standalone persisted object, describing the qualities and participant of a
+        multi-directional binding between aggregate roots. If such link object is present, all objects bound together by
+        it are expected to hold an instance of this class referencing the shared link object.
+      type: object
+      properties:
+        placeholder:
+          description: |
+            The textual representation of this association if the referenced domain object is missing, but the fact of
+            the association existing is known.
+          type: string
+        data:
+          description: |
+            Arbitrary data qualifying this association from the perspective of the owner object, such as constraints and
+            other metadata.
+          type: string
+          additionalProperties:
+            type: object
+        link:
+          description: |
+            Reference to the persisted binder object in case of a multi-directional association between multiple domain
+            objects. If null, the association is unidirectional.
+          type: string
+          format: uri # TODO: Type is to be specified
+        ref:
+          description: |
+            The unique persistence identifier of the associated object.
+          type: string
+          format: uri
 
     PersistableObject:
       description: |
