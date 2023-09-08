@@ -6,7 +6,6 @@ import java.util.List;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubjectContributionByUser extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -14,9 +13,6 @@ public class SubjectContributionByUser extends ContributionApiImpl
   public SubjectContributionByUser() {
     super(SubjectContributionByUser.class.getName());
   }
-
-  @Autowired
-  private OrgApi orgApi;
 
   @Override
   public List<Subject> getUserSubjects(URI userUri) {
