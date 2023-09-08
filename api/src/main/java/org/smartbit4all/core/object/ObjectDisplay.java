@@ -1,7 +1,7 @@
 package org.smartbit4all.core.object;
 
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.DEFAULT_LAYOUT;
 import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.DEFAULT_LAYOUT;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +159,7 @@ public final class ObjectDisplay {
         final Optional<String> opt = Optional.ofNullable(compLayoutDef
             .getWidget()
             .getGridIdentifier());
-        return opt.isEmpty() ? Stream.empty() : Stream.of(opt.get());
+        return !opt.isPresent() ? Stream.empty() : Stream.of(opt.get());
       case CONTAINER:
         return compLayoutDef.getComponents().stream().flatMap(this::grids);
       default:
