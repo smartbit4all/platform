@@ -2,15 +2,18 @@ package org.smartbit4all.bff.api.config;
 
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.bff.api.assoc.AssociationGridApi;
+import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PlatformBffApiConfig {
-
 
   @Bean
   public SearchIndex<User> userSearch() {
@@ -38,5 +41,14 @@ public class PlatformBffApiConfig {
             .map(Group.CHILDREN, Group.CHILDREN);
   }
 
+  @Bean
+  AssociationGridApi associationGridApi() {
+    return new AssociationGridApiImpl();
+  }
+
+  @Bean
+  ProviderApiInvocationHandler<AssociationGridApi> associationGridApiProvider() {
+    return Invocations.asProvider(AssociationGridApi.class, associationGridApi());
+  }
 
 }

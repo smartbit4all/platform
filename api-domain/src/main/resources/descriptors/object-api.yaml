@@ -670,10 +670,10 @@ components:
           items:
             type: string
 
-    Association:
+    RefObject:
       description: |
         Wraps an object URI defining a qualified association between two domain objects.
-        
+
         It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may
         reference a link object, which is a standalone persisted object, describing the qualities and participant of a
         multi-directional binding between aggregate roots. If such link object is present, all objects bound together by

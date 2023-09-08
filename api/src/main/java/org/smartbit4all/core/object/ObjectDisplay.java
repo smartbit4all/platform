@@ -1,14 +1,16 @@
 package org.smartbit4all.core.object;
 
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.DEFAULT_LAYOUT;
+import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
@@ -66,8 +68,8 @@ public final class ObjectDisplay {
    * @return a {@code List} of {@code String} value set names present and visible on the layout
    */
   public List<String> getLayoutValueSets(String layoutName) {
-    if (layoutsByName.containsKey(layoutName)) {
-      Collections.emptyList();
+    if (!layoutsByName.containsKey(layoutName)) {
+      return Collections.emptyList();
     }
 
     return formWidgets(layoutsByName.get(layoutName))
@@ -80,7 +82,7 @@ public final class ObjectDisplay {
         .map(SelectionDefinition::getValueSetName)
         .filter(Objects::nonNull)
         .distinct()
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private Stream<SmartWidgetDefinition> formWidgets(SmartComponentLayoutDefinition compLayoutDef) {
@@ -93,6 +95,73 @@ public final class ObjectDisplay {
         return compLayoutDef.getForm().stream();
       case CONTAINER:
         return compLayoutDef.getComponents().stream().flatMap(this::formWidgets);
+      default:
+        return Stream.empty();
+    }
+  }
+
+  /**
+   * Returns every form present in a layout in the order of their appearance.
+   * 
+   * @param layoutName the unique {@String} name of a given layout in this object display, not null
+   * @return a {@code List} of {@link SmartLayoutDefinition}s describing
+   */
+  public List<SmartLayoutDefinition> getForms(String layoutName) {
+    if (!layoutsByName.containsKey(layoutName)) {
+      return Collections.emptyList();
+    }
+
+    return forms(layoutsByName.get(layoutName))
+        .map(layout -> new SmartLayoutDefinition().widgets(layout.getForm()))
+        .collect(toList());
+  }
+
+  public List<SmartLayoutDefinition> getDefaultForms() {
+    return getForms(DEFAULT_LAYOUT);
+  }
+
+  private Stream<SmartComponentLayoutDefinition> forms(
+      SmartComponentLayoutDefinition compLayoutDef) {
+    if (compLayoutDef == null) {
+      return Stream.empty();
+    }
+
+    switch (compLayoutDef.getType()) {
+      case FORM:
+        return Stream.of(compLayoutDef);
+      case CONTAINER:
+        return compLayoutDef.getComponents().stream().flatMap(this::forms);
+      default:
+        return Stream.empty();
+    }
+  }
+
+  public List<String> getGridIdentifiers(String layoutName) {
+    if (!layoutsByName.containsKey(layoutName)) {
+      return Collections.emptyList();
+    }
+
+    return grids(layoutsByName.get(layoutName)).collect(toList());
+  }
+
+  public List<String> getDefaultGridIdentifiers() {
+    return getGridIdentifiers(DEFAULT_LAYOUT);
+  }
+
+  private Stream<String> grids(SmartComponentLayoutDefinition compLayoutDef) {
+    if (compLayoutDef == null) {
+      return Stream.empty();
+    }
+
+    switch (compLayoutDef.getType()) {
+      case WIDGET:
+        // Java 9+ would enable a more succinct way, but alas...
+        final Optional<String> opt = Optional.ofNullable(compLayoutDef
+            .getWidget()
+            .getGridIdentifier());
+        return opt.isEmpty() ? Stream.empty() : Stream.of(opt.get());
+      case CONTAINER:
+        return compLayoutDef.getComponents().stream().flatMap(this::grids);
       default:
         return Stream.empty();
     }
