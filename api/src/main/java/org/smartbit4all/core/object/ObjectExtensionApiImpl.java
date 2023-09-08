@@ -28,6 +28,7 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.object.bean.Association;
 import org.smartbit4all.api.object.bean.ObjectDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
@@ -618,6 +619,10 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             // single object:
             return SmartLayoutItem.ofFormElement(combobox(key, key, selectionDefinition));
           case LIST:
+            if (propertyDescriptor.getPropertyQualifiedName().equals(Association.class.getName())) {
+              return SmartLayoutItem.ofComponent(ObjectLayoutBuilder
+                  .grid(idPrefix + StringConstant.HYPHEN + key + StringConstant.HYPHEN + "grid"));
+            }
             return SmartLayoutItem
                 .ofFormElement(multiSelectCombobox(key, idPrefix, selectionDefinition));
           case MAP:
