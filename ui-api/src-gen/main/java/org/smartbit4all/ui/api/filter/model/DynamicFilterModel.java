@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,7 +44,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class DynamicFilterModel {
   public static final String FILTER_CONFIG_MODE = "filterConfigMode";
-  private org.smartbit4all.api.filter.bean.FilterConfigMode filterConfigMode = null;
+  private FilterConfigMode filterConfigMode = null;
 
   public static final String SELECTORS = "selectors";
   private List<FilterGroupSelectorModel> selectors = new ArrayList<>();
@@ -51,8 +52,10 @@ public class DynamicFilterModel {
   public static final String ROOT = "root";
   private FilterGroupModel root;
 
+  public DynamicFilterModel() { 
+  }
 
-  public DynamicFilterModel filterConfigMode(org.smartbit4all.api.filter.bean.FilterConfigMode filterConfigMode) {
+  public DynamicFilterModel filterConfigMode(FilterConfigMode filterConfigMode) {
     
     this.filterConfigMode = filterConfigMode;
     return this;
@@ -68,14 +71,14 @@ public class DynamicFilterModel {
   @JsonProperty(FILTER_CONFIG_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.filter.bean.FilterConfigMode getFilterConfigMode() {
+  public FilterConfigMode getFilterConfigMode() {
     return filterConfigMode;
   }
 
 
   @JsonProperty(FILTER_CONFIG_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFilterConfigMode(org.smartbit4all.api.filter.bean.FilterConfigMode filterConfigMode) {
+  public void setFilterConfigMode(FilterConfigMode filterConfigMode) {
     this.filterConfigMode = filterConfigMode;
   }
 

@@ -46,6 +46,8 @@ public class TreeModel {
   public static final String SELECTED_NODE_IDENTIFIER = "selectedNodeIdentifier";
   private String selectedNodeIdentifier;
 
+  public TreeModel() { 
+  }
 
   public TreeModel rootNodes(List<TreeNode> rootNodes) {
     

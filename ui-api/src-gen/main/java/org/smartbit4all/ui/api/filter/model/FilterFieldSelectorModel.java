@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -56,11 +57,13 @@ public class FilterFieldSelectorModel {
   private String style;
 
   public static final String OPERATIONS = "operations";
-  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = new ArrayList<>();
+  private List<FilterOperation> operations = new ArrayList<>();
 
   public static final String ENABLED = "enabled";
   private Boolean enabled;
 
+  public FilterFieldSelectorModel() { 
+  }
 
   public FilterFieldSelectorModel id(String id) {
     
@@ -171,13 +174,13 @@ public class FilterFieldSelectorModel {
   }
 
 
-  public FilterFieldSelectorModel operations(List<org.smartbit4all.api.filter.bean.FilterOperation> operations) {
+  public FilterFieldSelectorModel operations(List<FilterOperation> operations) {
     
     this.operations = operations;
     return this;
   }
 
-  public FilterFieldSelectorModel addOperationsItem(org.smartbit4all.api.filter.bean.FilterOperation operationsItem) {
+  public FilterFieldSelectorModel addOperationsItem(FilterOperation operationsItem) {
     this.operations.add(operationsItem);
     return this;
   }
@@ -193,14 +196,14 @@ public class FilterFieldSelectorModel {
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<org.smartbit4all.api.filter.bean.FilterOperation> getOperations() {
+  public List<FilterOperation> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperations(List<org.smartbit4all.api.filter.bean.FilterOperation> operations) {
+  public void setOperations(List<FilterOperation> operations) {
     this.operations = operations;
   }
 

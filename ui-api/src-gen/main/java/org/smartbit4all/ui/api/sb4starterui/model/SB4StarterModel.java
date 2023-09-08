@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.binarydata.BinaryContent;
+import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterState;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -45,17 +47,19 @@ public class SB4StarterModel {
   private SB4StarterState state;
 
   public static final String START_CONTENT = "startContent";
-  private org.smartbit4all.api.binarydata.BinaryContent startContent = null;
+  private BinaryContent startContent = null;
 
   public static final String RESULT_CONTENT = "resultContent";
-  private org.smartbit4all.api.binarydata.BinaryContent resultContent = null;
+  private BinaryContent resultContent = null;
 
   public static final String SB4_STARTER_URL = "SB4StarterUrl";
   private String sb4StarterUrl;
 
   public static final String EDIT_COMMAND_KIND = "editCommandKind";
-  private org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind = null;
+  private CommandKind editCommandKind = null;
 
+  public SB4StarterModel() { 
+  }
 
   public SB4StarterModel state(SB4StarterState state) {
     
@@ -85,7 +89,7 @@ public class SB4StarterModel {
   }
 
 
-  public SB4StarterModel startContent(org.smartbit4all.api.binarydata.BinaryContent startContent) {
+  public SB4StarterModel startContent(BinaryContent startContent) {
     
     this.startContent = startContent;
     return this;
@@ -101,19 +105,19 @@ public class SB4StarterModel {
   @JsonProperty(START_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.binarydata.BinaryContent getStartContent() {
+  public BinaryContent getStartContent() {
     return startContent;
   }
 
 
   @JsonProperty(START_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartContent(org.smartbit4all.api.binarydata.BinaryContent startContent) {
+  public void setStartContent(BinaryContent startContent) {
     this.startContent = startContent;
   }
 
 
-  public SB4StarterModel resultContent(org.smartbit4all.api.binarydata.BinaryContent resultContent) {
+  public SB4StarterModel resultContent(BinaryContent resultContent) {
     
     this.resultContent = resultContent;
     return this;
@@ -129,14 +133,14 @@ public class SB4StarterModel {
   @JsonProperty(RESULT_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.binarydata.BinaryContent getResultContent() {
+  public BinaryContent getResultContent() {
     return resultContent;
   }
 
 
   @JsonProperty(RESULT_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResultContent(org.smartbit4all.api.binarydata.BinaryContent resultContent) {
+  public void setResultContent(BinaryContent resultContent) {
     this.resultContent = resultContent;
   }
 
@@ -168,7 +172,7 @@ public class SB4StarterModel {
   }
 
 
-  public SB4StarterModel editCommandKind(org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind) {
+  public SB4StarterModel editCommandKind(CommandKind editCommandKind) {
     
     this.editCommandKind = editCommandKind;
     return this;
@@ -184,14 +188,14 @@ public class SB4StarterModel {
   @JsonProperty(EDIT_COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.sb4starter.bean.CommandKind getEditCommandKind() {
+  public CommandKind getEditCommandKind() {
     return editCommandKind;
   }
 
 
   @JsonProperty(EDIT_COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEditCommandKind(org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind) {
+  public void setEditCommandKind(CommandKind editCommandKind) {
     this.editCommandKind = editCommandKind;
   }
 

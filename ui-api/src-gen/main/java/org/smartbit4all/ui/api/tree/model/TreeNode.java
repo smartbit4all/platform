@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -94,11 +95,13 @@ public class TreeNode {
   private Boolean childrenNodesLoaded = false;
 
   public static final String NAVIGATION_TARGET = "navigationTarget";
-  private org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget = null;
+  private NavigationTargetRef navigationTarget = null;
 
   public static final String LEVEL = "level";
   private Integer level;
 
+  public TreeNode() { 
+  }
 
   public TreeNode kind(TreeNodeKind kind) {
     
@@ -477,7 +480,7 @@ public class TreeNode {
   }
 
 
-  public TreeNode navigationTarget(org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget) {
+  public TreeNode navigationTarget(NavigationTargetRef navigationTarget) {
     
     this.navigationTarget = navigationTarget;
     return this;
@@ -493,14 +496,14 @@ public class TreeNode {
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.ui.api.navigation.model.NavigationTarget getNavigationTarget() {
+  public NavigationTargetRef getNavigationTarget() {
     return navigationTarget;
   }
 
 
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNavigationTarget(org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget) {
+  public void setNavigationTarget(NavigationTargetRef navigationTarget) {
     this.navigationTarget = navigationTarget;
   }
 

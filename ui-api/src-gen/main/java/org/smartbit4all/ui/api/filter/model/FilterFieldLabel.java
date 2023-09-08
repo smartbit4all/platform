@@ -48,6 +48,8 @@ public class FilterFieldLabel {
   public static final String DUPLICATE_NUM = "duplicateNum";
   private Integer duplicateNum = 0;
 
+  public FilterFieldLabel() { 
+  }
 
   public FilterFieldLabel code(String code) {
     

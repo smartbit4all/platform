@@ -1,0 +1,20 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+   api project(':api-domain')
+}
+
+smartbit4all {
+  openApi {
+    modelPackage = "org.smartbit4all.bff.api.groupselector.bean"
+  	dateTimeMapping = "java.time.LocalDateTime"
+    importMappings = [
+     "UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
+     "User": "org.smartbit4all.api.org.bean.User",
+     "Group": "org.smartbit4all.api.org.bean.Group"
+    ]
+  }
+}
+

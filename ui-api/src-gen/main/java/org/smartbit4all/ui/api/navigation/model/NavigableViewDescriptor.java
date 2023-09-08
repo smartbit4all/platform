@@ -51,6 +51,8 @@ public class NavigableViewDescriptor {
   public static final String ICON = "icon";
   private String icon;
 
+  public NavigableViewDescriptor() { 
+  }
 
   public NavigableViewDescriptor viewName(String viewName) {
     

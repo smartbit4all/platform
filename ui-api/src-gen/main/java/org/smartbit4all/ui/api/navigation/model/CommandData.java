@@ -53,6 +53,8 @@ public class CommandData {
   public static final String PARAMS = "params";
   private List<Object> params = null;
 
+  public CommandData() { 
+  }
 
   public CommandData model(Object model) {
     

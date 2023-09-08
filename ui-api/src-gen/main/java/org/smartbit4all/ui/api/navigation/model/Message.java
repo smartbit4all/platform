@@ -68,6 +68,8 @@ public class Message {
   public static final String SELECT_RESULT = "selectResult";
   private MessageResult selectResult;
 
+  public Message() { 
+  }
 
   public Message uuid(UUID uuid) {
     

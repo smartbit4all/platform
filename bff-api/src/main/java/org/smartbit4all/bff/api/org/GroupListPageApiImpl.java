@@ -9,7 +9,6 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
-import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
@@ -19,10 +18,11 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.bff.api.groupselector.bean.GroupEditingModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
-    implements GroupDashboardPageApi {
+public class GroupListPageApiImpl extends PageApiImpl<Object>
+    implements GroupListPageApi {
 
   @Autowired
   GridModelApi gridModelApi;
@@ -37,7 +37,7 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
   OrgApi orgApi;
 
 
-  public GroupDashboardPageApiImpl() {
+  public GroupListPageApiImpl() {
     super(Object.class);
   }
 
@@ -64,7 +64,7 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
     gridModelApi.initGridInView(view.getUuid(), GROUP_GRID, groupGridModel);
 
     gridModelApi.addGridPageCallback(view.getUuid(), GROUP_GRID,
-        invocationApi.builder(GroupDashboardPageApi.class)
+        invocationApi.builder(GroupListPageApi.class)
             .build(a -> a.extendPageData(null)));
     return pageModel;
   }

@@ -78,7 +78,9 @@ public enum SmartFormWidgetType {
   
   SORTABLE("SORTABLE"),
   
-  MATRIX("MATRIX");
+  MATRIX("MATRIX"),
+  
+  MONTH_PICKER("MONTH_PICKER");
 
   private String value;
 

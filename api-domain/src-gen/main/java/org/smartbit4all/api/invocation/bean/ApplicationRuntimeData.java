@@ -38,8 +38,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ApplicationRuntimeData.URI,
   ApplicationRuntimeData.UUID,
-  ApplicationRuntimeData.BASE_URL,
   ApplicationRuntimeData.IP_ADDRESS,
+  ApplicationRuntimeData.BASE_URL,
   ApplicationRuntimeData.SERVER_PORT,
   ApplicationRuntimeData.STARTUP_TIME,
   ApplicationRuntimeData.STOP_TIME,
@@ -56,11 +56,11 @@ public class ApplicationRuntimeData {
   public static final String UUID = "uuid";
   private UUID uuid;
 
-  public static final String BASE_URL = "baseUrl";
-  private String baseUrl;
-
   public static final String IP_ADDRESS = "ipAddress";
   private String ipAddress;
+
+  public static final String BASE_URL = "baseUrl";
+  private String baseUrl;
 
   public static final String SERVER_PORT = "serverPort";
   private Integer serverPort;
@@ -141,33 +141,6 @@ public class ApplicationRuntimeData {
   }
 
 
-  public ApplicationRuntimeData baseUrl(String baseUrl) {
-    
-    this.baseUrl = baseUrl;
-    return this;
-  }
-
-   /**
-   * The base url of the runtime.
-   * @return baseUrl
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The base url of the runtime.")
-  @JsonProperty(BASE_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getBaseUrl() {
-    return baseUrl;
-  }
-
-
-  @JsonProperty(BASE_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBaseUrl(String baseUrl) {
-    this.baseUrl = baseUrl;
-  }
-
-
   public ApplicationRuntimeData ipAddress(String ipAddress) {
     
     this.ipAddress = ipAddress;
@@ -193,6 +166,33 @@ public class ApplicationRuntimeData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIpAddress(String ipAddress) {
     this.ipAddress = ipAddress;
+  }
+
+
+  public ApplicationRuntimeData baseUrl(String baseUrl) {
+    
+    this.baseUrl = baseUrl;
+    return this;
+  }
+
+   /**
+   * The base url of the runtime.
+   * @return baseUrl
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The base url of the runtime.")
+  @JsonProperty(BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+
+
+  @JsonProperty(BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBaseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
   }
 
 
@@ -380,8 +380,8 @@ public class ApplicationRuntimeData {
     ApplicationRuntimeData applicationRuntimeData = (ApplicationRuntimeData) o;
     return Objects.equals(this.uri, applicationRuntimeData.uri) &&
         Objects.equals(this.uuid, applicationRuntimeData.uuid) &&
-        Objects.equals(this.baseUrl, applicationRuntimeData.baseUrl) &&
         Objects.equals(this.ipAddress, applicationRuntimeData.ipAddress) &&
+        Objects.equals(this.baseUrl, applicationRuntimeData.baseUrl) &&
         Objects.equals(this.serverPort, applicationRuntimeData.serverPort) &&
         Objects.equals(this.startupTime, applicationRuntimeData.startupTime) &&
         Objects.equals(this.stopTime, applicationRuntimeData.stopTime) &&
@@ -392,7 +392,7 @@ public class ApplicationRuntimeData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, baseUrl, ipAddress, serverPort, startupTime, stopTime, timeOffset, lastTouchTime, apis);
+    return Objects.hash(uri, uuid, ipAddress, baseUrl, serverPort, startupTime, stopTime, timeOffset, lastTouchTime, apis);
   }
 
   @Override
@@ -401,8 +401,8 @@ public class ApplicationRuntimeData {
     sb.append("class ApplicationRuntimeData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
-    sb.append("    baseUrl: ").append(toIndentedString(baseUrl)).append("\n");
     sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
+    sb.append("    baseUrl: ").append(toIndentedString(baseUrl)).append("\n");
     sb.append("    serverPort: ").append(toIndentedString(serverPort)).append("\n");
     sb.append("    startupTime: ").append(toIndentedString(startupTime)).append("\n");
     sb.append("    stopTime: ").append(toIndentedString(stopTime)).append("\n");

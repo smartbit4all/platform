@@ -24,6 +24,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -65,19 +67,19 @@ public class FilterFieldModel {
   private Boolean draggable;
 
   public static final String SELECTED_OPERATION = "selectedOperation";
-  private org.smartbit4all.api.filter.bean.FilterOperation selectedOperation = null;
+  private FilterOperation selectedOperation = null;
 
   public static final String OPERATIONS = "operations";
-  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = new ArrayList<>();
+  private List<FilterOperation> operations = new ArrayList<>();
 
   public static final String POSSIBLE_VALUES = "possibleValues";
-  private List<org.smartbit4all.api.value.bean.Value> possibleValues = new ArrayList<>();
+  private List<Value> possibleValues = new ArrayList<>();
 
   public static final String SELECTED_VALUES = "selectedValues";
-  private List<org.smartbit4all.api.value.bean.Value> selectedValues = new ArrayList<>();
+  private List<Value> selectedValues = new ArrayList<>();
 
   public static final String SELECTED_VALUE = "selectedValue";
-  private org.smartbit4all.api.value.bean.Value selectedValue = null;
+  private Value selectedValue = null;
 
   public static final String VALUE1 = "value1";
   private String value1;
@@ -94,6 +96,8 @@ public class FilterFieldModel {
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
 
+  public FilterFieldModel() { 
+  }
 
   public FilterFieldModel selectorId(String selectorId) {
     
@@ -204,7 +208,7 @@ public class FilterFieldModel {
   }
 
 
-  public FilterFieldModel selectedOperation(org.smartbit4all.api.filter.bean.FilterOperation selectedOperation) {
+  public FilterFieldModel selectedOperation(FilterOperation selectedOperation) {
     
     this.selectedOperation = selectedOperation;
     return this;
@@ -220,25 +224,25 @@ public class FilterFieldModel {
   @JsonProperty(SELECTED_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.filter.bean.FilterOperation getSelectedOperation() {
+  public FilterOperation getSelectedOperation() {
     return selectedOperation;
   }
 
 
   @JsonProperty(SELECTED_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedOperation(org.smartbit4all.api.filter.bean.FilterOperation selectedOperation) {
+  public void setSelectedOperation(FilterOperation selectedOperation) {
     this.selectedOperation = selectedOperation;
   }
 
 
-  public FilterFieldModel operations(List<org.smartbit4all.api.filter.bean.FilterOperation> operations) {
+  public FilterFieldModel operations(List<FilterOperation> operations) {
     
     this.operations = operations;
     return this;
   }
 
-  public FilterFieldModel addOperationsItem(org.smartbit4all.api.filter.bean.FilterOperation operationsItem) {
+  public FilterFieldModel addOperationsItem(FilterOperation operationsItem) {
     this.operations.add(operationsItem);
     return this;
   }
@@ -254,25 +258,25 @@ public class FilterFieldModel {
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<org.smartbit4all.api.filter.bean.FilterOperation> getOperations() {
+  public List<FilterOperation> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperations(List<org.smartbit4all.api.filter.bean.FilterOperation> operations) {
+  public void setOperations(List<FilterOperation> operations) {
     this.operations = operations;
   }
 
 
-  public FilterFieldModel possibleValues(List<org.smartbit4all.api.value.bean.Value> possibleValues) {
+  public FilterFieldModel possibleValues(List<Value> possibleValues) {
     
     this.possibleValues = possibleValues;
     return this;
   }
 
-  public FilterFieldModel addPossibleValuesItem(org.smartbit4all.api.value.bean.Value possibleValuesItem) {
+  public FilterFieldModel addPossibleValuesItem(Value possibleValuesItem) {
     this.possibleValues.add(possibleValuesItem);
     return this;
   }
@@ -288,25 +292,25 @@ public class FilterFieldModel {
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<org.smartbit4all.api.value.bean.Value> getPossibleValues() {
+  public List<Value> getPossibleValues() {
     return possibleValues;
   }
 
 
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPossibleValues(List<org.smartbit4all.api.value.bean.Value> possibleValues) {
+  public void setPossibleValues(List<Value> possibleValues) {
     this.possibleValues = possibleValues;
   }
 
 
-  public FilterFieldModel selectedValues(List<org.smartbit4all.api.value.bean.Value> selectedValues) {
+  public FilterFieldModel selectedValues(List<Value> selectedValues) {
     
     this.selectedValues = selectedValues;
     return this;
   }
 
-  public FilterFieldModel addSelectedValuesItem(org.smartbit4all.api.value.bean.Value selectedValuesItem) {
+  public FilterFieldModel addSelectedValuesItem(Value selectedValuesItem) {
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
@@ -322,19 +326,19 @@ public class FilterFieldModel {
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<org.smartbit4all.api.value.bean.Value> getSelectedValues() {
+  public List<Value> getSelectedValues() {
     return selectedValues;
   }
 
 
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectedValues(List<org.smartbit4all.api.value.bean.Value> selectedValues) {
+  public void setSelectedValues(List<Value> selectedValues) {
     this.selectedValues = selectedValues;
   }
 
 
-  public FilterFieldModel selectedValue(org.smartbit4all.api.value.bean.Value selectedValue) {
+  public FilterFieldModel selectedValue(Value selectedValue) {
     
     this.selectedValue = selectedValue;
     return this;
@@ -350,14 +354,14 @@ public class FilterFieldModel {
   @JsonProperty(SELECTED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.value.bean.Value getSelectedValue() {
+  public Value getSelectedValue() {
     return selectedValue;
   }
 
 
   @JsonProperty(SELECTED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedValue(org.smartbit4all.api.value.bean.Value selectedValue) {
+  public void setSelectedValue(Value selectedValue) {
     this.selectedValue = selectedValue;
   }
 

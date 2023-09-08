@@ -57,6 +57,8 @@ public class ViewModelDataSimple {
   public static final String CHILDREN = "children";
   private Map<String, ViewModelDataSimple> children = new HashMap<>();
 
+  public ViewModelDataSimple() { 
+  }
 
   public ViewModelDataSimple uuid(UUID uuid) {
     

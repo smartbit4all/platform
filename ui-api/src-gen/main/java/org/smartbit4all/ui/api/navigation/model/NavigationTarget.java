@@ -86,6 +86,8 @@ public class NavigationTarget {
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
 
+  public NavigationTarget() { 
+  }
 
   public NavigationTarget uuid(UUID uuid) {
     

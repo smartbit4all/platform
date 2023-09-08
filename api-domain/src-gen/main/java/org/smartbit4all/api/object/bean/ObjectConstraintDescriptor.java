@@ -38,6 +38,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object. The values can be used to identify the situation when the given constraint must be applied. ")
 @JsonPropertyOrder({
+  ObjectConstraintDescriptor.NAME,
   ObjectConstraintDescriptor.WHEN,
   ObjectConstraintDescriptor.CONDITION,
   ObjectConstraintDescriptor.CONTEXTS,
@@ -49,6 +50,9 @@ import javax.validation.Valid;
 @JsonTypeName("ObjectConstraintDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectConstraintDescriptor {
+  public static final String NAME = "name";
+  private String name;
+
   /**
    * Gets or Sets when
    */
@@ -107,6 +111,34 @@ public class ObjectConstraintDescriptor {
 
   public ObjectConstraintDescriptor() { 
   }
+
+  public ObjectConstraintDescriptor name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Get name
+   * @return name
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setName(String name) {
+    this.name = name;
+  }
+
 
   public ObjectConstraintDescriptor when(WhenEnum when) {
     
@@ -342,7 +374,8 @@ public class ObjectConstraintDescriptor {
       return false;
     }
     ObjectConstraintDescriptor objectConstraintDescriptor = (ObjectConstraintDescriptor) o;
-    return Objects.equals(this.when, objectConstraintDescriptor.when) &&
+    return Objects.equals(this.name, objectConstraintDescriptor.name) &&
+        Objects.equals(this.when, objectConstraintDescriptor.when) &&
         Objects.equals(this.condition, objectConstraintDescriptor.condition) &&
         Objects.equals(this.contexts, objectConstraintDescriptor.contexts) &&
         Objects.equals(this.predicates, objectConstraintDescriptor.predicates) &&
@@ -353,13 +386,14 @@ public class ObjectConstraintDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(when, condition, contexts, predicates, componentConstraints, actionConstraints, validationRules);
+    return Objects.hash(name, when, condition, contexts, predicates, componentConstraints, actionConstraints, validationRules);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectConstraintDescriptor {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    when: ").append(toIndentedString(when)).append("\n");
     sb.append("    condition: ").append(toIndentedString(condition)).append("\n");
     sb.append("    contexts: ").append(toIndentedString(contexts)).append("\n");

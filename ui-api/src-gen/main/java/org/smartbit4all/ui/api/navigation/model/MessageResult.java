@@ -52,6 +52,8 @@ public class MessageResult {
   public static final String TYPE = "type";
   private MessageResultType type;
 
+  public MessageResult() { 
+  }
 
   public MessageResult code(String code) {
     

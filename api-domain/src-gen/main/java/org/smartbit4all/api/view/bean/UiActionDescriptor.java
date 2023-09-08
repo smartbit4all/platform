@@ -26,6 +26,7 @@ import org.smartbit4all.api.view.bean.UiActionButtonIconPos;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
+import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -47,7 +48,8 @@ import javax.validation.Valid;
   UiActionDescriptor.INPUT_DIALOG,
   UiActionDescriptor.INPUT2_DIALOG,
   UiActionDescriptor.FEEDBACK_TYPE,
-  UiActionDescriptor.FEEDBACK_TEXT
+  UiActionDescriptor.FEEDBACK_TEXT,
+  UiActionDescriptor.UPLOAD
 })
 @JsonTypeName("UiActionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -87,6 +89,9 @@ public class UiActionDescriptor {
 
   public static final String FEEDBACK_TEXT = "feedbackText";
   private String feedbackText;
+
+  public static final String UPLOAD = "upload";
+  private UiActionUploadDescriptor upload;
 
   public UiActionDescriptor() { 
   }
@@ -425,6 +430,34 @@ public class UiActionDescriptor {
   }
 
 
+  public UiActionDescriptor upload(UiActionUploadDescriptor upload) {
+    
+    this.upload = upload;
+    return this;
+  }
+
+   /**
+   * Get upload
+   * @return upload
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionUploadDescriptor getUpload() {
+    return upload;
+  }
+
+
+  @JsonProperty(UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUpload(UiActionUploadDescriptor upload) {
+    this.upload = upload;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -445,12 +478,13 @@ public class UiActionDescriptor {
         Objects.equals(this.inputDialog, uiActionDescriptor.inputDialog) &&
         Objects.equals(this.input2Dialog, uiActionDescriptor.input2Dialog) &&
         Objects.equals(this.feedbackType, uiActionDescriptor.feedbackType) &&
-        Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText);
+        Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText) &&
+        Objects.equals(this.upload, uiActionDescriptor.upload);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText);
+    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, upload);
   }
 
   @Override
@@ -469,6 +503,7 @@ public class UiActionDescriptor {
     sb.append("    input2Dialog: ").append(toIndentedString(input2Dialog)).append("\n");
     sb.append("    feedbackType: ").append(toIndentedString(feedbackType)).append("\n");
     sb.append("    feedbackText: ").append(toIndentedString(feedbackText)).append("\n");
+    sb.append("    upload: ").append(toIndentedString(upload)).append("\n");
     sb.append("}");
     return sb.toString();
   }

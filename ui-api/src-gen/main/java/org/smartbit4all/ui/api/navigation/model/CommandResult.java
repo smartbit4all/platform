@@ -50,6 +50,8 @@ public class CommandResult {
   public static final String VIEW = "view";
   private ViewModelData view;
 
+  public CommandResult() { 
+  }
 
   public CommandResult uiToOpen(NavigationTarget uiToOpen) {
     

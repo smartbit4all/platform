@@ -1,10 +1,10 @@
 package org.smartbit4all.bff.api.org;
 
 import java.util.UUID;
-import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.groupselector.bean.GroupEditingModel;
 
 public interface GroupEditorPageApi extends PageApi<GroupEditingModel> {
 

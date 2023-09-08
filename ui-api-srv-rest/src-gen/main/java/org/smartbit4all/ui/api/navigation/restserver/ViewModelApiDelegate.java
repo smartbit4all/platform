@@ -1,7 +1,11 @@
 package org.smartbit4all.ui.api.navigation.restserver;
 
+import org.smartbit4all.ui.api.navigation.model.CommandData;
+import org.smartbit4all.ui.api.navigation.model.CommandResult;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import java.util.UUID;
-import io.swagger.annotations.*;
+import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link ViewModelApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 public interface ViewModelApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -38,15 +43,15 @@ public interface ViewModelApiDelegate {
     /**
      * POST /createViewModel
      *
-     * @param orgSmartbit4allUiApiNavigationModelNavigationTarget  (required)
+     * @param navigationTarget  (required)
      * @return  (status code 201)
      * @see ViewModelApi#createViewModel
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.ViewModelData> createViewModel(org.smartbit4all.ui.api.navigation.model.NavigationTarget orgSmartbit4allUiApiNavigationModelNavigationTarget) throws Exception {
+    default ResponseEntity<ViewModelData> createViewModel(NavigationTarget navigationTarget) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
+                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -74,16 +79,16 @@ public interface ViewModelApiDelegate {
      * POST /executeCommand/{uuid}
      *
      * @param uuid  (required)
-     * @param orgSmartbit4allUiApiNavigationModelCommandData  (required)
+     * @param commandData  (required)
      * @return  (status code 200)
      * @see ViewModelApi#executeCommand
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> executeCommand(UUID uuid,
-        org.smartbit4all.ui.api.navigation.model.CommandData orgSmartbit4allUiApiNavigationModelCommandData) throws Exception {
+    default ResponseEntity<CommandResult> executeCommand(UUID uuid,
+        CommandData commandData) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -100,11 +105,11 @@ public interface ViewModelApiDelegate {
      * @return  (status code 200)
      * @see ViewModelApi#getModel
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.ViewModelData> getModel(UUID uuid) throws Exception {
+    default ResponseEntity<ViewModelData> getModel(UUID uuid) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
+                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -118,16 +123,16 @@ public interface ViewModelApiDelegate {
      * POST /message/{uuid}
      *
      * @param uuid Message UUID. (required)
-     * @param orgSmartbit4allUiApiNavigationModelMessageResult  (required)
+     * @param messageResult  (required)
      * @return  (status code 200)
      * @see ViewModelApi#message
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> message(UUID uuid,
-        org.smartbit4all.ui.api.navigation.model.MessageResult orgSmartbit4allUiApiNavigationModelMessageResult) throws Exception {
+    default ResponseEntity<CommandResult> message(UUID uuid,
+        MessageResult messageResult) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -160,13 +165,13 @@ public interface ViewModelApiDelegate {
      * @return  (status code 200)
      * @see ViewModelApi#upload
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(String uuid,
-        org.smartbit4all.ui.api.navigation.model.CommandData command,
+    default ResponseEntity<CommandResult> upload(String uuid,
+        CommandData command,
         MultipartFile content) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -56,7 +57,7 @@ public class FilterGroupModel {
   private String id;
 
   public static final String GROUP_TYPE = "groupType";
-  private org.smartbit4all.api.filter.bean.FilterGroupType groupType = null;
+  private FilterGroupType groupType = null;
 
   public static final String LABEL = "label";
   private FilterGroupLabel label;
@@ -91,6 +92,8 @@ public class FilterGroupModel {
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
 
+  public FilterGroupModel() { 
+  }
 
   public FilterGroupModel id(String id) {
     
@@ -120,7 +123,7 @@ public class FilterGroupModel {
   }
 
 
-  public FilterGroupModel groupType(org.smartbit4all.api.filter.bean.FilterGroupType groupType) {
+  public FilterGroupModel groupType(FilterGroupType groupType) {
     
     this.groupType = groupType;
     return this;
@@ -136,14 +139,14 @@ public class FilterGroupModel {
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.filter.bean.FilterGroupType getGroupType() {
+  public FilterGroupType getGroupType() {
     return groupType;
   }
 
 
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroupType(org.smartbit4all.api.filter.bean.FilterGroupType groupType) {
+  public void setGroupType(FilterGroupType groupType) {
     this.groupType = groupType;
   }
 

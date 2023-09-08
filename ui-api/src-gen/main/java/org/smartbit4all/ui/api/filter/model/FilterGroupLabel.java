@@ -43,6 +43,8 @@ public class FilterGroupLabel {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
+  public FilterGroupLabel() { 
+  }
 
   public FilterGroupLabel labelCode(String labelCode) {
     

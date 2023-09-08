@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.groupselector.bean;
+package org.smartbit4all.bff.api.groupselector.bean;
 
 import java.util.Objects;
 import java.util.Arrays;

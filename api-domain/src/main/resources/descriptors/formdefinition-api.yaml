@@ -46,6 +46,7 @@ components:
         - RICH_TEXT
         - SORTABLE
         - MATRIX
+        - MONTH_PICKER
     SmartLayoutDefinition:
       type: object
       required: [widgets]

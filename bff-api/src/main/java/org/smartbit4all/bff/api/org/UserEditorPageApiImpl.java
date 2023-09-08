@@ -81,7 +81,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   }
 
   protected String getUserListName() {
-    return OrgViewNames.USER_DASHBOARD_PAGE;
+    return OrgViewNames.USER_LIST_PAGE;
   }
 
   protected List<UiAction> getUserEditorActions() {

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.bff.api.groupselector.bean.GroupEditingModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
@@ -73,7 +73,7 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
   }
 
   protected String getGroupListName() {
-    return OrgViewNames.GROUP_DASHBOARD_PAGE;
+    return OrgViewNames.GROUP_LIST_PAGE;
   }
 
   protected List<UiAction> getGroupEditorActions() {

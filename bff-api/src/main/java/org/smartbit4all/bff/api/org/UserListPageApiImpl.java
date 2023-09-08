@@ -20,7 +20,7 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements UserDashboardPageApi {
+public class UserListPageApiImpl extends PageApiImpl<Object> implements UserListPageApi {
 
   @Autowired
   GridModelApi gridModelApi;
@@ -34,7 +34,7 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   @Autowired
   OrgApi orgApi;
 
-  public UserDashboardPageApiImpl() {
+  public UserListPageApiImpl() {
     super(Object.class);
   }
 
@@ -63,7 +63,7 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
 
 
     gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
-        invocationApi.builder(UserDashboardPageApi.class)
+        invocationApi.builder(UserListPageApi.class)
             .build(a -> a.extendPageData(null)));
     return pageModel;
   }
