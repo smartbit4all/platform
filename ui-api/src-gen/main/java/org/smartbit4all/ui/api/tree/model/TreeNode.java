@@ -95,7 +95,7 @@ public class TreeNode {
   private Boolean childrenNodesLoaded = false;
 
   public static final String NAVIGATION_TARGET = "navigationTarget";
-  private NavigationTargetRef navigationTarget = null;
+  private NavigationTarget navigationTarget = null;
 
   public static final String LEVEL = "level";
   private Integer level;
@@ -480,7 +480,7 @@ public class TreeNode {
   }
 
 
-  public TreeNode navigationTarget(NavigationTargetRef navigationTarget) {
+  public TreeNode navigationTarget(NavigationTarget navigationTarget) {
     
     this.navigationTarget = navigationTarget;
     return this;
@@ -496,14 +496,14 @@ public class TreeNode {
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public NavigationTargetRef getNavigationTarget() {
+  public NavigationTarget getNavigationTarget() {
     return navigationTarget;
   }
 
 
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNavigationTarget(NavigationTargetRef navigationTarget) {
+  public void setNavigationTarget(NavigationTarget navigationTarget) {
     this.navigationTarget = navigationTarget;
   }
 

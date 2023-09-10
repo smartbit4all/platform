@@ -73,7 +73,7 @@ components:
           type: boolean
           default: false
         navigationTarget:
-          type: 'NavigationTargetRef'
+          type: 'NavigationTarget'
         level:
           type: integer
           format: int32
