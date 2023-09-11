@@ -9,15 +9,22 @@ import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.org.bean.ACL;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
+
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   private static final String ACL_MATRIX = "ACL_MATRIX";
   private static final String ACL = "ACL";
@@ -30,15 +37,18 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   @Override
 
   public ACL initModel(View view) {
-    ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects().get(ACL, ACL.class);
-
     ObjectMapHelper parameters = parameters(view);
+    ACL acl = parameters.get("ACL", ACL.class);
+
     List<String> operations = parameters.getAsList(OPERATIONS, String.class);
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
         .addWidgetsItem(
             new SmartWidgetDefinition().label(ACL).key(ACL_MATRIX).type(SmartFormWidgetType.MATRIX)
                 .matrix(consturctMatrixModel(acl, operations))));
+
+    view.putValueSetsItem("OPERATIONS", new ValueSet().valueSetData(
+        new ValueSetData().values(operations.stream().map(Object.class::cast).collect(toList()))));
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SAVE));
@@ -63,8 +73,9 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
       // Set the columns only once
       if (matrix.getColumns() == null) {
         matrix
-            .columns(aclEntry.getOperations().stream()
-                .map(operation -> new Value().code(operation).displayValue(operation))
+            .columns(operations.stream()
+                .map(operation -> new Value().code(operation)
+                    .displayValue(localeSettingApi.get(operation)))
                 .collect(Collectors.toList()));
       }
     });
@@ -80,7 +91,14 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   @Override
   public void saveEditing(UUID viewUuid, UiActionRequest request) {
-    // TODO Auto-generated method stub
+    // ObjectNode rootNode = objectApi.loadLatest(viewApi.getView(viewUuid).getObjectUri());
+    // ObjectMapHelper requestParams = actionRequestHelper(request);
+    // ACL updatedAcl = requestParams.get(UiActions.MODEL, ACL.class);
+    //
+    // rootNode.aspects().modify("ACL", ACL.class,
+    // acl -> updatedAcl);
+    //
+    // objectApi.save(rootNode);
 
   }
 
