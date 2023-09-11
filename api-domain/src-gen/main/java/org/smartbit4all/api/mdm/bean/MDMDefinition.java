@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,8 +41,9 @@ import javax.validation.Valid;
   MDMDefinition.URI,
   MDMDefinition.NAME,
   MDMDefinition.ADMIN_GROUP_NAME,
+  MDMDefinition.ADMIN_APPROVER_GROUP_NAME,
   MDMDefinition.STATE,
-  MDMDefinition.BRANCH_STRATEGY,
+  MDMDefinition.BRANCHING_STRATEGY,
   MDMDefinition.DESCRIPTORS
 })
 @JsonTypeName("MDMDefinition")
@@ -56,46 +58,14 @@ public class MDMDefinition {
   public static final String ADMIN_GROUP_NAME = "adminGroupName";
   private String adminGroupName;
 
+  public static final String ADMIN_APPROVER_GROUP_NAME = "adminApproverGroupName";
+  private String adminApproverGroupName;
+
   public static final String STATE = "state";
   private URI state;
 
-  /**
-   * Gets or Sets branchStrategy
-   */
-  public enum BranchStrategyEnum {
-    GLOBAL("global"),
-    
-    ENTRYLEVEL("entryLevel");
-
-    private String value;
-
-    BranchStrategyEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static BranchStrategyEnum fromValue(String value) {
-      for (BranchStrategyEnum b : BranchStrategyEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String BRANCH_STRATEGY = "branchStrategy";
-  private BranchStrategyEnum branchStrategy;
+  public static final String BRANCHING_STRATEGY = "branchingStrategy";
+  private MDMBranchingStrategy branchingStrategy;
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
@@ -166,11 +136,11 @@ public class MDMDefinition {
   }
 
    /**
-   * The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one. It is mandatory to set this group name or else the master data management won&#39;t be able to setup the rights. 
+   * The name of the administration group. If a user is involved in the group then can administer all the entries inside the definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one. It is mandatory to set this group name or else the master data management won&#39;t be able to setup the rights. 
    * @return adminGroupName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one. It is mandatory to set this group name or else the master data management won't be able to setup the rights. ")
+  @ApiModelProperty(value = "The name of the administration group. If a user is involved in the group then can administer all the entries inside the definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one. It is mandatory to set this group name or else the master data management won't be able to setup the rights. ")
   @JsonProperty(ADMIN_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,6 +153,33 @@ public class MDMDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAdminGroupName(String adminGroupName) {
     this.adminGroupName = adminGroupName;
+  }
+
+
+  public MDMDefinition adminApproverGroupName(String adminApproverGroupName) {
+    
+    this.adminApproverGroupName = adminApproverGroupName;
+    return this;
+  }
+
+   /**
+   * The name of the administration approver group. Optional, if we don&#39;t set it then admin approver functionality won&#39;t be available. 
+   * @return adminApproverGroupName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the administration approver group. Optional, if we don't set it then admin approver functionality won't be available. ")
+  @JsonProperty(ADMIN_APPROVER_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAdminApproverGroupName() {
+    return adminApproverGroupName;
+  }
+
+
+  @JsonProperty(ADMIN_APPROVER_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdminApproverGroupName(String adminApproverGroupName) {
+    this.adminApproverGroupName = adminApproverGroupName;
   }
 
 
@@ -214,30 +211,31 @@ public class MDMDefinition {
   }
 
 
-  public MDMDefinition branchStrategy(BranchStrategyEnum branchStrategy) {
+  public MDMDefinition branchingStrategy(MDMBranchingStrategy branchingStrategy) {
     
-    this.branchStrategy = branchStrategy;
+    this.branchingStrategy = branchingStrategy;
     return this;
   }
 
    /**
-   * Get branchStrategy
-   * @return branchStrategy
+   * Get branchingStrategy
+   * @return branchingStrategy
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(BRANCH_STRATEGY)
+  @JsonProperty(BRANCHING_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public BranchStrategyEnum getBranchStrategy() {
-    return branchStrategy;
+  public MDMBranchingStrategy getBranchingStrategy() {
+    return branchingStrategy;
   }
 
 
-  @JsonProperty(BRANCH_STRATEGY)
+  @JsonProperty(BRANCHING_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBranchStrategy(BranchStrategyEnum branchStrategy) {
-    this.branchStrategy = branchStrategy;
+  public void setBranchingStrategy(MDMBranchingStrategy branchingStrategy) {
+    this.branchingStrategy = branchingStrategy;
   }
 
 
@@ -287,14 +285,15 @@ public class MDMDefinition {
     return Objects.equals(this.uri, mdMDefinition.uri) &&
         Objects.equals(this.name, mdMDefinition.name) &&
         Objects.equals(this.adminGroupName, mdMDefinition.adminGroupName) &&
+        Objects.equals(this.adminApproverGroupName, mdMDefinition.adminApproverGroupName) &&
         Objects.equals(this.state, mdMDefinition.state) &&
-        Objects.equals(this.branchStrategy, mdMDefinition.branchStrategy) &&
+        Objects.equals(this.branchingStrategy, mdMDefinition.branchingStrategy) &&
         Objects.equals(this.descriptors, mdMDefinition.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, adminGroupName, state, branchStrategy, descriptors);
+    return Objects.hash(uri, name, adminGroupName, adminApproverGroupName, state, branchingStrategy, descriptors);
   }
 
   @Override
@@ -304,8 +303,9 @@ public class MDMDefinition {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
+    sb.append("    adminApproverGroupName: ").append(toIndentedString(adminApproverGroupName)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
-    sb.append("    branchStrategy: ").append(toIndentedString(branchStrategy)).append("\n");
+    sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
     return sb.toString();

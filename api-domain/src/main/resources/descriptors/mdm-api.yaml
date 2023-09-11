@@ -30,19 +30,33 @@ components:
         adminGroupName:
           type: string
           description: |
-            The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the
-            definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one.
+            The name of the administration group. If a user is involved in the group then can administer all the entries inside the
+            definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one.
             It is mandatory to set this group name or else the master data management won't be able to setup the rights.
+        adminApproverGroupName:
+          type: string
+          description: |
+            The name of the administration approver group. Optional, if we don't set it then admin approver functionality won't be available.
         state:
           type: string
           format: uri
           description: The reference to the current state of the definition. It contains the necessary runtime informations.
-        branchStrategy:
-          enum: [global, entryLevel]
+        branchingStrategy:
+          description: |
+            Branching strategy of this MDMDefinition. This will be the default for all contained MDMEntityDescriptors,
+            but can be overriden if needed. If not set, NONE will be used.
+          $ref: '#/components/schemas/MDMBranchingStrategy'
         descriptors:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/MDMEntryDescriptor'
+    MDMBranchingStrategy:
+      type: string
+      enum:
+      - none
+      - entry
+      - group
+      - global
     MDMEntryDescriptor:
       type: object
       description: |
@@ -115,6 +129,8 @@ components:
           description: |
             Indicates if this entry is treated as a generic value set (it's not necessary for the type 
             to be a GenericValue, but usually it will be)
+        branchingStrategy:
+          $ref: '#/components/schemas/MDMBranchingStrategy'
     MDMTableColumnDescriptor:
       type: object
       description: |

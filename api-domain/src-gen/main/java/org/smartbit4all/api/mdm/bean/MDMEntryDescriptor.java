@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -48,7 +49,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.SCHEMA,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
   MDMEntryDescriptor.EVENT_HANDLERS_BEFORE_SAVE,
-  MDMEntryDescriptor.IS_VALUE_SET
+  MDMEntryDescriptor.IS_VALUE_SET,
+  MDMEntryDescriptor.BRANCHING_STRATEGY
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -91,6 +93,9 @@ public class MDMEntryDescriptor {
 
   public static final String IS_VALUE_SET = "isValueSet";
   private Boolean isValueSet = false;
+
+  public static final String BRANCHING_STRATEGY = "branchingStrategy";
+  private MDMBranchingStrategy branchingStrategy;
 
   public MDMEntryDescriptor() { 
   }
@@ -471,6 +476,34 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor branchingStrategy(MDMBranchingStrategy branchingStrategy) {
+    
+    this.branchingStrategy = branchingStrategy;
+    return this;
+  }
+
+   /**
+   * Get branchingStrategy
+   * @return branchingStrategy
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BRANCHING_STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMBranchingStrategy getBranchingStrategy() {
+    return branchingStrategy;
+  }
+
+
+  @JsonProperty(BRANCHING_STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBranchingStrategy(MDMBranchingStrategy branchingStrategy) {
+    this.branchingStrategy = branchingStrategy;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -492,12 +525,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.schema, mdMEntryDescriptor.schema) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
         Objects.equals(this.eventHandlersBeforeSave, mdMEntryDescriptor.eventHandlersBeforeSave) &&
-        Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet);
+        Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet) &&
+        Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
   }
 
   @Override
@@ -517,6 +551,7 @@ public class MDMEntryDescriptor {
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");
     sb.append("    eventHandlersBeforeSave: ").append(toIndentedString(eventHandlersBeforeSave)).append("\n");
     sb.append("    isValueSet: ").append(toIndentedString(isValueSet)).append("\n");
+    sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("}");
     return sb.toString();
   }

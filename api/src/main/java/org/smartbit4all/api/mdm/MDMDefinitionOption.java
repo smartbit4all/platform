@@ -2,8 +2,8 @@ package org.smartbit4all.api.mdm;
 
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
-import org.smartbit4all.api.mdm.bean.MDMDefinition.BranchStrategyEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
@@ -24,8 +24,8 @@ public class MDMDefinitionOption {
   public MDMDefinitionOption(MDMDefinition definition) {
     super();
     this.definition = definition;
-    if (definition.getBranchStrategy() == null) {
-      definition.setBranchStrategy(BranchStrategyEnum.GLOBAL);
+    if (definition.getBranchingStrategy() == null) {
+      definition.setBranchingStrategy(MDMBranchingStrategy.GLOBAL);
     }
   }
 
