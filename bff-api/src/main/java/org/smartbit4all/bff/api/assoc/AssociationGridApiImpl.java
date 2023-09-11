@@ -31,8 +31,8 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
   private static final Logger log = LoggerFactory.getLogger(AssociationGridApiImpl.class);
 
   @Autowired(required = false)
-  private List<AssociationConfig> associationConfigs;
-  private Map<String, AssociationConfig> configsByName;
+  private List<AssociationGridConfig> associationGridConfigs;
+  private Map<String, AssociationGridConfig> configsByName;
 
   @Autowired
   private GridModelApi gridModelApi;
@@ -45,10 +45,10 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    configsByName = (associationConfigs == null)
+    configsByName = (associationGridConfigs == null)
         ? new HashMap<>()
-        : associationConfigs.stream()
-            .collect(toMap(AssociationConfig::name, Function.identity()));
+        : associationGridConfigs.stream()
+            .collect(toMap(AssociationGridConfig::name, Function.identity()));
   }
 
 
@@ -63,7 +63,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
   @Override
   public void initGridInView(UUID viewUuid, String associationConf, ObjectNode objectNode,
       String gridIdentifier) {
-    final AssociationConfig config = configsByName.get(associationConf);
+    final AssociationGridConfig config = configsByName.get(associationConf);
     if (config == null) {
       log.error(
           "Attempted to initialise [ Grid: {} ] in [ View: {} ] with [ Configuration: {} ], but the referenced configuration is unknown!",
