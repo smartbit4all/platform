@@ -13,9 +13,9 @@ public class ObjectNotFoundException extends RuntimeException {
 
   public ObjectNotFoundException(URI objectUri, Class<?> clazz, String message) {
     super(message + StringConstant.LEFT_PARENTHESIS + objectUri + StringConstant.COMMA_SPACE
-        + clazz == null ? "unkonwn class"
-            : clazz
-                + StringConstant.RIGHT_PARENTHESIS);
+        + (clazz == null ? "unkonwn class"
+            : clazz.toString())
+        + StringConstant.RIGHT_PARENTHESIS);
   }
 
 }

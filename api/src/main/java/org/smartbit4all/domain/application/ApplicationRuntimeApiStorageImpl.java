@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
+import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -27,7 +28,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.CollectionUtils;
 
 /**
  * The application runtime api implementation via {@link StorageApi}.
@@ -71,7 +71,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    */
   private final ReadWriteLock rwlRuntimes = new ReentrantReadWriteLock();
 
-  @Autowired
+  @Autowired(required = false)
   private StorageApi storageApi;
 
   /**
@@ -127,6 +127,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRuntime() {
+    if (storageCluster == null) {
+      return;
+    }
     long currentTimeMillis = System.currentTimeMillis();
     if (!self.isDone()) {
       // Save the self and set as self. From that time the runtime is officially registered.
@@ -145,13 +148,24 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
   public void maintain() throws InterruptedException, ExecutionException {
+    if (storageCluster == null) {
+      return;
+    }
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     if (self.isDone()) {
       // The application runtime is already exists and must be updated in the storage.
+      try {
         storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
           return r.lastTouchTime(currentTimeMillis);
         });
+      } catch (ObjectNotFoundException e) {
+        log.error("ApplicationRuntime not found! {}, {}", runtimeUri, getBaseUrl());
+        storageCluster.restoreArchived(runtimeUri);
+        storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
+          return r.lastTouchTime(currentTimeMillis);
+        });
+      }
       self.get().getData().setLastTouchTime(currentTimeMillis);
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
@@ -160,22 +174,12 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     // Manage the invalid runtimes, move them into the archive set.
     List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
     Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
-    Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
     for (ApplicationRuntimeData runtimeData : activeRuntimes) {
-      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 3)) {
+      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 5)) {
         // This is an invalid runtime. Remove it from the list and from the set.
         invalidRuntimes.add(runtimeData);
       } else {
-        ApplicationRuntime runtime = runtimeOf(runtimeData);
-        activeRuntimesMap.put(runtimeData.getUuid(), runtime);
-        if (!CollectionUtils.isEmpty(runtime.getData().getApis())) {
-          for (URI api : runtime.getData().getApis()) {
-            List<UUID> runtimes =
-                activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
-            runtimes.add(runtime.getUuid());
-          }
-
-        }
+        activeRuntimesMap.put(runtimeData.getUuid(), runtimeOf(runtimeData));
       }
     }
     // Set the new runtimes. This is an atomic operation there is no need to lock.
@@ -189,12 +193,16 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    storageCluster = storageApi.get(CLUSTER);
-    storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
         .baseUrl(getBaseUrl()).ipAddress(InetAddress.getLocalHost().getHostAddress())
         .serverPort(getPort()).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
     myRuntime = new ApplicationRuntime(runtimeData);
+    try {
+      storageCluster = storageApi.get(CLUSTER);
+      storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    } catch (Exception e) {
+      return;
+    }
   }
 
   private String getBaseUrl() {

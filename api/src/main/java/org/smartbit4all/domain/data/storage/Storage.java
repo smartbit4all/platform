@@ -42,6 +42,8 @@ import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
  */
 public final class Storage {
 
+  public static final String ARCHIVE = "archive";
+
   private static final String SETTINGS = "settings";
 
   /**
@@ -534,8 +536,17 @@ public final class Storage {
    */
   public URI archive(URI uri) {
     if (uri != null && exists(uri)) {
-      URI constructArchiveUri = constructUriForSet(uri, "archive");
+      URI constructArchiveUri = constructUriForSet(uri, ARCHIVE);
       return objectStorage.move(uri, constructArchiveUri) ? constructArchiveUri
+          : null;
+    }
+    return null;
+  }
+
+  public URI restoreArchived(URI uri) {
+    URI constructArchiveUri = constructUriForSet(uri, ARCHIVE);
+    if (uri != null && exists(constructArchiveUri)) {
+      return objectStorage.move(constructArchiveUri, uri) ? uri
           : null;
     }
     return null;
@@ -630,8 +641,14 @@ public final class Storage {
             : StringConstant.EMPTY));
   }
 
-  private final URI constructUriForSet(URI uri, String setName) {
+  public final URI constructUriForSet(URI uri, String setName) {
     return UriUtils.createUri(uri.getScheme(), null, StringConstant.SLASH + setName + uri.getPath(),
+        null);
+  }
+
+  private final URI removeSetNameFromUri(URI uri, String setName) {
+    return UriUtils.createUri(uri.getScheme(), null,
+        uri.getPath().replace(StringConstant.SLASH + setName, ""),
         null);
   }
 
