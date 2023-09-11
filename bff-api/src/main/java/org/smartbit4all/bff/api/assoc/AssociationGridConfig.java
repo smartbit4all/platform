@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.object.bean.Association;
+import org.smartbit4all.api.object.bean.RefObject;
 import com.google.common.base.Strings;
 
 public final class AssociationGridConfig {
@@ -46,8 +46,8 @@ public final class AssociationGridConfig {
     return name;
   }
 
-  SearchIndex<Association> searchIndex(CollectionApi collectionApi) {
-    return collectionApi.searchIndex(searchIndex.schema, searchIndex.name, Association.class);
+  SearchIndex<RefObject> searchIndex(CollectionApi collectionApi) {
+    return collectionApi.searchIndex(searchIndex.schema, searchIndex.name, RefObject.class);
   }
 
   public String[] pathToAssocList() {
@@ -112,7 +112,7 @@ public final class AssociationGridConfig {
       this.name = name;
     }
 
-    public Builder searchIndex(SearchIndex<Association> searchIndex) {
+    public Builder searchIndex(SearchIndex<RefObject> searchIndex) {
       this.searchIndex = SearchIndexIdentifier.of(searchIndex);
       return this;
     }

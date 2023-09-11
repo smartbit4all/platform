@@ -15,7 +15,7 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.object.bean.Association;
+import org.smartbit4all.api.object.bean.RefObject;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -71,7 +71,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
       return;
     }
 
-    final SearchIndex<Association> searchIndex = config.searchIndex(collectionApi);
+    final SearchIndex<RefObject> searchIndex = config.searchIndex(collectionApi);
     final GridModel gridModel = gridModelApi.createGridModel(
         searchIndex.getDefinition().getDefinition(),
         config.columnsToInclude());
