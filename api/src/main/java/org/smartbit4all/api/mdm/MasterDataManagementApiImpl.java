@@ -166,6 +166,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           m = new HashMap<>();
         }
         Map<String, URI> currentMap = m;
+        // TODO merge instead of synchronization...
         m.putAll(options.stream().collect(toMap(o -> o.getDefinition().getName(), o -> {
           URI uri = currentMap.get(o.getDefinition().getName());
           // Set the name of the searchIndex
