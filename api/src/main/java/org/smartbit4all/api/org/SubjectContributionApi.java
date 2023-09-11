@@ -15,4 +15,6 @@ public interface SubjectContributionApi extends ContributionApi {
 
   List<Subject> getUserSubjects(URI userUri);
 
+  List<Subject> getAllSubjects();
+
 }

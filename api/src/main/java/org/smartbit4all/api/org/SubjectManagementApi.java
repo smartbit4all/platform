@@ -44,4 +44,6 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    */
   List<Subject> getMySubjects(String modelName);
 
+  List<Subject> getAllSubjects(String modelName);
+
 }

@@ -29,6 +29,8 @@ import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.ObjectNavigation;
+import org.smartbit4all.api.object.AccessControlInternalApi;
+import org.smartbit4all.api.object.AccessControlInternalApiImpl;
 import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.ApplyChangeApiImpl;
 import org.smartbit4all.api.object.BranchApi;
@@ -276,13 +278,18 @@ public class PlatformApiConfig {
   }
 
   @Bean
-  public SubjectContributionApi SubjectContributionByGroup() {
+  public SubjectContributionApi subjectContributionByGroup() {
     return new SubjectContributionByGroup();
   }
 
   @Bean
-  public SubjectContributionApi SubjectContributionByUser() {
+  public SubjectContributionApi subjectContributionByUser() {
     return new SubjectContributionByUser();
+  }
+
+  @Bean
+  public AccessControlInternalApi accessControlInternalApi() {
+    return new AccessControlInternalApiImpl();
   }
 
   @Bean

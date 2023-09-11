@@ -5,9 +5,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
@@ -38,6 +40,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -66,6 +69,9 @@ class ObjectApiTest {
 
   @Autowired
   private SubjectManagementApi subjectManagementApi;
+
+  @Autowired
+  private AccessControlInternalApi accessControlInternalApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -327,6 +333,7 @@ class ObjectApiTest {
     URI admin = orgApi.saveGroup(new Group().builtIn(true).name("admin"));
     URI normal = orgApi.saveGroup(new Group().builtIn(true).name("normal"));
 
+    URI normalUserUri = createUser("normal user", "Normal Norman", normal);
     URI rootAdmin = createUser("root admin", "root admin", admin);
 
     URI rootUri = objectApi.save(rootNode);
@@ -334,12 +341,65 @@ class ObjectApiTest {
     StoredMap map = collectionApi.map(SCHEMA_ASPECTS, USER_CATEGORY);
     map.put(objectApi.getLatestUri(rootAdmin).toString(), rootUri);
 
-    List<Subject> subjectsOfUser =
-        subjectManagementApi.getSubjectsOfUser(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL, rootAdmin);
+    {
+      List<Subject> subjectsOfUser =
+          subjectManagementApi.getSubjectsOfUser(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL,
+              rootAdmin);
 
-    org.assertj.core.api.Assertions.assertThat(subjectsOfUser.stream().map(s -> s.getRef()))
-        .containsExactlyInAnyOrder(admin, rootAdmin, rootUri);
+      org.assertj.core.api.Assertions.assertThat(subjectsOfUser.stream().map(s -> s.getRef()))
+          .containsExactlyInAnyOrder(admin, rootAdmin, rootUri);
+    }
 
+    List<URI> objectsToEval = new ArrayList<>();
+
+    List<Subject> allSubjects =
+        subjectManagementApi.getAllSubjects(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL);
+
+    {
+      ObjectNode categoryNode =
+          objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 1"));
+      categoryNode.aspects().modify(
+          AccessControlInternalApi.ACL_ASPECT, ACL.class,
+          acl -> new ACL().addEntriesItem(
+              new ACLEntry().subject(getSubject(allSubjects, admin)).addOperationsItem("read"))
+              .addEntriesItem(new ACLEntry().subject(getSubject(allSubjects, normal))
+                  .addOperationsItem("write")));
+      objectsToEval.add(objectApi.save(categoryNode));
+    }
+    {
+      ObjectNode categoryNode =
+          objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 2"));
+      categoryNode.aspects().modify(
+          AccessControlInternalApi.ACL_ASPECT, ACL.class,
+          acl -> new ACL().addEntriesItem(
+              new ACLEntry().subject(getSubject(allSubjects, normal)).addOperationsItem("read"))
+              .addEntriesItem(new ACLEntry().subject(getSubject(allSubjects, rootAdmin))
+                  .addOperationsItem("write")));
+      objectsToEval.add(objectApi.save(categoryNode));
+    }
+    {
+      ObjectNode categoryNode =
+          objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 3"));
+      objectsToEval.add(objectApi.save(categoryNode));
+    }
+    List<String> operations = Arrays.asList("read", "write");
+    {
+      Map<String, Set<String>> operationsByCategory =
+          objectsToEval.stream().map(u -> objectApi.loadLatest(u))
+              .collect(toMap(n -> n.getValueAsString(SampleCategory.NAME),
+                  n -> accessControlInternalApi.getAvailableOperationsOn(rootAdmin, n, operations,
+                      ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL)));
+      org.assertj.core.api.Assertions.assertThat(operationsByCategory)
+          .containsEntry("My Category 1", new HashSet<>(Arrays.asList("read")))
+          .containsEntry("My Category 2", new HashSet<>(Arrays.asList("write")))
+          .containsEntry("My Category 3", new HashSet<>(Arrays.asList("read", "write")));
+    }
+
+  }
+
+  private final Subject getSubject(List<Subject> subjects, URI uri) {
+    return subjects.stream().filter(s -> objectApi.getLatestUri(uri).equals(s.getRef())).findFirst()
+        .get();
   }
 
   private URI createUser(String username, String fullname, URI... group) {

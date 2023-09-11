@@ -11,6 +11,7 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class SampleSubjectContributionApi extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -32,6 +33,14 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
     result.add(new Subject().ref(map.uris().get(objectApi.getLatestUri(userUri).toString()))
         .type(getApiName()));
     return result;
+  }
+
+  @Override
+  public List<Subject> getAllSubjects() {
+    StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
+    return map.uris().values().stream()
+        .map(u -> new Subject().ref(objectApi.getLatestUri(u)).type(getApiName()))
+        .collect(toList());
   }
 
 }
