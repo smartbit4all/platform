@@ -1,19 +1,18 @@
 package org.smartbit4all.bff.api.assoc;
 
-import com.google.common.base.Strings;
-import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.SearchIndex;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.object.bean.Association;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.bean.RefObject;
+import com.google.common.base.Strings;
 
-public final class AssociationConfig {
+public final class AssociationGridConfig {
 
-  public static AssociationConfig.Builder create(String name) {
+  public static AssociationGridConfig.Builder create(String name) {
     return new Builder(name);
   }
 
@@ -28,7 +27,8 @@ public final class AssociationConfig {
 
   private final List<String> supportedWidgetActions;
 
-  private AssociationConfig(String name, SearchIndexIdentifier searchIndex, String[] pathToAssocList,
+  private AssociationGridConfig(String name, SearchIndexIdentifier searchIndex,
+      String[] pathToAssocList,
       List<String> columnsToInclude, List<String> columnsToShow,
       InvocationRequest onGridPageRenderCallback, InvocationRequest onGridSelectionChangedCallback,
       List<String> supportedWidgetActions) {
@@ -46,8 +46,8 @@ public final class AssociationConfig {
     return name;
   }
 
-  SearchIndex<Association> searchIndex(CollectionApi collectionApi) {
-    return collectionApi.searchIndex(searchIndex.schema, searchIndex.name, Association.class);
+  SearchIndex<RefObject> searchIndex(CollectionApi collectionApi) {
+    return collectionApi.searchIndex(searchIndex.schema, searchIndex.name, RefObject.class);
   }
 
   public String[] pathToAssocList() {
@@ -112,7 +112,7 @@ public final class AssociationConfig {
       this.name = name;
     }
 
-    public Builder searchIndex(SearchIndex<Association> searchIndex) {
+    public Builder searchIndex(SearchIndex<RefObject> searchIndex) {
       this.searchIndex = SearchIndexIdentifier.of(searchIndex);
       return this;
     }
@@ -129,6 +129,7 @@ public final class AssociationConfig {
       this.pathToAssocList = Arrays.copyOf(pathToAssocList, pathToAssocList.length);
       return this;
     }
+
     public Builder columnsToUse(String... columnsToUse) {
       if (columnsToUse == null || columnsToUse.length < 1) {
         throw new IllegalArgumentException("columnsToUse cannot be null or empty!");
@@ -163,8 +164,8 @@ public final class AssociationConfig {
       return this;
     }
 
-    public AssociationConfig build() {
-      return new AssociationConfig(
+    public AssociationGridConfig build() {
+      return new AssociationGridConfig(
           name, searchIndex, pathToAssocList, columnsToInclude, columnsToShow,
           onGridPageRenderCallback, onGridSelectionChangedCallback, supportedWidgetActions);
     }

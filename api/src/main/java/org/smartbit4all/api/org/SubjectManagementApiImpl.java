@@ -121,4 +121,13 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     return Collections.emptyList();
   }
 
+  @Override
+  public List<Subject> getAllSubjects(String modelName) {
+    SubjectModel model = getModel(modelName);
+    return model.getDescriptors().entrySet().stream()
+        .flatMap(
+            e -> getContributionApi(e.getValue().getApiName()).getAllSubjects().stream())
+        .collect(toList());
+  }
+
 }

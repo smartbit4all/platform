@@ -28,4 +28,13 @@ public class SubjectContributionByGroup extends ContributionApiImpl
         .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
   }
 
+  @Override
+  public List<Subject> getAllSubjects() {
+    if (orgApi == null) {
+      return Collections.emptyList();
+    }
+    return orgApi.getAllGroups().stream()
+        .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
+  }
+
 }

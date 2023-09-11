@@ -28,7 +28,6 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
-import org.smartbit4all.api.object.bean.Association;
 import org.smartbit4all.api.object.bean.ObjectDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
@@ -36,6 +35,7 @@ import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnum;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.object.bean.RefObject;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
@@ -619,7 +619,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             // single object:
             return SmartLayoutItem.ofFormElement(combobox(key, key, selectionDefinition));
           case LIST:
-            if (propertyDescriptor.getPropertyQualifiedName().equals(Association.class.getName())) {
+            if (propertyDescriptor.getPropertyQualifiedName().equals(RefObject.class.getName())) {
               return SmartLayoutItem.ofComponent(ObjectLayoutBuilder
                   .grid(idPrefix + StringConstant.HYPHEN + key + StringConstant.HYPHEN + "grid"));
             }

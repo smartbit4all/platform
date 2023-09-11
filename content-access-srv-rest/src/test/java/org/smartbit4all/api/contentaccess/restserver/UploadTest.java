@@ -11,11 +11,13 @@ import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.restserver.config.ContentAccessSrvRestTestConfig;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
 
-public class UploadTest extends ContentAccessSrvRestTest {
+class UploadTest extends ContentAccessSrvRestTest {
 
   private static final String UPLOAD_FOLDER_NAME = "upload";
 
@@ -31,17 +33,32 @@ public class UploadTest extends ContentAccessSrvRestTest {
     UUID uuid = contentAccessApi.share(content);
 
     String url = basePath() + "upload";
-    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add("file",
-        new FileSystemResource("./src/test/resources/contentAccessData/lorem-ipsum.pdf"));
-    body.add("uuid", uuid.toString());
-    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
+    final String filepath = "./src/test/resources/contentAccessData/lorem-ipsum.pdf";
 
-    ResponseEntity<Void> resp = restTemplate.postForEntity(url, requestEntity, Void.class);
+    RequestEntity<MultiValueMap<String, HttpEntity<?>>> req = fileUploadRequest(
+        uuid,
+        url,
+        filepath);
+    ResponseEntity<Void> resp = restTemplate.exchange(req, Void.class);
 
     assertTrue(resp.getStatusCode().is2xxSuccessful());
     assertThrows(NoSuchElementException.class, () -> contentAccessApi.download(uuid));
 
+  }
+
+  private RequestEntity<MultiValueMap<String, HttpEntity<?>>> fileUploadRequest(UUID uuid,
+      String url, String filepath) {
+    MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
+    multipartBodyBuilder.part("uuid", uuid); // DO NOT CALL toString()!!!
+    multipartBodyBuilder.part("file",
+        new FileSystemResource(filepath));
+
+    RequestEntity<MultiValueMap<String, HttpEntity<?>>> req = RequestEntity
+        .post(URI.create(url))
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .accept(MediaType.MULTIPART_FORM_DATA)
+        .body(multipartBodyBuilder.build());
+    return req;
   }
 
   @Test
@@ -50,14 +67,14 @@ public class UploadTest extends ContentAccessSrvRestTest {
     content.setDataUri(
         new URI(ContentAccessApi.SCHEME, null, "/" + UPLOAD_FOLDER_NAME + "/zero", null));
     UUID uuid = contentAccessApi.share(content);
-
+    final String filepath = "./src/test/resources/contentAccessData/zero";
     String url = basePath() + "upload";
-    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add("file", new FileSystemResource("./src/test/resources/contentAccessData/zero"));
-    body.add("uuid", uuid.toString());
-    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
+    RequestEntity<MultiValueMap<String, HttpEntity<?>>> fileUploadRequest = fileUploadRequest(
+        uuid,
+        url,
+        filepath);
 
-    ResponseEntity<Void> resp = restTemplate.postForEntity(url, requestEntity, Void.class);
+    ResponseEntity<Void> resp = restTemplate.exchange(fileUploadRequest, Void.class);
 
     assertTrue(resp.getStatusCode().is2xxSuccessful());
     assertThrows(NoSuchElementException.class, () -> contentAccessApi.download(uuid));
