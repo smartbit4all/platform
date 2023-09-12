@@ -25,7 +25,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
-import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
@@ -62,7 +62,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
-import org.smartbit4all.bff.api.search.SearchIndexResultPageApi;
+import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -560,8 +560,8 @@ class MDMApiTest {
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
-      SearchIndexResultPageConfig config =
-          new SearchIndexResultPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
+      SearchPageConfig config =
+          new SearchPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
               .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
               .addGridViewOptionsItem(new GridView()
                   .orderedColumnNames(
@@ -581,7 +581,7 @@ class MDMApiTest {
 
       {
         GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
-            SearchIndexResultPageApi.WIDGET_RESULT_GRID);
+            SearchPageApi.WIDGET_RESULT_GRID);
 
         GridPage page = gridModel.getPage();
 

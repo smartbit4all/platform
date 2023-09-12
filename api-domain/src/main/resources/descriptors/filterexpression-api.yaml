@@ -273,7 +273,7 @@ components:
         - RADIO_BUTTON
         - RANGE
 
-    SearchIndexResultPageConfig:
+    SearchPageConfig:
       type: object
       description: |
         This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter

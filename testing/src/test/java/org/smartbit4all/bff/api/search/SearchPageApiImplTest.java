@@ -5,6 +5,6 @@ import org.smartbit4all.testing.mdm.MDMApiTestConfig;
 
 @ViewApi(value = MDMApiTestConfig.SEARCHINDEX_LIST_PAGE, parent = MDMApiTestConfig.MDM_MAIN_PAGE,
     keepModelOnImplicitClose = true)
-public class SearchIndexResultPageApiImplTest extends SearchIndexResultPageApiImpl {
+public class SearchPageApiImplTest extends SearchPageApiImpl {
 
 }

@@ -1,7 +1,7 @@
 package org.smartbit4all.bff.api.search;
 
 import java.util.UUID;
-import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.PageApi;
@@ -13,12 +13,12 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
  * A generic search result page api that accept different parameters and manages the filter
  * expressions and the result grid. We can extend this page in our project to make it more
  * sophisticated but we can pass parameters also to use the default behavior. The main extension
- * points are the filtering logic if it is not just a simple {@link SearchIndexResultPageConfig}.
+ * points are the filtering logic if it is not just a simple {@link SearchPageConfig}.
  * The actions for the whole page and the grid rows.
  * 
  * @author Peter Boros
  */
-public interface SearchIndexResultPageApi extends PageApi<SearchIndexResultPageConfig> {
+public interface SearchPageApi extends PageApi<SearchPageConfig> {
 
   /**
    * The generic query action that will run the execute search with the current filter expressions.

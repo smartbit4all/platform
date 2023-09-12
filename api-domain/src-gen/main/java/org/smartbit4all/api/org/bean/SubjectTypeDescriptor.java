@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -44,7 +44,7 @@ public class SubjectTypeDescriptor {
   private String name;
 
   public static final String SELECTION_CONFIG = "selectionConfig";
-  private SearchIndexResultPageConfig selectionConfig = null;
+  private SearchPageConfig selectionConfig = null;
 
   public static final String API_NAME = "apiName";
   private String apiName;
@@ -80,7 +80,7 @@ public class SubjectTypeDescriptor {
   }
 
 
-  public SubjectTypeDescriptor selectionConfig(SearchIndexResultPageConfig selectionConfig) {
+  public SubjectTypeDescriptor selectionConfig(SearchPageConfig selectionConfig) {
     
     this.selectionConfig = selectionConfig;
     return this;
@@ -97,14 +97,14 @@ public class SubjectTypeDescriptor {
   @JsonProperty(SELECTION_CONFIG)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public SearchIndexResultPageConfig getSelectionConfig() {
+  public SearchPageConfig getSelectionConfig() {
     return selectionConfig;
   }
 
 
   @JsonProperty(SELECTION_CONFIG)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectionConfig(SearchIndexResultPageConfig selectionConfig) {
+  public void setSelectionConfig(SearchPageConfig selectionConfig) {
     this.selectionConfig = selectionConfig;
   }
 

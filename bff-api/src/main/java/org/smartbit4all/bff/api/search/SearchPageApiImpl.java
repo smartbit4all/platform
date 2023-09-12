@@ -12,7 +12,7 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
-import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.PageApiImpl;
@@ -25,8 +25,8 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultPageConfig>
-    implements SearchIndexResultPageApi {
+public class SearchPageApiImpl extends PageApiImpl<SearchPageConfig>
+    implements SearchPageApi {
 
   @Autowired
   private CollectionApi collectionsApi;
@@ -47,7 +47,7 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
       if (pageConfig == null) {
         pageConfig = objectApi
             .loadLatest(view.getObjectUri())
-            .getObject(SearchIndexResultPageConfig.class);
+            .getObject(SearchPageConfig.class);
       }
       searchIndex = collectionsApi.searchIndex(pageConfig.getSearchIndexSchema(),
           pageConfig.getSearchIndexName());
@@ -69,7 +69,7 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
 
     protected SearchIndex<?> searchIndex;
 
-    protected SearchIndexResultPageConfig pageConfig;
+    protected SearchPageConfig pageConfig;
 
     protected List<URI> uris;
 
@@ -81,12 +81,12 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
 
   }
 
-  public SearchIndexResultPageApiImpl() {
-    super(SearchIndexResultPageConfig.class);
+  public SearchPageApiImpl() {
+    super(SearchPageConfig.class);
   }
 
   @Override
-  public SearchIndexResultPageConfig initModel(View view) {
+  public SearchPageConfig initModel(View view) {
     PageContext ctx = new PageContext(view.getUuid());
 
     // Setup the available actions.

@@ -37,15 +37,15 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
 @JsonPropertyOrder({
-  SearchIndexResultPageConfig.URI,
-  SearchIndexResultPageConfig.FILTER_MODEL,
-  SearchIndexResultPageConfig.SEARCH_INDEX_SCHEMA,
-  SearchIndexResultPageConfig.SEARCH_INDEX_NAME,
-  SearchIndexResultPageConfig.GRID_VIEW_OPTIONS
+  SearchPageConfig.URI,
+  SearchPageConfig.FILTER_MODEL,
+  SearchPageConfig.SEARCH_INDEX_SCHEMA,
+  SearchPageConfig.SEARCH_INDEX_NAME,
+  SearchPageConfig.GRID_VIEW_OPTIONS
 })
-@JsonTypeName("SearchIndexResultPageConfig")
+@JsonTypeName("SearchPageConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SearchIndexResultPageConfig {
+public class SearchPageConfig {
   public static final String URI = "uri";
   private URI uri;
 
@@ -61,10 +61,10 @@ public class SearchIndexResultPageConfig {
   public static final String GRID_VIEW_OPTIONS = "gridViewOptions";
   private List<GridView> gridViewOptions = new ArrayList<>();
 
-  public SearchIndexResultPageConfig() { 
+  public SearchPageConfig() { 
   }
 
-  public SearchIndexResultPageConfig uri(URI uri) {
+  public SearchPageConfig uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -92,7 +92,7 @@ public class SearchIndexResultPageConfig {
   }
 
 
-  public SearchIndexResultPageConfig filterModel(FilterExpressionBuilderModel filterModel) {
+  public SearchPageConfig filterModel(FilterExpressionBuilderModel filterModel) {
     
     this.filterModel = filterModel;
     return this;
@@ -120,7 +120,7 @@ public class SearchIndexResultPageConfig {
   }
 
 
-  public SearchIndexResultPageConfig searchIndexSchema(String searchIndexSchema) {
+  public SearchPageConfig searchIndexSchema(String searchIndexSchema) {
     
     this.searchIndexSchema = searchIndexSchema;
     return this;
@@ -147,7 +147,7 @@ public class SearchIndexResultPageConfig {
   }
 
 
-  public SearchIndexResultPageConfig searchIndexName(String searchIndexName) {
+  public SearchPageConfig searchIndexName(String searchIndexName) {
     
     this.searchIndexName = searchIndexName;
     return this;
@@ -174,13 +174,13 @@ public class SearchIndexResultPageConfig {
   }
 
 
-  public SearchIndexResultPageConfig gridViewOptions(List<GridView> gridViewOptions) {
+  public SearchPageConfig gridViewOptions(List<GridView> gridViewOptions) {
     
     this.gridViewOptions = gridViewOptions;
     return this;
   }
 
-  public SearchIndexResultPageConfig addGridViewOptionsItem(GridView gridViewOptionsItem) {
+  public SearchPageConfig addGridViewOptionsItem(GridView gridViewOptionsItem) {
     this.gridViewOptions.add(gridViewOptionsItem);
     return this;
   }
@@ -216,12 +216,12 @@ public class SearchIndexResultPageConfig {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SearchIndexResultPageConfig searchIndexResultPageConfig = (SearchIndexResultPageConfig) o;
-    return Objects.equals(this.uri, searchIndexResultPageConfig.uri) &&
-        Objects.equals(this.filterModel, searchIndexResultPageConfig.filterModel) &&
-        Objects.equals(this.searchIndexSchema, searchIndexResultPageConfig.searchIndexSchema) &&
-        Objects.equals(this.searchIndexName, searchIndexResultPageConfig.searchIndexName) &&
-        Objects.equals(this.gridViewOptions, searchIndexResultPageConfig.gridViewOptions);
+    SearchPageConfig searchPageConfig = (SearchPageConfig) o;
+    return Objects.equals(this.uri, searchPageConfig.uri) &&
+        Objects.equals(this.filterModel, searchPageConfig.filterModel) &&
+        Objects.equals(this.searchIndexSchema, searchPageConfig.searchIndexSchema) &&
+        Objects.equals(this.searchIndexName, searchPageConfig.searchIndexName) &&
+        Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
   }
 
   @Override
@@ -232,7 +232,7 @@ public class SearchIndexResultPageConfig {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SearchIndexResultPageConfig {\n");
+    sb.append("class SearchPageConfig {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
