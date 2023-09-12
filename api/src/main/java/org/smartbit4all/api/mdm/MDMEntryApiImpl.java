@@ -291,8 +291,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   public final String getListName() {
     return descriptor.getPublishedListName() != null
-        ? descriptor.getPublishedListName()
+        ? amendListName()
         : descriptor.getName() + "List";
+  }
+
+  private String amendListName() {
+    String publishedListName = descriptor.getPublishedListName();
+    return publishedListName.endsWith("List") || !Boolean.TRUE.equals(descriptor.getIsValueSet())
+        ? publishedListName
+        : publishedListName + "List";
   }
 
   @Override

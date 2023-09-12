@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +23,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
@@ -47,6 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
 public class ObjectExtensionApiImpl implements ObjectExtensionApi {
+
+  private static final Logger log = LoggerFactory.getLogger(ObjectExtensionApiImpl.class);
 
   // TODO: We lose type information HERE!!!
   private static ObjectPropertyDescriptor inlinePropertyDescriptor(
@@ -251,14 +254,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
               + " ]!");
     }
 
-    Map<String, PropertyDefinitionData> propertiesByName = definition.getPropertiesByName();
-    Map<String, ReferenceDefinition> outgoingReferences = definition.getOutgoingReferences();
-
-    final Map<String, ObjectPropertyDescriptor> propertyDescriptors = new HashMap<>();
-    propertyDescriptors.putAll(propertiesByName.entrySet().stream()
-        .collect(toMap(Map.Entry::getKey, e -> inlinePropertyDescriptor(e.getValue()))));
-    propertyDescriptors.putAll(outgoingReferences.entrySet().stream()
-        .collect(toMap(Map.Entry::getKey, e -> refPropertyDescriptor(e.getValue()))));
+    final Map<String, ObjectPropertyDescriptor> propertyDescriptors =
+        describeProperties(definition);
 
     // we save a shallow copy for later:
     final Map<String, ObjectPropertyDescriptor> definitionProperties =
@@ -284,6 +281,18 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
         .layoutDescriptor(createDefaultLayout(definitionName, evaluationResult.layoutElements));
 
     return saveAndAddToGlobalMap(definitionName, objectDescriptor);
+  }
+
+  private Map<String, ObjectPropertyDescriptor> describeProperties(ObjectDefinition<?> definition) {
+    Map<String, PropertyDefinitionData> propertiesByName = definition.getPropertiesByName();
+    Map<String, ReferenceDefinition> outgoingReferences = definition.getOutgoingReferences();
+
+    final Map<String, ObjectPropertyDescriptor> propertyDescriptors = new HashMap<>();
+    propertyDescriptors.putAll(propertiesByName.entrySet().stream()
+        .collect(toMap(Map.Entry::getKey, e -> inlinePropertyDescriptor(e.getValue()))));
+    propertyDescriptors.putAll(outgoingReferences.entrySet().stream()
+        .collect(toMap(Map.Entry::getKey, e -> refPropertyDescriptor(e.getValue()))));
+    return propertyDescriptors;
   }
 
   @Override
@@ -336,24 +345,23 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
         .uris()
         .containsKey(definitionName);
     if (!knownExtension) {
-      throw new IllegalArgumentException("Cannot evaluate the [ " + definitionName
-          + " ] object descriptor, for it does not exist! Try calling 'create()'!");
+      log.debug("Unknown definition [ {} ], trying to create descriptor with ObjectDefinition API",
+          definitionName);
     }
 
-    final ObjectDescriptor objectDescriptor = objectApi
-        .load(collectionApi
+    final URI descriptorUri = Optional
+        .ofNullable(collectionApi
             .map(SCHEMA, EXTENSION_MAP)
             .uris()
             .get(definitionName))
+        .orElseGet(() -> describe(objectDefinitionApi.definition(definitionName)));
+    final ObjectDescriptor objectDescriptor = objectApi
+        .load(descriptorUri)
         .getObject(ObjectDescriptor.class);
-    final List<ObjectPropertyDescriptor> propertyDescriptors = enumerateProps(objectDescriptor);
-    final List<SmartLayoutItem> layoutElements =
-        new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
-            .evaluate(propertyDescriptors).layoutElements;
 
-    // TODO: this is horrendous, refactor to generate a layout without save is incoming!
-    final URI tempUri = createDefaultLayout("temp-layout", layoutElements);
-    return objectApi.loadLatest(tempUri).getObject(ObjectLayoutDescriptor.class);
+    return objectApi
+        .loadLatest(objectDescriptor.getLayoutDescriptor())
+        .getObject(ObjectLayoutDescriptor.class);
   }
 
   /**
@@ -393,7 +401,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
         .objectUri(null)
         .qualifiedName(definition.getQualifiedName())
         .storageSchema(storageSchema)
-        .objectAsMap(new LinkedHashMap<>())
+        .objectAsMap(new ObjectMap(definition) /* new LinkedHashMap<>() */)
         .state(ObjectNodeState.NEW)
         .versionNr(null);
 
@@ -420,12 +428,30 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
         .map(n -> n.getObject(ObjectDescriptor.class))
         .map(this::enumerateProps)
         .map(props -> new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
-            .evaluateWithoutLayout(props))
+            .evaluateStructure(props))
         .map(res -> {
           ObjectDefinition<?> definition = objectDefinitionApi.baseDefinition(definitionName);
           return registerObjectDefinition(definitionName, definition, res);
         })
         .orElse(null);
+  }
+
+  private URI describe(ObjectDefinition<?> definition) {
+    Objects.requireNonNull(definition, "definition cannot be null!");
+
+    final String definitionName = definition.getQualifiedName();
+
+    Map<String, ObjectPropertyDescriptor> propertiesByName = describeProperties(definition);
+    PropertyEvaluationResult evaluationResult =
+        new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
+            .evaluate(propertiesByName.values());
+
+    final ObjectDescriptor objectDescriptor = new ObjectDescriptor()
+        .definitionProperties(savePropertyDescriptors(propertiesByName.values()))
+        .name(definitionName)
+        .layoutDescriptor(createDefaultLayout(definitionName, evaluationResult.layoutElements));
+
+    return saveAndAddToGlobalMap(definitionName, objectDescriptor);
   }
 
   private static final class PropertyDescriptorEvaluator {
@@ -439,29 +465,34 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     }
 
     private PropertyEvaluationResult evaluate(
-        Collection<ObjectPropertyDescriptor> propertyDescriptors, boolean layout) {
+        Collection<ObjectPropertyDescriptor> propertyDescriptors, boolean layout,
+        boolean structure) {
       final List<PropertyDefinitionData> propertyDefinitions = new ArrayList<>();
       final List<ReferenceDefinition> referenceDefinitions = new ArrayList<>();
       final List<SmartLayoutItem> layoutElements = new ArrayList<>();
 
-      for (ObjectPropertyDescriptor opd : propertyDescriptors) {
-        final String propertyName = opd.getPropertyName();
-        if (PropertyKindEnum.INLINE == opd.getPropertyKind()) {
-          PropertyDefinitionData propDefData = new PropertyDefinitionData()
-              .name(propertyName)
-              .typeClass(getInlinePropertyDefinitionTypeClass(opd));
-          propertyDefinitions.add(propDefData);
 
-        } else if (PropertyKindEnum.REFERENCE == opd.getPropertyKind()) {
-          final String referencedTypeQualifiedName = opd.getReferencedTypeQualifiedName();
-          ReferenceDefinition refDefinition = new ReferenceDefinition(new ReferenceDefinitionData()
-              .sourceObjectName(definitionName)
-              .propertyPath(propertyName)
-              .propertyKind(opd.getPropertyStructure())
-              .targetObjectName(referencedTypeQualifiedName)
-              .aggregation(opd.getAggregation()));
-          refDefinition.setTarget(objectDefinitionApi.definition(referencedTypeQualifiedName));
-          referenceDefinitions.add(refDefinition);
+      for (ObjectPropertyDescriptor opd : propertyDescriptors) {
+        if (structure) {
+          final String propertyName = opd.getPropertyName();
+          if (PropertyKindEnum.INLINE == opd.getPropertyKind()) {
+            PropertyDefinitionData propDefData = new PropertyDefinitionData()
+                .name(propertyName)
+                .typeClass(getInlinePropertyDefinitionTypeClass(opd));
+            propertyDefinitions.add(propDefData);
+
+          } else if (PropertyKindEnum.REFERENCE == opd.getPropertyKind()) {
+            final String referencedTypeQualifiedName = opd.getReferencedTypeQualifiedName();
+            ReferenceDefinition refDefinition =
+                new ReferenceDefinition(new ReferenceDefinitionData()
+                    .sourceObjectName(definitionName)
+                    .propertyPath(propertyName)
+                    .propertyKind(opd.getPropertyStructure())
+                    .targetObjectName(referencedTypeQualifiedName)
+                    .aggregation(opd.getAggregation()));
+            refDefinition.setTarget(objectDefinitionApi.definition(referencedTypeQualifiedName));
+            referenceDefinitions.add(refDefinition);
+          }
         }
 
         if (layout) {
@@ -481,12 +512,17 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
     private PropertyEvaluationResult evaluate(
         Collection<ObjectPropertyDescriptor> propertyDescriptors) {
-      return evaluate(propertyDescriptors, true);
+      return evaluate(propertyDescriptors, true, true);
     }
 
-    private PropertyEvaluationResult evaluateWithoutLayout(
+    private PropertyEvaluationResult evaluateStructure(
         Collection<ObjectPropertyDescriptor> propertyDescriptors) {
-      return evaluate(propertyDescriptors, false);
+      return evaluate(propertyDescriptors, false, true);
+    }
+
+    private PropertyEvaluationResult evaluateLayout(
+        Collection<ObjectPropertyDescriptor> propertyDescriptors) {
+      return evaluate(propertyDescriptors, true, false);
     }
 
     private String getInlinePropertyDefinitionTypeClass(ObjectPropertyDescriptor opd) {

@@ -33,4 +33,8 @@ public interface ObjectLayoutApi {
 
   ObjectDisplay getObjectDisplay(URI objectUri, URI descriptorUri);
 
+  ObjectDisplay getObjectDisplay(URI objectUri, ObjectLayoutDescriptor descriptor);
+
+  ObjectDisplay getSketchDisplay(ObjectNode objectNode, ObjectLayoutDescriptor descriptor);
+
 }

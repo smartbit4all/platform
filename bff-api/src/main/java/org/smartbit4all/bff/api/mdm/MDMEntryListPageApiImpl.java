@@ -1,12 +1,12 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -25,7 +25,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
-import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
@@ -38,6 +38,9 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDisplay;
+import org.smartbit4all.core.object.ObjectExtensionApi;
+import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +73,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
   @Autowired
   protected SmartLayoutApi smartLayoutApi;
+
+  @Autowired
+  private ObjectExtensionApi objectExtensionApi;
+  @Autowired
+  private ObjectLayoutApi objectLayoutApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -228,9 +236,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     showEditorView(viewUuid, getContextByViewUUID(viewUuid), null);
   }
 
-  private final Map<String, Object> createNewObject(MDMEntryDescriptor entryDescriptor) {
-    ObjectDefinition<?> definition = objectApi.definition(entryDescriptor.getTypeQualifiedName());
-    return definition.newInstanceAsMap();
+  private final ObjectNode createNewObject(MDMEntryDescriptor entryDescriptor) {
+    // ObjectDefinition<?> definition =
+    // objectApi.definition(entryDescriptor.getTypeQualifiedName());
+    // return definition.newInstanceAsMap();
+    final String qualifiedName = entryDescriptor.getTypeQualifiedName();
+    return objectExtensionApi.newInstance(qualifiedName, "my-schema");
   }
 
   @Override
@@ -255,14 +266,21 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   protected void showEditorView(UUID viewUuid, PageContext ctx,
       BranchedObjectEntry branchedObjectEntry) {
     ObjectDefinition<?> objectDefinition = ctx.getObjectDefinition();
-    List<String> fields = objectDefinition.getProperties()
-        .stream()
-        .map(PropertyDefinitionData::getName)
-        .filter(Objects::nonNull)
-        .filter(propName -> !propName.endsWith(ObjectDefinition.URI_PROPERTY))
-        .collect(toList());
-    SmartLayoutDefinition layout = smartLayoutApi.createLayout(objectDefinition.getDefinitionData(),
-        fields);
+
+    // Model:
+    final ObjectNode modelNode = (branchedObjectEntry == null)
+        ? createNewObject(ctx.entryDescriptor)
+        : objectApi.load(getEditingObjectUri(branchedObjectEntry));
+    // Layout:
+    final ObjectLayoutDescriptor layoutDescriptor = objectExtensionApi
+        .generateDefaultLayout(objectDefinition.getQualifiedName());
+    final ObjectDisplay display = objectLayoutApi.getSketchDisplay(modelNode, layoutDescriptor);
+    SmartLayoutDefinition layout = display.getDefaultForms().stream()
+        .map(SmartLayoutDefinition::getWidgets)
+        .flatMap(List::stream)
+        .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
+
+
     viewApi.showView(
         new View()
             .viewName(getEditorViewName(ctx))
@@ -275,15 +293,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
             .actions(Arrays.asList(
                 new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
                 new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
-            .model(branchedObjectEntry == null ? createNewObject(ctx.entryDescriptor)
-                : constructEditingObject(branchedObjectEntry)));
+            .model(modelNode.getObjectAsMap()));
   }
 
+  @Deprecated
   private final Object constructEditingObject(
       BranchedObjectEntry branchedObjectEntry) {
-    URI uri = branchedObjectEntry.getBranchUri() != null ? branchedObjectEntry.getBranchUri()
+    URI uri = branchedObjectEntry.getBranchUri() != null
+        ? branchedObjectEntry.getBranchUri()
         : branchedObjectEntry.getOriginalUri();
     return objectApi.load(uri).getObjectAsMap();
+  }
+
+  private URI getEditingObjectUri(BranchedObjectEntry branchedObjectEntry) {
+    return (branchedObjectEntry.getBranchUri() != null)
+        ? branchedObjectEntry.getBranchUri()
+        : branchedObjectEntry.getOriginalUri();
   }
 
   @Override

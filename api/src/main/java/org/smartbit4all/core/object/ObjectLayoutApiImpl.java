@@ -91,6 +91,11 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     return getObjectDisplayInternal(objectUri, layoutDescriptor);
   }
 
+  @Override
+  public ObjectDisplay getObjectDisplay(URI objectUri, ObjectLayoutDescriptor descriptor) {
+    return getObjectDisplayInternal(objectUri, descriptor);
+  }
+
   private ObjectDisplay getObjectDisplayInternal(URI objectUri,
       ObjectLayoutDescriptor layoutDescriptor) {
     List<ComponentConstraint> componentConstraints = new ArrayList<>();
@@ -167,6 +172,11 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     return new ObjectPropertyResolverContextObject()
         .name(THIS_CONTEXT)
         .uri(objectUri);
+  }
+
+  @Override
+  public ObjectDisplay getSketchDisplay(ObjectNode objectNode, ObjectLayoutDescriptor descriptor) {
+    return new ObjectDisplay(descriptor.getLayouts(), new ArrayList<>(), new ArrayList<>());
   }
 
 }
