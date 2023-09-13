@@ -17,6 +17,8 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
@@ -28,11 +30,13 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -396,6 +400,24 @@ class ObjectApiTest {
     }
 
   }
+
+  @Test
+  void testObjectPropertyFormat() {
+    ObjectNode rootNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("Root").singleLink(new SampleLinkObject().linkName("link")));
+    URI uri = objectApi.save(rootNode);
+    ObjectPropertyResolver resolver = objectApi.resolver();
+    resolver.addContextObject("object", uri);
+    String resolve = resolver.resolve(new ObjectPropertyFormatter().formatString("{0} ({1})")
+        .addParametersItem(
+            new ObjectPropertyFormatterParameter().propertyUri(URI.create("object:/#name")))
+        .addParametersItem(new ObjectPropertyFormatterParameter()
+            .propertyUri(URI.create("object:/singleLink#linkName"))));
+
+    Assertions.assertEquals("Root (link)", resolve);
+  }
+
+
 
   private final Subject getSubject(List<Subject> subjects, URI uri) {
     return subjects.stream().filter(s -> objectApi.getLatestUri(uri).equals(s.getRef())).findFirst()

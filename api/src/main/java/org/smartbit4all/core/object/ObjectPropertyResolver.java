@@ -1,8 +1,8 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +12,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.lang.NonNull;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object property resolver is the central logic that can help to access the values in an
@@ -296,6 +299,22 @@ public final class ObjectPropertyResolver {
   public ObjectNode getContextObjectNode(String objectName) {
     ContextObject contextObject = contextObjects.get(objectName);
     return contextObject != null ? contextObject.objectNode() : null;
+  }
+
+  /**
+   * This special resolver accept a formatter that contains the message format string (currently in
+   * the format of the Java {@link MessageFormat}). It also contains the parameter definition also.
+   * 
+   * @param formatter The formatter.
+   * @return The result of the format with all the parameters resolved by the context.
+   */
+  public String resolve(ObjectPropertyFormatter formatter) {
+    if (formatter == null) {
+      return StringConstant.EMPTY;
+    }
+    List<Object> properties =
+        formatter.getParameters().stream().map(p -> resolve(p.getPropertyUri())).collect(toList());
+    return MessageFormat.format(formatter.getFormatString(), properties.toArray());
   }
 
 }

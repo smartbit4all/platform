@@ -720,3 +720,32 @@ components:
             successfully save and load objects.
           type: string
           format: uri
+
+    ObjectPropertyFormatter:
+      description: |
+        This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat
+        but later on it can use different formatters if it is necessary.
+      type: object
+      required: [parameters]
+      properties:
+        formatString:
+          description: |
+            The format string by the syntactical rules of the formatter.
+          type: string
+        parameters:
+          description: |
+            The properties in order bound to the given parameter.
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectPropertyFormatterParameter'
+                    
+    ObjectPropertyFormatterParameter:
+      description: |
+        This setting information to resolve a necessary parameters for the message format.
+      type: object
+      properties:
+        propertyUri:
+          description: |
+            The uri of the property in the resolver context. By default the object itself is named as object.
+          type: string
+          format: uri
