@@ -375,7 +375,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
             String message = String.format(
                 "The save of the %s object is overwriting the %s version with the modification of %s earlier version. It could lead loss of modification data!",
                 object.getUri(), currentVersion, object.getVersion());
-            log.warn(message, new Exception());
+            try {
+              throw new ObjectModificationException(message);
+            } catch (ObjectModificationException e) {
+              log.warn(e.getMessage(), e);
+            }
           }
         }
       }
