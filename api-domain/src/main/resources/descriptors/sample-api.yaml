@@ -7,7 +7,7 @@ info:
     email: info@it4all.hu
   version: 1.0.0
 tags:
-- name: Storage
+  - name: Storage
 paths:
   /nope:
     post:
@@ -15,7 +15,7 @@ paths:
       responses:
         '200':
           description: nope
-                
+
 components:
   schemas:
     SampleCategory:
@@ -152,3 +152,43 @@ components:
           type: string
         description:
           type: string
+
+    SampleExtensibleObject:
+      type: object
+      description: |
+        A recursive category holder for other categories and different items.
+      required: [uri, subCategories, containerItems, links, keyWords]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        color:
+          enum: [RED, BLACK, GREEN, WHITE]
+        cost:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        subCategories:
+          type: array
+          items:
+            type: string
+            format: uri
+        containerItems:
+          type: array
+          items:
+            type: string
+            format: uri
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleLinkObject'
+        singleLink:
+          $ref: '#/components/schemas/SampleLinkObject'
+        keyWords:
+          type: array
+          items:
+            type: string

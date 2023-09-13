@@ -17,6 +17,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnu
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier;
@@ -46,7 +47,7 @@ class ObjectExtensionTest {
       + " contains the old and new properties, and the generated layout contains all of them as"
       + " well.")
   void extendingASingleObjectDefinitionWithAStringPropertyWorks() throws Exception {
-    final String extensionName = SampleCategory.class.getName() + ".ColouredBean";
+    final String extensionName = SampleExtensibleObject.class.getName() + ".ColouredBean";
     final String favouriteColourProp = "favouriteColour";
 
     final ObjectDefinition<SampleCategory> sampleCategoryDef = objectDefinitionApi
@@ -110,7 +111,7 @@ class ObjectExtensionTest {
       throws Exception {
     final String schema = "extension-test";
 
-    final String extensionName = SampleCategory.class.getName() + ".Owned";
+    final String extensionName = SampleExtensibleObject.class.getName() + ".Owned";
     final String ownerProp = "owner";
     // there is no real value set, but that is no concern. We just want to test if the default
     // layout is indeed generated with a combobox:
