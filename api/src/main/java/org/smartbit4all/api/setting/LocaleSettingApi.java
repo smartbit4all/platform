@@ -144,6 +144,19 @@ public final class LocaleSettingApi implements InitializingBean {
     return get(getLocale(), keys);
   }
 
+  /**
+   * Evaluates the locale specific title of the given enum value.
+   * 
+   * @param enumValue The enum value.
+   * @return
+   */
+  public final String get(Enum<?> enumValue) {
+    if (enumValue == null) {
+      return StringConstant.EMPTY;
+    }
+    return get(getLocale(), enumValue.getClass().getName(), enumValue.name());
+  }
+
   public final String get(Locale locale, String... keys) {
     if (keys == null || keys.length == 0) {
       return null;
