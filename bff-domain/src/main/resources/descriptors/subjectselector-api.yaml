@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: Subject selector api
+  description: Subject selector ui api.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: SubjectSelector
+paths: {}
+components:
+  schemas:
+    SubjectSelectorPageModel:
+      type: object
+      properties:
+        sujectModelName:
+          type: string
+        selectedSubjectName:
+          type: string
+        selectedDescriptor:
+          type: SubjectTypeDescriptor
+        descriptors:
+          type: object
+          description: The subject descriptors identified by their unique name.
+          additionalProperties:
+           $ref: '#/components/schemas/SubjectTypeDescriptor'      
+         

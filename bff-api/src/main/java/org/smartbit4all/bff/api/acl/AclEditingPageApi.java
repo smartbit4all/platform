@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.acl;
 
+import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.view.PageApi;
@@ -17,4 +18,10 @@ public interface AclEditingPageApi extends PageApi<ACL> {
   @ActionHandler(SAVE)
   void saveEditing(UUID viewUuid, UiActionRequest request);
 
+  String OPEN_SUBJECT_SELECTOR = "OPEN_SUBJECT_SELECTOR";
+
+  @ActionHandler(OPEN_SUBJECT_SELECTOR)
+  void openSubjectSelector(UUID viewUuid, UiActionRequest request);
+
+  void handleSubjectSelected(UUID viewUuid, URI subjectUri);
 }
