@@ -8,17 +8,18 @@ import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 
 /**
  * A generic search result page api that accept different parameters and manages the filter
  * expressions and the result grid. We can extend this page in our project to make it more
  * sophisticated but we can pass parameters also to use the default behavior. The main extension
- * points are the filtering logic if it is not just a simple {@link SearchPageConfig}.
- * The actions for the whole page and the grid rows.
- * 
+ * points are the filtering logic if it is not just a simple {@link SearchPageConfig}. The actions
+ * for the whole page and the grid rows.
+ *
  * @author Peter Boros
  */
-public interface SearchPageApi extends PageApi<SearchPageConfig> {
+public interface SearchPageApi extends PageApi<SearchPageModel> {
 
   /**
    * The generic query action that will run the execute search with the current filter expressions.
@@ -46,7 +47,7 @@ public interface SearchPageApi extends PageApi<SearchPageConfig> {
 
   /**
    * The grid page rendering callback parameter.
-   * 
+   *
    * <p>
    * An {@link InvocationRequest} is expected to be passed under this parameter key. The request
    * must accept a {@link GridPage} as its first parameter, and must return a non-null
@@ -74,7 +75,7 @@ public interface SearchPageApi extends PageApi<SearchPageConfig> {
 
   /**
    * Executes the query action and refresh the result grid.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -83,7 +84,7 @@ public interface SearchPageApi extends PageApi<SearchPageConfig> {
 
   /**
    * It closes the view and return to the parent.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -92,7 +93,7 @@ public interface SearchPageApi extends PageApi<SearchPageConfig> {
 
   /**
    * Cancel the editing of the given object. Normally it closes the view and return to the parent.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */

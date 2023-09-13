@@ -8,12 +8,15 @@ dependencies {
 
 smartbit4all {
   openApi {
-    modelPackage = "org.smartbit4all.bff.api.groupselector.bean"
+    modelPackagePrefix = "org.smartbit4all.bff.api"
+    modelPackagePostfix = "bean"
   	dateTimeMapping = "java.time.LocalDateTime"
     importMappings = [
      "UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
      "User": "org.smartbit4all.api.org.bean.User",
-     "Group": "org.smartbit4all.api.org.bean.Group"
+     "Group": "org.smartbit4all.api.org.bean.Group",
+     "FilterExpressionBuilderModel": "org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel",
+     "FilterExpressionFieldList": "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",
     ]
   }
 }

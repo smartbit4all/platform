@@ -10,6 +10,8 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
@@ -20,16 +22,22 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
+import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SearchPageApiImpl extends PageApiImpl<SearchPageConfig>
+public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
 
+  /**
+   * SearchPageConfig variable which is used by this page.
+   */
+  public static final String VAR_SEARCHPAGECONFIG = "VAR_SEARCHPAGECONFIG";
+
   @Autowired
-  private CollectionApi collectionsApi;
+  private CollectionApi collectionApi;
 
   @Autowired
   private GridModelApi gridModelApi;
@@ -43,19 +51,22 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageConfig>
       super();
       this.viewUUID = viewUUID;
       view = viewApi.getView(viewUUID);
-      ObjectMapHelper parameters = parameters(view);
+      ObjectMapHelper variables = variables(view);
+      pageConfig = variables.get(VAR_SEARCHPAGECONFIG, SearchPageConfig.class);
       if (pageConfig == null) {
         pageConfig = objectApi
             .loadLatest(view.getObjectUri())
             .getObject(SearchPageConfig.class);
+        variables.getMap().put(VAR_SEARCHPAGECONFIG, pageConfig);
       }
-      searchIndex = collectionsApi.searchIndex(pageConfig.getSearchIndexSchema(),
+      ObjectMapHelper parameters = parameters(view);
+      searchIndex = collectionApi.searchIndex(pageConfig.getSearchIndexSchema(),
           pageConfig.getSearchIndexName());
       uris = parameters.getAsList(PARAM_URI_LIST, URI.class);
       StoredCollectionDescriptor listDescriptor =
           parameters.get(PARAM_STORED_LIST, StoredCollectionDescriptor.class);
       if (listDescriptor != null) {
-        list = collectionsApi.list(listDescriptor.getSchema(), listDescriptor.getName());
+        list = collectionApi.list(listDescriptor.getSchema(), listDescriptor.getName());
       }
       selectionCallback = parameters.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
       gridPageRenderCallback = parameters.get(
@@ -82,11 +93,11 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageConfig>
   }
 
   public SearchPageApiImpl() {
-    super(SearchPageConfig.class);
+    super(SearchPageModel.class);
   }
 
   @Override
-  public SearchPageConfig initModel(View view) {
+  public SearchPageModel initModel(View view) {
     PageContext ctx = new PageContext(view.getUuid());
 
     // Setup the available actions.
@@ -111,8 +122,19 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageConfig>
 
     refreshGrid(ctx);
 
-    return ctx.pageConfig;
-
+    FilterExpressionBuilderModel filterModel = ctx.pageConfig.getFilterModel();
+    String pageTitle = "";
+    FilterExpressionFieldList filters = null;
+    if (filterModel != null) {
+      pageTitle = filterModel.getLabel();
+      filters = filterModel.getWorkplaceList();
+    }
+    // if (filters == null) {
+    // filters = ctx.searchIndex.allFilterFields();
+    // }
+    return new SearchPageModel()
+        .pageTitle(pageTitle)
+        .filters(filters);
   }
 
   private void refreshGrid(PageContext ctx) {

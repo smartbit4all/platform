@@ -1,0 +1,21 @@
+openapi: 3.0.1
+info:
+  title: Generic PageApi
+  description: Generic page api models.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: GenericPageApi
+paths: {}
+components:
+  schemas:
+    SearchPageModel:
+      type: object
+      properties:
+        pageTitle:
+          type: string
+          description: Title of this page.
+        filters:
+          type: FilterExpressionFieldList
