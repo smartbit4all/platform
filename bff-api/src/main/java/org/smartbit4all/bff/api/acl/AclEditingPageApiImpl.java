@@ -106,6 +106,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
         acl -> updatedAcl);
 
     objectApi.save(rootNode);
+    viewApi.closeView(viewUuid);
 
   }
 
@@ -117,19 +118,29 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper parameters = parameters(view);
     ACL acl = getModel(viewUuid);
-    acl.addEntriesItem(new ACLEntry().subject(new Subject().ref(subjectUri)));
+
+    if (!checkSubjectIsAlreadyInAcl(acl, subjectUri)) {
+      acl.addEntriesItem(new ACLEntry().subject(new Subject().ref(subjectUri)));
+    } else {
+      throw new RuntimeException(
+          String.format("Subject reference by %s is already in ACL", subjectUri));
+    }
+
 
     List<String> operations = parameters.getAsList(OPERATIONS, String.class);
-
 
     view.getLayouts().get(ACL_MATRIX)
         .setWidgets(List.of(
             new SmartWidgetDefinition().label(ACL).key(ACL_MATRIX).type(SmartFormWidgetType.MATRIX)
                 .matrix(consturctMatrixModel(acl, operations))));
 
-
     setModel(viewUuid, acl);
   }
 
+  private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
+    return acl.getEntries().stream().map(entry -> entry.getSubject().getRef()).collect(toList())
+        .contains(subjectUri);
 
+
+  }
 }
