@@ -29,7 +29,7 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
   /**
    * The close action that will close the list.
    */
-  static final String ACTION_CLOSE = "CLOSE";
+  static final String ACTION_CLOSE = "CLOSE_SEARCH_PAGE";
 
   /**
    * The action that will close the list and pass the selected rows to the caller view. This
