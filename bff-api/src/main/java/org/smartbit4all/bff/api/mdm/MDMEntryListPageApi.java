@@ -10,6 +10,7 @@ import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 
 /**
  * This generic page api is responsible for the listing of a given {@link MDMEntryDescriptor}. It
@@ -17,7 +18,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
  * have to inherit and register this page api to be able to set the parent view names for the proper
  * routing.
  */
-public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
+public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * The identifier of of the {@link MDMEntryDescriptor} object parameter.
@@ -42,7 +43,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * The identifier of the grid that contains the entries.
    */
-  static final String WIDGET_ENTRY_GRID = "ENTRY_GRID";
+  static final String WIDGET_ENTRY_GRID = "RESULT_GRID";
 
   /**
    * Run the query and update the content of the grid.

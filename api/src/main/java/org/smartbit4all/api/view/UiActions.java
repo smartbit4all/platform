@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,13 +10,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.View;
 
 public final class UiActions {
+
+  private static final int JUMBO_OPERATION_THRESHOLD = 64;
 
   public static final String INPUT = "input";
 
@@ -94,7 +96,7 @@ public final class UiActions {
 
     addSingle(actions, code);
 
-    if (codes == null || codes.length == 0) {
+    if (varargsPresent(codes)) {
       for (String c : codes) {
         addSingle(actions, c);
       }
@@ -110,7 +112,7 @@ public final class UiActions {
   private static void addJumbo(Collection<UiAction> actions, String code, String... codes) {
     final Set<String> codesPresent = actions.stream()
         .map(UiAction::getCode)
-        .collect(Collectors.toSet());
+        .collect(toSet());
     if (!codesPresent.contains(code)) {
       actions.add(new UiAction().code(code));
     }
@@ -118,6 +120,26 @@ public final class UiActions {
     Arrays.stream(codes)
         .filter(c -> !codesPresent.contains(c))
         .forEach(c -> actions.add(new UiAction().code(c)));
+  }
+
+  public static void add(View view, Collection<UiAction> actions) {
+    addActionsInternal(view.getActions(), actions);
+  }
+
+  private static void addActionsInternal(Collection<UiAction> present, Collection<UiAction> toAdd) {
+    Objects.requireNonNull(present, "actions present cannot be null!");
+    Objects.requireNonNull(toAdd, "actions toAdd cannot be null!");
+
+    if (isJumboOperation(present, toAdd)) {
+      final Set<String> codesPresent = present.stream()
+          .map(UiAction::getCode)
+          .collect(toSet());
+      toAdd.stream()
+          .filter(a -> !codesPresent.contains(a.getCode()))
+          .forEach(present::add);
+    } else {
+      toAdd.forEach(a -> addSingle(present, a));
+    }
   }
 
   /**
@@ -154,16 +176,25 @@ public final class UiActions {
 
     addSingle(actions, a);
 
-    if (as == null || as.length == 0) {
+    if (varargsPresent(as)) {
       for (UiAction e : as) {
         addSingle(actions, e);
       }
     }
   }
 
+  private static boolean isJumboOperation(Collection<?> c1, Collection<?> c2) {
+    return (c1.size() + c2.size()) > JUMBO_OPERATION_THRESHOLD;
+  }
+
   @SafeVarargs
   private static <T> boolean isJumboOperation(Collection<UiAction> actions, T... arr) {
-    return (arr != null) && ((actions.size() + arr.length) > 64);
+    return (arr != null) && ((actions.size() + arr.length) > JUMBO_OPERATION_THRESHOLD);
+  }
+
+  @SafeVarargs
+  private static <T> boolean varargsPresent(T... args) {
+    return args != null && args.length > 0;
   }
 
   private static void addSingle(Collection<UiAction> actions, UiAction action) {
@@ -175,7 +206,7 @@ public final class UiActions {
   private static void addJumbo(Collection<UiAction> actions, UiAction a, UiAction... as) {
     final Set<String> codesPresent = actions.stream()
         .map(UiAction::getCode)
-        .collect(Collectors.toSet());
+        .collect(toSet());
     if (!codesPresent.contains(a.getCode())) {
       actions.add(a);
     }
@@ -251,7 +282,7 @@ public final class UiActions {
    * @param as additional {@code UiAction}s to remove, optional
    */
   public static void remove(Collection<UiAction> actions, UiAction a, UiAction... as) {
-    if (as == null) {
+    if (!varargsPresent(as)) {
       remove(actions, a.getCode());
     } else {
       remove(actions, a.getCode(), Arrays.stream(as)
@@ -274,12 +305,12 @@ public final class UiActions {
    * @param codes additional {@code UiAction#CODE}s to remove, optional
    */
   public static void remove(Collection<UiAction> actions, String code, String... codes) {
-    if (codes == null || codes.length == 0) {
+    if (!varargsPresent(codes)) {
       actions.removeIf(actionCode(code));
     } else {
       final Set<String> allCodes = Stream
           .concat(Stream.of(code), Arrays.stream(codes))
-          .collect(Collectors.toSet());
+          .collect(toSet());
       actions.removeIf(a -> allCodes.contains(a.getCode()));
     }
   }
@@ -292,7 +323,7 @@ public final class UiActions {
 
     final Set<String> allCodes = new HashSet<>();
     allCodes.add(code);
-    if (codes != null && codes.length > 0) {
+    if (varargsPresent(codes)) {
       allCodes.addAll(Arrays.asList(codes));
     }
 

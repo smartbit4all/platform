@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -37,6 +38,7 @@ import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDisplay;
 import org.smartbit4all.core.object.ObjectExtensionApi;
@@ -45,7 +47,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
+public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
 
   private static final Logger log = LoggerFactory.getLogger(MDMEntryListPageApiImpl.class);
@@ -53,7 +55,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   private static final String PROPERTY_URI = "uri";
 
   public MDMEntryListPageApiImpl() {
-    super(MDMEntryDescriptor.class);
+    super(SearchPageModel.class);
   }
 
   @Autowired
@@ -152,7 +154,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   }
 
   @Override
-  public MDMEntryDescriptor initModel(View view) {
+  public SearchPageModel initModel(View view) {
     PageContext context = getContextByView(view);
     refreshActions(view, context);
 
@@ -172,7 +174,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
     refreshGrid(context);
 
-    return context.entryDescriptor;
+    String pageTitle = context.entryDescriptor.getName();
+    FilterExpressionFieldList filters = null;
+    return new SearchPageModel()
+        .pageTitle(pageTitle)
+        .filters(null);
   }
 
   private void refreshActions(View view, PageContext context) {
