@@ -93,6 +93,24 @@ public class ObjectMap implements Map<String, Object> {
     return keySet.stream().map(ObjectMapEntry::new).collect(Collectors.toSet());
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ObjectMap {\n");
+    forEach((k, v) -> sb.append(k).append(toIndentedString(v)).append("\n"));
+    sb.append("}");
+    return sb.toString();
+  }
+
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+
+
   final class ObjectMapEntry implements Map.Entry<String, Object> {
 
     private final String key;
