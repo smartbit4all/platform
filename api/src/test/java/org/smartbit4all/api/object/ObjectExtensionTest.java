@@ -16,7 +16,6 @@ import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnum;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -50,13 +49,13 @@ class ObjectExtensionTest {
     final String extensionName = SampleExtensibleObject.class.getName() + ".ColouredBean";
     final String favouriteColourProp = "favouriteColour";
 
-    final ObjectDefinition<SampleCategory> sampleCategoryDef = objectDefinitionApi
-        .definition(SampleCategory.class);
-    final int originalPropertyCount = sampleCategoryDef.getProperties().size();
+    final ObjectDefinition<SampleExtensibleObject> originalObjectDef = objectDefinitionApi
+        .definition(SampleExtensibleObject.class);
+    final int originalPropertyCount = originalObjectDef.getProperties().size();
 
     final URI colouredBeanDescriptorUri = objectExtensionApi.create(
         extensionName,
-        sampleCategoryDef,
+        originalObjectDef,
         Arrays.asList(new ObjectPropertyDescriptor()
             .propertyName(favouriteColourProp)
             .propertyQualifiedName(String.class.getName())
@@ -74,7 +73,7 @@ class ObjectExtensionTest {
     assertThat(extendedDef).isNotNull();
     assertThat(extendedDef.getProperties()).hasSize(originalPropertyCount + 1);
     assertThat(extendedDef.getPropertiesByName())
-        .containsKeys(sampleCategoryDef.getPropertiesByName().keySet().toArray(new String[0]));
+        .containsKeys(originalObjectDef.getPropertiesByName().keySet().toArray(new String[0]));
 
     final ObjectLayoutDescriptor colouredBeanLayout = objectApi
         .loadLatest(colouredBeanDescriptor.getLayoutDescriptor())
@@ -91,14 +90,14 @@ class ObjectExtensionTest {
         .isNotEmpty()
         .hasSize(4)
         .anySatisfy(w -> assertThat(w)
-            .returns(SampleCategory.NAME, SmartWidgetDefinition::getKey)
+            .returns(SampleExtensibleObject.NAME, SmartWidgetDefinition::getKey)
             .returns(SmartFormWidgetType.TEXT_FIELD, SmartWidgetDefinition::getType))
         .anySatisfy(w -> assertThat(w)
-            .returns(SampleCategory.COST, SmartWidgetDefinition::getKey)
+            .returns(SampleExtensibleObject.COST, SmartWidgetDefinition::getKey)
             .returns(SmartFormWidgetType.TEXT_FIELD, SmartWidgetDefinition::getType)
             .satisfies(x -> assertThat(x.getMask()).isNotEmpty()))
         .anySatisfy(w -> assertThat(w)
-            .returns(SampleCategory.CREATED_AT, SmartWidgetDefinition::getKey)
+            .returns(SampleExtensibleObject.CREATED_AT, SmartWidgetDefinition::getKey)
             .returns(SmartFormWidgetType.DATE_TIME_PICKER, SmartWidgetDefinition::getType))
         .anySatisfy(w -> assertThat(w)
             .returns(favouriteColourProp, SmartWidgetDefinition::getKey)
@@ -119,7 +118,7 @@ class ObjectExtensionTest {
 
     final URI ownedBeanDescriptorUri = objectExtensionApi.create(
         extensionName,
-        objectDefinitionApi.definition(SampleCategory.class),
+        objectDefinitionApi.definition(SampleExtensibleObject.class),
         Collections.singletonList(
             new ObjectPropertyDescriptor()
                 .propertyName(ownerProp)

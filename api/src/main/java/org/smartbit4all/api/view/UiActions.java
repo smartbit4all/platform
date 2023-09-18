@@ -104,7 +104,7 @@ public final class UiActions {
   }
 
   private static void addSingle(Collection<UiAction> actions, String code) {
-    if (contains(actions, code)) {
+    if (!contains(actions, code)) {
       actions.add(new UiAction().code(code));
     }
   }
@@ -198,7 +198,7 @@ public final class UiActions {
   }
 
   private static void addSingle(Collection<UiAction> actions, UiAction action) {
-    if (contains(actions, action.getCode())) {
+    if (!contains(actions, action.getCode())) {
       actions.add(action);
     }
   }
