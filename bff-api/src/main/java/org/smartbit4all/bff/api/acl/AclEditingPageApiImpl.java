@@ -9,6 +9,8 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.Subject;
@@ -23,6 +25,7 @@ import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
 
@@ -69,8 +72,9 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     matrix.data(new HashMap<String, Object>());
 
     acl.getEntries().stream().forEach(aclEntry -> {
-      matrix.addRowsItem(new Value().code(aclEntry.getSubject().getRef().toString())
-          .displayValue(aclEntry.getSubject().getRef().toString()));
+      matrix
+          .addRowsItem(new Value().code(aclEntry.getSubject().getRef().toString())
+              .displayValue(resolveAclEntryDisplayValue(aclEntry.getSubject().getRef())));
 
       // Put value into the matrix data where the key is the name of the "row"(the Subject)
       // and set the the value with list of filtered operation
@@ -78,16 +82,24 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
           aclEntry.getOperations().stream().filter(operations::contains).collect(toList()));
 
       // Set the columns only once
-      if (matrix.getColumns() == null) {
-        matrix
-            .columns(operations.stream()
-                .map(operation -> new Value().code(operation)
-                    .displayValue(localeSettingApi.get(operation)))
-                .collect(Collectors.toList()));
-      }
     });
+    if (matrix.getColumns() == null) {
+      matrix
+          .columns(operations.stream()
+              .map(operation -> new Value().code(operation)
+                  .displayValue(localeSettingApi.get(operation)))
+              .collect(Collectors.toList()));
+    }
 
     return matrix;
+  }
+
+  private String resolveAclEntryDisplayValue(URI entryRef) {
+    ObjectPropertyResolver resolver = objectApi.resolver();
+    resolver.addContextObject("object", entryRef);
+    return resolver.resolve(new ObjectPropertyFormatter().formatString("{0}")
+        .addParametersItem(
+            new ObjectPropertyFormatterParameter().propertyUri(URI.create("object:/#name"))));
   }
 
   @Override
