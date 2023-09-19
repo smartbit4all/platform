@@ -25,7 +25,7 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
   }
 
   @Override
-  public MDMEntryEditingObject initModel(View view) {
+  public Object initModel(View view) {
     // The page always get an initiated model. So if the init model is called it is a mistake.
     // log.error("The master data management page api should be used with prepared model.");
     UiAction saveAction = new UiAction().code(ACTION_SAVE).submit(true);

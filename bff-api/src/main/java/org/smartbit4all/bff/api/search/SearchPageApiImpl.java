@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.search;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -90,6 +92,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
     protected InvocationRequest gridPageRenderCallback;
 
+
   }
 
   public SearchPageApiImpl() {
@@ -107,11 +110,19 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       ctx.view.addActionsItem(new UiAction().code(ACTION_RETURN_SELECTED_ROWS).submit(true));
     }
 
-    GridModel gridModel =
-        gridModelApi.createGridModel(ctx.searchIndex.getDefinition().getDefinition(),
-            ctx.searchIndex.getDefinition().getDefinition().allProperties().stream()
-                .map(Property::getName).collect(toList()),
-            ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
+    GridModel gridModel = gridModelApi.createGridModel(
+        ctx.searchIndex.getDefinition().getDefinition(),
+        ctx.searchIndex.getDefinition().getDefinition().allProperties().stream()
+            .map(Property::getName)
+            .collect(toList()),
+        ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
+
+    final List<GridView> gridViewOptions = ctx.pageConfig.getGridViewOptions();
+    if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
+      gridModel.setView(gridViewOptions.get(0));
+      gridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
+    }
+
     gridModelApi.initGridInView(ctx.viewUUID, WIDGET_RESULT_GRID, gridModel);
     if (ctx.gridPageRenderCallback != null) {
       gridModelApi.addGridPageCallback(

@@ -1,6 +1,8 @@
 package org.smartbit4all.bff.api.acl;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +29,6 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -141,10 +142,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     List<String> operations = parameters.getAsList(OPERATIONS, String.class);
 
-    view.getLayouts().get(ACL_MATRIX)
-        .setWidgets(List.of(
-            new SmartWidgetDefinition().label(ACL).key(ACL_MATRIX).type(SmartFormWidgetType.MATRIX)
-                .matrix(consturctMatrixModel(acl, operations))));
+    view.getLayouts().get(ACL_MATRIX).setWidgets(aclMatrixWidget(acl, operations));
 
     setModel(viewUuid, acl);
   }
@@ -152,7 +150,15 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
     return acl.getEntries().stream().map(entry -> entry.getSubject().getRef()).collect(toList())
         .contains(subjectUri);
+  }
 
-
+  private List<SmartWidgetDefinition> aclMatrixWidget(ACL acl, List<String> ops) {
+    final List<SmartWidgetDefinition> widgets = new ArrayList<>();
+    widgets.add(new SmartWidgetDefinition()
+        .label(ACL)
+        .key(ACL_MATRIX)
+        .type(SmartFormWidgetType.MATRIX)
+        .matrix(consturctMatrixModel(acl, ops)));
+    return widgets;
   }
 }
