@@ -33,7 +33,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   GridColumnMeta.LABEL,
   GridColumnMeta.PROPERTY_NAME,
-  GridColumnMeta.TYPE_CLASS
+  GridColumnMeta.TYPE_CLASS,
+  GridColumnMeta.ALWAYS_HIDDEN,
+  GridColumnMeta.ALWAYS_SHOW
 })
 @JsonTypeName("GridColumnMeta")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +48,12 @@ public class GridColumnMeta {
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
+
+  public static final String ALWAYS_HIDDEN = "alwaysHidden";
+  private Boolean alwaysHidden = false;
+
+  public static final String ALWAYS_SHOW = "alwaysShow";
+  private Boolean alwaysShow = false;
 
   public GridColumnMeta() { 
   }
@@ -133,6 +141,60 @@ public class GridColumnMeta {
   }
 
 
+  public GridColumnMeta alwaysHidden(Boolean alwaysHidden) {
+    
+    this.alwaysHidden = alwaysHidden;
+    return this;
+  }
+
+   /**
+   * Get alwaysHidden
+   * @return alwaysHidden
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ALWAYS_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAlwaysHidden() {
+    return alwaysHidden;
+  }
+
+
+  @JsonProperty(ALWAYS_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAlwaysHidden(Boolean alwaysHidden) {
+    this.alwaysHidden = alwaysHidden;
+  }
+
+
+  public GridColumnMeta alwaysShow(Boolean alwaysShow) {
+    
+    this.alwaysShow = alwaysShow;
+    return this;
+  }
+
+   /**
+   * Get alwaysShow
+   * @return alwaysShow
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ALWAYS_SHOW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAlwaysShow() {
+    return alwaysShow;
+  }
+
+
+  @JsonProperty(ALWAYS_SHOW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAlwaysShow(Boolean alwaysShow) {
+    this.alwaysShow = alwaysShow;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -144,12 +206,14 @@ public class GridColumnMeta {
     GridColumnMeta gridColumnMeta = (GridColumnMeta) o;
     return Objects.equals(this.label, gridColumnMeta.label) &&
         Objects.equals(this.propertyName, gridColumnMeta.propertyName) &&
-        Objects.equals(this.typeClass, gridColumnMeta.typeClass);
+        Objects.equals(this.typeClass, gridColumnMeta.typeClass) &&
+        Objects.equals(this.alwaysHidden, gridColumnMeta.alwaysHidden) &&
+        Objects.equals(this.alwaysShow, gridColumnMeta.alwaysShow);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName, typeClass);
+    return Objects.hash(label, propertyName, typeClass, alwaysHidden, alwaysShow);
   }
 
   @Override
@@ -159,6 +223,8 @@ public class GridColumnMeta {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    propertyName: ").append(toIndentedString(propertyName)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
+    sb.append("    alwaysHidden: ").append(toIndentedString(alwaysHidden)).append("\n");
+    sb.append("    alwaysShow: ").append(toIndentedString(alwaysShow)).append("\n");
     sb.append("}");
     return sb.toString();
   }
