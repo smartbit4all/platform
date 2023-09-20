@@ -94,6 +94,31 @@ paths:
           description: 'The component does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the component data'
+  /component/{uuid}/load:
+    get:
+      tags:
+      - View
+      summary: Returns component's model in a ViewContextChange.
+      operationId: 'getComponentModel2'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Component's unique identifier.
+      responses:
+        '200':
+          description: 'Returns ComponentModel by unique identifier'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
+        '404':
+          description: 'The component does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the component data'
   /component/{uuid}/data:
     post:
       tags:

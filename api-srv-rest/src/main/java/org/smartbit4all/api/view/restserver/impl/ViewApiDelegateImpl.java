@@ -95,6 +95,11 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
   }
 
   @Override
+  public ResponseEntity<ViewContextChange> getComponentModel2(UUID uuid) throws Exception {
+    return ResponseEntity.ok(viewContextService.getComponentModel2(uuid));
+  }
+
+  @Override
   public ResponseEntity<ViewContextChange> performAction(UUID uuid, UiActionRequest request)
       throws Exception {
     return ResponseEntity.ok(viewContextService.performAction(uuid, request));

@@ -539,6 +539,11 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
+  public ViewContextChange getComponentModel2(UUID viewUuid) {
+    return performViewCall(() -> getComponentModel(viewUuid), SCHEMA);
+  }
+
+  @Override
   public ViewContextChange performAction(UUID viewUuid, UiActionRequest request) {
     Objects.requireNonNull(request, "Request must be specified!");
     Objects.requireNonNull(request.getCode(), "Request.code must be specified!");
@@ -733,7 +738,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .value(getComponentModel(after.getUuid()));
     try {
       // handle model (data)
-      if (before != null) {
+      if (before != null && before.getModel() != null) {
         // check for individual changes
         // before is from an objectNode, model is Map
         Map<String, Object> beforeModel = (Map<String, Object>) before.getModel();

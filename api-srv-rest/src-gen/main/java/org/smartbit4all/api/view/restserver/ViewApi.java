@@ -195,6 +195,38 @@ public interface ViewApi {
 
 
     /**
+     * GET /component/{uuid}/load : Returns component&#39;s model in a ViewContextChange.
+     *
+     * @param uuid Component&#39;s unique identifier. (required)
+     * @return Returns ComponentModel by unique identifier (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the component data (status code 500)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "Returns component's model in a ViewContextChange.",
+        nickname = "getComponentModel2",
+        notes = "",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Returns ComponentModel by unique identifier", response = ViewContextChange.class),
+        @ApiResponse(code = 404, message = "The component does not exists with the given uuid"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the component data")
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/component/{uuid}/load",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> getComponentModel2(
+        @ApiParam(value = "Component's unique identifier.", required = true) @PathVariable("uuid") UUID uuid
+    ) throws Exception {
+        return getDelegate().getComponentModel2(uuid);
+    }
+
+
+    /**
      * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
      *
      * @param uuid View&#39;s unique identifier. (required)

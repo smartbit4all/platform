@@ -131,6 +131,29 @@ public interface ViewApiDelegate {
     }
 
     /**
+     * GET /component/{uuid}/load : Returns component&#39;s model in a ViewContextChange.
+     *
+     * @param uuid Component&#39;s unique identifier. (required)
+     * @return Returns ComponentModel by unique identifier (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the component data (status code 500)
+     * @see ViewApi#getComponentModel2
+     */
+    default ResponseEntity<ViewContextChange> getComponentModel2(UUID uuid) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"changes\" : [ { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" }, { \"path\" : \"path\", \"changes\" : { \"key\" : \"{}\" }, \"changedWidgets\" : [ \"changedWidgets\", \"changedWidgets\" ], \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" } ], \"viewContext\" : { \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } ] } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
      *
      * @param uuid View&#39;s unique identifier. (required)

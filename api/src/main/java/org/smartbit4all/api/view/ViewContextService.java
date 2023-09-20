@@ -128,6 +128,15 @@ public interface ViewContextService {
   ComponentModel getComponentModel(UUID viewUuid);
 
   /**
+   * Returns a ComponentModel assembled from the View specified by viewUuid, wrapped in a
+   * ViewContextChange, so all other view changes can be handled by the client..
+   *
+   * @param viewUuid
+   * @return
+   */
+  ViewContextChange getComponentModel2(UUID viewUuid);
+
+  /**
    * Performs an action based on request. Finds View by viewUuid, and calls it's API's action
    * handler method which is registered for request.code value.
    *
