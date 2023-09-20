@@ -276,6 +276,8 @@ public class BranchApiImpl implements BranchApi {
                         .get(objectApi.getLatestUri(refUriOnBranch));
                     if (referredEntry != null) {
                       branchedUris.set(i, referredEntry.newUri);
+                    } else {
+                      branchedUris.set(i, objectApi.loadLatest(refUriOnBranch).getObjectUri());
                     }
                   }
                   return l.uris(branchedUris);
@@ -358,7 +360,7 @@ public class BranchApiImpl implements BranchApi {
                   .originalUri(branchedNodeReference);
             } else {
               newEntry = new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW)
-                  .branchUri(branchedNodeReference);
+                  .branchUri(objectApi.getLatestUri(branchedNodeReference));
             }
           }
           result.add(newEntry);

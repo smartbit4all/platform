@@ -68,6 +68,10 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
         uris.forEach(data::addUrisItem);
+        // TODO add the new object to the branch entry.
+        if (branchUri != null) {
+
+        }
         return data;
       });
     });

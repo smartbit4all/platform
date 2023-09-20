@@ -1,5 +1,8 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -76,9 +79,6 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -202,7 +202,7 @@ class MDMApiTest {
         t -> t.name("Type two v1")));
 
     URI draftNew = typeApi
-        .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
+        .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four 4")
             .description("This is the fourth category type.")));
 
     URI draftNewToDelete =
@@ -217,6 +217,10 @@ class MDMApiTest {
     typeApi.remove(publishedToDelete);
 
     objectApi.save(objectNode);
+
+    ObjectNode objectFour =
+        objectApi.load(draftNew).setValue("Type four", SampleCategoryType.NAME);
+    objectApi.save(objectFour);
 
     List<BranchedObjectEntry> publishedAndDraftObjects =
         typeApi.getBranchingList();

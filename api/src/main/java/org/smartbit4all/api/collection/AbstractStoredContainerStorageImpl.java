@@ -58,6 +58,7 @@ abstract class AbstractStoredContainerStorageImpl {
     BranchEntry branchEntry = objectApi.loadLatest(branchUri).getObject(BranchEntry.class);
     BranchedObject branchedObject = branchEntry.getBranchedObjects().get(uri.toString());
     if (branchedObject == null) {
+      // TODO If the given object is new by the branch entry then skip adding as modified.
       if (!objectApi.exists(uri)) {
         objectApi.save(constructNew(uri));
       }
