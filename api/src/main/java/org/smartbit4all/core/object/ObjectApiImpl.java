@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,6 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -273,6 +273,9 @@ public class ObjectApiImpl implements ObjectApi {
       return ((ObjectNode) value).getObject(clazz);
     }
     if (value instanceof ObjectNodeReference) {
+      if (clazz == URI.class) {
+        return (T) ((ObjectNodeReference) value).getObjectUri();
+      }
       ObjectNode objectNode = ((ObjectNodeReference) value).get();
       if (objectNode != null) {
         return objectNode.getObject(clazz);
