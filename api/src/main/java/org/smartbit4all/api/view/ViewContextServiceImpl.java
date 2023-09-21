@@ -540,7 +540,18 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public ViewContextChange getComponentModel2(UUID viewUuid) {
-    return performViewCall(() -> getComponentModel(viewUuid), SCHEMA);
+    ViewContextChange result = performViewCall(
+        () -> getComponentModel(viewUuid), SCHEMA);
+    result.getChanges().stream()
+        .filter(change -> viewUuid.equals(change.getUuid()))
+        .forEach(change -> {
+          // make sure this view is in 'whole'
+          Map<String, Object> changes = new HashMap<>();
+          // this is the whole model at '' path
+          changes.put(change.getPath(), change.getValue());
+          change.setChanges(changes);
+        });
+    return result;
   }
 
   @Override
