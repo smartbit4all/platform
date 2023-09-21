@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.ViewConstraint;
@@ -63,7 +64,8 @@ import javax.validation.Valid;
   View.VALUE_SETS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE,
   View.CALLBACKS,
-  View.LAYOUTS
+  View.LAYOUTS,
+  View.COMPONENT_LAYOUTS
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -127,6 +129,9 @@ public class View {
 
   public static final String LAYOUTS = "layouts";
   private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
+
+  public static final String COMPONENT_LAYOUTS = "componentLayouts";
+  private Map<String, SmartComponentLayoutDefinition> componentLayouts = new HashMap<>();
 
   public View() { 
   }
@@ -748,6 +753,40 @@ public class View {
   }
 
 
+  public View componentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
+    
+    this.componentLayouts = componentLayouts;
+    return this;
+  }
+
+  public View putComponentLayoutsItem(String key, SmartComponentLayoutDefinition componentLayoutsItem) {
+    this.componentLayouts.put(key, componentLayoutsItem);
+    return this;
+  }
+
+   /**
+   * The components layouts defined in the view. This named layouts can be used by the UI to render
+   * @return componentLayouts
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The components layouts defined in the view. This named layouts can be used by the UI to render")
+  @JsonProperty(COMPONENT_LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, SmartComponentLayoutDefinition> getComponentLayouts() {
+    return componentLayouts;
+  }
+
+
+  @JsonProperty(COMPONENT_LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setComponentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
+    this.componentLayouts = componentLayouts;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -776,12 +815,13 @@ public class View {
         Objects.equals(this.valueSets, view.valueSets) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose) &&
         Objects.equals(this.callbacks, view.callbacks) &&
-        Objects.equals(this.layouts, view.layouts);
+        Objects.equals(this.layouts, view.layouts) &&
+        Objects.equals(this.componentLayouts, view.componentLayouts);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, valueSets, keepModelOnImplicitClose, callbacks, layouts);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts);
   }
 
   @Override
@@ -808,6 +848,7 @@ public class View {
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("    callbacks: ").append(toIndentedString(callbacks)).append("\n");
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
+    sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
     sb.append("}");
     return sb.toString();
   }

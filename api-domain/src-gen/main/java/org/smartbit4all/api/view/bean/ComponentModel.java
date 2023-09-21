@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
@@ -46,6 +47,7 @@ import javax.validation.Valid;
   ComponentModel.DATA,
   ComponentModel.CONSTRAINTS,
   ComponentModel.LAYOUTS,
+  ComponentModel.COMPONENT_LAYOUTS,
   ComponentModel.ACTIONS,
   ComponentModel.VALUE_SETS,
   ComponentModel.WIDGETS
@@ -67,6 +69,9 @@ public class ComponentModel {
 
   public static final String LAYOUTS = "layouts";
   private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
+
+  public static final String COMPONENT_LAYOUTS = "componentLayouts";
+  private Map<String, SmartComponentLayoutDefinition> componentLayouts = null;
 
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
@@ -232,6 +237,42 @@ public class ComponentModel {
   }
 
 
+  public ComponentModel componentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
+    
+    this.componentLayouts = componentLayouts;
+    return this;
+  }
+
+  public ComponentModel putComponentLayoutsItem(String key, SmartComponentLayoutDefinition componentLayoutsItem) {
+    if (this.componentLayouts == null) {
+      this.componentLayouts = new HashMap<>();
+    }
+    this.componentLayouts.put(key, componentLayoutsItem);
+    return this;
+  }
+
+   /**
+   * Get componentLayouts
+   * @return componentLayouts
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(COMPONENT_LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, SmartComponentLayoutDefinition> getComponentLayouts() {
+    return componentLayouts;
+  }
+
+
+  @JsonProperty(COMPONENT_LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setComponentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
+    this.componentLayouts = componentLayouts;
+  }
+
+
   public ComponentModel actions(List<UiAction> actions) {
     
     this.actions = actions;
@@ -351,6 +392,7 @@ public class ComponentModel {
         Objects.equals(this.data, componentModel.data) &&
         Objects.equals(this.constraints, componentModel.constraints) &&
         Objects.equals(this.layouts, componentModel.layouts) &&
+        Objects.equals(this.componentLayouts, componentModel.componentLayouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
         Objects.equals(this.valueSets, componentModel.valueSets) &&
         Objects.equals(this.widgets, componentModel.widgets);
@@ -358,7 +400,7 @@ public class ComponentModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets, widgets);
+    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets);
   }
 
   @Override
@@ -370,6 +412,7 @@ public class ComponentModel {
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    constraints: ").append(toIndentedString(constraints)).append("\n");
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
+    sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");

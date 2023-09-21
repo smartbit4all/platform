@@ -31,6 +31,7 @@ smartbit4all {
   		"FilterExpressionOrderBy": "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
   		"FilterExpressionBuilderModel": "org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel",
   		"PropertyDefinitionData": "org.smartbit4all.api.object.bean.PropertyDefinitionData",
+  		"SmartComponentLayoutDefinition": "org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition",
   		"SmartLayoutDefinition": "org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition",
   		"SmartWidgetDefinition": "org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition",
   		"SmartFilterType": "org.smartbit4all.api.filterexpression.bean.SmartFilterType",

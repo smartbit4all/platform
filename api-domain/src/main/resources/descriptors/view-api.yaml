@@ -498,7 +498,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,valueSets,callbacks,eventHandlers,layouts]
+      required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,valueSets,callbacks,eventHandlers,layouts,componentLayouts]
       properties:
         uuid:
           type: string
@@ -566,6 +566,10 @@ components:
           description: The layouts defined in the view. This named layouts can be used by the UI to render 
           additionalProperties: 
             type: SmartLayoutDefinition
+        componentLayouts:
+          description: The components layouts defined in the view. This named layouts can be used by the UI to render 
+          additionalProperties: 
+            type: SmartComponentLayoutDefinition
     ViewEventHandler:
       type: object
       description: |
@@ -636,6 +640,9 @@ components:
         layouts:
           additionalProperties: 
             type: SmartLayoutDefinition
+        componentLayouts:
+          additionalProperties: 
+            type: SmartComponentLayoutDefinition
         actions:
           type: array
           items:

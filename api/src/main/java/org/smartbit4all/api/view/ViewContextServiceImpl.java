@@ -535,6 +535,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .actions(view.getActions())
         .valueSets(view.getValueSets())
         .layouts(view.getLayouts())
+        .componentLayouts(view.getComponentLayouts())
         .widgets(new ArrayList<>(view.getWidgetModels().keySet()));
   }
 
