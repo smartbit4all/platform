@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
@@ -45,6 +46,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.PUBLISHED_MAP_NAME,
   MDMEntryDescriptor.TABLE_COLUMNS,
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
+  MDMEntryDescriptor.LIST_PAGE_GRID_VIEWS,
   MDMEntryDescriptor.SEARCH_INDEX_FOR_ENTRIES,
   MDMEntryDescriptor.SCHEMA,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
@@ -78,6 +80,9 @@ public class MDMEntryDescriptor {
 
   public static final String EDITOR_VIEW_NAME = "editorViewName";
   private String editorViewName;
+
+  public static final String LIST_PAGE_GRID_VIEWS = "listPageGridViews";
+  private List<GridView> listPageGridViews = new ArrayList<>();
 
   public static final String SEARCH_INDEX_FOR_ENTRIES = "searchIndexForEntries";
   private String searchIndexForEntries;
@@ -223,11 +228,11 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list.  
+   * The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list. 
    * @return uniqueIdentifierPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list.  ")
+  @ApiModelProperty(value = "The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list. ")
   @JsonProperty(UNIQUE_IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -328,6 +333,40 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEditorViewName(String editorViewName) {
     this.editorViewName = editorViewName;
+  }
+
+
+  public MDMEntryDescriptor listPageGridViews(List<GridView> listPageGridViews) {
+    
+    this.listPageGridViews = listPageGridViews;
+    return this;
+  }
+
+  public MDMEntryDescriptor addListPageGridViewsItem(GridView listPageGridViewsItem) {
+    this.listPageGridViews.add(listPageGridViewsItem);
+    return this;
+  }
+
+   /**
+   * The supported GridViews for presenting the MDM Entry List Page. If none are provided, all table columns are rendered. If more than one GridViews are  provided, it is the PageApi implementation&#39;s responsibility to provide actions for  switching between grid views. 
+   * @return listPageGridViews
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The supported GridViews for presenting the MDM Entry List Page. If none are provided, all table columns are rendered. If more than one GridViews are  provided, it is the PageApi implementation's responsibility to provide actions for  switching between grid views. ")
+  @JsonProperty(LIST_PAGE_GRID_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<GridView> getListPageGridViews() {
+    return listPageGridViews;
+  }
+
+
+  @JsonProperty(LIST_PAGE_GRID_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setListPageGridViews(List<GridView> listPageGridViews) {
+    this.listPageGridViews = listPageGridViews;
   }
 
 
@@ -521,6 +560,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.publishedMapName, mdMEntryDescriptor.publishedMapName) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
+        Objects.equals(this.listPageGridViews, mdMEntryDescriptor.listPageGridViews) &&
         Objects.equals(this.searchIndexForEntries, mdMEntryDescriptor.searchIndexForEntries) &&
         Objects.equals(this.schema, mdMEntryDescriptor.schema) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
@@ -531,7 +571,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
   }
 
   @Override
@@ -546,6 +586,7 @@ public class MDMEntryDescriptor {
     sb.append("    publishedMapName: ").append(toIndentedString(publishedMapName)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
+    sb.append("    listPageGridViews: ").append(toIndentedString(listPageGridViews)).append("\n");
     sb.append("    searchIndexForEntries: ").append(toIndentedString(searchIndexForEntries)).append("\n");
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");

@@ -29,9 +29,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do.  
+ * A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do. 
  */
-@ApiModel(description = "A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do.  ")
+@ApiModel(description = "A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do. ")
 @JsonPropertyOrder({
   MDMEntryEditingObject.BRANCH_OBJECT_ENTRY,
   MDMEntryEditingObject.ORIGINAL_OBJECT,

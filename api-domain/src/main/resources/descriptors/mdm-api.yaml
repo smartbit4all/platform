@@ -8,7 +8,7 @@ info:
   version: 1.0.0
 tags:
   - name: MasterDataManagement
-    description: 
+    description:
 paths: {}
 components:
   schemas:
@@ -53,16 +53,16 @@ components:
     MDMBranchingStrategy:
       type: string
       enum:
-      - none
-      - entry
-      - group
-      - global
+        - none
+        - entry
+        - group
+        - global
     MDMEntryDescriptor:
       type: object
       description: |
         The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of
         the given list of object.
-      required: [uri, tableColumns, state]
+      required: [uri, tableColumns, state, listPageGridViews]
       properties:
         name:
           type: string
@@ -76,7 +76,7 @@ components:
             entry. The security group of the entry is named like mdm.definition.entry.
         typeQualifiedName:
           type: string
-          default: "org.smartbit4all.api.value.bean.GenericValue"
+          default: 'org.smartbit4all.api.value.bean.GenericValue'
           description: |
             The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
             GenericValue object is used.
@@ -89,7 +89,7 @@ components:
           description: |
             The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String
             element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar.
-            If this property is set then a map is generated for the published list. 
+            If this property is set then a map is generated for the published list.
           items:
             type: string
         publishedMapName:
@@ -106,6 +106,15 @@ components:
         editorViewName:
           type: string
           description: The name of the view editor view to open. If empty then we use the default in the application.
+        listPageGridViews:
+          description: |
+            The supported GridViews for presenting the MDM Entry List Page.
+            If none are provided, all table columns are rendered. If more than one GridViews are 
+            provided, it is the PageApi implementation's responsibility to provide actions for 
+            switching between grid views.
+          type: array
+          items:
+            type: GridView
         searchIndexForEntries:
           type: string
           description: The name of search index that provides the entries.
@@ -172,7 +181,7 @@ components:
       type: object
       description: |
         A generic object to use as the editing object for the master data management page apis. The list page constructs
-        this object and pass to the editor page. When saving the editing the list can decide what to do. 
+        this object and pass to the editor page. When saving the editing the list can decide what to do.
       required: [uri, created, objects]
       properties:
         branchObjectEntry:
