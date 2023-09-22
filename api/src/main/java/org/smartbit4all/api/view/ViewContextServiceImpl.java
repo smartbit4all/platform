@@ -769,6 +769,11 @@ public class ViewContextServiceImpl implements ViewContextService {
             findDifferences(ComponentModel.LAYOUTS,
                 before.getLayouts(),
                 after.getLayouts()));
+        // layouts
+        result.change.getChanges().putAll(
+            findDifferences(ComponentModel.COMPONENT_LAYOUTS,
+                before.getComponentLayouts(),
+                after.getComponentLayouts()));
         // widgets
         result.change.changedWidgets(new ArrayList<>(
             findDifferences(null,
