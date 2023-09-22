@@ -17,7 +17,6 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -200,9 +199,14 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (searchIndices != null) {
-      searchIndexByName = searchIndices.stream()
-          .collect(toMap(i -> getQualifiedNameOfSearchIndex(i.logicalSchema(), i.name()), i -> i));
+    if (searchIndices == null) {
+      return;
+    }
+
+    for (SearchIndex<?> searchIndex : searchIndices) {
+      searchIndexByName.put(
+          getQualifiedNameOfSearchIndex(searchIndex.logicalSchema(), searchIndex.name()),
+          searchIndex);
     }
   }
 
