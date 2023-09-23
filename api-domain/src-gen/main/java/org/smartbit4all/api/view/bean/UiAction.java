@@ -41,6 +41,7 @@ import javax.validation.Valid;
   UiAction.INPUT_TYPE,
   UiAction.INPUT2_TYPE,
   UiAction.SUBMIT,
+  UiAction.MODEL,
   UiAction.CONFIRM,
   UiAction.PARAMS
 })
@@ -64,6 +65,9 @@ public class UiAction {
 
   public static final String SUBMIT = "submit";
   private Boolean submit;
+
+  public static final String MODEL = "model";
+  private Boolean model;
 
   public static final String CONFIRM = "confirm";
   private Boolean confirm = false;
@@ -218,11 +222,11 @@ public class UiAction {
   }
 
    /**
-   * Get submit
+   * If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.
    * @return submit
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.")
   @JsonProperty(SUBMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,6 +239,33 @@ public class UiAction {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubmit(Boolean submit) {
     this.submit = submit;
+  }
+
+
+  public UiAction model(Boolean model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(Boolean model) {
+    this.model = model;
   }
 
 
@@ -315,13 +346,14 @@ public class UiAction {
         Objects.equals(this.inputType, uiAction.inputType) &&
         Objects.equals(this.input2Type, uiAction.input2Type) &&
         Objects.equals(this.submit, uiAction.submit) &&
+        Objects.equals(this.model, uiAction.model) &&
         Objects.equals(this.confirm, uiAction.confirm) &&
         Objects.equals(this.params, uiAction.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, confirm, params);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params);
   }
 
   @Override
@@ -334,6 +366,7 @@ public class UiAction {
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("    input2Type: ").append(toIndentedString(input2Type)).append("\n");
     sb.append("    submit: ").append(toIndentedString(submit)).append("\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");

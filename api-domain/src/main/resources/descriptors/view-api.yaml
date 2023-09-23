@@ -858,6 +858,10 @@ components:
         input2Type:
           $ref: '#/components/schemas/UiActionInputType'
         submit:
+          description: If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.
+          type: boolean
+        model:
+          description: If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.
           type: boolean
         confirm:
           type: boolean
