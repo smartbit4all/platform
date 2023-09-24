@@ -1,8 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +32,9 @@ import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class BranchApiImpl implements BranchApi {
 
-  protected static final String SCHEME = "branch";
+  public static final String SCHEME = "branch";
 
   @Autowired
   private ObjectApi objectApi;

@@ -387,6 +387,14 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public Storage branchStorage(@Autowired(required = false) ObjectStorage objectStorage,
+      ObjectDefinitionApi objectDefinitionApi) {
+    Storage storage = new Storage(BranchApiImpl.SCHEME, objectDefinitionApi, objectStorage);
+    storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    return storage;
+  }
+
+  @Bean
   public ObjectReferenceConfigs invocationReferences() {
     return new ObjectReferenceConfigs().ref(AsyncInvocationRequest.class,
         AsyncInvocationRequest.AND_THEN, AsyncInvocationRequest.class, ReferencePropertyKind.LIST,
