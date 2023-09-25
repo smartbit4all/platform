@@ -101,6 +101,16 @@ public class BranchApiImpl implements BranchApi {
 
   }
 
+  public void addToBranchedObjects(ObjectNode branchEntryNode, URI sourceUri, URI targetUri) {
+    branchEntryNode.modify(BranchEntry.class, b -> {
+      URI branchedLatestUri = objectApi.getLatestUri(targetUri);
+      b.putBranchedObjectsItem(branchedLatestUri.toString(),
+          new BranchedObject().branchedObjectLatestUri(branchedLatestUri)
+              .sourceObjectLatestUri(objectApi.getLatestUri(sourceUri)));
+      return b;
+    });
+  }
+
   @Override
   public void registerCollection(URI branchUri, URI storedItemUri, URI storedItemBranchedUri,
       StoredCollectionDescriptor descriptor) {
