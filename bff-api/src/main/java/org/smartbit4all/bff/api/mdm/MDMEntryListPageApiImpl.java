@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMEntryApiImpl;
@@ -167,6 +169,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                 .filter(p -> !propertiesToRemove.contains(p.getName()))
                 .map(Property::getName).collect(toList()),
             context.definition.getName(), context.entryDescriptor.getName());
+
+    final List<GridView> gridViewOptions = context.entryDescriptor.getListPageGridViews();
+    if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
+      entryGridModel.setView(gridViewOptions.get(0));
+      entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
+    }
+
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
     gridModelApi.addGridRowCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
@@ -287,19 +296,23 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
 
-    viewApi.showView(
-        new View()
-            .viewName(getEditorViewName(ctx))
-            .type(ViewType.DIALOG)
-            .putLayoutsItem("layout", layout)
-            .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
-            .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
-            .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
-            .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
-            .actions(Arrays.asList(
-                new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
-                new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
-            .model(modelNode.getObjectAsMap()));
+    View editorView = new View()
+        .viewName(getEditorViewName(ctx))
+        .type(ViewType.DIALOG)
+        .putLayoutsItem("layout", layout)
+        .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
+        .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
+        .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
+        .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
+        .actions(Arrays.asList(
+            new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
+            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)));
+    if (isDefaultEditor(ctx)) {
+      editorView.model(modelNode.getObjectAsMap());
+    } else {
+      editorView.putParametersItem("raw-model", modelNode.getObjectAsMap());
+    }
+    viewApi.showView(editorView);
   }
 
   @Deprecated
@@ -397,6 +410,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private final String getEditorViewName(PageContext context) {
     return context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
         : context.entryDescriptor.getEditorViewName();
+  }
+
+  private boolean isDefaultEditor(PageContext context) {
+    final String editorViewName = context.entryDescriptor.getEditorViewName();
+    return editorViewName == null || defaultEditorViewName.equals(editorViewName);
   }
 
   @Override

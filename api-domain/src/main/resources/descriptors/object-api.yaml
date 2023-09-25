@@ -669,6 +669,8 @@ components:
           description: The validation rules must be checked before an editing is finalized. The validation result is part of the view.
           items:
             type: string
+        displayName:
+          $ref: '#/components/schemas/LangString'
 
     RefObject:
       description: |
@@ -738,7 +740,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ObjectPropertyFormatterParameter'
-                    
+
     ObjectPropertyFormatterParameter:
       description: |
         This setting information to resolve a necessary parameters for the message format.
@@ -749,3 +751,15 @@ components:
             The uri of the property in the resolver context. By default the object itself is named as object.
           type: string
           format: uri
+
+    LangString:
+      description: |
+        A localisation aware string with its localised values.
+      type: object
+      properties:
+        defaultValue:
+          type: string
+        valueByLocale:
+          type: string
+          additionalProperties:
+            type: string

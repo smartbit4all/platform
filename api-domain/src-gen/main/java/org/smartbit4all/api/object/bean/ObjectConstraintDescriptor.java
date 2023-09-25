@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
@@ -45,7 +46,8 @@ import javax.validation.Valid;
   ObjectConstraintDescriptor.PREDICATES,
   ObjectConstraintDescriptor.COMPONENT_CONSTRAINTS,
   ObjectConstraintDescriptor.ACTION_CONSTRAINTS,
-  ObjectConstraintDescriptor.VALIDATION_RULES
+  ObjectConstraintDescriptor.VALIDATION_RULES,
+  ObjectConstraintDescriptor.DISPLAY_NAME
 })
 @JsonTypeName("ObjectConstraintDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -108,6 +110,9 @@ public class ObjectConstraintDescriptor {
 
   public static final String VALIDATION_RULES = "validationRules";
   private List<String> validationRules = null;
+
+  public static final String DISPLAY_NAME = "displayName";
+  private LangString displayName;
 
   public ObjectConstraintDescriptor() { 
   }
@@ -365,6 +370,34 @@ public class ObjectConstraintDescriptor {
   }
 
 
+  public ObjectConstraintDescriptor displayName(LangString displayName) {
+    
+    this.displayName = displayName;
+    return this;
+  }
+
+   /**
+   * Get displayName
+   * @return displayName
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public LangString getDisplayName() {
+    return displayName;
+  }
+
+
+  @JsonProperty(DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisplayName(LangString displayName) {
+    this.displayName = displayName;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -381,12 +414,13 @@ public class ObjectConstraintDescriptor {
         Objects.equals(this.predicates, objectConstraintDescriptor.predicates) &&
         Objects.equals(this.componentConstraints, objectConstraintDescriptor.componentConstraints) &&
         Objects.equals(this.actionConstraints, objectConstraintDescriptor.actionConstraints) &&
-        Objects.equals(this.validationRules, objectConstraintDescriptor.validationRules);
+        Objects.equals(this.validationRules, objectConstraintDescriptor.validationRules) &&
+        Objects.equals(this.displayName, objectConstraintDescriptor.displayName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, when, condition, contexts, predicates, componentConstraints, actionConstraints, validationRules);
+    return Objects.hash(name, when, condition, contexts, predicates, componentConstraints, actionConstraints, validationRules, displayName);
   }
 
   @Override
@@ -401,6 +435,7 @@ public class ObjectConstraintDescriptor {
     sb.append("    componentConstraints: ").append(toIndentedString(componentConstraints)).append("\n");
     sb.append("    actionConstraints: ").append(toIndentedString(actionConstraints)).append("\n");
     sb.append("    validationRules: ").append(toIndentedString(validationRules)).append("\n");
+    sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
     sb.append("}");
     return sb.toString();
   }
