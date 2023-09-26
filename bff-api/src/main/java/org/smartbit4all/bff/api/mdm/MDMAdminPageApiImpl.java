@@ -9,6 +9,8 @@ import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.utility.StringConstant;
@@ -71,7 +73,11 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
     view.actions(context.definition.getDescriptors().values().stream()
         .filter(this::filterDescriptor)
         .map(e -> new UiAction()
-            .code(OPEN_LIST_PREFIX + e.getName()))
+            .code(OPEN_LIST_PREFIX + e.getName())
+            .descriptor(new UiActionDescriptor()
+                .title(e.getName())
+                .color("accent")
+                .type(UiActionButtonType.RAISED)))
         .collect(toList()));
     return context.definition;
   }
