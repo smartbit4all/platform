@@ -197,7 +197,14 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void performQuery(UUID viewUuid, UiActionRequest request) {
-    refreshGrid(new PageContext(viewUuid));
+    SearchPageModel model = extractClientModel(request);
+    setModel(viewUuid, model);
+    PageContext ctx = new PageContext(viewUuid);
+    if (ctx.pageConfig.getFilterModel() == null) {
+      ctx.pageConfig.filterModel(new FilterExpressionBuilderModel());
+    }
+    ctx.pageConfig.getFilterModel().workplaceList(model.getFilters());
+    refreshGrid(ctx);
   }
 
   @Override
