@@ -25,7 +25,6 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.CompareApi;
-import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
@@ -750,61 +749,64 @@ public class ViewContextServiceImpl implements ViewContextService {
         .value(getComponentModel(after.getUuid()));
     try {
       // handle model (data)
-      if (before != null && before.getModel() != null) {
-        // check for individual changes
-        // before is from an objectNode, model is Map
-        Map<String, Object> beforeModel = (Map<String, Object>) before.getModel();
-        Map<String, Object> afterModel = (Map<String, Object>) after.getModel();
-        ObjectChangeData changes = compareApi.changesOfMap(beforeModel, afterModel);
-        result.oldValues = compareApi.toMap(changes, ComponentModel.DATA, false);
-        result.newValues = compareApi.toMap(changes, ComponentModel.DATA, true);
-        result.change.changes(result.newValues);
-        // valuesets
-        result.change.getChanges().putAll(
-            findDifferences(ComponentModel.VALUE_SETS,
-                before.getValueSets(),
-                after.getValueSets()));
-        // layouts
-        result.change.getChanges().putAll(
-            findDifferences(ComponentModel.LAYOUTS,
-                before.getLayouts(),
-                after.getLayouts()));
-        // layouts
-        result.change.getChanges().putAll(
-            findDifferences(ComponentModel.COMPONENT_LAYOUTS,
-                before.getComponentLayouts(),
-                after.getComponentLayouts()));
-        // widgets
-        result.change.changedWidgets(new ArrayList<>(
-            findDifferences(null,
-                before.getWidgetModels(),
-                after.getWidgetModels())
-                    .keySet()));
-        // actions
-        if (!Objects.deepEquals(after.getActions(), before.getActions())) {
-          result.change.getChanges().put(ComponentModel.ACTIONS, after.getActions());
-        }
-        // constraints
-        List<ComponentConstraint> beforeConstraints =
-            before.getConstraint() == null ? Collections.emptyList()
-                : before.getConstraint().getComponentConstraints();
-        List<ComponentConstraint> afterConstraints =
-            after.getConstraint() == null ? Collections.emptyList()
-                : after.getConstraint().getComponentConstraints();
-        if (!Objects.deepEquals(beforeConstraints, afterConstraints)) {
-          result.change.getChanges().put(ComponentModel.CONSTRAINTS, afterConstraints);
-        }
-      } else {
-        // whole model is new, we can use ComponentModelChange.path/value for now to avoid double
-        // ComponentModel creation
-        result.change.changes(new HashMap<>());
-        result.change.getChanges().put(result.change.getPath(), result.change.getValue());
-        // we should still fill oldValues/newValues so any DataChange aware method can use it
-        result.oldValues = new HashMap<>();
-        result.oldValues.put(ComponentModel.DATA, null);
-        result.newValues = new HashMap<>();
-        result.newValues.put(ComponentModel.DATA, after.getModel());
-      }
+
+      // TODO compare data doesn't work well for complex objects, for now we'll send everything.
+      // if (before != null && before.getModel() != null) {
+      // // check for individual changes
+      // // before is from an objectNode, model is Map
+      // Map<String, Object> beforeModel = (Map<String, Object>) before.getModel();
+      // Map<String, Object> afterModel = (Map<String, Object>) after.getModel();
+      // ObjectChangeData changes = compareApi.changesOfMap(beforeModel, afterModel);
+      // result.oldValues = compareApi.toMap(changes, ComponentModel.DATA, false);
+      // result.newValues = compareApi.toMap(changes, ComponentModel.DATA, true);
+      // result.change.changes(result.newValues);
+      // // valuesets
+      // result.change.getChanges().putAll(
+      // findDifferences(ComponentModel.VALUE_SETS,
+      // before.getValueSets(),
+      // after.getValueSets()));
+      // // layouts
+      // result.change.getChanges().putAll(
+      // findDifferences(ComponentModel.LAYOUTS,
+      // before.getLayouts(),
+      // after.getLayouts()));
+      // // layouts
+      // result.change.getChanges().putAll(
+      // findDifferences(ComponentModel.COMPONENT_LAYOUTS,
+      // before.getComponentLayouts(),
+      // after.getComponentLayouts()));
+      // // widgets
+      // result.change.changedWidgets(new ArrayList<>(
+      // findDifferences(null,
+      // before.getWidgetModels(),
+      // after.getWidgetModels())
+      // .keySet()));
+      // // actions
+      // if (!Objects.deepEquals(after.getActions(), before.getActions())) {
+      // result.change.getChanges().put(ComponentModel.ACTIONS, after.getActions());
+      // }
+      // // constraints
+      // List<ComponentConstraint> beforeConstraints =
+      // before.getConstraint() == null ? Collections.emptyList()
+      // : before.getConstraint().getComponentConstraints();
+      // List<ComponentConstraint> afterConstraints =
+      // after.getConstraint() == null ? Collections.emptyList()
+      // : after.getConstraint().getComponentConstraints();
+      // if (!Objects.deepEquals(beforeConstraints, afterConstraints)) {
+      // result.change.getChanges().put(ComponentModel.CONSTRAINTS, afterConstraints);
+      // }
+      // } else {
+      // whole model is new, we can use ComponentModelChange.path/value for now to avoid double
+      // ComponentModel creation
+
+      result.change.changes(new HashMap<>());
+      result.change.getChanges().put(result.change.getPath(), result.change.getValue());
+      // we should still fill oldValues/newValues so any DataChange aware method can use it
+      result.oldValues = new HashMap<>();
+      result.oldValues.put(ComponentModel.DATA, null);
+      result.newValues = new HashMap<>();
+      result.newValues.put(ComponentModel.DATA, after.getModel());
+      // }
     } catch (Exception e) {
       log.error("Unexpected error when calculating changes", e);
     }
