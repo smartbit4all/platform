@@ -148,6 +148,16 @@ public interface ObjectExtensionApi {
   URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors);
 
   /**
+   * Checks whether an extension descriptor exists with a given qualified name or not.
+   * 
+   * @param definitionName the {@code String} artificial fully qualified name an
+   *        {@link ObjectDescriptor} may refer to, may be null
+   * @return true, if the provided definition name denotes a known extension descriptor, false
+   *         otherwise
+   */
+  boolean exists(String definitionName);
+
+  /**
    * Recreates the default layout for an existing {@link ObjectDescriptor}.
    *
    * <p>

@@ -297,11 +297,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   @Override
   public URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors) {
-    final boolean knownExtension = collectionApi
-        .map(SCHEMA, EXTENSION_MAP)
-        .uris()
-        .containsKey(definitionName);
-    if (!knownExtension) {
+    if (!exists(definitionName)) {
       throw new IllegalArgumentException("Cannot extend the [ " + definitionName
           + " ] object descriptor, for it does not exist! Try calling 'create()'!");
     }
@@ -339,12 +335,16 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
   }
 
   @Override
-  public ObjectLayoutDescriptor generateDefaultLayout(String definitionName) {
-    final boolean knownExtension = collectionApi
+  public boolean exists(String definitionName) {
+    return collectionApi
         .map(SCHEMA, EXTENSION_MAP)
         .uris()
         .containsKey(definitionName);
-    if (!knownExtension) {
+  }
+
+  @Override
+  public ObjectLayoutDescriptor generateDefaultLayout(String definitionName) {
+    if (!exists(definitionName)) {
       log.debug("Unknown definition [ {} ], trying to create descriptor with ObjectDefinition API",
           definitionName);
     }
