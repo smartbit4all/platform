@@ -43,7 +43,8 @@ import javax.validation.Valid;
   GridViewDescriptor.COLUMNS,
   GridViewDescriptor.SELECTION_MODE,
   GridViewDescriptor.SELECTION_TYPE,
-  GridViewDescriptor.PRESERVE_SELECTION_ON_PAGE_CHANGE
+  GridViewDescriptor.PRESERVE_SELECTION_ON_PAGE_CHANGE,
+  GridViewDescriptor.SHOW_EDIT_COLUMNS
 })
 @JsonTypeName("GridViewDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -103,6 +104,9 @@ public class GridViewDescriptor {
 
   public static final String PRESERVE_SELECTION_ON_PAGE_CHANGE = "preserveSelectionOnPageChange";
   private Boolean preserveSelectionOnPageChange;
+
+  public static final String SHOW_EDIT_COLUMNS = "showEditColumns";
+  private Boolean showEditColumns;
 
   public GridViewDescriptor() { 
   }
@@ -305,6 +309,33 @@ public class GridViewDescriptor {
   }
 
 
+  public GridViewDescriptor showEditColumns(Boolean showEditColumns) {
+    
+    this.showEditColumns = showEditColumns;
+    return this;
+  }
+
+   /**
+   * Get showEditColumns
+   * @return showEditColumns
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SHOW_EDIT_COLUMNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getShowEditColumns() {
+    return showEditColumns;
+  }
+
+
+  @JsonProperty(SHOW_EDIT_COLUMNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setShowEditColumns(Boolean showEditColumns) {
+    this.showEditColumns = showEditColumns;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -320,12 +351,13 @@ public class GridViewDescriptor {
         Objects.equals(this.columns, gridViewDescriptor.columns) &&
         Objects.equals(this.selectionMode, gridViewDescriptor.selectionMode) &&
         Objects.equals(this.selectionType, gridViewDescriptor.selectionType) &&
-        Objects.equals(this.preserveSelectionOnPageChange, gridViewDescriptor.preserveSelectionOnPageChange);
+        Objects.equals(this.preserveSelectionOnPageChange, gridViewDescriptor.preserveSelectionOnPageChange) &&
+        Objects.equals(this.showEditColumns, gridViewDescriptor.showEditColumns);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange);
+    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange, showEditColumns);
   }
 
   @Override
@@ -339,6 +371,7 @@ public class GridViewDescriptor {
     sb.append("    selectionMode: ").append(toIndentedString(selectionMode)).append("\n");
     sb.append("    selectionType: ").append(toIndentedString(selectionType)).append("\n");
     sb.append("    preserveSelectionOnPageChange: ").append(toIndentedString(preserveSelectionOnPageChange)).append("\n");
+    sb.append("    showEditColumns: ").append(toIndentedString(showEditColumns)).append("\n");
     sb.append("}");
     return sb.toString();
   }
