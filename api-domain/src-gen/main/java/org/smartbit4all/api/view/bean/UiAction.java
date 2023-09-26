@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -43,7 +44,8 @@ import javax.validation.Valid;
   UiAction.SUBMIT,
   UiAction.MODEL,
   UiAction.CONFIRM,
-  UiAction.PARAMS
+  UiAction.PARAMS,
+  UiAction.DESCRIPTOR
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -74,6 +76,9 @@ public class UiAction {
 
   public static final String PARAMS = "params";
   private Map<String, Object> params = null;
+
+  public static final String DESCRIPTOR = "descriptor";
+  private UiActionDescriptor descriptor;
 
   public UiAction() { 
   }
@@ -331,6 +336,34 @@ public class UiAction {
   }
 
 
+  public UiAction descriptor(UiActionDescriptor descriptor) {
+    
+    this.descriptor = descriptor;
+    return this;
+  }
+
+   /**
+   * Get descriptor
+   * @return descriptor
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionDescriptor getDescriptor() {
+    return descriptor;
+  }
+
+
+  @JsonProperty(DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescriptor(UiActionDescriptor descriptor) {
+    this.descriptor = descriptor;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -348,12 +381,13 @@ public class UiAction {
         Objects.equals(this.submit, uiAction.submit) &&
         Objects.equals(this.model, uiAction.model) &&
         Objects.equals(this.confirm, uiAction.confirm) &&
-        Objects.equals(this.params, uiAction.params);
+        Objects.equals(this.params, uiAction.params) &&
+        Objects.equals(this.descriptor, uiAction.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor);
   }
 
   @Override
@@ -369,6 +403,7 @@ public class UiAction {
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");
+    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

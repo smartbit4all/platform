@@ -871,6 +871,8 @@ components:
             Additional parameters for executing the UI action. 
           type: object
           additionalProperties: true
+        descriptor:
+          $ref: '#/components/schemas/UiActionDescriptor'
     UiActionInputType:
       type: string
       default: none
