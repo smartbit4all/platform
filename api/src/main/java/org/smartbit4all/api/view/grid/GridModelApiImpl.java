@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view.grid;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,14 +49,14 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
   private static final Integer DEFAULT_PAGE_SIZE = 10;
 
   private static final List<Integer> DEFAULT_PAGE_SIZE_OPTIONS = Arrays.asList(5, 10, 25, 50);
+
+  private static final Boolean DEFAULT_SHOW_EDIT_COLUMNS = Boolean.FALSE;
 
   private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
 
@@ -73,6 +75,9 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Value("${grid.pageSize:10}")
   private String defaultPageSize;
+
+  @Value("${grid.showEditColumns:false}")
+  private String defaultShowEditColumns;
 
   @Autowired
   private ObjectApi objectApi;
@@ -170,6 +175,10 @@ public class GridModelApiImpl implements GridModelApi {
     if (gridModel.getPageSizeOptions() == null || gridModel.getPageSizeOptions().isEmpty()) {
       gridModel.setPageSizeOptions(getDefaultPageSizeOptions());
     }
+    if (gridModel.getView() != null && gridModel.getView().getDescriptor() != null
+        && gridModel.getView().getDescriptor().getShowEditColumns() == null) {
+      gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
+    }
     gridModel.setViewUuid(viewUuid);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridServerModel.class, viewUuid, gridId + SERVER_MODEL_POSTFIX,
@@ -198,6 +207,17 @@ public class GridModelApiImpl implements GridModelApi {
       pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS;
     }
     return pageSizeOptions;
+  }
+
+  private Boolean getDefaultShowEditColumns() {
+    Boolean showEditColumns;
+    try {
+      showEditColumns = Boolean.valueOf(defaultShowEditColumns);
+    } catch (NumberFormatException e) {
+      log.warn("Invalid showEditColumns setting: {}", defaultShowEditColumns);
+      showEditColumns = DEFAULT_SHOW_EDIT_COLUMNS;
+    }
+    return showEditColumns;
   }
 
   @Override
