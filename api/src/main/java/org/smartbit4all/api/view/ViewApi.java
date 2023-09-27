@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -161,7 +162,7 @@ public interface ViewApi {
    * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
    * execution cycle. Typically one server call because it refers to the actual loaded View
    * instance.
-   * 
+   *
    * @param viewUuid The uuid of the view.
    * @return Always return a new instance from the api. Use cautiously!
    */
@@ -171,10 +172,17 @@ public interface ViewApi {
    * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
    * execution cycle. Typically one server call because it refers to the actual loaded View
    * instance.
-   * 
+   *
    * @param view The view instance to manage.
    * @return Always return a new instance from the api. Use cautiously!
    */
   ViewEventApi events(View view);
+
+  /**
+   * Opens a link in the browser.
+   *
+   * @param link
+   */
+  void openLink(Link link);
 
 }

@@ -459,7 +459,7 @@ components:
     ViewContext:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views]
+      required: [uri,views,links]
       properties:
         uri:
           type: string
@@ -471,12 +471,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/View'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
     ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views]
+      required: [uri,views,links]
       properties:
         uuid:
           type: string
@@ -485,6 +489,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ViewData'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
     ViewContextChange:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
@@ -1091,3 +1099,25 @@ components:
           format: int64
         data:
           type: BinaryData
+    Link:
+      type: object
+      description: | 
+        An anchor with a href representing a hyperlink object, which the client will open. 
+        For possible attributes see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
+      required: [url]
+      properties:
+        url:
+          description: The URL that this link points to. It will be anchor's href attribute's value.
+          type: string
+        download:
+          description: Specifies if created anchor should contain download attribute.
+          type: boolean
+        filename:
+          description: Used only when download is true, it will download attribute's value
+          type: string
+        target:
+          enum:
+          - SELF
+          - BLANK
+          - PARENT
+          - TOP

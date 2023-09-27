@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.ViewData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -37,7 +38,8 @@ import javax.validation.Valid;
 @ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextData.UUID,
-  ViewContextData.VIEWS
+  ViewContextData.VIEWS,
+  ViewContextData.LINKS
 })
 @JsonTypeName("ViewContextData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +49,9 @@ public class ViewContextData {
 
   public static final String VIEWS = "views";
   private List<ViewData> views = new ArrayList<>();
+
+  public static final String LINKS = "links";
+  private List<Link> links = new ArrayList<>();
 
   public ViewContextData() { 
   }
@@ -113,6 +118,40 @@ public class ViewContextData {
   }
 
 
+  public ViewContextData links(List<Link> links) {
+    
+    this.links = links;
+    return this;
+  }
+
+  public ViewContextData addLinksItem(Link linksItem) {
+    this.links.add(linksItem);
+    return this;
+  }
+
+   /**
+   * Get links
+   * @return links
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(LINKS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<Link> getLinks() {
+    return links;
+  }
+
+
+  @JsonProperty(LINKS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setLinks(List<Link> links) {
+    this.links = links;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -123,12 +162,13 @@ public class ViewContextData {
     }
     ViewContextData viewContextData = (ViewContextData) o;
     return Objects.equals(this.uuid, viewContextData.uuid) &&
-        Objects.equals(this.views, viewContextData.views);
+        Objects.equals(this.views, viewContextData.views) &&
+        Objects.equals(this.links, viewContextData.links);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, views);
+    return Objects.hash(uuid, views, links);
   }
 
   @Override
@@ -137,6 +177,7 @@ public class ViewContextData {
     sb.append("class ViewContextData {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("}");
     return sb.toString();
   }

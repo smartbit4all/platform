@@ -169,7 +169,8 @@ public class ViewContextServiceImpl implements ViewContextService {
         .uuid(context.getUuid())
         .views(context.getViews().stream()
             .map(this::convertViewToUi)
-            .collect(toList()));
+            .collect(toList()))
+        .links(context.getLinks());
   }
 
   private ViewData convertViewToUi(View view) {
@@ -505,6 +506,14 @@ public class ViewContextServiceImpl implements ViewContextService {
     lock.lock();
     try {
       ObjectNode contextNode = objectApi.load(viewContextUri);
+      // clear links on load
+      contextNode.modify(ViewContext.class,
+          c -> {
+            if (c.getLinks() != null) {
+              c.getLinks().clear();
+            }
+            return c;
+          });
       currentViewContext.set(contextNode.getObject(ViewContext.class));
       command.execute();
       contextNode.modify(ViewContext.class, c -> currentViewContext.get());
