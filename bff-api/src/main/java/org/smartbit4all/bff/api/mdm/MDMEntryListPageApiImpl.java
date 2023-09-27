@@ -310,7 +310,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     if (isDefaultEditor(ctx)) {
       editorView.model(modelNode.getObjectAsMap());
     } else {
-      editorView.putParametersItem("raw-model", modelNode.getObjectAsMap());
+      editorView.putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap());
     }
     viewApi.showView(editorView);
   }

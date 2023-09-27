@@ -7,6 +7,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.view.PageApi;
+import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -44,6 +45,15 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * The identifier of the grid that contains the entries.
    */
   static final String WIDGET_ENTRY_GRID = "RESULT_GRID";
+
+  /**
+   * The view parameter to open custom editors with.
+   * 
+   * <p>
+   * This is done to ensure the {@link PageApiImpl#initModel(org.smartbit4all.api.view.bean.View)}
+   * method runs for custom editors.
+   */
+  static final String PARAM_RAW_MODEL = "raw-model";
 
   /**
    * Run the query and update the content of the grid.
