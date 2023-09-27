@@ -43,3 +43,6 @@ components:
           format: int64
         contentHash:
           type: string
+        folderUri:
+          type: string
+          format: uri

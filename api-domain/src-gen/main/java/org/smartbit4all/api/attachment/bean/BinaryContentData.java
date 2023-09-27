@@ -42,7 +42,8 @@ import javax.validation.Valid;
   BinaryContentData.MIME_TYPE,
   BinaryContentData.EXTENSION,
   BinaryContentData.SIZE,
-  BinaryContentData.CONTENT_HASH
+  BinaryContentData.CONTENT_HASH,
+  BinaryContentData.FOLDER_URI
 })
 @JsonTypeName("BinaryContentData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,6 +74,9 @@ public class BinaryContentData {
 
   public static final String CONTENT_HASH = "contentHash";
   private String contentHash;
+
+  public static final String FOLDER_URI = "folderUri";
+  private URI folderUri;
 
   public BinaryContentData() { 
   }
@@ -325,6 +329,34 @@ public class BinaryContentData {
   }
 
 
+  public BinaryContentData folderUri(URI folderUri) {
+    
+    this.folderUri = folderUri;
+    return this;
+  }
+
+   /**
+   * Get folderUri
+   * @return folderUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FOLDER_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getFolderUri() {
+    return folderUri;
+  }
+
+
+  @JsonProperty(FOLDER_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFolderUri(URI folderUri) {
+    this.folderUri = folderUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -342,12 +374,13 @@ public class BinaryContentData {
         Objects.equals(this.mimeType, binaryContentData.mimeType) &&
         Objects.equals(this.extension, binaryContentData.extension) &&
         Objects.equals(this.size, binaryContentData.size) &&
-        Objects.equals(this.contentHash, binaryContentData.contentHash);
+        Objects.equals(this.contentHash, binaryContentData.contentHash) &&
+        Objects.equals(this.folderUri, binaryContentData.folderUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(location, dataUri, fileName, created, updated, mimeType, extension, size, contentHash);
+    return Objects.hash(location, dataUri, fileName, created, updated, mimeType, extension, size, contentHash, folderUri);
   }
 
   @Override
@@ -363,6 +396,7 @@ public class BinaryContentData {
     sb.append("    extension: ").append(toIndentedString(extension)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    contentHash: ").append(toIndentedString(contentHash)).append("\n");
+    sb.append("    folderUri: ").append(toIndentedString(folderUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }
