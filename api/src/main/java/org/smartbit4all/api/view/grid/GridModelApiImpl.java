@@ -18,7 +18,9 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
@@ -34,8 +36,10 @@ import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
@@ -79,6 +83,9 @@ public class GridModelApiImpl implements GridModelApi {
   @Value("${grid.showEditColumns:false}")
   private String defaultShowEditColumns;
 
+  @Value("${grid.saveGridColumns:false}")
+  private String saveGridColumns;
+
   @Autowired
   private ObjectApi objectApi;
 
@@ -97,6 +104,12 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private InvocationApi invocationApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
+
+  @Autowired
+  private SessionApi sessionApi;
 
   @Override
   public GridView createGridView(Class<?> clazz, List<String> columns, String... columnPrefix) {
@@ -180,6 +193,7 @@ public class GridModelApiImpl implements GridModelApi {
       gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
     }
     gridModel.setViewUuid(viewUuid);
+    loadGridDataForUser(viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridServerModel.class, viewUuid, gridId + SERVER_MODEL_POSTFIX,
         new GridServerModel());
@@ -492,39 +506,97 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public GridModel updateGrid(UUID viewUuid, String gridId, GridUpdateData update) {
     return executeGridCall(viewUuid, gridId, model -> {
-      // check update to match existing columns
-      List<@NotNull String> validColumns = model.getView().getDescriptor().getColumns().stream()
-          .map(col -> col.getPropertyName())
-          .collect(toList());
-      if (update.getOrderedColumnNames().stream()
-          .anyMatch(col -> !validColumns.contains(col))) {
-        throw new IllegalArgumentException("Invalid ordered columnName in update");
-      }
-      // any check??
-      model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
-      if (!update.getOrderByList().isEmpty()) {
-        if (update.getOrderByList().stream()
-            .map(col -> col.getPropertyName())
-            .anyMatch(col -> !validColumns.contains(col))) {
-          throw new IllegalArgumentException("Invalid orderByList columnName in update");
-        }
-        if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
-          TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-          TableDatas.sortByFilterExpression(data, update.getOrderByList());
-          tableDataApi.save(data);
-          model.getAccessConfig().dataUri(data.getUri());
-          int lowerBound = model.getPage().getLowerBound();
-          int upperBound = model.getPage().getUpperBound();
-          model.page(constructPage(viewUuid, gridId, data,
-              lowerBound, Math.min(data.size(), upperBound), 0,
-              true, true)
-                  .lowerBound(lowerBound)
-                  .upperBound(upperBound));
-        }
-      }
-      model.getView().setOrderByList(update.getOrderByList());
+      updateGridInternal(viewUuid, gridId, model, update);
+      saveGridDataToUser(viewUuid, gridId, update);
       return model;
     });
+  }
+
+  private void updateGridInternal(UUID viewUuid, String gridId, GridModel model,
+      GridUpdateData update) {
+    // check update to match existing columns
+    List<@NotNull String> validColumns = model.getView().getDescriptor().getColumns().stream()
+        .map(col -> col.getPropertyName())
+        .collect(toList());
+    if (update.getOrderedColumnNames().stream()
+        .anyMatch(col -> !validColumns.contains(col))) {
+      throw new IllegalArgumentException("Invalid ordered columnName in update");
+    }
+    // any check??
+    model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
+    if (!update.getOrderByList().isEmpty()) {
+      if (update.getOrderByList().stream()
+          .map(col -> col.getPropertyName())
+          .anyMatch(col -> !validColumns.contains(col))) {
+        throw new IllegalArgumentException("Invalid orderByList columnName in update");
+      }
+      if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
+        TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
+        TableDatas.sortByFilterExpression(data, update.getOrderByList());
+        tableDataApi.save(data);
+        model.getAccessConfig().dataUri(data.getUri());
+        int lowerBound = model.getPage().getLowerBound();
+        int upperBound = model.getPage().getUpperBound();
+        model.page(constructPage(viewUuid, gridId, data,
+            lowerBound, Math.min(data.size(), upperBound), 0,
+            true, true)
+                .lowerBound(lowerBound)
+                .upperBound(upperBound));
+      }
+    }
+    model.getView().setOrderByList(update.getOrderByList());
+  }
+
+  private void saveGridDataToUser(UUID viewUuid, String gridId, GridUpdateData update) {
+    try {
+      if (isSaveGridEnabled()) {
+        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId);
+        if (ref != null) {
+          ref.set(update);
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error when saving gridUpdateData to user", e);
+    }
+  }
+
+  private void loadGridDataForUser(UUID viewUuid, String gridId, GridModel gridModel) {
+    try {
+      if (isSaveGridEnabled()) {
+        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId);
+        if (ref != null && ref.exists()) {
+          GridUpdateData update = ref.get();
+          if (update != null) {
+            try {
+              updateGridInternal(viewUuid, gridId, gridModel, update);
+            } catch (IllegalArgumentException e) {
+              // invalid column name in saved data, clear ref
+              ref.clear();
+              log.warn("{} {}", e.getMessage(), update);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error when loading gridUpdateData to user", e);
+    }
+  }
+
+  private boolean isSaveGridEnabled() {
+    return "true".equals(saveGridColumns);
+  }
+
+  private StoredReference<GridUpdateData> getSavedGridDataRef(UUID viewUuid, String gridId) {
+    StoredReference<GridUpdateData> ref = null;
+    URI userUri = sessionApi.getUserUri();
+    if (userUri != null) {
+      String viewName = viewApi.getView(viewUuid).getViewName();
+      ref = collectionApi.reference(
+          userUri,
+          ViewContextService.SCHEMA,
+          viewName + "." + gridId, GridUpdateData.class);
+    }
+    return ref;
   }
 
   private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
