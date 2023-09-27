@@ -763,3 +763,28 @@ components:
           type: string
           additionalProperties:
             type: string
+
+    ObjectValidationResult:
+      description: |
+        This object is produced by the validate oparetions. It can be used directly in services and can be save as part of
+        the object or even as aspect together with the object.
+      type: object
+      required: [severity, items]
+      properties:
+        severity:
+          $ref: '#/components/schemas/ObjectValidationSeverity'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectValidationItem'
+    ObjectValidationItem:
+      description: |
+        One item in the validation result.
+      type: object
+      properties:
+        severity:
+          $ref: '#/components/schemas/ObjectValidationSeverity'
+        message:
+          $ref: '#/components/schemas/LangString'
+    ObjectValidationSeverity:
+      enum: [BLOCKER, ERROR, WARNING, INFO, OK]
