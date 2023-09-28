@@ -110,8 +110,16 @@ public class UserSelfEditorPageApiImpl extends PageApiImpl<UserSelfEditingModel>
     }
 
     objectApi.save(userNode);
+    handleSuccessfulSave();
     log.debug("User self editing successfull on user: {}", user);
     viewApi.closeView(viewUuid);
+  }
+
+  /*
+   * Method called when saveUser is successful.
+   */
+  protected void handleSuccessfulSave() {
+    // Override as needed
   }
 
   protected String setUserField(ObjectNode userNode, Supplier<String> userGetter,
