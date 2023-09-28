@@ -108,7 +108,7 @@ public class GridModelApiImpl implements GridModelApi {
   @Autowired
   private CollectionApi collectionApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -588,7 +588,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   private StoredReference<GridUpdateData> getSavedGridDataRef(UUID viewUuid, String gridId) {
     StoredReference<GridUpdateData> ref = null;
-    URI userUri = sessionApi.getUserUri();
+    URI userUri = sessionApi == null ? null : sessionApi.getUserUri();
     if (userUri != null) {
       String viewName = viewApi.getView(viewUuid).getViewName();
       ref = collectionApi.reference(
