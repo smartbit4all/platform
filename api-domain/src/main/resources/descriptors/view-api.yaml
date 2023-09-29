@@ -1032,7 +1032,6 @@ components:
       type: string
       description: |
         Defines the possible feedback types which are shown if a UiAction was completed.
-      default: SNACKBAR
       enum:
         - NONE
         - SNACKBAR

@@ -85,7 +85,7 @@ public class UiActionDescriptor {
   private UiActionDialogDescriptor input2Dialog;
 
   public static final String FEEDBACK_TYPE = "feedbackType";
-  private UiActionFeedbackType feedbackType = UiActionFeedbackType.SNACKBAR;
+  private UiActionFeedbackType feedbackType;
 
   public static final String FEEDBACK_TEXT = "feedbackText";
   private String feedbackText;
