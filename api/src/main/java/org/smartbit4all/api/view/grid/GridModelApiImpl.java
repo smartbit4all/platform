@@ -707,6 +707,11 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall) {
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+    if (gridModel == null) {
+      // view exists, gridModel doesn't -> try to initialize model
+      viewApi.getModel(viewUuid, null);
+      gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+    }
     if (gridModel != null) {
       gridModel.setViewUuid(viewUuid);
       T result = gridCall.apply(gridModel);
