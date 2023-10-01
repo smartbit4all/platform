@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ListBasedMap;
@@ -140,13 +141,28 @@ public final class LocaleSettingApi implements InitializingBean {
     localeSpecificTranslations.clear();
   }
 
+  public final String get(LangString langString) {
+    return get(getLocale(), langString);
+  }
+
+  public final String get(Locale locale, LangString langString) {
+    if (langString == null) {
+      return "*empty*";
+    }
+    String lang = locale.getLanguage();
+    if (langString.getValueByLocale().containsKey(lang)) {
+      return langString.getValueByLocale().get(lang);
+    }
+    return langString.getDefaultValue();
+  }
+
   public final String get(String... keys) {
     return get(getLocale(), keys);
   }
 
   /**
    * Evaluates the locale specific title of the given enum value.
-   * 
+   *
    * @param enumValue The enum value.
    * @return
    */
