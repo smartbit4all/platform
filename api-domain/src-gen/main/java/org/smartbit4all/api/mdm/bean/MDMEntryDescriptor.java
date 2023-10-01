@@ -28,6 +28,7 @@ import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
+import org.smartbit4all.api.object.bean.LangString;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -39,6 +40,8 @@ import javax.validation.Valid;
 @ApiModel(description = "The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of the given list of object. ")
 @JsonPropertyOrder({
   MDMEntryDescriptor.NAME,
+  MDMEntryDescriptor.DISPLAY_NAME_LIST,
+  MDMEntryDescriptor.DISPLAY_NAME_FORM,
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
@@ -59,6 +62,12 @@ import javax.validation.Valid;
 public class MDMEntryDescriptor {
   public static final String NAME = "name";
   private String name;
+
+  public static final String DISPLAY_NAME_LIST = "displayNameList";
+  private LangString displayNameList = null;
+
+  public static final String DISPLAY_NAME_FORM = "displayNameForm";
+  private LangString displayNameForm = null;
 
   public static final String ADMIN_GROUP_NAME = "adminGroupName";
   private String adminGroupName;
@@ -129,6 +138,62 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public MDMEntryDescriptor displayNameList(LangString displayNameList) {
+    
+    this.displayNameList = displayNameList;
+    return this;
+  }
+
+   /**
+   * Get displayNameList
+   * @return displayNameList
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DISPLAY_NAME_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public LangString getDisplayNameList() {
+    return displayNameList;
+  }
+
+
+  @JsonProperty(DISPLAY_NAME_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisplayNameList(LangString displayNameList) {
+    this.displayNameList = displayNameList;
+  }
+
+
+  public MDMEntryDescriptor displayNameForm(LangString displayNameForm) {
+    
+    this.displayNameForm = displayNameForm;
+    return this;
+  }
+
+   /**
+   * Get displayNameForm
+   * @return displayNameForm
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DISPLAY_NAME_FORM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public LangString getDisplayNameForm() {
+    return displayNameForm;
+  }
+
+
+  @JsonProperty(DISPLAY_NAME_FORM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisplayNameForm(LangString displayNameForm) {
+    this.displayNameForm = displayNameForm;
   }
 
 
@@ -553,6 +618,8 @@ public class MDMEntryDescriptor {
     }
     MDMEntryDescriptor mdMEntryDescriptor = (MDMEntryDescriptor) o;
     return Objects.equals(this.name, mdMEntryDescriptor.name) &&
+        Objects.equals(this.displayNameList, mdMEntryDescriptor.displayNameList) &&
+        Objects.equals(this.displayNameForm, mdMEntryDescriptor.displayNameForm) &&
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
@@ -571,7 +638,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
+    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
   }
 
   @Override
@@ -579,6 +646,8 @@ public class MDMEntryDescriptor {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMEntryDescriptor {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    displayNameList: ").append(toIndentedString(displayNameList)).append("\n");
+    sb.append("    displayNameForm: ").append(toIndentedString(displayNameForm)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");

@@ -112,7 +112,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
     return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
         invocationApi, branchApi,
-        valueSetApi);
+        valueSetApi, localeSettingApi);
 
   }
 

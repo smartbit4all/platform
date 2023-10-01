@@ -66,7 +66,7 @@ public interface MDMEntryApi {
    * remove it from the branched list. If it is a modified object then we undo the modification of
    * the object and replace it with the source uri. The branched object won't be removed from the
    * branch. It will be skipped if every reference is removed from the branched objects.
-   * 
+   *
    * @param draftUri If the given uri is a branched object let is be {@link BranchingStateEnum#NEW}
    *        or {@link BranchingStateEnum#MODIFIED} then it is going to be removed from the branch.
    *        In case of modification this operation restore the original object version. In case of
@@ -86,7 +86,7 @@ public interface MDMEntryApi {
   /**
    * If we already have a branch then we remove the given object from the branch. Else we remove it
    * from the list of the main branch.
-   * 
+   *
    * @param objectUri
    */
   boolean remove(URI objectUri);
@@ -94,16 +94,31 @@ public interface MDMEntryApi {
   /**
    * Returns all the {@link BranchedObjectEntry} currently seen be an editor of the given MDM Entry.
    * It contains the published and untouched objects with {@link BranchingStateEnum#NOP} state.
-   * 
+   *
    * @return Return all the published objects loaded.
    */
   List<BranchedObjectEntry> getBranchingList();
 
   /**
    * Returns if the given MDM Entry is in edit mode on a global or entry level Branch
-   * 
+   *
    * @return
    */
   boolean hasBranch();
+
+  /**
+   * Returns the displayable name / page title of entry list.
+   *
+   * @return
+   */
+  String getDisplayNameList();
+
+  /**
+   * Returns the displayable name / page title of entry form.
+   *
+   * @return
+   */
+  String getDisplayNameForm();
+
 
 }

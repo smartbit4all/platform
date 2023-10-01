@@ -183,7 +183,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     refreshGrid(context);
 
-    String pageTitle = context.entryDescriptor.getName();
+    String pageTitle = context.entryApi.getDisplayNameList();
     FilterExpressionFieldList filters = null;
     return new SearchPageModel()
         .pageTitle(pageTitle)
@@ -343,15 +343,17 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
     URI uri = objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0]));
+    ObjectNode objectNode;
     if (uri == null) {
-      context.entryApi.save(objectApi.create(context.entryApi.getDescriptor().getSchema(),
-          objectDefinition, editingObjectAsMap));
+      objectNode = objectApi.create(
+          context.entryApi.getDescriptor().getSchema(),
+          objectDefinition,
+          editingObjectAsMap);
     } else {
-      ObjectNode objectNode = objectApi
-          .load(uri);
+      objectNode = objectApi.load(uri);
       objectNode.setValues(editingObjectAsMap);
-      context.entryApi.save(objectNode);
     }
+    context.entryApi.save(objectNode);
     refreshGrid(context);
   }
 
