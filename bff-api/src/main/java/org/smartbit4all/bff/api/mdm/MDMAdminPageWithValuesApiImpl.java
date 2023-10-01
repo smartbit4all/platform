@@ -1,7 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
-import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -11,8 +10,8 @@ public class MDMAdminPageWithValuesApiImpl extends MDMAdminPageApiImpl
     implements MDMAdminPageWithValuesApi {
 
   @Override
-  public MDMDefinition initModel(View view) {
-    MDMDefinition model = super.initModel(view);
+  public Object initModel(View view) {
+    Object model = super.initModel(view);
     view.getActions().add(0, new UiAction().code(ACTION_OPEN_VALUES));
     return model;
   }

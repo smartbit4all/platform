@@ -18,7 +18,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
  * </ul>
  *
  */
-public interface MDMAdminPageApi extends PageApi<MDMDefinition> {
+public interface MDMAdminPageApi extends PageApi<Object> {
 
   static final String MDM_ADMIN = "MDMAdmin";
   static final String MDM_ADMIN_VALUES = MDM_ADMIN + "Values";
