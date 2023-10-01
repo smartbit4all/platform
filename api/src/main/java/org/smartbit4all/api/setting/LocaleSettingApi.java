@@ -150,7 +150,7 @@ public final class LocaleSettingApi implements InitializingBean {
       return "*empty*";
     }
     String lang = locale.getLanguage();
-    if (langString.getValueByLocale().containsKey(lang)) {
+    if (langString.getValueByLocale() != null && langString.getValueByLocale().containsKey(lang)) {
       return langString.getValueByLocale().get(lang);
     }
     return langString.getDefaultValue();
