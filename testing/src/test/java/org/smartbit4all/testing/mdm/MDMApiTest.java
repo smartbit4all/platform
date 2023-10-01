@@ -400,8 +400,9 @@ class MDMApiTest {
           new UiActionRequest().code(MDMEntryListPageApi.ACTION_EDIT_ENTRY));
 
       View viewEditing = uiTestApi.getView(MDMApiTestConfig.MDM_EDITING_PAGE);
-
       Assertions.assertThat(viewEditing).isNotNull();
+      // initModel must be called before accessing view.getModel()
+      viewApi.getModel(viewEditing.getUuid(), null);
 
       // Modify the model
       SampleCategoryType editingObject =

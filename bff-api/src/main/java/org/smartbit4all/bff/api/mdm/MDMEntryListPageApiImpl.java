@@ -296,7 +296,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
 
-    View editorView = new View()
+    viewApi.showView(new View()
         .viewName(getEditorViewName(ctx))
         .type(ViewType.DIALOG)
         .putLayoutsItem("layout", layout)
@@ -306,22 +306,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
         .actions(Arrays.asList(
             new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
-            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)));
-    if (isDefaultEditor(ctx)) {
-      editorView.model(modelNode.getObjectAsMap());
-    } else {
-      editorView.putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap());
-    }
-    viewApi.showView(editorView);
-  }
-
-  @Deprecated
-  private final Object constructEditingObject(
-      BranchedObjectEntry branchedObjectEntry) {
-    URI uri = branchedObjectEntry.getBranchUri() != null
-        ? branchedObjectEntry.getBranchUri()
-        : branchedObjectEntry.getOriginalUri();
-    return objectApi.load(uri).getObjectAsMap();
+            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
+        .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap()));
   }
 
   private URI getEditingObjectUri(BranchedObjectEntry branchedObjectEntry) {
@@ -410,11 +396,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private final String getEditorViewName(PageContext context) {
     return context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
         : context.entryDescriptor.getEditorViewName();
-  }
-
-  private boolean isDefaultEditor(PageContext context) {
-    final String editorViewName = context.entryDescriptor.getEditorViewName();
-    return editorViewName == null || defaultEditorViewName.equals(editorViewName);
   }
 
   @Override
