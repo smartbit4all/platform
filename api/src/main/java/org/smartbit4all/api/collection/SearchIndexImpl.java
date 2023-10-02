@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,6 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -144,7 +144,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
-    if (!useDatabase || readFromStorage) {
+    if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
+        && !useDatabase)
+        || readFromStorage) {
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;

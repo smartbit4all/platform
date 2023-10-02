@@ -293,11 +293,7 @@ public class CrudApiImpl implements CrudApi {
       return executionApisByName.values().iterator().next();
     }
 
-    CrudExecutionApi execApi = fromConfigExecApisByDomain(entityDef)
-        .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
-            .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
-                .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
-                    .orElse(null))));
+    CrudExecutionApi execApi = getExecutionApi(entityDef);
 
     if (execApi == null) {
       throw new IllegalStateException(
@@ -306,6 +302,22 @@ public class CrudApiImpl implements CrudApi {
     }
 
     return execApi;
+  }
+
+  private CrudExecutionApi getExecutionApi(EntityDefinition entityDef) {
+    return fromConfigExecApisByDomain(entityDef)
+        .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
+            .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
+                .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
+                    .orElse(null))));
+  }
+
+  @Override
+  public boolean isExecutionApiExists(EntityDefinition entityDef) {
+    if (config == null) {
+      return false;
+    }
+    return getExecutionApi(entityDef) != null;
   }
 
   private Optional<CrudExecutionApi> fromConfigExecApiNamesByDomain(EntityDefinition entityDef) {

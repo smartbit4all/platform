@@ -139,4 +139,12 @@ public interface CrudApi {
       String sequenceName, Map<Property<?>, Object> extraValues) throws Exception;
 
 
+  /**
+   * Checks whether a {@link CrudExecutionApi} is registered for the entity definition by the
+   * parameterization of the application. If there is no parameterization, then return false.
+   * 
+   * @param entityDef
+   * @return
+   */
+  boolean isExecutionApiExists(EntityDefinition entityDef);
 }
