@@ -7,7 +7,6 @@ import java.util.Objects;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.RefObject;
 import com.google.common.base.Strings;
 
@@ -20,7 +19,7 @@ public final class AssociationGridConfig {
   private final String name;
   private final String mdmDefinition;
   /** The descriptor enumerating the possible new values for the assoc list. */
-  private final MDMEntryDescriptor entryDescriptor;
+  private final String descriptorName;
   private final SearchIndexIdentifier searchIndex;
   /** Where the assoc list is in the domain object. */
   private final String[] pathToAssocList;
@@ -38,7 +37,7 @@ public final class AssociationGridConfig {
 
   private AssociationGridConfig(String name,
       String mdmDefinition,
-      MDMEntryDescriptor entryDescriptor,
+      String descriptorName,
       SearchIndexIdentifier searchIndex,
       String[] pathToAssocList,
       String[] assocListInView,
@@ -48,7 +47,7 @@ public final class AssociationGridConfig {
       List<String> supportedWidgetActions, String newAssocDialogName) {
     this.name = name;
     this.mdmDefinition = mdmDefinition;
-    this.entryDescriptor = entryDescriptor;
+    this.descriptorName = descriptorName;
     this.searchIndex = searchIndex;
     this.pathToAssocList = pathToAssocList;
     this.assocListInView = assocListInView;
@@ -68,8 +67,8 @@ public final class AssociationGridConfig {
     return mdmDefinition;
   }
 
-  MDMEntryDescriptor entryDescriptor() {
-    return entryDescriptor;
+  String descriptorName() {
+    return descriptorName;
   }
 
   SearchIndex<RefObject> searchIndex(CollectionApi collectionApi) {
@@ -131,7 +130,7 @@ public final class AssociationGridConfig {
     private final String name;
 
     private String mdmDefinition;
-    private MDMEntryDescriptor entryDescriptor;
+    private String descriptorName;
     private SearchIndexIdentifier searchIndex;
     private String[] pathToAssocList;
     private String[] assocListInView;
@@ -157,8 +156,8 @@ public final class AssociationGridConfig {
       return this;
     }
 
-    public Builder entryDescriptor(MDMEntryDescriptor entryDescriptor) {
-      this.entryDescriptor = Objects.requireNonNull(entryDescriptor);
+    public Builder entryDescriptor(String descriptorName) {
+      this.descriptorName = Objects.requireNonNull(descriptorName);
       return this;
     }
 
@@ -229,7 +228,7 @@ public final class AssociationGridConfig {
 
     public AssociationGridConfig build() {
       return new AssociationGridConfig(
-          name, mdmDefinition, entryDescriptor, searchIndex, pathToAssocList, assocListInView,
+          name, mdmDefinition, descriptorName, searchIndex, pathToAssocList, assocListInView,
           columnsToInclude,
           columnsToShow,
           onGridPageRenderCallback, onGridSelectionChangedCallback, supportedWidgetActions,

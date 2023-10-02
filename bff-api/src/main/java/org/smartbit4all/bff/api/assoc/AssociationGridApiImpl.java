@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.assoc;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +39,8 @@ import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class AssociationGridApiImpl implements AssociationGridApi, InitializingBean {
 
@@ -196,7 +196,8 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     final String configName = request.getIdentifier();
     final AssociationGridConfig config = configsByName.get(configName);
     // get the target MDM entry descriptor
-    MDMEntryDescriptor mdmEntryDescriptor = config.entryDescriptor();
+    MDMEntryDescriptor mdmEntryDescriptor =
+        masterDataManagementApi.getEntryDescriptor(config.mdmDefinition(), config.descriptorName());
     StoredList list = masterDataManagementApi
         .getApi(config.mdmDefinition(), mdmEntryDescriptor.getName())
         .getList();

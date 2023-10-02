@@ -46,6 +46,15 @@ public interface MasterDataManagementApi {
    */
   MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName);
 
+  /**
+   * Retrieve the entry descriptor from a MDM definition.
+   * 
+   * @param definitionName The {@link MDMDefinition} name.
+   * @param entryName The name of the entry.
+   * @return The descriptor object. Please do not modify this object.
+   */
+  MDMEntryDescriptor getEntryDescriptor(String definitionName, String entryName);
+
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
   URI initiateGlobalBranch(String definition, String title);
