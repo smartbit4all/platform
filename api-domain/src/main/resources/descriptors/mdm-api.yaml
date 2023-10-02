@@ -69,6 +69,10 @@ components:
           description: |
             The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the
             qualified name of the given class. It is easy to identify in the message...properties.
+        displayNameList:
+          type: LangString
+        displayNameForm:
+          type: LangString
         adminGroupName:
           type: string
           description: |

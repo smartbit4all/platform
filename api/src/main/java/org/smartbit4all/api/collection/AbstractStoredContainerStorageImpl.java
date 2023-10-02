@@ -75,7 +75,12 @@ abstract class AbstractStoredContainerStorageImpl {
   }
 
   public void branch(URI branchUri) {
-    this.branchUri = objectApi.getLatestUri(branchUri);
+    if (branchUri != null) {
+      this.branchUri = objectApi.getLatestUri(branchUri);
+    } else {
+      this.branchUri = branchUri;
+    }
+
   }
 
 }

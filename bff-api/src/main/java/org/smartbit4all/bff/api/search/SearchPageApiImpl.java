@@ -17,7 +17,14 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridSelectionMode;
+import org.smartbit4all.api.grid.bean.GridSelectionType;
 import org.smartbit4all.api.grid.bean.GridView;
+import org.smartbit4all.api.grid.bean.GridViewDescriptor;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -42,10 +49,13 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   private CollectionApi collectionApi;
 
   @Autowired
-  private GridModelApi gridModelApi;
+  protected GridModelApi gridModelApi;
 
   @Autowired
   private FilterExpressionApi filterExpressionApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   protected class PageContext {
 
@@ -62,7 +72,8 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         variables.getMap().put(VAR_SEARCHPAGECONFIG, pageConfig);
       }
       ObjectMapHelper parameters = parameters(view);
-      searchIndex = collectionApi.searchIndex(pageConfig.getSearchIndexSchema(),
+      searchIndex = collectionApi.searchIndex(
+          pageConfig.getSearchIndexSchema(),
           pageConfig.getSearchIndexName());
       uris = parameters.getAsList(PARAM_URI_LIST, URI.class);
       StoredCollectionDescriptor listDescriptor =
@@ -106,9 +117,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     // Setup the available actions.
     ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true))
         .addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false));
-    if (ctx.selectionCallback != null) {
-      ctx.view.addActionsItem(new UiAction().code(ACTION_RETURN_SELECTED_ROWS).submit(true));
-    }
 
     GridModel gridModel = gridModelApi.createGridModel(
         ctx.searchIndex.getDefinition().getDefinition(),
@@ -121,6 +129,14 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       gridModel.setView(gridViewOptions.get(0));
       gridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
+    }
+
+    if (ctx.selectionCallback != null) {
+      ctx.view.addActionsItem(new UiAction().code(ACTION_RETURN_SELECTED_ROWS).submit(true));
+      GridViewDescriptor gridViewDescriptor = gridModel.getView().getDescriptor();
+      gridViewDescriptor.setSelectionMode(GridSelectionMode.SINGLE);
+      gridViewDescriptor.setSelectionType(GridSelectionType.CHECKBOX);
+      gridViewDescriptor.setPreserveSelectionOnPageChange(false);
     }
 
     gridModelApi.initGridInView(ctx.viewUUID, WIDGET_RESULT_GRID, gridModel);
@@ -214,7 +230,17 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void performReturnSelectedRows(UUID viewUuid, UiActionRequest request) {
-
+    final PageContext ctx = new PageContext(viewUuid);
+    List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, WIDGET_RESULT_GRID);
+    InvocationRequest selectionCallback = ctx.selectionCallback;
+    InvocationParameter invocationParameter = selectionCallback.getParameters().get(0);
+    invocationParameter.setValue(selectedRows);
+    try {
+      invocationApi.invoke(selectionCallback);
+    } catch (ApiNotFoundException e) {
+      throw new IllegalStateException(e);
+    }
+    performClose(viewUuid, request);
   }
 
 }

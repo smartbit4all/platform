@@ -23,11 +23,11 @@ import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMEntryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
@@ -183,7 +183,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     refreshGrid(context);
 
-    String pageTitle = context.entryDescriptor.getName();
+    String pageTitle = context.entryApi.getDisplayNameList();
     FilterExpressionFieldList filters = null;
     return new SearchPageModel()
         .pageTitle(pageTitle)
@@ -248,7 +248,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void newEntry(UUID viewUuid, UiActionRequest request) {
-    showEditorView(viewUuid, getContextByViewUUID(viewUuid), null);
+    showEditorView(
+        viewUuid,
+        getContextByViewUUID(viewUuid),
+        new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW));
   }
 
   private final ObjectNode createNewObject(MDMEntryDescriptor entryDescriptor) {
@@ -283,9 +286,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     ObjectDefinition<?> objectDefinition = ctx.getObjectDefinition();
 
     // Model:
-    final ObjectNode modelNode = (branchedObjectEntry == null)
+    URI branchUri = ctx.entryApi.getBranchUri();
+    URI objectLatestUri = getEditingObjectUri(branchedObjectEntry); // branchedObjectEntry contains
+                                                                    // latest uris
+    final ObjectNode modelNode = (objectLatestUri == null)
         ? createNewObject(ctx.entryDescriptor)
-        : objectApi.load(getEditingObjectUri(branchedObjectEntry));
+        : objectApi.load(objectLatestUri, branchUri);
+    // objectUri, branchUri
     // Layout:
     final ObjectLayoutDescriptor layoutDescriptor = objectExtensionApi
         .generateDefaultLayout(objectDefinition.getQualifiedName());
@@ -295,10 +302,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .flatMap(List::stream)
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
-
-    View editorView = new View()
+    viewApi.showView(new View()
         .viewName(getEditorViewName(ctx))
         .type(ViewType.DIALOG)
+        .objectUri(modelNode.getObjectUri())
+        .branchUri(branchUri)
         .putLayoutsItem("layout", layout)
         .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
         .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
@@ -306,22 +314,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
         .actions(Arrays.asList(
             new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
-            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)));
-    if (isDefaultEditor(ctx)) {
-      editorView.model(modelNode.getObjectAsMap());
-    } else {
-      editorView.putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap());
-    }
-    viewApi.showView(editorView);
-  }
-
-  @Deprecated
-  private final Object constructEditingObject(
-      BranchedObjectEntry branchedObjectEntry) {
-    URI uri = branchedObjectEntry.getBranchUri() != null
-        ? branchedObjectEntry.getBranchUri()
-        : branchedObjectEntry.getOriginalUri();
-    return objectApi.load(uri).getObjectAsMap();
+            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
+        .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap()));
   }
 
   private URI getEditingObjectUri(BranchedObjectEntry branchedObjectEntry) {
@@ -351,21 +345,30 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
-      BranchedObjectEntry branchedObjectEntry) {
+  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
-    URI uri = objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0]));
-    if (uri == null) {
-      context.entryApi.save(objectApi.create(context.entryApi.getDescriptor().getSchema(),
-          objectDefinition, editingObjectAsMap));
+    ObjectNode objectNode;
+    if (objectUri == null) {
+      objectNode = objectApi.create(
+          context.entryApi.getDescriptor().getSchema(),
+          objectDefinition,
+          editingObjectAsMap);
     } else {
-      ObjectNode objectNode = objectApi
-          .load(uri);
+      objectNode = objectApi.load(objectUri);
       objectNode.setValues(editingObjectAsMap);
-      context.entryApi.save(objectNode);
     }
+    saveObjectInternal(context, objectNode);
+  }
+
+  @Override
+  public void saveObject(UUID viewUuid, ObjectNode objectNode) {
+    saveObjectInternal(getContextByViewUUID(viewUuid), objectNode);
+  }
+
+  protected void saveObjectInternal(PageContext context, ObjectNode objectNode) {
+    context.entryApi.save(objectNode);
     refreshGrid(context);
   }
 
@@ -410,11 +413,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private final String getEditorViewName(PageContext context) {
     return context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
         : context.entryDescriptor.getEditorViewName();
-  }
-
-  private boolean isDefaultEditor(PageContext context) {
-    final String editorViewName = context.entryDescriptor.getEditorViewName();
-    return editorViewName == null || defaultEditorViewName.equals(editorViewName);
   }
 
   @Override

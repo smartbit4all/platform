@@ -24,7 +24,9 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
@@ -67,6 +69,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   private ValueSetApi valueSetApi;
 
+  private LocaleSettingApi localeSettingApi;
+
   /**
    * If the given MDM ap is managing a list of published values then this list forms a value set
    * definition by default. If it is true then the next access will try to refresh the value set
@@ -83,7 +87,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   public MDMEntryApiImpl(MasterDataManagementApi api, MDMDefinition definition,
       MDMEntryDescriptor descriptor,
       ObjectApi objectApi, CollectionApi collectionApi, InvocationApi invocationApi,
-      BranchApi branchApi, ValueSetApi valueSetApi) {
+      BranchApi branchApi, ValueSetApi valueSetApi, LocaleSettingApi localeSettingApi) {
     super();
     Objects.requireNonNull(descriptor, "Unable to initiate master data entry without descriptor.");
     this.api = api;
@@ -96,6 +100,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     this.invocationApi = invocationApi;
     this.branchApi = branchApi;
     this.valueSetApi = valueSetApi;
+    this.localeSettingApi = localeSettingApi;
   }
 
   @Override
@@ -140,7 +145,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       objectNode
           .setValues(fireBeforeSaveNew(objectApi.definition(descriptor.getTypeQualifiedName()),
               objectNode.getObjectAsMap(), descriptor));
-      URI uri = objectApi.save(objectNode);
+      URI uri = objectApi.save(objectNode, branchUri);
       list.add(uri);
       return uri;
     } else if (objectNode.getState() == ObjectNodeState.MODIFIED) {
@@ -163,7 +168,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return null;
   }
 
-  private final URI getBranchUri() {
+  @Override
+  public final URI getBranchUri() {
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
     URI branchUri = null;
     if (mdmDefinitionState != null) {
@@ -340,6 +346,18 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   @Override
   public boolean hasBranch() {
     return getBranchUri() != null;
+  }
+
+  @Override
+  public String getDisplayNameList() {
+    LangString displayName = descriptor.getDisplayNameList();
+    return displayName != null ? localeSettingApi.get(displayName) : descriptor.getName();
+  }
+
+  @Override
+  public String getDisplayNameForm() {
+    LangString displayName = descriptor.getDisplayNameForm();
+    return displayName != null ? localeSettingApi.get(displayName) : descriptor.getName();
   }
 
 }

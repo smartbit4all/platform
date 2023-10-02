@@ -1,12 +1,15 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
+import java.util.HashMap;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
@@ -17,7 +20,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
-public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements MDMAdminPageApi {
+public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
 
   protected static final String OPEN_LIST_PREFIX = ACTION_OPEN_LIST + StringConstant.UNDERLINE;
 
@@ -27,8 +30,11 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
   @Autowired
   private SessionApi sessionApi;
 
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
+
   public MDMAdminPageApiImpl() {
-    super(MDMDefinition.class);
+    super(Object.class);
   }
 
   /**
@@ -68,18 +74,29 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
   }
 
   @Override
-  public MDMDefinition initModel(View view) {
+  public Object initModel(View view) {
     PageContext context = getContextByView(view);
     view.actions(context.definition.getDescriptors().values().stream()
         .filter(this::filterDescriptor)
         .map(e -> new UiAction()
             .code(OPEN_LIST_PREFIX + e.getName())
-            .descriptor(new UiActionDescriptor()
-                .title(e.getName())
-                .color("accent")
-                .type(UiActionButtonType.RAISED)))
+            .descriptor(getUiActionDescriptor(e)))
         .collect(toList()));
-    return context.definition;
+    return new HashMap<String, Object>();
+  }
+
+  protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e) {
+    return new UiActionDescriptor()
+        .title(getTitle(e))
+        .color("primary")
+        .type(UiActionButtonType.NORMAL);
+  }
+
+  // we could use MDMEntryApi.getDisplayNameList, but we would instantiate new MDMEntryApi for each
+  // getTitle call and it's probably expensive..
+  protected String getTitle(MDMEntryDescriptor e) {
+    LangString displayName = e.getDisplayNameList();
+    return displayName != null ? localeSettingApi.get(displayName) : e.getName();
   }
 
   protected boolean filterDescriptor(MDMEntryDescriptor entryDescriptor) {

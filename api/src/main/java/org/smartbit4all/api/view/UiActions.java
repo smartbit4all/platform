@@ -31,6 +31,8 @@ public final class UiActions {
 
   public static final String TITLE = UiActionDescriptor.TITLE;
 
+  public static final String FILES = "_files";
+
   private UiActions() {}
 
   public static UiActionBuilder builder() {
