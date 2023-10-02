@@ -1,10 +1,12 @@
 package org.smartbit4all.api.view;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
@@ -18,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @param <M> type of the model which this API handles
  */
 public abstract class PageApiImpl<M> implements PageApi<M> {
+
+  private static final List<ViewState> statesToDefaultCloseAt =
+      Arrays.asList(ViewState.OPENED, ViewState.TO_OPEN, ViewState.OPEN_PENDING);
 
   @Autowired
   protected ObjectApi objectApi;
@@ -47,6 +52,14 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
   @Override
   public M load(UUID viewUuid) {
     return getModel(viewUuid);
+  }
+
+  @Override
+  public void defaultClose(UUID viewUuid, UiActionRequest request) {
+    View view = viewApi.getView(viewUuid);
+    if (statesToDefaultCloseAt.contains(view.getState())) {
+      viewApi.closeView(viewUuid);
+    }
   }
 
   /**

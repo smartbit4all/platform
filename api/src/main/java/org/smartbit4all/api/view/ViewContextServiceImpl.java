@@ -152,6 +152,11 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   };
 
+  private List<String> requestCodesToSkipWithMissingView =
+      new ArrayList<>(defaultRequestCodesToSkipWithMissingView);
+  private static final List<String> defaultRequestCodesToSkipWithMissingView =
+      Arrays.asList(PageApi.DEFAULT_CLOSE);
+
   @Override
   public ViewContextData createViewContext() {
     UUID uuid = UUID.randomUUID();
@@ -567,7 +572,18 @@ public class ViewContextServiceImpl implements ViewContextService {
   public ViewContextChange performAction(UUID viewUuid, UiActionRequest request) {
     Objects.requireNonNull(request, "Request must be specified!");
     Objects.requireNonNull(request.getCode(), "Request.code must be specified!");
-    View view = getViewFromCurrentViewContext(viewUuid);
+    View view = null;
+    try {
+      view = getViewFromCurrentViewContext(viewUuid);
+    } catch (Exception e) {
+      // TODO: handle VIEW_NOT_FOUND_BY_UUID with specific Exception
+      if (e.getMessage() != null && e.getMessage().startsWith(ViewContexts.VIEW_NOT_FOUND_BY_UUID)
+          && requestCodesToSkipWithMissingView.contains(request.getCode())) {
+        return createViewContextChange(Collections.emptyList());
+      } else {
+        throw e;
+      }
+    }
     Objects.requireNonNull(view, "View not found!");
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
@@ -700,7 +716,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     try {
       return objectApi.create(SCHEMA, getCurrentViewContextEntry());
     } catch (Throwable tr) {
-      throw new RuntimeException("Error after calling method " + methodName,
+      throw new RuntimeException("Error before calling method " + methodName,
           tr);
     }
   }
@@ -949,6 +965,15 @@ public class ViewContextServiceImpl implements ViewContextService {
     // notify data listeners, calculate changes during data change processing and return
     return performViewCall(() -> {
     }, "performDataChanged");
+  }
+
+  /**
+   * Adds a ui action code, so the incoming request with this code will not fail even when the given
+   * view by the performAcion's viewUuid parameter is missing.
+   */
+  public void addRequestCodeToSkipWithMissingView(String actionCode) {
+    Objects.requireNonNull(actionCode, "actionCode can not be null!");
+    requestCodesToSkipWithMissingView.add(actionCode);
   }
 
 }
