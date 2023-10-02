@@ -168,7 +168,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return null;
   }
 
-  private final URI getBranchUri() {
+  @Override
+  public final URI getBranchUri() {
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
     URI branchUri = null;
     if (mdmDefinitionState != null) {

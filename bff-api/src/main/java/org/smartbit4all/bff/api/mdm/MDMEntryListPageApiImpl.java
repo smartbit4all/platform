@@ -23,11 +23,11 @@ import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMEntryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
@@ -248,7 +248,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void newEntry(UUID viewUuid, UiActionRequest request) {
-    showEditorView(viewUuid, getContextByViewUUID(viewUuid), null);
+    showEditorView(
+        viewUuid,
+        getContextByViewUUID(viewUuid),
+        new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW));
   }
 
   private final ObjectNode createNewObject(MDMEntryDescriptor entryDescriptor) {
@@ -283,9 +286,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     ObjectDefinition<?> objectDefinition = ctx.getObjectDefinition();
 
     // Model:
-    final ObjectNode modelNode = (branchedObjectEntry == null)
+    URI branchUri = ctx.entryApi.getBranchUri();
+    URI objectLatestUri = getEditingObjectUri(branchedObjectEntry); // branchedObjectEntry contains
+                                                                    // latest uris
+    final ObjectNode modelNode = (objectLatestUri == null)
         ? createNewObject(ctx.entryDescriptor)
-        : objectApi.load(getEditingObjectUri(branchedObjectEntry));
+        : objectApi.load(objectLatestUri, branchUri);
+    // objectUri, branchUri
     // Layout:
     final ObjectLayoutDescriptor layoutDescriptor = objectExtensionApi
         .generateDefaultLayout(objectDefinition.getQualifiedName());
@@ -295,10 +302,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .flatMap(List::stream)
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
-
     viewApi.showView(new View()
         .viewName(getEditorViewName(ctx))
         .type(ViewType.DIALOG)
+        .objectUri(modelNode.getObjectUri())
+        .branchUri(branchUri)
         .putLayoutsItem("layout", layout)
         .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
         .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
@@ -337,22 +345,29 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
-      BranchedObjectEntry branchedObjectEntry) {
+  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
-    URI uri = objectApi.asType(URI.class, editingObjectAsMap.get(MDMEntryApiImpl.uriPath[0]));
     ObjectNode objectNode;
-    if (uri == null) {
+    if (objectUri == null) {
       objectNode = objectApi.create(
           context.entryApi.getDescriptor().getSchema(),
           objectDefinition,
           editingObjectAsMap);
     } else {
-      objectNode = objectApi.load(uri);
+      objectNode = objectApi.load(objectUri);
       objectNode.setValues(editingObjectAsMap);
     }
+    saveObjectInternal(context, objectNode);
+  }
+
+  @Override
+  public void saveObject(UUID viewUuid, ObjectNode objectNode) {
+    saveObjectInternal(getContextByViewUUID(viewUuid), objectNode);
+  }
+
+  protected void saveObjectInternal(PageContext context, ObjectNode objectNode) {
     context.entryApi.save(objectNode);
     refreshGrid(context);
   }

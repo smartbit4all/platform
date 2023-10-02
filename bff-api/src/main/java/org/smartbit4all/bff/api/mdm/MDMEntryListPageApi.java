@@ -5,13 +5,13 @@ import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This generic page api is responsible for the listing of a given {@link MDMEntryDescriptor}. It
@@ -48,7 +48,7 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * The view parameter to open custom editors with.
-   * 
+   *
    * <p>
    * This is done to ensure the {@link PageApiImpl#initModel(org.smartbit4all.api.view.bean.View)}
    * method runs for custom editors.
@@ -203,11 +203,18 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    *
    * @param viewUuid The list view instance
    * @param objectUri The uri of the edited object.
-   * @param editingObject The object or map value of the newly create object.
-   * @param branchedObjectEntry The branching information about the given entry.
+   * @param editingObject The object or map value of the newly created / updated object.
    */
-  void saveObject(UUID viewUuid, URI objectUri, Object editingObject,
-      BranchedObjectEntry branchedObjectEntry);
+  void saveObject(UUID viewUuid, URI objectUri, Object editingObject);
+
+  /**
+   * This callback function is responsible for saving an object into the MDM entry list we are
+   * working on currently.
+   *
+   * @param viewUuid The list view instance
+   * @param objectNode The objectNode of the newly created / updated object.
+   */
+  void saveObject(UUID viewUuid, ObjectNode objectNode);
 
   GridRow addWidgetEntryGridActions(GridRow page, UUID viewUuid);
 

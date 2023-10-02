@@ -107,6 +107,14 @@ public interface MDMEntryApi {
   boolean hasBranch();
 
   /**
+   * Returns the bracnhUri of the given MDM Entry if it is in edit mode on a global or entry level
+   * Branch. May return null.
+   *
+   * @return
+   */
+  URI getBranchUri();
+
+  /**
    * Returns the displayable name / page title of entry list.
    *
    * @return
