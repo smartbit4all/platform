@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
@@ -41,6 +42,12 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
     return map.uris().values().stream()
         .map(u -> new Subject().ref(objectApi.getLatestUri(u)).type(getApiName()))
         .collect(toList());
+  }
+
+  @Override
+  public List<URI> getUsersOf(List<URI> subjects) {
+    // TODO implement later on.
+    return Collections.emptyList();
   }
 
 }

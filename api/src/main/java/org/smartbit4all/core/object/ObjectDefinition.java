@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -461,6 +461,19 @@ public final class ObjectDefinition<T> {
       return toMap(newInstance());
     }
     return new HashMap<>();
+  }
+
+  /**
+   * Detects if the parameter clazz is equals to the definition.
+   * 
+   * @param instanceClazz The class to check.
+   * @return If the {@link Class#getName()} queals to the {@link #qualifiedName} of the definition.
+   */
+  public boolean instanceOf(Class<?> instanceClazz) {
+    if (instanceClazz == null) {
+      return false;
+    }
+    return instanceClazz.getName().equals(qualifiedName);
   }
 
 }

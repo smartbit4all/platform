@@ -44,6 +44,23 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    */
   List<Subject> getMySubjects(String modelName);
 
+  /**
+   * Get all the subjects available in the given model.
+   * 
+   * @param modelName The name of the subject model.
+   * @return The list of the subjects available.
+   */
   List<Subject> getAllSubjects(String modelName);
+
+  /**
+   * Retrieves the uri list of the users belongs to the given subjects.
+   * 
+   * @param modelName The name of the model.
+   * @param subjects The URI list of the subjects. We might not know what kind of subject it is in
+   *        the model. All the {@link SubjectContributionApi}s must recognize quickly that an URI is
+   *        managed by the given api or not.
+   * @return The distinct list of the user URI belongs to the
+   */
+  List<URI> getUsersOf(String modelName, List<URI> subjects);
 
 }

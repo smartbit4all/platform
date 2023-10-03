@@ -130,4 +130,14 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
         .collect(toList());
   }
 
+  @Override
+  public List<URI> getUsersOf(String modelName, List<URI> subjects) {
+    SubjectModel model = getModel(modelName);
+    return model.getDescriptors().entrySet().stream()
+        .flatMap(
+            e -> getContributionApi(e.getValue().getApiName()).getUsersOf(subjects).stream())
+        .distinct()
+        .collect(toList());
+  }
+
 }

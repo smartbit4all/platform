@@ -13,8 +13,27 @@ import org.smartbit4all.api.org.bean.Subject;
  */
 public interface SubjectContributionApi extends ContributionApi {
 
+  /**
+   * Retrieves the list of subjects the user belongs to.
+   * 
+   * @param userUri The user URI.
+   * @return The list of subjects.
+   */
   List<Subject> getUserSubjects(URI userUri);
 
+  /**
+   * @return All the subjects available in the given contribution. Like all the organization units
+   *         or so.
+   */
   List<Subject> getAllSubjects();
+
+  /**
+   * The users belongs to the given subjects.
+   * 
+   * @param subjects The URI list of the subjects. Not necessarily managed by this contribution, so
+   *        the implementation must tolerate the foreign URI.
+   * @return The
+   */
+  List<URI> getUsersOf(List<URI> subjects);
 
 }
