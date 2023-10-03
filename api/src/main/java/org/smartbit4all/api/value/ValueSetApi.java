@@ -5,6 +5,7 @@ import java.util.List;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
+import org.smartbit4all.api.view.bean.ValueSet;
 
 /**
  * The value set api is responsible for the central value set registration of application tenant.
@@ -58,13 +59,14 @@ public interface ValueSetApi {
    *
    * @param namespace The namespace of the value set.
    * @param name The unique name of the value set.
-   * @param branchUri THe branch to use to read values from, if applicable
+   * @param branchUri The branch to use to read values from, if applicable
+   * @param useObjectNode If true, ValueSetData.values will be List<ObjectNode>
    * @return The result {@link ValueSetData}.
    */
-  ValueSetData valuesOf(String namespace, String name, URI branchUri);
+  ValueSetData valuesOf(String namespace, String name, URI branchUri, boolean useObjectNode);
 
   default ValueSetData valuesOf(String namespace, String name) {
-    return valuesOf(namespace, name, null);
+    return valuesOf(namespace, name, null, false);
   };
 
   /**
@@ -75,19 +77,20 @@ public interface ValueSetApi {
    * @param branchUri THe branch to use to read values from, if applicable
    * @return The result {@link ValueSetData}.
    */
-  ValueSetData valuesOf(ValueSetDefinitionData definitionData, URI branchUri);
+  ValueSetData valuesOf(ValueSetDefinitionData definitionData, URI branchUri,
+      boolean useObjectNode);
 
   default ValueSetData valuesOf(ValueSetDefinitionData definitionData) {
-    return valuesOf(definitionData, null);
+    return valuesOf(definitionData, null, false);
   };
 
   /**
    * Saves the given value set.
    *
-   * @param logicalSchema
+   * @param namespace
    * @param valueSetDef
    */
-  void save(String logicalSchema, ValueSetDefinitionData valueSetDef);
+  void save(String namespace, ValueSetDefinitionData valueSetDef);
 
   /**
    * Saves the given value set into the global name space.
@@ -106,5 +109,16 @@ public interface ValueSetApi {
    * @return
    */
   <T> List<T> getValues(Class<T> typeClass, ValueSetData valueSet, String... path);
+
+  /**
+   * Creates a ValueSet where values will be List<Value>,
+   *
+   * @param namespace
+   * @param name
+   * @param branchUri
+   * @param path This path will be used to fill displayValue
+   * @return
+   */
+  ValueSet getValueSetWithValues(String namespace, String name, URI branchUri, String... path);
 
 }

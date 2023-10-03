@@ -308,8 +308,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             valueSetApi.getDefinitionData(definition.getName(), descriptor.getName());
         if (definitionData == null) {
           valueSetApi.save(definition.getName(),
-              new ValueSetDefinitionData().qualifiedName(descriptor.getName())
-                  .kind(ValueSetDefinitionKind.LIST).storageSchema(definition.getName())
+              new ValueSetDefinitionData()
+                  .qualifiedName(descriptor.getName())
+                  .kind(ValueSetDefinitionKind.LIST)
+                  .storageSchema(descriptor.getSchema())
                   .containerName(getPublishedListName(descriptor))
                   .typeClass(descriptor.getTypeQualifiedName()));
         }
@@ -529,7 +531,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
-    return descriptor.getName() + "List";
+    return descriptor.getPublishedListName() != null
+        ? descriptor.getPublishedListName()
+        : descriptor.getName() + "List";
   }
 
   @Override

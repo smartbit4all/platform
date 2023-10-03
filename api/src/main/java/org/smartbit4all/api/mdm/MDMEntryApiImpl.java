@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
-import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -280,32 +279,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return result;
   }
 
-  private StoredMap getPublishedStoredMap() {
-    return collectionApi.map(descriptor.getSchema(), getPublishedMapName());
-  }
-
   @Override
   public String getName() {
     return descriptor.getName();
   }
 
-  private String getPublishedMapName() {
-    return descriptor.getPublishedMapName() != null
-        ? descriptor.getPublishedMapName()
-        : descriptor.getName() + "Map";
-  }
-
   public final String getListName() {
-    return descriptor.getPublishedListName() != null
-        ? amendListName()
-        : descriptor.getName() + "List";
-  }
-
-  private String amendListName() {
-    String publishedListName = descriptor.getPublishedListName();
-    return publishedListName.endsWith("List") || !Boolean.TRUE.equals(descriptor.getIsValueSet())
-        ? publishedListName
-        : publishedListName + "List";
+    return MasterDataManagementApiImpl.getPublishedListName(descriptor);
   }
 
   @Override
@@ -316,24 +296,20 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   public final void refreshValueSetDefinition() {
     if (refreshValueSetDefinition) {
       refreshValueSetDefinition = false;
-      ObjectDefinition<?> definition = objectApi.definition(descriptor.getTypeQualifiedName());
       String publishedListName = getListName();
-      valueSetApi.save(descriptor.getSchema(),
-          new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)
-              .storageSchema(descriptor.getSchema()).containerName(publishedListName)
-              .objectDefinition(ObjectDefinition.uriOf(descriptor.getTypeQualifiedName()))
-              .qualifiedName(publishedListName));
+      valueSetApi.save(definition.getName(),
+          new ValueSetDefinitionData()
+              .qualifiedName(descriptor.getName())
+              .kind(ValueSetDefinitionKind.LIST)
+              .storageSchema(descriptor.getSchema())
+              .containerName(publishedListName)
+              .objectDefinition(ObjectDefinition.uriOf(descriptor.getTypeQualifiedName())));
     }
   }
 
   @Override
   public MDMEntryDescriptor getDescriptor() {
     return descriptor;
-  }
-
-  @Override
-  public StoredMap getMap() {
-    return getPublishedStoredMap();
   }
 
   @Override

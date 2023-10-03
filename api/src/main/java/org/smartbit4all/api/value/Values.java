@@ -33,11 +33,15 @@ public final class Values {
    * @return
    */
   public static final List<Value> values(Stream<ObjectNode> values, String... paths) {
+    return valuesStream(values, paths)
+        .collect(Collectors.toList());
+  }
+
+  public static Stream<Value> valuesStream(Stream<ObjectNode> values, String... paths) {
     return values
         .map(n -> new Value()
             .objectUri(n.getObjectUri())
-            .displayValue(n.getValueAsString(paths)))
-        .collect(Collectors.toList());
+            .displayValue(n.getValueAsString(paths)));
   }
 
   /**

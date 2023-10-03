@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.StoredList;
-import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -44,11 +43,6 @@ public interface MDMEntryApi {
    * @return Return the published {@link StoredList} if the published list name was set.
    */
   StoredList getList();
-
-  /**
-   * @return Returns the version URI of the currently published objects.
-   */
-  StoredMap getMap();
 
   /**
    * Save a new object according to the current state of the branch entry. If a branch is initiated

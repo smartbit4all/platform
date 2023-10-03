@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -20,6 +21,7 @@ import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.api.value.bean.ValueSetOperand;
 import org.smartbit4all.api.value.bean.ValueSetOperation;
+import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -83,18 +85,20 @@ public class ValueSetApiImpl implements ValueSetApi {
   }
 
   @Override
-  public ValueSetData valuesOf(String logicalSchema, String qualifiedName, URI branchUri) {
+  public ValueSetData valuesOf(String logicalSchema, String qualifiedName, URI branchUri,
+      boolean useObjectNode) {
     // The version URI of the given ValueSetDefinition. The new version of the values set must be
     // promoted before the first usage.
     ValueSetDefinitionData definitionData = getDefinitionData(logicalSchema, qualifiedName);
     if (definitionData != null) {
-      return valuesOf(definitionData, branchUri);
+      return valuesOf(definitionData, branchUri, useObjectNode);
     }
     return new ValueSetData().qualifiedName(qualifiedName);
   }
 
   @Override
-  public ValueSetData valuesOf(ValueSetDefinitionData definitionData, URI branchUri) {
+  public ValueSetData valuesOf(ValueSetDefinitionData definitionData, URI branchUri,
+      boolean useObjectNode) {
     if (definitionData != null) {
       ObjectDefinition<?> objectDefinition = getObjectDefinition(definitionData);
       if (objectDefinition != null) {
@@ -104,7 +108,7 @@ public class ValueSetApiImpl implements ValueSetApi {
         result.setProperties(objectDefinition.getProperties());
         // We can continue with the final value set definition.
         result.setValues(
-            readValues(definitionData, objectDefinition, branchUri).values().stream()
+            readValues(definitionData, objectDefinition, branchUri, useObjectNode).values().stream()
                 .collect(toList()));
         return result;
       }
@@ -114,7 +118,7 @@ public class ValueSetApiImpl implements ValueSetApi {
   }
 
   private Map<Object, Object> readValues(ValueSetDefinitionData definitionData,
-      ObjectDefinition<?> objectDefinition, URI branchUri) {
+      ObjectDefinition<?> objectDefinition, URI branchUri, boolean useObjectNode) {
     Map<Object, Object> result = Collections.emptyMap();
     if (definitionData == null) {
       return result;
@@ -125,23 +129,26 @@ public class ValueSetApiImpl implements ValueSetApi {
         result = readEnumClass(objectDefinition.getClazz(), definitionData.getQualifiedName());
       }
     } else if (definitionData.getKind() == ValueSetDefinitionKind.INLINE) {
+      if (useObjectNode) {
+        throw new IllegalArgumentException("useObjectNode not supported for inline valueSet");
+      }
       // TODO use branchUri ??
       result = readInlineValues(definitionData, objectDefinition);
     } else if (definitionData.getKind() == ValueSetDefinitionKind.ALLOF) {
       // TODO use branchUri ??
-      result = readAllObjectValues(definitionData, objectDefinition);
+      result = readAllObjectValues(definitionData, objectDefinition, useObjectNode);
     } else if (definitionData.getKind() == ValueSetDefinitionKind.LIST) {
-      result = readListValues(definitionData, objectDefinition, branchUri);
+      result = readListValues(definitionData, objectDefinition, branchUri, useObjectNode);
     } else if (definitionData.getKind() == ValueSetDefinitionKind.COMPOSITE) {
       // It's a value set composed from other sets. There must be an expression that defines the
       // way. We have to evaluate the expression to have the final definition.
-      result = readCompositeValues(definitionData, objectDefinition, branchUri);
+      result = readCompositeValues(definitionData, objectDefinition, branchUri, useObjectNode);
     }
     return result;
   }
 
   private Map<Object, Object> readCompositeValues(ValueSetDefinitionData definitionData,
-      ObjectDefinition<?> objectDefinition, URI branchUri) {
+      ObjectDefinition<?> objectDefinition, URI branchUri, boolean useObjectNode) {
     if (definitionData.getExpression() == null) {
       log.warn("The {} composite value set doen't have any expression.",
           definitionData.getQualifiedName());
@@ -150,7 +157,8 @@ public class ValueSetApiImpl implements ValueSetApi {
     // TODO Evaluate the expression. All the set must have the same object type or else we can not
     // merge the values.
     List<Map<Object, Object>> valueLists = definitionData.getExpression().getOperands().stream()
-        .map(vso -> readValues(getDefinitionDataFromOperand(vso), objectDefinition, branchUri))
+        .map(vso -> readValues(getDefinitionDataFromOperand(vso), objectDefinition, branchUri,
+            useObjectNode))
         .collect(toList());
     ValueSetOperation operation = definitionData.getExpression().getOperation();
     Map<Object, Object> result = null;
@@ -200,27 +208,29 @@ public class ValueSetApiImpl implements ValueSetApi {
   }
 
   private Map<Object, Object> readListValues(ValueSetDefinitionData definitionData,
-      ObjectDefinition<?> objectDefinition, URI branchUri) {
+      ObjectDefinition<?> objectDefinition, URI branchUri, boolean useObjectNode) {
     StoredList storedList =
         collectionApi.list(definitionData.getStorageSchema(), definitionData.getContainerName());
     if (storedList != null) {
       storedList.branch(branchUri);
       return storedList.uris().stream()
           .collect(toMap(u -> objectApi.getLatestUri(u),
-              u -> objectApi.read(u, objectDefinition.getClazz())));
+              u -> useObjectNode ? objectApi.load(u)
+                  : objectApi.read(u, objectDefinition.getClazz())));
     }
     return Collections.emptyMap();
   }
 
   private Map<Object, Object> readAllObjectValues(ValueSetDefinitionData definitionData,
-      ObjectDefinition<?> objectDefinition) {
+      ObjectDefinition<?> objectDefinition, boolean useObjectNode) {
     Storage storage = storageApi.get(definitionData.getStorageSchema());
     if (storage != null) {
       List<URI> allObjectUris = storage.readAllUris(objectDefinition.getClazz());
       // Quick win that we read all the properties.
       return allObjectUris.stream()
           .collect(toMap(u -> objectApi.getLatestUri(u),
-              u -> objectApi.read(u, objectDefinition.getClazz())));
+              u -> useObjectNode ? objectApi.load(u)
+                  : objectApi.read(u, objectDefinition.getClazz())));
     }
     return Collections.emptyMap();
   }
@@ -311,4 +321,19 @@ public class ValueSetApiImpl implements ValueSetApi {
         .map(on -> on.getValue(typeClass, path)).collect(toList());
   }
 
+  @Override
+  public ValueSet getValueSetWithValues(String namespace, String name, URI branchUri,
+      String... path) {
+
+    ValueSetData valueSetData = valuesOf(namespace, name, branchUri, true);
+    Stream<ObjectNode> values = valueSetData.getValues().stream()
+        .map(o -> ((ObjectNode) o));
+    valueSetData.values(Values.valuesStream(values, path)
+        // .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
+        .map(o -> ((Object) o))
+        .collect(toList()));
+    return new ValueSet()
+        .valueSetName(name)
+        .valueSetData(valueSetData.keyProperty(Value.OBJECT_URI));
+  }
 }
