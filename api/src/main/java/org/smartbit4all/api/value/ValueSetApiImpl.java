@@ -330,6 +330,7 @@ public class ValueSetApiImpl implements ValueSetApi {
         .map(o -> ((ObjectNode) o));
     valueSetData.values(Values.valuesStream(values, path)
         // .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
+        .sorted(Values.CASE_INSENSITIVE_ORDER)
         .map(o -> ((Object) o))
         .collect(toList()));
     return new ValueSet()
