@@ -1,7 +1,7 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.DEFAULT_LAYOUT;
+import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +25,15 @@ public final class ObjectDisplay {
   ObjectDisplay(Map<String, SmartComponentLayoutDefinition> layoutsByName,
       List<ComponentConstraint> componentConstraints,
       List<UiActionConstraint> uiActionConstraints) {
-    this.layoutsByName = layoutsByName;
-    this.componentConstraints = componentConstraints;
-    this.uiActionConstraints = uiActionConstraints;
+    this.layoutsByName = layoutsByName == null
+        ? Collections.emptyMap()
+        : layoutsByName;
+    this.componentConstraints = componentConstraints == null
+        ? Collections.emptyList()
+        : componentConstraints;
+    this.uiActionConstraints = uiActionConstraints == null
+        ? Collections.emptyList()
+        : uiActionConstraints;
   }
 
 

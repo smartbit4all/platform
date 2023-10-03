@@ -205,7 +205,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     }
 
     if (layoutElements.stream().allMatch(SmartLayoutItem::isNone)) {
-      throw new IllegalArgumentException();
+      log.warn(definitionName + " contains no displayable layout elements!");
+      return objectLayoutApi.create(definitionName).build();
     }
 
     ObjectLayoutBuilder layoutBuilder = objectLayoutApi.create(definitionName);
