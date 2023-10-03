@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +26,6 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -153,13 +153,32 @@ public class ObjectNode {
   }
 
   /**
-   * Special possibility to load an object and save it as a new version of another object.
-   * 
+   * Special possibility to load an object and save it as a new version of another object. If
+   * parameter is null, this will be treated as a new ObjectNode
+   *
    * @param objectUri The object uri is
    */
   public final void overwriteObject(URI objectUri) {
     data.setObjectUri(objectUri);
-    setModified();
+    if (objectUri == null) {
+      setState(ObjectNodeState.NEW);
+    } else {
+      setModified();
+    }
+  }
+
+  /**
+   * We want to treat this ObjectNode as a NEW ObjectNode, so we will clear objectUri, and set
+   * storageSchema to a new value. Important: this method is not recursive, so all references will
+   * be treated as they were.
+   *
+   * @param schema
+   */
+  public final void resetToNew(String schema) {
+    overwriteObject(null);
+    if (schema != null) {
+      data.setStorageSchema(schema);
+    }
   }
 
   /**
