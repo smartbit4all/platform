@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -24,6 +25,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
+import org.smartbit4all.bff.api.config.PlatformBffApiConfig;
 import org.smartbit4all.bff.api.groupselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
@@ -136,8 +138,14 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   }
 
   private SubjectModel getSubjectModel(View view) {
-    String subjectModelName =
-        view.getParameters().get("TEST_SUBJECT_NAME").toString();
+    Object modelName = view.getParameters().get(PlatformBffApiConfig.SUBJECT_MODEL_NAME);
+    String subjectModelName;
+    if (modelName == null) {
+      // By default we use the ACL subject model.
+      subjectModelName = PlatformApiConfig.SUBJECT_ACL;
+    } else {
+      subjectModelName = modelName.toString();
+    }
     return subjectManagementApi.getModel(subjectModelName);
 
   }
