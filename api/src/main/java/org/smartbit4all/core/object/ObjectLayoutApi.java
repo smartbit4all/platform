@@ -7,7 +7,7 @@ import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 
 /**
  * Facilitates registration and management of object layout archetypes.
- * 
+ *
  * @author Szabolcs Bazil Papp
  *
  */
@@ -18,6 +18,9 @@ public interface ObjectLayoutApi {
   String SESSION_CONTEXT = "session";
   String USER_CONTEXT = "user";
   String THIS_CONTEXT = "this";
+
+  String DEFAULT_LAYOUT = "default";
+
 
   Stream<ObjectNode> findAllObjectLayoutDescriptors();
 

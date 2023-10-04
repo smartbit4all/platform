@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.DEFAULT_LAYOUT;
 import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
@@ -51,25 +50,25 @@ public final class ObjectDisplay {
   }
 
   public boolean isDefaultLayoutPresent() {
-    return this.layoutsByName.containsKey(DEFAULT_LAYOUT);
+    return this.layoutsByName.containsKey(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   public SmartComponentLayoutDefinition getDefaultLayout() {
-    return this.layoutsByName.get(DEFAULT_LAYOUT);
+    return this.layoutsByName.get(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   /**
    * Returns a list of value set names visible on the layout.
-   * 
+   *
    * @return a {@code List} of {@code String} value set names present and visible on the layout
    */
   public List<String> getDefaultLayoutValueSets() {
-    return getLayoutValueSets(DEFAULT_LAYOUT);
+    return getLayoutValueSets(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   /**
    * Returns a list of value set names visible on the layout.
-   * 
+   *
    * @param layoutName the {@code String} name of a layout present on this instance, not null
    * @return a {@code List} of {@code String} value set names present and visible on the layout
    */
@@ -108,7 +107,7 @@ public final class ObjectDisplay {
 
   /**
    * Returns every form present in a layout in the order of their appearance.
-   * 
+   *
    * @param layoutName the unique {@String} name of a given layout in this object display, not null
    * @return a {@code List} of {@link SmartLayoutDefinition}s describing
    */
@@ -123,7 +122,7 @@ public final class ObjectDisplay {
   }
 
   public List<SmartLayoutDefinition> getDefaultForms() {
-    return getForms(DEFAULT_LAYOUT);
+    return getForms(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   private Stream<SmartComponentLayoutDefinition> forms(
@@ -151,7 +150,7 @@ public final class ObjectDisplay {
   }
 
   public List<String> getDefaultGridIdentifiers() {
-    return getGridIdentifiers(DEFAULT_LAYOUT);
+    return getGridIdentifiers(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   private Stream<String> grids(SmartComponentLayoutDefinition compLayoutDef) {

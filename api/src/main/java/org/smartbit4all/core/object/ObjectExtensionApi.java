@@ -41,7 +41,8 @@ public interface ObjectExtensionApi {
    * A layout is also generated for the new definition, using the widgets found on the provided
    * {@link ObjectPropertyDescriptor}s. If a property descriptor does not possess a widget, a
    * default one is heuristically generated. The extracted widgets and/or components are ordered
-   * into a default layout which may be accessed with the {@code "default"} key under
+   * into a default layout which may be accessed with the
+   * {@code ObjectLayoutApi.DEFAULT_LAYOUT = "default"} key under
    * {@link ObjectLayoutDescriptor#getLayouts()}. The layout itself is stored by the definition
    * name, and can be accessed either
    *
@@ -149,7 +150,7 @@ public interface ObjectExtensionApi {
 
   /**
    * Checks whether an extension descriptor exists with a given qualified name or not.
-   * 
+   *
    * @param definitionName the {@code String} artificial fully qualified name an
    *        {@link ObjectDescriptor} may refer to, may be null
    * @return true, if the provided definition name denotes a known extension descriptor, false
@@ -173,7 +174,7 @@ public interface ObjectExtensionApi {
   ObjectLayoutDescriptor generateDefaultLayout(String definitionName);
 
   /**
-   * 
+   *
    * @param definitionName a unique {@code String} name of an existing {@link ObjectDescriptor}, not
    *        null
    * @param storageSchema the desired {@code String} schema where the new object shall be stored,
@@ -183,7 +184,7 @@ public interface ObjectExtensionApi {
   ObjectNode newInstance(String definitionName, String storageSchema);
 
   /**
-   * 
+   *
    * @param objectDescriptorUri
    * @param storageSchema
    * @return

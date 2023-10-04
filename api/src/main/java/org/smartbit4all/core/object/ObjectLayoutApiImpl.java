@@ -15,6 +15,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
@@ -112,16 +113,21 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
         }
         context.addObjectsItem(selfContext(objectUri));
 
+        LangString displayName = null;
         if (test(constraintDescriptor.getPredicates(), context)) {
           componentConstraints.addAll(constraintDescriptor.getComponentConstraints());
           uiActionConstraints.addAll(constraintDescriptor.getActionConstraints() == null
               ? Collections.emptyList()
               : constraintDescriptor.getActionConstraints());
+          if (constraintDescriptor.getDisplayName() != null) {
+            displayName = constraintDescriptor.getDisplayName();
+          } ;
         }
       }
 
     }
     Map<String, SmartComponentLayoutDefinition> layoutsByName = layoutDescriptor.getLayouts();
+    // TODO override labels by langStrings
     return new ObjectDisplay(layoutsByName, componentConstraints, uiActionConstraints);
   }
 

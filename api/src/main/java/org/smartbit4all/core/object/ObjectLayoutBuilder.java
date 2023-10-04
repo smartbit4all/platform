@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
@@ -27,8 +26,6 @@ import org.smartbit4all.api.view.bean.UiActionConstraint;
 import org.smartbit4all.core.utility.StringConstant;
 
 public final class ObjectLayoutBuilder {
-
-  static final String DEFAULT_LAYOUT = "default";
 
   /**
    * Constructs a grid layout definition with the provided grid identifier.
@@ -192,7 +189,7 @@ public final class ObjectLayoutBuilder {
   }
 
   public ObjectLayoutBuilder layout(SmartComponentLayoutDefinition layoutDefinition) {
-    this.layoutDescriptor.putLayoutsItem(DEFAULT_LAYOUT, layoutDefinition);
+    this.layoutDescriptor.putLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layoutDefinition);
     return this;
   }
 
