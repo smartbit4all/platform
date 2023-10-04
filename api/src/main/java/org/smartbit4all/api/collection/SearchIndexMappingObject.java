@@ -330,26 +330,30 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     objects.forEach(n -> {
       DataRow row = tableData.addRow();
       for (DataColumn<?> col : tableData.columns()) {
+        Object value = null;
         Object defaultValue = defaultValues.get(col.getProperty().getName());
         if (defaultValue != null) {
-          tableData.setObject(col, row, defaultValue);
+          value = defaultValue;
         } else {
           SearchIndexMappingProperty mapping = property(col.getProperty().getName());
           if (mapping.path != null && mapping.processor == null
               && mapping.complexProcessor == null) {
-            Object value = n.getValue(mapping.path);
+            value = n.getValue(mapping.path);
             if (value instanceof ObjectNodeReference) {
               value = ((ObjectNodeReference) value).getObjectUri();
             } else if (value != null && !col.getProperty().type().equals(value.getClass())) {
               value = objectApi.asType(col.getProperty().type(), value);
             }
-            tableData.setObject(col, row, value);
           } else if (mapping.path != null && mapping.processor != null) {
-            tableData.setObject(col, row, mapping.processor.apply(n.getValue(mapping.path)));
+            value = mapping.processor.apply(n.getValue(mapping.path));
           } else if (mapping.complexProcessor != null) {
-            tableData.setObject(col, row, mapping.complexProcessor.apply(n));
+            value = mapping.complexProcessor.apply(n);
           }
         }
+        if (value != null && !col.getProperty().type().isInstance(value)) {
+          value = objectApi.asType(col.getProperty().type(), value);
+        }
+        tableData.setObject(col, row, value);
       }
       // Read all the details also.
       for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
