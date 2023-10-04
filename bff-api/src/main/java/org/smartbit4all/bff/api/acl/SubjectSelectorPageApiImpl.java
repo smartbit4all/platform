@@ -122,7 +122,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
     SearchIndex<?> searchIndex =
         collectionApi.searchIndex(selectionConfig.getSearchIndexSchema(),
-            selectionConfig.getSearchIndexSchema());
+            selectionConfig.getSearchIndexName());
 
     GridModel gridModel =
         gridModelApi.createGridModel(searchIndex.getDefinition().getDefinition(),
