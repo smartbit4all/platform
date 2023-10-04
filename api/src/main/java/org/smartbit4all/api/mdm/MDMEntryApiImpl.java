@@ -1,10 +1,9 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +33,9 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -135,36 +137,62 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public URI save(ObjectNode objectNode) {
+  public List<URI> save(ObjectNode objectNode) {
     URI branchUri = getBranchUri();
     StoredList list = getList();
     list.branch(branchUri);
+    List<URI> results = new ArrayList<>();
 
-    if (objectNode.getState() == ObjectNodeState.NEW) {
-      objectNode
-          .setValues(fireBeforeSaveNew(objectApi.definition(descriptor.getTypeQualifiedName()),
-              objectNode.getObjectAsMap(), descriptor));
-      URI uri = objectApi.save(objectNode, branchUri);
-      list.add(uri);
-      return uri;
-    } else if (objectNode.getState() == ObjectNodeState.MODIFIED) {
-      URI uri = objectNode.getObjectUri();
-      List<URI> resultUri = new ArrayList<>(1);
-      list.update(l -> {
-        return l.stream().map(u -> {
-          if (objectApi.equalsIgnoreVersion(uri, u)) {
-            // Save a modified version and replace the original uri.
-            URI savedUri = objectApi.save(objectNode, branchUri);
-            resultUri.add(savedUri);
-            return savedUri;
-          } else {
-            return u;
-          }
-        }).collect(toList());
-      });
-      return resultUri.isEmpty() ? null : resultUri.iterator().next();
+
+    list.update(l -> {
+      // Save the object node
+      if (objectNode.getState() == ObjectNodeState.NEW) {
+        objectNode
+            .setValues(fireBeforeSaveNew(objectApi.definition(descriptor.getTypeQualifiedName()),
+                objectNode.getObjectAsMap(), descriptor));
+      }
+      Map<URI, URI> savedUriByOriginal = new HashMap<>();
+      objectApi.save(objectNode, branchUri);
+      if (descriptor.getSelfContainedRefList() != null && objectNode.getDefinition()
+          .getOutgoingReference(descriptor.getSelfContainedRefList()) != null) {
+        results.addAll(
+            getResultsUrisBySelfContainedList(objectNode, descriptor.getSelfContainedRefList(),
+                savedUriByOriginal)
+                    .collect(toList()));
+      } else {
+        results.add(objectNode.getResultUri());
+        if (objectNode.getObjectUri() != null) {
+          savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+        }
+      }
+      Map<URI, URI> savedUrisByLatest =
+          results.stream().collect(toMap(u -> objectApi.getLatestUri(u), u -> u));
+
+      // Merge the existing ones
+      List<URI> merged = l.stream().map(u -> {
+        URI uri = savedUriByOriginal.get(u);
+        if (uri == null) {
+          uri = u;
+        }
+        URI savedUri = savedUrisByLatest.remove(objectApi.getLatestUri(uri));
+        return savedUri != null ? savedUri : u;
+      }).collect(toList());
+      // Add the newly saved ones.
+      merged.addAll(savedUrisByLatest.values());
+      return merged;
+    });
+    return results;
+  }
+
+  private final Stream<URI> getResultsUrisBySelfContainedList(ObjectNode objectNode, String list,
+      Map<URI, URI> originalByResultUri) {
+    if (objectNode.getObjectUri() != null) {
+      originalByResultUri.put(objectNode.getObjectUri(), objectNode.getResultUri());
     }
-    return null;
+    return Stream.concat(Stream.of(objectNode.getResultUri()),
+        objectNode.list(list).stream().filter(ref -> ref.isLoaded())
+            .flatMap(
+                ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri)));
   }
 
   @Override

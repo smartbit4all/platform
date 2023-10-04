@@ -55,7 +55,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.URI_CONSTRUCTOR,
   MDMEntryDescriptor.EVENT_HANDLERS_BEFORE_SAVE,
   MDMEntryDescriptor.IS_VALUE_SET,
-  MDMEntryDescriptor.BRANCHING_STRATEGY
+  MDMEntryDescriptor.BRANCHING_STRATEGY,
+  MDMEntryDescriptor.SELF_CONTAINED_REF_LIST
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -110,6 +111,9 @@ public class MDMEntryDescriptor {
 
   public static final String BRANCHING_STRATEGY = "branchingStrategy";
   private MDMBranchingStrategy branchingStrategy;
+
+  public static final String SELF_CONTAINED_REF_LIST = "selfContainedRefList";
+  private String selfContainedRefList;
 
   public MDMEntryDescriptor() { 
   }
@@ -608,6 +612,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor selfContainedRefList(String selfContainedRefList) {
+    
+    this.selfContainedRefList = selfContainedRefList;
+    return this;
+  }
+
+   /**
+   * The name of the self contained reference list like childer list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. 
+   * @return selfContainedRefList
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the self contained reference list like childer list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. ")
+  @JsonProperty(SELF_CONTAINED_REF_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSelfContainedRefList() {
+    return selfContainedRefList;
+  }
+
+
+  @JsonProperty(SELF_CONTAINED_REF_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelfContainedRefList(String selfContainedRefList) {
+    this.selfContainedRefList = selfContainedRefList;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -633,12 +664,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
         Objects.equals(this.eventHandlersBeforeSave, mdMEntryDescriptor.eventHandlersBeforeSave) &&
         Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet) &&
-        Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy);
+        Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy) &&
+        Objects.equals(this.selfContainedRefList, mdMEntryDescriptor.selfContainedRefList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy);
+    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
   }
 
   @Override
@@ -662,6 +694,7 @@ public class MDMEntryDescriptor {
     sb.append("    eventHandlersBeforeSave: ").append(toIndentedString(eventHandlersBeforeSave)).append("\n");
     sb.append("    isValueSet: ").append(toIndentedString(isValueSet)).append("\n");
     sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
+    sb.append("    selfContainedRefList: ").append(toIndentedString(selfContainedRefList)).append("\n");
     sb.append("}");
     return sb.toString();
   }

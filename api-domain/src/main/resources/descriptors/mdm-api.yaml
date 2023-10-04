@@ -144,6 +144,11 @@ components:
             to be a GenericValue, but usually it will be)
         branchingStrategy:
           $ref: '#/components/schemas/MDMBranchingStrategy'
+        selfContainedRefList:
+          type: string
+          description: |
+            The name of the self contained reference list like childer list. It is used to recurse on the object nodes if a complex 
+            hierarchy is saved via the MDMEntryApi.
     MDMTableColumnDescriptor:
       type: object
       description: |

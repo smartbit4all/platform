@@ -1,8 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -79,6 +76,9 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -182,13 +182,14 @@ class MDMApiTest {
         .description("This is the first category type.")));
     SampleCategoryType second = new SampleCategoryType().code("TYPE2").name("Type two")
         .description("This is the second category type.");
-    URI publishedSecond = typeApi.save(objectApi.create(SCHEMA, second));
+    URI publishedSecond = typeApi.save(objectApi.create(SCHEMA, second)).get(0);
     typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type three")
         .description("This is the third category type.")));
     URI publishedToDelete = typeApi
         .save(objectApi.create(SCHEMA,
             new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
-                .description("This is the category type to delete.")));
+                .description("This is the category type to delete.")))
+        .get(0);
 
 
     Assertions
@@ -199,16 +200,18 @@ class MDMApiTest {
     masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing session 1");
 
     URI draft = typeApi.save(objectApi.loadLatest(publishedSecond).modify(SampleCategoryType.class,
-        t -> t.name("Type two v1")));
+        t -> t.name("Type two v1"))).get(0);
 
     URI draftNew = typeApi
         .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four 4")
-            .description("This is the fourth category type.")));
+            .description("This is the fourth category type.")))
+        .get(0);
 
     URI draftNewToDelete =
         typeApi
             .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE5").name("Type five")
-                .description("This is the fifth category type.")));
+                .description("This is the fifth category type.")))
+            .get(0);
 
     ObjectNode objectNode = objectApi.load(draft).setValue("This is the second category type v2.",
         SampleCategoryType.DESCRIPTION);
@@ -646,15 +649,18 @@ class MDMApiTest {
     // Save some property definition drafts
     URI draftString = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(PROPERTY_STRING).typeClass(String.class.getName())
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))))
+        .get(0);
     URI draftLong = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(PROPERTY_LONG).typeClass(Long.class.getName())
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))))
+        .get(0);
     URI draftCategoryUri = propertyDefinitionMDMApi.save(objectApi.create(SCHEMA,
         new PropertyDefinitionData().name(CATEGORY).typeClass(URI.class.getName())
             .referredType(SampleCategoryType.class.getName())
             .referredPropertyName(SampleCategoryType.URI)
-            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))));
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD))))
+        .get(0);
 
     masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
 
@@ -672,7 +678,8 @@ class MDMApiTest {
                     .get(draftLong.toString()))
             .addPropertiesItem(
                 publishedProperties
-                    .get(draftCategoryUri.toString()))));
+                    .get(draftCategoryUri.toString()))))
+        .get(0);
 
 
     ObjectDefinitionData definitionData = objectApi
