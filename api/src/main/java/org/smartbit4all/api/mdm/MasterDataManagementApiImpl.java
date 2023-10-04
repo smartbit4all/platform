@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
@@ -45,8 +48,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -441,11 +442,13 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         objectApi.definition(entryDescriptor.getTypeQualifiedName());
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
-          tcd -> addEntryPropertyToSearchIndex(result, tcd.getName(),
-              getClazz(objectDefinition.getPropertiesByName().get(tcd.getName()).getTypeClass(),
-                  String.class),
-              -1,
-              tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
+          tcd -> {
+            String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
+            addEntryPropertyToSearchIndex(result, tcd.getName(),
+                getTypeOfProperty(objectDefinition, path),
+                -1,
+                path);
+          });
     } else {
       // Navigate to the nearest referred object.
       Map<String, ReferenceDefinition> outgoingReferences =
@@ -475,10 +478,30 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     Class<?> typeClass;
     try {
       typeClass = Class.forName(className);
-    } catch (ClassNotFoundException e1) {
+    } catch (ClassNotFoundException | NullPointerException e1) {
       typeClass = defaultClass;
     }
     return typeClass;
+  }
+
+  private Class<?> getTypeOfProperty(ObjectDefinition<?> definition, String[] path) {
+    PropertyDefinitionData propDef = definition.getPropertiesByName().get(path[0]);
+    if (path.length == 1) {
+      if (propDef == null) {
+        return String.class;
+      }
+      return getClazz(propDef.getTypeClass(), String.class);
+    }
+    String[] subPath = new String[path.length - 1];
+    System.arraycopy(path, 1, subPath, 0, subPath.length);
+    ReferenceDefinition refDef = definition.getOutgoingReference(path[0]);
+    if (refDef != null) {
+      return getTypeOfProperty(refDef.getTarget(), subPath);
+    } else if (propDef != null) {
+      return getTypeOfProperty(objectDefinitionApi.definition(propDef.getTypeClass()), subPath);
+    }
+    throw new IllegalArgumentException(definition.getQualifiedName()
+        + " does not contain any references or properties named " + path[0]);
   }
 
   private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,
