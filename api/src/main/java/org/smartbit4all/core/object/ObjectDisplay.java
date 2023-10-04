@@ -79,9 +79,9 @@ public final class ObjectDisplay {
 
     return formWidgets(layoutsByName.get(layoutName))
         .filter(w -> SmartFormWidgetType.SELECT == w.getType())
-        .filter(w -> componentConstraints.stream()
-            .noneMatch(c -> Objects.equals(c.getDataName(), w.getKey())
-                && Boolean.FALSE.equals(c.getVisible())))
+        // .filter(w -> componentConstraints.stream()
+        // .noneMatch(c -> Objects.equals(c.getDataName(), w.getKey())
+        // && Boolean.FALSE.equals(c.getVisible())))
         .map(SmartWidgetDefinition::getSelection)
         .filter(Objects::nonNull)
         .map(SelectionDefinition::getValueSetName)

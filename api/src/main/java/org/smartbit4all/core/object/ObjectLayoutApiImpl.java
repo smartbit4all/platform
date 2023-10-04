@@ -105,6 +105,10 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
 
       for (ObjectConstraintDescriptor constraintDescriptor : layoutDescriptor.getConstraints()) {
         ObjectPropertyResolverContext context = constraintDescriptor.getContexts();
+        if (context == null) {
+          context = new ObjectPropertyResolverContext();
+          constraintDescriptor.setContexts(context);
+        }
         if (sessionIsPresent()) {
           context.addObjectsItem(sessionContext());
         }
