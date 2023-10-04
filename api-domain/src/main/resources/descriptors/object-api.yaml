@@ -574,7 +574,7 @@ components:
         The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in
         or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the
         page. The extension contains the constraint and rule definitions for the given object let it be document or folder.
-      required: [uri, name, layouts, properties]
+      required: [uri, name, layouts, properties, definitionProperties, extensionProperties]
       properties:
         uri:
           type: string
@@ -609,6 +609,7 @@ components:
       description: |
         Defines the desired layout for displaying a particular object and the various constraints
         to be enforced on it.
+      required: [uri, name, layouts, constraints]
       properties:
         uri:
           type: string
@@ -638,7 +639,7 @@ components:
       description: |
         There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object.
         The values can be used to identify the situation when the given constraint must be applied.
-      required: [name, layouts, properties]
+      required: [name, predicates, componentConstraints, actionConstraints, validationRules]
       properties:
         name:
           type: string

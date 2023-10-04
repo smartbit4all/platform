@@ -54,10 +54,10 @@ public class ObjectLayoutDescriptor {
   private String name;
 
   public static final String LAYOUTS = "layouts";
-  private Map<String, SmartComponentLayoutDefinition> layouts = null;
+  private Map<String, SmartComponentLayoutDefinition> layouts = new HashMap<>();
 
   public static final String CONSTRAINTS = "constraints";
-  private List<ObjectConstraintDescriptor> constraints = null;
+  private List<ObjectConstraintDescriptor> constraints = new ArrayList<>();
 
   public ObjectLayoutDescriptor() { 
   }
@@ -72,11 +72,12 @@ public class ObjectLayoutDescriptor {
    * Get uri
    * @return uri
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getUri() {
     return uri;
@@ -84,7 +85,7 @@ public class ObjectLayoutDescriptor {
 
 
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -100,10 +101,11 @@ public class ObjectLayoutDescriptor {
    * A unique string name for the layout descriptor to be used as a key in mappings. 
    * @return name
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "A unique string name for the layout descriptor to be used as a key in mappings. ")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "A unique string name for the layout descriptor to be used as a key in mappings. ")
   @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getName() {
     return name;
@@ -111,7 +113,7 @@ public class ObjectLayoutDescriptor {
 
 
   @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(String name) {
     this.name = name;
   }
@@ -124,9 +126,6 @@ public class ObjectLayoutDescriptor {
   }
 
   public ObjectLayoutDescriptor putLayoutsItem(String key, SmartComponentLayoutDefinition layoutsItem) {
-    if (this.layouts == null) {
-      this.layouts = new HashMap<>();
-    }
     this.layouts.put(key, layoutsItem);
     return this;
   }
@@ -135,11 +134,12 @@ public class ObjectLayoutDescriptor {
    * The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. 
    * @return layouts
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. ")
+  @ApiModelProperty(required = true, value = "The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. ")
   @JsonProperty(LAYOUTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, SmartComponentLayoutDefinition> getLayouts() {
     return layouts;
@@ -147,7 +147,7 @@ public class ObjectLayoutDescriptor {
 
 
   @JsonProperty(LAYOUTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLayouts(Map<String, SmartComponentLayoutDefinition> layouts) {
     this.layouts = layouts;
   }
@@ -160,9 +160,6 @@ public class ObjectLayoutDescriptor {
   }
 
   public ObjectLayoutDescriptor addConstraintsItem(ObjectConstraintDescriptor constraintsItem) {
-    if (this.constraints == null) {
-      this.constraints = new ArrayList<>();
-    }
     this.constraints.add(constraintsItem);
     return this;
   }
@@ -171,11 +168,12 @@ public class ObjectLayoutDescriptor {
    * The constraints to be enforced for the object&#39;s layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. 
    * @return constraints
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The constraints to be enforced for the object's layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. ")
+  @ApiModelProperty(required = true, value = "The constraints to be enforced for the object's layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. ")
   @JsonProperty(CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<ObjectConstraintDescriptor> getConstraints() {
     return constraints;
@@ -183,7 +181,7 @@ public class ObjectLayoutDescriptor {
 
 
   @JsonProperty(CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setConstraints(List<ObjectConstraintDescriptor> constraints) {
     this.constraints = constraints;
   }

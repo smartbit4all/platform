@@ -53,10 +53,10 @@ public class ObjectDescriptor {
   private String name;
 
   public static final String DEFINITION_PROPERTIES = "definitionProperties";
-  private Map<String, URI> definitionProperties = null;
+  private Map<String, URI> definitionProperties = new HashMap<>();
 
   public static final String EXTENSION_PROPERTIES = "extensionProperties";
-  private Map<String, URI> extensionProperties = null;
+  private Map<String, URI> extensionProperties = new HashMap<>();
 
   public static final String LAYOUT_DESCRIPTOR = "layoutDescriptor";
   private URI layoutDescriptor;
@@ -131,9 +131,6 @@ public class ObjectDescriptor {
   }
 
   public ObjectDescriptor putDefinitionPropertiesItem(String key, URI definitionPropertiesItem) {
-    if (this.definitionProperties == null) {
-      this.definitionProperties = new HashMap<>();
-    }
     this.definitionProperties.put(key, definitionPropertiesItem);
     return this;
   }
@@ -142,11 +139,12 @@ public class ObjectDescriptor {
    * The properties extracted from the relevant ObjectDefinition. 
    * @return definitionProperties
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The properties extracted from the relevant ObjectDefinition. ")
+  @ApiModelProperty(required = true, value = "The properties extracted from the relevant ObjectDefinition. ")
   @JsonProperty(DEFINITION_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, URI> getDefinitionProperties() {
     return definitionProperties;
@@ -154,7 +152,7 @@ public class ObjectDescriptor {
 
 
   @JsonProperty(DEFINITION_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDefinitionProperties(Map<String, URI> definitionProperties) {
     this.definitionProperties = definitionProperties;
   }
@@ -167,9 +165,6 @@ public class ObjectDescriptor {
   }
 
   public ObjectDescriptor putExtensionPropertiesItem(String key, URI extensionPropertiesItem) {
-    if (this.extensionProperties == null) {
-      this.extensionProperties = new HashMap<>();
-    }
     this.extensionProperties.put(key, extensionPropertiesItem);
     return this;
   }
@@ -178,11 +173,12 @@ public class ObjectDescriptor {
    * The properties configured by extending the base ObjectDefinition 
    * @return extensionProperties
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The properties configured by extending the base ObjectDefinition ")
+  @ApiModelProperty(required = true, value = "The properties configured by extending the base ObjectDefinition ")
   @JsonProperty(EXTENSION_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, URI> getExtensionProperties() {
     return extensionProperties;
@@ -190,7 +186,7 @@ public class ObjectDescriptor {
 
 
   @JsonProperty(EXTENSION_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExtensionProperties(Map<String, URI> extensionProperties) {
     this.extensionProperties = extensionProperties;
   }

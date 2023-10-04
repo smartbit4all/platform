@@ -100,16 +100,16 @@ public class ObjectConstraintDescriptor {
   private ObjectPropertyResolverContext contexts;
 
   public static final String PREDICATES = "predicates";
-  private List<InvocationRequestDefinition> predicates = null;
+  private List<InvocationRequestDefinition> predicates = new ArrayList<>();
 
   public static final String COMPONENT_CONSTRAINTS = "componentConstraints";
-  private List<ComponentConstraint> componentConstraints = null;
+  private List<ComponentConstraint> componentConstraints = new ArrayList<>();
 
   public static final String ACTION_CONSTRAINTS = "actionConstraints";
-  private List<UiActionConstraint> actionConstraints = null;
+  private List<UiActionConstraint> actionConstraints = new ArrayList<>();
 
   public static final String VALIDATION_RULES = "validationRules";
-  private List<String> validationRules = null;
+  private List<String> validationRules = new ArrayList<>();
 
   public static final String DISPLAY_NAME = "displayName";
   private LangString displayName;
@@ -234,9 +234,6 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addPredicatesItem(InvocationRequestDefinition predicatesItem) {
-    if (this.predicates == null) {
-      this.predicates = new ArrayList<>();
-    }
     this.predicates.add(predicatesItem);
     return this;
   }
@@ -245,11 +242,12 @@ public class ObjectConstraintDescriptor {
    * Get predicates
    * @return predicates
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(PREDICATES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<InvocationRequestDefinition> getPredicates() {
     return predicates;
@@ -257,7 +255,7 @@ public class ObjectConstraintDescriptor {
 
 
   @JsonProperty(PREDICATES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPredicates(List<InvocationRequestDefinition> predicates) {
     this.predicates = predicates;
   }
@@ -270,9 +268,6 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addComponentConstraintsItem(ComponentConstraint componentConstraintsItem) {
-    if (this.componentConstraints == null) {
-      this.componentConstraints = new ArrayList<>();
-    }
     this.componentConstraints.add(componentConstraintsItem);
     return this;
   }
@@ -281,11 +276,12 @@ public class ObjectConstraintDescriptor {
    * The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.
    * @return componentConstraints
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
+  @ApiModelProperty(required = true, value = "The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
   @JsonProperty(COMPONENT_CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<ComponentConstraint> getComponentConstraints() {
     return componentConstraints;
@@ -293,7 +289,7 @@ public class ObjectConstraintDescriptor {
 
 
   @JsonProperty(COMPONENT_CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setComponentConstraints(List<ComponentConstraint> componentConstraints) {
     this.componentConstraints = componentConstraints;
   }
@@ -306,9 +302,6 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addActionConstraintsItem(UiActionConstraint actionConstraintsItem) {
-    if (this.actionConstraints == null) {
-      this.actionConstraints = new ArrayList<>();
-    }
     this.actionConstraints.add(actionConstraintsItem);
     return this;
   }
@@ -317,11 +310,12 @@ public class ObjectConstraintDescriptor {
    * The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.
    * @return actionConstraints
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
+  @ApiModelProperty(required = true, value = "The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
   @JsonProperty(ACTION_CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<UiActionConstraint> getActionConstraints() {
     return actionConstraints;
@@ -329,7 +323,7 @@ public class ObjectConstraintDescriptor {
 
 
   @JsonProperty(ACTION_CONSTRAINTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setActionConstraints(List<UiActionConstraint> actionConstraints) {
     this.actionConstraints = actionConstraints;
   }
@@ -342,9 +336,6 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addValidationRulesItem(String validationRulesItem) {
-    if (this.validationRules == null) {
-      this.validationRules = new ArrayList<>();
-    }
     this.validationRules.add(validationRulesItem);
     return this;
   }
@@ -353,10 +344,11 @@ public class ObjectConstraintDescriptor {
    * The validation rules must be checked before an editing is finalized. The validation result is part of the view.
    * @return validationRules
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The validation rules must be checked before an editing is finalized. The validation result is part of the view.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The validation rules must be checked before an editing is finalized. The validation result is part of the view.")
   @JsonProperty(VALIDATION_RULES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getValidationRules() {
     return validationRules;
@@ -364,7 +356,7 @@ public class ObjectConstraintDescriptor {
 
 
   @JsonProperty(VALIDATION_RULES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValidationRules(List<String> validationRules) {
     this.validationRules = validationRules;
   }
