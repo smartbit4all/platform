@@ -103,6 +103,12 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Import({DomainConfig.class, PlatformApiScheduledConfig.class})
 public class PlatformApiConfig {
 
+  /**
+   * This constant is usually used for the definition of the ACL subject model. It contains all the
+   * grouping mechanism that helps to define the access control lists.
+   */
+  public static final String SUBJECT_ACL = "aclSubjectModel";
+
   @Bean
   public InvocationApi invocationApi() {
     return new InvocationApiImpl();

@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PlatformBffApiConfig {
 
+  public static final String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";
+
   @Bean
   public SearchIndex<User> userSearch() {
     return new SearchIndexImpl<>(OrgApiStorageImpl.ORG_SCHEME, User.class.getSimpleName(),
