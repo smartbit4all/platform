@@ -519,7 +519,7 @@ components:
       type: object
       description: |
         The object property is the descriptor of a property available for a management.
-      required: [uri, propertyName, propertyKind, propertyQualifiedName, propertyStructure]
+      required: [uri, propertyName, propertyKind, propertyQualifiedName, propertyStructure, tags]
       properties:
         uri:
           type: string
@@ -567,6 +567,14 @@ components:
           description: |
             Marks whether this property shall be treated as a 'built-in' quality of the host object.
             Clients are not allowed to remove a 'built-in' property from an object descriptor.
+        tags:
+          description: |
+            An unrestricted enumeration of tags used for qualifying this descriptor. Applications
+            may use these fields freely to decide whether or not this instance is an appropriate
+            candidate for assembling an ObjectDescriptor, or may disregard it completely.
+          type: array
+          items:
+            type: string
 
     ObjectDescriptor:
       type: object

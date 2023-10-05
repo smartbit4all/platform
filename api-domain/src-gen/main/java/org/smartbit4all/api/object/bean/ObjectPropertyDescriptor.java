@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
@@ -49,7 +51,8 @@ import javax.validation.Valid;
   ObjectPropertyDescriptor.WIDGET,
   ObjectPropertyDescriptor.DEFAULT_VALUE,
   ObjectPropertyDescriptor.DEFAULT_CONSTRAINT,
-  ObjectPropertyDescriptor.BUILT_IN
+  ObjectPropertyDescriptor.BUILT_IN,
+  ObjectPropertyDescriptor.TAGS
 })
 @JsonTypeName("ObjectPropertyDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -124,6 +127,9 @@ public class ObjectPropertyDescriptor {
 
   public static final String BUILT_IN = "builtIn";
   private Boolean builtIn = false;
+
+  public static final String TAGS = "tags";
+  private List<String> tags = new ArrayList<>();
 
   public ObjectPropertyDescriptor() { 
   }
@@ -463,6 +469,39 @@ public class ObjectPropertyDescriptor {
   }
 
 
+  public ObjectPropertyDescriptor tags(List<String> tags) {
+    
+    this.tags = tags;
+    return this;
+  }
+
+  public ObjectPropertyDescriptor addTagsItem(String tagsItem) {
+    this.tags.add(tagsItem);
+    return this;
+  }
+
+   /**
+   * An unrestricted enumeration of tags used for qualifying this descriptor. Applications may use these fields freely to decide whether or not this instance is an appropriate candidate for assembling an ObjectDescriptor, or may disregard it completely. 
+   * @return tags
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "An unrestricted enumeration of tags used for qualifying this descriptor. Applications may use these fields freely to decide whether or not this instance is an appropriate candidate for assembling an ObjectDescriptor, or may disregard it completely. ")
+  @JsonProperty(TAGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getTags() {
+    return tags;
+  }
+
+
+  @JsonProperty(TAGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTags(List<String> tags) {
+    this.tags = tags;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -483,12 +522,13 @@ public class ObjectPropertyDescriptor {
         Objects.equals(this.widget, objectPropertyDescriptor.widget) &&
         Objects.equals(this.defaultValue, objectPropertyDescriptor.defaultValue) &&
         Objects.equals(this.defaultConstraint, objectPropertyDescriptor.defaultConstraint) &&
-        Objects.equals(this.builtIn, objectPropertyDescriptor.builtIn);
+        Objects.equals(this.builtIn, objectPropertyDescriptor.builtIn) &&
+        Objects.equals(this.tags, objectPropertyDescriptor.tags);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, propertyName, propertyKind, propertyQualifiedName, referencedTypeQualifiedName, aggregation, propertyStructure, valueSet, widget, defaultValue, defaultConstraint, builtIn);
+    return Objects.hash(uri, propertyName, propertyKind, propertyQualifiedName, referencedTypeQualifiedName, aggregation, propertyStructure, valueSet, widget, defaultValue, defaultConstraint, builtIn, tags);
   }
 
   @Override
@@ -507,6 +547,7 @@ public class ObjectPropertyDescriptor {
     sb.append("    defaultValue: ").append(toIndentedString(defaultValue)).append("\n");
     sb.append("    defaultConstraint: ").append(toIndentedString(defaultConstraint)).append("\n");
     sb.append("    builtIn: ").append(toIndentedString(builtIn)).append("\n");
+    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("}");
     return sb.toString();
   }
