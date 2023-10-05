@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
@@ -36,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat but later on it can use different formatters if it is necessary. ")
 @JsonPropertyOrder({
   ObjectPropertyFormatter.FORMAT_STRING,
-  ObjectPropertyFormatter.PARAMETERS
+  ObjectPropertyFormatter.PARAMETERS,
+  ObjectPropertyFormatter.REQUIRED_PROPERTIES
 })
 @JsonTypeName("ObjectPropertyFormatter")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +48,9 @@ public class ObjectPropertyFormatter {
 
   public static final String PARAMETERS = "parameters";
   private List<ObjectPropertyFormatterParameter> parameters = new ArrayList<>();
+
+  public static final String REQUIRED_PROPERTIES = "requiredProperties";
+  private List<URI> requiredProperties = null;
 
   public ObjectPropertyFormatter() { 
   }
@@ -111,6 +116,42 @@ public class ObjectPropertyFormatter {
   }
 
 
+  public ObjectPropertyFormatter requiredProperties(List<URI> requiredProperties) {
+    
+    this.requiredProperties = requiredProperties;
+    return this;
+  }
+
+  public ObjectPropertyFormatter addRequiredPropertiesItem(URI requiredPropertiesItem) {
+    if (this.requiredProperties == null) {
+      this.requiredProperties = new ArrayList<>();
+    }
+    this.requiredProperties.add(requiredPropertiesItem);
+    return this;
+  }
+
+   /**
+   * Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.
+   * @return requiredProperties
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.")
+  @JsonProperty(REQUIRED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<URI> getRequiredProperties() {
+    return requiredProperties;
+  }
+
+
+  @JsonProperty(REQUIRED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRequiredProperties(List<URI> requiredProperties) {
+    this.requiredProperties = requiredProperties;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -121,12 +162,13 @@ public class ObjectPropertyFormatter {
     }
     ObjectPropertyFormatter objectPropertyFormatter = (ObjectPropertyFormatter) o;
     return Objects.equals(this.formatString, objectPropertyFormatter.formatString) &&
-        Objects.equals(this.parameters, objectPropertyFormatter.parameters);
+        Objects.equals(this.parameters, objectPropertyFormatter.parameters) &&
+        Objects.equals(this.requiredProperties, objectPropertyFormatter.requiredProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(formatString, parameters);
+    return Objects.hash(formatString, parameters, requiredProperties);
   }
 
   @Override
@@ -135,6 +177,7 @@ public class ObjectPropertyFormatter {
     sb.append("class ObjectPropertyFormatter {\n");
     sb.append("    formatString: ").append(toIndentedString(formatString)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    requiredProperties: ").append(toIndentedString(requiredProperties)).append("\n");
     sb.append("}");
     return sb.toString();
   }

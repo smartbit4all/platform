@@ -749,7 +749,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ObjectPropertyFormatterParameter'
-
+        requiredProperties:
+          description: Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.
+          type: array
+          items:
+            type: string
+            format: uri
     ObjectPropertyFormatterParameter:
       description: |
         This setting information to resolve a necessary parameters for the message format.
