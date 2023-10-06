@@ -74,6 +74,12 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
+   * action toggle between the normal and the inactive list.
+   */
+  static final String ACTION_TOGGLE_INACTIVES = "TOGGLE_INACTIVES";
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
    * action publishes all the draft editing object and the changes will be available for every user.
    */
   static final String ACTION_FINALIZE_CHANGES = "FINALIZE_CHANGES";
@@ -107,6 +113,13 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * will be restored to the original object.
    */
   static final String ACTION_CANCEL_DRAFT_ENTRY = "CANCEL_DRAFT_ENTRY";
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action starts the editing of the currently selected entry. The inactive object is going to be
+   * restored and appears in the active list again.
+   */
+  static final String ACTION_RESTORE_ENTRY = "RESTORE_ENTRY";
 
   /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
@@ -161,6 +174,16 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
+   * action publishes all the draft editing object and the changes will be available for every user.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @ActionHandler(ACTION_TOGGLE_INACTIVES)
+  void toggleInactives(UUID viewUuid, UiActionRequest request);
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The edited object is going to be
    * deleted from the list that contains the currently edited versions of the objects.
    *
@@ -196,6 +219,18 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   @WidgetActionHandler(value = ACTION_CANCEL_DRAFT_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action cancels all the draft editing object and we will have the published object list.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param gridId The identifier of the grid widget in the given page.
+   * @param rowId The identifier of the row.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @WidgetActionHandler(value = ACTION_RESTORE_ENTRY, widget = WIDGET_ENTRY_GRID)
+  void performRestoreEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**
    * This callback function is responsible for saving an object into the MDM entry list we are

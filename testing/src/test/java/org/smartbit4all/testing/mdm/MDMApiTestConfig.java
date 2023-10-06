@@ -65,7 +65,8 @@ public class MDMApiTestConfig extends TestFSCleaner {
             .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin"));
     result.addDefaultDescriptor(SampleCategoryType.class)
         .uniqueIdentifierPath(Arrays.asList(SampleCategoryType.CODE))
-        .editorViewName(MDM_EDITING_PAGE);
+        .editorViewName(MDM_EDITING_PAGE)
+        .setInactiveMgmt(true);
     result.addDefaultDescriptor(SampleCategory.class)
         .uniqueIdentifierPath(Arrays.asList(SampleCategory.NAME)).editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(PropertyDefinitionData.class);

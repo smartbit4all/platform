@@ -27,9 +27,9 @@ public interface StoredList {
 
   List<URI> update(UnaryOperator<List<URI>> update);
 
-  void removeAll(Collection<URI> uris);
+  boolean removeAll(Collection<URI> uris);
 
-  void remove(URI uri);
+  boolean remove(URI uri);
 
   boolean exists();
 
@@ -56,5 +56,11 @@ public interface StoredList {
   void branch(URI branchUri);
 
   List<BranchedObjectEntry> compareWithBranch(URI branchUri);
+
+  public enum OperationMode {
+    NORMAL, UNIQUE, UNIQUE_ON_LATEST
+  }
+
+  StoredList operationMode(OperationMode mode);
 
 }

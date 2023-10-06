@@ -45,6 +45,11 @@ public interface MDMEntryApi {
   StoredList getList();
 
   /**
+   * @return The inactive list if the {@link MDMEntryDescriptor#INACTIVE_MGMT} is set true.
+   */
+  StoredList getInactiveList();
+
+  /**
    * Save a new object according to the current state of the branch entry. If a branch is initiated
    * then the save will appear on the branch. If no branch exists the the
    *
@@ -87,6 +92,14 @@ public interface MDMEntryApi {
   boolean remove(URI objectUri);
 
   /**
+   * The given uri is restored from the inactive list if it exists over there.
+   * 
+   * @param objectUri
+   * @return true if we found the inactive item.
+   */
+  boolean restore(URI objectUri);
+
+  /**
    * Returns all the {@link BranchedObjectEntry} currently seen be an editor of the given MDM Entry.
    * It contains the published and untouched objects with {@link BranchingStateEnum#NOP} state.
    *
@@ -122,6 +135,5 @@ public interface MDMEntryApi {
    * @return
    */
   String getDisplayNameForm();
-
 
 }

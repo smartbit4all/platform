@@ -88,6 +88,12 @@ components:
           type: string
           description: |
             Name of Collection.list in which published entries will be stored.
+        inactiveMgmt:
+          type: boolean
+          default: true
+          description: |
+            The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the
+            removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched.
         uniqueIdentifierPath:
           type: array
           description: |

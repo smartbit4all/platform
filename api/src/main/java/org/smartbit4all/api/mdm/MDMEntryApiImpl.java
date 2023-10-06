@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.StoredList.OperationMode;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -49,6 +50,11 @@ import static java.util.stream.Collectors.toSet;
  *
  */
 public class MDMEntryApiImpl implements MDMEntryApi {
+
+  /**
+   * The postfix of the inactive list.
+   */
+  public static final String INACTIVE_POSTFIX = "-inactive";
 
   private static final Logger log = LoggerFactory.getLogger(MDMEntryApiImpl.class);
 
@@ -267,7 +273,29 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     StoredList list = getList();
     list.branch(branchUri);
     list.remove(objectUri);
+    StoredList inactiveList = getInactiveList();
+    if (inactiveList != null) {
+      inactiveList.branch(branchUri);
+      inactiveList.operationMode(OperationMode.UNIQUE_ON_LATEST);
+      inactiveList.add(objectUri);
+    }
     return true;
+  }
+
+  @Override
+  public boolean restore(URI objectUri) {
+    URI branchUri = getBranchUri();
+    StoredList inactiveList = getInactiveList();
+    if (inactiveList != null) {
+      inactiveList.branch(branchUri);
+      if (inactiveList.remove(objectUri)) {
+        StoredList list = getList();
+        list.branch(branchUri);
+        list.add(objectUri);
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -319,6 +347,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   @Override
   public StoredList getList() {
     return collectionApi.list(descriptor.getSchema(), getListName());
+  }
+
+  @Override
+  public StoredList getInactiveList() {
+    return Boolean.TRUE.equals(descriptor.getInactiveMgmt())
+        ? collectionApi.list(descriptor.getSchema(), getListName() + INACTIVE_POSTFIX)
+        : null;
   }
 
   public final void refreshValueSetDefinition() {

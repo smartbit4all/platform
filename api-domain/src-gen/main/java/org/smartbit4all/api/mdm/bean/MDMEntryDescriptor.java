@@ -45,6 +45,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
+  MDMEntryDescriptor.INACTIVE_MGMT,
   MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
   MDMEntryDescriptor.PUBLISHED_MAP_NAME,
   MDMEntryDescriptor.TABLE_COLUMNS,
@@ -78,6 +79,9 @@ public class MDMEntryDescriptor {
 
   public static final String PUBLISHED_LIST_NAME = "publishedListName";
   private String publishedListName;
+
+  public static final String INACTIVE_MGMT = "inactiveMgmt";
+  private Boolean inactiveMgmt = true;
 
   public static final String UNIQUE_IDENTIFIER_PATH = "uniqueIdentifierPath";
   private List<String> uniqueIdentifierPath = null;
@@ -279,6 +283,33 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublishedListName(String publishedListName) {
     this.publishedListName = publishedListName;
+  }
+
+
+  public MDMEntryDescriptor inactiveMgmt(Boolean inactiveMgmt) {
+    
+    this.inactiveMgmt = inactiveMgmt;
+    return this;
+  }
+
+   /**
+   * The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched. 
+   * @return inactiveMgmt
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched. ")
+  @JsonProperty(INACTIVE_MGMT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getInactiveMgmt() {
+    return inactiveMgmt;
+  }
+
+
+  @JsonProperty(INACTIVE_MGMT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInactiveMgmt(Boolean inactiveMgmt) {
+    this.inactiveMgmt = inactiveMgmt;
   }
 
 
@@ -654,6 +685,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
+        Objects.equals(this.inactiveMgmt, mdMEntryDescriptor.inactiveMgmt) &&
         Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
         Objects.equals(this.publishedMapName, mdMEntryDescriptor.publishedMapName) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
@@ -670,7 +702,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
+    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
   }
 
   @Override
@@ -683,6 +715,7 @@ public class MDMEntryDescriptor {
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
+    sb.append("    inactiveMgmt: ").append(toIndentedString(inactiveMgmt)).append("\n");
     sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
     sb.append("    publishedMapName: ").append(toIndentedString(publishedMapName)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");

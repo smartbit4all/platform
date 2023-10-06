@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -31,9 +30,12 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -46,8 +48,11 @@ import org.smartbit4all.core.object.ObjectDisplay;
 import org.smartbit4all.core.object.ObjectExtensionApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -55,6 +60,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private static final Logger log = LoggerFactory.getLogger(MDMEntryListPageApiImpl.class);
 
   private static final String PROPERTY_URI = "uri";
+
+  private static final String VARIABLE_INACTIVES = "inactives";
+
+  private static final String VARIABLE_ACTIVES = "actives";
 
   public MDMEntryListPageApiImpl() {
     super(SearchPageModel.class);
@@ -80,8 +89,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private ObjectExtensionApi objectExtensionApi;
+
   @Autowired
   private ObjectLayoutApi objectLayoutApi;
+
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -101,6 +114,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryApi entryApi;
     SearchIndex<BranchedObjectEntry> searchIndexAdmin;
     SearchIndex<Object> searchIndexPublished;
+    boolean inactives = false;
 
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(view);
@@ -115,6 +129,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       searchIndexPublished =
           collectionApi.searchIndex(definition.getName(), entryDescriptor.getName(),
               Object.class);
+      inactives = Boolean.TRUE.equals(variables(view).get(VARIABLE_INACTIVES, Boolean.class));
 
       return this;
     }
@@ -129,6 +144,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     public boolean checkAdmin() {
       return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName());
+    }
+
+    public void setInactives(boolean inactives) {
+      this.inactives = inactives;
+      variables(view).put(VARIABLE_INACTIVES, inactives);
     }
 
     ObjectDefinition<?> getBranchedObjectDefinition() {
@@ -158,7 +178,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public SearchPageModel initModel(View view) {
     PageContext context = getContextByView(view);
-    refreshActions(view, context);
+    refreshActions(context);
 
     Set<String> propertiesToRemove = new HashSet<>(
         Arrays.asList(BranchedObjectEntry.ORIGINAL_URI, BranchedObjectEntry.BRANCH_URI));
@@ -183,41 +203,66 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     refreshGrid(context);
 
-    String pageTitle = context.entryApi.getDisplayNameList();
     FilterExpressionFieldList filters = null;
     return new SearchPageModel()
-        .pageTitle(pageTitle)
+        .pageTitle(getPageTitle(context))
         .filters(null);
   }
 
-  private void refreshActions(View view, PageContext context) {
+  private String getPageTitle(PageContext context) {
+    String pageTitle = context.entryApi.getDisplayNameList();
+    if (Boolean.TRUE.equals(context.inactives)) {
+      pageTitle += StringConstant.SPACE_HYPHEN_SPACE
+          + localeSettingApi.get(MasterDataManagementApi.SCHEMA, VARIABLE_INACTIVES);
+    }
+    return pageTitle;
+  }
+
+  private void refreshActions(PageContext context) {
     boolean isAdmin = context.checkAdmin();
     boolean hasBranch = context.entryApi.hasBranch();
+    boolean inactiveEnabled = Boolean.TRUE.equals(context.entryDescriptor.getInactiveMgmt());
     List<UiAction> uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY)
-        .addIf(ACTION_NEW_ENTRY, isAdmin)
-        .addIf(ACTION_START_EDITING, isAdmin, !hasBranch)
-        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, hasBranch)
-        .addIf(ACTION_CANCEL_CHANGES, isAdmin, hasBranch)
+        .addIf(ACTION_NEW_ENTRY, isAdmin, !context.inactives)
+        .addIf(ACTION_START_EDITING, isAdmin, !hasBranch, !context.inactives)
+        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, hasBranch, !context.inactives)
+        .addIf(ACTION_CANCEL_CHANGES, isAdmin, hasBranch, !context.inactives)
+        .addIf(
+            new UiAction().code(ACTION_TOGGLE_INACTIVES).descriptor(
+                new UiActionDescriptor().type(UiActionButtonType.STROKED)
+                    .title(context.inactives
+                        ? localeSettingApi.get(MasterDataManagementApi.SCHEMA, VARIABLE_ACTIVES)
+                        : localeSettingApi.get(MasterDataManagementApi.SCHEMA,
+                            VARIABLE_INACTIVES))),
+            isAdmin, inactiveEnabled)
         .build();
 
-    view.actions(uiActions);
+    context.view.actions(uiActions);
   }
 
   private final void refreshGrid(PageContext ctx) {
 
     if (ctx.checkAdmin() && ctx.entryApi.hasBranch()) {
+      List<BranchedObjectEntry> list;
+      if (ctx.inactives) {
+        StoredList inactiveList = ctx.entryApi.getInactiveList();
+        list = inactiveList.compareWithBranch(ctx.entryApi.getBranchUri());
+      } else {
+        list = ctx.entryApi.getBranchingList();
+      }
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
           ctx.searchIndexAdmin
-              .executeSearchOnNodes(ctx.entryApi.getBranchingList().stream().map(i -> {
+              .executeSearchOnNodes(list.stream().map(i -> {
                 ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
                 return objectApi.create(ctx.definition.getName(), objectDefinition,
                     objectDefinition.toMap(i));
               }), null));
-
     } else {
+      StoredList inactiveList = ctx.entryApi.getInactiveList();
+      StoredList list = ctx.inactives ? inactiveList : ctx.entryApi.getList();
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexPublished.executeSearchOn(ctx.entryApi.getList().uris().stream(),
+          ctx.searchIndexPublished.executeSearchOn(list.uris().stream(),
               null));
     }
 
@@ -234,7 +279,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.initiateGlobalBranch(context.definition.getName(),
         String.valueOf(System.currentTimeMillis()));
-    refreshActions(context.view, context);
+    refreshActions(context);
     refreshGrid(context);
   }
 
@@ -242,7 +287,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.dropGlobal(context.definition.getName());
-    refreshActions(context.view, context);
+    refreshActions(context);
     refreshGrid(context);
   }
 
@@ -267,7 +312,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.mergeGlobal(context.definition.getName());
     refreshGrid(context);
-    refreshActions(context.view, context);
+    refreshActions(context);
+  }
+
+  @Override
+  public void toggleInactives(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    context.setInactives(!context.inactives);
+    getModel(viewUuid).setPageTitle(getPageTitle(context));
+    refreshActions(context);
+    refreshGrid(context);
   }
 
   @Override
@@ -341,6 +395,17 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.BRANCH_URI,
         (u, ctx) -> ctx.entryApi.cancel(u));
+    refreshGrid(context);
+  }
+
+  @Override
+  public void performRestoreEntry(UUID viewUuid, String gridId, String rowId,
+      UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    performActionOnEntry(context, gridId, rowId,
+        context.entryApi.getBranchUri() != null ? BranchedObjectEntry.BRANCH_URI
+            : ObjectDefinition.URI_PROPERTY,
+        (u, ctx) -> ctx.entryApi.restore(u));
     refreshGrid(context);
   }
 
@@ -419,10 +484,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public GridRow addWidgetEntryGridActions(GridRow row, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
     if (ctx.checkAdmin()) {
-      row.addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
-          .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY));
-      if (ctx.entryApi.hasBranch()) {
-        row.addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY));
+      if (ctx.inactives) {
+        row.addActionsItem(new UiAction().code(ACTION_RESTORE_ENTRY));
+      } else {
+        row.addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
+            .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY));
+        if (ctx.entryApi.hasBranch()) {
+          row.addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY));
+        }
       }
     }
     return row;

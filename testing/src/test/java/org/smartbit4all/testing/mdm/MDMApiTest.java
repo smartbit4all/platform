@@ -219,7 +219,19 @@ class MDMApiTest {
     typeApi.remove(draftNewToDelete);
     typeApi.remove(publishedToDelete);
 
+    typeApi.restore(draftNewToDelete);
+    typeApi.remove(draftNewToDelete);
+
     objectApi.save(objectNode);
+
+    typeApi.remove(draftNew);
+
+    Assertions
+        .assertThat(
+            typeApi.getList().nodes().filter(n -> draftNew.equals(n.getObjectUri())).findFirst())
+        .isNotPresent();
+
+    typeApi.restore(draftNew);
 
     ObjectNode objectFour =
         objectApi.load(draftNew).setValue("Type four", SampleCategoryType.NAME);

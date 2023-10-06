@@ -4,7 +4,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,9 +19,12 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import static java.util.stream.Collectors.toList;
 
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
+
+  private OperationMode operationMode = OperationMode.NORMAL;
 
   StoredListStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
       ObjectApi objectApi,
@@ -62,11 +67,26 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   public void addAll(Stream<URI> uris) {
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
-        uris.forEach(data::addUrisItem);
-        // TODO add the new object to the branch entry.
-        if (branchUri != null) {
-
+        Set<URI> currentUris = new HashSet<>();
+        if (operationMode != OperationMode.NORMAL) {
+          if (data.getUris() != null) {
+            currentUris.addAll(data.getUris().stream().map(u -> {
+              if (operationMode == OperationMode.UNIQUE) {
+                return u;
+              }
+              return objectApi.getLatestUri(u);
+            }).collect(toList()));
+          }
         }
+        uris.filter(u -> {
+          if (!currentUris.isEmpty()) {
+            if (operationMode == OperationMode.UNIQUE) {
+              return !currentUris.contains(u);
+            }
+            return !currentUris.contains(objectApi.getLatestUri(u));
+          }
+          return true;
+        }).forEach(data::addUrisItem);
         return data;
       });
     });
@@ -86,23 +106,37 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   }
 
   @Override
-  public void removeAll(Collection<URI> uris) {
+  public boolean removeAll(Collection<URI> uris) {
+    List<URI> removedUris = new ArrayList<>();
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
-        data.getUris().removeAll(uris);
+        if (data.getUris().removeAll(uris)) {
+          removedUris.addAll(uris);
+        }
         return data;
       });
     });
+    return !removedUris.isEmpty();
   }
 
   @Override
-  public void remove(URI uri) {
+  public boolean remove(URI uri) {
+    List<URI> removedUris = new ArrayList<>();
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
-        data.getUris().remove(uri);
+        if (branchUri != null) {
+          if (data.getUris().removeIf(u -> objectApi.equalsIgnoreVersion(u, uri))) {
+            removedUris.add(uri);
+          }
+        } else {
+          if (data.getUris().remove(uri)) {
+            removedUris.add(uri);
+          }
+        }
         return data;
       });
     });
+    return !removedUris.isEmpty();
   }
 
   @Override
@@ -136,6 +170,12 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   @Override
   public List<BranchedObjectEntry> compareWithBranch(URI branchUri) {
     return branchApi.compareListByUri(branchUri, getUri(), StoredListData.URIS);
+  }
+
+  @Override
+  public StoredList operationMode(OperationMode mode) {
+    operationMode = mode;
+    return this;
   }
 
 }
