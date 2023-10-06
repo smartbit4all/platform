@@ -131,6 +131,12 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   @Override
+  public List<User> getUsers(List<URI> userUris) {
+    return users.values().stream().filter(user -> userUris.contains(user.getUri()))
+        .collect(Collectors.toList());
+  }
+
+  @Override
   public List<User> getActiveUsers() {
     return new ArrayList<>(users.values());
   }

@@ -3,6 +3,7 @@ package org.smartbit4all.sec.org;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.gateway.SecurityGatewayService;
 import org.smartbit4all.api.org.OrgApiImpl;
 import org.smartbit4all.api.org.bean.Group;
@@ -27,6 +28,12 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
   public User getUser(URI userUri) {
     User user = secGatewayService.getUser(userUri);
     return user;
+  }
+
+  @Override
+  public List<User> getUsers(List<URI> userUris) {
+    return secGatewayService.getUsers().stream().filter(user -> userUris.contains(user.getUri()))
+        .collect(Collectors.toList());
   }
 
   @Override

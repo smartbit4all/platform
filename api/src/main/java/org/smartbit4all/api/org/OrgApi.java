@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.OrgBulkUpdate;
+import org.smartbit4all.api.org.bean.OrgState;
 import org.smartbit4all.api.org.bean.User;
 
 public interface OrgApi {
@@ -26,6 +28,11 @@ public interface OrgApi {
    * Get all information of a user.
    */
   User getUser(URI userUri);
+
+  /**
+   * Get all information of the users.
+   */
+  List<User> getUsers(List<URI> userUris);
 
   /**
    * Return all users active, and inactive.
@@ -163,5 +170,21 @@ public interface OrgApi {
   void restoreDeletedUser(URI userUri);
 
   default void updateUsername(User user, String username) {};
+
+  /**
+   * Update multiple records in one transaction.
+   * 
+   * @param update
+   */
+  default void bulkUpdate(OrgBulkUpdate update) {};
+
+  /**
+   * Returns the current state of the OrgApi.
+   * 
+   * @return
+   */
+  default OrgState getOrgState() {
+    return new OrgState();
+  };
 
 }

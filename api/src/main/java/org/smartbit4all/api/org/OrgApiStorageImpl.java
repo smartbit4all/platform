@@ -23,10 +23,16 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.gateway.SecurityGateways;
+import org.smartbit4all.api.org.bean.BulkUpdateOperation;
 import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.GroupOfGroupUpdate;
+import org.smartbit4all.api.org.bean.GroupUpdate;
 import org.smartbit4all.api.org.bean.GroupsOfUser;
 import org.smartbit4all.api.org.bean.GroupsOfUserCollection;
+import org.smartbit4all.api.org.bean.OrgBulkUpdate;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.org.bean.UserOfGroupUpdate;
+import org.smartbit4all.api.org.bean.UserUpdate;
 import org.smartbit4all.api.org.bean.UsersOfGroup;
 import org.smartbit4all.api.org.bean.UsersOfGroupCollection;
 import org.smartbit4all.api.session.SessionApi;
@@ -393,6 +399,15 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public User getUser(URI userUri) {
     return storage.get().read(userUri, User.class);
+  }
+
+  @Override
+  public List<User> getUsers(List<URI> userUris) {
+    return storage.get().read(new ArrayList<>(userUris), User.class);
+  }
+
+  public List<Group> getGroups(List<URI> groupUris) {
+    return storage.get().read(new ArrayList<>(groupUris), Group.class);
   }
 
   @Override
@@ -936,5 +951,311 @@ public class OrgApiStorageImpl implements OrgApi {
 
     invalidateCache();
 
+  }
+
+  @Override
+  public void bulkUpdate(OrgBulkUpdate update) {
+    bulkUpdateGroups(update);
+    bulkUpdateUsers(update);
+    bulkUpdateGroupsOfGroups(update);
+    bulkUpdateUsersOfGroups(update);
+
+    invalidateCache();
+
+  }
+
+  private void bulkUpdateUsersOfGroups(OrgBulkUpdate update) {
+    // load users of group
+    StorageObject<UsersOfGroupCollection> usersOfGRoupCollectionSO =
+        loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+    UsersOfGroupCollection usersOfGroupCollection = usersOfGRoupCollectionSO.getObject();
+    List<UsersOfGroup> usersOfGroupList = usersOfGroupCollection.getUsersOfGroupCollection();
+    Map<URI, UsersOfGroup> usersOfGroupMap =
+        usersOfGroupList.stream().collect(Collectors.toMap(a -> a.getGroupUri(), a -> a));
+
+    // load Groups of user
+    StorageObject<GroupsOfUserCollection> groupsOfUserCollectionSO =
+        loadSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
+    GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionSO.getObject();
+    List<GroupsOfUser> groupsOfUserList = groupsOfUserCollection.getGroupsOfUserCollection();
+    Map<Object, GroupsOfUser> groupsOfUserMap =
+        groupsOfUserList.stream().collect(Collectors.toMap(a -> a.getUserUri(), a -> a));
+
+    // Load all users
+    Map<String, URI> userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE).getUris();
+    // Load all groups
+    Map<String, URI> groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE).getUris();
+
+    for (UserOfGroupUpdate usersOfGroupUpdate : update.getUsersOfGroup()) {
+
+      URI groupUri = groupObjectMap.get(usersOfGroupUpdate.getGroup().getName());
+      URI userUri = userObjectMap.get(usersOfGroupUpdate.getUser().getUsername());
+      if (usersOfGroupUpdate.getOperation() == BulkUpdateOperation.INSERT) {
+        // add to UsersOfGroup
+        UsersOfGroup usersOfGroup = usersOfGroupMap.get(groupUri);
+        if (usersOfGroup == null) {
+          usersOfGroup = new UsersOfGroup().groupUri(groupUri);
+          usersOfGroupList.add(usersOfGroup);
+          usersOfGroupMap.put(groupUri, usersOfGroup);
+        }
+        usersOfGroup.addUsersItem(userUri);
+
+        // add to GroupsOfUser
+        GroupsOfUser groupsOfUser = groupsOfUserMap.get(userUri);
+        if (groupsOfUser == null) {
+          groupsOfUser = new GroupsOfUser().userUri(userUri);
+          groupsOfUserList.add(groupsOfUser);
+          groupsOfUserMap.put(userUri, groupsOfUser);
+        }
+        groupsOfUser.addGroupsItem(groupUri);
+      } else if (usersOfGroupUpdate.getOperation() == BulkUpdateOperation.DELETE) {
+        // remove from UsersOfGroup
+        UsersOfGroup usersOfGroup = usersOfGroupMap.get(groupUri);
+        if (usersOfGroup != null) {
+          usersOfGroup.getUsers().remove(userUri);
+        }
+        // remove from GroupsOfUser
+        GroupsOfUser groupsOfUser = groupsOfUserMap.get(userUri);
+        if (groupsOfUser != null) {
+          groupsOfUser.getGroups().remove(groupUri);
+        }
+      }
+    }
+
+    // update collections
+    if (!update.getUsersOfGroup().isEmpty()) {
+      storage.get().save(usersOfGRoupCollectionSO);
+      storage.get().save(groupsOfUserCollectionSO);
+    }
+  }
+
+  private void bulkUpdateGroupsOfGroups(OrgBulkUpdate update) {
+    Map<String, URI> groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE).getUris();
+    for (GroupOfGroupUpdate groupsOfGroup : update.getGroupsOfGroup()) {
+      Group parentGroup = groupsOfGroup.getParentGroup();
+      Group childGroup = groupsOfGroup.getChildGroup();
+      URI parentGroupUri = groupObjectMap.get(parentGroup.getName());
+      if (parentGroupUri == null) {
+        // this group has been deleted
+        continue;
+      }
+      URI childGroupUriFromStorage = groupObjectMap.get(childGroup.getName());
+      URI childGroupUri =
+          childGroupUriFromStorage != null ? childGroupUriFromStorage : childGroup.getUri();
+      if (groupsOfGroup.getOperation() == BulkUpdateOperation.INSERT) {
+        if (parentGroup.getChildren().contains(childGroupUri)) {
+          continue;
+        }
+        storage.get().update(parentGroupUri, Group.class,
+            g -> g.addChildrenItem(childGroupUri));
+      } else if (groupsOfGroup.getOperation() == BulkUpdateOperation.DELETE) {
+        if (parentGroup.getChildren().contains(childGroupUri)) {
+          storage.get().update(parentGroupUri, Group.class,
+              g -> {
+                g.getChildren().remove(childGroupUri);
+                return g;
+              });
+        }
+      }
+    }
+  }
+
+  private void bulkUpdateUsers(OrgBulkUpdate update) {
+    // collect new and deleted users
+    List<User> newUsers = new ArrayList<>();
+    List<User> deletedUsers = new ArrayList<>();
+    Map<String, URI> userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE).getUris();
+    for (UserUpdate userUpdate : update.getUsers()) {
+      User user = userUpdate.getUser();
+      if (userUpdate.getOperation() == BulkUpdateOperation.INSERT) {
+        URI uri = userObjectMap.get(user.getUsername());
+        if (uri == null) {
+          StorageObject<User> userStorageObj = storage.get().instanceOf(User.class);
+          userStorageObj.setObject(user);
+          storage.get().save(userStorageObj);
+          newUsers.add(user);
+          userObjectMap.put(user.getUsername(), user.getUri());
+        } else {
+          storage.get().update(user.getUri(), User.class, u -> user);
+        }
+      } else if (userUpdate.getOperation() == BulkUpdateOperation.UPDATE) {
+        if (storage.get().exists(user.getUri())) {
+          storage.get().update(user.getUri(), User.class, u -> user);
+        }
+      } else if (userUpdate.getOperation() == BulkUpdateOperation.DELETE) {
+        storage.get().update(user.getUri(), User.class, u -> u.inactive(true));
+        deletedUsers.add(user);
+        userObjectMap.remove(user.getUsername());
+      }
+    }
+
+    boolean userAdded = false;
+    boolean userDeleted = false;
+    ObjectMapRequest userMap = new ObjectMapRequest().mapName(USER_OBJECTMAP_REFERENCE);
+    for (User user : newUsers) {
+      userAdded = true;
+      userMap.putUrisToAddItem(user.getUsername(), user.getUri());
+    }
+    for (User user : deletedUsers) {
+      userDeleted = true;
+      userMap.putUrisToRemoveItem(user.getUsername(), user.getUri());
+    }
+    if (userAdded || userDeleted) {
+      storage.get().updateAttachedMap(
+          storage.get().settings().getUri(), userMap);
+    }
+
+    if (userDeleted) {
+      ObjectMapRequest inactiveUserMap =
+          new ObjectMapRequest().mapName(INACTIVE_USER_OBJECTMAP_REFERENCE);
+
+      StorageObject<GroupsOfUserCollection> groupsOfUserCollectionSO =
+          loadSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
+      GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionSO.getObject();
+      List<GroupsOfUser> groupsOfUserList = groupsOfUserCollection.getGroupsOfUserCollection();
+      Map<URI, GroupsOfUser> groupsOfUserByUserUri =
+          groupsOfUserList.stream().collect(Collectors.toMap(u -> u.getUserUri(), u -> u));
+
+      StorageObject<UsersOfGroupCollection> usersOfGroupCollectionReference =
+          loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+      List<UsersOfGroup> usersOfGroupCollection =
+          usersOfGroupCollectionReference.getObject().getUsersOfGroupCollection();
+      Map<URI, UsersOfGroup> usersOfGroupByUri =
+          usersOfGroupCollection.stream().collect(Collectors.toMap(g -> g.getGroupUri(), g -> g));
+
+      for (User user : deletedUsers) {
+        // Inactivate user
+        inactiveUserMap.putUrisToAddItem(user.getUsername(), user.getUri());
+
+        GroupsOfUser groupsOfUser = groupsOfUserByUserUri.get(user.getUri());
+        if (groupsOfUser != null) {
+          // remove the group of user from the group of user list
+          groupsOfUserList.remove(groupsOfUser);
+          // remove from all users of group
+          for (URI groupUri : groupsOfUser.getGroups()) {
+            UsersOfGroup usersOfGroup = usersOfGroupByUri.get(groupUri);
+            if (usersOfGroup != null) {
+              usersOfGroup.getUsers().remove(user.getUri());
+            }
+          }
+        }
+      }
+      storage.get().updateAttachedMap(
+          storage.get().settings().getUri(), inactiveUserMap);
+      storage.get().save(usersOfGroupCollectionReference);
+      storage.get().save(groupsOfUserCollectionSO);
+    }
+  }
+
+  private void bulkUpdateGroups(OrgBulkUpdate update) {
+    List<Group> newGroups = new ArrayList<>();
+    List<Group> deletedGroups = new ArrayList<>();
+
+    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
+
+    for (GroupUpdate groupUpdate : update.getGroups()) {
+      Group group = groupUpdate.getGroup();
+      if (groupUpdate.getOperation() == BulkUpdateOperation.INSERT) {
+        URI uri = groupObjectMap.getUris().get(group.getName());
+        if (uri == null) {
+          StorageObject<Group> groupStorageObj = storage.get().instanceOf(Group.class);
+          groupStorageObj.setObject(group);
+          storage.get().save(groupStorageObj);
+          newGroups.add(group);
+        } else {
+          storage.get().update(group.getUri(), Group.class, g -> groupUpdate.getGroup());
+        }
+      } else if (groupUpdate.getOperation() == BulkUpdateOperation.UPDATE) {
+        if (storage.get().exists(group.getUri())) {
+          storage.get().update(group.getUri(), Group.class, g -> groupUpdate.getGroup());
+        }
+      } else if (groupUpdate.getOperation() == BulkUpdateOperation.DELETE) {
+        if (storage.get().exists(group.getUri())) {
+          StorageObject<Group> storageObject = storage.get().load(group.getUri(), Group.class);
+          storageObject.setDeleted();
+          storage.get().save(storageObject);
+        }
+        deletedGroups.add(group);
+      }
+
+    }
+
+    ObjectMapRequest groupMap = new ObjectMapRequest().mapName(GROUP_OBJECTMAP_REFERENCE);
+    boolean groupAdded = false;
+    boolean groupDeleted = false;
+    for (Group group : newGroups) {
+      groupAdded = true;
+      groupMap.putUrisToAddItem(group.getName(), group.getUri());
+    }
+    for (Group group : deletedGroups) {
+      groupDeleted = true;
+      groupMap.putUrisToRemoveItem(group.getName(), group.getUri());
+    }
+    if (groupAdded || groupDeleted) {
+      storage.get().updateAttachedMap(
+          storage.get().settings().getUri(), groupMap);
+    }
+    if (groupDeleted) {
+      StorageObject<GroupsOfUserCollection> groupsOfUserCollectionSO =
+          loadSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
+      GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionSO.getObject();
+      List<GroupsOfUser> groupsOfUserList = groupsOfUserCollection.getGroupsOfUserCollection();
+      Map<Object, GroupsOfUser> groupsOfUserByUserUri =
+          groupsOfUserList.stream().collect(Collectors.toMap(u -> u.getUserUri(), u -> u));
+
+      // settings -> UsersOfGroupCollection -> UsersOfGroup -> Remove user from groups
+      StorageObject<UsersOfGroupCollection> usersOfGroupCollectionReference =
+          loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+      List<UsersOfGroup> usersOfGroupCollection =
+          usersOfGroupCollectionReference.getObject().getUsersOfGroupCollection();
+      Map<Object, UsersOfGroup> usersOfGroupByUri =
+          usersOfGroupCollection.stream().collect(Collectors.toMap(g -> g.getGroupUri(), g -> g));
+
+      for (Group group : deletedGroups) {
+        UsersOfGroup usersOfGroup = usersOfGroupByUri.get(group.getUri());
+        if (usersOfGroup != null) {
+          usersOfGroupCollection.remove(usersOfGroup);
+          for (URI userUri : usersOfGroup.getUsers()) {
+            GroupsOfUser groupsOfUser = groupsOfUserByUserUri.get(userUri);
+            if (groupsOfUser != null) {
+              groupsOfUser.getGroups().remove(group.getUri());
+            }
+          }
+        }
+      }
+      storage.get().save(usersOfGroupCollectionReference);
+      storage.get().save(groupsOfUserCollectionSO);
+    }
+  }
+
+  @Override
+  public org.smartbit4all.api.org.bean.OrgState getOrgState() {
+    List<User> users = getActiveUsers();
+    List<Group> groups = getAllGroups();
+    Map<URI, Group> groupsByUris =
+        groups.stream().collect(Collectors.toMap(g -> g.getUri(), g -> g));
+
+    Map<String, User> usersByUserNames =
+        users.stream().collect(Collectors.toMap(u -> u.getUsername(), u -> u));
+    Map<String, Group> groupsByNames =
+        groups.stream().collect(Collectors.toMap(g -> g.getName(), g -> g));
+
+    StorageObject<UsersOfGroupCollection> usersOfGRoupCollectionSO =
+        loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+    UsersOfGroupCollection usersOfGroupCollection = usersOfGRoupCollectionSO.getObject();
+
+    List<UsersOfGroup> usersOfGroupList = usersOfGroupCollection.getUsersOfGroupCollection();
+
+    return new org.smartbit4all.api.org.bean.OrgState()
+        .users(usersByUserNames)
+        .groups(groupsByNames)
+        .usersOfGroup(usersOfGroupList.stream()
+            .collect(Collectors.toMap(
+                u -> getGroup(u.getGroupUri()).getName(),
+                u -> getUsers(u.getUsers()))))
+        .groupsOfGroup(groups.stream()
+            .collect(Collectors.toMap(
+                g -> g.getName(),
+                g -> getGroups(g.getChildren()))));
   }
 }

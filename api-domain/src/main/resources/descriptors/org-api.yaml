@@ -251,6 +251,108 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UsersOfGroup'
+    
+    OrgState:
+      type: object
+      required: [users, groups, groupsOfGroup, usersOfGroup]
+      properties:
+        uri:
+          type: string
+          format: uri
+        users:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+        groups:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Group'
+        usersOfGroup:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+        groupsOfGroup:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/Group'
+    OrgBulkUpdate:
+      type: object
+      required: [users, groups, groupsOfGroup, usersOfGroup]
+      properties:
+        uri:
+          type: string
+          format: uri
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserUpdate'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupUpdate'
+        groupsOfGroup:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupOfGroupUpdate'
+        usersOfGroup:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserOfGroupUpdate'
+    BulkUpdateOperation:
+      type: string
+      enum:
+        - INSERT
+        - UPDATE
+        - DELETE
+    UserUpdate:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        user:
+          $ref: '#/components/schemas/User'
+        operation:
+          $ref: '#/components/schemas/BulkUpdateOperation'
+    GroupUpdate:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        group:
+          $ref: '#/components/schemas/Group'
+        operation:
+          $ref: '#/components/schemas/BulkUpdateOperation'
+    GroupOfGroupUpdate:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        parentGroup:
+          $ref: '#/components/schemas/Group'
+        childGroup:
+          $ref: '#/components/schemas/Group'
+        operation:
+          $ref: '#/components/schemas/BulkUpdateOperation'
+    UserOfGroupUpdate:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        group:
+          $ref: '#/components/schemas/Group'
+        user:
+          $ref: '#/components/schemas/User'
+        operation:
+          $ref: '#/components/schemas/BulkUpdateOperation'
+          
 
     ACL:
       type: object
