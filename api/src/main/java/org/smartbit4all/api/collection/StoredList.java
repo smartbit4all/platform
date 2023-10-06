@@ -33,6 +33,8 @@ public interface StoredList {
 
   boolean exists();
 
+  Long getLastModified();
+
   /**
    * This function checks if the given uri exists in the list. If not then the uri will be added to
    * the list as the first uri. If exists then the uri will be moved to the first position. After

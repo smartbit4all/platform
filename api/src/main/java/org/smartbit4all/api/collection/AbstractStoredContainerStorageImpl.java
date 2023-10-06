@@ -83,4 +83,12 @@ abstract class AbstractStoredContainerStorageImpl {
 
   }
 
+  public boolean exists() {
+    return objectApi.exists(getUri(), branchUri);
+  }
+
+  public Long getLastModified() {
+    return objectApi.getLastModified(uri);
+  }
+
 }

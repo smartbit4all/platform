@@ -47,11 +47,6 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   }
 
   @Override
-  public boolean exists() {
-    return objectApi.exists(getUri(), branchUri);
-  }
-
-  @Override
   public void add(URI uri) {
     addAll(Stream.of(uri));
   }

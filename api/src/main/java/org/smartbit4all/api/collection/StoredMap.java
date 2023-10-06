@@ -53,4 +53,8 @@ public interface StoredMap {
    */
   void branch(URI branchUri);
 
+  boolean exists();
+
+  Long getLastModified();
+
 }
