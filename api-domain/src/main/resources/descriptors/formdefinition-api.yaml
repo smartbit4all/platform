@@ -147,6 +147,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PropertyMapping'
+        emptyLabel:
+          description: Optional value, used for empty valueList entry, this will be the label.
+          type: string
     PropertyMapping:
       type: object
       description: Mapping of two properties.

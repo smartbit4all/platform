@@ -38,7 +38,8 @@ import javax.validation.Valid;
   SelectionDefinition.VALUE_SET_NAME,
   SelectionDefinition.TYPE,
   SelectionDefinition.DISPLAY_PROPERTY,
-  SelectionDefinition.MAPPING
+  SelectionDefinition.MAPPING,
+  SelectionDefinition.EMPTY_LABEL
 })
 @JsonTypeName("SelectionDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -89,6 +90,9 @@ public class SelectionDefinition {
 
   public static final String MAPPING = "mapping";
   private List<PropertyMapping> mapping = new ArrayList<>();
+
+  public static final String EMPTY_LABEL = "emptyLabel";
+  private String emptyLabel;
 
   public SelectionDefinition() { 
   }
@@ -210,6 +214,33 @@ public class SelectionDefinition {
   }
 
 
+  public SelectionDefinition emptyLabel(String emptyLabel) {
+    
+    this.emptyLabel = emptyLabel;
+    return this;
+  }
+
+   /**
+   * Optional value, used for empty valueList entry, this will be the label.
+   * @return emptyLabel
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Optional value, used for empty valueList entry, this will be the label.")
+  @JsonProperty(EMPTY_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getEmptyLabel() {
+    return emptyLabel;
+  }
+
+
+  @JsonProperty(EMPTY_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEmptyLabel(String emptyLabel) {
+    this.emptyLabel = emptyLabel;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -222,12 +253,13 @@ public class SelectionDefinition {
     return Objects.equals(this.valueSetName, selectionDefinition.valueSetName) &&
         Objects.equals(this.type, selectionDefinition.type) &&
         Objects.equals(this.displayProperty, selectionDefinition.displayProperty) &&
-        Objects.equals(this.mapping, selectionDefinition.mapping);
+        Objects.equals(this.mapping, selectionDefinition.mapping) &&
+        Objects.equals(this.emptyLabel, selectionDefinition.emptyLabel);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(valueSetName, type, displayProperty, mapping);
+    return Objects.hash(valueSetName, type, displayProperty, mapping, emptyLabel);
   }
 
   @Override
@@ -238,6 +270,7 @@ public class SelectionDefinition {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    displayProperty: ").append(toIndentedString(displayProperty)).append("\n");
     sb.append("    mapping: ").append(toIndentedString(mapping)).append("\n");
+    sb.append("    emptyLabel: ").append(toIndentedString(emptyLabel)).append("\n");
     sb.append("}");
     return sb.toString();
   }
