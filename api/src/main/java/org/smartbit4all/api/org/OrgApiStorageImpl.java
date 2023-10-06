@@ -1232,13 +1232,15 @@ public class OrgApiStorageImpl implements OrgApi {
   public org.smartbit4all.api.org.bean.OrgState getOrgState() {
     List<User> users = getActiveUsers();
     List<Group> groups = getAllGroups();
-    Map<URI, Group> groupsByUris =
-        groups.stream().collect(Collectors.toMap(g -> g.getUri(), g -> g));
 
     Map<String, User> usersByUserNames =
         users.stream().collect(Collectors.toMap(u -> u.getUsername(), u -> u));
+    Map<URI, User> usersByUri =
+        users.stream().collect(Collectors.toMap(u -> u.getUri(), u -> u));
     Map<String, Group> groupsByNames =
         groups.stream().collect(Collectors.toMap(g -> g.getName(), g -> g));
+    Map<URI, Group> groupsByUri =
+        groups.stream().collect(Collectors.toMap(g -> g.getUri(), g -> g));
 
     StorageObject<UsersOfGroupCollection> usersOfGRoupCollectionSO =
         loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
@@ -1246,16 +1248,21 @@ public class OrgApiStorageImpl implements OrgApi {
 
     List<UsersOfGroup> usersOfGroupList = usersOfGroupCollection.getUsersOfGroupCollection();
 
+    Map<String, List<User>> usersOfGroup = usersOfGroupList.stream()
+        .collect(Collectors.toMap(
+            u -> groupsByUri.get(u.getGroupUri()).getName(),
+            u -> u.getUsers().stream().map(uri -> usersByUri.get(uri))
+                .collect(Collectors.toList())));
+
+    Map<String, List<Group>> groupsOfGroup = groups.stream()
+        .collect(Collectors.toMap(
+            g -> g.getName(),
+            g -> g.getChildren().stream().map(uri -> groupsByUri.get(uri))
+                .collect(Collectors.toList())));
     return new org.smartbit4all.api.org.bean.OrgState()
         .users(usersByUserNames)
         .groups(groupsByNames)
-        .usersOfGroup(usersOfGroupList.stream()
-            .collect(Collectors.toMap(
-                u -> getGroup(u.getGroupUri()).getName(),
-                u -> getUsers(u.getUsers()))))
-        .groupsOfGroup(groups.stream()
-            .collect(Collectors.toMap(
-                g -> g.getName(),
-                g -> getGroups(g.getChildren()))));
+        .usersOfGroup(usersOfGroup)
+        .groupsOfGroup(groupsOfGroup);
   }
 }
