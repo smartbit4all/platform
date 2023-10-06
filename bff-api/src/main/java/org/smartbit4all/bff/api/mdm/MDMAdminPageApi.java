@@ -41,7 +41,15 @@ public interface MDMAdminPageApi extends PageApi<Object> {
    */
   static final String ACTION_PARAM_MDM_ENTRY = "MDM_ENTRY";
 
+  /**
+   * The identifier of the add new action.
+   */
+  static final String ACTION_ADD_NEW_ENTRY = "ADD_NEW_ENTRY";
+
   @ActionHandler
   void openList(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_ADD_NEW_ENTRY)
+  void performNewEntry(UUID viewUuid, UiActionRequest request);
 
 }

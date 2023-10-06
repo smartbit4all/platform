@@ -81,4 +81,6 @@ public interface MasterDataManagementApi {
    */
   void dropGlobal(String definitionName);
 
+  URI addNewEntries(MDMDefinitionOption o);
+
 }

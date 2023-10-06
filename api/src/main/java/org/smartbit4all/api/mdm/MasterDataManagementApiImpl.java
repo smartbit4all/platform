@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -48,6 +46,8 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -180,37 +180,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         Map<String, URI> currentMap = m;
         // TODO merge instead of synchronization...
         m.putAll(options.stream().collect(toMap(o -> o.getDefinition().getName(), o -> {
-          URI uri = currentMap.get(o.getDefinition().getName());
-          // Set the name of the searchIndex
-          o.getDefinition().getDescriptors().values().forEach(d -> {
-            d.setSearchIndexForEntries(
-                BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName());
-            d.setAdminGroupName(constructEntrySecurityGroupName(o.getDefinition(), d));
-          });
-          if (uri == null) {
-            // We create a new definition and its state and add to the map.
-            o.getDefinition()
-                .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
-                    .collect(toMap(Entry::getKey, e -> e.getValue())));
-            uri = objectApi.saveAsNew(SCHEMA,
-                o.getDefinition().state(objectApi.saveAsNew(SCHEMA, new MDMDefinitionState())));
-          } else {
-            // We simply update the current entry but reserve the states.
-            ObjectNode definitionNode = objectApi.loadLatest(uri);
-
-            URI stateUri = definitionNode.ref(MDMDefinition.STATE).getObjectUri();
-
-            definitionNode.modify(MDMDefinition.class, def -> {
-              o.getDefinition()
-                  .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
-                      .collect(toMap(Entry::getKey, e -> {
-                        return e.getValue();
-                      })));
-              return o.getDefinition().state(stateUri);
-            });
-            objectApi.save(definitionNode);
-          }
-          return uri;
+          return constructNewEntries(currentMap, o);
         })));
         return m;
       });
@@ -220,6 +190,63 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       synchronizeSecurityOptions();
     }
     optionsSaved = true;
+  }
+
+  @Override
+  public URI addNewEntries(MDMDefinitionOption o) {
+    if (o == null || o.getDefinition() == null || o.getDefinition().getDescriptors() == null) {
+      return null;
+    }
+    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+    URI definitionUri = map.uris().get(o.getDefinition().getName());
+    if (definitionUri == null) {
+      return null;
+    }
+
+    // Update the entries if we already have the definition.
+    constructNewEntries(map.uris(), o);
+
+    synchronizeObjectDefinitions();
+    synchronizeValueSets();
+    synchronizeSearchIndices();
+    synchronizeSecurityOptions();
+
+    return definitionUri;
+  }
+
+  private URI constructNewEntries(Map<String, URI> currentMap, MDMDefinitionOption o) {
+    URI uri = currentMap.get(o.getDefinition().getName());
+    // Set the name of the searchIndex
+    o.getDefinition().getDescriptors().values().forEach(d -> {
+      d.setSearchIndexForEntries(
+          BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName());
+      d.setAdminGroupName(constructEntrySecurityGroupName(o.getDefinition(), d));
+    });
+    if (uri == null) {
+      // We create a new definition and its state and add to the map.
+      o.getDefinition()
+          .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
+              .collect(toMap(Entry::getKey, e -> e.getValue())));
+      uri = objectApi.saveAsNew(SCHEMA,
+          o.getDefinition().state(objectApi.saveAsNew(SCHEMA, new MDMDefinitionState())));
+    } else {
+      // We simply update the current entry but reserve the states.
+      ObjectNode definitionNode = objectApi.loadLatest(uri);
+
+      URI stateUri = definitionNode.ref(MDMDefinition.STATE).getObjectUri();
+
+      definitionNode.modify(MDMDefinition.class, def -> {
+        for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
+            .entrySet()) {
+          // MDMEntryDescriptor currentDesc = def.getDescriptors().get(descEntry.getKey());
+          // TODO merge later.
+          def.putDescriptorsItem(descEntry.getKey(), descEntry.getValue());
+        }
+        return def;
+      });
+      objectApi.save(definitionNode);
+    }
+    return uri;
   }
 
   private String constructEntrySecurityGroupName(MDMDefinition definition, MDMEntryDescriptor d) {

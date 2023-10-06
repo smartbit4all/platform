@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.toList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
@@ -20,19 +19,20 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
 
   protected static final String OPEN_LIST_PREFIX = ACTION_OPEN_LIST + StringConstant.UNDERLINE;
 
   @Autowired
-  private MasterDataManagementApi masterDataManagementApi;
+  protected MasterDataManagementApi masterDataManagementApi;
 
   @Autowired
   private SessionApi sessionApi;
 
   @Autowired
-  private LocaleSettingApi localeSettingApi;
+  protected LocaleSettingApi localeSettingApi;
 
   public MDMAdminPageApiImpl() {
     super(Object.class);
@@ -77,7 +77,12 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   @Override
   public Object initModel(View view) {
     PageContext context = getContextByView(view);
-    view.actions(context.definition.getDescriptors().values().stream()
+    refreshUiActions(context);
+    return new HashMap<String, Object>();
+  }
+
+  protected void refreshUiActions(PageContext context) {
+    context.view.actions(context.definition.getDescriptors().values().stream()
         .filter(this::filterDescriptor)
         .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
         .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
@@ -85,7 +90,6 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
             .code(OPEN_LIST_PREFIX + e.getName())
             .descriptor(getUiActionDescriptor(e)))
         .collect(toList()));
-    return new HashMap<String, Object>();
   }
 
   protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e) {
@@ -131,4 +135,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   protected String getListViewName() {
     return MDM_LIST;
   }
+
+  @Override
+  public void performNewEntry(UUID viewUuid, UiActionRequest request) {
+    // NOP
+  }
+
 }
