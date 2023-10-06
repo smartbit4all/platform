@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -78,6 +79,8 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     PageContext context = getContextByView(view);
     view.actions(context.definition.getDescriptors().values().stream()
         .filter(this::filterDescriptor)
+        .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
+        .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
         .map(e -> new UiAction()
             .code(OPEN_LIST_PREFIX + e.getName())
             .descriptor(getUiActionDescriptor(e)))
