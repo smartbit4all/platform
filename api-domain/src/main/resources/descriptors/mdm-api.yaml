@@ -73,6 +73,11 @@ components:
           type: LangString
         displayNameForm:
           type: LangString
+        order:
+          description: |
+            An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries.
+          type: integer
+          format: int64
         adminGroupName:
           type: string
           description: |

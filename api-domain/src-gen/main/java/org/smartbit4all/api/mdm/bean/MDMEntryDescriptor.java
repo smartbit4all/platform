@@ -42,6 +42,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.NAME,
   MDMEntryDescriptor.DISPLAY_NAME_LIST,
   MDMEntryDescriptor.DISPLAY_NAME_FORM,
+  MDMEntryDescriptor.ORDER,
   MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
@@ -70,6 +71,9 @@ public class MDMEntryDescriptor {
 
   public static final String DISPLAY_NAME_FORM = "displayNameForm";
   private LangString displayNameForm = null;
+
+  public static final String ORDER = "order";
+  private Long order;
 
   public static final String ADMIN_GROUP_NAME = "adminGroupName";
   private String adminGroupName;
@@ -202,6 +206,33 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayNameForm(LangString displayNameForm) {
     this.displayNameForm = displayNameForm;
+  }
+
+
+  public MDMEntryDescriptor order(Long order) {
+    
+    this.order = order;
+    return this;
+  }
+
+   /**
+   * An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries. 
+   * @return order
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries. ")
+  @JsonProperty(ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getOrder() {
+    return order;
+  }
+
+
+  @JsonProperty(ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrder(Long order) {
+    this.order = order;
   }
 
 
@@ -682,6 +713,7 @@ public class MDMEntryDescriptor {
     return Objects.equals(this.name, mdMEntryDescriptor.name) &&
         Objects.equals(this.displayNameList, mdMEntryDescriptor.displayNameList) &&
         Objects.equals(this.displayNameForm, mdMEntryDescriptor.displayNameForm) &&
+        Objects.equals(this.order, mdMEntryDescriptor.order) &&
         Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
@@ -702,7 +734,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
   }
 
   @Override
@@ -712,6 +744,7 @@ public class MDMEntryDescriptor {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    displayNameList: ").append(toIndentedString(displayNameList)).append("\n");
     sb.append("    displayNameForm: ").append(toIndentedString(displayNameForm)).append("\n");
+    sb.append("    order: ").append(toIndentedString(order)).append("\n");
     sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
