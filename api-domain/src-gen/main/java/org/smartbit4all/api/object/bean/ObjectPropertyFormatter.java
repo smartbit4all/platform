@@ -50,7 +50,7 @@ public class ObjectPropertyFormatter {
   private List<ObjectPropertyFormatterParameter> parameters = new ArrayList<>();
 
   public static final String REQUIRED_PROPERTIES = "requiredProperties";
-  private List<URI> requiredProperties = null;
+  private List<URI> requiredProperties = new ArrayList<>();
 
   public ObjectPropertyFormatter() { 
   }
@@ -123,9 +123,6 @@ public class ObjectPropertyFormatter {
   }
 
   public ObjectPropertyFormatter addRequiredPropertiesItem(URI requiredPropertiesItem) {
-    if (this.requiredProperties == null) {
-      this.requiredProperties = new ArrayList<>();
-    }
     this.requiredProperties.add(requiredPropertiesItem);
     return this;
   }
@@ -134,11 +131,12 @@ public class ObjectPropertyFormatter {
    * Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.
    * @return requiredProperties
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.")
+  @ApiModelProperty(required = true, value = "Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.")
   @JsonProperty(REQUIRED_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<URI> getRequiredProperties() {
     return requiredProperties;
@@ -146,7 +144,7 @@ public class ObjectPropertyFormatter {
 
 
   @JsonProperty(REQUIRED_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRequiredProperties(List<URI> requiredProperties) {
     this.requiredProperties = requiredProperties;
   }

@@ -737,7 +737,7 @@ components:
         This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat
         but later on it can use different formatters if it is necessary.
       type: object
-      required: [parameters]
+      required: [parameters,requiredProperties]
       properties:
         formatString:
           description: |
