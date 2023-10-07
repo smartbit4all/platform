@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -203,6 +204,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       return null;
     }
 
+    // Setup the new entries to fill the default values.
+
     // Update the entries if we already have the definition.
     constructNewEntries(map.uris(), o);
 
@@ -216,7 +219,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   private URI constructNewEntries(Map<String, URI> currentMap, MDMDefinitionOption o) {
     URI uri = currentMap.get(o.getDefinition().getName());
-    // Set the name of the searchIndex
+    // Set the name of the searchIndex and inherit security group name
     o.getDefinition().getDescriptors().values().forEach(d -> {
       d.setSearchIndexForEntries(
           BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName());
@@ -233,7 +236,14 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       // We simply update the current entry but reserve the states.
       ObjectNode definitionNode = objectApi.loadLatest(uri);
 
-      URI stateUri = definitionNode.ref(MDMDefinition.STATE).getObjectUri();
+      // Inherit the admin group if it is not set.
+      for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
+          .entrySet()) {
+        if (Strings.isEmpty(descEntry.getValue().getAdminGroupName())) {
+          descEntry.getValue()
+              .setAdminGroupName(definitionNode.getValueAsString(MDMDefinition.ADMIN_GROUP_NAME));
+        }
+      }
 
       definitionNode.modify(MDMDefinition.class, def -> {
         for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()

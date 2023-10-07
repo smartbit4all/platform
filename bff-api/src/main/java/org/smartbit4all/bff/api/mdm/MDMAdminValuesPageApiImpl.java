@@ -66,7 +66,8 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
     MDMDefinition definition = new MDMDefinition().name(context.definition.getName());
     MDMDefinitionOption o = new MDMDefinitionOption(definition);
     o.addDefaultDescriptor(GenericValue.class, code).name(code)
-        .displayNameForm(new LangString().defaultValue(name)).isValueSet(Boolean.TRUE);
+        .displayNameForm(new LangString().defaultValue(name))
+        .displayNameList(new LangString().defaultValue(name)).isValueSet(Boolean.TRUE);
     masterDataManagementApi.addNewEntries(o);
   }
 
