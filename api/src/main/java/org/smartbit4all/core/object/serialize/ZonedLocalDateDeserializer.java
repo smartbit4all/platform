@@ -1,4 +1,4 @@
-package org.smartbit4all.core.object.zone;
+package org.smartbit4all.core.object.serialize;
 
 import java.io.IOException;
 import java.time.DateTimeException;

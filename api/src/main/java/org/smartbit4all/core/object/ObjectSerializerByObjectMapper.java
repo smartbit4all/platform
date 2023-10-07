@@ -3,6 +3,7 @@ package org.smartbit4all.core.object;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,8 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
-import org.smartbit4all.core.object.zone.ZonedLocalDateDeserializer;
-import org.smartbit4all.core.object.zone.ZonedLocalDateTimeDeserializer;
+import org.smartbit4all.core.object.serialize.UriDeserializer;
+import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
+import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -51,6 +53,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(LocalDate.class, ZonedLocalDateDeserializer.INSTANCE);
     module.addDeserializer(LocalDateTime.class, ZonedLocalDateTimeDeserializer.INSTANCE);
+    module.addDeserializer(URI.class, UriDeserializer.INSTANCE);
     objectMapper.registerModule(module);
     // Task 5641: Storage - OffsetDateTime formatting with default serializer
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
