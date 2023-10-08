@@ -59,7 +59,7 @@ public final class ObjectLayoutBuilder {
     return new SmartComponentLayoutDefinition()
         .type(ComponentType.FORM)
         .direction(layoutDirection)
-        .form(Arrays.asList(formWidgetDefs));
+        .form(formWidgetDefs == null ? new ArrayList<>() : Arrays.asList(formWidgetDefs));
   }
 
   /**

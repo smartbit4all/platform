@@ -46,6 +46,7 @@ import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
@@ -204,13 +205,15 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
       throw new IllegalArgumentException("definitionName may not be null or empty!");
     }
 
-    ObjectLayoutBuilder layoutBuilder = objectLayoutApi.create(definitionName);
     if (layoutElements.stream().allMatch(SmartLayoutItem::isNone)) {
       log.warn(definitionName + " contains no displayable layout elements!");
-      // we should create a default layout on every occasion, and this one doesn't have
-      // return objectLayoutApi.create(definitionName).build();
+      return objectLayoutApi
+          .create(definitionName)
+          .layout(ObjectLayoutBuilder.form(LayoutDirection.VERTICAL))
+          .build();
     }
 
+    ObjectLayoutBuilder layoutBuilder = objectLayoutApi.create(definitionName);
     if (layoutElements.stream().noneMatch(SmartLayoutItem::isComponent)) {
       // only form elements are present (and maybe NONEs):
       return layoutBuilder
