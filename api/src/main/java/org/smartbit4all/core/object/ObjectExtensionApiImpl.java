@@ -1,12 +1,12 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.combobox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.container;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.multiSelectCombobox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.selectionDefinition;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -144,12 +144,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   /**
    * Saves a list of property descriptors if necessary.
-   * 
+   *
    * <p>
    * {@link ObjectPropertyDescriptor}s are saved only if their
    * {@link ObjectPropertyDescriptor#getUri()} property is null. If any two properties share the
    * same name, an unchecked exception is thrown.
-   * 
+   *
    * @param propertyDescriptors a {@code List} of {@code ObjectPropertyDescriptor}s with unique
    *        names, may be null
    * @return a {@code Map} containing the {@code URI}s of the persisted property descriptors
@@ -170,7 +170,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
   /**
    * Persists a property descriptor if its {@link ObjectPropertyDescriptor#getUri()} property is
    * null.
-   * 
+   *
    * @param propertyDescriptor an {@link ObjectPropertyDescriptor}, not null
    * @return the {@code URI} of the persisted property descriptor
    */
@@ -184,14 +184,14 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   /**
    * Creates and persists a default layout based on the supplied and/or generated layout elements.
-   * 
+   *
    * <p>
    * If the layout elements of the object are solely form widgets, the returned layout describes a
    * <i>smart form</i>, with its items laid out vertically. If there are other, component level
    * layout elements present (e.g. a grid), the entire layout is wrapped in a vertical container,
    * with the form elements on the top (if any). Any subsequent components follow this optional form
    * in the container.
-   * 
+   *
    * @param definitionName the qualified name of the object definition, not null
    * @param layoutElements a {@code List} of {@link SmartLayoutItem}s, not null or empty
    * @return the {@code URI} of the saved {@link ObjectLayoutDescriptor}
@@ -204,12 +204,13 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
       throw new IllegalArgumentException("definitionName may not be null or empty!");
     }
 
+    ObjectLayoutBuilder layoutBuilder = objectLayoutApi.create(definitionName);
     if (layoutElements.stream().allMatch(SmartLayoutItem::isNone)) {
       log.warn(definitionName + " contains no displayable layout elements!");
-      return objectLayoutApi.create(definitionName).build();
+      // we should create a default layout on every occasion, and this one doesn't have
+      // return objectLayoutApi.create(definitionName).build();
     }
 
-    ObjectLayoutBuilder layoutBuilder = objectLayoutApi.create(definitionName);
     if (layoutElements.stream().noneMatch(SmartLayoutItem::isComponent)) {
       // only form elements are present (and maybe NONEs):
       return layoutBuilder
@@ -367,12 +368,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   /**
    * Enumerates all property descriptors available in the object descriptor.
-   * 
+   *
    * <p>
    * The final list is obtained by merging the contents of
    * {@link ObjectDescriptor#getDefinitionProperties()} and
    * {@link ObjectDescriptor#getExtensionProperties()}.
-   * 
+   *
    * @param objectDescriptor an {@link ObjectDescriptor}
    * @return a {@code List} of all available {@link ObjectPropertyDescriptor}s in the object
    *         descriptor
