@@ -267,8 +267,6 @@ public final class ObjectPropertyResolver {
       foundValue = targetNode.getValue(fieldParts);
     }
 
-    // We should check if the found value is an URI that could be a reference. We can identify if it
-    // is an URI and a
     if (propertyPath.strat == null || !propertyPath.strat.startsWith("redirect")) {
       return foundValue;
     }
