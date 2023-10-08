@@ -25,7 +25,6 @@ import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
-import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
@@ -482,7 +481,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           tcd -> {
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
             addEntryPropertyToSearchIndex(result, tcd.getName(),
-                getTypeOfProperty(objectDefinition, path),
+                objectDefinitionApi.getTypeOfProperty(objectDefinition, String.class, path),
                 -1,
                 path);
           });
@@ -521,26 +520,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     return typeClass;
   }
 
-  private Class<?> getTypeOfProperty(ObjectDefinition<?> definition, String[] path) {
-    PropertyDefinitionData propDef = definition.getPropertiesByName().get(path[0]);
-    if (path.length == 1) {
-      if (propDef == null) {
-        return String.class;
-      }
-      return getClazz(propDef.getTypeClass(), String.class);
-    }
-    String[] subPath = new String[path.length - 1];
-    System.arraycopy(path, 1, subPath, 0, subPath.length);
-    ReferenceDefinition refDef = definition.getOutgoingReference(path[0]);
-    if (refDef != null) {
-      return getTypeOfProperty(refDef.getTarget(), subPath);
-    } else if (propDef != null) {
-      return getTypeOfProperty(objectDefinitionApi.definition(propDef.getTypeClass()), subPath);
-    }
-    throw new IllegalArgumentException(definition.getQualifiedName()
-        + " does not contain any references or properties named " + path[0]);
-  }
-
   private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,
       MDMEntryDescriptor entryDescriptor) {
     SearchIndexImpl<?> result =
@@ -555,12 +534,19 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         o -> o.getObjectUri());
     result.mapComplex(BranchedObjectEntry.BRANCH_URI, URI.class, 500,
         o -> null);
+
+    ObjectDefinition<?> objectDefinition =
+        objectApi.definition(entryDescriptor.getTypeQualifiedName());
+
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
-          tcd -> result.map(tcd.getName(), tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
+          tcd -> {
+            String[] pathes = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
+            result.map(tcd.getName(),
+                objectDefinitionApi.getTypeOfProperty(objectDefinition, String.class, pathes),
+                pathes);
+          });
     } else {
-      ObjectDefinition<?> objectDefinition =
-          objectApi.definition(entryDescriptor.getTypeQualifiedName());
       // Navigate to the nearest referred object.
       Map<String, ReferenceDefinition> outgoingReferences =
           objectDefinition.getOutgoingReferences();

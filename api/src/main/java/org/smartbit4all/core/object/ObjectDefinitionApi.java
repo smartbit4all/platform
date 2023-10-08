@@ -62,4 +62,14 @@ public interface ObjectDefinitionApi {
    */
   void addReference(ReferenceDefinitionData referenceDefinitionData);
 
+  /**
+   * Walks until the end of the path end returns the type class of the property found there.
+   * 
+   * @param definition
+   * @param defaultType
+   * @param path
+   * @return If not found then the String.class is returned.
+   */
+  Class<?> getTypeOfProperty(ObjectDefinition<?> definition, Class<?> defaultType, String... path);
+
 }

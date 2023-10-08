@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
 
@@ -542,6 +542,41 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
       storageApi = context.getBean(StorageApi.class);
     }
     return storageApi;
+  }
+
+  @Override
+  public Class<?> getTypeOfProperty(ObjectDefinition<?> definition, Class<?> defaultType,
+      String... path) {
+    if (path == null || path.length == 0) {
+      return definition.getClazz();
+    }
+    PropertyDefinitionData propDef = definition.getPropertiesByName().get(path[0]);
+    if (path.length == 1) {
+      if (propDef == null) {
+        return String.class;
+      }
+      return getClazz(propDef.getTypeClass(), String.class);
+    }
+    String[] subPath = new String[path.length - 1];
+    System.arraycopy(path, 1, subPath, 0, subPath.length);
+    ReferenceDefinition refDef = definition.getOutgoingReference(path[0]);
+    if (refDef != null) {
+      return getTypeOfProperty(refDef.getTarget(), defaultType, subPath);
+    } else if (propDef != null) {
+      return getTypeOfProperty(definition(propDef.getTypeClass()), defaultType, subPath);
+    }
+    throw new IllegalArgumentException(definition.getQualifiedName()
+        + " does not contain any references or properties named " + path[0]);
+  }
+
+  private final Class<?> getClazz(String className, Class<?> defaultClass) {
+    Class<?> typeClass;
+    try {
+      typeClass = Class.forName(className);
+    } catch (ClassNotFoundException | NullPointerException e1) {
+      typeClass = defaultClass;
+    }
+    return typeClass;
   }
 
 }
