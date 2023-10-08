@@ -42,7 +42,8 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   protected void refreshUiActions(PageContext context) {
     super.refreshUiActions(context);
     // Add a new value action as last.
-    context.view.addActionsItem(new UiAction().code(ACTION_ADD_NEW_ENTRY).confirm(Boolean.TRUE)
+    context.view.addActionsItem(new UiAction()
+        .code(ACTION_ADD_NEW_ENTRY)
         .inputType(UiActionInputType.TEXTFIELD).input2Type(UiActionInputType.TEXTFIELD)
         .descriptor(new UiActionDescriptor()
             .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, ACTION_ADD_NEW_ENTRY))
@@ -50,12 +51,30 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
             .type(UiActionButtonType.RAISED)
             .inputDialog(new UiActionDialogDescriptor()
                 .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, VALUE_SET_NAME))
-                .actionButton(new UiActionButtonDescriptor().caption("Next"))
-                .cancelButton(new UiActionButtonDescriptor().caption("Cancel")))
+                .actionButton(nextButton())
+                .cancelButton(cancelButton()))
             .input2Dialog(new UiActionDialogDescriptor()
                 .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, VALUE_SET_CODE))
-                .actionButton(new UiActionButtonDescriptor().caption("Next"))
-                .cancelButton(new UiActionButtonDescriptor().caption("Cancel")))));
+                .actionButton(finishButton())
+                .cancelButton(cancelButton()))));
+  }
+
+  private UiActionButtonDescriptor cancelButton() {
+    return new UiActionButtonDescriptor()
+        .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "cancel"))
+        .color("");
+  }
+
+  private UiActionButtonDescriptor nextButton() {
+    return new UiActionButtonDescriptor()
+        .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "next"))
+        .color("primary");
+  }
+
+  private UiActionButtonDescriptor finishButton() {
+    return new UiActionButtonDescriptor()
+        .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "finish"))
+        .color("accent");
   }
 
   @Override
@@ -69,6 +88,8 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
         .displayNameForm(new LangString().defaultValue(name))
         .displayNameList(new LangString().defaultValue(name)).isValueSet(Boolean.TRUE);
     masterDataManagementApi.addNewEntries(o);
+    PageContext refreshedContext = getContextByViewUUID(viewUuid);
+    refreshUiActions(refreshedContext);
   }
 
 }
