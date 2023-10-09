@@ -2,6 +2,7 @@ package org.smartbit4all.api.binarydata;
 
 import java.io.InputStream;
 import java.net.URI;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 
 /**
  * The {@link BinaryContent} is a platform level structure to generalize the file attachment for
@@ -9,7 +10,10 @@ import java.net.URI;
  * content. It can be used as referred object and this api is responsible for storing them.
  * 
  * @author Peter Boros
+ * @deprecated Use the normal {@link BinaryDataObject} and the {@link BinaryContentData} instead of
+ *             {@link BinaryContent}.
  */
+@Deprecated
 public interface BinaryContentApi {
 
   /**

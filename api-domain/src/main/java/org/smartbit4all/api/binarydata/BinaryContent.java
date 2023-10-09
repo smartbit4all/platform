@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
     BinaryContent.SIZE
 })
 @JsonTypeName("BinaryContent")
+@Deprecated
 public class BinaryContent {
 
   public static final String LOCATION_STORAGE = "storage";
