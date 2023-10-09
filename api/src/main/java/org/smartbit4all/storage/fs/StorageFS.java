@@ -839,6 +839,12 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         // We must try again.
         log.debug("Unable to read {}", storageObjectDataFile);
         waitTime = waitTime * rnd.nextInt(4);
+      } catch (IllegalStateException e) {
+        if (e.getCause() instanceof IOException) {
+          log.debug("Unable to read {}", storageObjectDataFile);
+          waitTime = waitTime * rnd.nextInt(4);
+        }
+        throw e;
       }
       try {
         Thread.sleep(waitTime);
@@ -932,7 +938,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         version);
 
     List<BinaryData> multipart = storageAccessApi.readVersion(objectVersionFile, versionUri);
-    // FileIO.readMultipart(objectVersionFile);
 
     BinaryData versionObjectBinaryData = multipart.get(0);
     BinaryData versionBinaryData = multipart.get(1);
