@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +20,7 @@ import org.smartbit4all.api.collection.StoredList.OperationMode;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -34,9 +38,6 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -203,15 +204,24 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public final URI getBranchUri() {
-    MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
-    URI branchUri = null;
-    if (mdmDefinitionState != null) {
-      branchUri = mdmDefinitionState.getBranchForEntries().get(descriptor.getName());
-      if (branchUri == null) {
-        branchUri = mdmDefinitionState.getGlobalBranch();
-      }
+    MDMBranchingStrategy branchingStrategy = descriptor.getBranchingStrategy();
+    if (branchingStrategy == null) {
+      branchingStrategy = definition.getBranchingStrategy();
     }
-    return branchUri;
+    if (branchingStrategy == MDMBranchingStrategy.NONE) {
+      return null;
+    }
+    MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
+    if (mdmDefinitionState != null) {
+      if (branchingStrategy == MDMBranchingStrategy.ENTRY) {
+        return mdmDefinitionState.getBranchForEntries().get(descriptor.getName());
+      }
+      if (branchingStrategy == MDMBranchingStrategy.GLOBAL) {
+        return mdmDefinitionState.getGlobalBranch();
+      }
+      // TODO handle MDMBranchingStrategy.GROUP
+    }
+    return null;
   }
 
   @Override

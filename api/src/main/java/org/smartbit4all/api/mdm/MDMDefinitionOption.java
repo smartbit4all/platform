@@ -69,6 +69,9 @@ public class MDMDefinitionOption {
           "descriptor already registered (" + definition.getName()
               + "." + descriptor.getName() + ")");
     }
+    if (descriptor.getBranchingStrategy() == null) {
+      descriptor.setBranchingStrategy(definition.getBranchingStrategy());
+    }
     definition.putDescriptorsItem(descriptor.getName(), descriptor);
   }
 

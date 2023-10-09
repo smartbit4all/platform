@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
@@ -19,7 +20,6 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
 
@@ -124,11 +124,14 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
     PageContext ctx = getContextByViewUUID(viewUuid);
     MDMDefinition definition = ctx.definition;
-
+    MDMEntryDescriptor descriptor = masterDataManagementApi
+        .getEntryDescriptor(definition, descriptorName);
+    if (descriptor.getBranchingStrategy() == null) {
+      descriptor.setBranchingStrategy(definition.getBranchingStrategy());
+    }
     View listView = new View().viewName(getListViewName())
         .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
-        .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
-            .getEntryDescriptor(definition, descriptorName));
+        .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, descriptor);
     viewApi.showView(listView);
   }
 

@@ -2,7 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.net.URI;
 import java.util.UUID;
-import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.view.PageApi;
@@ -251,6 +251,6 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   void saveObject(UUID viewUuid, ObjectNode objectNode);
 
-  GridRow addWidgetEntryGridActions(GridRow page, UUID viewUuid);
+  GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 
 }

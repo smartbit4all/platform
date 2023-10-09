@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,11 +20,13 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -33,6 +37,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.UiActions.UiActionBuilder;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -51,8 +56,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -115,6 +118,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     SearchIndex<BranchedObjectEntry> searchIndexAdmin;
     SearchIndex<Object> searchIndexPublished;
     boolean inactives = false;
+    MDMBranchingStrategy branchingStrategy;
 
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(view);
@@ -130,6 +134,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           collectionApi.searchIndex(definition.getName(), entryDescriptor.getName(),
               Object.class);
       inactives = Boolean.TRUE.equals(variables(view).get(VARIABLE_INACTIVES, Boolean.class));
+
+      branchingStrategy = entryDescriptor.getBranchingStrategy();
+      if (branchingStrategy == null) {
+        log.warn("branchingStrategy null, using default NONE");
+        branchingStrategy = MDMBranchingStrategy.NONE;
+      }
 
       return this;
     }
@@ -197,7 +207,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
-    gridModelApi.addGridRowCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
+    gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
 
@@ -218,27 +228,29 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     return pageTitle;
   }
 
-  private void refreshActions(PageContext context) {
-    boolean isAdmin = context.checkAdmin();
-    boolean hasBranch = context.entryApi.hasBranch();
-    boolean inactiveEnabled = Boolean.TRUE.equals(context.entryDescriptor.getInactiveMgmt());
-    List<UiAction> uiActions = UiActions.builder()
+  private void refreshActions(PageContext ctx) {
+    boolean isAdmin = ctx.checkAdmin();
+    boolean branchActive = ctx.entryApi.hasBranch();
+    boolean inactiveEnabled = Boolean.TRUE.equals(ctx.entryDescriptor.getInactiveMgmt());
+    boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
+    boolean entryEditingEnabled = branchActive || !branchingEnabled;
+
+    UiActionBuilder uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY)
-        .addIf(ACTION_NEW_ENTRY, isAdmin, !context.inactives)
-        .addIf(ACTION_START_EDITING, isAdmin, !hasBranch, !context.inactives)
-        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, hasBranch, !context.inactives)
-        .addIf(ACTION_CANCEL_CHANGES, isAdmin, hasBranch, !context.inactives)
+        .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+        .addIf(ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
+        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
+        .addIf(ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
         .addIf(
             new UiAction().code(ACTION_TOGGLE_INACTIVES).descriptor(
                 new UiActionDescriptor().type(UiActionButtonType.STROKED)
-                    .title(context.inactives
+                    .title(ctx.inactives
                         ? localeSettingApi.get(MasterDataManagementApi.SCHEMA, VARIABLE_ACTIVES)
                         : localeSettingApi.get(MasterDataManagementApi.SCHEMA,
                             VARIABLE_INACTIVES))),
-            isAdmin, inactiveEnabled)
-        .build();
+            isAdmin, inactiveEnabled);
 
-    context.view.actions(uiActions);
+    ctx.view.actions(uiActions.build());
   }
 
   private final void refreshGrid(PageContext ctx) {
@@ -481,20 +493,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public GridRow addWidgetEntryGridActions(GridRow row, UUID viewUuid) {
+  public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
-    if (ctx.checkAdmin()) {
-      if (ctx.inactives) {
-        row.addActionsItem(new UiAction().code(ACTION_RESTORE_ENTRY));
-      } else {
-        row.addActionsItem(new UiAction().code(ACTION_EDIT_ENTRY))
-            .addActionsItem(new UiAction().code(ACTION_DELETE_ENTRY));
-        if (ctx.entryApi.hasBranch()) {
-          row.addActionsItem(new UiAction().code(ACTION_CANCEL_DRAFT_ENTRY));
-        }
-      }
-    }
-    return row;
+    boolean isAdmin = ctx.checkAdmin();
+    boolean branchActive = ctx.entryApi.hasBranch();
+    boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
+    boolean entryEditingEnabled = branchActive || !branchingEnabled;
+
+    page.getRows().forEach(row -> {
+      row.setActions(UiActions.builder()
+          // .add("VIEW")
+          .addIf(ACTION_RESTORE_ENTRY, isAdmin, ctx.inactives)
+          .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+          .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+          // TODO check if draft present..
+          .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+              !ctx.inactives)
+          .build());
+    });
+    return page;
   }
 
 }
