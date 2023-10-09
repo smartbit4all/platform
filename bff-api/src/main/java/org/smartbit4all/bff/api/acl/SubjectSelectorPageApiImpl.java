@@ -20,8 +20,11 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
@@ -49,6 +52,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   @Autowired
   private InvocationApi invocationApi;
 
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
+
   public SubjectSelectorPageApiImpl() {
     super(SubjectSelectorPageModel.class);
   }
@@ -62,7 +68,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     initGrid(firstDescriptorName.toString(), view.getUuid(), model.getDescriptors());
 
     view.addActionsItem(new UiAction().code(CANCEL));
-    view.addActionsItem(new UiAction().code(SUBMIT_SELECTION));
+    view.addActionsItem(new UiAction().code(SUBMIT_SELECTION)
+        .descriptor(new UiActionDescriptor().title(localeSettingApi.get(SUBMIT_SELECTION))
+            .color("primary").type(UiActionButtonType.RAISED)));
 
     return new SubjectSelectorPageModel()
         .descriptors(model.getDescriptors())

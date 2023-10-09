@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.acl;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +21,8 @@ import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
@@ -29,6 +30,7 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -54,7 +56,8 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
         .addWidgetsItem(
-            new SmartWidgetDefinition().label(ACL).key(ACL_MATRIX).type(SmartFormWidgetType.MATRIX)
+            new SmartWidgetDefinition().label(localeSettingApi.get(ACL)).key(ACL_MATRIX)
+                .type(SmartFormWidgetType.MATRIX)
                 .matrix(consturctMatrixModel(acl, operations))));
 
     view.putValueSetsItem("OPERATIONS", new ValueSet().valueSetData(
@@ -62,7 +65,10 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SAVE));
-    view.addActionsItem(new UiAction().code(OPEN_SUBJECT_SELECTOR));
+    view.addActionsItem(
+        new UiAction().code(OPEN_SUBJECT_SELECTOR).descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(OPEN_SUBJECT_SELECTOR)).color("primary")
+            .type(UiActionButtonType.RAISED)));
 
 
     return acl;
