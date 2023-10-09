@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -18,10 +18,10 @@ package org.smartbit4all.core.utility;
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
  * dependence on libraries like Google Guava or Apache Commons. This list of constants were inspired
  * by the StringUtils of Apache Commons.
- * 
+ *
  * @see <a href=
  *      "http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html">StringUtils</a>
- * 
+ *
  * @author Peter Boros
  */
 public class StringConstant {
@@ -57,6 +57,8 @@ public class StringConstant {
   public static final String DOT = ".";
 
   public static final String DOT_SPACE = ". ";
+
+  public static final String DOT_REGEX = "\\.";
 
   public static final String DOUBLE_QUOTE = "\"";
 

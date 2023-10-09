@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.service.dataset;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -165,7 +166,14 @@ public class TableDataApiImpl implements TableDataApi {
   @Override
   public <T> TableData<?> tableOf(EntityDefinition entityDef, List<T> objectList,
       List<String> columns) {
-    Map<String, Property<?>> properties = columns.stream()
+    // in case of embedded column names (which contains a DOT) we only need the main property (first
+    // element of property
+    // path)
+    List<String> tableColumns = columns.stream()
+        .map(col -> col.split(StringConstant.DOT_REGEX)[0])
+        .distinct()
+        .collect(toList());
+    Map<String, Property<?>> properties = tableColumns.stream()
         .collect(toMap(col -> col, entityDef::getProperty));
     BuilderWithFixProperties<EntityDefinition> table =
         TableDatas.builder(entityDef, properties.values());
@@ -173,7 +181,7 @@ public class TableDataApiImpl implements TableDataApi {
         .forEachOrdered(object -> {
           BuilderWithFixProperties<EntityDefinition> row = table.addRow();
           Map<String, Object> map = objectApi.create(null, object).getObjectAsMap();
-          columns.forEach(
+          tableColumns.forEach(
               col -> row.setObject(properties.get(col), map.get(col)));
         });
     return table.build(objectApi);

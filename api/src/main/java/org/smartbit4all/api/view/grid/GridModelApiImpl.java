@@ -42,12 +42,15 @@ import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +91,9 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private ObjectDefinitionApi objectDefinitionApi;
 
   // FIXME (viewApi is not present everywhere)
   @Autowired(required = false)
@@ -138,9 +144,21 @@ public class GridModelApiImpl implements GridModelApi {
     List<GridColumnMeta> headers = new ArrayList<>();
     for (String column : columns) {
       keys[idxLastKey] = column;
+
+      Class<?> columnClass;
+      if (column.contains(StringConstant.DOT)) {
+        String[] path = column.split(StringConstant.DOT_REGEX);
+        Property<?> complexProperty = entityDefinition.getProperty(path[0]);
+        ObjectDefinition<?> definition = objectDefinitionApi
+            .definition(complexProperty.type());
+        String[] restPath = Arrays.copyOfRange(path, 1, path.length);
+        columnClass = objectDefinitionApi.getTypeOfProperty(definition, String.class, restPath);
+      } else {
+        columnClass = entityDefinition.getProperty(column).type();
+      }
       headers.add(new GridColumnMeta().propertyName(column)
           .label(localeSettingApi.get(keys))
-          .typeClass(entityDefinition.getProperty(column).type().getName()));
+          .typeClass(columnClass.getName()));
     }
     return new GridView()
         .descriptor(new GridViewDescriptor()
