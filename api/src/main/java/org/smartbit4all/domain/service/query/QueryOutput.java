@@ -88,8 +88,8 @@ public class QueryOutput {
           "Can not copy queryOutput results with different EntityDefinitions!");
     }
 
-    // FIXME should be deep copy instead?
-    this.tableData = queryOutput.tableData;
+    this.tableData.clearRows();
+    TableDatas.append(this.tableData, queryOutput.tableData);
     this.setSerializedTableData(queryOutput.getSerializedTableData());
   }
 
