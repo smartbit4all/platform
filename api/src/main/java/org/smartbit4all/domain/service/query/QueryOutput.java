@@ -88,8 +88,12 @@ public class QueryOutput {
           "Can not copy queryOutput results with different EntityDefinitions!");
     }
 
-    this.tableData.clearRows();
-    TableDatas.append(this.tableData, queryOutput.tableData);
+    if (this.tableData != null) {
+      this.tableData.clearRows();
+      TableDatas.append(this.tableData, queryOutput.tableData);
+    } else {
+      this.tableData = queryOutput.tableData;
+    }
     this.setSerializedTableData(queryOutput.getSerializedTableData());
   }
 
