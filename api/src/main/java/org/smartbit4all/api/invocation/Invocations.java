@@ -240,7 +240,13 @@ public class Invocations {
         invocationResult.setInnerTypeClass(firtsNotNull.get().getClass().getName());
       }
       return invocationResult;
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    } catch (InvocationTargetException ite) {
+      if (ite.getCause() instanceof RuntimeException) {
+        throw (RuntimeException) ite.getCause();
+      } else {
+        throw new RuntimeException("Unable to call the method for the " + request, ite);
+      }
+    } catch (IllegalAccessException | IllegalArgumentException e) {
       throw new RuntimeException("Unable to call the method for the " + request, e);
     }
   }
