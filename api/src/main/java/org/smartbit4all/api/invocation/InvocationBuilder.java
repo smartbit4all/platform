@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -104,6 +106,9 @@ public class InvocationBuilder<T> implements InvocationHandler {
             throw new IllegalArgumentException(
                 "In invocation builder use Invocations.listOf warpper for passing list parameters.");
           }
+          if (invocationParameter.getValue() instanceof Proxy) {
+            invocationParameter.setValue(new ArrayList());
+          }
         } else if (Map.class.isAssignableFrom(parameter.getType())) {
           try {
             invocationParameter.setInnerTypeClass(
@@ -112,9 +117,11 @@ public class InvocationBuilder<T> implements InvocationHandler {
             throw new IllegalArgumentException(
                 "In invocation builder use Invocations.mapOf warpper for passing map parameters.");
           }
+          if (invocationParameter.getValue() instanceof Proxy) {
+            invocationParameter.setValue(new HashMap());
+          }
         }
         request.addParametersItem(invocationParameter);
-
       }
     }
     return null;

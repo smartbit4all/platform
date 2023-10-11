@@ -36,7 +36,6 @@ import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -354,10 +353,11 @@ public class ObjectApiImpl implements ObjectApi {
     if (value == null) {
       return new HashMap<>();
     }
-    return value.entrySet().stream()
-        .collect(toMap(
-            Entry::getKey,
-            e -> asType(clazz, e.getValue())));
+    Map<String, V> result = new HashMap<>();
+    for (Entry<String, ?> e : value.entrySet()) {
+      result.put(e.getKey(), asType(clazz, e.getValue()));
+    }
+    return result;
   }
 
   @Override
