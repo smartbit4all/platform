@@ -53,7 +53,7 @@ public class TableDataSerializerTest {
         TableDatas.of(userAccountDef, userAccountDef.allProperties());
 
     TableDataSerializer serializer =
-        TableDataSerializer.to(new FileOutputStream(tempFile)).tableData(tableData);
+        TableDataSerializer.to(new FileOutputStream(tempFile), objectApi).tableData(tableData);
 
     final int testRowCount = 100;
     for (int i = 0; i < testRowCount; i++) {
@@ -107,7 +107,7 @@ public class TableDataSerializerTest {
         TableDatas.of(userAccountDef, userAccountDef.allProperties());
 
     TableDataSerializer serializer =
-        TableDataSerializer.to(new FileOutputStream(tempFile)).tableData(tableData);
+        TableDataSerializer.to(new FileOutputStream(tempFile), objectApi).tableData(tableData);
 
     serializer.finish();
 
@@ -129,7 +129,7 @@ public class TableDataSerializerTest {
         TableDatas.of(userAccountDef, userAccountDef.allProperties());
 
     TableDataSerializer serializer =
-        TableDataSerializer.to(new FileOutputStream(tempFile)).tableData(tableData);
+        TableDataSerializer.to(new FileOutputStream(tempFile), objectApi).tableData(tableData);
 
     final int testRowCount = 1000;
     for (int i = 0; i < testRowCount; i++) {

@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -22,7 +22,7 @@ import org.smartbit4all.core.utility.StringConstant;
 /**
  * In a condition an operand that means a property. If we need to evaluate the condition then we
  * have to bind the value of the property.
- * 
+ *
  * @author Peter Boros
  *
  * @param <T>
@@ -55,7 +55,7 @@ public class OperandProperty<T> extends Operand<T> {
 
   /**
    * Creates a new operand with the given property.
-   * 
+   *
    * @param property
    */
   public OperandProperty(Property<T> property) {
@@ -81,9 +81,11 @@ public class OperandProperty<T> extends Operand<T> {
    */
   public T applyFunction(T value) {
     T result = value;
-    if (value instanceof String) {
-      PropertyFunction propertyFunction = property.getPropertyFunction();
-      if (propertyFunction != null) {
+    PropertyFunction propertyFunction = property.getPropertyFunction();
+    if (propertyFunction != null) {
+      if ("field".equals(propertyFunction)) {
+        // return objectApi.asType(node, propertyFunction.getParameterString())
+      } else if (value instanceof String) {
         if (PropertyFunction.LOWER.getStatement().equals(propertyFunction.getStatement())) {
           result = (T) ((String) value).toLowerCase();
         } else if (PropertyFunction.UPPER.getClass().equals(propertyFunction.getStatement())) {
@@ -117,7 +119,7 @@ public class OperandProperty<T> extends Operand<T> {
   /**
    * Sets the bound value for the given operand. It's a kind of lambda to effectively access the
    * bound value from the actual context.
-   * 
+   *
    * @param boundValue The bound value instance that contains all the information to access the
    *        value for the property.
    */
@@ -150,7 +152,7 @@ public class OperandProperty<T> extends Operand<T> {
   /**
    * In case of JDBC statements it could be important to store the qualification (table alias in the
    * SQL) for the given expression. If it's null then we ignore it.
-   * 
+   *
    * @return
    */
   public String getQualifier() {
@@ -160,7 +162,7 @@ public class OperandProperty<T> extends Operand<T> {
   /**
    * In case of JDBC statements it could be important to store the qualification (table alias in the
    * SQL) for the given expression. If it's null then we ignore it.
-   * 
+   *
    * @param qualifier
    */
   public void setQualifier(String qualifier) {
@@ -169,7 +171,7 @@ public class OperandProperty<T> extends Operand<T> {
 
   /**
    * Set the property.
-   * 
+   *
    * @param property
    */
   void setProperty(Property<T> property) {

@@ -3,6 +3,7 @@ package org.smartbit4all.sql.query;
 import java.net.URI;
 import javax.sql.DataSource;
 import org.smartbit4all.core.io.TestFSConfig;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.CrudApiImpl.QueryExecutorConfig;
 import org.smartbit4all.sql.config.SQLConfig;
@@ -84,9 +85,9 @@ public class QuerySeparatedSchemaTestConfig {
 
   @Bean
   public SQLCrudExecutionApi queryExecutionApi1(
-      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
+      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate, ObjectApi objectApi) {
 
-    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
+    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate, objectApi);
     sqlQueryExecutionApi.setSchema("test1");
 
     return sqlQueryExecutionApi;
@@ -94,9 +95,9 @@ public class QuerySeparatedSchemaTestConfig {
 
   @Bean
   public SQLCrudExecutionApi queryExecutionApi2(
-      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
+      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate, ObjectApi objectApi) {
 
-    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
+    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate, objectApi);
     sqlQueryExecutionApi.setSchema("test2");
 
     return sqlQueryExecutionApi;

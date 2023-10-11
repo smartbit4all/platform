@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -65,17 +66,20 @@ public class CrudApiImpl implements CrudApi {
   protected DataSetApi dataSetApi;
   private TableDataApi tableDataApi;
   private IdentifierService identifierService;
+  private ObjectApi objectApi;
 
   public CrudApiImpl(ApplicationContext appContext,
       @Autowired(required = false) QueryExecutorConfig config,
       @Autowired(required = false) DataSetApi dataSetApi,
       @Autowired(required = false) TableDataApi tableDataApi,
-      @Autowired(required = false) IdentifierService identifierService) {
+      @Autowired(required = false) IdentifierService identifierService,
+      @Autowired(required = true) ObjectApi objectApi) {
     this.executionApisByName = appContext.getBeansOfType(CrudExecutionApi.class);
     this.config = config;
     this.dataSetApi = dataSetApi;
     this.tableDataApi = tableDataApi;
     this.identifierService = identifierService;
+    this.objectApi = objectApi;
   }
 
   @Override
@@ -479,4 +483,8 @@ public class CrudApiImpl implements CrudApi {
     return result;
   }
 
+  @Override
+  public ObjectApi getObjectApi() {
+    return objectApi;
+  }
 }

@@ -89,8 +89,8 @@ public final class TableDataPager<E extends EntityDefinition> {
   }
 
   private TableDataPager(Class<E> entityDefClazz, BinaryData binaryData,
-      EntityManager entityManager) throws Exception {
-    this(entityDefClazz, () -> binaryData.asRandomAccessFile(), entityManager, null);
+      EntityManager entityManager, ObjectApi objectApi) throws Exception {
+    this(entityDefClazz, () -> binaryData.asRandomAccessFile(), entityManager, objectApi);
   }
 
   private void readRowIndices(RandomAccessFile raf) throws IOException {
@@ -285,8 +285,8 @@ public final class TableDataPager<E extends EntityDefinition> {
   }
 
   public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,
-      BinaryData binaryData, EntityManager entityManager) throws Exception {
-    return new TableDataPager<>(entityDefClazz, binaryData, entityManager);
+      BinaryData binaryData, EntityManager entityManager, ObjectApi objectApi) throws Exception {
+    return new TableDataPager<>(entityDefClazz, binaryData, entityManager, objectApi);
   }
 
   private static interface RafGetter {

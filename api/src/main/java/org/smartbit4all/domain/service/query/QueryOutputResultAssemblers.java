@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
@@ -16,15 +17,18 @@ public class QueryOutputResultAssemblers {
 
   /**
    * Based on the {@link QueryInput} a {@link QueryOutputResultAssembler} will be created.
+   *
+   * @param objectApi
    */
-  public static QueryOutputResultAssembler create(QueryInput input, QueryOutput output) {
+  public static QueryOutputResultAssembler create(QueryInput input, QueryOutput output,
+      ObjectApi objectApi) {
     Objects.requireNonNull(input, "input can not be null!");
     Objects.requireNonNull(output, "output can not be null!");
 
     if (input.isResultSerialized()) {
-      return new QueryOutputResultAssemblerFile(input, output);
+      return new QueryOutputResultAssemblerFile(input, output, objectApi);
     } else {
-      return new QueryOutputResultAssemblerInMem(input, output);
+      return new QueryOutputResultAssemblerInMem(input, output, objectApi);
     }
   }
 
@@ -53,12 +57,17 @@ public class QueryOutputResultAssemblers {
      */
     List<DataColumn<?>> columnsByIndex = new ArrayList<>();
 
-    private QueryOutputResultAssemblerInMem(QueryInput queryInput, QueryOutput queryOutput) {
+    private ObjectApi objectApi;
+
+    private QueryOutputResultAssemblerInMem(QueryInput queryInput, QueryOutput queryOutput,
+        ObjectApi objectApi) {
       Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
       this.queryOutput = queryOutput;
       this.entityDef = queryInput.entityDef();
+      this.objectApi = objectApi;
     }
 
+    @Override
     public void start() {
       if (tableData == null) {
         tableData = new TableData<>(entityDef);
@@ -67,6 +76,7 @@ public class QueryOutputResultAssemblers {
     }
 
 
+    @Override
     public int accept(Property<?> property) {
       columnsByIndex.add(tableData.addColumnOwn(property));
       return columnsByIndex.size() - 1;
@@ -77,19 +87,27 @@ public class QueryOutputResultAssemblers {
       // NOPE
     }
 
+    @Override
     public void setValue(int index, Object value) {
-      tableData.setObject(columnsByIndex.get(index), row, value);
+      DataColumn<?> column = columnsByIndex.get(index);
+      if (value != null && !column.getProperty().type().isInstance(value)) {
+        value = objectApi.asType(column.getProperty().type(), value);
+      }
+      tableData.setObject(column, row, value);
     }
 
+    @Override
     public boolean startRow() {
       row = tableData.addRow();
       return true;
     }
 
+    @Override
     public void finishRow() {
       row = null;
     }
 
+    @Override
     public void finish() {
       queryOutput.setTableData(tableData);
     }
@@ -112,16 +130,20 @@ public class QueryOutputResultAssemblers {
 
     private BinaryDataOutputStream os;
 
-    private QueryOutputResultAssemblerFile(QueryInput queryInput, QueryOutput queryOutput) {
+    private ObjectApi objectApi;
+
+    private QueryOutputResultAssemblerFile(QueryInput queryInput, QueryOutput queryOutput,
+        ObjectApi objectApi) {
       if (!queryInput.isResultSerialized()) {
         throw new IllegalStateException(
             "Can not assemble output result serialized when query is not set to do so.");
       }
       this.queryOutput = queryOutput;
       this.entityDef = queryInput.entityDef();
+      this.objectApi = objectApi;
       // use parameter 0 here to serialize into a temp file
       os = new BinaryDataOutputStream(0);
-      serializer = TableDataSerializer.to(os);
+      serializer = TableDataSerializer.to(os, objectApi);
     }
 
     @Override
@@ -160,6 +182,10 @@ public class QueryOutputResultAssemblers {
 
     @Override
     public void setValue(int index, Object value) {
+      DataColumn<?> column = columnsByIndex.get(index);
+      if (value != null && !column.getProperty().type().isInstance(value)) {
+        value = objectApi.asType(column.getProperty().type(), value);
+      }
       row.setObject(columnsByIndex.get(index), value);
     }
 

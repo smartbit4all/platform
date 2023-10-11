@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.ExpressionBetween;
@@ -107,8 +108,10 @@ final class SQLQueryExecution {
 
   private SQLDBParameter sqlDBParameter;
 
+  private ObjectApi objectApi;
+
   public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query, String schema,
-      SQLDBParameter sqlDBParameter) {
+      SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
     super();
     this.jdbcTemplate = jdbcTemplate;
     this.queryInput = query;
@@ -118,6 +121,7 @@ final class SQLQueryExecution {
     columnIndex = 1;
     this.schema = schema;
     this.sqlDBParameter = sqlDBParameter;
+    this.objectApi = objectApi;
   }
 
   /**
@@ -276,7 +280,7 @@ final class SQLQueryExecution {
     int indexTrans[] = new int[metaData.getColumnCount()];
     Property<?> propertyTrans[] = new Property<?>[metaData.getColumnCount()];
     QueryOutputResultAssembler resultAssembler =
-        QueryOutputResultAssemblers.create(this.queryInput, this.queryOutput);
+        QueryOutputResultAssemblers.create(this.queryInput, this.queryOutput, this.objectApi);
     resultAssembler.start();
     for (int i = 0; i < metaData.getColumnCount(); i++) {
       String columnName = builder.getColumnAssignedColumnName(metaData, i + 1).toUpperCase();
