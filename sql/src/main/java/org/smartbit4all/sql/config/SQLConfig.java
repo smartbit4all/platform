@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.sql.service.query.SQLCrudExecutionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +67,10 @@ public class SQLConfig implements InitializingBean {
 
   @Bean
   @ConditionalOnMissingBean
-  public SQLCrudExecutionApi sqlCrudExecutionApi(JdbcTemplate jdbcTemplate,
+  public SQLCrudExecutionApi sqlCrudExecutionApi(JdbcTemplate jdbcTemplate, ObjectApi objectApi,
       @Autowired(
           required = false) @Qualifier(SQLDBParameterBase.DEFAULT) SQLDBParameter sqldbParameter) {
-    SQLCrudExecutionApi api = new SQLCrudExecutionApi(jdbcTemplate);
+    SQLCrudExecutionApi api = new SQLCrudExecutionApi(jdbcTemplate, objectApi);
     api.setSqlDbParameter(sqldbParameter);
     return api;
   }

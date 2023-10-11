@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.testmodel;
 
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.Join;
@@ -18,6 +19,8 @@ public interface AddressDef extends EntityDefinition {
 
   public static final String ID = "id";
   public static final String ID_COL = "ID";
+  public static final String CREATED = "created";
+  public static final String ID_CREATED = "CREATED";
   public static final String ZIP = "zip";
   public static final String ZIP_COL = "ZIP";
   public static final String CITY = "city";
@@ -34,12 +37,15 @@ public interface AddressDef extends EntityDefinition {
 
   @OwnProperty(name = CITY, columnName = CITY_COL)
   Property<String> city();
-  
+
   @OwnProperty(name = PERSON_ID, columnName = PERSON_COL)
   Property<Long> personId();
-  
+
   @ReferenceEntity
   @Join(source = PERSON_ID, target = PersonDef.ID)
   PersonDef person();
+
+  @OwnProperty(name = CREATED, columnName = ID_CREATED)
+  Property<UserActivityLog> created();
 
 }

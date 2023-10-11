@@ -145,12 +145,9 @@ public final class TableDataSerializer {
    * stream.
    *
    * @param os
+   * @param objectApi Used for serializing complex values.
    * @return
    */
-  public static final TableDataSerializer to(OutputStream os) {
-    return to(os, null);
-  }
-
   public static final TableDataSerializer to(OutputStream os, ObjectApi objectApi) {
 
     Objects.requireNonNull(os, "The output stream is missing to serialize the table data.");

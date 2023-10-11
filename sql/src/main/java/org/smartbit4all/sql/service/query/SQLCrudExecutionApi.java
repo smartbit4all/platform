@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.service.query;
 
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.modify.CreateInput;
 import org.smartbit4all.domain.service.modify.CreateOutput;
@@ -27,15 +28,18 @@ public class SQLCrudExecutionApi implements CrudExecutionApi {
 
   protected SQLDBParameter sqlDBParameter;
 
-  public SQLCrudExecutionApi(JdbcTemplate jdbcTemplate) {
+  private ObjectApi objectApi;
+
+  public SQLCrudExecutionApi(JdbcTemplate jdbcTemplate, ObjectApi objectApi) {
     super();
     this.jdbcTemplate = jdbcTemplate;
+    this.objectApi = objectApi;
   }
 
   @Override
   public <E extends EntityDefinition> QueryOutput executeQuery(QueryInput queryInput) {
     SQLQueryExecution queryExecution =
-        new SQLQueryExecution(jdbcTemplate, queryInput, schema, sqlDBParameter);
+        new SQLQueryExecution(jdbcTemplate, queryInput, schema, sqlDBParameter, objectApi);
     queryExecution.execute();
     return queryExecution.queryOutput;
   }

@@ -295,8 +295,10 @@ public class ObjectNode {
    * @param values The map of values.
    */
   public ObjectNode setValues(Map<String, Object> values) {
-    data.getObjectAsMap().putAll(values);
-    setModified();
+    if (values != null) {
+      data.getObjectAsMap().putAll(values);
+      setModified();
+    }
     return this;
   }
 

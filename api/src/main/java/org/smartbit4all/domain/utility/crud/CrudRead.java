@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -71,7 +71,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * The name of the query. If we don't name it directly then it will have a generated name.
-   * 
+   *
    * @return
    */
   public String name() {
@@ -80,7 +80,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Sets the where for the query.
-   * 
+   *
    * @param where
    * @return Fluid API
    */
@@ -126,7 +126,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * {@link Deprecated Use the #listData() }
-   * 
+   *
    * @return
    * @throws Exception
    */
@@ -164,7 +164,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * In this case we want to run the query and retrieve the first value from the first row.
    * Typically the result of the count, sum avg etc. functions can be executed in this way.
-   * 
+   *
    * @return
    * @throws Exception
    */
@@ -205,7 +205,7 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
-   * 
+   *
    * @param <T> the value type of the property
    * @param property
    * @return
@@ -250,7 +250,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * We can add all columns to the query.
-   * 
+   *
    * @return Fluid API
    */
   public CrudRead<E> selectAllProperties() {
@@ -260,7 +260,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * We can set the properties to list as the result of the query. By default the result contains
    * only the identifiers.
-   * 
+   *
    * @return Fluid API
    */
   public CrudRead<E> select(List<Property<?>> properties) {
@@ -270,7 +270,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Add the properties to the query.
-   * 
+   *
    * @param propertySet
    * @return
    */
@@ -281,7 +281,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Add the properties to the query.
-   * 
+   *
    * @param propertySet varargs to add properties in a convenient way.
    * @return
    */
@@ -302,7 +302,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * We can add all columns to the query.
-   * 
+   *
    * @deprecated use {@link #selectAllProperties()} instead!
    * @return Fluid API
    */
@@ -314,7 +314,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Defines a sort order for the query.
-   * 
+   *
    * @param order
    * @return Fluid API
    */
@@ -325,7 +325,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Defines a sort order for the query with ascending parameter.
-   * 
+   *
    * @param property
    * @return Fluid API
    */
@@ -355,7 +355,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Set the limit of the results at the level of SQL. Preserve the JVM from the flood of byte in
    * case an SQL select with unsatisfying conditions.
-   * 
+   *
    * @param queryLimit
    * @return
    */
@@ -367,7 +367,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Set the distinct for the query. In this case every result will be different in the result set.
    * In case of SQL queries it will add the distinct clause for the select.
-   * 
+   *
    * @return
    */
   public CrudRead<E> distinct() {
@@ -377,7 +377,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * We can remove the distinct flag from the query.
-   * 
+   *
    * @return
    */
   public CrudRead<E> distinctNot() {
@@ -387,7 +387,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Requires the count of the result records.
-   * 
+   *
    * @return Fluid API
    */
   public CrudRead<E> count() {
@@ -397,7 +397,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Requires the minimum value of the given property.
-   * 
+   *
    * @param property
    * @return Fluid API
    */
@@ -408,7 +408,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Requires the maximum value of the given property.
-   * 
+   *
    * @param property
    * @return Fluid API
    */
@@ -419,7 +419,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Requires the average value of the given property.
-   * 
+   *
    * @param property
    * @return Fluid API
    */
@@ -430,7 +430,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Requires the summary of the given property.
-   * 
+   *
    * @param property
    * @return Fluid API
    */
@@ -441,7 +441,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Query result will appear in result parameter. All existing rows will be deleted.
-   * 
+   *
    * @param result
    * @return Fluid API
    */
@@ -453,7 +453,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Query result will be appended to the result parameter. Existing rows will NOT be deleted.
-   * 
+   *
    * @param result
    * @return Fluid API
    */
@@ -465,7 +465,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Query result will appear in result parameter. All existing rows will be deleted.
-   * 
+   *
    * @param resultData
    * @return Fluid API
    */
@@ -478,7 +478,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Query result will be appended to the result parameter. Existing rows will NOT be deleted.
-   * 
+   *
    * @param resultData
    * @return Fluid API
    */
@@ -493,7 +493,7 @@ public class CrudRead<E extends EntityDefinition> {
    * The from sets the {@link EntityDefinition} that is the root for the query. All the related
    * entities must be attached with {@link Reference} as we add {@link PropertyRef} properties to
    * the query.
-   * 
+   *
    * @param entityDef
    * @return
    */
@@ -506,7 +506,7 @@ public class CrudRead<E extends EntityDefinition> {
    * The from sets the {@link EntityDefinition} that is the root for the query. All the related
    * entities must be attached with {@link Reference} as we add {@link PropertyRef} properties to
    * the query.
-   * 
+   *
    * @param tableDataUri The table data the query is executed against.
    * @return
    */
@@ -518,7 +518,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Set the input of the Query. The {@link QueryInput}'s name and EntityDefinition must match the
    * input's name and EntityDefinition!
-   * 
+   *
    * @param input
    * @return Fluid API
    */
@@ -535,7 +535,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Sets the output of the Query. The {@link QueryOutput}'s name and EntityDefinition must match
    * the input's name and EntityDefinition!
-   * 
+   *
    * @param output
    * @return Fluid API
    */
@@ -546,7 +546,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Returns the output of the Query.
-   * 
+   *
    * @return Fluid API
    */
   public QueryOutput output() {
@@ -556,7 +556,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
    * level. It waits until gets the lock or interrupted by someone.
-   * 
+   *
    * @return
    */
   public CrudRead<E> lock() {
@@ -567,7 +567,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
    * level. If it cann't get the lock immediately then the query throws an exception.
-   * 
+   *
    * @return
    */
   public CrudRead<E> tryLock() {
@@ -579,7 +579,7 @@ public class CrudRead<E extends EntityDefinition> {
    * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
    * level. If it cann't get the lock during the given timeout period then the query throws an
    * exception.
-   * 
+   *
    * @param timeOut The timeout for the lock trial in millisecond.
    * @return
    */
@@ -597,7 +597,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Add the properties to the query by a bean.
-   * 
+   *
    * @param beanClass The bean that has fields translatable to entity properties
    * @return
    * @throws Exception
@@ -611,7 +611,7 @@ public class CrudRead<E extends EntityDefinition> {
 
   /**
    * Executes the query and returns the {@link TableData} as a result.
-   * 
+   *
    * @return Return the result as the typed table data of the given entity.
    * @throws Exception
    */
@@ -634,7 +634,8 @@ public class CrudRead<E extends EntityDefinition> {
     execute();
     BinaryData resultFile = queryOutput.getSerializedTableData();
 
-    return TableDataPager.create(entityDefClazz, resultFile, entityManager);
+    return TableDataPager.create(entityDefClazz, resultFile, entityManager,
+        CrudApis.getCrudApi().getObjectApi());
   }
 
   /**
@@ -644,7 +645,7 @@ public class CrudRead<E extends EntityDefinition> {
    * because the whole query can be included in line. The conversion to the bean is executed after
    * the query creates the inner {@link TableData} representation. So we can use the
    * {@link TableData} later on to retrieve other data formats from the same query result.
-   * 
+   *
    * @param beanClass The bean class that must have registered transfer binding in the
    *        {@link TransferService}. It can be an interface also but in this case the instances will
    *        be proxies with {@link DataRowValBeanInvocationHandler}. Inside the invocation handler

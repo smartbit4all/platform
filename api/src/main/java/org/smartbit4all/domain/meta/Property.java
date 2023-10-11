@@ -406,6 +406,10 @@ public abstract class Property<T> {
     return function(PropertyFunction.withSelfPropertyArgument(functionName));
   }
 
+  // public final <R> Property<R> function(Class<R> clazz, String functionName) {
+  // return function(PropertyFunction.withSelfPropertyArgument(functionName));
+  // }
+  //
   /**
    * Applies the given function on property. </br>
    * Use the {@link PropertyFunction#build(String)} static method to create a

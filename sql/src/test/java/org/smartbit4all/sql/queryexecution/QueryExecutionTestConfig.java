@@ -3,6 +3,7 @@ package org.smartbit4all.sql.queryexecution;
 import java.net.URI;
 import javax.sql.DataSource;
 import org.smartbit4all.core.io.TestFSConfig;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.CrudApiImpl.QueryExecutorConfig;
 import org.smartbit4all.sql.config.SQLConfig;
@@ -125,14 +126,14 @@ public class QueryExecutionTestConfig {
 
   @Bean
   public SQLCrudExecutionApi queryExecutionApi1(
-      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
-    return new SQLCrudExecutionApi(jdbcTemplate);
+      @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate, ObjectApi objectApi) {
+    return new SQLCrudExecutionApi(jdbcTemplate, objectApi);
   }
 
   @Bean
   public SQLCrudExecutionApi queryExecutionApi2(
-      @Qualifier("dataConnection2") JdbcTemplate jdbcTemplate) {
-    return new SQLCrudExecutionApi(jdbcTemplate);
+      @Qualifier("dataConnection2") JdbcTemplate jdbcTemplate, ObjectApi objectApi) {
+    return new SQLCrudExecutionApi(jdbcTemplate, objectApi);
   }
 
   @Bean
