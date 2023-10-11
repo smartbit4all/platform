@@ -295,7 +295,7 @@ components:
       type: object
       description: |
         This object is a grid row containening the identifier and actions releted with the row.
-      required: [actions]
+      required: [actions,icons]
       properties:
         id:
           type: string
@@ -309,6 +309,10 @@ components:
           type: boolean
         selected:
           type: boolean
+        icons:
+          type: string
+          additionalProperties:
+            type: ImageResource
     GridView:
       type: object
       description: |
@@ -378,6 +382,13 @@ components:
         alwaysShow:
           type: boolean
           default: false
+        contentType:
+          $ref: '#/components/schemas/GridColumnContentType'
+    GridColumnContentType:
+      type: string
+      enum:
+        - text
+        - html
     GridUpdateData:
       type: object
       description: |

@@ -1120,3 +1120,14 @@ components:
           - BLANK
           - PARENT
           - TOP
+    ImageResource:
+      type: object
+      properties:
+        kind:
+          enum: [FE, BE, URL]
+        source:
+          type: string
+        identifier:
+          type: string
+        color:
+          type: string

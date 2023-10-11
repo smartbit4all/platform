@@ -23,7 +23,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -39,7 +42,8 @@ import javax.validation.Valid;
   GridRow.ACTIONS,
   GridRow.DATA,
   GridRow.SELECTABLE,
-  GridRow.SELECTED
+  GridRow.SELECTED,
+  GridRow.ICONS
 })
 @JsonTypeName("GridRow")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -58,6 +62,9 @@ public class GridRow {
 
   public static final String SELECTED = "selected";
   private Boolean selected;
+
+  public static final String ICONS = "icons";
+  private Map<String, ImageResource> icons = new HashMap<>();
 
   public GridRow() { 
   }
@@ -204,6 +211,40 @@ public class GridRow {
   }
 
 
+  public GridRow icons(Map<String, ImageResource> icons) {
+    
+    this.icons = icons;
+    return this;
+  }
+
+  public GridRow putIconsItem(String key, ImageResource iconsItem) {
+    this.icons.put(key, iconsItem);
+    return this;
+  }
+
+   /**
+   * Get icons
+   * @return icons
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(ICONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, ImageResource> getIcons() {
+    return icons;
+  }
+
+
+  @JsonProperty(ICONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setIcons(Map<String, ImageResource> icons) {
+    this.icons = icons;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -217,12 +258,13 @@ public class GridRow {
         Objects.equals(this.actions, gridRow.actions) &&
         Objects.equals(this.data, gridRow.data) &&
         Objects.equals(this.selectable, gridRow.selectable) &&
-        Objects.equals(this.selected, gridRow.selected);
+        Objects.equals(this.selected, gridRow.selected) &&
+        Objects.equals(this.icons, gridRow.icons);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, actions, data, selectable, selected);
+    return Objects.hash(id, actions, data, selectable, selected, icons);
   }
 
   @Override
@@ -234,6 +276,7 @@ public class GridRow {
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    selectable: ").append(toIndentedString(selectable)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
+    sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
     sb.append("}");
     return sb.toString();
   }

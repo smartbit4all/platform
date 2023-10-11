@@ -43,7 +43,8 @@ smartbit4all {
   		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
   		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
   		"SearchIndexResultPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig",
-  		"LangString": "org.smartbit4all.api.object.bean.LangString"
+  		"LangString": "org.smartbit4all.api.object.bean.LangString",
+  		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource"
   	]
   }
 }
