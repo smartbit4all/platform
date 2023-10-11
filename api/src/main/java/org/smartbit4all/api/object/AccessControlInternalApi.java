@@ -53,4 +53,9 @@ public interface AccessControlInternalApi {
   Set<String> getAvailableOperationsOn(ObjectNode objectNode, List<String> operationsToCheck,
       String subjectModel);
 
+  List<String> getAvailableOperationsOfUser(String modelName, URI userUri, ACL acl,
+      List<String> operations);
+
+  List<String> getMyAvailableOperations(String modelName, ACL acl, List<String> operations);
+
 }
