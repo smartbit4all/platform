@@ -360,27 +360,48 @@ components:
         The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects.
         The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce
         the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well.
-      required: [entries]
+      required: [rootEntry]
       properties:
-        entries:
-          type: array
-          items:
-            $ref: '#/components/schemas/ACLEntry'
+        rootEntry:
+          $ref: '#/components/schemas/ACLEntry'
     ACLEntry:
       type: object
       description: |
-        The ACL entry refers to one subject and defines the operations available for the given subject.
-      required: [operations]
+        The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit 
+        for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF.
+        It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation.
+      required: [entryKind, entries, operations]
       properties:
+        entryKind:
+          description: |
+            The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively.
+            The evaluation is using the theories if mathematical sets.
+          enum: [SUBJECT, SET]
+          default: SUBJECT
         subject:
           description: |
-            The reference to the subject defined in the given application.
+            The reference to the subject defined in the given application. It is set when the kind is SUBJECT.
           $ref: '#/components/schemas/Subject'
+        subjectCondition:
+          description: |
+            If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse
+            situation then the condition is NOTIN.
+          enum: [IN, NOTIN]
+          default: IN
+        setOperation:
+          enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]
+          default: UNION
         operations:
-          type: array
           description: The unique identifiers of the operations defined in the given application.
+          type: array
           items:
             type: string
+        entries:
+          description: |
+            The list if entries in the given set if the kind is SET.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLEntry'
     SubjectList:
       type: object
       description: |
@@ -413,12 +434,6 @@ components:
           format: uri
           description: |
             The reference to the object referred by this subject. It can be the latest uri of a user, a group or whatever subject we have.
-        cond:
-          enum: [IN, NOTIN]
-          default: IN
-          description: |
-            If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse
-            situation then the condition is NOTIN.
     SubjectModel:
       type: object
       description: |
@@ -448,7 +463,7 @@ components:
           type: string
           description: The name of the subject type.
         selectionConfig:
-          type: SearchIndexResultPageConfig
+          type: SearchPageConfig
           description: |
             The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the
             columns of the grid and the filter model.

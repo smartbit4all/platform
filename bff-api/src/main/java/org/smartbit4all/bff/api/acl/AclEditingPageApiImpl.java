@@ -78,7 +78,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     SmartMatrixModel matrix = new SmartMatrixModel();
     matrix.data(new HashMap<String, Object>());
 
-    acl.getEntries().stream().forEach(aclEntry -> {
+    acl.getRootEntry().getEntries().stream().forEach(aclEntry -> {
       matrix
           .addRowsItem(new Value().code(aclEntry.getSubject().getRef().toString())
               .displayValue(resolveAclEntryDisplayValue(aclEntry.getSubject().getRef())));
@@ -139,7 +139,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     ACL acl = getModel(viewUuid);
 
     if (!checkSubjectIsAlreadyInAcl(acl, subjectUri)) {
-      acl.addEntriesItem(new ACLEntry().subject(new Subject().ref(subjectUri)));
+      acl.getRootEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(subjectUri)));
     } else {
       throw new RuntimeException(
           String.format("Subject reference by %s is already in ACL", subjectUri));
@@ -154,7 +154,8 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   }
 
   private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
-    return acl.getEntries().stream().map(entry -> entry.getSubject().getRef()).collect(toList())
+    return acl.getRootEntry().getEntries().stream().map(entry -> entry.getSubject().getRef())
+        .collect(toList())
         .contains(subjectUri);
   }
 

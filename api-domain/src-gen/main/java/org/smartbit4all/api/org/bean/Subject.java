@@ -34,8 +34,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. ")
 @JsonPropertyOrder({
   Subject.TYPE,
-  Subject.REF,
-  Subject.COND
+  Subject.REF
 })
 @JsonTypeName("Subject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,44 +44,6 @@ public class Subject {
 
   public static final String REF = "ref";
   private URI ref;
-
-  /**
-   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
-   */
-  public enum CondEnum {
-    IN("IN"),
-    
-    NOTIN("NOTIN");
-
-    private String value;
-
-    CondEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CondEnum fromValue(String value) {
-      for (CondEnum b : CondEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String COND = "cond";
-  private CondEnum cond = CondEnum.IN;
 
   public Subject() { 
   }
@@ -144,34 +105,6 @@ public class Subject {
   }
 
 
-  public Subject cond(CondEnum cond) {
-    
-    this.cond = cond;
-    return this;
-  }
-
-   /**
-   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
-   * @return cond
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. ")
-  @JsonProperty(COND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public CondEnum getCond() {
-    return cond;
-  }
-
-
-  @JsonProperty(COND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCond(CondEnum cond) {
-    this.cond = cond;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -182,13 +115,12 @@ public class Subject {
     }
     Subject subject = (Subject) o;
     return Objects.equals(this.type, subject.type) &&
-        Objects.equals(this.ref, subject.ref) &&
-        Objects.equals(this.cond, subject.cond);
+        Objects.equals(this.ref, subject.ref);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, ref, cond);
+    return Objects.hash(type, ref);
   }
 
   @Override
@@ -197,7 +129,6 @@ public class Subject {
     sb.append("class Subject {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    ref: ").append(toIndentedString(ref)).append("\n");
-    sb.append("    cond: ").append(toIndentedString(cond)).append("\n");
     sb.append("}");
     return sb.toString();
   }
