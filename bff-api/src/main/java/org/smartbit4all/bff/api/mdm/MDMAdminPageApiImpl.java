@@ -60,6 +60,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
       return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
     }
 
+    public View getView() {
+      return view;
+    }
+
   }
 
   protected PageContext getContextByViewUUID(UUID viewUuid) {
