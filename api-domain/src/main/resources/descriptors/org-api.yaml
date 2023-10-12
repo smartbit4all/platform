@@ -447,10 +447,12 @@ components:
         name:
           type: string
           description: The name of the subject model that identifies it as a global identifier in an application tenant.
+        title:
+          type: LangString
         descriptors:
-          type: object
+          type: array
           description: The subject descriptors identified by their unique name.
-          additionalProperties:
+          items:
             $ref: '#/components/schemas/SubjectTypeDescriptor'
     SubjectTypeDescriptor:
       type: object
@@ -462,6 +464,8 @@ components:
         name:
           type: string
           description: The name of the subject type.
+        title:
+          type: LangString
         selectionConfig:
           type: SearchPageConfig
           description: |

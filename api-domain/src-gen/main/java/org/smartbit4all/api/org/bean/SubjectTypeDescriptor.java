@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
+import org.smartbit4all.api.object.bean.LangString;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,6 +35,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex to be able to select the given object. This type defines how get the unique identifier. ")
 @JsonPropertyOrder({
   SubjectTypeDescriptor.NAME,
+  SubjectTypeDescriptor.TITLE,
   SubjectTypeDescriptor.SELECTION_CONFIG,
   SubjectTypeDescriptor.API_NAME
 })
@@ -42,6 +44,9 @@ import javax.validation.Valid;
 public class SubjectTypeDescriptor {
   public static final String NAME = "name";
   private String name;
+
+  public static final String TITLE = "title";
+  private LangString title = null;
 
   public static final String SELECTION_CONFIG = "selectionConfig";
   private SearchPageConfig selectionConfig = null;
@@ -77,6 +82,34 @@ public class SubjectTypeDescriptor {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public SubjectTypeDescriptor title(LangString title) {
+    
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Get title
+   * @return title
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public LangString getTitle() {
+    return title;
+  }
+
+
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTitle(LangString title) {
+    this.title = title;
   }
 
 
@@ -146,13 +179,14 @@ public class SubjectTypeDescriptor {
     }
     SubjectTypeDescriptor subjectTypeDescriptor = (SubjectTypeDescriptor) o;
     return Objects.equals(this.name, subjectTypeDescriptor.name) &&
+        Objects.equals(this.title, subjectTypeDescriptor.title) &&
         Objects.equals(this.selectionConfig, subjectTypeDescriptor.selectionConfig) &&
         Objects.equals(this.apiName, subjectTypeDescriptor.apiName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, selectionConfig, apiName);
+    return Objects.hash(name, title, selectionConfig, apiName);
   }
 
   @Override
@@ -160,6 +194,7 @@ public class SubjectTypeDescriptor {
     StringBuilder sb = new StringBuilder();
     sb.append("class SubjectTypeDescriptor {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    selectionConfig: ").append(toIndentedString(selectionConfig)).append("\n");
     sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
     sb.append("}");

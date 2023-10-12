@@ -42,14 +42,9 @@ smartbit4all {
   		"GridView": "org.smartbit4all.api.grid.bean.GridView",
   		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
   		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
-<<<<<<< Upstream, based on origin/develop
-  		"SearchIndexResultPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig",
+  		"SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
   		"LangString": "org.smartbit4all.api.object.bean.LangString",
   		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource"
-=======
-  		"SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
-  		"LangString": "org.smartbit4all.api.object.bean.LangString"
->>>>>>> 4d59070 [#13152] Improve ACL evaluation
   	]
   }
 }

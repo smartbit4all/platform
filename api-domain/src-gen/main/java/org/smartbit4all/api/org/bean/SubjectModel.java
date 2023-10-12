@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SubjectModel.URI,
   SubjectModel.NAME,
+  SubjectModel.TITLE,
   SubjectModel.DESCRIPTORS
 })
 @JsonTypeName("SubjectModel")
@@ -50,8 +51,11 @@ public class SubjectModel {
   public static final String NAME = "name";
   private String name;
 
+  public static final String TITLE = "title";
+  private LangString title = null;
+
   public static final String DESCRIPTORS = "descriptors";
-  private Map<String, SubjectTypeDescriptor> descriptors = new HashMap<>();
+  private List<SubjectTypeDescriptor> descriptors = new ArrayList<>();
 
   public SubjectModel() { 
   }
@@ -112,14 +116,42 @@ public class SubjectModel {
   }
 
 
-  public SubjectModel descriptors(Map<String, SubjectTypeDescriptor> descriptors) {
+  public SubjectModel title(LangString title) {
+    
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Get title
+   * @return title
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public LangString getTitle() {
+    return title;
+  }
+
+
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTitle(LangString title) {
+    this.title = title;
+  }
+
+
+  public SubjectModel descriptors(List<SubjectTypeDescriptor> descriptors) {
     
     this.descriptors = descriptors;
     return this;
   }
 
-  public SubjectModel putDescriptorsItem(String key, SubjectTypeDescriptor descriptorsItem) {
-    this.descriptors.put(key, descriptorsItem);
+  public SubjectModel addDescriptorsItem(SubjectTypeDescriptor descriptorsItem) {
+    this.descriptors.add(descriptorsItem);
     return this;
   }
 
@@ -134,14 +166,14 @@ public class SubjectModel {
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, SubjectTypeDescriptor> getDescriptors() {
+  public List<SubjectTypeDescriptor> getDescriptors() {
     return descriptors;
   }
 
 
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDescriptors(Map<String, SubjectTypeDescriptor> descriptors) {
+  public void setDescriptors(List<SubjectTypeDescriptor> descriptors) {
     this.descriptors = descriptors;
   }
 
@@ -157,12 +189,13 @@ public class SubjectModel {
     SubjectModel subjectModel = (SubjectModel) o;
     return Objects.equals(this.uri, subjectModel.uri) &&
         Objects.equals(this.name, subjectModel.name) &&
+        Objects.equals(this.title, subjectModel.title) &&
         Objects.equals(this.descriptors, subjectModel.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, descriptors);
+    return Objects.hash(uri, name, title, descriptors);
   }
 
   @Override
@@ -171,6 +204,7 @@ public class SubjectModel {
     sb.append("class SubjectModel {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
     return sb.toString();
