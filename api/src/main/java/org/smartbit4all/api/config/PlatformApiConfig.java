@@ -137,6 +137,12 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public ProviderApiInvocationHandler<TreeApi> treeApiProvider(
+      TreeApi api) {
+    return Invocations.asProvider(TreeApi.class, api);
+  }
+
+  @Bean
   public GridModelApi gridApi() {
     return new GridModelApiImpl();
   }

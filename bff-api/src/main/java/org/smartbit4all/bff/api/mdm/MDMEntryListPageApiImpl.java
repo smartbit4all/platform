@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +54,8 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -504,7 +504,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       row.setActions(UiActions.builder()
           // .add("VIEW")
           .addIf(ACTION_RESTORE_ENTRY, isAdmin, ctx.inactives)
-          .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+          .add(ACTION_EDIT_ENTRY) // isAdmin, entryEditingEnabled, !ctx.inactives)
           .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
           // TODO check if draft present..
           .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
