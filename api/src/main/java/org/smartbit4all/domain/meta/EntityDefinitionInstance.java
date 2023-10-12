@@ -3,15 +3,17 @@ package org.smartbit4all.domain.meta;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
+import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
-import org.smartbit4all.domain.meta.EntityDefinitionInstance.PropertyFunctionMapper;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.springframework.cglib.proxy.Enhancer;
@@ -94,6 +96,8 @@ class EntityDefinitionInstance implements EntityDefinition {
    */
   protected JDBCDataConverterHelper dataConverterHelper;
 
+  private ObjectDefinitionApi objectDefinitionApi;
+
   @Override
   public final Property<?> getProperty(String propertyName) {
     Property<?> property = propertiesByName.get(propertyName);
@@ -101,20 +105,32 @@ class EntityDefinitionInstance implements EntityDefinition {
       property = getReferredPropertyByPath(propertyName);
     }
     if (property == null) {
-      String[] propertyRefs = propertyName.split("\\.");
+      String[] propertyRefs = propertyName.split(StringConstant.DOT_REGEX);
       if (propertyRefs.length > 1) {
         String referredPropertyName = propertyRefs[propertyRefs.length - 1];
+        String complexTypeName = propertyRefs[0];
+        if (getReference(complexTypeName) != null) {
+          List<Reference<?, ?>> joinPath = new ArrayList<>();
+          EntityDefinition currentEntity = this;
+          for (int i = 0; i < propertyRefs.length - 1; i++) {
+            String referenceName = propertyRefs[i];
+            Reference<?, ?> reference = currentEntity.getReference(referenceName);
+            joinPath.add(reference);
+            currentEntity = reference.getTarget();
+          }
+          Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
+          property = this.findOrCreateReferredProperty(joinPath, referredProperty);
+        } else {
+          Property<?> complexProperty = propertiesByName.get(complexTypeName);
+          ObjectDefinition<?> definition = objectDefinitionApi
+              .definition(complexProperty.type());
+          String[] restPath = Arrays.copyOfRange(propertyRefs, 1, propertyRefs.length);
+          Class<?> type = objectDefinitionApi.getTypeOfProperty(definition, String.class, restPath);
+          property = getFunctionProperty(complexProperty,
+              PropertyFunction.build(propertyName).type(type).build());// TODO create FIELD function
 
-        List<Reference<?, ?>> joinPath = new ArrayList<>();
-        EntityDefinition currentEntity = this;
-        for (int i = 0; i < propertyRefs.length - 1; i++) {
-          String referenceName = propertyRefs[i];
-          Reference<?, ?> reference = currentEntity.getReference(referenceName);
-          joinPath.add(reference);
-          currentEntity = reference.getTarget();
         }
-        Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
-        property = this.findOrCreateReferredProperty(joinPath, referredProperty);
+
       }
     }
     return property;
@@ -239,12 +255,13 @@ class EntityDefinitionInstance implements EntityDefinition {
                 "function method can only be invoked with one PropertyFunction typed parameter!");
           }
           PropertyFunction functionParam = (PropertyFunction) args[0];
-          return propertyFunctionMapper.getFunctionProperty(property, functionParam);
+          return propertyFunctionMapper.getFunctionProperty(property, functionParam,
+              dataConverterHelper);
         }
 
         PropertyFunction basicFunction = PropertyFunction.basicFunctionsByName.get(methodName);
         if (basicFunction != null) {
-          return propertyFunctionMapper.getFunctionProperty(property, basicFunction);
+          return getFunctionProperty(property, basicFunction);
         }
 
         return method.invoke(property, args);
@@ -266,6 +283,10 @@ class EntityDefinitionInstance implements EntityDefinition {
           new Object[] {p.getName(), p.getJoinReferences(), p.getReferredProperty()});
     }
     throw new RuntimeException("Can not create proxy for property subtype: " + propClazz.getName());
+  }
+
+  public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction propFunction) {
+    return propertyFunctionMapper.getFunctionProperty(baseProp, propFunction, dataConverterHelper);
   }
 
   public void finishSetup() {
@@ -341,7 +362,8 @@ class EntityDefinitionInstance implements EntityDefinition {
 
     private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
 
-    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction propFunction) {
+    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction propFunction,
+        JDBCDataConverterHelper dataConverterHelper) {
       String functionName = propFunction.getName();
       List<Property<?>> funcProps = functionPropertiesByBasePropery.get(baseProp);
       if (funcProps == null) {
@@ -353,8 +375,14 @@ class EntityDefinitionInstance implements EntityDefinition {
           .findFirst().orElse(null);
       if (funcProp == null) {
         if (baseProp instanceof PropertyOwned) {
-          funcProp =
-              PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp), propFunction);
+          if (propFunction.getType() == null) {
+            funcProp =
+                PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp), propFunction);
+          } else {
+            funcProp =
+                PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp),
+                    propFunction, propFunction.getType(), dataConverterHelper);
+          }
         } else if (baseProp instanceof PropertyRef) {
           funcProp =
               PropertyRef.createFunctionProperty(((PropertyRef<?>) baseProp), propFunction);
@@ -388,6 +416,10 @@ class EntityDefinitionInstance implements EntityDefinition {
 
   final void setDataConverterHelper(JDBCDataConverterHelper dataConverterHelper) {
     this.dataConverterHelper = dataConverterHelper;
+  }
+
+  public void setObjectDefinitionApi(ObjectDefinitionApi objectDefinitionApi) {
+    this.objectDefinitionApi = objectDefinitionApi;
   }
 
   @Override

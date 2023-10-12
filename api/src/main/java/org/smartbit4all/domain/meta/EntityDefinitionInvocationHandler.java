@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.annotation.property.ComputedProperty;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
@@ -84,6 +85,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     ctx = applicationContext;
+
+    setObjectDefinitionApi(ctx.getBean(ObjectDefinitionApi.class));
   }
 
   @Override

@@ -355,4 +355,12 @@ public interface ObjectApi {
    */
   boolean exists(URI uri, URI branchUri);
 
+  /**
+   * Can be used to serialize any Java object as a String.
+   * 
+   * @param o The object to serialize
+   * @return The result string. Typical JSON like mapping. Returns null if the object is null.
+   */
+  String asString(Object o);
+
 }

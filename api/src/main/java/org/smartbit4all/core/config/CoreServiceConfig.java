@@ -34,6 +34,7 @@ import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * The basic services we have in the platform to support the function execution and transformations
@@ -124,6 +125,11 @@ public class CoreServiceConfig {
 
       @Override
       public <T> T fromString(String data, Class<T> clazz) throws IOException {
+        return null;
+      }
+
+      @Override
+      public String writeValueAsString(Object object) throws JsonProcessingException {
         return null;
       }
     };

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import org.smartbit4all.api.binarydata.BinaryData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * The domain objects must be serialized by definition. The serialization method could be different
@@ -69,5 +70,14 @@ public interface ObjectSerializer {
    * @return The object as a result. Returns null if the map is null.
    */
   <T> T fromMap(Map<String, Object> map, Class<T> clazz);
+
+  /**
+   * Can be used to serialize any Java object as a String.
+   * 
+   * @param object The object to serialize
+   * @return The result string. Typical JSON like mapping. Returns null if the object is null.
+   * @throws JsonProcessingException
+   */
+  String writeValueAsString(Object object) throws JsonProcessingException;
 
 }

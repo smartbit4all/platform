@@ -16,10 +16,15 @@ package org.smartbit4all.domain.meta;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 public class EntityConfiguration {
+
+  @Autowired
+  private ObjectDefinitionApi objectDefinitionApi;
 
   @SuppressWarnings("unchecked")
   protected <T extends EntityDefinition> T createEntityProxy(Class<T> def) {

@@ -28,7 +28,7 @@ public class PropertyObject extends Property<Object> {
   public PropertyObject function(PropertyFunction function) {
     EntityDefinition entityDef = getEntityDef();
     if (entityDef instanceof EntityDefinitionInstance) {
-      return (PropertyObject) ((EntityDefinitionInstance) entityDef).propertyFunctionMapper
+      return (PropertyObject) ((EntityDefinitionInstance) entityDef)
           .getFunctionProperty(this,
               function);
     }

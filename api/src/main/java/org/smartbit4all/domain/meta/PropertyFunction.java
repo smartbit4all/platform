@@ -20,6 +20,7 @@ public final class PropertyFunction {
   public static final PropertyFunction AVG = PropertyFunction.withSelfPropertyArgument("avg");
   public static final PropertyFunction MIN = PropertyFunction.withSelfPropertyArgument("min");
   public static final PropertyFunction MAX = PropertyFunction.withSelfPropertyArgument("max");
+  public static final PropertyFunction FIELD = PropertyFunction.withSelfPropertyArgument("field");
 
   public static final PropertyFunction TRUNCATE_SECOND =
       PropertyFunction.withSelfPropertyArgument("truncate_second");
@@ -48,11 +49,18 @@ public final class PropertyFunction {
 
   private List<Property<?>> requiredProperties = new ArrayList<>();
 
+  private Class<?> type;
+
   private PropertyFunction(Builder builder) {
     this.name = builder.functionName;
     this.sqlStatement = builder.sqlStatement;
     this.requiredProperties = builder.requiredProperties;
     this.parameterString = builder.paramString;
+    this.type = builder.type;
+  }
+
+  public Class<?> getType() {
+    return type;
   }
 
   public String getStatement() {
@@ -115,6 +123,8 @@ public final class PropertyFunction {
 
     private int innerFunctionCounter = 0;
 
+    private Class<?> type;
+
     private String paramString;
     private StringBuilder paramStringBuilder = new StringBuilder();
 
@@ -156,6 +166,14 @@ public final class PropertyFunction {
         requiredProperties.add(prop);
       }
       addPropNumberToParamStringBuilder(indexOfProp);
+      return this;
+    }
+
+    /**
+     * Adds the given property as parameter.
+     */
+    public Builder type(Class<?> type) {
+      this.type = type;
       return this;
     }
 

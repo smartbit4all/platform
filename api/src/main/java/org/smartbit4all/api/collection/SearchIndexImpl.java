@@ -25,7 +25,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -151,7 +150,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
-          TableDatas.sort(result, queryInput.orderBys());
+          tableDataApi.sort(result, queryInput.orderBys());
         }
         return result;
       }

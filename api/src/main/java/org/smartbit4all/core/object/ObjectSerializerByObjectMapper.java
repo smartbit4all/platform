@@ -18,6 +18,7 @@ import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
 import org.smartbit4all.core.object.serialize.UriDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -129,6 +130,14 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
       return null;
     }
     return objectMapper.readValue(data, clazz);
+  }
+
+  @Override
+  public String writeValueAsString(Object object) throws JsonProcessingException {
+    if (object == null) {
+      return null;
+    }
+    return objectMapper.writeValueAsString(object);
   }
 
   @SuppressWarnings("unchecked")

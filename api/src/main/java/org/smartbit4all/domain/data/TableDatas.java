@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +30,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.api.object.bean.TableDataContent;
 import org.smartbit4all.api.object.bean.TableDataContentColumn;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
@@ -42,8 +39,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.meta.SortOrderProperty;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Companion class of {@link TableData}
@@ -227,104 +222,6 @@ public final class TableDatas {
     }
     String fill = fillBuilder.toString();
     return fill;
-  }
-
-  /**
-   * Sorts the rows of the given {@link TableData} by the given {@link SortOrderProperty}-ies.</br>
-   *
-   * @param <E> The {@link EntityDefinition} of the {@link TableData}
-   * @param tableData The source {@link TableData}
-   * @param sortProperties The properties describing the sort orders
-   */
-  public static <E extends EntityDefinition> void sort(TableData<E> tableData,
-      List<SortOrderProperty> sortProperties) {
-    Objects.requireNonNull(tableData, "tableData can not be null!");
-    if (ObjectUtils.isEmpty(sortProperties)) {
-      throw new IllegalArgumentException("sortProperties can not be null nor empty!");
-    }
-
-    // check the sortProperties
-    for (SortOrderProperty sortProp : sortProperties) {
-      if (tableData.getColumn(sortProp.property) == null) {
-        throw new IllegalArgumentException(
-            "The given TableData has no property with the descibed SortOrderProperty: ["
-                + sortProp.property.getUri() + "]!");
-      }
-    }
-
-    sortRows(tableData.rowModel.rows, sortProperties);
-  }
-
-  public static <E extends EntityDefinition> void sortByFilterExpression(TableData<E> tableData,
-      List<FilterExpressionOrderBy> sortProperties) {
-    List<SortOrderProperty> sortOrders = sortProperties.stream()
-        .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
-            ? tableData.entity().getProperty(orderBy.getPropertyName()).desc()
-            : tableData.entity().getProperty(orderBy.getPropertyName()).asc())
-        .collect(toList());
-    sort(tableData, sortOrders);
-  }
-
-  /**
-   * Creates a new {@link TableData} that is sorted by the given {@link SortOrderProperty}-ies.</br>
-   * The source and the result TableData both will exist in the memory, so be aware of the double
-   * memory consumption.
-   *
-   * @param <E> The {@link EntityDefinition} of the {@link TableData}
-   * @param tableData The source {@link TableData}
-   * @param sortProperties The properties describing the sort orders
-   * @return The new sorted {@link TableData}
-   */
-  public static <E extends EntityDefinition> TableData<E> sortToNew(TableData<E> tableData,
-      List<SortOrderProperty> sortProperties) {
-    Objects.requireNonNull(tableData, "tableData can not be null!");
-    if (ObjectUtils.isEmpty(sortProperties)) {
-      throw new IllegalArgumentException("sortProperties can not be null nor empty!");
-    }
-
-    // check the sortProperties
-    for (SortOrderProperty sortProp : sortProperties) {
-      if (tableData.getColumn(sortProp.property) == null) {
-        throw new IllegalArgumentException(
-            "The given TableData has no property with the descibed SortProperty: ["
-                + sortProp.property.getUri() + "]!");
-      }
-    }
-
-    TableData<E> result = copy(tableData);
-    sortRows(result.rowModel.rows, sortProperties);
-
-    return result;
-  }
-
-  private static void sortRows(List<DataRow> rows, List<SortOrderProperty> sortProperties) {
-    Collections.sort(rows, getDataRowComparator(sortProperties));
-  }
-
-  public static Comparator<DataRow> getDataRowComparator(List<SortOrderProperty> sortProperties) {
-    return (row1, row2) -> {
-      for (SortOrderProperty sortProp : sortProperties) {
-        Property<?> prop = sortProp.property;
-        Comparator<Object> comparator = (Comparator<Object>) prop.getComparator();
-        if (comparator == null) {
-          return 0;
-        }
-        Object o1 = row1.get(prop);
-        Object o2 = row2.get(prop);
-        int res = comparator.compare(o1, o2);
-        if (res != 0) {
-          if (o1 == null) {
-            return sortProp.nullsFirst ? -1 : 1;
-          } else if (o2 == null) {
-            return sortProp.nullsFirst ? 1 : -1;
-          }
-          // invert only when neither o1 nor o2 is null, nullsFirst is stronger than asc (??)
-          return sortProp.asc ? res : res * -1;
-        }
-      }
-
-      return 0;
-    };
   }
 
   /**

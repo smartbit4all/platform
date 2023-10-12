@@ -8,28 +8,41 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.RandomAccess;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.serialize.TableDataPager;
 import org.smartbit4all.domain.utility.serialize.TableDataSerializer;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 /**
  *
@@ -46,6 +59,8 @@ public class TableDataApiImpl implements TableDataApi {
   private static final String TABLEDATACONTENTS = "tabledatacontents";
 
   private static final String TABLEDATAFILEEXTESION = ".td";
+
+  private static final int defaultChunkSize = 100;
 
   private static final Logger log = LoggerFactory.getLogger(TableDataApiImpl.class);
 
@@ -186,5 +201,200 @@ public class TableDataApiImpl implements TableDataApi {
         });
     return table.build(objectApi);
   }
+
+
+
+  @Override
+  public <E extends EntityDefinition> void sort(TableData<E> tableData,
+      List<SortOrderProperty> sortProperties) {
+    sort(tableData, sortProperties, false);
+  }
+
+  private <E extends EntityDefinition> Property<?> getComplexColumn(TableData<E> tableData,
+      String propertyName) {
+    if (propertyName.contains(StringConstant.DOT)) {
+      String[] path = propertyName.split(StringConstant.DOT_REGEX);
+      String column = path[0];
+      return tableData.entity().getProperty(column);
+    }
+    return null;
+  }
+
+  @Override
+  public <E extends EntityDefinition> void sortByFilterExpression(TableData<E> tableData,
+      List<FilterExpressionOrderBy> sortProperties) {
+    List<SortOrderProperty> sortOrders = sortProperties.stream()
+        .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
+            ? tableData.entity().getProperty(orderBy.getPropertyName()).desc()
+            : tableData.entity().getProperty(orderBy.getPropertyName()).asc())
+        .collect(toList());
+    sort(tableData, sortOrders);
+  }
+
+  @Override
+  public <E extends EntityDefinition> TableData<E> sort(TableData<E> tableData,
+      List<SortOrderProperty> sortProperties, boolean toNewTableData) {
+
+
+    Objects.requireNonNull(tableData, "tableData can not be null!");
+    if (ObjectUtils.isEmpty(sortProperties)) {
+      throw new IllegalArgumentException("sortProperties can not be null nor empty!");
+    }
+
+    // check the sortProperties
+    for (SortOrderProperty sortProp : sortProperties) {
+      if (tableData.getColumn(sortProp.property) == null) {
+        Property<?> complexColumn = getComplexColumn(tableData, sortProp.property.getName());
+        if (complexColumn == null || tableData.getColumn(complexColumn) == null)
+          throw new IllegalArgumentException(
+              "The given TableData has no property with the descibed SortOrderProperty: ["
+                  + sortProp.property.getUri() + "]!");
+
+      }
+    }
+
+    if (toNewTableData) {
+      tableData = TableDatas.copy(tableData);
+    }
+    sortRows(tableData.rows(), sortProperties);
+
+    return tableData;
+  }
+
+  private void sortRows(List<DataRow> rows, List<SortOrderProperty> sortProperties) {
+    Collections.sort(rows, getDataRowComparator(sortProperties));
+  }
+
+  private Comparator<DataRow> getDataRowComparator(List<SortOrderProperty> sortProperties) {
+    return (row1, row2) -> {
+      for (SortOrderProperty sortProp : sortProperties) {
+        Property<?> prop = sortProp.property;
+        Comparator<Object> comparator = (Comparator<Object>) prop.getComparator();
+        if (comparator == null) {
+          return 0;
+        }
+        Object o1 = getObject(row1, prop);
+        Object o2 = getObject(row2, prop);
+        int res = comparator.compare(o1, o2);
+        if (res != 0) {
+          if (o1 == null) {
+            return sortProp.nullsFirst ? -1 : 1;
+          } else if (o2 == null) {
+            return sortProp.nullsFirst ? 1 : -1;
+          }
+          // invert only when neither o1 nor o2 is null, nullsFirst is stronger than asc (??)
+          return sortProp.asc ? res : res * -1;
+        }
+      }
+
+      return 0;
+    };
+  }
+
+  private Object getObject(DataRow row, Property<?> prop) {
+    if (row.tableData().getColumn(prop) == null) {
+      Property<?> complexColumn = getComplexColumn(row.tableData(), prop.getName());
+      if (complexColumn != null) {
+        Object object = row.get(complexColumn);
+        String[] path = prop.getName().split(StringConstant.DOT_REGEX);
+        String[] restPath = Arrays.copyOfRange(path, 1, path.length);
+        return objectApi.getValueFromObject(prop.type(), object, restPath);
+      }
+    }
+
+    return row.get(prop);
+  }
+
+  @Override
+  public List<Integer> getSortedIndexes(TableDataPager<?> pager,
+      List<SortOrderProperty> sortProperties)
+      throws Exception {
+    return getSortedIndexes(pager, sortProperties, defaultChunkSize);
+  }
+
+  /**
+   * Returns the sorted index list of the given serialized {@link TableData}
+   *
+   * @param chunkSize number of rows to fetch for one page from the serialized data
+   */
+  @Override
+  public List<Integer> getSortedIndexes(TableDataPager<?> pager,
+      List<SortOrderProperty> sortProperties, final int chunkSize) throws Exception {
+
+    final int totalRowCount = pager.getTotalRowCount();
+
+    // sort the table data in rounds, store the indexes
+    Map<Integer, List<Integer>> sortedChunkIndexesByRound = new HashMap<>();
+    int offset = 0;
+    int roundCntr = 0;
+    while (offset < totalRowCount) {
+      TableData<?> tableDataPage = pager.fetch(offset, chunkSize);
+      List<DataRow> originalPageRows = new ArrayList<>(tableDataPage.rows());
+      sort(tableDataPage, sortProperties);
+
+      List<Integer> sortedRoundIndexes = new ArrayList<>();
+      for (DataRow dataRow : tableDataPage.rows()) {
+        int orignalIndex = originalPageRows.indexOf(dataRow);
+        sortedRoundIndexes.add(orignalIndex + roundCntr * chunkSize);
+      }
+
+      sortedChunkIndexesByRound.put(roundCntr, sortedRoundIndexes);
+      offset += chunkSize;
+      roundCntr++;
+    }
+
+
+    // init the cache
+    Map<Integer, DataRow> cache = new LinkedHashMap<>(roundCntr);
+    for (int i = 0; i < roundCntr; i++) {
+      List<Integer> roundIndexes = sortedChunkIndexesByRound.get(i);
+      Integer roundIdx = roundIndexes.remove(0);
+      cache.put(roundIdx, seekRow(pager, roundIdx));
+    }
+
+    List<Integer> sortedIndexes = new ArrayList<>();
+    Comparator<DataRow> dataRowComparator = getDataRowComparator(sortProperties);
+
+    /*
+     * fill the result index list: sorting the cache, put the first one to the result list, then
+     * take the next index from the round that the current index was taken from
+     */
+    while (sortedIndexes.size() < totalRowCount) {
+      // sort the cache
+      cache = cache.entrySet()
+          .stream()
+          .sorted((entry1, entry2) -> {
+            return dataRowComparator.compare(entry1.getValue(), entry2.getValue());
+          })
+          .collect(
+              Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y,
+                  LinkedHashMap::new));
+
+      // get the first one from the cache
+      Iterator<Integer> cacheIter = cache.keySet().iterator();
+      Integer idx = cacheIter.next();
+      cacheIter.remove();
+      sortedIndexes.add(idx);
+
+      // find the next index from the rounds and add to cache
+      int sourceRound = idx / chunkSize;
+      List<Integer> roundIndexes = sortedChunkIndexesByRound.get(sourceRound);
+      if (!roundIndexes.isEmpty()) {
+        Integer nextRoundIdx = roundIndexes.remove(0);
+        cache.put(nextRoundIdx, seekRow(pager, nextRoundIdx));
+      }
+    }
+
+    return sortedIndexes;
+  }
+
+  private DataRow seekRow(TableDataPager<?> pager, int idx) throws Exception {
+    TableData<?> tableData = pager.fetch(idx, 1);
+    if (tableData.isEmpty()) {
+      return null;
+    }
+    return TableDatas.copy(tableData).rows().get(0);
+  }
+
 
 }

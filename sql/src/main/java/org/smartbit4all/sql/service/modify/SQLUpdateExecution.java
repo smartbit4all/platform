@@ -17,6 +17,7 @@ package org.smartbit4all.sql.service.modify;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression;
@@ -67,10 +68,13 @@ public class SQLUpdateExecution<E extends EntityDefinition> {
 
   private SQLDBParameter sqlDBParameter;
 
+  private ObjectApi objectApi;
+
   public SQLUpdateExecution(JdbcTemplate jdbcTemplate, UpdateInput<E> input, String schema,
-      SQLDBParameter sqlDBParameter) {
+      SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
+    this.objectApi = objectApi;
   }
 
   public UpdateOutput execute() {

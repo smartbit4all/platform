@@ -281,7 +281,7 @@ public class CrudApiImpl implements CrudApi {
     out.setTableData(TableDatas.copyRows(tableData, result, queryInput.properties()));
 
     if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
-      TableDatas.sort(out.getTableData(), queryInput.orderBys());
+      tableDataApi.sort(out.getTableData(), queryInput.orderBys());
     }
     return out;
 

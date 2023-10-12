@@ -151,6 +151,18 @@ public class PropertyOwned<T> extends Property<T> {
     return funcProp;
   }
 
+
+  public static <R, T> PropertyOwned<R> createFunctionProperty(PropertyOwned<T> baseProperty,
+      PropertyFunction function, Class<R> type, JDBCDataConverterHelper jdbcDataConverterHelper) {
+    PropertyOwned<R> funcProp =
+        new PropertyOwned<>(function.getName(), type, baseProperty.getDbExpression().get(null),
+            jdbcDataConverterHelper);
+    funcProp.setEntityDef(baseProperty.getEntityDef());
+    funcProp.setPropertyFunction(function);
+    return funcProp;
+  }
+
+
   /**
    * Set the length of the database column type. Works on strings only.
    *

@@ -585,4 +585,8 @@ public class DataRow {
     return hash;
   }
 
+  public TableData<?> tableData() {
+    return tableData;
+  }
+
 }

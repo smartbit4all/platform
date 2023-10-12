@@ -18,8 +18,8 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
-import org.smartbit4all.domain.utility.SerializedTableDataSorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,6 +43,9 @@ public class TableDataSerializerTest {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private TableDataApi tableDataApi;
 
   @Test
   public void test01() throws Exception {
@@ -146,7 +149,7 @@ public class TableDataSerializerTest {
     TableDataPager<UserAccountDef> pager =
         TableDataPager.create(UserAccountDef.class, tempFile, entityManager, objectApi);
 
-    List<Integer> sortedIndexes = SerializedTableDataSorter.getSortedIndexes(pager,
+    List<Integer> sortedIndexes = tableDataApi.getSortedIndexes(pager,
         Collections.singletonList(userAccountDef.id().asc()));
 
     List<Integer> expectedIndexes = new ArrayList<>(testRowCount);
@@ -156,7 +159,7 @@ public class TableDataSerializerTest {
 
     assertEquals(expectedIndexes, sortedIndexes);
 
-    List<Integer> sortedIndexes2 = SerializedTableDataSorter.getSortedIndexes(pager,
+    List<Integer> sortedIndexes2 = tableDataApi.getSortedIndexes(pager,
         Arrays.asList(userAccountDef.lastname().desc(),
             userAccountDef.firstname().asc()));
 

@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.PropertyOwned;
@@ -73,10 +74,13 @@ public class SQLCreateExecution<E extends EntityDefinition> {
 
   private SQLDBParameter sqlDBParameter;
 
+  private ObjectApi objectApi;
+
   public SQLCreateExecution(JdbcTemplate jdbcTemplate, CreateInput<E> input, String schema,
-      SQLDBParameter sqlDBParameter) {
+      SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
+    this.objectApi = objectApi;
   }
 
   // private final class PreparedStatementSetter
@@ -173,7 +177,9 @@ public class SQLCreateExecution<E extends EntityDefinition> {
 
       for (int i = 0; i < values.size(); i++) {
         SQLBindValue bindValue = values.get(i);
-        bindValue.setValue(input.get(i));
+
+        Object value = getValue(bindValue, input.get(i));
+        bindValue.setValue(value);
       }
       for (int i = 0; i < identifiers.size(); i++) {
         SQLBindValue bindValue = identifiers.get(i);
@@ -226,6 +232,18 @@ public class SQLCreateExecution<E extends EntityDefinition> {
     // executedCount += SQLModifyUtility.executeBatch(stmt);
     // }
     // }
+  }
+
+  private Object getValue(SQLBindValue bindValue, Object value) {
+    if (value != null
+        && bindValue.getProperty().jdbcConverter() != null
+        && !bindValue.getProperty().jdbcConverter().extType().isInstance(value)
+        && bindValue.getProperty().jdbcConverter().extType().isAssignableFrom(String.class)) {
+      return objectApi.asString(value);
+    }
+
+
+    return value;
   }
 
   protected final CreateOutput getOutput() {

@@ -2,6 +2,7 @@ package org.smartbit4all.domain.meta;
 
 import static java.util.stream.Collectors.toList;
 import java.util.List;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
@@ -36,6 +37,7 @@ public class EntityDefinitionBuilder {
     EntityDefinitionBuilder builder = new EntityDefinitionBuilder();
     builder.instance
         .setDataConverterHelper(ctx.getBean(JDBCDataConverterHelper.class));
+    builder.instance.setObjectDefinitionApi(ctx.getBean(ObjectDefinitionApi.class));
     return builder;
   }
 

@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.units.qual.C;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.meta.DataConverter;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -477,11 +476,12 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * We can use the list of rows for accessing the records in the data table.
    *
-   * @return An unmodifiable list of the rows.
+   * @return A list of the rows.
    */
   public List<DataRow> rows() {
-    return Collections.unmodifiableList(rowModel.rows);
+    return rowModel.rows;
   }
+
 
   /**
    * We can iterate through the table data row by row. Every row is returned as a bean created as
