@@ -14,16 +14,17 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.domain.meta.ExpressionFinder.FoundExpression;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SB4ExpressionTest {
 
@@ -32,7 +33,7 @@ class SB4ExpressionTest {
   @BeforeAll
   static void setup() {
     ctx = new AnnotationConfigApplicationContext();
-    ctx.register(MetaConfiguration.class);
+    ctx.register(PlatformApiConfig.class);
     ctx.register(SecurityEntityConfiguration.class);
     ctx.refresh();
   }

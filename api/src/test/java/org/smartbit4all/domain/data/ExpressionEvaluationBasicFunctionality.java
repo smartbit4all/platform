@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,19 +22,18 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.data.index.StorageLoaderTableData;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.data.storage.TestTableDataIndex;
 import org.smartbit4all.domain.meta.Expression;
-import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.security.AddressDef;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Expression Evaluaton test
@@ -83,7 +83,7 @@ public class ExpressionEvaluationBasicFunctionality {
   @BeforeAll
   private static void init() {
     ctx = new AnnotationConfigApplicationContext();
-    ctx.register(MetaConfiguration.class);
+    ctx.register(PlatformApiConfig.class);
     ctx.register(SecurityEntityConfiguration.class);
     ctx.refresh();
 
