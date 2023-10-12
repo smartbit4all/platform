@@ -308,8 +308,9 @@ class ObjectApiTest {
       ObjectNode rootNode = objectApi.load(rootUri);
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNull();
       rootNode.aspects().modify("ACL", ACL.class,
-          acl -> new ACL().addEntriesItem(new ACLEntry().subject(new Subject().ref(everybodyUri))
-              .addOperationsItem("read").addOperationsItem("write")));
+          acl -> new ACL().rootEntry(
+              new ACLEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(everybodyUri))
+                  .addOperationsItem("read").addOperationsItem("write"))));
       objectApi.save(rootNode);
     }
     {
@@ -318,7 +319,7 @@ class ObjectApiTest {
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNotNull();
       ACL acl = rootNode.aspects().get("ACL", ACL.class);
       org.assertj.core.api.Assertions
-          .assertThat(acl.getEntries().stream().map(e -> e.getSubject().getRef()))
+          .assertThat(acl.getRootEntry().getEntries().stream().map(e -> e.getSubject().getRef()))
           .contains(everybodyUri);
     }
 
@@ -364,10 +365,10 @@ class ObjectApiTest {
           objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 1"));
       categoryNode.aspects().modify(
           AccessControlInternalApi.ACL_ASPECT, ACL.class,
-          acl -> new ACL().addEntriesItem(
+          acl -> new ACL().rootEntry(new ACLEntry().addEntriesItem(
               new ACLEntry().subject(getSubject(allSubjects, admin)).addOperationsItem("read"))
               .addEntriesItem(new ACLEntry().subject(getSubject(allSubjects, normal))
-                  .addOperationsItem("write")));
+                  .addOperationsItem("write"))));
       objectsToEval.add(objectApi.save(categoryNode));
     }
     {
@@ -375,10 +376,10 @@ class ObjectApiTest {
           objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 2"));
       categoryNode.aspects().modify(
           AccessControlInternalApi.ACL_ASPECT, ACL.class,
-          acl -> new ACL().addEntriesItem(
+          acl -> new ACL().rootEntry(new ACLEntry().addEntriesItem(
               new ACLEntry().subject(getSubject(allSubjects, normal)).addOperationsItem("read"))
               .addEntriesItem(new ACLEntry().subject(getSubject(allSubjects, rootAdmin))
-                  .addOperationsItem("write")));
+                  .addOperationsItem("write"))));
       objectsToEval.add(objectApi.save(categoryNode));
     }
     {

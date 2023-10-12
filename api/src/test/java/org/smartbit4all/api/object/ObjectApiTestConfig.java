@@ -4,6 +4,7 @@ import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
@@ -66,15 +67,19 @@ public class ObjectApiTestConfig {
   @Bean
   SubjectModel sampleSubjectModel() {
     return new SubjectModel().name(SAMPLE_SUBJECT_MODEL)
-        .putDescriptorsItem(Group.class.getName(),
+        .title(new LangString().defaultValue("ACL model"))
+        .addDescriptorsItem(
             new SubjectTypeDescriptor()
-                .apiName(SubjectContributionByGroup.class.getName()).name(Group.class.getName()))
-        .putDescriptorsItem(User.class.getName(),
+                .apiName(SubjectContributionByGroup.class.getName()).name(Group.class.getName())
+                .title(new LangString().defaultValue("Security group")))
+        .addDescriptorsItem(
             new SubjectTypeDescriptor()
-                .apiName(SubjectContributionByUser.class.getName()).name(User.class.getName()))
-        .putDescriptorsItem(SampleCategory.class.getName(),
+                .apiName(SubjectContributionByUser.class.getName()).name(User.class.getName())
+                .title(new LangString().defaultValue("User")))
+        .addDescriptorsItem(
             new SubjectTypeDescriptor()
-                .apiName(SampleCategory.class.getName()).name(SampleCategory.class.getName()));
+                .apiName(SampleCategory.class.getName()).name(SampleCategory.class.getName())
+                .title(new LangString().defaultValue("Sample category")));
   }
 
   @Bean

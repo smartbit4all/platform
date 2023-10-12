@@ -95,9 +95,9 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
   @Override
   public List<Subject> getSubjectsOfUser(String modelName, URI userUri) {
     SubjectModel model = getModel(modelName);
-    return model.getDescriptors().entrySet().stream()
+    return model.getDescriptors().stream()
         .flatMap(
-            e -> getContributionApi(e.getValue().getApiName()).getUserSubjects(userUri).stream())
+            d -> getContributionApi(d.getApiName()).getUserSubjects(userUri).stream())
         .collect(toList());
   }
 
@@ -124,18 +124,18 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
   @Override
   public List<Subject> getAllSubjects(String modelName) {
     SubjectModel model = getModel(modelName);
-    return model.getDescriptors().entrySet().stream()
+    return model.getDescriptors().stream()
         .flatMap(
-            e -> getContributionApi(e.getValue().getApiName()).getAllSubjects().stream())
+            d -> getContributionApi(d.getApiName()).getAllSubjects().stream())
         .collect(toList());
   }
 
   @Override
   public List<URI> getUsersOf(String modelName, List<URI> subjects) {
     SubjectModel model = getModel(modelName);
-    return model.getDescriptors().entrySet().stream()
+    return model.getDescriptors().stream()
         .flatMap(
-            e -> getContributionApi(e.getValue().getApiName()).getUsersOf(subjects).stream())
+            d -> getContributionApi(d.getApiName()).getUsersOf(subjects).stream())
         .distinct()
         .collect(toList());
   }

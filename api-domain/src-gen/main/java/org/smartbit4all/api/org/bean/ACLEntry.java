@@ -31,24 +31,177 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The ACL entry refers to one subject and defines the operations available for the given subject. 
+ * The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. 
  */
-@ApiModel(description = "The ACL entry refers to one subject and defines the operations available for the given subject. ")
+@ApiModel(description = "The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. ")
 @JsonPropertyOrder({
+  ACLEntry.ENTRY_KIND,
   ACLEntry.SUBJECT,
-  ACLEntry.OPERATIONS
+  ACLEntry.SUBJECT_CONDITION,
+  ACLEntry.SET_OPERATION,
+  ACLEntry.OPERATIONS,
+  ACLEntry.ENTRIES
 })
 @JsonTypeName("ACLEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ACLEntry {
+  /**
+   * The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. 
+   */
+  public enum EntryKindEnum {
+    SUBJECT("SUBJECT"),
+    
+    SET("SET");
+
+    private String value;
+
+    EntryKindEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static EntryKindEnum fromValue(String value) {
+      for (EntryKindEnum b : EntryKindEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String ENTRY_KIND = "entryKind";
+  private EntryKindEnum entryKind = EntryKindEnum.SUBJECT;
+
   public static final String SUBJECT = "subject";
   private Subject subject;
+
+  /**
+   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
+   */
+  public enum SubjectConditionEnum {
+    IN("IN"),
+    
+    NOTIN("NOTIN");
+
+    private String value;
+
+    SubjectConditionEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SubjectConditionEnum fromValue(String value) {
+      for (SubjectConditionEnum b : SubjectConditionEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String SUBJECT_CONDITION = "subjectCondition";
+  private SubjectConditionEnum subjectCondition = SubjectConditionEnum.IN;
+
+  /**
+   * Gets or Sets setOperation
+   */
+  public enum SetOperationEnum {
+    UNION("UNION"),
+    
+    INTERSECT("INTERSECT"),
+    
+    DIF("DIF"),
+    
+    SYMMETRICDIF("SYMMETRICDIF");
+
+    private String value;
+
+    SetOperationEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SetOperationEnum fromValue(String value) {
+      for (SetOperationEnum b : SetOperationEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String SET_OPERATION = "setOperation";
+  private SetOperationEnum setOperation = SetOperationEnum.UNION;
 
   public static final String OPERATIONS = "operations";
   private List<String> operations = new ArrayList<>();
 
+  public static final String ENTRIES = "entries";
+  private List<ACLEntry> entries = new ArrayList<>();
+
   public ACLEntry() { 
   }
+
+  public ACLEntry entryKind(EntryKindEnum entryKind) {
+    
+    this.entryKind = entryKind;
+    return this;
+  }
+
+   /**
+   * The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. 
+   * @return entryKind
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. ")
+  @JsonProperty(ENTRY_KIND)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public EntryKindEnum getEntryKind() {
+    return entryKind;
+  }
+
+
+  @JsonProperty(ENTRY_KIND)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setEntryKind(EntryKindEnum entryKind) {
+    this.entryKind = entryKind;
+  }
+
 
   public ACLEntry subject(Subject subject) {
     
@@ -75,6 +228,60 @@ public class ACLEntry {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubject(Subject subject) {
     this.subject = subject;
+  }
+
+
+  public ACLEntry subjectCondition(SubjectConditionEnum subjectCondition) {
+    
+    this.subjectCondition = subjectCondition;
+    return this;
+  }
+
+   /**
+   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
+   * @return subjectCondition
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. ")
+  @JsonProperty(SUBJECT_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SubjectConditionEnum getSubjectCondition() {
+    return subjectCondition;
+  }
+
+
+  @JsonProperty(SUBJECT_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubjectCondition(SubjectConditionEnum subjectCondition) {
+    this.subjectCondition = subjectCondition;
+  }
+
+
+  public ACLEntry setOperation(SetOperationEnum setOperation) {
+    
+    this.setOperation = setOperation;
+    return this;
+  }
+
+   /**
+   * Get setOperation
+   * @return setOperation
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SET_OPERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SetOperationEnum getSetOperation() {
+    return setOperation;
+  }
+
+
+  @JsonProperty(SET_OPERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSetOperation(SetOperationEnum setOperation) {
+    this.setOperation = setOperation;
   }
 
 
@@ -111,6 +318,40 @@ public class ACLEntry {
   }
 
 
+  public ACLEntry entries(List<ACLEntry> entries) {
+    
+    this.entries = entries;
+    return this;
+  }
+
+  public ACLEntry addEntriesItem(ACLEntry entriesItem) {
+    this.entries.add(entriesItem);
+    return this;
+  }
+
+   /**
+   * The list if entries in the given set if the kind is SET. 
+   * @return entries
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The list if entries in the given set if the kind is SET. ")
+  @JsonProperty(ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<ACLEntry> getEntries() {
+    return entries;
+  }
+
+
+  @JsonProperty(ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setEntries(List<ACLEntry> entries) {
+    this.entries = entries;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -120,21 +361,29 @@ public class ACLEntry {
       return false;
     }
     ACLEntry acLEntry = (ACLEntry) o;
-    return Objects.equals(this.subject, acLEntry.subject) &&
-        Objects.equals(this.operations, acLEntry.operations);
+    return Objects.equals(this.entryKind, acLEntry.entryKind) &&
+        Objects.equals(this.subject, acLEntry.subject) &&
+        Objects.equals(this.subjectCondition, acLEntry.subjectCondition) &&
+        Objects.equals(this.setOperation, acLEntry.setOperation) &&
+        Objects.equals(this.operations, acLEntry.operations) &&
+        Objects.equals(this.entries, acLEntry.entries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subject, operations);
+    return Objects.hash(entryKind, subject, subjectCondition, setOperation, operations, entries);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLEntry {\n");
+    sb.append("    entryKind: ").append(toIndentedString(entryKind)).append("\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
+    sb.append("    subjectCondition: ").append(toIndentedString(subjectCondition)).append("\n");
+    sb.append("    setOperation: ").append(toIndentedString(setOperation)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
+    sb.append("    entries: ").append(toIndentedString(entries)).append("\n");
     sb.append("}");
     return sb.toString();
   }

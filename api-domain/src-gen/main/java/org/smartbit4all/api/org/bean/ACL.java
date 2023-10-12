@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,48 +33,43 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. ")
 @JsonPropertyOrder({
-  ACL.ENTRIES
+  ACL.ROOT_ENTRY
 })
 @JsonTypeName("ACL")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ACL {
-  public static final String ENTRIES = "entries";
-  private List<ACLEntry> entries = new ArrayList<>();
+  public static final String ROOT_ENTRY = "rootEntry";
+  private ACLEntry rootEntry;
 
   public ACL() { 
   }
 
-  public ACL entries(List<ACLEntry> entries) {
+  public ACL rootEntry(ACLEntry rootEntry) {
     
-    this.entries = entries;
-    return this;
-  }
-
-  public ACL addEntriesItem(ACLEntry entriesItem) {
-    this.entries.add(entriesItem);
+    this.rootEntry = rootEntry;
     return this;
   }
 
    /**
-   * Get entries
-   * @return entries
+   * Get rootEntry
+   * @return rootEntry
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(ENTRIES)
+  @JsonProperty(ROOT_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLEntry> getEntries() {
-    return entries;
+  public ACLEntry getRootEntry() {
+    return rootEntry;
   }
 
 
-  @JsonProperty(ENTRIES)
+  @JsonProperty(ROOT_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setEntries(List<ACLEntry> entries) {
-    this.entries = entries;
+  public void setRootEntry(ACLEntry rootEntry) {
+    this.rootEntry = rootEntry;
   }
 
 
@@ -89,19 +82,19 @@ public class ACL {
       return false;
     }
     ACL ACL = (ACL) o;
-    return Objects.equals(this.entries, ACL.entries);
+    return Objects.equals(this.rootEntry, ACL.rootEntry);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(entries);
+    return Objects.hash(rootEntry);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACL {\n");
-    sb.append("    entries: ").append(toIndentedString(entries)).append("\n");
+    sb.append("    rootEntry: ").append(toIndentedString(rootEntry)).append("\n");
     sb.append("}");
     return sb.toString();
   }

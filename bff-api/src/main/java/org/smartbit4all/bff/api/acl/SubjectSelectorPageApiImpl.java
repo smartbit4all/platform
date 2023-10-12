@@ -33,6 +33,7 @@ import org.smartbit4all.bff.api.groupselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageModel>
     implements SubjectSelectorPageApi {
@@ -63,9 +64,12 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   public SubjectSelectorPageModel initModel(View view) {
 
     SubjectModel model = getSubjectModel(view);
-    Object firstDescriptorName = model.getDescriptors().keySet().toArray()[0];
+    String firstDescriptorName = model.getDescriptors().get(0).getName();
 
-    initGrid(firstDescriptorName.toString(), view.getUuid(), model.getDescriptors());
+    Map<String, SubjectTypeDescriptor> descriptorMap =
+        model.getDescriptors().stream().collect(toMap(SubjectTypeDescriptor::getName, d -> d));
+
+    initGrid(firstDescriptorName, view.getUuid(), descriptorMap);
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SUBMIT_SELECTION)
@@ -73,10 +77,12 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
             .color("primary").type(UiActionButtonType.RAISED)));
 
     return new SubjectSelectorPageModel()
-        .descriptors(model.getDescriptors())
-        .selectedDescriptor(model.getDescriptors().get(firstDescriptorName))
-        .selectedSubjectName(firstDescriptorName.toString())
-        .sujectModelName(model.getName());
+        .descriptors(
+            descriptorMap)
+        .selectedDescriptor(model.getDescriptors().get(0))
+        .selectedSubjectName(firstDescriptorName)
+        .sujectModelName(
+            model.getTitle() != null ? localeSettingApi.get(model.getTitle()) : model.getName());
   }
 
   @Override
