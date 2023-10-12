@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.ViewData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +40,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ViewContextData.UUID,
   ViewContextData.VIEWS,
-  ViewContextData.LINKS
+  ViewContextData.LINKS,
+  ViewContextData.DOWNLOADS
 })
 @JsonTypeName("ViewContextData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -52,6 +54,9 @@ public class ViewContextData {
 
   public static final String LINKS = "links";
   private List<Link> links = new ArrayList<>();
+
+  public static final String DOWNLOADS = "downloads";
+  private List<DownloadedFile> downloads = new ArrayList<>();
 
   public ViewContextData() { 
   }
@@ -152,6 +157,40 @@ public class ViewContextData {
   }
 
 
+  public ViewContextData downloads(List<DownloadedFile> downloads) {
+    
+    this.downloads = downloads;
+    return this;
+  }
+
+  public ViewContextData addDownloadsItem(DownloadedFile downloadsItem) {
+    this.downloads.add(downloadsItem);
+    return this;
+  }
+
+   /**
+   * Get downloads
+   * @return downloads
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(DOWNLOADS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<DownloadedFile> getDownloads() {
+    return downloads;
+  }
+
+
+  @JsonProperty(DOWNLOADS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDownloads(List<DownloadedFile> downloads) {
+    this.downloads = downloads;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -163,12 +202,13 @@ public class ViewContextData {
     ViewContextData viewContextData = (ViewContextData) o;
     return Objects.equals(this.uuid, viewContextData.uuid) &&
         Objects.equals(this.views, viewContextData.views) &&
-        Objects.equals(this.links, viewContextData.links);
+        Objects.equals(this.links, viewContextData.links) &&
+        Objects.equals(this.downloads, viewContextData.downloads);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, views, links);
+    return Objects.hash(uuid, views, links, downloads);
   }
 
   @Override
@@ -178,6 +218,7 @@ public class ViewContextData {
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
+    sb.append("    downloads: ").append(toIndentedString(downloads)).append("\n");
     sb.append("}");
     return sb.toString();
   }

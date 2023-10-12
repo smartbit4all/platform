@@ -175,7 +175,8 @@ public class ViewContextServiceImpl implements ViewContextService {
         .views(context.getViews().stream()
             .map(this::convertViewToUi)
             .collect(toList()))
-        .links(context.getLinks());
+        .links(context.getLinks())
+        .downloads(context.getDownloads());
   }
 
   private ViewData convertViewToUi(View view) {
@@ -511,11 +512,14 @@ public class ViewContextServiceImpl implements ViewContextService {
     lock.lock();
     try {
       ObjectNode contextNode = objectApi.load(viewContextUri);
-      // clear links on load
+      // clear links & downloads on load
       contextNode.modify(ViewContext.class,
           c -> {
             if (c.getLinks() != null) {
               c.getLinks().clear();
+            }
+            if (c.getDownloads() != null) {
+              c.getDownloads().clear();
             }
             return c;
           });
