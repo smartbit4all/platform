@@ -53,4 +53,14 @@ public class SubjectContributionByUser extends ContributionApiImpl
         .collect(toList());
   }
 
+  @Override
+  public List<Subject> getAllSubjects(List<URI> baseList) {
+    if (baseList == null || objectApi == null || orgApi == null) {
+      return Collections.emptyList();
+    }
+    return baseList.stream().filter(s -> objectApi.definition(s).instanceOf(User.class))
+        .map(u -> new Subject().type(User.class.getName()).ref(u))
+        .collect(toList());
+  }
+
 }

@@ -6,13 +6,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.logging.log4j.util.Strings;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.SubjectConditionEnum;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -34,6 +37,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private OrgApi orgApi;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -98,8 +104,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     if (inList != null && !inList.isEmpty()) {
       result.addAll(inList.stream().flatMap(e -> e.getOperations().stream()).collect(toList()));
     } else {
-      // By default all the operations are available.
-      result.addAll(operations);
+      // If the acl is empty then by default all the operations are available.
+      // else nothing.
+      if (acl.getRootEntry().getEntries().isEmpty()) {
+        result.addAll(operations);
+      }
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
     List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
@@ -108,6 +117,44 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           notInLIst.stream().flatMap(e -> e.getOperations().stream()).collect(toSet());
       result.removeIf(o -> forbiddenOperations.contains(o));
     }
+    return result;
+  }
+
+  @Override
+  public Map<String, List<URI>> getUsersByOperation(String modelName, ACL acl,
+      List<String> operations) {
+    Map<SubjectConditionEnum, List<ACLEntry>> entriesByCond =
+        acl.getRootEntry().getEntries().stream().collect(groupingBy(e -> e.getSubjectCondition()));
+    Map<String, List<URI>> result;
+    List<ACLEntry> inList = entriesByCond.get(SubjectConditionEnum.IN);
+    if (inList != null && !inList.isEmpty()) {
+      List<User> allUsers = orgApi.getAllUsers();
+      List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
+      result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
+    } else {
+      // We construct the subjects for every operation
+      result = getUsersByOpartion(modelName, operations, inList);
+    }
+    // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
+    List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
+    if (notInLIst != null && !notInLIst.isEmpty()) {
+      Map<String, List<URI>> forbiddenUsersByOperation =
+          getUsersByOpartion(modelName, operations, notInLIst);
+      for (Entry<String, List<URI>> entry : forbiddenUsersByOperation.entrySet()) {
+        List<URI> positiveList = result.get(entry.getKey());
+        positiveList.removeAll(entry.getValue());
+      }
+    }
+    return result;
+  }
+
+  private final Map<String, List<URI>> getUsersByOpartion(String modelName, List<String> operations,
+      List<ACLEntry> inList) {
+    Map<String, List<URI>> result;
+    result = operations.stream()
+        .collect(toMap(o -> o, o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
+            .filter(a -> a.getOperations().contains(o)).map(a -> a.getSubject())
+            .collect(toList()))));
     return result;
   }
 

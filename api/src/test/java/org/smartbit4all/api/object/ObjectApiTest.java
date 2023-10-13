@@ -337,9 +337,13 @@ class ObjectApiTest {
 
     URI admin = orgApi.saveGroup(new Group().builtIn(true).name("admin"));
     URI normal = orgApi.saveGroup(new Group().builtIn(true).name("normal"));
+    URI superGroup = orgApi.saveGroup(new Group().builtIn(true).name("super"));
+    orgApi.addChildGroup(orgApi.getGroup(superGroup), orgApi.getGroup(admin));
+    orgApi.addChildGroup(orgApi.getGroup(superGroup), orgApi.getGroup(normal));
 
     URI normalUserUri = createUser("normal user", "Normal Norman", normal);
     URI rootAdmin = createUser("root admin", "root admin", admin);
+    URI superUserUri = createUser("super user", "super user", superGroup);
 
     URI rootUri = objectApi.save(rootNode);
 
@@ -353,6 +357,15 @@ class ObjectApiTest {
 
       org.assertj.core.api.Assertions.assertThat(subjectsOfUser.stream().map(s -> s.getRef()))
           .containsExactlyInAnyOrder(admin, rootAdmin, rootUri);
+    }
+
+    {
+      List<Subject> subjectsOfUser =
+          subjectManagementApi.getAllSubjects(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL,
+              Arrays.asList(new Subject().ref(superGroup).type(Group.class.getName())));
+
+      org.assertj.core.api.Assertions.assertThat(subjectsOfUser.stream().map(s -> s.getRef()))
+          .containsExactlyInAnyOrder(admin, normal, superGroup);
     }
 
     List<URI> objectsToEval = new ArrayList<>();
@@ -387,6 +400,16 @@ class ObjectApiTest {
           objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 3"));
       objectsToEval.add(objectApi.save(categoryNode));
     }
+    {
+      ObjectNode categoryNode =
+          objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 4"));
+      categoryNode.aspects().modify(
+          AccessControlInternalApi.ACL_ASPECT, ACL.class,
+          acl -> new ACL().rootEntry(new ACLEntry().addEntriesItem(
+              new ACLEntry().subject(getSubject(allSubjects, superGroup)).addOperationsItem("read")
+                  .addOperationsItem("write"))));
+      objectsToEval.add(objectApi.save(categoryNode));
+    }
     List<String> operations = Arrays.asList("read", "write");
     {
       Map<String, Set<String>> operationsByCategory =
@@ -397,7 +420,23 @@ class ObjectApiTest {
       org.assertj.core.api.Assertions.assertThat(operationsByCategory)
           .containsEntry("My Category 1", new HashSet<>(Arrays.asList("read")))
           .containsEntry("My Category 2", new HashSet<>(Arrays.asList("write")))
-          .containsEntry("My Category 3", new HashSet<>(Arrays.asList("read", "write")));
+          .containsEntry("My Category 3", new HashSet<>(Arrays.asList("read", "write")))
+          .containsEntry("My Category 4", new HashSet<>());
+    }
+
+    {
+
+      Map<String, Set<String>> operationsByCategory =
+          objectsToEval.stream().map(u -> objectApi.loadLatest(u))
+              .collect(toMap(n -> n.getValueAsString(SampleCategory.NAME),
+                  n -> accessControlInternalApi.getAvailableOperationsOn(superUserUri, n,
+                      operations,
+                      ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL)));
+      org.assertj.core.api.Assertions.assertThat(operationsByCategory)
+          .containsEntry("My Category 1", new HashSet<>(Arrays.asList("read", "write")))
+          .containsEntry("My Category 2", new HashSet<>(Arrays.asList("read")))
+          .containsEntry("My Category 3", new HashSet<>(Arrays.asList("read", "write")))
+          .containsEntry("My Category 4", new HashSet<>(Arrays.asList("read", "write")));
     }
 
   }

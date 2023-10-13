@@ -53,6 +53,16 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
   List<Subject> getAllSubjects(String modelName);
 
   /**
+   * Get all the subjects that is implicitly expand the list. For example if we have a security
+   * group in the base list then this function return all the embedded groups also.
+   * 
+   * @param modelName The name of the subject model.
+   * @param baseList The base list of the subjects.
+   * @return The expanded list of the subjects with all the implicitly included subjects.
+   */
+  List<Subject> getAllSubjects(String modelName, List<Subject> baseList);
+
+  /**
    * Retrieves the uri list of the users belongs to the given subjects.
    * 
    * @param modelName The name of the model.
@@ -61,6 +71,6 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    *        managed by the given api or not.
    * @return The distinct list of the user URI belongs to the
    */
-  List<URI> getUsersOf(String modelName, List<URI> subjects);
+  List<URI> getUsersOf(String modelName, List<Subject> subjects);
 
 }

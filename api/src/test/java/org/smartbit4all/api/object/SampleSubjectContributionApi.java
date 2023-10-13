@@ -50,4 +50,15 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
     return Collections.emptyList();
   }
 
+  @Override
+  public List<Subject> getAllSubjects(List<URI> baseList) {
+    if (baseList == null || objectApi == null) {
+      return Collections.emptyList();
+    }
+    return baseList.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(SampleCategory.class))
+        .map(u -> new Subject().type(SampleCategory.class.getName()).ref(u))
+        .collect(toList());
+  }
+
 }

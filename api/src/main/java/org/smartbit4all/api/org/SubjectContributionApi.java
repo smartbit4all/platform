@@ -36,4 +36,10 @@ public interface SubjectContributionApi extends ContributionApi {
    */
   List<URI> getUsersOf(List<URI> subjects);
 
+  /**
+   * @param baseList The base list of the subjects.
+   * @return The expanded list of the subjects with all the implicitly included subjects.
+   */
+  List<Subject> getAllSubjects(List<URI> baseList);
+
 }

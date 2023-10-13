@@ -1,6 +1,7 @@
 package org.smartbit4all.api.org;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -131,13 +132,31 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
   }
 
   @Override
-  public List<URI> getUsersOf(String modelName, List<URI> subjects) {
+  public List<Subject> getAllSubjects(String modelName, List<Subject> baseList) {
     SubjectModel model = getModel(modelName);
     return model.getDescriptors().stream()
         .flatMap(
-            d -> getContributionApi(d.getApiName()).getUsersOf(subjects).stream())
+            d -> getContributionApi(d.getApiName())
+                .getAllSubjects(getRelatedSubjectUris(d.getName(), baseList))
+                .stream())
+        .collect(toList());
+  }
+
+  @Override
+  public List<URI> getUsersOf(String modelName, List<Subject> subjects) {
+    SubjectModel model = getModel(modelName);
+    return model.getDescriptors().stream()
+        .flatMap(
+            d -> getContributionApi(d.getApiName())
+                .getUsersOf(getRelatedSubjectUris(d.getName(), subjects)).stream())
         .distinct()
         .collect(toList());
+  }
+
+  private final List<URI> getRelatedSubjectUris(String descriptorName,
+      Collection<Subject> subjects) {
+    return subjects.stream().filter(s -> descriptorName.equals(s.getType()))
+        .map(Subject::getRef).collect(toList());
   }
 
 }

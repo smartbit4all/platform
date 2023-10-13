@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
@@ -57,5 +58,7 @@ public interface AccessControlInternalApi {
       List<String> operations);
 
   List<String> getMyAvailableOperations(String modelName, ACL acl, List<String> operations);
+
+  Map<String, List<URI>> getUsersByOperation(String modelName, ACL acl, List<String> operations);
 
 }
