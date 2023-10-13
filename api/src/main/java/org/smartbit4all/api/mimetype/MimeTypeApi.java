@@ -7,11 +7,12 @@ import javax.activation.MimetypesFileTypeMap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
 /**
  * Utility class for getting mimeType from filename, and extension from mimeType.
- * 
+ *
  * @author Andras Pallo
  *
  */
@@ -78,5 +79,14 @@ public class MimeTypeApi implements InitializingBean {
     return extensionsByMimeType.get(mimeType);
   }
 
+  public String ensurePdfFilename(String filename) {
+    if (Strings.isNullOrEmpty(filename)) {
+      return "file.pdf";
+    }
+    if (filename.toLowerCase().endsWith(".docx")) {
+      return filename.substring(0, filename.length() - ".docx".length()) + ".pdf";
+    }
+    return filename + ".pdf";
+  }
 
 }
