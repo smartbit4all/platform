@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
@@ -43,6 +44,7 @@ import javax.validation.Valid;
   ViewContext.UUID,
   ViewContext.VIEWS,
   ViewContext.LINKS,
+  ViewContext.DOWNLOADS,
   ViewContext.OPEN_PENDING_DATA
 })
 @JsonTypeName("ViewContext")
@@ -59,6 +61,9 @@ public class ViewContext {
 
   public static final String LINKS = "links";
   private List<Link> links = new ArrayList<>();
+
+  public static final String DOWNLOADS = "downloads";
+  private List<DownloadedFile> downloads = new ArrayList<>();
 
   public static final String OPEN_PENDING_DATA = "openPendingData";
   private OpenPendingData openPendingData;
@@ -191,6 +196,40 @@ public class ViewContext {
   }
 
 
+  public ViewContext downloads(List<DownloadedFile> downloads) {
+    
+    this.downloads = downloads;
+    return this;
+  }
+
+  public ViewContext addDownloadsItem(DownloadedFile downloadsItem) {
+    this.downloads.add(downloadsItem);
+    return this;
+  }
+
+   /**
+   * Get downloads
+   * @return downloads
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(DOWNLOADS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<DownloadedFile> getDownloads() {
+    return downloads;
+  }
+
+
+  @JsonProperty(DOWNLOADS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDownloads(List<DownloadedFile> downloads) {
+    this.downloads = downloads;
+  }
+
+
   public ViewContext openPendingData(OpenPendingData openPendingData) {
     
     this.openPendingData = openPendingData;
@@ -232,12 +271,13 @@ public class ViewContext {
         Objects.equals(this.uuid, viewContext.uuid) &&
         Objects.equals(this.views, viewContext.views) &&
         Objects.equals(this.links, viewContext.links) &&
+        Objects.equals(this.downloads, viewContext.downloads) &&
         Objects.equals(this.openPendingData, viewContext.openPendingData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, links, openPendingData);
+    return Objects.hash(uri, uuid, views, links, downloads, openPendingData);
   }
 
   @Override
@@ -248,6 +288,7 @@ public class ViewContext {
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
+    sb.append("    downloads: ").append(toIndentedString(downloads)).append("\n");
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("}");
     return sb.toString();

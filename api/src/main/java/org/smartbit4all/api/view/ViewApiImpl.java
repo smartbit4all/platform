@@ -15,6 +15,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageOption;
@@ -499,9 +500,12 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public void openLink(Link link) {
     viewContextService.updateCurrentViewContext(
-        context -> {
-          context.addLinksItem(link);
-          return context;
-        });
+        context -> context.addLinksItem(link));
+  }
+
+  @Override
+  public void downloadFile(DownloadedFile file) {
+    viewContextService.updateCurrentViewContext(
+        context -> context.addDownloadsItem(file));
   }
 }

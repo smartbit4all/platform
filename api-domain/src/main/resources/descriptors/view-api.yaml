@@ -459,7 +459,7 @@ components:
     ViewContext:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views,links]
+      required: [uri,views,links,downloads]
       properties:
         uri:
           type: string
@@ -475,12 +475,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
+        downloads:
+          type: array
+          items:
+            $ref: '#/components/schemas/DownloadedFile'
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
     ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views,links]
+      required: [uri,views,links,downloads]
       properties:
         uuid:
           type: string
@@ -493,6 +497,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
+        downloads:
+          type: array
+          items:
+            $ref: '#/components/schemas/DownloadedFile'
     ViewContextChange:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
@@ -1098,6 +1106,18 @@ components:
           format: int64
         data:
           type: BinaryData
+    DownloadedFile:
+      type: object
+      description: |
+        Information about uploaded file.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        identifier:
+          type: string
+        filename:
+          type: string
     Link:
       type: object
       description: | 

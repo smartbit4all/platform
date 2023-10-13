@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.View;
@@ -184,5 +185,7 @@ public interface ViewApi {
    * @param link
    */
   void openLink(Link link);
+
+  void downloadFile(DownloadedFile file);
 
 }
