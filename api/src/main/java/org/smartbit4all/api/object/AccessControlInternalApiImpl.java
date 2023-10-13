@@ -1,5 +1,9 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,10 +24,6 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
@@ -127,13 +127,23 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         acl.getRootEntry().getEntries().stream().collect(groupingBy(e -> e.getSubjectCondition()));
     Map<String, List<URI>> result;
     List<ACLEntry> inList = entriesByCond.get(SubjectConditionEnum.IN);
+    // if (inList != null && !inList.isEmpty()) {
+    // List<User> allUsers = orgApi.getAllUsers();
+    // List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
+    // result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
+    // } else {
+    // // We construct the subjects for every operation
+    // result = getUsersByOpartion(modelName, operations, inList);
+    // }
+
     if (inList != null && !inList.isEmpty()) {
+      // We construct the subjects for every operation
+      result = getUsersByOpartion(modelName, operations, inList);
+    } else {
       List<User> allUsers = orgApi.getAllUsers();
       List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
       result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
-    } else {
-      // We construct the subjects for every operation
-      result = getUsersByOpartion(modelName, operations, inList);
+
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
     List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
@@ -153,7 +163,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     Map<String, List<URI>> result;
     result = operations.stream()
         .collect(toMap(o -> o, o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
-            .filter(a -> a.getOperations().contains(o)).map(a -> a.getSubject())
+            .filter(a -> a.getOperations().contains(o))
+            .map(a -> {
+              return a.getSubject();
+            })
             .collect(toList()))));
     return result;
   }
