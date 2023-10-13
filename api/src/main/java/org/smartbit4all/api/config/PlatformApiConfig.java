@@ -57,6 +57,7 @@ import org.smartbit4all.api.org.SubjectManagementApiImpl;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.setting.ApplicationInfo;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
@@ -421,5 +422,10 @@ public class PlatformApiConfig {
             MDMDefinitionState.class,
             ReferencePropertyKind.REFERENCE,
             AggregationKind.NONE);
+  }
+
+  @Bean
+  public ApplicationInfo ApplicationInfo() {
+    return new ApplicationInfo();
   }
 }
