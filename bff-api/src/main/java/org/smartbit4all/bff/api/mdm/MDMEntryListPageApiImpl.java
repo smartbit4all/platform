@@ -36,6 +36,7 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
+import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -510,6 +511,30 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
               !ctx.inactives)
           .build());
+      String icon;
+      Map<String, Object> map = (Map<String, Object>) row.getData();
+      BranchingStateEnum state = (BranchingStateEnum) map.get(BranchedObjectEntry.BRANCHING_STATE);
+      switch (state) {
+        case NEW:
+          icon = "add_circle";
+          break;
+        case MODIFIED:
+          icon = "tag";
+          break;
+        case DELETED:
+          icon = "cancel";
+          break;
+
+        default:
+          icon = "radio_button_unchecked";
+          break;
+      }
+      if (icon != null) {
+        row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
+            new ImageResource()
+                .source("smart-icon")
+                .identifier(icon));
+      }
     });
     return page;
   }

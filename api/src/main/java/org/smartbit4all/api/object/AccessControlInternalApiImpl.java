@@ -1,9 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +20,10 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
@@ -169,6 +169,14 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
             })
             .collect(toList()))));
     return result;
+  }
+
+  @Override
+  public boolean getMatchingSubjects(String modelName, ACL acl, List<Subject> subjects,
+      List<String> requiredOperations, List<String> forbiddenOperations) {
+    // getUsersByOperation(modelName, acl, forbiddenOperations)
+    // if(acl == null || acl.getRootEntry() == null || )
+    return true;
   }
 
 }
