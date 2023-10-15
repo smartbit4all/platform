@@ -198,11 +198,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public void updateIndex(List<URI> changeList) {
-    SearchEntityTableDataResult updateResult = constructResult();
-    objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
-        Collections.emptyMap());
-    // Update the entity definitions by the table data in the result.
-    objectMapping.merge(updateResult);
+    if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
+        || useDatabase) {
+      SearchEntityTableDataResult updateResult = constructResult();
+      objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
+          Collections.emptyMap());
+      // Update the entity definitions by the table data in the result.
+      objectMapping.merge(updateResult);
+
+    }
   }
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
