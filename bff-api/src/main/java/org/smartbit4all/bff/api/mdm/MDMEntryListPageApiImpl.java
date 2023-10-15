@@ -195,6 +195,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
             context.definition.getName(), context.entryDescriptor.getName());
+    if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
+      List<String> newCols = new ArrayList<>();
+      newCols.add(BranchedObjectEntry.BRANCHING_STATE);
+      newCols.addAll(
+          columns.stream()
+              .filter(col -> !BranchedObjectEntry.BRANCHING_STATE.equals(col))
+              .collect(toList()));
+      entryGridModel.getView().setOrderedColumnNames(newCols);
+    }
     GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
         BranchedObjectEntry.BRANCH_URI);
     if (columns.contains(PROPERTY_URI)) {
