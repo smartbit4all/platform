@@ -1,13 +1,12 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import org.slf4j.Logger;
@@ -55,8 +54,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -191,16 +188,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByView(view);
     refreshActions(context);
 
-    Set<String> propertiesToRemove = new HashSet<>(
-        Arrays.asList(BranchedObjectEntry.ORIGINAL_URI, BranchedObjectEntry.BRANCH_URI));
-
+    List<String> columns =
+        context.searchIndexAdmin.getDefinition().getDefinition().allProperties().stream()
+            .map(Property::getName).collect(toList());
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
-            context.searchIndexAdmin.getDefinition().getDefinition().allProperties().stream()
-                .filter(p -> !propertiesToRemove.contains(p.getName()))
-                .map(Property::getName).collect(toList()),
+            columns,
             context.definition.getName(), context.entryDescriptor.getName());
-
+    GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI);
+    GridModels.hideColumns(entryGridModel, BranchedObjectEntry.BRANCH_URI);
     final List<GridView> gridViewOptions = context.entryDescriptor.getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       entryGridModel.setView(gridViewOptions.get(0));
@@ -309,7 +305,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     showEditorView(
         viewUuid,
         getContextByViewUUID(viewUuid),
-        new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW));
+        new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW),
+        request.getCode());
   }
 
   private final ObjectNode createNewObject(MDMEntryDescriptor entryDescriptor) {
@@ -344,22 +341,31 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     performActionOnGridRow(getContextByViewUUID(viewUuid), gridId, rowId, (r, ctx) -> {
       BranchedObjectEntry branchedObjectEntry =
           objectApi.asType(BranchedObjectEntry.class, r.getData());
-      showEditorView(viewUuid, ctx, branchedObjectEntry);
+      showEditorView(viewUuid, ctx, branchedObjectEntry, request.getCode());
     });
   }
 
   protected void showEditorView(UUID viewUuid, PageContext ctx,
-      BranchedObjectEntry branchedObjectEntry) {
+      BranchedObjectEntry branchedObjectEntry, String actionCode) {
     ObjectDefinition<?> objectDefinition = ctx.getObjectDefinition();
 
+    boolean isView = ACTION_VIEW_ENTRY.equals(actionCode) ||
+        ACTION_VIEW_ORIGINAL_ENTRY.equals(actionCode);
+
+    boolean isViewOriginal = ACTION_VIEW_ORIGINAL_ENTRY.equals(actionCode);
+
     // Model:
-    URI branchUri = ctx.entryApi.getBranchUri();
-    URI objectLatestUri = getEditingObjectUri(branchedObjectEntry); // branchedObjectEntry contains
-                                                                    // latest uris
+    URI branchUri = isViewOriginal ? null : ctx.entryApi.getBranchUri();
+    URI objectLatestUri =
+        (!isViewOriginal && branchedObjectEntry.getBranchUri() != null) // branchedObjectEntry
+                                                                        // contains latest uris
+            ? branchedObjectEntry.getBranchUri()
+            : branchedObjectEntry.getOriginalUri();
+
     final ObjectNode modelNode = (objectLatestUri == null)
         ? createNewObject(ctx.entryDescriptor)
         : objectApi.load(objectLatestUri, branchUri);
-    // objectUri, branchUri
+
     // Layout:
     final ObjectLayoutDescriptor layoutDescriptor = objectExtensionApi
         .generateDefaultLayout(objectDefinition.getQualifiedName());
@@ -369,6 +375,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .flatMap(List::stream)
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
+    List<UiAction> actions = UiActions.builder()
+        .addIf(new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true), !isView)
+        .add(new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL))
+        .build();
     viewApi.showView(new View()
         .viewName(getEditorViewName(ctx))
         .type(ViewType.DIALOG)
@@ -379,16 +389,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
         .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
         .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
-        .actions(Arrays.asList(
-            new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
-            new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
-        .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap()));
-  }
-
-  private URI getEditingObjectUri(BranchedObjectEntry branchedObjectEntry) {
-    return (branchedObjectEntry.getBranchUri() != null)
-        ? branchedObjectEntry.getBranchUri()
-        : branchedObjectEntry.getOriginalUri();
+        .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap())
+        .putParametersItem(PARAM_ACTION_CODE, actionCode)
+        .actions(actions));
   }
 
   @Override
@@ -502,14 +505,19 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
 
     page.getRows().forEach(row -> {
+      boolean isOnBranch =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI) != null;
+      boolean isOnOriginal =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI) != null;
       row.setActions(UiActions.builder()
-          // .add("VIEW")
-          .addIf(ACTION_RESTORE_ENTRY, isAdmin, ctx.inactives)
-          .add(ACTION_EDIT_ENTRY) // isAdmin, entryEditingEnabled, !ctx.inactives)
+//          .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
+          .addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
+          .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
           .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-          // TODO check if draft present..
+          .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+              !ctx.inactives, isOnBranch && isOnOriginal)
           .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
-              !ctx.inactives)
+              !ctx.inactives, isOnBranch)
           .build());
       String icon;
       Map<String, Object> map = (Map<String, Object>) row.getData();
