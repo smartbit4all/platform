@@ -34,6 +34,8 @@ import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessApi;
 import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessFS;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
+import org.smartbit4all.domain.data.storage.StorageArchiveApi;
+import org.smartbit4all.domain.data.storage.StorageArchiveApiImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.CrudApiImpl;
 import org.smartbit4all.domain.service.CrudApis;
@@ -216,6 +218,11 @@ public class DomainServiceConfig {
   @Bean
   public StorageApi getStorageApi() {
     return new StorageApiImpl();
+  }
+
+  @Bean
+  public StorageArchiveApi getStorageArchiveApi() {
+    return new StorageArchiveApiImpl();
   }
 
   @Bean

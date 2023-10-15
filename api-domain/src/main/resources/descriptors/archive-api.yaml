@@ -1,0 +1,36 @@
+openapi: 3.0.3
+info:
+  title: Archive api
+  description: |
+    File deletion program config file.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: ArchiveApi
+    description: Archive
+paths: {}
+components:
+  schemas:
+    ArchiveConfigData:
+      type: object
+      properties:
+        rootDir:
+          type: string
+        deleteAll:
+          type: array
+          items:
+            type: string
+        deleteBeforeVersion:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeforeVersionData'
+    BeforeVersionData:
+      type: object
+      properties:
+        path:
+          type: string
+        version:
+          type: integer
+          
