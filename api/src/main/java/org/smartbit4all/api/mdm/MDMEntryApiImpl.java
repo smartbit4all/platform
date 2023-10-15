@@ -275,8 +275,10 @@ public class MDMEntryApiImpl implements MDMEntryApi {
             result.add(boe.getBranchUri());
           }
         });
-    toCancel.stream()
-        .forEach(uri -> branchApi.removeBranchedObject(branchUri, uri));
+    if (toCancel != null) {
+      toCancel.stream()
+          .forEach(uri -> branchApi.removeBranchedObject(branchUri, uri));
+    }
 
     return !result.isEmpty();
   }
