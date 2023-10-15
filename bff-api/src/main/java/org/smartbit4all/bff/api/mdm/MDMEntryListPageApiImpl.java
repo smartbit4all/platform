@@ -195,8 +195,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
             context.definition.getName(), context.entryDescriptor.getName());
-    GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI);
-    GridModels.hideColumns(entryGridModel, BranchedObjectEntry.BRANCH_URI);
+    GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
+        BranchedObjectEntry.BRANCH_URI);
+    if (columns.contains(PROPERTY_URI)) {
+      GridModels.hideColumns(entryGridModel, PROPERTY_URI);
+    }
     final List<GridView> gridViewOptions = context.entryDescriptor.getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       entryGridModel.setView(gridViewOptions.get(0));
@@ -510,7 +513,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       boolean isOnOriginal =
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI) != null;
       row.setActions(UiActions.builder()
-//          .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
+          // .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
           .addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
           .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
           .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
