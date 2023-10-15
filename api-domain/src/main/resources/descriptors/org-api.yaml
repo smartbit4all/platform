@@ -352,8 +352,14 @@ components:
           $ref: '#/components/schemas/User'
         operation:
           $ref: '#/components/schemas/BulkUpdateOperation'
-          
-
+    ACLObject:
+      type: object
+      properties:    
+        uri: 
+          type: string
+          format: uri
+        acl:
+          $ref: '#/components/schemas/ACL'
     ACL:
       type: object
       description: |

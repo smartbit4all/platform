@@ -55,6 +55,8 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   static final String PARAM_RAW_MODEL = "raw-model";
 
+  static final String PARAM_ACTION_CODE = "action-code";
+
   /**
    * Run the query and update the content of the grid.
    */
@@ -98,6 +100,10 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * is saved.
    */
   static final String ACTION_EDIT_ENTRY = "EDIT_ENTRY";
+
+  static final String ACTION_VIEW_ENTRY = "VIEW_ENTRY";
+
+  static final String ACTION_VIEW_ORIGINAL_ENTRY = "VIEW_ORIGINAL_ENTRY";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -192,7 +198,12 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param rowId The identifier of the row.
    * @param request The action request that contains every information about the triggering action.
    */
-  @WidgetActionHandler(value = ACTION_EDIT_ENTRY, widget = WIDGET_ENTRY_GRID)
+  @WidgetActionHandler(value = {
+      ACTION_EDIT_ENTRY,
+      ACTION_VIEW_ENTRY,
+      ACTION_VIEW_ORIGINAL_ENTRY
+  },
+      widget = WIDGET_ENTRY_GRID)
   void performEditEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**

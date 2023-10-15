@@ -24,6 +24,7 @@ import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -214,10 +215,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
     if (mdmDefinitionState != null) {
       if (branchingStrategy == MDMBranchingStrategy.ENTRY) {
-        return mdmDefinitionState.getBranchForEntries().get(descriptor.getName());
+        MDMModification modification = mdmDefinitionState.getModificationsForEntries()
+            .get(descriptor.getName());
+        return modification == null ? null : modification.getBranchUri();
       }
       if (branchingStrategy == MDMBranchingStrategy.GLOBAL) {
-        return mdmDefinitionState.getGlobalBranch();
+        MDMModification modification = mdmDefinitionState.getGlobalModification();
+        return modification == null ? null : modification.getBranchUri();
       }
       // TODO handle MDMBranchingStrategy.GROUP
     }
@@ -271,8 +275,10 @@ public class MDMEntryApiImpl implements MDMEntryApi {
             result.add(boe.getBranchUri());
           }
         });
-    toCancel.stream()
-        .forEach(uri -> branchApi.removeBranchedObject(branchUri, uri));
+    if (toCancel != null) {
+      toCancel.stream()
+          .forEach(uri -> branchApi.removeBranchedObject(branchUri, uri));
+    }
 
     return !result.isEmpty();
   }

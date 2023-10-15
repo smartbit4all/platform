@@ -216,7 +216,8 @@ public class ValueSetApiImpl implements ValueSetApi {
       return storedList.uris().stream()
           .collect(toMap(u -> objectApi.getLatestUri(u),
               u -> useObjectNode ? objectApi.load(u)
-                  : objectApi.read(u, objectDefinition.getClazz())));
+                  : objectApi.read(u, objectDefinition.getClazz()),
+              (v1, v2) -> v1));
     }
     return Collections.emptyMap();
   }

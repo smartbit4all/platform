@@ -188,15 +188,28 @@ components:
           type: string
           format: uri
           description: The uri of the object.
-        globalBranch:
-          type: string
-          format: uri
-          description: The uri of the global branch if any.
-        branchForEntries:
+        globalModification:
+          description: The global branch modification if any.
+          $ref: '#/components/schemas/MDMModification'
+        modificationsForEntries:
           type: string
           additionalProperties:
-            type: string
-            format: uri
+            $ref: '#/components/schemas/MDMModification'
+    MDMModification:
+      type: object
+      description: |
+        This object represents an ongoing modification in an MDMDefinition. It is strored inline in 
+        the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy).
+      properties:
+        branchUri:
+          type: string
+          format: uri
+        created:
+          type: UserActivityLog
+        notifyUri:
+          type: string
+          format: uri
+        
     MDMEntryEditingObject:
       type: object
       description: |
