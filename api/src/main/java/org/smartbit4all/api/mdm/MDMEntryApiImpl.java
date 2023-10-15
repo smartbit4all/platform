@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -178,7 +179,19 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
       // Merge the existing ones
       List<URI> merged = l.stream().map(u -> {
-        URI uri = savedUriByOriginal.get(u);
+        URI latestUri = objectApi.getLatestUri(u);
+        Map<URI, URI> uris;
+        if (Objects.equals(latestUri, u)) {
+          // latestUri was in collection, deal with it
+          uris = savedUriByOriginal.entrySet().stream()
+              .collect(toMap(
+                  e -> objectApi.getLatestUri(e.getKey()),
+                  Entry::getValue,
+                  (v1, v2) -> v1));
+        } else {
+          uris = savedUriByOriginal;
+        }
+        URI uri = uris.get(u);
         if (uri == null) {
           uri = u;
         }
