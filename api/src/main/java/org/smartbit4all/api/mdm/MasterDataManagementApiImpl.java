@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -46,8 +49,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -586,15 +587,18 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   public URI initiateGlobalBranch(String definitionName, String branchCaption) {
     return modifyDefinitionState(definitionName, state -> {
       return state
-          .globalBranch(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri()));
+          .globalModification(new MDMModification()
+              // TODO created, etc.
+              .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, state -> {
-      if (state.getGlobalBranch() != null) {
+      if (state.getGlobalModification() != null) {
         throw new IllegalStateException(MessageFormat.format(
             localeSettingApi.get("mdm.globalbranch.alreadyexists"),
             definitionName));
       }
     }, state -> {
-      if (state.getBranchForEntries() != null && !state.getBranchForEntries().isEmpty()) {
+      if (state.getModificationsForEntries() != null
+          && !state.getModificationsForEntries().isEmpty()) {
         throw new IllegalStateException(MessageFormat.format(
             localeSettingApi.get("mdm.entriesbranch.notempty"),
             definitionName));
@@ -611,9 +615,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public void mergeGlobal(String definitionName) {
     modifyDefinitionState(definitionName, state -> {
-      branchApi.merge(state.getGlobalBranch());
+      branchApi.merge(state.getGlobalModification().getBranchUri());
       return state
-          .globalBranch(null);
+          .globalModification(null);
     }, state -> noGlobalBranchValidation(definitionName, state));
   }
 
@@ -621,12 +625,12 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   public void dropGlobal(String definitionName) {
     modifyDefinitionState(definitionName, state -> {
       return state
-          .globalBranch(null);
+          .globalModification(null);
     }, state -> noGlobalBranchValidation(definitionName, state));
   }
 
   private void noGlobalBranchValidation(String definitionName, MDMDefinitionState state) {
-    if (state.getGlobalBranch() == null) {
+    if (state.getGlobalModification() == null) {
       throw new IllegalStateException(MessageFormat.format(
           localeSettingApi.get("mdm.globalbranch.empty"),
           definitionName));
