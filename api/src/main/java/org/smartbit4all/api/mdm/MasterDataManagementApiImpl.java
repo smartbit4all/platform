@@ -33,6 +33,7 @@ import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -107,7 +108,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Autowired
   private MasterDataManagementApi self;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -590,9 +591,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public URI initiateGlobalBranch(String definitionName, String branchCaption) {
     MDMDefinitionState resultState = modifyDefinitionState(definitionName, state -> {
+      UserActivityLog createActivityLog = null;
+      if (sessionApi == null) {
+        log.warn("Unable to create created activity log. The Sessionapi is missing!");
+      } else {
+        createActivityLog = sessionApi.createActivityLog();
+      }
+
       return state
           .globalModification(new MDMModification()
-              .created(sessionApi.createActivityLog())
+              .created(createActivityLog)
               .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, state -> {
       if (state.getGlobalModification() != null) {
