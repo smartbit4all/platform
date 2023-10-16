@@ -162,6 +162,10 @@ public interface ViewContextService {
 
   ViewContextChange performViewCall(ViewCall viewCall, String methodName);
 
-  List<UUID> getChildOfView(UUID viewUuid);
+
+  /**
+   * The view returns the uuid of the opened child views
+   */
+  List<UUID> getChildrenOfView(UUID viewUuid);
 
 }

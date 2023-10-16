@@ -1005,14 +1005,14 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public List<UUID> getChildOfView(UUID viewUuid) {
+  public List<UUID> getChildrenOfView(UUID viewUuid) {
     ViewContextData viewContext = getCurrentViewContext();
 
-    return viewContext.getViews().stream().filter(v -> v.getContainerUuid() != null)
-        .filter(v -> v.getContainerUuid().equals(viewUuid)).map(v -> v.getUuid())
+    return viewContext.getViews().stream()
+        .filter(v -> v.getContainerUuid() != null)
+        .filter(v -> v.getContainerUuid().equals(viewUuid))
+        .map(v -> v.getUuid())
         .collect(Collectors.toList());
-
-
   }
 
 
