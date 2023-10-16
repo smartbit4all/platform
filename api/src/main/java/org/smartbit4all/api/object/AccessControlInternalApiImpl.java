@@ -127,13 +127,23 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         acl.getRootEntry().getEntries().stream().collect(groupingBy(e -> e.getSubjectCondition()));
     Map<String, List<URI>> result;
     List<ACLEntry> inList = entriesByCond.get(SubjectConditionEnum.IN);
+    // if (inList != null && !inList.isEmpty()) {
+    // List<User> allUsers = orgApi.getAllUsers();
+    // List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
+    // result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
+    // } else {
+    // // We construct the subjects for every operation
+    // result = getUsersByOpartion(modelName, operations, inList);
+    // }
+
     if (inList != null && !inList.isEmpty()) {
+      // We construct the subjects for every operation
+      result = getUsersByOpartion(modelName, operations, inList);
+    } else {
       List<User> allUsers = orgApi.getAllUsers();
       List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
       result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
-    } else {
-      // We construct the subjects for every operation
-      result = getUsersByOpartion(modelName, operations, inList);
+
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
     List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
@@ -153,9 +163,20 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     Map<String, List<URI>> result;
     result = operations.stream()
         .collect(toMap(o -> o, o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
-            .filter(a -> a.getOperations().contains(o)).map(a -> a.getSubject())
+            .filter(a -> a.getOperations().contains(o))
+            .map(a -> {
+              return a.getSubject();
+            })
             .collect(toList()))));
     return result;
+  }
+
+  @Override
+  public boolean getMatchingSubjects(String modelName, ACL acl, List<Subject> subjects,
+      List<String> requiredOperations, List<String> forbiddenOperations) {
+    // getUsersByOperation(modelName, acl, forbiddenOperations)
+    // if(acl == null || acl.getRootEntry() == null || )
+    return true;
   }
 
 }

@@ -1,10 +1,14 @@
 package org.smartbit4all.api.view.grid;
 
+import static java.util.stream.Collectors.toList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridView;
 
 /**
  * {@link GridModel} static utility method collection
@@ -42,4 +46,20 @@ public class GridModels {
         : null;
   }
 
+  public static void hideColumns(GridModel grid, String... columns) {
+    hideColumns(grid, Arrays.asList(columns));
+  }
+
+  public static void hideColumns(GridModel grid, List<String> columns) {
+
+    GridView gridView = grid.getView();
+    List<String> orderedColumns = gridView.getOrderedColumnNames().stream()
+        .filter(col -> !columns.contains(col))
+        .collect(toList());
+    gridView.setOrderedColumnNames(orderedColumns);
+
+    gridView.getDescriptor().getColumns().stream()
+        .filter(col -> columns.contains(col.getPropertyName()))
+        .forEach(col -> col.setAlwaysHidden(true));
+  }
 }

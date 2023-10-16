@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,8 +38,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMDefinitionState.URI,
-  MDMDefinitionState.GLOBAL_BRANCH,
-  MDMDefinitionState.BRANCH_FOR_ENTRIES
+  MDMDefinitionState.GLOBAL_MODIFICATION,
+  MDMDefinitionState.MODIFICATIONS_FOR_ENTRIES
 })
 @JsonTypeName("MDMDefinitionState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,11 +47,11 @@ public class MDMDefinitionState {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String GLOBAL_BRANCH = "globalBranch";
-  private URI globalBranch;
+  public static final String GLOBAL_MODIFICATION = "globalModification";
+  private MDMModification globalModification;
 
-  public static final String BRANCH_FOR_ENTRIES = "branchForEntries";
-  private Map<String, URI> branchForEntries = new HashMap<>();
+  public static final String MODIFICATIONS_FOR_ENTRIES = "modificationsForEntries";
+  private Map<String, MDMModification> modificationsForEntries = null;
 
   public MDMDefinitionState() { 
   }
@@ -84,65 +85,67 @@ public class MDMDefinitionState {
   }
 
 
-  public MDMDefinitionState globalBranch(URI globalBranch) {
+  public MDMDefinitionState globalModification(MDMModification globalModification) {
     
-    this.globalBranch = globalBranch;
+    this.globalModification = globalModification;
     return this;
   }
 
    /**
-   * The uri of the global branch if any.
-   * @return globalBranch
+   * Get globalModification
+   * @return globalModification
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the global branch if any.")
-  @JsonProperty(GLOBAL_BRANCH)
+  @ApiModelProperty(value = "")
+  @JsonProperty(GLOBAL_MODIFICATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getGlobalBranch() {
-    return globalBranch;
+  public MDMModification getGlobalModification() {
+    return globalModification;
   }
 
 
-  @JsonProperty(GLOBAL_BRANCH)
+  @JsonProperty(GLOBAL_MODIFICATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGlobalBranch(URI globalBranch) {
-    this.globalBranch = globalBranch;
+  public void setGlobalModification(MDMModification globalModification) {
+    this.globalModification = globalModification;
   }
 
 
-  public MDMDefinitionState branchForEntries(Map<String, URI> branchForEntries) {
+  public MDMDefinitionState modificationsForEntries(Map<String, MDMModification> modificationsForEntries) {
     
-    this.branchForEntries = branchForEntries;
+    this.modificationsForEntries = modificationsForEntries;
     return this;
   }
 
-  public MDMDefinitionState putBranchForEntriesItem(String key, URI branchForEntriesItem) {
-    this.branchForEntries.put(key, branchForEntriesItem);
+  public MDMDefinitionState putModificationsForEntriesItem(String key, MDMModification modificationsForEntriesItem) {
+    if (this.modificationsForEntries == null) {
+      this.modificationsForEntries = new HashMap<>();
+    }
+    this.modificationsForEntries.put(key, modificationsForEntriesItem);
     return this;
   }
 
    /**
-   * Get branchForEntries
-   * @return branchForEntries
+   * Get modificationsForEntries
+   * @return modificationsForEntries
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(BRANCH_FOR_ENTRIES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODIFICATIONS_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, URI> getBranchForEntries() {
-    return branchForEntries;
+  public Map<String, MDMModification> getModificationsForEntries() {
+    return modificationsForEntries;
   }
 
 
-  @JsonProperty(BRANCH_FOR_ENTRIES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBranchForEntries(Map<String, URI> branchForEntries) {
-    this.branchForEntries = branchForEntries;
+  @JsonProperty(MODIFICATIONS_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModificationsForEntries(Map<String, MDMModification> modificationsForEntries) {
+    this.modificationsForEntries = modificationsForEntries;
   }
 
 
@@ -156,13 +159,13 @@ public class MDMDefinitionState {
     }
     MDMDefinitionState mdMDefinitionState = (MDMDefinitionState) o;
     return Objects.equals(this.uri, mdMDefinitionState.uri) &&
-        Objects.equals(this.globalBranch, mdMDefinitionState.globalBranch) &&
-        Objects.equals(this.branchForEntries, mdMDefinitionState.branchForEntries);
+        Objects.equals(this.globalModification, mdMDefinitionState.globalModification) &&
+        Objects.equals(this.modificationsForEntries, mdMDefinitionState.modificationsForEntries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, globalBranch, branchForEntries);
+    return Objects.hash(uri, globalModification, modificationsForEntries);
   }
 
   @Override
@@ -170,8 +173,8 @@ public class MDMDefinitionState {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMDefinitionState {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    globalBranch: ").append(toIndentedString(globalBranch)).append("\n");
-    sb.append("    branchForEntries: ").append(toIndentedString(branchForEntries)).append("\n");
+    sb.append("    globalModification: ").append(toIndentedString(globalModification)).append("\n");
+    sb.append("    modificationsForEntries: ").append(toIndentedString(modificationsForEntries)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.sql.service.modify;
 
-import java.net.URI;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -236,14 +235,13 @@ public class SQLCreateExecution<E extends EntityDefinition> {
   }
 
   private Object getValue(SQLBindValue bindValue, Object value) {
-    if (value != null
-        && !URI.class.isInstance(value)
-        && bindValue.getProperty().jdbcConverter() != null
-        && !bindValue.getProperty().jdbcConverter().extType().isInstance(value)
-        && bindValue.getProperty().jdbcConverter().extType().isAssignableFrom(String.class)) {
-      return objectApi.asString(value);
-    }
-
+    // if (value != null
+    // && !URI.class.isInstance(value)
+    // && bindValue.getProperty().jdbcConverter() != null
+    // && !bindValue.getProperty().jdbcConverter().extType().isInstance(value)
+    // && bindValue.getProperty().jdbcConverter().extType().isAssignableFrom(String.class)) {
+    // return objectApi.asString(value);
+    // }
 
     return value;
   }
