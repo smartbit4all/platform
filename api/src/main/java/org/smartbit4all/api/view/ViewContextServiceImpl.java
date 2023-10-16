@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,6 +17,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
@@ -68,6 +67,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -1002,5 +1003,18 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(actionCode, "actionCode can not be null!");
     requestCodesToSkipWithMissingView.add(actionCode);
   }
+
+  @Override
+  public List<UUID> getChildOfView(UUID viewUuid) {
+    ViewContextData viewContext = getCurrentViewContext();
+
+    return viewContext.getViews().stream().filter(v -> v.getContainerUuid() != null)
+        .filter(v -> v.getContainerUuid().equals(viewUuid)).map(v -> v.getUuid())
+        .collect(Collectors.toList());
+
+
+  }
+
+
 
 }

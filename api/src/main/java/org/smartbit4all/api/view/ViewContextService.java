@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
@@ -160,5 +161,7 @@ public interface ViewContextService {
   ViewContextChange performDataChanged(UUID viewUuid, DataChange event);
 
   ViewContextChange performViewCall(ViewCall viewCall, String methodName);
+
+  List<UUID> getChildOfView(UUID viewUuid);
 
 }
