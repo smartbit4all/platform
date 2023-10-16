@@ -21,6 +21,7 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -39,6 +40,7 @@ import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -96,6 +98,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private LocaleSettingApi localeSettingApi;
+
+  @Autowired(required = false)
+  private MDMApprovalApi mdmApprovalApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -243,13 +248,43 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.entryDescriptor.getInactiveMgmt());
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
-
     UiActionBuilder uiActions = UiActions.builder()
-        .add(ACTION_DO_QUERY)
-        .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-        .addIf(ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
-        .addIf(ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
-        .addIf(ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
+        .add(ACTION_DO_QUERY);
+    // if API present, approving enabled
+    boolean approvingEnabled = mdmApprovalApi != null;
+    if (approvingEnabled) {
+      URI approver = ctx.entryApi.getApprover();
+      boolean underApproval = approver != null;
+      boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
+      boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
+
+      uiActions
+          .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
+          .addIf(new UiAction().code(ACTION_START_EDITING).confirm(true),
+              isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
+          .addIf(new UiAction().code(ACTION_CANCEL_CHANGES).confirm(true),
+              canEdit, branchingEnabled, branchActive, !ctx.inactives)
+          .addIf(new UiAction().code(ACTION_SEND_FOR_APPROVAL).confirm(true),
+              isAdmin, !underApproval, branchingEnabled, branchActive,
+              !ctx.inactives)
+          .addIf(new UiAction().code(ACTION_ADMIN_APPROVE_OK).confirm(true),
+              isApprover, underApproval, branchingEnabled, branchActive,
+              !ctx.inactives)
+          .addIf(
+              new UiAction().code(ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
+                  .input2Type(UiActionInputType.TEXTAREA),
+              isApprover, underApproval, branchingEnabled,
+              branchActive,
+              !ctx.inactives);
+    } else {
+      uiActions
+          .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+          .addIf(ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
+          .addIf(ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
+          .addIf(ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives);
+    }
+
+    uiActions
         .addIf(
             new UiAction().code(ACTION_TOGGLE_INACTIVES).descriptor(
                 new UiActionDescriptor().type(UiActionButtonType.STROKED)
@@ -333,6 +368,41 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.mergeGlobal(context.definition.getName());
+    refreshGrid(context);
+    refreshActions(context);
+  }
+
+  @Override
+  public void sendForApproval(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    if (mdmApprovalApi == null) {
+      throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
+    }
+    String definition = context.definition.getName();
+    List<URI> approvers = mdmApprovalApi.getApprovers(definition);
+    if (approvers == null || approvers.size() != 1) {
+      throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
+    }
+    masterDataManagementApi.sendForApprovalGlobal(
+        context.definition.getName(),
+        approvers.get(0));
+    refreshGrid(context);
+    refreshActions(context);
+  }
+
+  @Override
+  public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    masterDataManagementApi.approvalAcceptedGlobal(context.definition.getName());
+    refreshGrid(context);
+    refreshActions(context);
+  }
+
+  @Override
+  public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    // TODO send and store reason
+    masterDataManagementApi.approvalRejectedGlobal(context.definition.getName());
     refreshGrid(context);
     refreshActions(context);
   }
@@ -515,22 +585,37 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean branchActive = ctx.entryApi.hasBranch();
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
+    boolean approvingEnabled = mdmApprovalApi != null;
+    URI approver = ctx.entryApi.getApprover();
+    boolean underApproval = approver != null;
+    boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
 
     page.getRows().forEach(row -> {
       boolean isOnBranch =
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI) != null;
       boolean isOnOriginal =
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI) != null;
-      row.setActions(UiActions.builder()
-          // .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
-          .addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
-          .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-          .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-          .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
-              !ctx.inactives, isOnBranch && isOnOriginal)
-          .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
-              !ctx.inactives, isOnBranch)
-          .build());
+      UiActionBuilder uiActions = UiActions.builder();
+      // .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
+      if (approvingEnabled) {
+        boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
+        uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
+                !ctx.inactives, isOnBranch && isOnOriginal)
+            .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
+                !ctx.inactives, isOnBranch);
+      } else {
+        uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+                !ctx.inactives, isOnBranch && isOnOriginal)
+            .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+                !ctx.inactives, isOnBranch);
+      }
+      row.setActions(uiActions.build());
       String icon;
       Map<String, Object> map = (Map<String, Object>) row.getData();
       BranchingStateEnum state = (BranchingStateEnum) map.get(BranchedObjectEntry.BRANCHING_STATE);

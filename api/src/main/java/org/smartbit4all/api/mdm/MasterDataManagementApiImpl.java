@@ -32,6 +32,7 @@ import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -105,6 +106,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   private MasterDataManagementApi self;
+
+  @Autowired
+  private SessionApi sessionApi;
 
   @Override
   public MDMEntryApi getApi(String definition, String name) {
@@ -585,10 +589,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Override
   public URI initiateGlobalBranch(String definitionName, String branchCaption) {
-    return modifyDefinitionState(definitionName, state -> {
+    MDMDefinitionState resultState = modifyDefinitionState(definitionName, state -> {
       return state
           .globalModification(new MDMModification()
-              // TODO created, etc.
+              .created(sessionApi.createActivityLog())
               .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, state -> {
       if (state.getGlobalModification() != null) {
@@ -603,7 +607,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             localeSettingApi.get("mdm.entriesbranch.notempty"),
             definitionName));
       }
-    }).getUri();
+    });
+    fireModificationStarted(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
+        resultState.getUri());
+    return resultState.getUri();
   }
 
   @Override
@@ -613,20 +620,30 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
-  public void mergeGlobal(String definitionName) {
-    modifyDefinitionState(definitionName, state -> {
+  public URI mergeGlobal(String definitionName) {
+    URI stateUri = modifyDefinitionState(definitionName, state -> {
       branchApi.merge(state.getGlobalModification().getBranchUri());
       return state
           .globalModification(null);
-    }, state -> noGlobalBranchValidation(definitionName, state));
+    }, state -> noGlobalBranchValidation(definitionName, state))
+        .getUri();
+    fireModificationStarted(MODIFICATION_FINALIZED, null,
+        getDefinition(definitionName).getUri(),
+        stateUri);
+    return stateUri;
   }
 
   @Override
-  public void dropGlobal(String definitionName) {
-    modifyDefinitionState(definitionName, state -> {
+  public URI dropGlobal(String definitionName) {
+    URI stateUri = modifyDefinitionState(definitionName, state -> {
       return state
           .globalModification(null);
-    }, state -> noGlobalBranchValidation(definitionName, state));
+    }, state -> noGlobalBranchValidation(definitionName, state))
+        .getUri();
+    fireModificationStarted(MODIFICATION_CANCELLED, null,
+        getDefinition(definitionName).getUri(),
+        stateUri);
+    return stateUri;
   }
 
   private void noGlobalBranchValidation(String definitionName, MDMDefinitionState state) {
@@ -660,6 +677,45 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     } finally {
       lock.unlock();
     }
+  }
+
+  private void fireModificationStarted(String event, String scope, URI definition, URI state) {
+    invocationApi
+        .publisher(
+            MasterDataManagementApi.class,
+            MDMSubscriberApi.class,
+            STATE_CHANGED)
+        .publish(api -> api.stateChanged(event, scope, definition, state));
+  }
+
+  @Override
+  public void sendForApprovalGlobal(String definitionName, URI approver) {
+    URI stateUri = modifyDefinitionState(definitionName, state -> {
+      state.getGlobalModification().approver(approver);
+      return state;
+    }, state -> noGlobalBranchValidation(definitionName, state))
+        .getUri();
+    fireModificationStarted(MODIFICATION_SENT_FOR_APPROVAL, null,
+        getDefinition(definitionName).getUri(),
+        stateUri);
+  }
+
+  @Override
+  public void approvalAcceptedGlobal(String definitionName) {
+    URI stateUri = mergeGlobal(definitionName);
+    fireModificationStarted(MODIFICATION_APPROVED, null, getDefinition(definitionName).getUri(),
+        stateUri);
+  }
+
+  @Override
+  public void approvalRejectedGlobal(String definitionName) {
+    URI stateUri = modifyDefinitionState(definitionName, state -> {
+      state.getGlobalModification().approver(null);
+      return state;
+    }, state -> noGlobalBranchValidation(definitionName, state))
+        .getUri();
+    fireModificationStarted(MODIFICATION_REJECTED, null, getDefinition(definitionName).getUri(),
+        stateUri);
   }
 
 }

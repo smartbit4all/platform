@@ -93,7 +93,7 @@ public interface MDMEntryApi {
 
   /**
    * The given uri is restored from the inactive list if it exists over there.
-   * 
+   *
    * @param objectUri
    * @return true if we found the inactive item.
    */
@@ -113,6 +113,14 @@ public interface MDMEntryApi {
    * @return
    */
   boolean hasBranch();
+
+  /**
+   * Returns the approver of the given MDM Entry if it is in edit mode on a global or entry level
+   * Branch. May return null.
+   *
+   * @return
+   */
+  URI getApprover();
 
   /**
    * Returns the bracnhUri of the given MDM Entry if it is in edit mode on a global or entry level

@@ -428,4 +428,14 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return displayName != null ? localeSettingApi.get(displayName) : descriptor.getName();
   }
 
+  @Override
+  public URI getApprover() {
+    // TODO handle branching strategy
+    MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
+    if (mdmDefinitionState != null) {
+      MDMModification modification = mdmDefinitionState.getGlobalModification();
+      return modification == null ? null : modification.getApprover();
+    }
+    return null;
+  }
 }

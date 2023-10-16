@@ -36,7 +36,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMModification.BRANCH_URI,
   MDMModification.CREATED,
-  MDMModification.NOTIFY_URI
+  MDMModification.APPROVER
 })
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,8 +47,8 @@ public class MDMModification {
   public static final String CREATED = "created";
   private UserActivityLog created = null;
 
-  public static final String NOTIFY_URI = "notifyUri";
-  private URI notifyUri;
+  public static final String APPROVER = "approver";
+  private URI approver;
 
   public MDMModification() { 
   }
@@ -109,31 +109,31 @@ public class MDMModification {
   }
 
 
-  public MDMModification notifyUri(URI notifyUri) {
+  public MDMModification approver(URI approver) {
     
-    this.notifyUri = notifyUri;
+    this.approver = approver;
     return this;
   }
 
    /**
-   * Get notifyUri
-   * @return notifyUri
+   * Get approver
+   * @return approver
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(NOTIFY_URI)
+  @JsonProperty(APPROVER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getNotifyUri() {
-    return notifyUri;
+  public URI getApprover() {
+    return approver;
   }
 
 
-  @JsonProperty(NOTIFY_URI)
+  @JsonProperty(APPROVER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNotifyUri(URI notifyUri) {
-    this.notifyUri = notifyUri;
+  public void setApprover(URI approver) {
+    this.approver = approver;
   }
 
 
@@ -148,12 +148,12 @@ public class MDMModification {
     MDMModification mdMModification = (MDMModification) o;
     return Objects.equals(this.branchUri, mdMModification.branchUri) &&
         Objects.equals(this.created, mdMModification.created) &&
-        Objects.equals(this.notifyUri, mdMModification.notifyUri);
+        Objects.equals(this.approver, mdMModification.approver);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchUri, created, notifyUri);
+    return Objects.hash(branchUri, created, approver);
   }
 
   @Override
@@ -162,7 +162,7 @@ public class MDMModification {
     sb.append("class MDMModification {\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
-    sb.append("    notifyUri: ").append(toIndentedString(notifyUri)).append("\n");
+    sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
     sb.append("}");
     return sb.toString();
   }

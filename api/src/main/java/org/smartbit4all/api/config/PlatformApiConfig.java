@@ -231,6 +231,12 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public ProviderApiInvocationHandler<MasterDataManagementApi> masterDataManagementApiProvider(
+      MasterDataManagementApi api) {
+    return Invocations.asProvider(MasterDataManagementApi.class, api);
+  }
+
+  @Bean
   public ModifyApi modifyApi() {
     return new ModifyApiImpl();
   }

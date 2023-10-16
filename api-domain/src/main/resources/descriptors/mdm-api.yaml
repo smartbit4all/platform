@@ -206,7 +206,7 @@ components:
           format: uri
         created:
           type: UserActivityLog
-        notifyUri:
+        approver:
           type: string
           format: uri
         

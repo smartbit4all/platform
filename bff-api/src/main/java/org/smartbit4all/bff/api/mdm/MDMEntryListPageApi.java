@@ -86,6 +86,10 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   static final String ACTION_FINALIZE_CHANGES = "FINALIZE_CHANGES";
 
+  static final String ACTION_SEND_FOR_APPROVAL = "SEND_FOR_APPROVAL";
+  static final String ACTION_ADMIN_APPROVE_OK = "ADMIN_APPROVE_OK";
+  static final String ACTION_ADMIN_APPROVE_NOT_OK = "ADMIN_APPROVE_NOT_OK";
+
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action construct a new entry. Initiate the currently editing branch if it doesn't exist. The
@@ -177,6 +181,15 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   @ActionHandler(ACTION_FINALIZE_CHANGES)
   void finalizeChanges(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_SEND_FOR_APPROVAL)
+  void sendForApproval(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_ADMIN_APPROVE_OK)
+  void adminApproveOk(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_ADMIN_APPROVE_NOT_OK)
+  void adminApproveNotOk(UUID viewUuid, UiActionRequest request);
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
