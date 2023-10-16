@@ -14,6 +14,8 @@ import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
+import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
+import org.smartbit4all.api.org.bean.ACLEntry.SetOperationEnum;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
@@ -52,6 +54,11 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects().get(ACL, ACL.class);
 
+    if (acl == null) {
+      acl = new ACL().rootEntry(
+          new ACLEntry().entryKind(EntryKindEnum.SET).setOperation(SetOperationEnum.UNION));
+    }
+
     List<String> operations = parameters.getAsList(OPERATIONS, String.class);
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
@@ -76,7 +83,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   private SmartMatrixModel consturctMatrixModel(ACL acl, List<String> operations) {
     SmartMatrixModel matrix = new SmartMatrixModel();
-    matrix.data(new HashMap<String, Object>());
+    matrix.data(new HashMap<>());
 
     acl.getRootEntry().getEntries().stream().forEach(aclEntry -> {
       matrix
