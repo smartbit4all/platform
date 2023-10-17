@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.acl;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,16 +33,15 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
   @Autowired
-  private LocaleSettingApi localeSettingApi;
+  protected LocaleSettingApi localeSettingApi;
 
-  private static final String ACL_MATRIX = "ACL_MATRIX";
-  private static final String ACL = "ACL";
-  private static final String OPERATIONS = "OPERATIONS";
+  protected static final String ACL_MATRIX = "ACL_MATRIX";
+  protected static final String ACL = "ACL";
+  protected static final String OPERATIONS = "OPERATIONS";
 
   public AclEditingPageApiImpl() {
     super(ACL.class);
@@ -52,12 +52,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   public ACL initModel(View view) {
     ObjectMapHelper parameters = parameters(view);
 
-    ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects().get(ACL, ACL.class);
-
-    if (acl == null) {
-      acl = new ACL().rootEntry(
-          new ACLEntry().entryKind(EntryKindEnum.SET).setOperation(SetOperationEnum.UNION));
-    }
+    ACL acl = getAcl(view);
 
     List<String> operations = parameters.getAsList(OPERATIONS, String.class);
 
@@ -81,7 +76,17 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     return acl;
   }
 
-  private SmartMatrixModel consturctMatrixModel(ACL acl, List<String> operations) {
+  protected ACL getAcl(View view) {
+    ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects().get(ACL, ACL.class);
+
+    if (acl == null) {
+      acl = new ACL().rootEntry(
+          new ACLEntry().entryKind(EntryKindEnum.SET).setOperation(SetOperationEnum.UNION));
+    }
+    return acl;
+  }
+
+  protected SmartMatrixModel consturctMatrixModel(ACL acl, List<String> operations) {
     SmartMatrixModel matrix = new SmartMatrixModel();
     matrix.data(new HashMap<>());
 
@@ -119,7 +124,6 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   @Override
   public void closeAclEditing(UUID viewUuid, UiActionRequest request) {
     viewApi.closeView(viewUuid);
-
   }
 
   @Override
@@ -128,12 +132,16 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     ObjectMapHelper requestParams = actionRequestHelper(request);
     ACL updatedAcl = requestParams.get(UiActions.MODEL, ACL.class);
 
-    rootNode.aspects().modify("ACL", ACL.class,
-        acl -> updatedAcl);
+    updateAclInRootNode(rootNode, updatedAcl);
 
     objectApi.save(rootNode);
-    viewApi.closeView(viewUuid);
+    closeAclEditing(viewUuid, request);
 
+  }
+
+  protected void updateAclInRootNode(ObjectNode rootNode, ACL updatedAcl) {
+    rootNode.aspects().modify("ACL", ACL.class,
+        acl -> updatedAcl);
   }
 
   @Override
