@@ -843,8 +843,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         if (e.getCause() instanceof IOException) {
           log.debug("Unable to read {}", storageObjectDataFile);
           waitTime = waitTime * rnd.nextInt(4);
+        } else {
+          throw e;
         }
-        throw e;
       }
       try {
         Thread.sleep(waitTime);
