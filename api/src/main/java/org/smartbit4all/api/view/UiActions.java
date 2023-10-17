@@ -33,6 +33,8 @@ public final class UiActions {
 
   public static final String FILES = "_files";
 
+  public static final String SEPARATOR = "_actionSeparator_";
+
   private UiActions() {}
 
   public static UiActionBuilder builder() {
@@ -42,7 +44,7 @@ public final class UiActions {
   /**
    * Checks whether a {@code UiAction} with the specified code is present in the provided list of
    * actions.
-   * 
+   *
    * @param actions the {@code List} of actions to search through, not null
    * @param code {@code String} {@link UiAction#getCode()} to search for, not null
    * @return true if the list contains a matching action, false otherwise
@@ -60,10 +62,10 @@ public final class UiActions {
 
   /**
    * Adds {@code UiAction}(s) to the specified {@link View} if they are not present already.
-   * 
+   *
    * <p>
    * The new {@code UiAction}s are added with nothing but their {@link UiAction#CODE} set.
-   * 
+   *
    * @param view the {@link View} to modify, not null
    * @param code the {@code String} {@link UiAction#CODE} to add, not null
    * @param codes additional {@String} action codes to add, optional
@@ -74,15 +76,15 @@ public final class UiActions {
 
   /**
    * Adds {@code UiAction}(s) to the specified {@code List} if they are not present already.
-   * 
+   *
    * <p>
    * The new {@code UiAction}s are added with nothing but their {@link UiAction#CODE} set.
-   * 
+   *
    * <p>
    * This method directly modifies to provided {@code List}, thus it must be ensured that invoking
    * the {@link List#add(Object)} method is supported (which is not the case for unmodifiable
    * collections).
-   * 
+   *
    * @param actions the {@code List} of {@code UiAction}s to modify, not null
    * @param code the {@code String} {@link UiAction#CODE} to add, not null
    * @param codes additional {@String} action codes to add, optional
@@ -146,7 +148,7 @@ public final class UiActions {
 
   /**
    * Adds {@code UiAction}(s) to the specified {@link View} if they are not present already.
-   * 
+   *
    * @param view the {@link View} to modify, not null
    * @param a the {@link UiAction} to add, not null
    * @param as additional {@code UiAction}s to add, optional
@@ -157,12 +159,12 @@ public final class UiActions {
 
   /**
    * Adds {@code UiAction}(s) to the specified {@code List} if they are not present already.
-   * 
+   *
    * <p>
    * This method directly modifies to provided {@code List}, thus it must be ensured that invoking
    * the {@link List#add(Object)} method is supported (which is not the case for unmodifiable
    * collections).
-   * 
+   *
    * @param actions the {@code List} of {@code UiAction}s to modify, not null
    * @param a the {@link UiAction} to add, not null
    * @param as additional {@code UiAction}s to add, optional
@@ -223,7 +225,7 @@ public final class UiActions {
   /**
    * Removes the {@code UiAction}(s) denoted by the specified {@link UiAction#CODE}s from a given
    * view, if and only if they are present.
-   * 
+   *
    * @param view the {@link View} to modify, not null
    * @param code the {@link UiAction#CODE} to remove, not null
    * @param codes additional {@code UiAction#CODE}s to remove, optional
@@ -234,20 +236,20 @@ public final class UiActions {
 
   /**
    * Removes the specified {@code UiAction}(s) from a given view, if and only if they are present.
-   * 
+   *
    * <p>
    * Actions are matched by their {@link UiAction#getCode()}, thus the following code will remove
    * the action from the view:
-   * 
+   *
    * <pre>
    * <code>
    * final String myCode = "myCode";
-   * 
+   *
    * UiActions.add(view, new UiAction().code(myCode).submit(true));
    * UiActions.remove(view, new UiAction().code(myCode));
    * </code>
    * </pre>
-   * 
+   *
    * @param view the {@link View} to modify, not null
    * @param a the {@link UiAction} to remove, not null
    * @param as additional {@code UiAction}s to remove, optional
@@ -259,26 +261,26 @@ public final class UiActions {
   /**
    * Removes the specified {@code UiAction}(s) from a given {code List} of actions, if and only if
    * they are present.
-   * 
+   *
    * <p>
    * This method directly modifies to provided {@code List}, thus it must be ensured that invoking
    * the {@link List#removeIf(Predicate)} method is supported (which is not the case for
    * unmodifiable collections).
-   * 
+   *
    * <p>
    * Actions are matched by their {@link UiAction#getCode()}, thus the following code will remove
    * the action from the list:
-   * 
+   *
    * <pre>
    * <code>
    * final List<UiAction> actions = new ArrayList<>();
    * final String myCode = "myCode";
-   * 
+   *
    * UiActions.add(actions, new UiAction().code(myCode).submit(true));
    * UiActions.remove(actions, new UiAction().code(myCode));
    * </code>
    * </pre>
-   * 
+   *
    * @param actions the {@code List} of actions to modify, not null
    * @param a the {@link UiAction} to remove, not null
    * @param as additional {@code UiAction}s to remove, optional
@@ -296,12 +298,12 @@ public final class UiActions {
   /**
    * Removes the {@code UiAction}(s) denoted by the specified {@link UiAction#CODE}s from a given
    * {@code List} of actions, if and only if they are present.
-   * 
+   *
    * <p>
    * This method directly modifies to provided {@code List}, thus it must be ensured that invoking
    * the {@link List#removeIf(Predicate)} method is supported (which is not the case for
    * unmodifiable collections).
-   * 
+   *
    * @param actions the {@code List} of actions to modify, not null
    * @param code the {@link UiAction#CODE} to remove, not null
    * @param codes additional {@code UiAction#CODE}s to remove, optional
@@ -372,6 +374,14 @@ public final class UiActions {
           return this;
       }
       return this.add(action);
+    }
+
+    public UiActionBuilder addSeparator(boolean... conditions) {
+      for (boolean c : conditions) {
+        if (!c)
+          return this;
+      }
+      return this.add(new UiAction().code(SEPARATOR));
     }
 
     public List<UiAction> build() {
