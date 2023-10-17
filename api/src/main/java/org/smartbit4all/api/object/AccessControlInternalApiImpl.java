@@ -21,6 +21,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -169,6 +170,29 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
             })
             .collect(toList()))));
     return result;
+  }
+
+  public final Map<String, List<Subject>> getSubjectsByOperations(String modelName,
+      List<String> operations,
+      ACL acl) {
+    if (acl == null || acl.getRootEntry() == null) {
+      return Collections.emptyMap();
+    }
+    return acl.getRootEntry().getEntries().stream()
+        .flatMap(
+            e -> e.getOperations().stream().map(o -> new OperationSubjectTuple(o, e.getSubject())))
+        .collect(groupingBy(os -> os.operation, mapping(os -> os.subject, toList())));
+  }
+
+  private static class OperationSubjectTuple {
+    String operation;
+    Subject subject;
+
+    public OperationSubjectTuple(String operation, Subject subject) {
+      super();
+      this.operation = operation;
+      this.subject = subject;
+    }
   }
 
   @Override

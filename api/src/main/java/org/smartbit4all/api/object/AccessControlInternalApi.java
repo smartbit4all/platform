@@ -64,4 +64,7 @@ public interface AccessControlInternalApi {
   boolean getMatchingSubjects(String modelName, ACL acl, List<Subject> subjects,
       List<String> requiredOperations, List<String> forbiddenOperations);
 
+  Map<String, List<Subject>> getSubjectsByOperations(String modelName, List<String> operations,
+      ACL acl);
+
 }
