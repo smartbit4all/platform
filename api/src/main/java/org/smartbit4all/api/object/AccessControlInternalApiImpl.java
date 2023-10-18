@@ -20,6 +20,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
@@ -40,6 +41,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   private ObjectApi objectApi;
 
   @Autowired
+  @Lazy
   private OrgApi orgApi;
 
   @Autowired(required = false)
@@ -172,6 +174,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     return result;
   }
 
+  @Override
   public final Map<String, List<Subject>> getSubjectsByOperations(String modelName,
       List<String> operations,
       ACL acl) {
