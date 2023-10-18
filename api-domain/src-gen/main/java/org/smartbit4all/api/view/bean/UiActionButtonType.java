@@ -41,7 +41,9 @@ public enum UiActionButtonType {
   
   MINI_FAB("MINI_FAB"),
   
-  FAB("FAB");
+  FAB("FAB"),
+  
+  SEPARATOR("SEPARATOR");
 
   private String value;
 

@@ -1029,6 +1029,7 @@ components:
         - ICON
         - MINI_FAB
         - FAB
+        - SEPARATOR
     UiActionButtonIconPos:
       type: string
       description: |
