@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.View;
 
@@ -381,7 +382,10 @@ public final class UiActions {
         if (!c)
           return this;
       }
-      return this.add(new UiAction().code(SEPARATOR));
+      return this.add(new UiAction()
+          .code(SEPARATOR)
+          .descriptor(new UiActionDescriptor()
+              .type(UiActionButtonType.SEPARATOR)));
     }
 
     public List<UiAction> build() {
