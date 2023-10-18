@@ -116,6 +116,8 @@ public class CollectionTestConfig {
         CollectionApiTest.SAMPLE_CATEGORY, CollectionApiTest.SCHEMA, SampleCategory.class)
             .map(SampleCategory.NAME, SampleCategory.NAME)
             .map(SampleCategory.URI, SampleCategory.URI)
+            .detailListOfValue(TestCategoryFilter.KEYWORDS, SampleCategory.URI, String.class,
+                120, SampleCategory.KEY_WORDS)
             .mapComplex(TestFilter.CAPTION,
                 on -> {
                   return on.getValueAsString(SampleCategory.NAME)
@@ -129,6 +131,27 @@ public class CollectionTestConfig {
             SampleContainerItem.NAME)
         .map(SampleContainerItem.DATASHEET, String.class, 150, SampleContainerItem.DATASHEET,
             SampleDataSheet.NAME);
+    index.expressionDetail(TestCategoryFilter.KEYWORDS,
+        (obj, objectMapping) -> {
+          SearchIndexMappingObject detailMapping =
+              ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
+                  .get(TestCategoryFilter.KEYWORDS));
+          DetailDefinition detailDefinition =
+              objectMapping.entityDefinition.detailsByName.get(TestCategoryFilter.KEYWORDS);
+          List<Object> list = (List<Object>) obj;
+          Expression existsExpression = null;
+          if (list.size() > 1) {
+            existsExpression = detailMapping.getDefinition().definition
+                .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).in(list);
+          } else {
+            existsExpression = detailMapping.getDefinition().definition
+                .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).like(list.get(0));
+          }
+          // Add the exists to the current entity and return the exists expression as is.
+          return objectMapping.entityDefinition.definition
+              .exists(detailDefinition.masterJoin, existsExpression)
+              .name(SampleCategory.KEY_WORDS);
+        });
     return index;
   }
 

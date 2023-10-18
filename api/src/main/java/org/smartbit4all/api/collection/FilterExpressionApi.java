@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.util.Map;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
@@ -29,6 +30,9 @@ public interface FilterExpressionApi {
       EntityDefinition entityDef);
 
   Expression constructExpression(FilterExpressionList filterExpressions,
-      SearchEntityDefinition entityDef);
+      SearchEntityDefinition searchEntityDefinition,
+      SearchIndexMappingObject searchIndexMappingObject,
+      Map<String, CustomExpressionMapping> expressionByPropertyName);
+
 
 }

@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,9 +44,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -576,6 +576,35 @@ public class CollectionApiTest {
     }
 
     {
+      FilterExpressionList filterExpressions = new FilterExpressionList()
+          .addExpressionsItem(
+              new FilterExpressionData().currentOperation(FilterExpressionOperation.LIKE)
+                  .operand1(new FilterExpressionOperandData().isDataName(true)
+                      .valueAsString(SampleCategory.NAME))
+                  .operand2(
+                      new FilterExpressionOperandData().isDataName(false)
+                          .valueAsString("category %2%")))
+          .addExpressionsItem(
+              new FilterExpressionData().currentOperation(FilterExpressionOperation.EXISTS)
+                  .operand1(new FilterExpressionOperandData().isDataName(true)
+                      .valueAsString(SampleCategory.KEY_WORDS))
+                  .operand2(
+                      new FilterExpressionOperandData().isDataName(false)
+                          .selectedValues(Arrays.asList("key 1", "key 2", "key 3", "key 13"))));
+
+      {
+        TableData<?> tableData = searchIndex.executeSearch(filterExpressions);
+        assertEquals(2, tableData.size());
+
+        List<String> categoryNammeWithDetail =
+            Arrays.asList("category 2", "category 12");
+        DataColumn<?> colName =
+            tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
+        List<?> nameValues = tableData.values(colName);
+        assertTrue(categoryNammeWithDetail.containsAll(nameValues));
+        assertTrue(nameValues.containsAll(categoryNammeWithDetail));
+      }
+
       SearchIndexWithFilterBean<SampleCategory, TestCategoryFilter> detailValueSearch =
           (SearchIndexWithFilterBean<SampleCategory, TestCategoryFilter>) collectionApi
               .searchIndex(SCHEMA, CollectionApiTest.MY_SEARCHDETAILVALUES, SampleCategory.class);

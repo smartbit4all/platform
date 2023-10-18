@@ -51,25 +51,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private Class<O> indexedObjectDefinitionClass;
 
-  protected final class CustomExpressionMapping {
 
-    BiFunction<Object, Property<?>, Expression> expressionProcessor;
-
-    BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor;
-
-    BiFunction<Object, SearchIndexMappingObject, Expression> detailExpressionProcessor;
-
-    public CustomExpressionMapping(
-        BiFunction<Object, Property<?>, Expression> customExpressionProcessor,
-        BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor,
-        BiFunction<Object, SearchIndexMappingObject, Expression> detailExpressionProcessor) {
-      super();
-      this.expressionProcessor = customExpressionProcessor;
-      this.complexExpressionProcessor = complexExpressionProcessor;
-      this.detailExpressionProcessor = detailExpressionProcessor;
-    }
-
-  }
 
   protected SearchIndexMappingObject objectMapping = new SearchIndexMappingObject();
 
@@ -266,6 +248,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return objectMapping.getDefinition();
   }
 
+  private SearchIndexMappingObject getObjectMapping() {
+    initObjectMapping();
+    return objectMapping;
+  }
+
   public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
     this(
@@ -396,7 +383,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     Expression queryExpression =
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
-                filterExpressions, getDefinition());
+                filterExpressions, getDefinition(), getObjectMapping(), expressionByPropertyName);
     CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition)
         .selectAllProperties()
         .where(queryExpression);

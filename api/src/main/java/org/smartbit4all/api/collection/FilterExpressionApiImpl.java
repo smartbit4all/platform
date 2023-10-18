@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionBracket;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,23 +136,59 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   @Override
   public Expression constructExpression(FilterExpressionList filterExpressions,
-      SearchEntityDefinition entityDef) {
-    return constructExpressionInner(filterExpressions, entityDef, null);
+      SearchEntityDefinition entityDef,
+      SearchIndexMappingObject searchIndexMappingObject,
+      Map<String, CustomExpressionMapping> searchExpressionByPropertyName) {
+    return constructExpressionInner(filterExpressions,
+        entityDef,
+        null,
+        searchIndexMappingObject, searchExpressionByPropertyName);
   }
 
   @Override
   public Expression constructExpression(FilterExpressionList filterExpressions,
       EntityDefinition entityDef) {
-    return constructExpressionInner(filterExpressions, null, entityDef);
+    return constructExpressionInner(filterExpressions,
+        null,
+        entityDef,
+        null,
+        null);
   }
 
   private Expression constructExpressionInner(FilterExpressionList filterExpressions,
-      SearchEntityDefinition searchEntityDef, EntityDefinition entityDef) {
+      SearchEntityDefinition searchEntityDef, EntityDefinition entityDef,
+      SearchIndexMappingObject searchIndexMappingObject,
+      Map<String, CustomExpressionMapping> searchExpressionByPropertyName) {
     Expression currentExpression = null;
     FilterExpressionData prevFed = null;
     for (FilterExpressionData fed : filterExpressions.getExpressions()) {
-      // Construct the Expression from the FilterExpressionData
-      Expression exp = convertFilterExpression(fed, searchEntityDef, entityDef);
+      Expression exp = null;
+      if (searchExpressionByPropertyName != null && searchExpressionByPropertyName != null) {
+        String propertyName = getPropertyName(fed);
+
+        if (propertyName != null && searchExpressionByPropertyName.containsKey(propertyName)) {
+          Property<?> property = searchEntityDef.getDefinition().getProperty(propertyName);
+          Object value = getValue(fed, property != null ? property.type() : null);
+          CustomExpressionMapping customExpressionMapping =
+              searchExpressionByPropertyName.get(propertyName);
+          if (customExpressionMapping.complexExpressionProcessor != null) {
+            exp = customExpressionMapping.complexExpressionProcessor
+                .apply(value, searchEntityDef.definition).BRACKET();
+          } else if (customExpressionMapping.expressionProcessor != null && property != null) {
+            exp = customExpressionMapping.expressionProcessor.apply(value, property);
+          } else if (customExpressionMapping.detailExpressionProcessor != null) {
+            exp =
+                customExpressionMapping.detailExpressionProcessor.apply(value,
+                    searchIndexMappingObject);
+          }
+        }
+
+      }
+      if (exp == null) {
+        // Construct the Expression from the FilterExpressionData
+        exp =
+            convertFilterExpression(fed, searchEntityDef, entityDef);
+      }
       if (exp != null) {
         if (currentExpression != null && prevFed != null) {
           if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.OR) {
@@ -165,6 +203,44 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
       }
     }
     return currentExpression;
+  }
+
+
+  private Object getValue(FilterExpressionData fed, Class<?> type) {
+    List<Object> values = new ArrayList<>();
+    values.add(getValue(fed.getOperand1(), type));
+    values.add(getValue(fed.getOperand2(), type));
+    values.add(getValue(fed.getOperand3(), type));
+    return values.stream().filter(p -> p != null).findFirst().orElse(null);
+  }
+
+  private Object getValue(FilterExpressionOperandData operand1, Class<?> type) {
+    Object v = valueOf(operand1, type);
+    if (v != null) {
+      return v;
+    }
+    List<Object> listValue = valuesOf(operand1, type);
+    if (!listValue.isEmpty()) {
+      return listValue;
+    }
+
+    return null;
+  }
+
+  private String getPropertyName(FilterExpressionData fed) {
+    List<String> properties = new ArrayList<>();
+    properties.add(propertyNameOf(fed.getOperand1()));
+    properties.add(propertyNameOf(fed.getOperand2()));
+    properties.add(propertyNameOf(fed.getOperand3()));
+    // The first property would be great for type conversion.
+    return properties.stream().filter(p -> p != null).findFirst().orElse(null);
+  }
+
+  private String propertyNameOf(FilterExpressionOperandData op) {
+    if (op != null && Boolean.TRUE.equals(op.getIsDataName())) {
+      return op.getValueAsString();
+    }
+    return null;
   }
 
   private final PropertyObject propertyOf(FilterExpressionOperandData op,
@@ -199,7 +275,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
     if (fed.getCurrentOperation().equals(FilterExpressionOperation.EXPRESSION)) {
       // TODO detail entitydef?
       Expression innerExpression =
-          constructExpressionInner(fed.getSubExpression(), searchEntityDef, entityDef);
+          constructExpressionInner(fed.getSubExpression(), searchEntityDef, entityDef,
+              null, null);
       return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
     }
 
@@ -208,7 +285,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
         .contains(fed.getCurrentOperation())) {
       // The expression is simple parenthesis for the same entity definition.
       String propertyName = fed.getOperand1().getValueAsString();
-      Expression existsExpression = constructExists(fed, propertyName, searchEntityDef);
+      Expression existsExpression =
+          constructExists(fed, propertyName, searchEntityDef);
       if (fed.getCurrentOperation() == FilterExpressionOperation.NOT_EXISTS) {
         existsExpression = existsExpression.NOT();
       }
@@ -308,13 +386,16 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
     // ((SearchIndexMappingObject) mappingsByPropertyName.get(propertyName));
     DetailDefinition detailDefinition = searchEntityDef.detailsByName.get(propertyName);
     Expression existsExpression = constructExpressionInner(fed.getSubExpression(),
-        detailDefinition.detail, null);
+        detailDefinition.detail, null, null, null);
     // Add the exists to the current entity and return the exists expression as is.
     return searchEntityDef.definition.exists(detailDefinition.masterJoin, existsExpression)
         .name(propertyName);
   }
 
   private final Object convertValue(String valueAsString, Class<?> type) {
+    if (type == null) {
+      return valueAsString;
+    }
     if (String.class.equals(type)) {
       return valueAsString;
     }
@@ -325,6 +406,9 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   }
 
   private final List<Object> convertValues(List<String> values, Class<?> type) {
+    if (type == null) {
+      return (List<Object>) (Object) values;
+    }
     if (String.class.equals(type)) {
       return (List<Object>) (Object) values;
     }
