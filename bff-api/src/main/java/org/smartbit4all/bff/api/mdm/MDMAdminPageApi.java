@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
+import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.view.PageApi;
@@ -20,11 +21,11 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
  */
 public interface MDMAdminPageApi extends PageApi<Object> {
 
-  static final String MDM_ADMIN = "MDMAdmin";
-  static final String MDM_ADMIN_VALUES = MDM_ADMIN + "Values";
-  static final String MDM_LIST = "MDMList";
-  static final String MDM_LIST_VALUES = MDM_LIST + "Values";
-  static final String MDM_EDIT = "MDMEdit";
+  static final String MDM_ADMIN = MDMConstants.MDM_ADMIN;
+  static final String MDM_ADMIN_VALUES = MDMConstants.MDM_ADMIN_VALUES;
+  static final String MDM_LIST = MDMConstants.MDM_LIST;
+  static final String MDM_LIST_VALUES = MDMConstants.MDM_LIST_VALUES;
+  static final String MDM_EDIT = MDMConstants.MDM_EDIT;
 
   /**
    * Open the given MDMListPage for the descriptor.
