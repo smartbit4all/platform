@@ -118,6 +118,11 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
                   .filter(bo -> bo.getBranchedObjectLatestUri().equals(uriWithoutVersion))
                   .findFirst().orElse(null);
             }
+            // Check if it is new object to avoid register it as modified also.
+            if (alreadyExistingBranchedObject == null) {
+              alreadyExistingBranchedObject =
+                  branchEntry.getNewObjects().get(uriWithoutVersion.toString());
+            }
             if (alreadyExistingBranchedObject == null) {
               result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
                   objectChangeRequest.getStorageScheme(),
