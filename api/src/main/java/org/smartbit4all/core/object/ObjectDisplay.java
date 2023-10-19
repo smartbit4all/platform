@@ -1,7 +1,8 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
+import static java.util.stream.Collectors.toList;
 
 public final class ObjectDisplay {
 
@@ -25,13 +27,13 @@ public final class ObjectDisplay {
       List<ComponentConstraint> componentConstraints,
       List<UiActionConstraint> uiActionConstraints) {
     this.layoutsByName = layoutsByName == null
-        ? Collections.emptyMap()
+        ? new HashMap<>()
         : layoutsByName;
     this.componentConstraints = componentConstraints == null
-        ? Collections.emptyList()
+        ? new ArrayList<>()
         : componentConstraints;
     this.uiActionConstraints = uiActionConstraints == null
-        ? Collections.emptyList()
+        ? new ArrayList<>()
         : uiActionConstraints;
   }
 
