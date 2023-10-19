@@ -4,7 +4,7 @@ import java.util.UUID;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.bff.api.groupselector.bean.SubjectSelectorPageModel;
+import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 
 public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel> {
   String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";

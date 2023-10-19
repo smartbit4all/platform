@@ -21,8 +21,9 @@ components:
         selectedDescriptor:
           type: SubjectTypeDescriptor
         descriptors:
-          type: object
           description: The subject descriptors identified by their unique name.
-          additionalProperties:
-           $ref: '#/components/schemas/SubjectTypeDescriptor'      
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectTypeDescriptor'
+                 
          

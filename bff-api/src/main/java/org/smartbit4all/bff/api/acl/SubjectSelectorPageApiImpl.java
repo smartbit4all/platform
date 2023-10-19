@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
@@ -22,6 +23,7 @@ import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -29,11 +31,10 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.bff.api.config.PlatformBffApiConfig;
-import org.smartbit4all.bff.api.groupselector.bean.SubjectSelectorPageModel;
+import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageModel>
     implements SubjectSelectorPageApi {
@@ -64,12 +65,8 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   public SubjectSelectorPageModel initModel(View view) {
 
     SubjectModel model = getSubjectModel(view);
-    String firstDescriptorName = model.getDescriptors().get(0).getName();
 
-    Map<String, SubjectTypeDescriptor> descriptorMap =
-        model.getDescriptors().stream().collect(toMap(SubjectTypeDescriptor::getName, d -> d));
-
-    initGrid(firstDescriptorName, view.getUuid(), descriptorMap);
+    initGrid(model.getDescriptors().get(0), view.getUuid());
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SUBMIT_SELECTION)
@@ -78,9 +75,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
     return new SubjectSelectorPageModel()
         .descriptors(
-            descriptorMap)
+            model.getDescriptors())
         .selectedDescriptor(model.getDescriptors().get(0))
-        .selectedSubjectName(firstDescriptorName)
+        .selectedSubjectName(model.getDescriptors().get(0).getName())
         .sujectModelName(
             model.getTitle() != null ? localeSettingApi.get(model.getTitle()) : model.getName());
   }
@@ -88,14 +85,20 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   @Override
   public void peformSelectSubject(UUID viewUuid, UiActionRequest request) {
     ObjectMapHelper params = actionRequestHelper(request);
-    String subjectTypeName = params.get(SubjectTypeDescriptor.NAME, String.class);
+    String subjectTypeDescriptorName =
+        params.get(UiActions.MODEL, String.class);
     SubjectSelectorPageModel pageModel = this.getModel(viewUuid);
 
-    pageModel.setSelectedDescriptor(pageModel.getDescriptors().get(subjectTypeName));
-    pageModel.setSelectedSubjectName(subjectTypeName);
-    setModel(viewUuid, pageModel);
+    Optional<SubjectTypeDescriptor> subjectTypeDescriptor = pageModel.getDescriptors().stream()
+        .filter(d -> d.getName().equals(subjectTypeDescriptorName)).findFirst();
 
-    initGrid(subjectTypeName, viewUuid, pageModel.getDescriptors());
+    if (subjectTypeDescriptor.isPresent()) {
+      pageModel.setSelectedDescriptor(subjectTypeDescriptor.get());
+      pageModel.setSelectedSubjectName(subjectTypeDescriptorName);
+      setModel(viewUuid, pageModel);
+
+      initGrid(subjectTypeDescriptor.get(), viewUuid);
+    }
   }
 
   @Override
@@ -129,9 +132,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
   }
 
-  private void initGrid(String subjectName, UUID viewUuid,
-      Map<String, SubjectTypeDescriptor> descriptors) {
-    SubjectTypeDescriptor subjectTypeDescriptor = descriptors.get(subjectName);
+  private void initGrid(SubjectTypeDescriptor subjectTypeDescriptor, UUID viewUuid) {
     SearchPageConfig selectionConfig = subjectTypeDescriptor.getSelectionConfig();
 
     SearchIndex<?> searchIndex =
