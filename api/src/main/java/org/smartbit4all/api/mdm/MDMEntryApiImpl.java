@@ -1,8 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +24,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
@@ -40,6 +38,9 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -301,7 +302,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     URI branchUri = getBranchUri();
     StoredList list = getList();
     list.branch(branchUri);
-    list.remove(objectUri);
+    boolean remove = list.remove(objectUri);
+    if (!remove) {
+      return false;
+    }
+    BranchedObject removeNewBranchedObjects =
+        branchApi.removeNewBranchedObjects(branchUri, objectUri);
+    if (removeNewBranchedObjects != null) {
+      return true;
+    }
     StoredList inactiveList = getInactiveList();
     if (inactiveList != null) {
       inactiveList.branch(branchUri);

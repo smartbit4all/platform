@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +54,8 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -480,7 +480,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.ORIGINAL_URI,
+    performActionOnEntry(context, gridId, rowId, ObjectDefinition.URI_PROPERTY,
         (u, ctx) -> {
           ctx.entryApi.remove(u);
         });
@@ -555,17 +555,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         action.accept(objectUri, context);
       }
     });
-
-    GridModel gridModel =
-        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
-    Object valueFromGridRow =
-        GridModels.getValueFromGridRow(gridModel, rowId, uriProperty);
-    URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
-        : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
-
-    if (objectUri != null) {
-      action.accept(objectUri, context);
-    }
   }
 
   public final MDMEntryListPageApi defaultEditorViewName(String defaultEditorViewName) {
@@ -595,21 +584,32 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI) != null;
       boolean isOnOriginal =
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI) != null;
+      Object oBranchingState =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
+      boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
+      boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
+
       UiActionBuilder uiActions = UiActions.builder();
       // .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
       if (approvingEnabled) {
         boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
         uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
-            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+                !deletedOnBranch)
+            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives, newOnBranch)
+            .addIf(ACTION_INACTIVATE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+                !newOnBranch, !deletedOnBranch)
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch);
       } else {
         uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+                !deletedOnBranch)
+            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives, newOnBranch)
+            .addIf(ACTION_INACTIVATE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+                !newOnBranch, !deletedOnBranch)
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,

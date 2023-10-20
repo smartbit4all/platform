@@ -122,4 +122,13 @@ public interface BranchApi {
 
   String toStringBranchedObjectEntry(BranchedObjectEntry bo, String... path);
 
+  /**
+   * Try to remove the new object from the branch.
+   * 
+   * @param branchUri
+   * @param objectUri
+   * @return
+   */
+  BranchedObject removeNewBranchedObjects(URI branchUri, URI objectUri);
+
 }
