@@ -2,6 +2,7 @@ package org.smartbit4all.sec.oauth2;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -132,17 +133,18 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
         OAuth2AuthorizedClient authorizedClient =
             authorizedClientRepository.loadAuthorizedClient(registrationId, oauthToken, request);
 
-        AccountInfo accountInfo = createDefaultAccountInfo(authorizedClient, oauthToken);
-        sessionManagementApi.addSessionAuthentication(sessionURI, accountInfo);
 
+        User user = null;
         try {
-          setSessionUser(sessionURI, oauthToken);
+          user = setSessionUser(sessionURI, oauthToken);
         } catch (Exception e) {
           log.debug("Unable to set session user.", e);
           handleAuthorizationFailure(request, response, oauthToken);
           clearAuthenticationAttributes(request);
           return;
         }
+        AccountInfo accountInfo = createDefaultAccountInfo(user, authorizedClient, oauthToken);
+        sessionManagementApi.addSessionAuthentication(sessionURI, accountInfo);
 
         AbstractAuthenticationToken sessionAuthToken =
             SecurityContextUtility.setSessionAuthenticationTokenInContext(request, sessionUriTxt,
@@ -165,12 +167,13 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     response.setStatus(302);
   }
 
-  private void setSessionUser(URI sessionURI, OAuth2AuthenticationToken oauthToken)
+  private User setSessionUser(URI sessionURI, OAuth2AuthenticationToken oauthToken)
       throws Exception {
     String name = oauthToken.getName();
     Session session = sessionManagementApi.readSession(sessionURI);
+    User user = null;
     if (session.getUser() == null) {
-      User user = orgApi.getUserByUsername(name);
+      user = orgApi.getUserByUsername(name);
       URI userUri = null;
       if (user == null) {
         if (onMissingUser != null) {
@@ -194,6 +197,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
             "There was no user found or has no rights to log in with the authenticated ouath2 token!");
       }
     }
+    return user;
   }
 
   /**
@@ -204,21 +208,25 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     // override this to check user. e.g.: check permissions
   }
 
-  private AccountInfo createDefaultAccountInfo(OAuth2AuthorizedClient authorizedClient,
+  private AccountInfo createDefaultAccountInfo(User user, OAuth2AuthorizedClient authorizedClient,
       OAuth2AuthenticationToken oauthToken) {
     String registrationId = oauthToken.getAuthorizedClientRegistrationId();
-    String name = oauthToken.getName();
-    List<String> roles = oauthToken.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-        .collect(Collectors.toList());
+    List<String> oauthRoles =
+        oauthToken.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-    AccountInfo accountInfo = new AccountInfo()
-        .kind("oauth2-" + registrationId)
-        .userName(name)
-        .displayName(name)
-        .roles(roles)
-        .putParametersItem("registrationId", registrationId)
-        .putParametersItem("expiresAt",
-            "" + authorizedClient.getAccessToken().getExpiresAt().toEpochMilli());
+    AccountInfo accountInfo =
+        SecurityContextUtility.getDefaultAccountInfoProvider(orgApi).apply(user, oauthToken);
+    accountInfo.setKind("oauth2-" + registrationId);
+    accountInfo.putParametersItem("registrationId", registrationId);
+    accountInfo.putParametersItem("expiresAt",
+        "" + authorizedClient.getAccessToken().getExpiresAt().toEpochMilli());
+    List<String> roles = accountInfo.getRoles();
+    if (roles == null) {
+      roles = new ArrayList<>();
+      accountInfo.setRoles(roles);
+    }
+    roles.addAll(oauthRoles);
     return accountInfo;
   }
 
