@@ -248,7 +248,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       currentSession.set(session);
       return session;
     } catch (Exception e) {
-      log.error("Error reading session by uri", e);
+      log.debug("Exception occured when reading session by uri", e);
       currentSession.remove();
       return null;
     }
