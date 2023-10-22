@@ -4,10 +4,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.Invocations.ListWrapper;
 import org.smartbit4all.api.invocation.Invocations.MapWrapper;
@@ -22,7 +22,7 @@ import org.smartbit4all.core.object.BeanMetaUtil;
 /**
  * The invocation api can initiate this builder. This is an {@link InvocationHandler} at the same
  * time and captures the method invocations of the api {@link #clazz} interface.
- * 
+ *
  * @author Peter Boros
  */
 public class InvocationBuilder<T> implements InvocationHandler {
@@ -49,7 +49,7 @@ public class InvocationBuilder<T> implements InvocationHandler {
   /**
    * By calling the api method inside the consumer the builder can build the invocation request
    * ready to execute by the {@link InvocationApi}.
-   * 
+   *
    * @param apiCall
    * @return
    */
@@ -62,7 +62,7 @@ public class InvocationBuilder<T> implements InvocationHandler {
   /**
    * By calling the api method inside the consumer the builder can build the invocation request
    * ready to execute by the {@link InvocationApi}.
-   * 
+   *
    * @param apiCall
    * @param objects The object configuration for the api calls.
    * @return The invocation request batch that can be executed by the InvocationApi.
@@ -106,19 +106,23 @@ public class InvocationBuilder<T> implements InvocationHandler {
             throw new IllegalArgumentException(
                 "In invocation builder use Invocations.listOf warpper for passing list parameters.");
           }
-          if (invocationParameter.getValue() instanceof Proxy) {
-            invocationParameter.setValue(new ArrayList());
-          }
         } else if (Map.class.isAssignableFrom(parameter.getType())) {
           try {
+            MapWrapper mapWrapper = (MapWrapper) Proxy.getInvocationHandler(args[i]);
             invocationParameter.setInnerTypeClass(
-                ((MapWrapper) Proxy.getInvocationHandler(args[i])).getInnerType().getName());
+                mapWrapper.getInnerType().getName());
+            if (mapWrapper.getMap() == null) {
+              mapWrapper.setMap(new HashMap<>());
+            } else {
+              if (mapWrapper.getMap().values().stream()
+                  .anyMatch(Objects::isNull)) {
+                throw new IllegalArgumentException(
+                    "Map method parameter cannot contain null value");
+              }
+            }
           } catch (Exception e) {
             throw new IllegalArgumentException(
                 "In invocation builder use Invocations.mapOf warpper for passing map parameters.");
-          }
-          if (invocationParameter.getValue() instanceof Proxy) {
-            invocationParameter.setValue(new HashMap());
           }
         }
         request.addParametersItem(invocationParameter);
