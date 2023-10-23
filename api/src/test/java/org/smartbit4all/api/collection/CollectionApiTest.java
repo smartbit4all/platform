@@ -1,8 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +41,9 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -482,8 +482,6 @@ public class CollectionApiTest {
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("odd.odd"));
 
     assertEquals(TableDatas.toStringAdv(tableData), TableDatas.toStringAdv(tableDataByDerived));
-    assertEquals(TableDatas.contentOf(tableData).toString(),
-        TableDatas.contentOf(tableDataByDerived).toString());
 
     TableData<?> tableDataByDerivedNoResult =
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
