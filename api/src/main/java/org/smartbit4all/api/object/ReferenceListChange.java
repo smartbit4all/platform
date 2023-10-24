@@ -28,9 +28,8 @@ public class ReferenceListChange extends ReferenceChangeRequest {
    */
   final List<ObjectChangeRequest> changeList = new ArrayList<>();
 
-  public ReferenceListChange(ApplyChangeRequest request, ObjectChangeRequest objectChangeRequest,
-      ReferenceDefinition definition) {
-    super(request, objectChangeRequest, definition);
+  public ReferenceListChange(ReferenceDefinition definition) {
+    super(definition);
   }
 
   /**

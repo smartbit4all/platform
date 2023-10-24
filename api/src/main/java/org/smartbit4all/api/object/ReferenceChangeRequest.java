@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
@@ -13,34 +12,13 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 public abstract class ReferenceChangeRequest {
 
   /**
-   * To access the request and better destruction at the same time.
-   */
-  private WeakReference<ApplyChangeRequest> requestRef;
-
-  /**
-   * To access the object change and better destruction at the same time.
-   */
-  protected WeakReference<ObjectChangeRequest> objectChangeRef;
-
-  /**
    * The reference definition.
    */
   protected ReferenceDefinition definition;
 
-  protected ReferenceChangeRequest(ApplyChangeRequest request,
-      ObjectChangeRequest objectChangeRequest, ReferenceDefinition definition) {
+  protected ReferenceChangeRequest(ReferenceDefinition definition) {
     super();
     this.definition = definition;
-    this.requestRef = new WeakReference<>(request);
-    this.objectChangeRef = new WeakReference<>(objectChangeRequest);
-  }
-
-  public final ApplyChangeRequest request() {
-    return requestRef != null ? requestRef.get() : null;
-  }
-
-  public final ObjectChangeRequest object() {
-    return objectChangeRef != null ? objectChangeRef.get() : null;
   }
 
   public abstract Iterable<ObjectChangeRequest> changes();
