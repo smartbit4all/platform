@@ -1,5 +1,9 @@
 package org.smartbit4all.api.view.restserver.config;
 
+import org.smartbit4all.api.filterexpression.restserver.FilterApi;
+import org.smartbit4all.api.filterexpression.restserver.FilterApiController;
+import org.smartbit4all.api.filterexpression.restserver.FilterApiDelegate;
+import org.smartbit4all.api.filterexpression.restserver.impl.FilterApiDelegateImpl;
 import org.smartbit4all.api.grid.restserver.GridApiController;
 import org.smartbit4all.api.grid.restserver.GridApiDelegate;
 import org.smartbit4all.api.grid.restserver.impl.GridApiDelegateImpl;
@@ -63,6 +67,16 @@ public class ViewSrvRestConfig {
   @Bean
   public GridApiController gridApiController(GridApiDelegate delegate) {
     return new GridApiController(delegate);
+  }
+
+  @Bean
+  public FilterApiDelegate filterApiDelegate() {
+    return new FilterApiDelegateImpl();
+  }
+
+  @Bean
+  public FilterApi filterApiController(FilterApiDelegate delegate) {
+    return new FilterApiController(delegate);
   }
 
 }
