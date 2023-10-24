@@ -583,7 +583,7 @@ public class CollectionApiTest {
                       new FilterExpressionOperandData().isDataName(false)
                           .valueAsString("category %2%")))
           .addExpressionsItem(
-              new FilterExpressionData().currentOperation(FilterExpressionOperation.EXISTS)
+              new FilterExpressionData().currentOperation(FilterExpressionOperation.IN)
                   .operand1(new FilterExpressionOperandData().isDataName(true)
                       .valueAsString(SampleCategory.KEY_WORDS))
                   .operand2(
