@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,7 @@ import org.smartbit4all.core.object.ObjectNodeReference;
  * The change request for one object with a required operation. The object itself can be directly a
  * {@link Map} or the java object. If we set the java object then we don't use the map.
  * {@link #objectAsMap}!
- * 
+ *
  * @author Peter Boros
  */
 public class ObjectChangeRequest {
@@ -33,32 +32,27 @@ public class ObjectChangeRequest {
   private final String storageScheme;
 
   /**
-   * 
+   *
    */
   private ObjectChangeOperation operation;
 
   /**
-   * For better destruction.
-   */
-  private final WeakReference<ApplyChangeRequest> requestRef;
-
-  /**
    * If this change request refers to an ObjectNode, we need a reference to write back result URI.
    */
-  private WeakReference<ObjectNode> objectNodeRef;
+  private ObjectNode objectNode;
 
-  private WeakReference<ObjectNodeReference> referenceRef;
+  private ObjectNodeReference reference;
 
   private final URI uriToSave;
 
-  ObjectChangeRequest(ApplyChangeRequest request, ObjectNode node) {
-    this(request, node.getDefinition(), node.getStorageScheme(), opByState(node.getState()));
+  ObjectChangeRequest(ObjectNode node) {
+    this(node.getDefinition(), node.getStorageScheme(), opByState(node.getState()));
     this.uri = node.getObjectUri();
     this.objectAsMap = node.getObjectAsMap();
-    objectNodeRef = new WeakReference<>(node);
+    objectNode = node;
   }
 
-  ObjectChangeRequest(ApplyChangeRequest request, ObjectDefinition<?> definition,
+  ObjectChangeRequest(ObjectDefinition<?> definition,
       String storageScheme,
       ObjectChangeOperation operation) {
     super();
@@ -66,17 +60,15 @@ public class ObjectChangeRequest {
     this.storageScheme = storageScheme;
     this.operation = operation;
     this.uriToSave = null;
-    requestRef = new WeakReference<>(request);
   }
 
-  ObjectChangeRequest(ApplyChangeRequest request, ObjectNodeReference ref) {
+  ObjectChangeRequest(ObjectNodeReference ref) {
     super();
     this.definition = null;
     this.storageScheme = null;
     this.operation = opByState(ref.getState());
     this.uriToSave = ref.getObjectUri();
-    requestRef = new WeakReference<>(request);
-    referenceRef = new WeakReference<>(ref);
+    reference = ref;
   }
 
   /**
@@ -98,19 +90,19 @@ public class ObjectChangeRequest {
 
   /**
    * We can construct a new reference value change for the outgoing reference.
-   * 
+   *
    * @param reference The outgoing reference.
    * @return
    */
   public ReferenceValueChange referenceValue(String reference) {
     return (ReferenceValueChange) referenceChanges.computeIfAbsent(reference,
-        d -> new ReferenceValueChange(request(), this, definition.getOutgoingReference(reference)));
+        d -> new ReferenceValueChange(definition.getOutgoingReference(reference)));
   }
 
   public ReferenceListChange referenceList(String reference) {
 
     return (ReferenceListChange) referenceChanges.computeIfAbsent(reference,
-        d -> new ReferenceListChange(request(), this, definition.getOutgoingReference(reference)));
+        d -> new ReferenceListChange(definition.getOutgoingReference(reference)));
   }
 
   public final URI getUri() {
@@ -140,7 +132,7 @@ public class ObjectChangeRequest {
   }
 
   public final ObjectNode getObjectNode() {
-    return objectNodeRef.get();
+    return objectNode;
   }
 
   public final ObjectDefinition<?> getDefinition() {
@@ -155,10 +147,6 @@ public class ObjectChangeRequest {
     return referenceChanges;
   }
 
-  public final ApplyChangeRequest request() {
-    return requestRef.get();
-  }
-
   public final String getStorageScheme() {
     return storageScheme;
   }
@@ -169,7 +157,7 @@ public class ObjectChangeRequest {
 
   /**
    * This Uri has been set from outside as the Uri to save.
-   * 
+   *
    * @return
    */
   public URI getUriToSaveUri() {
@@ -191,17 +179,11 @@ public class ObjectChangeRequest {
   }
 
   public void setResult(URI resultUri) {
-    if (objectNodeRef != null) {
-      ObjectNode node = objectNodeRef.get();
-      if (node != null) {
-        node.setResult(resultUri);
-      }
+    if (objectNode != null) {
+      objectNode.setResult(resultUri);
     }
-    if (referenceRef != null) {
-      ObjectNodeReference ref = referenceRef.get();
-      if (ref != null) {
-        ref.setResult(resultUri);
-      }
+    if (reference != null) {
+      reference.setResult(resultUri);
     }
   }
 

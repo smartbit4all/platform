@@ -118,6 +118,11 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
                   .filter(bo -> bo.getBranchedObjectLatestUri().equals(uriWithoutVersion))
                   .findFirst().orElse(null);
             }
+            // Check if it is new object to avoid register it as modified also.
+            if (alreadyExistingBranchedObject == null) {
+              alreadyExistingBranchedObject =
+                  branchEntry.getNewObjects().get(uriWithoutVersion.toString());
+            }
             if (alreadyExistingBranchedObject == null) {
               result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
                   objectChangeRequest.getStorageScheme(),
@@ -212,7 +217,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     ApplyChangeRequest request = request(branchEntry);
     // Now we assume that the root container is the object that is set here. So we add modification
     // to this object if it is necessary.
-    ObjectChangeRequest objectChangeRequest = constructRequest(rootNode, request);
+    ObjectChangeRequest objectChangeRequest = constructRequest(rootNode);
     if (objectChangeRequest.getOperation() == ObjectChangeOperation.NEW
         || objectChangeRequest.getOperation() == ObjectChangeOperation.UPDATE) {
       request.getObjectChangeRequests().add(objectChangeRequest);
@@ -225,14 +230,14 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     return null;
   }
 
-  private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {
+  private ObjectChangeRequest constructRequest(ObjectNode node) {
     boolean containmentChanged = false;
 
-    ObjectChangeRequest result = new ObjectChangeRequest(request, node);
+    ObjectChangeRequest result = new ObjectChangeRequest(node);
 
     // Recurse on the values.
     for (Entry<String, ObjectNodeReference> entry : node.getReferences().entrySet()) {
-      ObjectChangeRequest changeRequest = constructRequest(entry.getValue(), request);
+      ObjectChangeRequest changeRequest = constructRequest(entry.getValue());
       if (changeRequest.getOperation() != ObjectChangeOperation.NOP ||
           entry.getValue().getState() != ObjectNodeState.NOP) {
         containmentChanged = true;
@@ -243,7 +248,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     // Recurse on the lists
     for (Entry<String, ObjectNodeList> entry : node.getReferenceLists().entrySet()) {
       for (ObjectNodeReference ref : entry.getValue().references()) {
-        ObjectChangeRequest changeRequest = constructRequest(ref, request);
+        ObjectChangeRequest changeRequest = constructRequest(ref);
         if (changeRequest.getOperation() == ObjectChangeOperation.DELETE) {
           // list has changed, should be applied, without this reference
           containmentChanged = true;
@@ -266,12 +271,11 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
   }
 
-  private ObjectChangeRequest constructRequest(ObjectNodeReference ref,
-      ApplyChangeRequest request) {
+  private ObjectChangeRequest constructRequest(ObjectNodeReference ref) {
     if (ref.isLoaded()) {
-      return constructRequest(ref.get(), request);
+      return constructRequest(ref.get());
     } else {
-      return new ObjectChangeRequest(request, ref);
+      return new ObjectChangeRequest(ref);
     }
   }
 

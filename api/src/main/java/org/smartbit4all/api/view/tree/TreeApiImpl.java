@@ -265,6 +265,7 @@ public class TreeApiImpl implements TreeApi {
         .classes(treeNode.getClasses())
         .actions(treeNode.getActions())
         .hasChildren(treeNode.getHasChildren())
+        .shortDescription(treeNode.getShortDescription())
         .childrenNodes(treeNode.getChildren().stream()
             .map(c -> convertUi2SmartTreeNode(treeState, treeState.getNodes().get(c)))
             .collect(toList()));

@@ -13,7 +13,7 @@ import com.google.common.base.Strings;
 
 /**
  * The api implementations can use this builder api based object to construct a request.
- * 
+ *
  * @author Peter Boros
  */
 public final class ApplyChangeRequest {
@@ -55,7 +55,7 @@ public final class ApplyChangeRequest {
   /**
    * This will add a new root object to the request to create as new. By executing the request the
    * object will be saved and its uri will be set.
-   * 
+   *
    * @param node The object that can be serialized as JSON.
    * @return The object change request is the request node attached to this object.
    */
@@ -64,7 +64,7 @@ public final class ApplyChangeRequest {
       throw new IllegalArgumentException("The object node to create must not be null");
     }
     return addAndReturn(
-        new ObjectChangeRequest(this, node));
+        new ObjectChangeRequest(node));
   }
 
   /**
@@ -73,7 +73,7 @@ public final class ApplyChangeRequest {
    * will be merged into the previous ones. At the end we will have the union of all the values to
    * set. If we also set the object itself to replace then first we set the object, construct the
    * Map based representation and update with the map based values we set with this function calls.
-   * 
+   *
    * @param uri The URI of the object to update with the given object. The uri must be the proper
    *        version uri on the main branch or on the branch that we gave. The modification on the
    *        given object will lead to modification on its container. If we have container then the
@@ -89,7 +89,7 @@ public final class ApplyChangeRequest {
       throw new IllegalArgumentException("To update an object we must set property values.");
     }
     // Here we have no idea about the class of the given object.
-    return addAndReturn(new ObjectChangeRequest(this, null,
+    return addAndReturn(new ObjectChangeRequest(null,
         uri.getScheme(), ObjectChangeOperation.UPDATE).objectAsMap(values).uri(uri));
   }
 
@@ -97,7 +97,7 @@ public final class ApplyChangeRequest {
    * This will add a new root object to the request to find with the URI. In this case we don't want
    * to modify the values of the given object but we need this to modify its references. At the same
    * time it will result a modification on the object because the references are also
-   * 
+   *
    * @param uri The URI of the object to update with the given object. The uri must be the proper
    *        version uri on the main branch or on the branch that we gave. The modification on the
    *        given object will lead to modification on its container. If we have container then the
@@ -109,7 +109,7 @@ public final class ApplyChangeRequest {
       throw new IllegalArgumentException("The uri is missing for the replacement.");
     }
     // Here we have no idea about the class of the given object.
-    return addAndReturn(new ObjectChangeRequest(this, null,
+    return addAndReturn(new ObjectChangeRequest(null,
         uri.getScheme(), ObjectChangeOperation.NOP).uri(uri));
   }
 

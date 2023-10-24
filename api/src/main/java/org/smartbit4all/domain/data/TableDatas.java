@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
-import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,10 +29,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.object.bean.TableDataContent;
-import org.smartbit4all.api.object.bean.TableDataContentColumn;
-import org.smartbit4all.api.object.bean.TableDataContentHeader;
-import org.smartbit4all.api.object.bean.TableDataContentRow;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -720,23 +715,6 @@ public final class TableDatas {
       return self();
     }
 
-  }
-
-  public static TableDataContent contentOf(TableData<?> tableData) {
-    TableDataContent result =
-        new TableDataContent().header(new TableDataContentHeader()).totalRowCount(tableData.size());
-    for (DataColumn<?> column : tableData.columns()) {
-      result.getHeader()
-          .addColumnsItem(
-              new TableDataContentColumn().propertyName(column.getName())
-                  .typeClass(column.getProperty().type().getName()));
-    }
-    for (DataRow row : tableData.rows()) {
-      result.addRowsItem(new TableDataContentRow().data(tableData.columns().stream()
-          .filter(c -> tableData.get(c, row) != null)
-          .collect(toMap(DataColumn::getName, c -> tableData.get(c, row)))));
-    }
-    return result;
   }
 
 }

@@ -1,17 +1,24 @@
 package org.smartbit4all.sec.utils;
 
-import java.net.URI;
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.smartbit4all.api.session.SessionApi;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 public class SecurityConfigUtils {
+
+  public static final String SB4_SESSION_URI = "sb4SessionUri";
 
   private SecurityConfigUtils() {}
 
@@ -53,15 +60,55 @@ public class SecurityConfigUtils {
         new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository,
             OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
     resolver.setAuthorizationRequestCustomizer(builder -> {
-      URI sessionUri = URI.create("no_session");
+      String sessionUriTxt = null;
       try {
-        sessionUri = sessionApi.getSessionUri();
+        sessionUriTxt = sessionApi.getSessionUri().toString();
       } catch (Exception e) {
-        // TODO: add proper validation
+        throw new IllegalStateException("There is no current session available", e);
       }
-      String sessionUriTxt = sessionUri.toString();
-      builder.additionalParameters(map -> map.put("sessionUri", sessionUriTxt));
+      final String sessionUri = sessionUriTxt;
+      builder.additionalParameters(map -> map.put(SB4_SESSION_URI, sessionUri));
     });
     return resolver;
+  }
+
+
+  public static AuthorizationRequestRepository<OAuth2AuthorizationRequest> getOauth2AuthReqRepository(
+      SessionApi sessionApi) {
+
+    return new AuthorizationRequestRepository<OAuth2AuthorizationRequest>() {
+
+      private HttpSessionOAuth2AuthorizationRequestRepository defaultRepo =
+          new HttpSessionOAuth2AuthorizationRequestRepository();
+
+      @Override
+      public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+        return defaultRepo.loadAuthorizationRequest(request);
+      }
+
+      @Override
+      public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest,
+          HttpServletRequest request, HttpServletResponse response) {
+
+        String state = authorizationRequest.getState();
+
+        String sessionUriTxt = null;
+        try {
+          sessionUriTxt = sessionApi.getSessionUri().toString();
+        } catch (Exception e) {
+          throw new IllegalStateException("There is no current session available", e);
+        }
+        // FIXME get the existing map and add the new uri there if multiple oauth flow is present
+        request.getSession().setAttribute(SB4_SESSION_URI,
+            Collections.singletonMap(state, sessionUriTxt));
+
+        defaultRepo.saveAuthorizationRequest(authorizationRequest, request, response);
+      }
+
+      @Override
+      public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request) {
+        return defaultRepo.removeAuthorizationRequest(request);
+      }
+    };
   }
 }

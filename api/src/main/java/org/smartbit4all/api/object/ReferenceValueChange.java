@@ -18,9 +18,8 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
    */
   private ObjectChangeRequest value;
 
-  public ReferenceValueChange(ApplyChangeRequest request, ObjectChangeRequest objectChangeRequest,
-      ReferenceDefinition definition) {
-    super(request, objectChangeRequest, definition);
+  public ReferenceValueChange(ReferenceDefinition definition) {
+    super(definition);
   }
 
   public final ObjectChangeRequest getValue() {

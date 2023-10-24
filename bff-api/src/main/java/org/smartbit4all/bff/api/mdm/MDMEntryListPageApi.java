@@ -118,6 +118,13 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
+   * inactivate is an action that places the given item into the inactive list and remove it from
+   * the normal list.
+   */
+  static final String ACTION_INACTIVATE_ENTRY = "INACTIVATE_ENTRY";
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The draft object (if any) is going
    * to be canceled from the list that contains the currently edited versions of the objects. It
    * will be restored to the original object.
@@ -229,7 +236,8 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param rowId The identifier of the row.
    * @param request The action request that contains every information about the triggering action.
    */
-  @WidgetActionHandler(value = ACTION_DELETE_ENTRY, widget = WIDGET_ENTRY_GRID)
+  @WidgetActionHandler(value = {ACTION_DELETE_ENTRY, ACTION_INACTIVATE_ENTRY},
+      widget = WIDGET_ENTRY_GRID)
   void performDeleteEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**

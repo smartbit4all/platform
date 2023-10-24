@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -480,7 +481,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.ORIGINAL_URI,
+    performActionOnEntry(context, gridId, rowId, row -> {
+      Object oBranchUri =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+      if (oBranchUri != null) {
+        return BranchedObjectEntry.BRANCH_URI;
+      }
+      return BranchedObjectEntry.ORIGINAL_URI;
+    },
         (u, ctx) -> {
           ctx.entryApi.remove(u);
         });
@@ -491,7 +499,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.BRANCH_URI,
+    performActionOnEntry(context, gridId, rowId, row -> BranchedObjectEntry.BRANCH_URI,
         (u, ctx) -> ctx.entryApi.cancel(u));
     refreshGrid(context);
   }
@@ -501,8 +509,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId,
-        context.entryApi.getBranchUri() != null ? BranchedObjectEntry.BRANCH_URI
-            : ObjectDefinition.URI_PROPERTY,
+        row -> {
+          Object oBranchUri =
+              GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+          if (oBranchUri != null) {
+            return BranchedObjectEntry.BRANCH_URI;
+          }
+          return BranchedObjectEntry.ORIGINAL_URI;
+        },
         (u, ctx) -> ctx.entryApi.restore(u));
     refreshGrid(context);
   }
@@ -544,10 +558,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   private final void performActionOnEntry(PageContext context, String gridId, String rowId,
-      String uriProperty, BiConsumer<URI, PageContext> action) {
+      Function<GridRow, String> uriPropertyGetter, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
       Object valueFromGridRow =
-          GridModels.getValueFromGridRow(r, uriProperty);
+          GridModels.getValueFromGridRow(r, uriPropertyGetter.apply(r));
       URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
           : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
 
@@ -555,17 +569,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         action.accept(objectUri, context);
       }
     });
-
-    GridModel gridModel =
-        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
-    Object valueFromGridRow =
-        GridModels.getValueFromGridRow(gridModel, rowId, uriProperty);
-    URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
-        : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
-
-    if (objectUri != null) {
-      action.accept(objectUri, context);
-    }
   }
 
   public final MDMEntryListPageApi defaultEditorViewName(String defaultEditorViewName) {
@@ -595,21 +598,32 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI) != null;
       boolean isOnOriginal =
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI) != null;
+      Object oBranchingState =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
+      boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
+      boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
+
       UiActionBuilder uiActions = UiActions.builder();
-      // .addIf(ACTION_VIEW_ENTRY, !isAdmin || !entryEditingEnabled || ctx.inactives)
       if (approvingEnabled) {
         boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
         uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
-            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+                !deletedOnBranch)
+            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives, newOnBranch)
+            .addIf(ACTION_INACTIVATE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+                !newOnBranch, !deletedOnBranch)
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
-                !ctx.inactives, isOnBranch);
+                !ctx.inactives, isOnBranch)
+            .addIf(ACTION_VIEW_ENTRY, (isAdmin || isApprover));
       } else {
         uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
+            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+                !deletedOnBranch)
+            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives, newOnBranch)
+            .addIf(ACTION_INACTIVATE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+                !newOnBranch, !deletedOnBranch)
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,

@@ -231,11 +231,8 @@ class MDMApiTest {
             typeApi.getList().nodes().filter(n -> draftNew.equals(n.getObjectUri())).findFirst())
         .isNotPresent();
 
-    typeApi.restore(draftNew);
-
-    ObjectNode objectFour =
-        objectApi.load(draftNew).setValue("Type four", SampleCategoryType.NAME);
-    objectApi.save(objectFour);
+    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
+        .description("This is the fourth category type.")));
 
     List<BranchedObjectEntry> publishedAndDraftObjects =
         typeApi.getBranchingList();

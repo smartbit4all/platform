@@ -208,24 +208,22 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   private Object getValue(FilterExpressionData fed, Class<?> type) {
     List<Object> values = new ArrayList<>();
-    values.add(getValue(fed.getOperand1(), type));
-    values.add(getValue(fed.getOperand2(), type));
-    values.add(getValue(fed.getOperand3(), type));
-    return values.stream().filter(p -> p != null).findFirst().orElse(null);
+    if (fed.getCurrentOperation() == FilterExpressionOperation.NOT_IN
+        || fed.getCurrentOperation() == FilterExpressionOperation.IN) {
+      values.addAll(valuesOf(fed.getOperand1(), type));
+      values.addAll(valuesOf(fed.getOperand2(), type));
+      values.addAll(valuesOf(fed.getOperand3(), type));
+      return values;
+    } else {
+      values.add(valueOf(fed.getOperand1(), type));
+      values.add(valueOf(fed.getOperand2(), type));
+      values.add(valueOf(fed.getOperand3(), type));
+      return values.stream().filter(p -> p != null).findFirst().orElse(null);
+
+    }
   }
 
-  private Object getValue(FilterExpressionOperandData operand1, Class<?> type) {
-    Object v = valueOf(operand1, type);
-    if (v != null) {
-      return v;
-    }
-    List<Object> listValue = valuesOf(operand1, type);
-    if (!listValue.isEmpty()) {
-      return listValue;
-    }
 
-    return null;
-  }
 
   private String getPropertyName(FilterExpressionData fed) {
     List<String> properties = new ArrayList<>();

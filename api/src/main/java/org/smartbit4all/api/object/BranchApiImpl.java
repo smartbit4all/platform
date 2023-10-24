@@ -143,6 +143,24 @@ public class BranchApiImpl implements BranchApi {
   }
 
   @Override
+  public BranchedObject removeNewBranchedObjects(URI branchUri, URI objectUri) {
+    if (objectUri == null || branchUri == null) {
+      return null;
+    }
+    List<BranchedObject> result = new ArrayList<>(1);
+    ObjectNode objectNode = objectApi.loadLatest(branchUri).modify(BranchEntry.class, b -> {
+      BranchedObject remove =
+          b.getNewObjects().remove(objectApi.getLatestUri(objectUri).toString());
+      if (remove != null) {
+        result.add(remove);
+      }
+      return b;
+    });
+    objectApi.save(objectNode);
+    return result.isEmpty() ? null : result.get(0);
+  }
+
+  @Override
   public BranchedObjectEntry removeBranchedObject(URI branchUri, URI branchedObjectUri) {
     return removeBranchedObject(branchUri, branchedObjectUri, false);
   }

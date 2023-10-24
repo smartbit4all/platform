@@ -63,13 +63,12 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     pageModel.getChildGroups().stream()
         .forEach(g -> orgApi.addChildGroup(pageModel.getGroup(), orgApi.getGroup(g)));
 
-    viewApi.showView(new View().viewName(getGroupListName()));
-
+    viewApi.closeView(viewUuid);
   }
 
   @Override
   public void cancelGroupEdit(UUID viewUuid, UiActionRequest request) {
-    viewApi.showView(new View().viewName(getGroupListName()));
+    viewApi.closeView(viewUuid);
   }
 
   protected String getGroupListName() {
