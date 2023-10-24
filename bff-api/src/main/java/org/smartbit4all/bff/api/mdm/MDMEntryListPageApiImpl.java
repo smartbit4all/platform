@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -480,7 +481,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, ObjectDefinition.URI_PROPERTY,
+    performActionOnEntry(context, gridId, rowId, row -> {
+      Object oBranchUri =
+          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+      if (oBranchUri != null) {
+        return BranchedObjectEntry.BRANCH_URI;
+      }
+      return BranchedObjectEntry.ORIGINAL_URI;
+    },
         (u, ctx) -> {
           ctx.entryApi.remove(u);
         });
@@ -491,7 +499,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, BranchedObjectEntry.BRANCH_URI,
+    performActionOnEntry(context, gridId, rowId, row -> BranchedObjectEntry.BRANCH_URI,
         (u, ctx) -> ctx.entryApi.cancel(u));
     refreshGrid(context);
   }
@@ -501,8 +509,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId,
-        context.entryApi.getBranchUri() != null ? BranchedObjectEntry.BRANCH_URI
-            : ObjectDefinition.URI_PROPERTY,
+        row -> {
+          Object oBranchUri =
+              GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+          if (oBranchUri != null) {
+            return BranchedObjectEntry.BRANCH_URI;
+          }
+          return BranchedObjectEntry.ORIGINAL_URI;
+        },
         (u, ctx) -> ctx.entryApi.restore(u));
     refreshGrid(context);
   }
@@ -544,10 +558,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   private final void performActionOnEntry(PageContext context, String gridId, String rowId,
-      String uriProperty, BiConsumer<URI, PageContext> action) {
+      Function<GridRow, String> uriPropertyGetter, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
       Object valueFromGridRow =
-          GridModels.getValueFromGridRow(r, uriProperty);
+          GridModels.getValueFromGridRow(r, uriPropertyGetter.apply(r));
       URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
           : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
 
