@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -67,8 +69,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -987,7 +987,11 @@ public class ViewContextServiceImpl implements ViewContextService {
     // perform data change on map, set as view's model
     ObjectNode modelNode =
         objectApi.create(SCHEMA, definition, (Map<String, Object>) modelBeforeChange);
-    event.getValues().forEach((key, value) -> modelNode.setValue(value, key.split("\\.")));
+    if (event.getValues().size() == 1 && event.getValues().containsKey("")) {
+      modelNode.setValues((Map<String, Object>) event.getValues().get(""));
+    } else {
+      event.getValues().forEach((key, value) -> modelNode.setValue(value, key.split("\\.")));
+    }
     view.setModel(modelNode.getObjectAsMap());
 
     // notify data listeners, calculate changes during data change processing and return
