@@ -456,6 +456,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     SmartLayoutDefinition layout = display.getDefaultForms().stream()
         .map(SmartLayoutDefinition::getWidgets)
         .flatMap(List::stream)
+        .map(w -> w.label(localeSettingApi.get(w.getLabel())))
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
     List<UiAction> actions = UiActions.builder()
