@@ -382,14 +382,18 @@ public final class UiActions {
         if (!c)
           return this;
       }
-      return this.add(new UiAction()
-          .code(SEPARATOR)
-          .descriptor(new UiActionDescriptor()
-              .type(UiActionButtonType.SEPARATOR)));
+      return this.add(separator());
     }
 
     public List<UiAction> build() {
       return this.actions;
     }
+  }
+
+  public static UiAction separator() {
+    return new UiAction()
+        .code(SEPARATOR)
+        .descriptor(new UiActionDescriptor()
+            .type(UiActionButtonType.SEPARATOR));
   }
 }

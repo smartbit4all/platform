@@ -313,7 +313,16 @@ public class CrudApiImpl implements CrudApi {
         .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
             .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
                 .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
-                    .orElse(null))));
+                    .orElseGet(() -> fromDefaultConfig(entityDef)
+                        .orElse(null)))));
+  }
+
+  private Optional<CrudExecutionApi> fromDefaultConfig(EntityDefinition entityDef) {
+    CrudExecutionApi api = null;
+    if (config.defaultExecutorApi != null) {
+      api = executionApisByName.get(config.defaultExecutorApi);
+    }
+    return Optional.of(api);
   }
 
   @Override
@@ -365,6 +374,8 @@ public class CrudApiImpl implements CrudApi {
     Map<String, CrudExecutionApi> execApisByDomain;
     Map<URI, String> execApiNamesByEntityUri;
     Map<String, String> execApiNamesByDomain;
+    String defaultExecutorApi;
+
 
     private QueryExecutorConfig() {
       execApisByEntityUri = new HashMap<>();
@@ -397,6 +408,11 @@ public class CrudApiImpl implements CrudApi {
     public QueryExecutorConfig addExecutionApiForEntityUri(String domainName,
         String executionApiName) {
       execApiNamesByDomain.put(domainName, executionApiName);
+      return this;
+    }
+
+    public QueryExecutorConfig defaultExecutionApi(String executionApiName) {
+      this.defaultExecutorApi = executionApiName;
       return this;
     }
 
