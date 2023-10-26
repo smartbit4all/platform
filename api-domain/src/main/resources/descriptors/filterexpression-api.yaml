@@ -36,12 +36,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/update:
+  /filter/{uuid}/{filterIdentifier}/performWidgetAction:
     post:
       tags:
       - filter
       summary: ''
-      operationId: 'update'
+      operationId: 'performWidgetAction'
       parameters: 
         - in: path
           name: uuid
@@ -60,231 +60,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/selectField:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'selectField'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionField'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/addBracket:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'addBracket'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/removeFilterExpression:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'removeFilterExpression'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionField'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/addFilterExpression:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'addFilterExpression'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionBuilderField'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/updateFilterExpression:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'updateFilterExpression'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionField'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/resetFilterWorkspace:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'resetFilterWorkspace'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterExpressionBuilderUiModel'
-  /filter/{uuid}/{filterIdentifier}/filterGroups:
-    post:
-      tags:
-      - filter
-      summary: ''
-      operationId: 'filterGroups'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: filterIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FilterExpressionFieldList'
+              type: UiActionRequest
       responses:
         '200':
           description: ''
@@ -608,6 +384,9 @@ components:
           type: FilterExpressionFieldList
         groupFilterAction:
           type: UiAction
+        viewUuid:
+          type: string
+          format: uuid
     FilterExpressionFieldEditor:
       type: object
       properties:

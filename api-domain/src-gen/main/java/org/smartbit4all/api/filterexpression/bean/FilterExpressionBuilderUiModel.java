@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldEditor;
@@ -47,7 +48,8 @@ import javax.validation.Valid;
   FilterExpressionBuilderUiModel.SHOW_GROUPS,
   FilterExpressionBuilderUiModel.FILTER_GROUPS_ACTION,
   FilterExpressionBuilderUiModel.GROUP_FILTER,
-  FilterExpressionBuilderUiModel.GROUP_FILTER_ACTION
+  FilterExpressionBuilderUiModel.GROUP_FILTER_ACTION,
+  FilterExpressionBuilderUiModel.VIEW_UUID
 })
 @JsonTypeName("FilterExpressionBuilderUiModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -81,6 +83,9 @@ public class FilterExpressionBuilderUiModel {
 
   public static final String GROUP_FILTER_ACTION = "groupFilterAction";
   private UiAction groupFilterAction = null;
+
+  public static final String VIEW_UUID = "viewUuid";
+  private UUID viewUuid;
 
   public FilterExpressionBuilderUiModel() { 
   }
@@ -372,6 +377,34 @@ public class FilterExpressionBuilderUiModel {
   }
 
 
+  public FilterExpressionBuilderUiModel viewUuid(UUID viewUuid) {
+    
+    this.viewUuid = viewUuid;
+    return this;
+  }
+
+   /**
+   * Get viewUuid
+   * @return viewUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getViewUuid() {
+    return viewUuid;
+  }
+
+
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewUuid(UUID viewUuid) {
+    this.viewUuid = viewUuid;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -390,12 +423,13 @@ public class FilterExpressionBuilderUiModel {
         Objects.equals(this.showGroups, filterExpressionBuilderUiModel.showGroups) &&
         Objects.equals(this.filterGroupsAction, filterExpressionBuilderUiModel.filterGroupsAction) &&
         Objects.equals(this.groupFilter, filterExpressionBuilderUiModel.groupFilter) &&
-        Objects.equals(this.groupFilterAction, filterExpressionBuilderUiModel.groupFilterAction);
+        Objects.equals(this.groupFilterAction, filterExpressionBuilderUiModel.groupFilterAction) &&
+        Objects.equals(this.viewUuid, filterExpressionBuilderUiModel.viewUuid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, filterGroupsAction, groupFilter, groupFilterAction);
+    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, filterGroupsAction, groupFilter, groupFilterAction, viewUuid);
   }
 
   @Override
@@ -412,6 +446,7 @@ public class FilterExpressionBuilderUiModel {
     sb.append("    filterGroupsAction: ").append(toIndentedString(filterGroupsAction)).append("\n");
     sb.append("    groupFilter: ").append(toIndentedString(groupFilter)).append("\n");
     sb.append("    groupFilterAction: ").append(toIndentedString(groupFilterAction)).append("\n");
+    sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("}");
     return sb.toString();
   }

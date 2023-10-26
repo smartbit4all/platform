@@ -5,11 +5,9 @@
  */
 package org.smartbit4all.api.filterexpression.restserver;
 
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,105 +28,6 @@ public interface FilterApi {
     default FilterApiDelegate getDelegate() {
         return new FilterApiDelegate() {};
     }
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/addBracket
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionBuilderUiModel  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "addBracket",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/addBracket",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> addBracket(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionBuilderUiModel filterExpressionBuilderUiModel
-    ) throws Exception {
-        return getDelegate().addBracket(uuid, filterIdentifier, filterExpressionBuilderUiModel);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/addFilterExpression
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionBuilderField  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "addFilterExpression",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/addFilterExpression",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> addFilterExpression(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionBuilderField filterExpressionBuilderField
-    ) throws Exception {
-        return getDelegate().addFilterExpression(uuid, filterIdentifier, filterExpressionBuilderField);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/filterGroups
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionFieldList  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "filterGroups",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/filterGroups",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> filterGroups(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionFieldList filterExpressionFieldList
-    ) throws Exception {
-        return getDelegate().filterGroups(uuid, filterIdentifier, filterExpressionFieldList);
-    }
-
 
     /**
      * GET /filter/{uuid}/{filterIdentifier}/load
@@ -161,17 +60,17 @@ public interface FilterApi {
 
 
     /**
-     * POST /filter/{uuid}/{filterIdentifier}/removeFilterExpression
+     * POST /filter/{uuid}/{filterIdentifier}/performWidgetAction
      *
      * @param uuid  (required)
      * @param filterIdentifier  (required)
-     * @param filterExpressionField  (required)
+     * @param body  (required)
      * @return  (status code 200)
      */
     @ApiOperation(
         tags = { "filter" },
         value = "",
-        nickname = "removeFilterExpression",
+        nickname = "performWidgetAction",
         notes = "",
         response = FilterExpressionBuilderUiModel.class
     )
@@ -180,148 +79,16 @@ public interface FilterApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/removeFilterExpression",
+        value = "/filter/{uuid}/{filterIdentifier}/performWidgetAction",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<FilterExpressionBuilderUiModel> removeFilterExpression(
+    default ResponseEntity<FilterExpressionBuilderUiModel> performWidgetAction(
         @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
         @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionField filterExpressionField
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
     ) throws Exception {
-        return getDelegate().removeFilterExpression(uuid, filterIdentifier, filterExpressionField);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/resetFilterWorkspace
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionBuilderUiModel  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "resetFilterWorkspace",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/resetFilterWorkspace",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> resetFilterWorkspace(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionBuilderUiModel filterExpressionBuilderUiModel
-    ) throws Exception {
-        return getDelegate().resetFilterWorkspace(uuid, filterIdentifier, filterExpressionBuilderUiModel);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/selectField
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionField  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "selectField",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/selectField",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> selectField(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionField filterExpressionField
-    ) throws Exception {
-        return getDelegate().selectField(uuid, filterIdentifier, filterExpressionField);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/update
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionBuilderUiModel  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "update",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/update",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> update(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionBuilderUiModel filterExpressionBuilderUiModel
-    ) throws Exception {
-        return getDelegate().update(uuid, filterIdentifier, filterExpressionBuilderUiModel);
-    }
-
-
-    /**
-     * POST /filter/{uuid}/{filterIdentifier}/updateFilterExpression
-     *
-     * @param uuid  (required)
-     * @param filterIdentifier  (required)
-     * @param filterExpressionField  (required)
-     * @return  (status code 200)
-     */
-    @ApiOperation(
-        tags = { "filter" },
-        value = "",
-        nickname = "updateFilterExpression",
-        notes = "",
-        response = FilterExpressionBuilderUiModel.class
-    )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = FilterExpressionBuilderUiModel.class)
-    })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/filter/{uuid}/{filterIdentifier}/updateFilterExpression",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<FilterExpressionBuilderUiModel> updateFilterExpression(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("filterIdentifier") String filterIdentifier,
-        @ApiParam(value = "", required = true) @Valid @RequestBody FilterExpressionField filterExpressionField
-    ) throws Exception {
-        return getDelegate().updateFilterExpression(uuid, filterIdentifier, filterExpressionField);
+        return getDelegate().performWidgetAction(uuid, filterIdentifier, body);
     }
 
 }
