@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderApi {
 
-  @Autowired
+  @Autowired(required = false)
   private ViewApi viewApi;
 
   @Autowired
