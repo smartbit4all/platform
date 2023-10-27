@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
@@ -16,6 +18,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
@@ -41,30 +44,30 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionBuilderUiModel model = getModel(viewUuid, filterIdentifier);
 
     switch (request.getCode()) {
-      case OPEN_FILTER_GROUPS:
+      case FilterExpressionBuilderApiActions.OPEN_FILTER_GROUPS:
         openFilterGroups(model);
         break;
-      case CLOSE_FILTER_GROUPS:
+      case FilterExpressionBuilderApiActions.CLOSE_FILTER_GROUPS:
         closeFilterGroups(model);
         break;
-      case ADD_BRACKET:
+      case FilterExpressionBuilderApiActions.ADD_BRACKET:
         addBracket(viewUuid, filterIdentifier, request, model);
         break;
-      case ADD_FILTER_EXPRESSION:
+      case FilterExpressionBuilderApiActions.ADD_FILTER_EXPRESSION:
         addFilterExpression(model, request);
         break;
-      case REMOVE_FILTER_EXPRESSION:
+      case FilterExpressionBuilderApiActions.REMOVE_FILTER_EXPRESSION:
         removeFilterExpression(model, request);
         break;
-      case REDO:
+      case FilterExpressionBuilderApiActions.REDO:
         resetFilterWorkspace(model);
         break;
-      case SELECT_FIELD:
+      case FilterExpressionBuilderApiActions.SELECT_FIELD:
         selectField(viewUuid, request, model);
         break;
-      case FILTER_GROUPS:
+      case FilterExpressionBuilderApiActions.FILTER_GROUPS:
         break;
-      case UPDATE_FILTER_EXPRESSION:
+      case FilterExpressionBuilderApiActions.UPDATE_FILTER_EXPRESSION:
         updateExpressionData(model, request);
         break;
       default:
@@ -83,9 +86,25 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
   }
 
   @Override
-  public FilterExpressionBuilderUiModel createFilterBuilder(FilterExpressionBuilderModel model) {
-    return new FilterExpressionBuilderUiModel().model(model).showGroups(false)
-        .possibleActions(UI_ACTIONS_CLOSED);
+  public FilterExpressionBuilderUiModel createFilterBuilder(FilterExpressionBuilderModel model,
+      FilterExpressionBuilderApiConfig config) {
+    Objects.requireNonNull(model, "FilterExpressionBuilderModel cannot be null");
+
+    FilterExpressionBuilderUiModel uiModel =
+        new FilterExpressionBuilderUiModel().model(model);
+
+    if (Objects.isNull(config)) {
+      return uiModel;
+    }
+
+    uiModel.setReadOnly(config.getReadOnly());
+
+    if (!config.getReadOnly()) {
+      uiModel.possibleActions(config.getAvailableActions().stream()
+          .map(code -> new UiAction().code(code)).collect(Collectors.toList()));
+    }
+
+    return uiModel;
   }
 
   @Override

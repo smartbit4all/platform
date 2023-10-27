@@ -378,6 +378,9 @@ components:
         showGroups:
           type: boolean
           default: false
+        readOnly:
+          type: boolean
+          default: false
         filterGroupsAction:
           type: UiAction
         groupFilter:
@@ -387,6 +390,9 @@ components:
         viewUuid:
           type: string
           format: uuid
+        config:
+          $ref: "#/components/schemas/FilterExpressionBuilderApiConfig"
+          
     FilterExpressionFieldEditor:
       type: object
       properties:
@@ -396,3 +402,15 @@ components:
           type: array
           items:
             type: UiAction
+    FilterExpressionBuilderApiConfig:
+      type: object
+      required: [availableActions]
+      properties:
+        readOnly:
+          type: boolean
+          default: false
+        availableActions:
+          type: array
+          items:
+            type: string
+          

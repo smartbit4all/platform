@@ -38,7 +38,7 @@ public interface FilterApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"groupFilter\" : \"\", \"selectedField\" : \"\", \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\" }";
+                    String exampleString = "{ \"groupFilter\" : \"\", \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"selectedField\" : \"\", \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"readOnly\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -63,7 +63,7 @@ public interface FilterApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"groupFilter\" : \"\", \"selectedField\" : \"\", \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\" }";
+                    String exampleString = "{ \"groupFilter\" : \"\", \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"selectedField\" : \"\", \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"readOnly\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
