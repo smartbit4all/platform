@@ -1,6 +1,6 @@
 package org.smartbit4all.api.view.filterexpression;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,7 +137,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
                 .possibleActions(SELECTED_EXPRESSION_ACTIONS));
       } else {
         model.setSelectedFieldEditor(new FilterExpressionFieldEditor()
-            .possibleActions(List.of(REMOVE_FILTER_EXPRESSION_ACTION)));
+            .possibleActions(Arrays.asList(REMOVE_FILTER_EXPRESSION_ACTION)));
       }
     }
 

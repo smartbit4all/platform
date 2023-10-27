@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.filterexpression;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
@@ -41,12 +42,12 @@ public interface FilterExpressionBuilderApi {
   public final UiAction FILTER_GROUPS_ACTION = new UiAction().code(FILTER_GROUPS);
 
 
-  public final List<UiAction> UI_ACTIONS_CLOSED = List.of(
+  public final List<UiAction> UI_ACTIONS_CLOSED = Arrays.asList(
       CLOSE_FILTER_GROUPS_ACTION,
       ADD_BRACKET_ACTION,
       REDO_ACTION);
 
-  public final List<UiAction> UI_ACTIONS_OPENED = List.of(
+  public final List<UiAction> UI_ACTIONS_OPENED = Arrays.asList(
       OPEN_FILTER_GROUPS_ACTION,
       ADD_BRACKET_ACTION,
       REDO_ACTION);
@@ -58,5 +59,5 @@ public interface FilterExpressionBuilderApi {
       new UiAction().code(REMOVE_FILTER_EXPRESSION).confirm(true);
 
   public final List<UiAction> SELECTED_EXPRESSION_ACTIONS =
-      List.of(SAVE_EXPRESSION_DATA_ACTION, REMOVE_FILTER_EXPRESSION_ACTION);
+      Arrays.asList(SAVE_EXPRESSION_DATA_ACTION, REMOVE_FILTER_EXPRESSION_ACTION);
 }
