@@ -128,8 +128,16 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
   private URI extractUriFromGridRow(GridRow row) {
 
-    return objectApi.asType(URI.class, ((Map<?, ?>) row.getData()).get("uri"));
+    return objectApi.asType(URI.class, getUriObject(row));
 
+  }
+
+  protected Object getUriObject(GridRow row) {
+    Object uri = ((Map<?, ?>) row.getData()).get("uri");
+    if (uri == null) {
+      uri = ((Map<?, ?>) row.getData()).get("originalUri");
+    }
+    return uri;
   }
 
   private void initGrid(SubjectTypeDescriptor subjectTypeDescriptor, UUID viewUuid) {
