@@ -298,6 +298,12 @@ public class CrudApiImpl implements CrudApi {
     }
 
     CrudExecutionApi execApi = getExecutionApi(entityDef);
+    if (execApi == null) {
+      Optional<CrudExecutionApi> fromDefaultConfig = fromDefaultConfig(entityDef);
+      if (fromDefaultConfig.isPresent()) {
+        execApi = fromDefaultConfig.get();
+      }
+    }
 
     if (execApi == null) {
       throw new IllegalStateException(
@@ -313,8 +319,7 @@ public class CrudApiImpl implements CrudApi {
         .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
             .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
                 .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
-                    .orElseGet(() -> fromDefaultConfig(entityDef)
-                        .orElse(null)))));
+                    .orElse(null))));
   }
 
   private Optional<CrudExecutionApi> fromDefaultConfig(EntityDefinition entityDef) {
