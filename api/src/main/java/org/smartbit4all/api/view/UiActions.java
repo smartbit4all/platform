@@ -154,7 +154,7 @@ public final class UiActions {
       if (idx == null) {
         actions.add(uiAction);
       } else {
-        actions.set(idx, uiAction);
+        actions.add(idx, uiAction);
       }
     }
   }
