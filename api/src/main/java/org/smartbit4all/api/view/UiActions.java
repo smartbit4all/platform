@@ -76,6 +76,42 @@ public final class UiActions {
   }
 
   /**
+   * Adds {@code UiAction}(s) to the specified {@link View} if they are not present already.
+   *
+   * <p>
+   * The new {@code UiAction}s are added with nothing but their {@link UiAction#CODE} set.
+   *
+   * @param view the {@link View} to modify, not null
+   * @param idx the idx of the new uiAction
+   * @param code the {@code String} {@link UiAction#CODE} to add, not null
+   */
+  public static void add(View view, int idx, String code) {
+    add(view.getActions(), idx, code);
+  }
+
+  /**
+   * Adds {@code UiAction}(s) to the specified {@code List} if they are not present already.
+   *
+   * <p>
+   * The new {@code UiAction}s are added with nothing but their {@link UiAction#CODE} set.
+   *
+   * <p>
+   * This method directly modifies to provided {@code List}, thus it must be ensured that invoking
+   * the {@link List#add(Object)} method is supported (which is not the case for unmodifiable
+   * collections).
+   *
+   * @param actions the {@code List} of {@code UiAction}s to modify, not null
+   * @param idx the idx of the new uiAction
+   * @param code the {@code String} {@link UiAction#CODE} to add, not null
+   */
+  public static void add(List<UiAction> actions, int idx, String code) {
+    Objects.requireNonNull(actions, "actions cannot be null!");
+    Objects.requireNonNull(code, "code cannot be null!");
+
+    addSingle(actions, idx, code);
+  }
+
+  /**
    * Adds {@code UiAction}(s) to the specified {@code List} if they are not present already.
    *
    * <p>
@@ -90,7 +126,7 @@ public final class UiActions {
    * @param code the {@code String} {@link UiAction#CODE} to add, not null
    * @param codes additional {@String} action codes to add, optional
    */
-  public static void add(Collection<UiAction> actions, String code, String... codes) {
+  public static void add(List<UiAction> actions, String code, String... codes) {
     Objects.requireNonNull(actions, "actions cannot be null!");
     Objects.requireNonNull(code, "code cannot be null!");
 
@@ -108,9 +144,18 @@ public final class UiActions {
     }
   }
 
-  private static void addSingle(Collection<UiAction> actions, String code) {
+  private static void addSingle(List<UiAction> actions, String code) {
+    addSingle(actions, null, code);
+  }
+
+  private static void addSingle(List<UiAction> actions, Integer idx, String code) {
     if (!contains(actions, code)) {
-      actions.add(new UiAction().code(code));
+      UiAction uiAction = new UiAction().code(code);
+      if (idx == null) {
+        actions.add(uiAction);
+      } else {
+        actions.set(idx, uiAction);
+      }
     }
   }
 
