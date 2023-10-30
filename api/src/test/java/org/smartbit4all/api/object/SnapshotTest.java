@@ -1,11 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.stream.IntStream;
@@ -23,6 +17,12 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 public class SnapshotTest {
@@ -44,7 +44,7 @@ public class SnapshotTest {
         new SampleCategory().name("root"));
     URI uri = objectApi.save(node);
     ObjectNode loaded = objectApi.load(uri);
-    ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+    ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
     assertNotNull(loadedFromSnapshot);
     assertEquals(loaded, loadedFromSnapshot);
   }
@@ -75,7 +75,7 @@ public class SnapshotTest {
       ObjectNode loaded = objectApi.load(uri);
       ObjectNodeReference ref = loaded.ref(SampleContainerItem.DATASHEET);
       assertFalse(ref.isLoaded());
-      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
       ref = loadedFromSnapshot.ref(SampleContainerItem.DATASHEET);
       assertFalse(ref.isLoaded());
       assertEquals(loaded, loadedFromSnapshot);
@@ -88,17 +88,17 @@ public class SnapshotTest {
       assertFalse(ref.isLoaded());
       ref.get();
       assertTrue(ref.isLoaded());
-      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
       ref = loadedFromSnapshot.ref(SampleContainerItem.DATASHEET);
       assertTrue(ref.isLoaded());
       assertEquals(loaded, loadedFromSnapshot);
     }
   }
 
-  private ObjectNode saveAndLoadSnapshot(ObjectNode loaded) {
+  private ObjectNode saveAndLoadSnapshot(ObjectNode loaded, boolean includeData) {
     // create
     SnapshotEntry snapshot = new SnapshotEntry()
-        .data(loaded.snapshot());
+        .data(loaded.snapshot(includeData));
     // save
     URI snapshotUri = objectApi.saveAsNew(MY_SCHEME, snapshot);
     // load
@@ -124,7 +124,7 @@ public class SnapshotTest {
       assertEquals(2, list.size());
       assertFalse(list.get(0).isLoaded());
       assertFalse(list.get(1).isLoaded());
-      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
       assertNotNull(loadedFromSnapshot);
       assertEquals(loaded, loadedFromSnapshot);
     }
@@ -140,7 +140,7 @@ public class SnapshotTest {
       assertTrue(list.get(0).isLoaded());
       assertTrue(list.get(1).isLoaded());
 
-      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
       assertNotNull(loadedFromSnapshot);
       assertEquals(loaded, loadedFromSnapshot);
     }
@@ -156,7 +156,7 @@ public class SnapshotTest {
       assertTrue(list.get(0).isLoaded());
       assertFalse(list.get(1).isLoaded());
 
-      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
       assertNotNull(loadedFromSnapshot);
       assertEquals(loaded, loadedFromSnapshot);
     }
@@ -177,23 +177,51 @@ public class SnapshotTest {
         .addNewObject(new SampleContainerItem().name("item " + i))
         .ref(SampleContainerItem.DATASHEET)
         .setNewObject(new SampleDataSheet().name("datasheet " + i)));
-    IntStream.range(0, 3).forEach(i -> subCategoriesList
-        .addNewObject(new SampleCategory().name("subcat " + i))
+    IntStream.range(0, 3).forEach(i -> {
+      ObjectNode subCategory =
+          subCategoriesList.addNewObject(new SampleCategory().name("subcat " + i));
+      constructCategory(i, subCategory);
+      IntStream.range(0, 3).forEach(j -> {
+        ObjectNodeList subSubCategories = subCategory.list(SampleCategory.SUB_CATEGORIES);
+        ObjectNode subSubCategory =
+            subSubCategories.addNewObject(new SampleCategory().name("subcat " + i + "." + j));
+        constructCategory(10 * i + j, subSubCategory);
+      });
+    });
+
+    URI uri = objectApi.save(node);
+    {
+      ObjectNode loaded = objectApi.request(SampleCategory.class)
+          .recursiveStartLabel(SampleCategory.class.getSimpleName())
+          .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+          .addContinueAt(SampleCategory.class.getSimpleName(), SampleCategory.SUB_CATEGORIES)
+          .add(SampleCategory.SUB_CATEGORIES, SampleCategory.CONTAINER_ITEMS,
+              SampleContainerItem.DATASHEET)
+          .load(uri);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, true);
+      assertEquals(loaded, loadedFromSnapshot);
+    }
+
+    {
+      ObjectNode loaded = objectApi.request(SampleCategory.class)
+          .recursiveStartLabel(SampleCategory.class.getSimpleName())
+          .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+          .addContinueAt(SampleCategory.class.getSimpleName(), SampleCategory.SUB_CATEGORIES)
+          .add(SampleCategory.SUB_CATEGORIES, SampleCategory.CONTAINER_ITEMS,
+              SampleContainerItem.DATASHEET)
+          .load(uri);
+      ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded, false);
+      assertEquals(loaded, loadedFromSnapshot);
+    }
+    // add maps later
+  }
+
+  private void constructCategory(int i, ObjectNode subCategory) {
+    subCategory
         .list(SampleCategory.CONTAINER_ITEMS)
         .addNewObject(new SampleContainerItem().name("subcat " + i + " item"))
         .ref(SampleContainerItem.DATASHEET)
-        .setNewObject(new SampleDataSheet().name("subcat " + i + " item datasheet ")));
-
-    URI uri = objectApi.save(node);
-    ObjectNode loaded = objectApi.request(SampleCategory.class)
-        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
-        .add(SampleCategory.SUB_CATEGORIES, SampleCategory.CONTAINER_ITEMS,
-            SampleContainerItem.DATASHEET)
-        .load(uri);
-    ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
-    assertEquals(loaded, loadedFromSnapshot);
-
-    // add maps later
+        .setNewObject(new SampleDataSheet().name("subcat " + i + " item datasheet "));
   }
 
 }

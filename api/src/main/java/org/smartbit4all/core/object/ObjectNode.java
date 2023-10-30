@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +24,8 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -694,69 +694,94 @@ public class ObjectNode {
    * @return
    */
   public SnapshotData snapshot() {
-    return snapshotNode(this);
+    return snapshotNode(this, true);
   }
 
-  private SnapshotData snapshotNode(ObjectNode node) {
+  /**
+   * Creates a snapshot from the current state of this ObjectNode. Only use it when there isn't any
+   * change, since this cannot be is a snapshot.
+   *
+   * @param includeData Indicates whether to include the data in the snapshot.
+   * @return
+   */
+  public SnapshotData snapshot(boolean includeData) {
+    return snapshotNode(this, includeData);
+  }
+
+  private SnapshotData snapshotNode(ObjectNode node, boolean includeData) {
     if (node.getState() != ObjectNodeState.NOP) {
       throw new IllegalStateException(
           "Node is not in NOP state, creating snapshot is unavailable!");
+    }
+    boolean latestUri = false;
+    Object uriObject = node.data.getObjectAsMap().get(ObjectDefinition.URI_PROPERTY);
+    URI uri = null;
+    if (uriObject instanceof String) {
+      uri = URI.create((String) uriObject);
+    } else if (uriObject instanceof URI) {
+      uri = (URI) uriObject;
+    }
+    if (uri != null && objectApi.isLatestUri(uri)) {
+      latestUri = true;
     }
     return new SnapshotData()
         .objectUri(node.data.getObjectUri())
         .qualifiedName(node.data.getQualifiedName())
         .storageSchema(node.data.getStorageSchema())
-        .objectAsMap(node.data.getObjectAsMap())
+        .objectAsMap(includeData ? node.data.getObjectAsMap() : null)
+        .latestUri(latestUri)
         .versionNr(node.data.getVersionNr())
         .qualifiedName(node.data.getQualifiedName())
-        .references(snapshotRefs(node.getReferences()))
-        .referenceLists(snapshotRefLists(node.getReferenceLists()))
-        .referenceMaps(snapshotRefMaps(node.getReferenceMaps()));
+        .references(snapshotRefs(node.getReferences(), includeData))
+        .referenceLists(snapshotRefLists(node.getReferenceLists(), includeData))
+        .referenceMaps(snapshotRefMaps(node.getReferenceMaps(), includeData));
   }
 
-  private Map<String, SnapshotDataRef> snapshotRefs(Map<String, ObjectNodeReference> refs) {
+  private Map<String, SnapshotDataRef> snapshotRefs(Map<String, ObjectNodeReference> refs,
+      boolean includeData) {
     return refs.entrySet().stream()
         .collect(toMap(
             Entry::getKey,
-            ref -> snapshotRef(ref.getValue())));
+            ref -> snapshotRef(ref.getValue(), includeData)));
   }
 
-  private Map<String, List<SnapshotDataRef>> snapshotRefLists(Map<String, ObjectNodeList> lists) {
+  private Map<String, List<SnapshotDataRef>> snapshotRefLists(Map<String, ObjectNodeList> lists,
+      boolean includeData) {
     return lists.entrySet().stream()
         .collect(toMap(
             Entry::getKey,
-            ref -> snapshotList(ref.getValue())));
+            ref -> snapshotList(ref.getValue(), includeData)));
   }
 
   private Map<String, Map<String, SnapshotDataRef>> snapshotRefMaps(
-      Map<String, ObjectNodeMap> maps) {
+      Map<String, ObjectNodeMap> maps, boolean includeData) {
     return maps.entrySet().stream()
         .collect(toMap(
             Entry::getKey,
-            map -> snapshotMap(map.getValue())));
+            map -> snapshotMap(map.getValue(), includeData)));
   }
 
-  private SnapshotDataRef snapshotRef(ObjectNodeReference ref) {
+  private SnapshotDataRef snapshotRef(ObjectNodeReference ref, boolean includeData) {
     SnapshotDataRef result = new SnapshotDataRef()
         .objectUri(ref.getObjectUri())
         .isLoaded(ref.isLoaded());
     if (Boolean.TRUE.equals(ref.isLoaded())) {
-      result.setData(snapshotNode(ref.get()));
+      result.setData(snapshotNode(ref.get(), includeData));
     }
     return result;
   }
 
-  private List<SnapshotDataRef> snapshotList(ObjectNodeList list) {
+  private List<SnapshotDataRef> snapshotList(ObjectNodeList list, boolean includeData) {
     return list.stream()
-        .map(this::snapshotRef)
+        .map(r -> snapshotRef(r, includeData))
         .collect(toList());
   }
 
-  private Map<String, SnapshotDataRef> snapshotMap(ObjectNodeMap map) {
+  private Map<String, SnapshotDataRef> snapshotMap(ObjectNodeMap map, boolean includeData) {
     return map.entrySet().stream()
         .collect(toMap(
             Entry::getKey,
-            ref -> snapshotRef(ref.getValue())));
+            ref -> snapshotRef(ref.getValue(), includeData)));
   }
 
   private ObjectNodeData fromSnapshot(SnapshotData snapshot) {
@@ -773,11 +798,21 @@ public class ObjectNode {
   }
 
   private Map<String, Object> convertObjectMap(SnapshotData snapshot) {
+    if (Boolean.FALSE.equals(snapshot.getIncludeData()) || snapshot.getObjectAsMap() == null
+        || snapshot.getObjectAsMap().isEmpty()) {
+      // Load the data from the storage with the versioned uri we have.
+      snapshot.objectAsMap(objectApi.load(snapshot.getObjectUri()).getObjectAsMap());
+      snapshot.getObjectAsMap().put(ObjectDefinition.URI_PROPERTY,
+          Boolean.TRUE.equals(snapshot.getLatestUri())
+              ? objectApi.getLatestUri(snapshot.getObjectUri())
+              : snapshot.getObjectUri());
+      return snapshot.getObjectAsMap();
+    }
     Map<String, Object> objectAsMap = snapshot.getObjectAsMap();
-    Object objUri = objectAsMap.get("uri");
+    Object objUri = objectAsMap.get(ObjectDefinition.URI_PROPERTY);
     if (objUri instanceof String) {
       objUri = URI.create((String) objUri);
-      objectAsMap.put("uri", objUri);
+      objectAsMap.put(ObjectDefinition.URI_PROPERTY, objUri);
     }
     return objectAsMap;
   }

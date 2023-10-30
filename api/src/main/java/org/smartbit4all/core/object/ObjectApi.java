@@ -239,9 +239,19 @@ public interface ObjectApi {
    * 
    * @param uri The uri.
    * @return If the uri is already the latest (it doesn't have any version segment) then returns the
-   *         uri parameter. If the uri contains version then
+   *         uri parameter. If the uri contains version then it will return an uri without this
+   *         information.
    */
   URI getLatestUri(URI uri);
+
+  /**
+   * Checks whether the latest uri version from the uri.
+   * 
+   * @param uri The uri.
+   * @return If the true if the uri is a latest (it doesn't have any version segment) then returns
+   *         the uri parameter.
+   */
+  boolean isLatestUri(URI uri);
 
   /**
    * @see #objectHistory(URI)

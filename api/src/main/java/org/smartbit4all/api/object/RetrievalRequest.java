@@ -54,6 +54,20 @@ public final class RetrievalRequest {
   private final RetrievalMode retrievalMode;
 
   /**
+   * If we have a recursive request then this is the starting point of the recursion. It acts like a
+   * label to go back when we reach the same object node later on. The label is a logical jump point
+   * in the {@link RetrievalRequest} that is a definition of the retrieval operation. This label
+   * should be unique in a path.
+   */
+  private String recursiveStartLabel;
+
+  /**
+   * We can setup the {@link #recursiveStartLabel} to continue at. If we have a leaf node then the
+   * retrieval operation can be continued from the same point.
+   */
+  private WeakReference<RetrievalRequest> continueRecursionAt;
+
+  /**
    * The request is constructed by the {@link ObjectApi} with an {@link ObjectDefinition}.
    * 
    */
@@ -103,18 +117,56 @@ public final class RetrievalRequest {
    *         returns this.
    */
   public final RetrievalRequest append(String... paths) {
-    return getOrCreate(true, paths);
+    return getOrCreate(true, new HashMap<>(), paths);
   }
 
   /**
    * Similar to {@link #append(String...)}, but return this, the root request, so subsequent
    * <code>add</code> calls will add paths to the same request.
    * 
-   * @param paths
+   * @param paths The names of the outgoing references to follow when loading the referred objects.
+   *        Without any modification it is the name of the property that contains the referrer URI.
    * @return
    */
   public final RetrievalRequest add(String... paths) {
     append(paths);
+    return this;
+  }
+
+  /**
+   * Similar to {@link #append(String...)}, but return this, the root request, so subsequent
+   * <code>add</code> calls will add paths to the same request. The request node is added as
+   * recursive label. Later on it can be referred as continue at point.
+   *
+   * @param label The label of the recursive starting point.
+   * @param paths The names of the outgoing references to follow when loading the referred objects.
+   *        Without any modification it is the name of the property that contains the referrer URI.
+   * @return
+   */
+  public final RetrievalRequest addRecursiveLabel(String label, String... paths) {
+    RetrievalRequest append = getOrCreate(true, new HashMap<>(), paths);
+    append.recursiveStartLabel = label;
+    return this;
+  }
+
+  /**
+   * Similar to {@link #append(String...)}, but return this, the root request, so subsequent
+   * <code>add</code> calls will add paths to the same request. The request node is added with
+   * continue at label refers to the continue at point.
+   *
+   * @param label The label of the recursive starting point.
+   * @param paths The names of the outgoing references to follow when loading the referred objects.
+   *        Without any modification it is the name of the property that contains the referrer URI.
+   * @return
+   */
+  public final RetrievalRequest addContinueAt(String label, String... paths) {
+    HashMap<String, RetrievalRequest> recursiveLabels = new HashMap<>();
+    RetrievalRequest append = getOrCreate(true, recursiveLabels, paths);
+    RetrievalRequest continueAt = recursiveLabels.get(label);
+    if (continueAt == null) {
+      throw new IllegalArgumentException("The unable to find the continue at point: " + label);
+    }
+    append.continueRecursionAt = new WeakReference<>(continueAt);
     return this;
   }
 
@@ -125,7 +177,7 @@ public final class RetrievalRequest {
    * @return
    */
   public final RetrievalRequest get(String... paths) {
-    return getOrCreate(false, paths);
+    return getOrCreate(false, new HashMap<>(), paths);
   }
 
   /**
@@ -135,9 +187,13 @@ public final class RetrievalRequest {
    * @param paths
    * @return
    */
-  private final RetrievalRequest getOrCreate(boolean create, String... paths) {
+  private final RetrievalRequest getOrCreate(boolean create,
+      Map<String, RetrievalRequest> recursiveLabels, String... paths) {
     if (paths == null || paths.length == 0) {
       return this;
+    }
+    if (recursiveStartLabel != null) {
+      recursiveLabels.put(recursiveStartLabel, this);
     }
     String path = paths[0];
     if (Strings.isNullOrEmpty(path)) {
@@ -160,7 +216,7 @@ public final class RetrievalRequest {
       references.put(ref, next);
     }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-    return next.getOrCreate(create, subPaths);
+    return next.getOrCreate(create, recursiveLabels, subPaths);
   }
 
   public static boolean calcLoadLatest(ReferenceDefinition ref, RetrievalMode retrievalMode) {
@@ -252,6 +308,33 @@ public final class RetrievalRequest {
    */
   public List<ObjectNode> load(List<URI> objectUris) {
     return objectApi.get().load(root(), objectUris);
+  }
+
+  /**
+   * If we have a recursive request then this is the starting point of the recursion. It acts like a
+   * label to go back when we reach the same object node later on. The label is a logical jump point
+   * in the {@link RetrievalRequest} that is a definition of the retrieval operation. This label
+   * should be unique in a path.
+   * 
+   * @return
+   */
+  public final String getRecursiveStartLabel() {
+    return recursiveStartLabel;
+  }
+
+  /**
+   * We can setup the {@link #recursiveStartLabel} to continue at. If we have a leaf node then the
+   * retrieval operation can be continued from the same point.
+   * 
+   * @return
+   */
+  public final RetrievalRequest getContinueRecursionAt() {
+    return continueRecursionAt != null ? continueRecursionAt.get() : null;
+  }
+
+  public final RetrievalRequest recursiveStartLabel(String recursiveStartLabel) {
+    this.recursiveStartLabel = recursiveStartLabel;
+    return this;
   }
 
 }

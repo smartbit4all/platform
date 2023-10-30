@@ -235,8 +235,11 @@ components:
         data:
           $ref: '#/components/schemas/SnapshotData'
     SnapshotData:
+      description: |
+        The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the
+        referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a 
+        loaded ObjectNode.
       type: object
-      description:
       required: [references, referenceLists, referenceMaps]
       properties:
         objectUri:
@@ -249,6 +252,16 @@ components:
         versionNr:
           type: integer
           format: int64
+        includeData:
+          description: Indicates whether the data of the node is included in the snapshot.
+          type: boolean
+          default: true
+        latestUri:
+          description: |
+            Indicates whether the data of the node contains latest uri in the snapshot. It counts only
+            if it doesn't contain the data.
+          type: boolean
+          default: false
         objectAsMap:
           type: object
           additionalProperties: true

@@ -33,14 +33,16 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * null
+ * The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. 
  */
-@ApiModel(description = "null")
+@ApiModel(description = "The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. ")
 @JsonPropertyOrder({
   SnapshotData.OBJECT_URI,
   SnapshotData.QUALIFIED_NAME,
   SnapshotData.STORAGE_SCHEMA,
   SnapshotData.VERSION_NR,
+  SnapshotData.INCLUDE_DATA,
+  SnapshotData.LATEST_URI,
   SnapshotData.OBJECT_AS_MAP,
   SnapshotData.REFERENCES,
   SnapshotData.REFERENCE_LISTS,
@@ -61,6 +63,12 @@ public class SnapshotData {
 
   public static final String VERSION_NR = "versionNr";
   private Long versionNr;
+
+  public static final String INCLUDE_DATA = "includeData";
+  private Boolean includeData = true;
+
+  public static final String LATEST_URI = "latestUri";
+  private Boolean latestUri = false;
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
   private Map<String, Object> objectAsMap = null;
@@ -186,6 +194,60 @@ public class SnapshotData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersionNr(Long versionNr) {
     this.versionNr = versionNr;
+  }
+
+
+  public SnapshotData includeData(Boolean includeData) {
+    
+    this.includeData = includeData;
+    return this;
+  }
+
+   /**
+   * Indicates whether the data of the node is included in the snapshot.
+   * @return includeData
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Indicates whether the data of the node is included in the snapshot.")
+  @JsonProperty(INCLUDE_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIncludeData() {
+    return includeData;
+  }
+
+
+  @JsonProperty(INCLUDE_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIncludeData(Boolean includeData) {
+    this.includeData = includeData;
+  }
+
+
+  public SnapshotData latestUri(Boolean latestUri) {
+    
+    this.latestUri = latestUri;
+    return this;
+  }
+
+   /**
+   * Indicates whether the data of the node contains latest uri in the snapshot. It counts only if it doesn&#39;t contain the data. 
+   * @return latestUri
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Indicates whether the data of the node contains latest uri in the snapshot. It counts only if it doesn't contain the data. ")
+  @JsonProperty(LATEST_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getLatestUri() {
+    return latestUri;
+  }
+
+
+  @JsonProperty(LATEST_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLatestUri(Boolean latestUri) {
+    this.latestUri = latestUri;
   }
 
 
@@ -367,6 +429,8 @@ public class SnapshotData {
         Objects.equals(this.qualifiedName, snapshotData.qualifiedName) &&
         Objects.equals(this.storageSchema, snapshotData.storageSchema) &&
         Objects.equals(this.versionNr, snapshotData.versionNr) &&
+        Objects.equals(this.includeData, snapshotData.includeData) &&
+        Objects.equals(this.latestUri, snapshotData.latestUri) &&
         Objects.equals(this.objectAsMap, snapshotData.objectAsMap) &&
         Objects.equals(this.references, snapshotData.references) &&
         Objects.equals(this.referenceLists, snapshotData.referenceLists) &&
@@ -376,7 +440,7 @@ public class SnapshotData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, objectAsMap, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, includeData, latestUri, objectAsMap, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -387,6 +451,8 @@ public class SnapshotData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
+    sb.append("    includeData: ").append(toIndentedString(includeData)).append("\n");
+    sb.append("    latestUri: ").append(toIndentedString(latestUri)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");

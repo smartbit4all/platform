@@ -72,7 +72,15 @@ public final class RetrievalApiImpl implements RetrievalApi {
         ReferencePropertyKind refKind = ref.getReferencePropertyKind();
         // TODO refName instead of sourcePropertyPath!!
         String referenceName = ref.getSourcePropertyPath();
-        RetrievalRequest refRequest = refEntry.getValue();
+        RetrievalRequest refRequest;
+        // If the request we reached is a recursive node to continue at a given point then we use
+        // the continue at point instead.
+        RetrievalRequest continueRecursionAt = refEntry.getValue().getContinueRecursionAt();
+        if (continueRecursionAt != null) {
+          refRequest = continueRecursionAt;
+        } else {
+          refRequest = refEntry.getValue();
+        }
         if (refKind == ReferencePropertyKind.REFERENCE) {
           data.putReferencesItem(
               referenceName,

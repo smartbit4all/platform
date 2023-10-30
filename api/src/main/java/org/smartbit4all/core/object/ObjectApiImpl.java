@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -189,6 +189,15 @@ public class ObjectApiImpl implements ObjectApi {
       return null;
     }
     return ObjectStorageImpl.getUriWithoutVersion(uri);
+  }
+
+  @Override
+  public boolean isLatestUri(URI uri) {
+    if (uri == null) {
+      return false;
+    }
+    URI latestUri = getLatestUri(uri);
+    return uri.equals(latestUri);
   }
 
   @Override
