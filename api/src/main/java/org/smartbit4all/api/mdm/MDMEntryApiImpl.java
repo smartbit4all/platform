@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +41,6 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -173,6 +173,69 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         results.add(objectNode.getResultUri());
         if (objectNode.getObjectUri() != null) {
           savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+        }
+      }
+      Map<URI, URI> savedUrisByLatest =
+          results.stream().collect(toMap(u -> objectApi.getLatestUri(u), u -> u));
+
+      // Merge the existing ones
+      List<URI> merged = l.stream().map(u -> {
+        URI latestUri = objectApi.getLatestUri(u);
+        Map<URI, URI> uris;
+        if (Objects.equals(latestUri, u)) {
+          // latestUri was in collection, deal with it
+          uris = savedUriByOriginal.entrySet().stream()
+              .collect(toMap(
+                  e -> objectApi.getLatestUri(e.getKey()),
+                  Entry::getValue,
+                  (v1, v2) -> v1));
+        } else {
+          uris = savedUriByOriginal;
+        }
+        URI uri = uris.get(u);
+        if (uri == null) {
+          uri = u;
+        }
+        URI savedUri = savedUrisByLatest.remove(objectApi.getLatestUri(uri));
+        return savedUri != null ? savedUri : u;
+      }).collect(toList());
+      // Add the newly saved ones.
+      merged.addAll(savedUrisByLatest.values());
+      return merged;
+    });
+    return results;
+  }
+
+  @Override
+  public List<URI> save(List<ObjectNode> objectNodes) {
+    URI branchUri = getBranchUri();
+    StoredList list = getList();
+    list.branch(branchUri);
+    List<URI> results = new ArrayList<>();
+
+
+    list.update(l -> {
+      Map<URI, URI> savedUriByOriginal = new HashMap<>();
+
+      for (ObjectNode objectNode : objectNodes) {
+        // Save the object node
+        if (objectNode.getState() == ObjectNodeState.NEW) {
+          objectNode
+              .setValues(fireBeforeSaveNew(objectApi.definition(descriptor.getTypeQualifiedName()),
+                  objectNode.getObjectAsMap(), descriptor));
+        }
+        objectApi.save(objectNode, branchUri);
+        if (descriptor.getSelfContainedRefList() != null && objectNode.getDefinition()
+            .getOutgoingReference(descriptor.getSelfContainedRefList()) != null) {
+          results.addAll(
+              getResultsUrisBySelfContainedList(objectNode, descriptor.getSelfContainedRefList(),
+                  savedUriByOriginal)
+                      .collect(toList()));
+        } else {
+          results.add(objectNode.getResultUri());
+          if (objectNode.getObjectUri() != null) {
+            savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+          }
         }
       }
       Map<URI, URI> savedUrisByLatest =
