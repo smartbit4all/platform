@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.acl;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -152,7 +153,8 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
             selectionConfig.getGridViewOptions().get(0).getOrderedColumnNames(), "");
     gridModel.getView().getDescriptor().setSelectionMode(GridSelectionMode.SINGLE);
     gridModel.getView().getDescriptor().setSelectionType(GridSelectionType.CHECKBOX);
-    gridModelApi.initGridInView(viewUuid, SUBJECT_GRID_ID, gridModel);
+    gridModel.setPageSize(5);
+    gridModel.setPageSizeOptions(Arrays.asList(5, 25, 50));
 
     TableData<?> tableData =
         searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()));
