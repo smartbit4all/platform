@@ -153,11 +153,13 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
             selectionConfig.getGridViewOptions().get(0).getOrderedColumnNames(), "");
     gridModel.getView().getDescriptor().setSelectionMode(GridSelectionMode.SINGLE);
     gridModel.getView().getDescriptor().setSelectionType(GridSelectionType.CHECKBOX);
+    gridModelApi.initGridInView(viewUuid, SUBJECT_GRID_ID, gridModel);
     gridModel.setPageSize(5);
     gridModel.setPageSizeOptions(Arrays.asList(5, 25, 50));
 
     TableData<?> tableData =
-        searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()));
+        searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()),
+            selectionConfig.getGridViewOptions().get(0).getOrderByList());
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
 
   }
