@@ -1,11 +1,11 @@
 package org.smartbit4all.bff.api.search;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
@@ -33,9 +33,11 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -164,11 +166,25 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         .filters(filters);
   }
 
+  /**
+   * Override this to add specific list of object for the search page.
+   * 
+   * @return
+   */
+  protected Stream<ObjectNode> getNodesToQuery() {
+    return null;
+  }
+
   private void refreshGrid(PageContext ctx) {
     TableData<?> gridContent = null;
     FilterExpressionList filters = getFilterExpressionList(ctx);
 
-    if (ctx.uris != null) {
+    Stream<ObjectNode> nodesToQuery = getNodesToQuery();
+    if (nodesToQuery != null) {
+      // We have an injected node stream to use.
+      gridContent =
+          ctx.searchIndex.executeSearchOnNodes(nodesToQuery, filters, getOrderByList(ctx));
+    } else if (ctx.uris != null) {
       // We have an explicit uri list. We use it directly.
       gridContent =
           ctx.searchIndex.executeSearchOn(ctx.uris.stream(), filters, getOrderByList(ctx));

@@ -62,8 +62,13 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
     // If the result is empty then we can add a false boolean expression instead of the original
     // exists.
     if (data == null || data.isEmpty()) {
-      ExpressionReplacer.replace(fullExpression, originalExists,
-          Expression.FALSE());
+      if (originalExists.isNegate()) {
+        ExpressionReplacer.replace(fullExpression, originalExists,
+            Expression.TRUE());
+      } else {
+        ExpressionReplacer.replace(fullExpression, originalExists,
+            Expression.FALSE());
+      }
       return;
     }
     // We save the data set from the first column of the query result and replace the expression

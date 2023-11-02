@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The generic implementation of the {@link SubjectManagementApi}.
@@ -155,7 +155,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
 
   private final List<URI> getRelatedSubjectUris(String descriptorName,
       Collection<Subject> subjects) {
-    return subjects.stream().filter(s -> descriptorName.equals(s.getType()))
+    return subjects.stream().filter(s -> s.getType() == null || descriptorName.equals(s.getType()))
         .map(Subject::getRef).collect(toList());
   }
 
