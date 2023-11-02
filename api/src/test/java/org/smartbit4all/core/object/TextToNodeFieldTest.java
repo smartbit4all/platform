@@ -1,7 +1,8 @@
-package org.smartbit4all.core.utility;
+package org.smartbit4all.core.object;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -13,9 +14,9 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectNode;
-import org.smartbit4all.core.utility.TextToNodeFieldProcessor.TextProcessorDescriptor;
+import org.smartbit4all.core.object.utility.TextToNodeFieldProcessor;
+import org.smartbit4all.core.object.utility.TextToNodeFieldProcessor.TextProcessorConverter;
+import org.smartbit4all.core.object.utility.TextToNodeFieldProcessor.TextProcessorDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -28,7 +29,6 @@ class TextToNodeFieldTest {
   @Autowired
   private ObjectApi objectApi;
 
-  private TextToNodeFieldProcessor textToNodeFieldProcessor;
 
 
   @BeforeEach
@@ -36,7 +36,6 @@ class TextToNodeFieldTest {
     SampleCategory sampleCategory =
         new SampleCategory().name("Dog").cost(1L).createdAt(OffsetDateTime.now());
     node = objectApi.create("NodeFieldTest", sampleCategory);
-    textToNodeFieldProcessor = new TextToNodeFieldProcessor();
   }
 
   @AfterAll
@@ -47,32 +46,59 @@ class TextToNodeFieldTest {
 
   @Test
   void FieldFromText() {
-    textToNodeFieldProcessor.setFieldFromText("name: Cat", "(?<=name: )[a-zA-Z]+", null, node,
+    TextToNodeFieldProcessor.setFieldFromText("name: Cat", "(?<=name: )[a-zA-Z]+", null, node,
         SampleCategory.NAME);
 
-    textToNodeFieldProcessor.setFieldFromText("cost: 1500", "(?<=cost: )(0|[1-9][0-9]*)$",
-        Long::parseLong,
+    TextToNodeFieldProcessor.setFieldFromText("Átvétel kért ideje: 2023. 11. 27. 13:00",
+        "(?<=Átvétel kért ideje: )\\d{4}. \\d{2}. \\d{2}. \\d{2}:\\d{2}",
+        new TextProcessorOffsetDateTimeConverter(),
         node,
-        SampleCategory.COST);
+        SampleCategory.CREATED_AT);
 
     assertEquals("Cat", node.getValue(String.class, SampleCategory.NAME));
-    assertEquals(1500, node.getValue(Long.class, SampleCategory.COST));
+    assertEquals("2023-11-27T13:00Z",
+        node.getValue(OffsetDateTime.class, SampleCategory.CREATED_AT).toString());
   }
 
   @Test
   void testFieldFromTextWithProcessDescriptors() {
     TextProcessorDescriptor nameProcessorDescriptor = new TextProcessorDescriptor(
         String.class.getName(), "(?<=name: )[a-zA-Z ]+", SampleCategory.NAME);
+
     TextProcessorDescriptor costProcessorDescriptor = new TextProcessorDescriptor(
-        Long.class.getName(), "(?<=cost: )(0|[1-9][0-9]*)$", SampleCategory.COST);
+        "org.smartbit4all.core.object.TextToNodeFieldTest$TextProcessorOffsetDateTimeConverter",
+        "(?<=Átvétel kért ideje: )\\d{4}. \\d{2}. \\d{2}. \\d{2}:\\d{2}",
+        SampleCategory.CREATED_AT);
 
     List<TextProcessorDescriptor> processors = new ArrayList<>();
     processors.add(nameProcessorDescriptor);
     processors.add(costProcessorDescriptor);
-    textToNodeFieldProcessor.setFieldFromText("name: Cat Dog, cost: 1500", node,
+    TextToNodeFieldProcessor.setFieldFromText(
+        "name: Cat Dog, Átvétel kért ideje: 2023. 11. 27. 13:00", node,
         processors);
 
     assertEquals("Cat Dog", node.getValue(String.class, SampleCategory.NAME));
-    assertEquals(1500, node.getValue(Long.class, SampleCategory.COST));
+    assertEquals("2023-11-27T13:00Z",
+        node.getValue(OffsetDateTime.class, SampleCategory.CREATED_AT).toString());
+  }
+
+  public static class TextProcessorOffsetDateTimeConverter
+      implements TextProcessorConverter<OffsetDateTime> {
+
+    @Override
+    public OffsetDateTime convert(String textValue) {
+      String[] parts = textValue.split("\\.| ");
+      int year = Integer.parseInt(parts[0]);
+      int month = Integer.parseInt(parts[2]);
+      int day = Integer.parseInt(parts[4]);
+      int hour = Integer.parseInt(parts[6].split(":")[0]);
+      int minute = Integer.parseInt(parts[6].split(":")[1]);
+
+      return OffsetDateTime.of(year, month, day, hour, minute, 0, 0, ZoneOffset.UTC);
+
+
+    }
+
+
   }
 }

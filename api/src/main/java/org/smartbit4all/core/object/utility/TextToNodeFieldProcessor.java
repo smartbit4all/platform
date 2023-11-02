@@ -1,10 +1,7 @@
-package org.smartbit4all.core.utility;
+package org.smartbit4all.core.object.utility;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -14,71 +11,85 @@ import org.smartbit4all.core.object.ObjectNode;
 public class TextToNodeFieldProcessor {
   private static final Logger log = LoggerFactory.getLogger(TextToNodeFieldProcessor.class);
 
-  public TextToNodeFieldProcessor() {
+  private TextToNodeFieldProcessor() {
     super();
   }
 
-  boolean setFieldFromText(String text, String regex, Function<String, Object> converter,
+
+  /**
+   * Extracts the appropriate data from text and sets the value for node property.
+   * 
+   * @param text From which we want to access a piece of data.
+   * @param regex
+   * @param converter
+   * @param node
+   * @param path
+   **/
+  public static boolean setFieldFromText(String text, String regex,
+      TextProcessorConverter<?> converter,
       ObjectNode node,
       String... path) {
     Objects.requireNonNull(text, "text cannot be null!");
     Objects.requireNonNull(regex, "regex cannot be null!");
     Objects.requireNonNull(node, "node cannot be null!");
     Objects.requireNonNull(path, "path cannot be null!");
-    Boolean madeModify = false;
+    boolean hasModified = false;
 
     String value = getValue(text, regex);
     if (value == null) {
       log.debug("It is not possible to find the data based on regex");
-      return madeModify;
+      return hasModified;
     }
 
     if (converter != null) {
-      Object convertedValue = converter.apply(value);
+      Object convertedValue = converter.convert(value);
       node.setValue(convertedValue, path);
-      madeModify = true;
+      hasModified = true;
     } else {
       node.setValue(value, path);
-      madeModify = true;
+      hasModified = true;
     }
-    return madeModify;
+    return hasModified;
   }
 
+  /**
+   * Extracts the appropriate data from text and sets the value for node property.
+   * 
+   * @param text From which we want to access a piece of data.
+   * @param node
+   * @param descriptors A list of descriptors describing what data to extract and where to insert
+   *        it.
+   **/
 
-  boolean setFieldFromText(String text, ObjectNode node,
+  public static boolean setFieldFromText(String text, ObjectNode node,
       List<TextProcessorDescriptor> descriptors) {
     Objects.requireNonNull(text, "text cannot be null!");
     Objects.requireNonNull(node, "node cannot be null!");
     Objects.requireNonNull(descriptors, "descriptors cannot be null!");
-    Boolean madeModify = false;
+    boolean hasModified = false;
     for (TextProcessorDescriptor descriptor : descriptors) {
 
       Class<?> clazz;
-      Object newInstance = null;
-      String value = getValue(text, descriptor.getRegex());
-
-      if (value == null) {
-        log.debug("It is not possible to find the data based on regex");
-        continue;
-      }
+      TextProcessorConverter<?> converter = null;
 
       try {
         clazz = Class.forName(descriptor.getConverterQualifiedName());
-        Constructor<?> constructor = clazz.getConstructor(String.class);
-        newInstance = constructor.newInstance(value);
-      } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
-          | InstantiationException | InvocationTargetException e) {
-        log.debug("No such class with QualifiedName exists", e);
+        if (TextProcessorConverter.class.isAssignableFrom(clazz)) {
+          converter = (TextProcessorConverter<?>) clazz.newInstance();
+        }
+
+      } catch (Exception e) {
+        log.error("No such class with QualifiedName exists", e);
         continue;
       }
 
-      node.setValue(newInstance, descriptor.path);
-      madeModify = true;
+      hasModified |=
+          setFieldFromText(text, descriptor.getRegex(), converter, node, descriptor.getPath());
     }
-    return madeModify;
+    return hasModified;
   }
 
-  private String getValue(String text, String regex) {
+  private static String getValue(String text, String regex) {
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(text);
     if (matcher.find()) {
@@ -110,8 +121,9 @@ public class TextToNodeFieldProcessor {
     public String getRegex() {
       return regex;
     }
+  }
 
-
-
+  public static interface TextProcessorConverter<T> {
+    T convert(String textValue);
   }
 }
