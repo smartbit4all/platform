@@ -4,11 +4,15 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.Invocations.ListWrapper;
 import org.smartbit4all.api.invocation.Invocations.MapWrapper;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -26,6 +30,8 @@ import org.smartbit4all.core.object.BeanMetaUtil;
  * @author Peter Boros
  */
 public class InvocationBuilder<T> implements InvocationHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(InvocationBuilder.class);
 
   private InvocationRequest request;
 
@@ -87,11 +93,23 @@ public class InvocationBuilder<T> implements InvocationHandler {
     return result;
   }
 
+  private URI getSessionUri() {
+    try {
+      if (sessionApi != null) {
+        return sessionApi.getSessionUri();
+      }
+    } catch (Exception e) {
+      log.warn("Failed to acquire current session: {}", e.getMessage());
+    }
+    return null;
+  }
+
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
     request = new InvocationRequest().name(clazz.getName()).interfaceClass(clazz.getName())
         .methodName(method.getName())
-        .sessionUri(sessionApi == null ? null : sessionApi.getSessionUri());
+        .sessionUri(getSessionUri());
     if (args != null && args.length != 0) {
       for (int i = 0; i < args.length; i++) {
         Parameter parameter = method.getParameters()[i];

@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -16,6 +18,9 @@ import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
+import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +36,13 @@ public final class AsyncInvocationChannelImpl
    * channels.
    */
   private ExecutorService executorService;
+
+  /**
+   * The technical session uri for every used thread.
+   */
+  private URI technicalSessionUri;
+
+  private Lock sessionLock = new ReentrantLock();
 
   /**
    * Core thread pool size of the {@link #executorService}.
@@ -69,6 +81,12 @@ public final class AsyncInvocationChannelImpl
   @Autowired(required = false)
   private SessionManagementApi sessionManagementApi;
 
+  @Autowired(required = false)
+  private SessionApi sessionApi;
+
+  @Autowired(required = false)
+  private OrgApi orgApi;
+
   private InvocationRegisterApi invocationRegisterApi;
 
   /**
@@ -76,6 +94,9 @@ public final class AsyncInvocationChannelImpl
    * runtime.
    */
   private URI uri;
+
+
+  private User userByUsername;
 
   public AsyncInvocationChannelImpl(String name) {
     super();
@@ -86,8 +107,9 @@ public final class AsyncInvocationChannelImpl
   public void invoke(AsyncInvocationRequestEntry requestEntry) {
     executorService.submit(() -> {
       // decorate the thread of given call.
-      if (technicalUserUri != null && sessionManagementApi != null) {
-        sessionManagementApi.startTechnicalSession(technicalUserUri);
+      URI userUri = getTechnicalUserUri();
+      if (userUri != null && sessionManagementApi != null) {
+        ensureUriTechnicalSession();
       } else if (requestEntry.request.getRequest().getSessionUri() != null) {
         sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
       }
@@ -203,6 +225,55 @@ public final class AsyncInvocationChannelImpl
   @Override
   public URI getUri() {
     return uri;
+  }
+
+  public URI getTechnicalUserUri() {
+    if (technicalUserUri != null) {
+      return technicalUserUri;
+    }
+    if (technicalUserName != null && orgApi != null) {
+      User user = orgApi.getUserByUsername(technicalUserName);
+      if (user != null) {
+        technicalUserUri = user.getUri();
+      } else {
+        technicalUserName = null;
+      }
+    }
+    return technicalUserUri;
+  }
+
+  public String getTechnicalUserName() {
+    return technicalUserName;
+  }
+
+  private void ensureUriTechnicalSession() {
+    if (technicalSessionUri != null) {
+      try {
+        sessionManagementApi.setSession(technicalSessionUri);
+        // we managed to set the session, thus it is valid => we can return:
+        return;
+      } catch (Exception e) {
+        technicalSessionUri = null;
+      }
+    }
+    if (sessionManagementApi != null && sessionApi != null) {
+      sessionLock.lock();
+      try {
+        if (technicalSessionUri != null) {
+          // some other thread managed to initialise the technical session URI. We can simply set it
+          // for ourselves, and our job is done:
+          sessionManagementApi.setSession(technicalSessionUri);
+          return;
+        }
+        URI userUri = getTechnicalUserUri();
+        if (userUri != null) {
+          sessionManagementApi.startTechnicalSession(userUri);
+          technicalSessionUri = sessionApi.getSessionUri();
+        }
+      } finally {
+        sessionLock.unlock();
+      }
+    }
   }
 
 }
