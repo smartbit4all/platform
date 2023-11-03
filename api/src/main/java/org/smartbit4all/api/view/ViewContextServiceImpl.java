@@ -319,7 +319,14 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult) {
+  public ViewContextChange handleMessage(UUID viewUuid, UUID messageUuid,
+      MessageResult messageResult) {
+    return performViewCall(() -> handleMessageInternal(viewUuid, messageUuid, messageResult),
+        "handleMessage");
+  }
+
+  private void handleMessageInternal(UUID viewUuid, UUID messageUuid,
+      MessageResult messageResult) {
     Objects.requireNonNull(messageResult, "MessageResult must be specified");
     Objects.requireNonNull(messageResult.getSelectedOption(),
         "MessageResult.selectedOption must be specified");
@@ -560,7 +567,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public ViewContextChange getComponentModel2(UUID viewUuid) {
     ViewContextChange result = performViewCall(
-        () -> getComponentModel(viewUuid), SCHEMA);
+        () -> getComponentModel(viewUuid), "getComponentModel2");
     ComponentModelChange change = result.getChanges().stream()
         .filter(ch -> viewUuid.equals(ch.getUuid()))
         .findFirst().orElse(null);

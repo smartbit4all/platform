@@ -377,6 +377,10 @@ paths:
       responses:
         '200':
           description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
   /view/{uuid}/constraint:
     get:
       tags:

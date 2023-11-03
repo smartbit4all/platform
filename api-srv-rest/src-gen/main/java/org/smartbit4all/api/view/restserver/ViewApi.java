@@ -302,17 +302,19 @@ public interface ViewApi {
         tags = { "View" },
         value = "",
         nickname = "message",
-        notes = ""
+        notes = "",
+        response = ViewContextChange.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "")
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
     })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/message/{viewUuid}/{messageUuid}",
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> message(
+    default ResponseEntity<ViewContextChange> message(
         @ApiParam(value = "View UUID.", required = true) @PathVariable("viewUuid") UUID viewUuid,
         @ApiParam(value = "Message UUID.", required = true) @PathVariable("messageUuid") UUID messageUuid,
         @ApiParam(value = "", required = true) @Valid @RequestBody MessageResult messageResult

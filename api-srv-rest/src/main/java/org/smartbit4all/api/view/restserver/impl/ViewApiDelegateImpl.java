@@ -56,10 +56,11 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
   }
 
   @Override
-  public ResponseEntity<Void> message(UUID viewUuid, UUID messageUuid, MessageResult messageResult)
+  public ResponseEntity<ViewContextChange> message(UUID viewUuid, UUID messageUuid,
+      MessageResult messageResult)
       throws Exception {
-    viewContextService.handleMessage(viewUuid, messageUuid, messageResult);
-    return ResponseEntity.ok().build();
+    return ResponseEntity
+        .ok(viewContextService.handleMessage(viewUuid, messageUuid, messageResult));
   }
 
   @Override

@@ -108,7 +108,7 @@ public interface ViewContextService {
    * @param messageUuid
    * @param messageResult
    */
-  void handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult);
+  ViewContextChange handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult);
 
   /**
    * If the API associated with view identified by viewToCloseUuid has a method with
