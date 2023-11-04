@@ -117,7 +117,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     View view;
     MDMEntryDescriptor entryDescriptor;
-    MDMDefinition definition;
+    public MDMDefinition definition;
     MDMEntryApi entryApi;
     SearchIndex<BranchedObjectEntry> searchIndexAdmin;
     SearchIndex<Object> searchIndexPublished;
@@ -243,7 +243,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     return pageTitle;
   }
 
-  private void refreshActions(PageContext ctx) {
+  protected void refreshActions(PageContext ctx) {
     boolean isAdmin = ctx.checkAdmin();
     boolean branchActive = ctx.entryApi.hasBranch();
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.entryDescriptor.getInactiveMgmt());
@@ -298,7 +298,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     ctx.view.actions(uiActions.build());
   }
 
-  private final void refreshGrid(PageContext ctx) {
+  protected final void refreshGrid(PageContext ctx) {
 
     if (ctx.checkAdmin() && ctx.entryApi.hasBranch()) {
       List<BranchedObjectEntry> list;
