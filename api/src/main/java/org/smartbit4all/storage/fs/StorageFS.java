@@ -147,6 +147,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private static Random rnd = new Random();
 
+  public static final StoragePerformanceRecord performanceRecord = new StoragePerformanceRecord();
+
   /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
@@ -307,11 +309,16 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
     try {
 
+      long startTime = System.currentTimeMillis();
+
       if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
         saveSingleVersionObject(object);
       } else {
         saveVersionedObject(object);
       }
+
+      long endTime = System.currentTimeMillis();
+      performanceRecord.addWrite(endTime - startTime);
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
@@ -589,6 +596,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
+    long startTime = System.currentTimeMillis();
     URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
     if (!storageAccessApi.exists(storageObjectDataFile, uriWithoutVersion)) {
@@ -647,6 +655,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (skipData) {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
+
+    long endTime = System.currentTimeMillis();
+    performanceRecord.addRead(endTime - startTime);
 
     return storageObject.lastModified(lastModified);
   }
