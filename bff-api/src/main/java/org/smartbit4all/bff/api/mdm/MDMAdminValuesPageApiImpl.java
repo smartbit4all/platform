@@ -1,6 +1,9 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.Collections.emptyList;
+import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -84,12 +87,19 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
     PageContext context = getContextByViewUUID(viewUuid);
     MDMDefinition definition = new MDMDefinition().name(context.definition.getName());
     MDMDefinitionOption o = new MDMDefinitionOption(definition);
-    o.addDefaultDescriptor(GenericValue.class, code).name(code)
+    o.addDefaultDescriptor(GenericValue.class, code).name(name)
         .displayNameForm(new LangString().defaultValue(name))
-        .displayNameList(new LangString().defaultValue(name)).isValueSet(Boolean.TRUE);
+        .displayNameList(new LangString().defaultValue(name))
+        .listPageGridViews(createDefaultListPageGridViews())
+        .isValueSet(Boolean.TRUE);
+
     masterDataManagementApi.addNewEntries(o);
     PageContext refreshedContext = getContextByViewUUID(viewUuid);
     refreshUiActions(refreshedContext);
+  }
+
+  protected List<GridView> createDefaultListPageGridViews() {
+    return emptyList();
   }
 
 }
