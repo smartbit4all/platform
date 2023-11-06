@@ -87,7 +87,7 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
     PageContext context = getContextByViewUUID(viewUuid);
     MDMDefinition definition = new MDMDefinition().name(context.definition.getName());
     MDMDefinitionOption o = new MDMDefinitionOption(definition);
-    o.addDefaultDescriptor(GenericValue.class, code).name(name)
+    o.addDefaultDescriptor(GenericValue.class, code).name(code)
         .displayNameForm(new LangString().defaultValue(name))
         .displayNameList(new LangString().defaultValue(name))
         .listPageGridViews(createDefaultListPageGridViews())
