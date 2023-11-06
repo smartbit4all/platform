@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
-import static java.util.stream.Collectors.toList;
 
 public final class ObjectDisplay {
 
@@ -101,7 +101,10 @@ public final class ObjectDisplay {
       case FORM:
         return compLayoutDef.getForm().stream();
       case CONTAINER:
-        return compLayoutDef.getComponents().stream().flatMap(this::formWidgets);
+        final List<SmartComponentLayoutDefinition> subComponents = compLayoutDef.getComponents();
+        return subComponents == null
+            ? Stream.empty()
+            : subComponents.stream().flatMap(this::formWidgets);
       default:
         return Stream.empty();
     }
