@@ -46,13 +46,13 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   private SubjectManagementApi subjectManagementApi;
 
   @Autowired
-  private CollectionApi collectionApi;
+  protected CollectionApi collectionApi;
 
   @Autowired
-  private GridModelApi gridModelApi;
+  protected GridModelApi gridModelApi;
 
   @Autowired
-  private FilterExpressionApi filterExpressionApi;
+  protected FilterExpressionApi filterExpressionApi;
 
   @Autowired
   private InvocationApi invocationApi;
