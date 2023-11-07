@@ -477,6 +477,10 @@ components:
           description: |
             The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the
             columns of the grid and the filter model.
+        parentPropertyName:
+          type: string
+          description: |
+            The property name of the parent property. If it is set then the selector page can show hierarchical view.
         apiName:
           type: string
           description: |

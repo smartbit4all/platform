@@ -14,6 +14,7 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.grid.bean.GridSelectionType;
@@ -173,7 +174,23 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     }
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
 
+    gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
+        .builder(SubjectSelectorPageApi.class)
+        .build(a -> a.onPage(null, viewUuid)));
+
   }
+
+  @Override
+  public GridPage onPage(GridPage page, UUID viewUuid) {
+    // SubjectSelectorPageModel model = getModel(viewUuid);
+    // String parentPropertyName = model.getSelectedDescriptor().getParentPropertyName();
+    // if (parentPropertyName != null) {
+    // page.getRows().stream().collect(toMap(r -> objectApi.asType(Boolean.class,
+    // GridModels.getValueFromGridRow(row, "builtIn")), null));
+    // }
+    return page;
+  }
+
 
   private SubjectModel getSubjectModel(View view) {
     Object modelName = view.getParameters().get(PlatformBffApiConfig.SUBJECT_MODEL_NAME);
