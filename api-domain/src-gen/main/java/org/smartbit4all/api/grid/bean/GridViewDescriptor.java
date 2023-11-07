@@ -61,7 +61,9 @@ public class GridViewDescriptor {
   public enum KindEnum {
     TABLE("TABLE"),
     
-    EXPANDABLECARDS1("EXPANDABLECARDS1");
+    EXPANDABLECARDS1("EXPANDABLECARDS1"),
+    
+    TREE("TREE");
 
     private String value;
 
@@ -204,13 +206,13 @@ public class GridViewDescriptor {
   }
 
    /**
-   * Get columns
+   * In the table the columns are the columns of the table. In the tree the columns can be used to append the title of a tree node. 
    * @return columns
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "In the table the columns are the columns of the table. In the tree the columns can be used to append the title of a tree node. ")
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

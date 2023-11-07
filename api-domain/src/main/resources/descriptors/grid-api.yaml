@@ -313,6 +313,19 @@ components:
           type: string
           additionalProperties:
             type: ImageResource
+        parent:
+          description: |
+            If the grid can be hierarchical then the parent contains the identifiers of the
+            parent row.
+          type: string
+        children:
+          description: |
+            If the grid can be hierarchical then the children list contains the identifiers of the
+            children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not
+            required to see if it is empty or not set.
+          type: array
+          items:
+            type: string
     GridView:
       type: object
       description: |
@@ -342,8 +355,11 @@ components:
         icon:
           type: string
         kind:
-          enum: [TABLE, EXPANDABLECARDS1]
+          enum: [TABLE, EXPANDABLECARDS1, TREE]
         columns:
+          description: |
+            In the table the columns are the columns of the table. In the tree the columns can be used to append the
+            title of a tree node.
           type: array
           items:
             $ref: '#/components/schemas/GridColumnMeta'

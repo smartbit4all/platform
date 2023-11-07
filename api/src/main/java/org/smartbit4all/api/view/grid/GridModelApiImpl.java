@@ -1,12 +1,11 @@
 package org.smartbit4all.api.view.grid;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,7 +41,6 @@ import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
@@ -53,6 +51,8 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -88,9 +88,6 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private ObjectApi objectApi;
-
-  @Autowired
-  private ObjectDefinitionApi objectDefinitionApi;
 
   // FIXME (viewApi is not present everywhere)
   @Autowired(required = false)
@@ -305,7 +302,7 @@ public class GridModelApiImpl implements GridModelApi {
         gridModel.getAccessConfig().dataUri(data.getUri());
         int firstPageSize = Math.min(pageSize, data.size());
         gridModel
-            .page(constructPage(viewUuid, gridId,
+            .page(constructPage(gridModel, gridId,
                 data,
                 0, firstPageSize, 0,
                 false, true)
@@ -343,7 +340,7 @@ public class GridModelApiImpl implements GridModelApi {
       }
     }
     gridModel.page(constructPage(
-        viewUuid, gridId,
+        gridModel, gridId,
         data,
         lowerBound, upperBound, 0,
         true, false)
@@ -364,7 +361,7 @@ public class GridModelApiImpl implements GridModelApi {
             .filter(id -> !currentPageRows.containsKey(id))
             .collect(toList());
         GridPage page =
-            constructPage(viewUuid, gridId, data,
+            constructPage(gridModel, gridId, data,
                 0, data.size(), 0,
                 true, false,
                 missingRowIds);
@@ -467,8 +464,21 @@ public class GridModelApiImpl implements GridModelApi {
         // TODO update / setPageSize?
         return model;
       }
-      TableData<?> tableData =
-          tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
+      // If we have a tree then load the whole table data as one page so we can construct the tree
+      // on the client side. Later on the paging can contains the logic for the lazy loading. The
+      // tree is working only if the row has an identifier column.
+      TableData<?> tableData;
+      int myOffset = offset;
+      int myLimit = limit;
+      if (isTreeView(model)) {
+        tableData =
+            tableDataApi.read(model.getAccessConfig().getDataUri());
+        myOffset = 0;
+        myLimit = tableData.size();
+      } else {
+        tableData =
+            tableDataApi.readPage(model.getAccessConfig().getDataUri(), myOffset, myLimit);
+      }
       GridViewDescriptor descriptor = model.getView().getDescriptor();
       boolean preserveSelection;
       if (descriptor.getPreserveSelectionOnPageChange() != null) {
@@ -478,13 +488,24 @@ public class GridModelApiImpl implements GridModelApi {
         preserveSelection = descriptor.getSelectionMode() == GridSelectionMode.MULTIPLE;
       }
       model.page(
-          constructPage(viewUuid, gridId, tableData,
-              0, tableData.size(), offset,
+          constructPage(model, gridId, tableData,
+              0, tableData.size(), myOffset,
               preserveSelection, true)
-                  .lowerBound(offset)
-                  .upperBound(offset + limit));
+                  .lowerBound(myOffset)
+                  .upperBound(myOffset + myLimit));
       return model;
     });
+  }
+
+  /**
+   * Checks whether or not the given grid view is tree.
+   * 
+   * @param model
+   * @return
+   */
+  private final boolean isTreeView(GridModel model) {
+    return model.getView() != null && model.getView().getDescriptor() != null
+        && model.getView().getDescriptor().getKind() == KindEnum.TREE;
   }
 
   @Override
@@ -499,7 +520,7 @@ public class GridModelApiImpl implements GridModelApi {
       TableData<?> tableData =
           tableDataApi.readPage(model.getAccessConfig().getDataUri(),
               model.getPage().getLowerBound(), pageSize);
-      model.page(constructPage(viewUuid, gridId, tableData,
+      model.page(constructPage(model, gridId, tableData,
           0, tableData.size(), model.getPage().getLowerBound(),
           true, true)
               .lowerBound(model.getPage().getLowerBound())
@@ -542,7 +563,7 @@ public class GridModelApiImpl implements GridModelApi {
         model.getAccessConfig().dataUri(data.getUri());
         int lowerBound = model.getPage().getLowerBound();
         int upperBound = model.getPage().getUpperBound();
-        model.page(constructPage(viewUuid, gridId, data,
+        model.page(constructPage(model, gridId, data,
             lowerBound, Math.min(data.size(), upperBound), 0,
             true, true)
                 .lowerBound(lowerBound)
@@ -604,22 +625,25 @@ public class GridModelApiImpl implements GridModelApi {
     return ref;
   }
 
-  private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
+  private GridPage constructPage(GridModel model, String gridId, TableData<?> tableData,
       int beginIndex, int endIndex, int offset,
       boolean preserveSelection, boolean refreshSelectedRows) {
-    return constructPage(viewUuid, gridId, tableData, beginIndex, endIndex, offset,
+    return constructPage(model, gridId, tableData, beginIndex, endIndex, offset,
         preserveSelection, refreshSelectedRows, null);
   }
 
-  private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
+  private GridPage constructPage(GridModel model, String gridId, TableData<?> tableData,
       int beginIndex, int endIndex, int offset,
       boolean preserveSelection, boolean refreshSelectedRows,
       List<String> rowIdFilter) {
+    UUID viewUuid = model.getViewUuid();
+    Objects.requireNonNull(viewUuid, "GridModel view UUID must not be null.");
     GridPage page =
         new GridPage()
             .rows(new ArrayList<>());
     DataColumn<?> idColumn = getIdColumnFromTableData(viewUuid, gridId, tableData);
     List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
+    // Collect the rows by id to be able to fill the children list at the end.
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow dataRow = tableData.rows().get(i);
       String rowId;
@@ -639,6 +663,27 @@ public class GridModelApiImpl implements GridModelApi {
     }
     List<InvocationRequest> gridPageCallbacks = getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
     page = (GridPage) executeObjectCallbacks(gridPageCallbacks, page);
+
+    // Here we have all the rows in the page and their setup is ready. We can construt the tree if
+    // any.
+    if (isTreeView(model)) {
+      Map<String, List<String>> childrenByParent = new HashMap<>();
+      for (GridRow row : page.getRows()) {
+        if (Strings.isNullOrEmpty(row.getParent())) {
+          childrenByParent.computeIfAbsent(row.getParent(), s -> new ArrayList<>())
+              .add(row.getId());
+        }
+      }
+      for (GridRow row : page.getRows()) {
+        if (row.getChildren() == null) {
+          // We need to draw the tree but the children not set. So we try to fill from the collected
+          // childrenByParent map.
+          List<String> list = childrenByParent.get(row.getId());
+          row.setChildren(list == null ? new ArrayList<>() : list);
+        }
+      }
+    }
+
     GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
     if (serverModel != null && !preserveSelection) {
       serverModel.getSelectedRows().clear();
@@ -891,7 +936,7 @@ public class GridModelApiImpl implements GridModelApi {
       } else if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
         // read all rows from tableData
         TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-        pageAllRows = constructPage(viewUuid, gridId,
+        pageAllRows = constructPage(model, gridId,
             data,
             0, data.size(), 0,
             true, false);

@@ -43,7 +43,9 @@ import javax.validation.Valid;
   GridRow.DATA,
   GridRow.SELECTABLE,
   GridRow.SELECTED,
-  GridRow.ICONS
+  GridRow.ICONS,
+  GridRow.PARENT,
+  GridRow.CHILDREN
 })
 @JsonTypeName("GridRow")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +67,12 @@ public class GridRow {
 
   public static final String ICONS = "icons";
   private Map<String, ImageResource> icons = new HashMap<>();
+
+  public static final String PARENT = "parent";
+  private String parent;
+
+  public static final String CHILDREN = "children";
+  private List<String> children = null;
 
   public GridRow() { 
   }
@@ -245,6 +253,68 @@ public class GridRow {
   }
 
 
+  public GridRow parent(String parent) {
+    
+    this.parent = parent;
+    return this;
+  }
+
+   /**
+   * If the grid can be hierarchical then the parent contains the identifiers of the parent row. 
+   * @return parent
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the grid can be hierarchical then the parent contains the identifiers of the parent row. ")
+  @JsonProperty(PARENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getParent() {
+    return parent;
+  }
+
+
+  @JsonProperty(PARENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParent(String parent) {
+    this.parent = parent;
+  }
+
+
+  public GridRow children(List<String> children) {
+    
+    this.children = children;
+    return this;
+  }
+
+  public GridRow addChildrenItem(String childrenItem) {
+    if (this.children == null) {
+      this.children = new ArrayList<>();
+    }
+    this.children.add(childrenItem);
+    return this;
+  }
+
+   /**
+   * If the grid can be hierarchical then the children list contains the identifiers of the children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not required to see if it is empty or not set. 
+   * @return children
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the grid can be hierarchical then the children list contains the identifiers of the children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not required to see if it is empty or not set. ")
+  @JsonProperty(CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getChildren() {
+    return children;
+  }
+
+
+  @JsonProperty(CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChildren(List<String> children) {
+    this.children = children;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -259,12 +329,14 @@ public class GridRow {
         Objects.equals(this.data, gridRow.data) &&
         Objects.equals(this.selectable, gridRow.selectable) &&
         Objects.equals(this.selected, gridRow.selected) &&
-        Objects.equals(this.icons, gridRow.icons);
+        Objects.equals(this.icons, gridRow.icons) &&
+        Objects.equals(this.parent, gridRow.parent) &&
+        Objects.equals(this.children, gridRow.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, actions, data, selectable, selected, icons);
+    return Objects.hash(id, actions, data, selectable, selected, icons, parent, children);
   }
 
   @Override
@@ -277,6 +349,8 @@ public class GridRow {
     sb.append("    selectable: ").append(toIndentedString(selectable)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
     sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
+    sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
+    sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");
     return sb.toString();
   }
