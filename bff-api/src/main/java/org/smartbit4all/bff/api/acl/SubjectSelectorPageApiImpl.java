@@ -174,9 +174,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     }
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
 
-    gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
-        .builder(SubjectSelectorPageApi.class)
-        .build(a -> a.onPage(null, viewUuid)));
+    // gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
+    // .builder(SubjectSelectorPageApi.class)
+    // .build(a -> a.onPage(null, viewUuid)));
 
   }
 
