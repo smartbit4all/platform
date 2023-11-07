@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.search;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -196,8 +196,12 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       // We try the database or read all.
       gridContent = ctx.searchIndex.executeSearch(filters, getOrderByList(ctx));
     }
+    setDataToGrid(ctx.view.getUuid(), ctx.searchIndex, gridContent);
+  }
+
+  protected void setDataToGrid(UUID uuid, SearchIndex<?> searchIndex, TableData<?> gridContent) {
     if (gridContent != null) {
-      gridModelApi.setData(ctx.view.getUuid(), WIDGET_RESULT_GRID, gridContent);
+      gridModelApi.setData(uuid, WIDGET_RESULT_GRID, gridContent);
     }
   }
 
