@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class StorageSequenceApiImpl implements StorageSequenceApi {
 
+  private static final Long START_VALUE = Long.valueOf(0);
   @Autowired
   private StorageApi storageApi;
 
@@ -43,7 +44,7 @@ public class StorageSequenceApiImpl implements StorageSequenceApi {
           return s;
         });
       } else {
-        StoredSequenceData s = new StoredSequenceData().current(Long.valueOf(0)).uri(sequenceURI);
+        StoredSequenceData s = new StoredSequenceData().current(START_VALUE).uri(sequenceURI);
         for (int i = 0; i < count; i++) {
           results.add(s.current(s.getCurrent() + 1).getCurrent());
         }
@@ -53,6 +54,22 @@ public class StorageSequenceApiImpl implements StorageSequenceApi {
       objectLock.unlock();
     }
     return results;
+  }
+
+  @Override
+  public Long current(URI sequenceURI) {
+    if (sequenceURI == null) {
+      return START_VALUE;
+    }
+    Storage storage = storageApi.getStorage(sequenceURI);
+    if (storage == null) {
+      return START_VALUE;
+    }
+    if (storage.exists(sequenceURI)) {
+      StoredSequenceData sequenceData = storage.read(sequenceURI, StoredSequenceData.class);
+      return sequenceData.getCurrent();
+    }
+    return START_VALUE;
   }
 
 }

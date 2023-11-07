@@ -31,5 +31,13 @@ public interface StorageSequenceApi {
   @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
   List<Long> next(URI sequenceURI, int count);
 
+  /**
+   * Retrieves the current value of the sequence.
+   * 
+   * @param sequenceURI The uri of the {@link StoredSequenceData}
+   * @return The current value of the sequence or -1 if the sequence doesn't exist.
+   */
+  Long current(URI sequenceURI);
+
 
 }

@@ -25,4 +25,9 @@ public class StoredSequenceStorageImpl implements StoredSequence {
     return sequenceApi.next(uri, count);
   }
 
+  @Override
+  public Long current() {
+    return sequenceApi.current(uri);
+  }
+
 }

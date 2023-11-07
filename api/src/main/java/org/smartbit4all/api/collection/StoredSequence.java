@@ -16,6 +16,11 @@ public interface StoredSequence {
   Long next();
 
   /**
+   * @return Return the current value without modifying the sequence.
+   */
+  Long current();
+
+  /**
    * Return the next number of sequence in an array.
    * 
    * @param count The number of sequence values we ask.

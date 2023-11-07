@@ -666,12 +666,18 @@ public class CollectionApiTest {
 
     assertEquals(count * nextCount, result.size());
 
+    assertEquals(count * nextCount, sequence.current());
+
     List<Long> expectedResult = new ArrayList<>();
     for (int i = 1; i <= count * nextCount; i++) {
       expectedResult.add(Long.valueOf(i));
     }
 
     assertEquals(expectedResult.toString(), result.toString());
+
+    StoredSequence sequence2 = collectionApi.sequence(SCHEMA, "second");
+
+    assertEquals(0, sequence2.current());
 
   }
 
