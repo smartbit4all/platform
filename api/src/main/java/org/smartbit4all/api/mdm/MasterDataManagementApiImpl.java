@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -51,8 +49,12 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
+
+  private static final String LIST = "List";
 
   public static final String MAP_DEFINITIONS = "definitions";
 
@@ -585,7 +587,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
     return descriptor.getPublishedListName() != null
         ? descriptor.getPublishedListName()
-        : descriptor.getName() + "List";
+        : descriptor.getName() + LIST;
+  }
+
+  public static final String getPublishedListName(String mdmName) {
+    return mdmName + LIST;
   }
 
   @Override

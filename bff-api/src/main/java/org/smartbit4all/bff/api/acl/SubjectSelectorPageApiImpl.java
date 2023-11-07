@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -157,9 +158,19 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     gridModel.setPageSize(5);
     gridModel.setPageSizeOptions(Arrays.asList(5, 25, 50));
 
-    TableData<?> tableData =
-        searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()),
+    TableData<?> tableData = null;
+    if (selectionConfig.getContainer() != null) {
+      StoredList list = collectionApi.list(selectionConfig.getContainer());
+      if (list != null) {
+        tableData = searchIndex.executeSearchOn(list.uris().stream(),
+            filterExpressionApi.of(searchIndex.allFilterFields()),
             selectionConfig.getGridViewOptions().get(0).getOrderByList());
+      }
+    }
+    if (tableData == null) {
+      tableData = searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()),
+          selectionConfig.getGridViewOptions().get(0).getOrderByList());
+    }
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
 
   }

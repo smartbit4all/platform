@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.grid.bean.GridView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,6 +42,7 @@ import javax.validation.Valid;
   SearchPageConfig.FILTER_MODEL,
   SearchPageConfig.SEARCH_INDEX_SCHEMA,
   SearchPageConfig.SEARCH_INDEX_NAME,
+  SearchPageConfig.CONTAINER,
   SearchPageConfig.GRID_VIEW_OPTIONS
 })
 @JsonTypeName("SearchPageConfig")
@@ -57,6 +59,9 @@ public class SearchPageConfig {
 
   public static final String SEARCH_INDEX_NAME = "searchIndexName";
   private String searchIndexName;
+
+  public static final String CONTAINER = "container";
+  private StoredCollectionDescriptor container = null;
 
   public static final String GRID_VIEW_OPTIONS = "gridViewOptions";
   private List<GridView> gridViewOptions = new ArrayList<>();
@@ -174,6 +179,34 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig container(StoredCollectionDescriptor container) {
+    
+    this.container = container;
+    return this;
+  }
+
+   /**
+   * The conteiner to run the query against.
+   * @return container
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The conteiner to run the query against.")
+  @JsonProperty(CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StoredCollectionDescriptor getContainer() {
+    return container;
+  }
+
+
+  @JsonProperty(CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainer(StoredCollectionDescriptor container) {
+    this.container = container;
+  }
+
+
   public SearchPageConfig gridViewOptions(List<GridView> gridViewOptions) {
     
     this.gridViewOptions = gridViewOptions;
@@ -221,12 +254,13 @@ public class SearchPageConfig {
         Objects.equals(this.filterModel, searchPageConfig.filterModel) &&
         Objects.equals(this.searchIndexSchema, searchPageConfig.searchIndexSchema) &&
         Objects.equals(this.searchIndexName, searchPageConfig.searchIndexName) &&
+        Objects.equals(this.container, searchPageConfig.container) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, filterModel, searchIndexSchema, searchIndexName, gridViewOptions);
+    return Objects.hash(uri, filterModel, searchIndexSchema, searchIndexName, container, gridViewOptions);
   }
 
   @Override
@@ -237,6 +271,7 @@ public class SearchPageConfig {
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
     sb.append("    searchIndexName: ").append(toIndentedString(searchIndexName)).append("\n");
+    sb.append("    container: ").append(toIndentedString(container)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("}");
     return sb.toString();

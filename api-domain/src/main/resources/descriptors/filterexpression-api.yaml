@@ -346,6 +346,9 @@ components:
         searchIndexName:
           description: The name of the search index.
           type: string
+        container:
+          description: The conteiner to run the query against.
+          type: StoredCollectionDescriptor
         gridViewOptions:
           description: |
             The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear.
