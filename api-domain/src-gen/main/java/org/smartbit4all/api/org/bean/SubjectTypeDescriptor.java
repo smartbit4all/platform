@@ -38,6 +38,7 @@ import javax.validation.Valid;
   SubjectTypeDescriptor.TITLE,
   SubjectTypeDescriptor.SELECTION_CONFIG,
   SubjectTypeDescriptor.PARENT_PROPERTY_NAME,
+  SubjectTypeDescriptor.PARENT_IDENTIFIER_PROPERTY_NAME,
   SubjectTypeDescriptor.API_NAME
 })
 @JsonTypeName("SubjectTypeDescriptor")
@@ -54,6 +55,9 @@ public class SubjectTypeDescriptor {
 
   public static final String PARENT_PROPERTY_NAME = "parentPropertyName";
   private String parentPropertyName;
+
+  public static final String PARENT_IDENTIFIER_PROPERTY_NAME = "parentIdentifierPropertyName";
+  private String parentIdentifierPropertyName;
 
   public static final String API_NAME = "apiName";
   private String apiName;
@@ -173,6 +177,33 @@ public class SubjectTypeDescriptor {
   }
 
 
+  public SubjectTypeDescriptor parentIdentifierPropertyName(String parentIdentifierPropertyName) {
+    
+    this.parentIdentifierPropertyName = parentIdentifierPropertyName;
+    return this;
+  }
+
+   /**
+   * The property name of the unique identifier property. If it is set then the selector page can show hierarchical view. 
+   * @return parentIdentifierPropertyName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The property name of the unique identifier property. If it is set then the selector page can show hierarchical view. ")
+  @JsonProperty(PARENT_IDENTIFIER_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getParentIdentifierPropertyName() {
+    return parentIdentifierPropertyName;
+  }
+
+
+  @JsonProperty(PARENT_IDENTIFIER_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentIdentifierPropertyName(String parentIdentifierPropertyName) {
+    this.parentIdentifierPropertyName = parentIdentifierPropertyName;
+  }
+
+
   public SubjectTypeDescriptor apiName(String apiName) {
     
     this.apiName = apiName;
@@ -213,12 +244,13 @@ public class SubjectTypeDescriptor {
         Objects.equals(this.title, subjectTypeDescriptor.title) &&
         Objects.equals(this.selectionConfig, subjectTypeDescriptor.selectionConfig) &&
         Objects.equals(this.parentPropertyName, subjectTypeDescriptor.parentPropertyName) &&
+        Objects.equals(this.parentIdentifierPropertyName, subjectTypeDescriptor.parentIdentifierPropertyName) &&
         Objects.equals(this.apiName, subjectTypeDescriptor.apiName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, title, selectionConfig, parentPropertyName, apiName);
+    return Objects.hash(name, title, selectionConfig, parentPropertyName, parentIdentifierPropertyName, apiName);
   }
 
   @Override
@@ -229,6 +261,7 @@ public class SubjectTypeDescriptor {
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    selectionConfig: ").append(toIndentedString(selectionConfig)).append("\n");
     sb.append("    parentPropertyName: ").append(toIndentedString(parentPropertyName)).append("\n");
+    sb.append("    parentIdentifierPropertyName: ").append(toIndentedString(parentIdentifierPropertyName)).append("\n");
     sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
     sb.append("}");
     return sb.toString();

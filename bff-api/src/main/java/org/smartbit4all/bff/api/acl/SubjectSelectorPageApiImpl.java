@@ -33,11 +33,14 @@ import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
+import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.config.PlatformBffApiConfig;
 import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageModel>
     implements SubjectSelectorPageApi {
@@ -174,20 +177,41 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     }
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
 
-    // gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
-    // .builder(SubjectSelectorPageApi.class)
-    // .build(a -> a.onPage(null, viewUuid)));
+    gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
+        .builder(SubjectSelectorPageApi.class)
+        .build(a -> a.onPage(null, viewUuid)));
 
   }
 
   @Override
   public GridPage onPage(GridPage page, UUID viewUuid) {
-    // SubjectSelectorPageModel model = getModel(viewUuid);
-    // String parentPropertyName = model.getSelectedDescriptor().getParentPropertyName();
-    // if (parentPropertyName != null) {
-    // page.getRows().stream().collect(toMap(r -> objectApi.asType(Boolean.class,
-    // GridModels.getValueFromGridRow(row, "builtIn")), null));
-    // }
+    SubjectSelectorPageModel model = getModel(viewUuid);
+    String parentPropertyName = model.getSelectedDescriptor().getParentPropertyName();
+    String parentIdentifierPropertyName =
+        model.getSelectedDescriptor().getParentIdentifierPropertyName();
+    if (parentPropertyName != null && parentIdentifierPropertyName != null) {
+      // gridModelApi.executeGridCall(viewUuid, SUBJECT_GRID_ID, g -> g.getView().getDescriptor());
+      Map<String, GridRow> rowsById = page.getRows().stream().collect(toMap(r -> {
+        Object valueParent = GridModels.getValueFromGridRow(r, parentIdentifierPropertyName);
+        if (valueParent != null) {
+          URI parentUri = objectApi.asType(URI.class, valueParent);
+          parentUri = objectApi.getLatestUri(parentUri);
+          return parentUri.toString();
+        }
+        return valueParent != null ? valueParent.toString() : StringConstant.UNKNOWN;
+      }, r -> r));
+      for (GridRow row : page.getRows()) {
+        Object parentId = GridModels.getValueFromGridRow(row, parentPropertyName);
+        if (parentId != null) {
+          URI parentUri = objectApi.asType(URI.class, parentId);
+          parentUri = objectApi.getLatestUri(parentUri);
+          GridRow parentRow = rowsById.get(parentUri);
+          if (parentRow != null) {
+            row.setParent(parentRow.getId());
+          }
+        }
+      }
+    }
     return page;
   }
 
