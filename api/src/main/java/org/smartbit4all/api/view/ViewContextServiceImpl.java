@@ -960,8 +960,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     try {
       viewCall.run();
     } catch (Throwable tr) {
-      throw new RuntimeException("Error when calling method " + methodName,
-          tr);
+      log.error("Error when calling method " + methodName, tr);
+      throw tr;
     }
     List<ViewComparisonResult> comparisons = afterInvoke(before, methodName);
     return createViewContextChange(comparisons);
