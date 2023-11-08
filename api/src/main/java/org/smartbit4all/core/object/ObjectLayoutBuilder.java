@@ -118,6 +118,13 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition toggle(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.TOGGLE)
+        .key(key)
+        .label(label);
+  }
+
   public static SmartWidgetDefinition combobox(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()
