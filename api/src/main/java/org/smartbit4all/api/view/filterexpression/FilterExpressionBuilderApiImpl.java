@@ -98,8 +98,9 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     }
 
     uiModel.setReadOnly(config.getReadOnly());
+    uiModel.setExtarnalDatabase(config.getExtarnalDatabase());
 
-    if (!config.getReadOnly()) {
+    if (Boolean.FALSE.equals(config.getReadOnly())) {
       uiModel.possibleActions(config.getAvailableActions().stream()
           .map(code -> new UiAction().code(code)).collect(Collectors.toList()));
     }

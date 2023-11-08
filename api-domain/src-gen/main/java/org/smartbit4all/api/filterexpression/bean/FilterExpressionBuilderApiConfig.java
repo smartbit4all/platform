@@ -34,6 +34,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   FilterExpressionBuilderApiConfig.READ_ONLY,
+  FilterExpressionBuilderApiConfig.EXTARNAL_DATABASE,
   FilterExpressionBuilderApiConfig.AVAILABLE_ACTIONS
 })
 @JsonTypeName("FilterExpressionBuilderApiConfig")
@@ -41,6 +42,9 @@ import javax.validation.Valid;
 public class FilterExpressionBuilderApiConfig {
   public static final String READ_ONLY = "readOnly";
   private Boolean readOnly = false;
+
+  public static final String EXTARNAL_DATABASE = "extarnalDatabase";
+  private Boolean extarnalDatabase = false;
 
   public static final String AVAILABLE_ACTIONS = "availableActions";
   private List<String> availableActions = new ArrayList<>();
@@ -72,6 +76,33 @@ public class FilterExpressionBuilderApiConfig {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReadOnly(Boolean readOnly) {
     this.readOnly = readOnly;
+  }
+
+
+  public FilterExpressionBuilderApiConfig extarnalDatabase(Boolean extarnalDatabase) {
+    
+    this.extarnalDatabase = extarnalDatabase;
+    return this;
+  }
+
+   /**
+   * Get extarnalDatabase
+   * @return extarnalDatabase
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXTARNAL_DATABASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getExtarnalDatabase() {
+    return extarnalDatabase;
+  }
+
+
+  @JsonProperty(EXTARNAL_DATABASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExtarnalDatabase(Boolean extarnalDatabase) {
+    this.extarnalDatabase = extarnalDatabase;
   }
 
 
@@ -118,12 +149,13 @@ public class FilterExpressionBuilderApiConfig {
     }
     FilterExpressionBuilderApiConfig filterExpressionBuilderApiConfig = (FilterExpressionBuilderApiConfig) o;
     return Objects.equals(this.readOnly, filterExpressionBuilderApiConfig.readOnly) &&
+        Objects.equals(this.extarnalDatabase, filterExpressionBuilderApiConfig.extarnalDatabase) &&
         Objects.equals(this.availableActions, filterExpressionBuilderApiConfig.availableActions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(readOnly, availableActions);
+    return Objects.hash(readOnly, extarnalDatabase, availableActions);
   }
 
   @Override
@@ -131,6 +163,7 @@ public class FilterExpressionBuilderApiConfig {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterExpressionBuilderApiConfig {\n");
     sb.append("    readOnly: ").append(toIndentedString(readOnly)).append("\n");
+    sb.append("    extarnalDatabase: ").append(toIndentedString(extarnalDatabase)).append("\n");
     sb.append("    availableActions: ").append(toIndentedString(availableActions)).append("\n");
     sb.append("}");
     return sb.toString();

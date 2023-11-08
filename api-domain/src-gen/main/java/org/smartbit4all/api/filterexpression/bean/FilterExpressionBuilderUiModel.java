@@ -48,6 +48,7 @@ import javax.validation.Valid;
   FilterExpressionBuilderUiModel.POSSIBLE_ACTIONS,
   FilterExpressionBuilderUiModel.SHOW_GROUPS,
   FilterExpressionBuilderUiModel.READ_ONLY,
+  FilterExpressionBuilderUiModel.EXTARNAL_DATABASE,
   FilterExpressionBuilderUiModel.FILTER_GROUPS_ACTION,
   FilterExpressionBuilderUiModel.GROUP_FILTER,
   FilterExpressionBuilderUiModel.GROUP_FILTER_ACTION,
@@ -80,6 +81,9 @@ public class FilterExpressionBuilderUiModel {
 
   public static final String READ_ONLY = "readOnly";
   private Boolean readOnly = false;
+
+  public static final String EXTARNAL_DATABASE = "extarnalDatabase";
+  private Boolean extarnalDatabase = false;
 
   public static final String FILTER_GROUPS_ACTION = "filterGroupsAction";
   private UiAction filterGroupsAction = null;
@@ -329,6 +333,33 @@ public class FilterExpressionBuilderUiModel {
   }
 
 
+  public FilterExpressionBuilderUiModel extarnalDatabase(Boolean extarnalDatabase) {
+    
+    this.extarnalDatabase = extarnalDatabase;
+    return this;
+  }
+
+   /**
+   * Get extarnalDatabase
+   * @return extarnalDatabase
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXTARNAL_DATABASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getExtarnalDatabase() {
+    return extarnalDatabase;
+  }
+
+
+  @JsonProperty(EXTARNAL_DATABASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExtarnalDatabase(Boolean extarnalDatabase) {
+    this.extarnalDatabase = extarnalDatabase;
+  }
+
+
   public FilterExpressionBuilderUiModel filterGroupsAction(UiAction filterGroupsAction) {
     
     this.filterGroupsAction = filterGroupsAction;
@@ -486,6 +517,7 @@ public class FilterExpressionBuilderUiModel {
         Objects.equals(this.possibleActions, filterExpressionBuilderUiModel.possibleActions) &&
         Objects.equals(this.showGroups, filterExpressionBuilderUiModel.showGroups) &&
         Objects.equals(this.readOnly, filterExpressionBuilderUiModel.readOnly) &&
+        Objects.equals(this.extarnalDatabase, filterExpressionBuilderUiModel.extarnalDatabase) &&
         Objects.equals(this.filterGroupsAction, filterExpressionBuilderUiModel.filterGroupsAction) &&
         Objects.equals(this.groupFilter, filterExpressionBuilderUiModel.groupFilter) &&
         Objects.equals(this.groupFilterAction, filterExpressionBuilderUiModel.groupFilterAction) &&
@@ -495,7 +527,7 @@ public class FilterExpressionBuilderUiModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, readOnly, filterGroupsAction, groupFilter, groupFilterAction, viewUuid, config);
+    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, readOnly, extarnalDatabase, filterGroupsAction, groupFilter, groupFilterAction, viewUuid, config);
   }
 
   @Override
@@ -510,6 +542,7 @@ public class FilterExpressionBuilderUiModel {
     sb.append("    possibleActions: ").append(toIndentedString(possibleActions)).append("\n");
     sb.append("    showGroups: ").append(toIndentedString(showGroups)).append("\n");
     sb.append("    readOnly: ").append(toIndentedString(readOnly)).append("\n");
+    sb.append("    extarnalDatabase: ").append(toIndentedString(extarnalDatabase)).append("\n");
     sb.append("    filterGroupsAction: ").append(toIndentedString(filterGroupsAction)).append("\n");
     sb.append("    groupFilter: ").append(toIndentedString(groupFilter)).append("\n");
     sb.append("    groupFilterAction: ").append(toIndentedString(groupFilterAction)).append("\n");

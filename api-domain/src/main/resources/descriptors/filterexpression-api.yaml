@@ -384,6 +384,9 @@ components:
         readOnly:
           type: boolean
           default: false
+        extarnalDatabase:
+          type: boolean
+          default: false
         filterGroupsAction:
           type: UiAction
         groupFilter:
@@ -410,6 +413,9 @@ components:
       required: [availableActions]
       properties:
         readOnly:
+          type: boolean
+          default: false
+        extarnalDatabase:
           type: boolean
           default: false
         availableActions:
