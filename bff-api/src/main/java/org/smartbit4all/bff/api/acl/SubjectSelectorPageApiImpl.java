@@ -1,7 +1,7 @@
 package org.smartbit4all.bff.api.acl;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,12 +12,13 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
-import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.grid.bean.GridSelectionType;
+import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -37,10 +38,8 @@ import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.config.PlatformBffApiConfig;
 import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
-import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageModel>
     implements SubjectSelectorPageApi {
@@ -153,68 +152,57 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
         collectionApi.searchIndex(selectionConfig.getSearchIndexSchema(),
             selectionConfig.getSearchIndexName());
 
+    List<String> columns =
+        new ArrayList<>(selectionConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+    boolean isTree = subjectTypeDescriptor.getParentPropertyName() != null
+        && subjectTypeDescriptor.getParentIdentifierPropertyName() != null;
+    if (isTree) {
+      columns.add(subjectTypeDescriptor.getParentPropertyName());
+      columns.add(subjectTypeDescriptor.getParentIdentifierPropertyName());
+    }
     GridModel gridModel =
         gridModelApi.createGridModel(searchIndex.getDefinition().getDefinition(),
-            selectionConfig.getGridViewOptions().get(0).getOrderedColumnNames(), "");
-    gridModel.getView().getDescriptor().setSelectionMode(GridSelectionMode.SINGLE);
-    gridModel.getView().getDescriptor().setSelectionType(GridSelectionType.CHECKBOX);
+            columns, "");
+    gridModel.getView().getDescriptor()
+        .selectionMode(GridSelectionMode.SINGLE)
+        .selectionType(GridSelectionType.CHECKBOX)
+        .kind(isTree ? KindEnum.TREE : KindEnum.TABLE);
+    if (isTree) {
+      GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentPropertyName());
+      GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentIdentifierPropertyName());
+    }
     gridModelApi.initGridInView(viewUuid, SUBJECT_GRID_ID, gridModel);
-    gridModel.setPageSize(5);
-    gridModel.setPageSizeOptions(Arrays.asList(5, 25, 50));
+    if (isTree) {
+      gridModelApi.setTreePropertyNames(viewUuid, SUBJECT_GRID_ID,
+          subjectTypeDescriptor.getParentIdentifierPropertyName(),
+          subjectTypeDescriptor.getParentPropertyName());
+    }
 
+    TableData<?> tableData =
+        getTableData(selectionConfig, filterExpressionApi.of(searchIndex.allFilterFields()));
+    gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
+  }
+
+  protected TableData<?> getTableData(SearchPageConfig selectionConfig,
+      FilterExpressionList expressionList) {
+    SearchIndex<?> searchIndex =
+        collectionApi.searchIndex(selectionConfig.getSearchIndexSchema(),
+            selectionConfig.getSearchIndexName());
     TableData<?> tableData = null;
     if (selectionConfig.getContainer() != null) {
       StoredList list = collectionApi.list(selectionConfig.getContainer());
       if (list != null) {
         tableData = searchIndex.executeSearchOn(list.uris().stream(),
-            filterExpressionApi.of(searchIndex.allFilterFields()),
+            expressionList,
             selectionConfig.getGridViewOptions().get(0).getOrderByList());
       }
     }
     if (tableData == null) {
-      tableData = searchIndex.executeSearch(filterExpressionApi.of(searchIndex.allFilterFields()),
+      tableData = searchIndex.executeSearch(expressionList,
           selectionConfig.getGridViewOptions().get(0).getOrderByList());
     }
-    gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
-
-    gridModelApi.addGridPageCallback(viewUuid, SUBJECT_GRID_ID, invocationApi
-        .builder(SubjectSelectorPageApi.class)
-        .build(a -> a.onPage(null, viewUuid)));
-
+    return tableData;
   }
-
-  @Override
-  public GridPage onPage(GridPage page, UUID viewUuid) {
-    SubjectSelectorPageModel model = getModel(viewUuid);
-    String parentPropertyName = model.getSelectedDescriptor().getParentPropertyName();
-    String parentIdentifierPropertyName =
-        model.getSelectedDescriptor().getParentIdentifierPropertyName();
-    if (parentPropertyName != null && parentIdentifierPropertyName != null) {
-      // gridModelApi.executeGridCall(viewUuid, SUBJECT_GRID_ID, g -> g.getView().getDescriptor());
-      Map<String, GridRow> rowsById = page.getRows().stream().collect(toMap(r -> {
-        Object valueParent = GridModels.getValueFromGridRow(r, parentIdentifierPropertyName);
-        if (valueParent != null) {
-          URI parentUri = objectApi.asType(URI.class, valueParent);
-          parentUri = objectApi.getLatestUri(parentUri);
-          return parentUri.toString();
-        }
-        return valueParent != null ? valueParent.toString() : StringConstant.UNKNOWN;
-      }, r -> r));
-      for (GridRow row : page.getRows()) {
-        Object parentId = GridModels.getValueFromGridRow(row, parentPropertyName);
-        if (parentId != null) {
-          URI parentUri = objectApi.asType(URI.class, parentId);
-          parentUri = objectApi.getLatestUri(parentUri);
-          GridRow parentRow = rowsById.get(parentUri);
-          if (parentRow != null) {
-            row.setParent(parentRow.getId());
-          }
-        }
-      }
-    }
-    return page;
-  }
-
 
   private SubjectModel getSubjectModel(View view) {
     Object modelName = view.getParameters().get(PlatformBffApiConfig.SUBJECT_MODEL_NAME);

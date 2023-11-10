@@ -220,6 +220,12 @@ components:
           items:
             type: string
           description: The path to access the identifier GridRow.data
+        idProperty:
+          description: If presented as TREE, this property will be used as id property. 
+          type: string
+        parentIdProperty:
+          description: If presented as TREE, this property will be used as parentId property.
+          type: string
         apiClass:
           type: string
         kind:

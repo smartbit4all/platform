@@ -1,7 +1,6 @@
 package org.smartbit4all.bff.api.acl;
 
 import java.util.UUID;
-import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -27,5 +26,4 @@ public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel
   @ActionHandler(SUBMIT_SELECTION)
   void performSubmitSelection(UUID viewUuid, UiActionRequest request);
 
-  GridPage onPage(GridPage page, UUID viewUuid);
 }

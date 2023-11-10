@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view.grid;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +53,6 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -247,7 +247,6 @@ public class GridModelApiImpl implements GridModelApi {
     if (Strings.isNullOrEmpty(identifierPath[0])) {
       throw new IllegalArgumentException("identifierPart path cannot be empty or null");
     }
-    Objects.nonNull(identifierPath);
 
     executeGridCall(viewUuid, gridId, gridModel -> {
       if (gridModel.getAccessConfig() == null) {
@@ -256,6 +255,24 @@ public class GridModelApiImpl implements GridModelApi {
       gridModel.getAccessConfig().identifierPath(Arrays.asList(identifierPath));
       return gridModel;
     });
+  }
+
+  @Override
+  public void setTreePropertyNames(UUID viewUuid, String gridId, String idProperty,
+      String parentIdProperty) {
+    Objects.requireNonNull(idProperty, "idProperty must not be null");
+    Objects.requireNonNull(parentIdProperty, "parentIdProperty must not be null");
+
+    executeGridCall(viewUuid, gridId, gridModel -> {
+      if (gridModel.getAccessConfig() == null) {
+        gridModel.accessConfig(new GridDataAccessConfig());
+      }
+      gridModel.getAccessConfig()
+          .idProperty(idProperty)
+          .parentIdProperty(parentIdProperty);
+      return gridModel;
+    });
+
   }
 
   @Override
@@ -499,7 +516,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   /**
    * Checks whether or not the given grid view is tree.
-   * 
+   *
    * @param model
    * @return
    */
@@ -667,9 +684,30 @@ public class GridModelApiImpl implements GridModelApi {
     // Here we have all the rows in the page and their setup is ready. We can construt the tree if
     // any.
     if (isTreeView(model)) {
+      String idProperty = model.getAccessConfig().getIdProperty();
+      String parentIdProperty = model.getAccessConfig().getParentIdProperty();
+      if (idProperty != null && parentIdProperty != null) {
+        // set row.parent if not set yet
+        Map<String, GridRow> rowsById = page.getRows().stream().collect(toMap(row -> {
+          String id = getStringFromRow(row, idProperty);
+          return id != null ? id : StringConstant.UNKNOWN;
+        }, r -> r));
+        for (GridRow row : page.getRows()) {
+          if (row.getParent() == null) {
+            String parentId = getStringFromRow(row, parentIdProperty);
+            if (parentId != null) {
+              GridRow parentRow = rowsById.get(parentId);
+              if (parentRow != null) {
+                row.setParent(parentRow.getId());
+              }
+            }
+          }
+        }
+      }
+      // set row.children by row.parent if not set yet
       Map<String, List<String>> childrenByParent = new HashMap<>();
       for (GridRow row : page.getRows()) {
-        if (Strings.isNullOrEmpty(row.getParent())) {
+        if (!Strings.isNullOrEmpty(row.getParent())) {
           childrenByParent.computeIfAbsent(row.getParent(), s -> new ArrayList<>())
               .add(row.getId());
         }
@@ -679,7 +717,7 @@ public class GridModelApiImpl implements GridModelApi {
           // We need to draw the tree but the children not set. So we try to fill from the collected
           // childrenByParent map.
           List<String> list = childrenByParent.get(row.getId());
-          row.setChildren(list == null ? new ArrayList<>() : list);
+          row.setChildren(list == null ? null : list);
         }
       }
     }
@@ -695,6 +733,30 @@ public class GridModelApiImpl implements GridModelApi {
     }
     return page;
   }
+
+  /**
+   * Retrieves row.property, and then returns latestUri.toString if property is URI, and
+   * object.toString otherwise
+   *
+   * @param row
+   * @param property
+   * @return
+   */
+  private String getStringFromRow(GridRow row, String property) {
+    Object object = GridModels.getValueFromGridRow(row, property);
+    if (object == null || "".equals(object)) {
+      return null;
+    }
+    try {
+      URI parentUri = objectApi.asType(URI.class, object);
+      parentUri = objectApi.getLatestUri(parentUri);
+      return parentUri.toString();
+    } catch (IllegalArgumentException e) {
+      // not URI, not NULL
+      return object.toString();
+    }
+  }
+
 
   private DataColumn<?> getIdColumnFromTableData(UUID viewUuid, String gridId,
       TableData<?> tableData) {

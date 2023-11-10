@@ -93,6 +93,18 @@ public interface GridModelApi {
    */
   void setDataIdentifier(UUID viewUuid, String gridId, String... identifierPath);
 
+  /**
+   * Sets view descriptor's kinf to TREE, and creates a grid where rows are connected hierarchically
+   * like this: <code>row[parentIdProperty] = parentRow[idProperty]</code>
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param idProperty
+   * @param parentIdProperty
+   */
+  void setTreePropertyNames(UUID viewUuid, String gridId, String idProperty,
+      String parentIdProperty);
+
   <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, List<T> data);
 
   void setData(UUID viewUuid, String gridId, TableData<?> data, boolean ignoreOrderByList);

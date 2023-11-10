@@ -37,6 +37,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   GridDataAccessConfig.DATA_URI,
   GridDataAccessConfig.IDENTIFIER_PATH,
+  GridDataAccessConfig.ID_PROPERTY,
+  GridDataAccessConfig.PARENT_ID_PROPERTY,
   GridDataAccessConfig.API_CLASS,
   GridDataAccessConfig.KIND
 })
@@ -48,6 +50,12 @@ public class GridDataAccessConfig {
 
   public static final String IDENTIFIER_PATH = "identifierPath";
   private List<String> identifierPath = null;
+
+  public static final String ID_PROPERTY = "idProperty";
+  private String idProperty;
+
+  public static final String PARENT_ID_PROPERTY = "parentIdProperty";
+  private String parentIdProperty;
 
   public static final String API_CLASS = "apiClass";
   private String apiClass;
@@ -160,6 +168,60 @@ public class GridDataAccessConfig {
   }
 
 
+  public GridDataAccessConfig idProperty(String idProperty) {
+    
+    this.idProperty = idProperty;
+    return this;
+  }
+
+   /**
+   * If presented as TREE, this property will be used as id property.
+   * @return idProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If presented as TREE, this property will be used as id property.")
+  @JsonProperty(ID_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdProperty() {
+    return idProperty;
+  }
+
+
+  @JsonProperty(ID_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdProperty(String idProperty) {
+    this.idProperty = idProperty;
+  }
+
+
+  public GridDataAccessConfig parentIdProperty(String parentIdProperty) {
+    
+    this.parentIdProperty = parentIdProperty;
+    return this;
+  }
+
+   /**
+   * If presented as TREE, this property will be used as parentId property.
+   * @return parentIdProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If presented as TREE, this property will be used as parentId property.")
+  @JsonProperty(PARENT_ID_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getParentIdProperty() {
+    return parentIdProperty;
+  }
+
+
+  @JsonProperty(PARENT_ID_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentIdProperty(String parentIdProperty) {
+    this.parentIdProperty = parentIdProperty;
+  }
+
+
   public GridDataAccessConfig apiClass(String apiClass) {
     
     this.apiClass = apiClass;
@@ -225,13 +287,15 @@ public class GridDataAccessConfig {
     GridDataAccessConfig gridDataAccessConfig = (GridDataAccessConfig) o;
     return Objects.equals(this.dataUri, gridDataAccessConfig.dataUri) &&
         Objects.equals(this.identifierPath, gridDataAccessConfig.identifierPath) &&
+        Objects.equals(this.idProperty, gridDataAccessConfig.idProperty) &&
+        Objects.equals(this.parentIdProperty, gridDataAccessConfig.parentIdProperty) &&
         Objects.equals(this.apiClass, gridDataAccessConfig.apiClass) &&
         Objects.equals(this.kind, gridDataAccessConfig.kind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dataUri, identifierPath, apiClass, kind);
+    return Objects.hash(dataUri, identifierPath, idProperty, parentIdProperty, apiClass, kind);
   }
 
   @Override
@@ -240,6 +304,8 @@ public class GridDataAccessConfig {
     sb.append("class GridDataAccessConfig {\n");
     sb.append("    dataUri: ").append(toIndentedString(dataUri)).append("\n");
     sb.append("    identifierPath: ").append(toIndentedString(identifierPath)).append("\n");
+    sb.append("    idProperty: ").append(toIndentedString(idProperty)).append("\n");
+    sb.append("    parentIdProperty: ").append(toIndentedString(parentIdProperty)).append("\n");
     sb.append("    apiClass: ").append(toIndentedString(apiClass)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("}");
