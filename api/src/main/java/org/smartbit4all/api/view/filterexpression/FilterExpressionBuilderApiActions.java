@@ -18,4 +18,5 @@ public class FilterExpressionBuilderApiActions {
   public static final String SELECT_FIELD = "SELECT_FIELD";
   public static final String UPDATE_FILTER_EXPRESSION = "UPDATE_FILTER_EXPRESSION";
   public static final String SAVE_EXPRESSION_DATA = "SAVE_EXPRESSION_DATA";
+  public static final String SAVE_EXPRESSION_FIELD_LIST = "SAVE_EXPRESSION_FIELD_LIST";
 }

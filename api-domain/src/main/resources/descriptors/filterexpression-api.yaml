@@ -398,6 +398,11 @@ components:
           format: uuid
         config:
           $ref: "#/components/schemas/FilterExpressionBuilderApiConfig"
+        type:
+          type: string
+          enum:
+            - SIMPLE
+            - COMPLEX
           
     FilterExpressionFieldEditor:
       type: object

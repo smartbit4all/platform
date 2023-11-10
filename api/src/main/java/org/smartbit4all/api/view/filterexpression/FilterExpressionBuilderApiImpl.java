@@ -70,6 +70,9 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
       case FilterExpressionBuilderApiActions.UPDATE_FILTER_EXPRESSION:
         updateExpressionData(model, request);
         break;
+      case FilterExpressionBuilderApiActions.SAVE_EXPRESSION_FIELD_LIST:
+        saveExpressionFiedlList(model, request);
+        break;
       default:
         break;
     }
@@ -78,6 +81,16 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
         model);
 
     return model;
+  }
+
+  private void saveExpressionFiedlList(FilterExpressionBuilderUiModel model,
+      UiActionRequest request) {
+    FilterExpressionBuilderUiModel builderUiModel =
+        actionRequestHelper(request).get(UiActions.MODEL, FilterExpressionBuilderUiModel.class);
+
+    model.getModel().getWorkplaceList()
+        .setFilters(builderUiModel.getModel().getWorkplaceList().getFilters());
+
   }
 
   private FilterExpressionBuilderUiModel getModel(UUID viewUuid, String filterIdentifier) {

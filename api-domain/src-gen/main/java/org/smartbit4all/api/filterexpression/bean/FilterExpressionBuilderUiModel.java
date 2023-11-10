@@ -53,7 +53,8 @@ import javax.validation.Valid;
   FilterExpressionBuilderUiModel.GROUP_FILTER,
   FilterExpressionBuilderUiModel.GROUP_FILTER_ACTION,
   FilterExpressionBuilderUiModel.VIEW_UUID,
-  FilterExpressionBuilderUiModel.CONFIG
+  FilterExpressionBuilderUiModel.CONFIG,
+  FilterExpressionBuilderUiModel.TYPE
 })
 @JsonTypeName("FilterExpressionBuilderUiModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -99,6 +100,44 @@ public class FilterExpressionBuilderUiModel {
 
   public static final String CONFIG = "config";
   private FilterExpressionBuilderApiConfig config;
+
+  /**
+   * Gets or Sets type
+   */
+  public enum TypeEnum {
+    SIMPLE("SIMPLE"),
+    
+    COMPLEX("COMPLEX");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TypeEnum fromValue(String value) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String TYPE = "type";
+  private TypeEnum type;
 
   public FilterExpressionBuilderUiModel() { 
   }
@@ -500,6 +539,33 @@ public class FilterExpressionBuilderUiModel {
   }
 
 
+  public FilterExpressionBuilderUiModel type(TypeEnum type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Get type
+   * @return type
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public TypeEnum getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(TypeEnum type) {
+    this.type = type;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -522,12 +588,13 @@ public class FilterExpressionBuilderUiModel {
         Objects.equals(this.groupFilter, filterExpressionBuilderUiModel.groupFilter) &&
         Objects.equals(this.groupFilterAction, filterExpressionBuilderUiModel.groupFilterAction) &&
         Objects.equals(this.viewUuid, filterExpressionBuilderUiModel.viewUuid) &&
-        Objects.equals(this.config, filterExpressionBuilderUiModel.config);
+        Objects.equals(this.config, filterExpressionBuilderUiModel.config) &&
+        Objects.equals(this.type, filterExpressionBuilderUiModel.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, readOnly, extarnalDatabase, filterGroupsAction, groupFilter, groupFilterAction, viewUuid, config);
+    return Objects.hash(model, selectedField, selectedFieldEditor, selectUiAction, deselectUiAction, possibleActions, showGroups, readOnly, extarnalDatabase, filterGroupsAction, groupFilter, groupFilterAction, viewUuid, config, type);
   }
 
   @Override
@@ -548,6 +615,7 @@ public class FilterExpressionBuilderUiModel {
     sb.append("    groupFilterAction: ").append(toIndentedString(groupFilterAction)).append("\n");
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    config: ").append(toIndentedString(config)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }
