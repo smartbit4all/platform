@@ -257,7 +257,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       URI approver = ctx.entryApi.getApprover();
       boolean underApproval = approver != null;
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
-      boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
+      boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
@@ -606,7 +606,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
-        boolean canEdit = (isAdmin && !underApproval) || (isApprover && underApproval);
+        boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
         uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
             .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
                 !deletedOnBranch)
@@ -657,6 +657,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       }
     });
     return page;
+  }
+
+  protected boolean canEdit(boolean isAdmin, boolean underApproval, boolean isApprover) {
+    return (isAdmin && !underApproval) || (isApprover && underApproval);
   }
 
 }
