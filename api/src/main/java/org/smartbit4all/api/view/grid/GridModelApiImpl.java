@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.grid;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import com.google.common.base.Strings;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -295,6 +295,7 @@ public class GridModelApiImpl implements GridModelApi {
   public void setData(UUID viewUuid, String gridId, TableData<?> data, boolean ignoreOrderByList) {
     executeGridCall(viewUuid, gridId, gridModel -> {
       Integer pageSize = gridModel.getPageSize();
+      Integer firstPageSize = 0;
       if (pageSize == null) {
         pageSize = getDefaultPageSize();
       }
@@ -311,13 +312,19 @@ public class GridModelApiImpl implements GridModelApi {
       if (gridModel.getAccessConfig() == null) {
         gridModel.accessConfig(new GridDataAccessConfig());
       }
+
+      if (isTreeView(gridModel)) {
+        firstPageSize = data.size();
+        pageSize = data.size();
+      } else {
+        firstPageSize = Math.min(pageSize, data.size());
+      }
       if (gridModel.getAccessConfig().getDataUri() != null
           && gridModel.getPage() != null) {
         updateGridModelWithData(viewUuid, gridId, data, gridModel, pageSize);
       } else {
 
         gridModel.getAccessConfig().dataUri(data.getUri());
-        int firstPageSize = Math.min(pageSize, data.size());
         gridModel
             .page(constructPage(gridModel, gridId,
                 data,
@@ -355,6 +362,10 @@ public class GridModelApiImpl implements GridModelApi {
       if (upperBound > data.size()) {
         upperBound = data.size();
       }
+    }
+    if (isTreeView(gridModel)) {
+      lowerBound = 0;
+      upperBound = data.size();
     }
     gridModel.page(constructPage(
         gridModel, gridId,
