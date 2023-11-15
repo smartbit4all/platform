@@ -9,6 +9,7 @@ import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -64,6 +65,39 @@ public interface TreeApi {
 
 
     /**
+     * POST /tree2/{viewUuid}/{treeId}/{nodeId}/collapse
+     * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param nodeId  (required)
+     * @return ViewContextChange where result &#x3D; collapsed SmartTreeNode object (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "collapseNode2",
+        notes = "Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = collapsed SmartTreeNode object", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/tree2/{viewUuid}/{treeId}/{nodeId}/collapse",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> collapseNode2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
+    ) throws Exception {
+        return getDelegate().collapseNode2(viewUuid, treeId, nodeId);
+    }
+
+
+    /**
      * POST /tree/{viewUuid}/{treeId}/{nodeId}/expand
      * Expands the given treenode. The viewcontext will hold the appropriate instruction  for the ui, if any. Returns the expanded SmartTreeNode. 
      *
@@ -93,6 +127,39 @@ public interface TreeApi {
         @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
     ) throws Exception {
         return getDelegate().expandNode(viewUuid, treeId, nodeId);
+    }
+
+
+    /**
+     * POST /tree2/{viewUuid}/{treeId}/{nodeId}/expand
+     * Expands the given treenode. The viewcontext will hold the appropriate instruction  for the ui, if any. Returns the expanded SmartTreeNode. 
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param nodeId  (required)
+     * @return ViewContextChange where result &#x3D; expanded SmartTreeNode object (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "expandNode2",
+        notes = "Expands the given treenode. The viewcontext will hold the appropriate instruction  for the ui, if any. Returns the expanded SmartTreeNode. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = expanded SmartTreeNode object", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/tree2/{viewUuid}/{treeId}/{nodeId}/expand",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> expandNode2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
+    ) throws Exception {
+        return getDelegate().expandNode2(viewUuid, treeId, nodeId);
     }
 
 
@@ -131,6 +198,39 @@ public interface TreeApi {
 
 
     /**
+     * GET /tree2/{viewUuid}/{treeId}/{nodeId}
+     * Query the child nodes of the tree&#39;s node given in the parameter
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param nodeId  (required)
+     * @return ViewContextChange where result &#x3D; list of SmartTreeNode objects (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "getChildrenNodes2",
+        notes = "Query the child nodes of the tree's node given in the parameter",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = list of SmartTreeNode objects", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/tree2/{viewUuid}/{treeId}/{nodeId}",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> getChildrenNodes2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
+    ) throws Exception {
+        return getDelegate().getChildrenNodes2(viewUuid, treeId, nodeId);
+    }
+
+
+    /**
      * GET /tree/{viewUuid}/{treeId}/action
      * Query all tree nodes.
      *
@@ -163,6 +263,37 @@ public interface TreeApi {
 
 
     /**
+     * GET /tree2/{viewUuid}/{treeId}/action
+     * Query all tree nodes.
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @return ViewContextChange where result &#x3D; list of UiAction objects (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "getMainActions2",
+        notes = "Query all tree nodes.",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = list of UiAction objects", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/tree2/{viewUuid}/{treeId}/action",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> getMainActions2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId
+    ) throws Exception {
+        return getDelegate().getMainActions2(viewUuid, treeId);
+    }
+
+
+    /**
      * GET /tree/{viewUuid}/{treeId}
      * Query all tree nodes.
      *
@@ -191,6 +322,37 @@ public interface TreeApi {
         @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId
     ) throws Exception {
         return getDelegate().getRootNodes(viewUuid, treeId);
+    }
+
+
+    /**
+     * GET /tree2/{viewUuid}/{treeId}
+     * Query all tree nodes.
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @return ViewContextChange where result &#x3D; list of SmartTreeNode objects (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "getRootNodes2",
+        notes = "Query all tree nodes.",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = list of SmartTreeNode objects", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/tree2/{viewUuid}/{treeId}",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> getRootNodes2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId
+    ) throws Exception {
+        return getDelegate().getRootNodes2(viewUuid, treeId);
     }
 
 
@@ -232,6 +394,42 @@ public interface TreeApi {
 
 
     /**
+     * POST /tree2/{viewUuid}/{treeId}/{nodeId}/action
+     * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param nodeId  (required)
+     * @param body  (required)
+     * @return ViewContextChange where result &#x3D; changed tree state. (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "performAction2",
+        notes = "Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = changed tree state.", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/tree2/{viewUuid}/{treeId}/{nodeId}/action",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> performAction2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId,
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
+    ) throws Exception {
+        return getDelegate().performAction2(viewUuid, treeId, nodeId, body);
+    }
+
+
+    /**
      * POST /tree/{viewUuid}/{treeId}/action
      * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
      *
@@ -267,6 +465,40 @@ public interface TreeApi {
 
 
     /**
+     * POST /tree2/{viewUuid}/{treeId}/action
+     * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param body  (required)
+     * @return ViewContextChange where result &#x3D; changed tree state (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "performMainAction2",
+        notes = "Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = changed tree state", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/tree2/{viewUuid}/{treeId}/action",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> performMainAction2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
+    ) throws Exception {
+        return getDelegate().performMainAction2(viewUuid, treeId, body);
+    }
+
+
+    /**
      * POST /tree/{viewUuid}/{treeId}/{nodeId}/select
      * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
      *
@@ -296,6 +528,39 @@ public interface TreeApi {
         @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
     ) throws Exception {
         return getDelegate().selectNode(viewUuid, treeId, nodeId);
+    }
+
+
+    /**
+     * POST /tree2/{viewUuid}/{treeId}/{nodeId}/select
+     * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
+     *
+     * @param viewUuid  (required)
+     * @param treeId  (required)
+     * @param nodeId  (required)
+     * @return ViewContextChange where result &#x3D; collapsed SmartTreeNode object (status code 200)
+     */
+    @ApiOperation(
+        tags = { "tree" },
+        value = "",
+        nickname = "selectNode2",
+        notes = "Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "ViewContextChange where result = collapsed SmartTreeNode object", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/tree2/{viewUuid}/{treeId}/{nodeId}/select",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> selectNode2(
+        @ApiParam(value = "", required = true) @PathVariable("viewUuid") UUID viewUuid,
+        @ApiParam(value = "", required = true) @PathVariable("treeId") String treeId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId
+    ) throws Exception {
+        return getDelegate().selectNode2(viewUuid, treeId, nodeId);
     }
 
 }

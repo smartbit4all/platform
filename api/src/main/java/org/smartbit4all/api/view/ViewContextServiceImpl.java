@@ -73,7 +73,7 @@ import com.google.common.base.Strings;
 public class ViewContextServiceImpl implements ViewContextService {
 
   public interface ViewCall {
-    void run() throws RuntimeException;
+    Object run() throws RuntimeException;
   }
 
   private static class ViewComparisonResult {
@@ -325,7 +325,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         "handleMessage");
   }
 
-  private void handleMessageInternal(UUID viewUuid, UUID messageUuid,
+  private Object handleMessageInternal(UUID viewUuid, UUID messageUuid,
       MessageResult messageResult) {
     Objects.requireNonNull(messageResult, "MessageResult must be specified");
     Objects.requireNonNull(messageResult.getSelectedOption(),
@@ -342,7 +342,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       log.error("Unexpected error when retreiving message", e);
       updateCurrentViewContext(
           c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
-      return;
+      return null;
     }
     View view;
     try {
@@ -352,7 +352,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       log.error("Unexpected error when retreiving message's view", e);
       updateCurrentViewContext(
           c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
-      return;
+      return null;
     }
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
@@ -368,6 +368,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     updateCurrentViewContext(
         c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
+    return null;
   }
 
   @EventListener(ApplicationStartedEvent.class)
@@ -600,7 +601,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       // TODO: handle VIEW_NOT_FOUND_BY_UUID with specific Exception
       if (e.getMessage() != null && e.getMessage().startsWith(ViewContexts.VIEW_NOT_FOUND_BY_UUID)
           && requestCodesToSkipWithMissingView.contains(request.getCode())) {
-        return createViewContextChange(Collections.emptyList());
+        return createViewContextChange(Collections.emptyList(), null);
       } else {
         throw e;
       }
@@ -620,7 +621,7 @@ public class ViewContextServiceImpl implements ViewContextService {
             new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, request);
-    return createViewContextChange(comparisons);
+    return createViewContextChange(comparisons, null); // ActionHandler is void
   }
 
   @Override
@@ -650,7 +651,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, widgetId,
             nodeId, request);
-    return createViewContextChange(comparisons);
+    return createViewContextChange(comparisons, null); // WidgetActionHandler is void
   }
 
   /**
@@ -761,12 +762,14 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
-  private ViewContextChange createViewContextChange(List<ViewComparisonResult> comparisons) {
+  private ViewContextChange createViewContextChange(List<ViewComparisonResult> comparisons,
+      Object result) {
     return new ViewContextChange()
         .viewContext(getCurrentViewContext())
         .changes(comparisons.stream()
             .map(comp -> comp.change)
-            .collect(toList()));
+            .collect(toList()))
+        .result(result);
   }
 
   private ViewComparisonResult compareViewNodes(View before, View after) {
@@ -957,14 +960,15 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public ViewContextChange performViewCall(ViewCall viewCall, String methodName) {
     ObjectNode before = beforeInvoke(methodName);
+    Object result;
     try {
-      viewCall.run();
+      result = viewCall.run();
     } catch (Throwable tr) {
       log.error("Error when calling method " + methodName, tr);
       throw tr;
     }
     List<ViewComparisonResult> comparisons = afterInvoke(before, methodName);
-    return createViewContextChange(comparisons);
+    return createViewContextChange(comparisons, result);
   }
 
   @Override
@@ -1003,6 +1007,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
     // notify data listeners, calculate changes during data change processing and return
     return performViewCall(() -> {
+      return null;
     }, "performDataChanged");
   }
 
