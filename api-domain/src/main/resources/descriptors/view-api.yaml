@@ -516,6 +516,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ComponentModelChange'
+        result:
+          description: |
+            If the server call is wrapped inside this ViewContextChange, then this field will
+            contain the result of the original call. 
+          type: object
     View:
       type: object
       required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,valueSets,callbacks,eventHandlers,layouts,componentLayouts]

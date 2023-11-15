@@ -37,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextChange.VIEW_CONTEXT,
-  ViewContextChange.CHANGES
+  ViewContextChange.CHANGES,
+  ViewContextChange.RESULT
 })
 @JsonTypeName("ViewContextChange")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +48,9 @@ public class ViewContextChange {
 
   public static final String CHANGES = "changes";
   private List<ComponentModelChange> changes = new ArrayList<>();
+
+  public static final String RESULT = "result";
+  private Object result;
 
   public ViewContextChange() { 
   }
@@ -114,6 +118,33 @@ public class ViewContextChange {
   }
 
 
+  public ViewContextChange result(Object result) {
+    
+    this.result = result;
+    return this;
+  }
+
+   /**
+   * If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call.  
+   * @return result
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call.  ")
+  @JsonProperty(RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getResult() {
+    return result;
+  }
+
+
+  @JsonProperty(RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResult(Object result) {
+    this.result = result;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -124,12 +155,13 @@ public class ViewContextChange {
     }
     ViewContextChange viewContextChange = (ViewContextChange) o;
     return Objects.equals(this.viewContext, viewContextChange.viewContext) &&
-        Objects.equals(this.changes, viewContextChange.changes);
+        Objects.equals(this.changes, viewContextChange.changes) &&
+        Objects.equals(this.result, viewContextChange.result);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewContext, changes);
+    return Objects.hash(viewContext, changes, result);
   }
 
   @Override
@@ -138,6 +170,7 @@ public class ViewContextChange {
     sb.append("class ViewContextChange {\n");
     sb.append("    viewContext: ").append(toIndentedString(viewContext)).append("\n");
     sb.append("    changes: ").append(toIndentedString(changes)).append("\n");
+    sb.append("    result: ").append(toIndentedString(result)).append("\n");
     sb.append("}");
     return sb.toString();
   }
