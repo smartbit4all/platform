@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
@@ -21,6 +22,7 @@ import org.smartbit4all.api.grid.bean.GridSelectionType;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.SubjectModel;
@@ -118,11 +120,13 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     ObjectMapHelper params = parameters(view);
     InvocationRequest invocationRequest = params.get(INVOCATION, InvocationRequest.class);
 
-    URI subjectUri = extractUriFromGridRow(selectedRows.get(0));
+    List<URI> subjectUriList = selectedRows.stream()
+        .map(row -> extractUriFromGridRow(row)).collect(Collectors.toList());
 
     if (Objects.nonNull(invocationRequest)) {
       try {
-        invocationRequest.getParameters().get(1).setValue(subjectUri);
+        invocationRequest.getParameters().get(1)
+            .setValue(Invocations.listOf(subjectUriList, URI.class));
         invocationApi.invoke(invocationRequest);
         viewApi.closeView(viewUuid);
       } catch (ApiNotFoundException e) {
@@ -163,13 +167,17 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     GridModel gridModel =
         gridModelApi.createGridModel(searchIndex.getDefinition().getDefinition(),
             columns, "");
+    GridSelectionMode selectionMode =
+        Optional.ofNullable(parameters(viewUuid).get(SELECTION_MODE, GridSelectionMode.class))
+            .orElse(GridSelectionMode.MULTIPLE);
     gridModel.getView().getDescriptor()
-        .selectionMode(GridSelectionMode.SINGLE)
+        .selectionMode(selectionMode)
         .selectionType(GridSelectionType.CHECKBOX)
         .kind(isTree ? KindEnum.TREE : KindEnum.TABLE);
     if (isTree) {
       GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentPropertyName());
       GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentIdentifierPropertyName());
+      gridModel.getView().getDescriptor().setShowEditColumns(false);
     }
     gridModelApi.initGridInView(viewUuid, SUBJECT_GRID_ID, gridModel);
     if (isTree) {

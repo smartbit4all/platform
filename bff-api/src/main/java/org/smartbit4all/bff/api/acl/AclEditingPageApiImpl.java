@@ -148,16 +148,20 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   public void openSubjectSelector(UUID viewUuid, UiActionRequest request) {}
 
   @Override
-  public void handleSubjectSelected(UUID viewUuid, URI subjectUri) {
+  public void handleSubjectSelected(UUID viewUuid, List<URI> subjectUriList) {
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper parameters = parameters(view);
     ACL acl = getModel(viewUuid);
 
-    if (!checkSubjectIsAlreadyInAcl(acl, subjectUri)) {
-      acl.getRootEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(subjectUri)));
-    } else {
-      throw new RuntimeException(
-          String.format("Subject reference by %s is already in ACL", subjectUri));
+    for (URI uri : subjectUriList) {
+      if (checkSubjectIsAlreadyInAcl(acl, uri)) {
+        throw new RuntimeException(
+            String.format("Subject reference by %s is already in ACL", uri));
+      }
+    }
+
+    for (URI uri : subjectUriList) {
+      acl.getRootEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(uri)));
     }
 
 

@@ -10,6 +10,7 @@ public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel
   String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";
   String SUBJECT_GRID_ID = "SUBJECT_GRID";
   String INVOCATION = "INVOCATION";
+  String SELECTION_MODE = "SELECTION_MODE";
 
   String CANCEL = "CANCEL";
 
