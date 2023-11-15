@@ -56,17 +56,21 @@ public class GridApiDelegateImpl implements GridApiDelegate {
       Boolean selected)
       throws Exception {
     return ResponseEntity.ok(viewContextService.performViewCall(
-        () -> gridModelApi.selectRow(
-            uuid, gridId, rowId, Boolean.TRUE == selected),
-        "gridSelectRow"));
+        () -> {
+          gridModelApi.selectRow(
+              uuid, gridId, rowId, Boolean.TRUE == selected);
+          return null;
+        }, "gridSelectRow"));
   }
 
   @Override
   public ResponseEntity<ViewContextChange> selectAll(UUID uuid, String gridId, Boolean selected)
       throws Exception {
     return ResponseEntity.ok(viewContextService.performViewCall(
-        () -> gridModelApi.selectAllRow(
-            uuid, gridId, Boolean.TRUE == selected),
+        () -> {
+          gridModelApi.selectAllRow(uuid, gridId, Boolean.TRUE == selected);
+          return null;
+        },
         "gridSelectAllRow"));
   }
 
