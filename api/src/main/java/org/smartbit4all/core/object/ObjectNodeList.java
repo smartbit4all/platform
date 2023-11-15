@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -206,4 +207,29 @@ public final class ObjectNodeList {
     }
     return o.toString().replace("\n", "\n    ");
   }
+
+  /**
+   * Execute a sort operation on the object node list. As a result of the call the list itself will
+   * be sorted via the comparator passed as parameter.
+   * 
+   * @param comparator
+   */
+  public void sort(Comparator<ObjectNode> comparator) {
+    if (comparator == null) {
+      return;
+    }
+    list.sort((o1, o2) -> {
+      if (o1.isEmpty() && o2.isEmpty()) {
+        return 0;
+      }
+      if (o1.isEmpty()) {
+        return 1;
+      }
+      if (o2.isEmpty()) {
+        return -1;
+      }
+      return comparator.compare(o1.get(), o2.get());
+    });
+  }
+
 }

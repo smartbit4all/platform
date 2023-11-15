@@ -36,6 +36,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -457,6 +458,43 @@ class ObjectApiTest {
     Assertions.assertEquals("Root (link)", resolve);
   }
 
+  @Test
+  void testObjectNodeListSort() {
+    ObjectNode rootNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("Root to sort"));
+    ObjectNodeList list = rootNode.list(SampleCategory.SUB_CATEGORIES);
+    list.addNewObject(new SampleCategory().name("Peach").cost(Long.valueOf(6)));
+    list.addNewObject(new SampleCategory().name("Apple").cost(Long.valueOf(7)));
+    list.addNewObject(new SampleCategory().name("Wallnut").cost(Long.valueOf(9)));
+    list.addNewObject(new SampleCategory().name("Pear").cost(Long.valueOf(1)));
+    list.addNewObject(new SampleCategory().name("Peach").cost(Long.valueOf(0)));
+
+    list.sort((o1, o2) -> {
+      Long v1 = o1.getValue(Long.class, SampleCategory.COST);
+      Long v2 = o2.getValue(Long.class, SampleCategory.COST);
+      return Long.compare(v1, v2);
+    });
+
+    URI uri = objectApi.save(rootNode);
+
+    ObjectNode rootLoaded = objectApi.load(uri);
+
+    ObjectNodeList subCategoryList = rootLoaded.list(SampleCategory.SUB_CATEGORIES);
+    org.assertj.core.api.Assertions.assertThat(subCategoryList
+        .nodeStream().map(n -> n.getValueAsString(SampleCategory.NAME)))
+        .containsExactly("Peach", "Pear", "Peach", "Apple", "Wallnut");
+
+    subCategoryList.sort((o1, o2) -> {
+      String v1 = o1.getValueAsString(SampleCategory.NAME);
+      String v2 = o2.getValueAsString(SampleCategory.NAME);
+      return v1.compareTo(v2);
+    });
+
+    org.assertj.core.api.Assertions.assertThat(subCategoryList
+        .nodeStream().map(n -> n.getValueAsString(SampleCategory.NAME)))
+        .containsExactly("Apple", "Peach", "Peach", "Pear", "Wallnut");
+
+  }
 
 
   private final Subject getSubject(List<Subject> subjects, URI uri) {
