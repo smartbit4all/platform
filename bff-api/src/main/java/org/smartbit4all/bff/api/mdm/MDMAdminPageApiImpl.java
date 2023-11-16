@@ -45,7 +45,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   protected class PageContext {
 
     View view;
-    MDMDefinition definition;
+    public MDMDefinition definition;
 
     PageContext loadByView() {
       definition = masterDataManagementApi.getDefinition(getDefinition(view));
