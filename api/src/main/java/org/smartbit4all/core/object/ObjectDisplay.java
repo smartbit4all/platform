@@ -13,6 +13,7 @@ import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
@@ -58,6 +59,13 @@ public final class ObjectDisplay {
   public SmartComponentLayoutDefinition getDefaultLayout() {
     return this.layoutsByName.get(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
+
+  public SmartComponentLayoutDefinition getDefaultLayout(LocaleSettingApi localeSettingApi) {
+    final SmartComponentLayoutDefinition layout = getDefaultLayout();
+    formWidgets(layout).forEach(w -> w.setLabel(localeSettingApi.get(w.getLabel())));
+    return layout;
+  }
+
 
   /**
    * Returns a list of value set names visible on the layout.

@@ -42,11 +42,9 @@ import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.bean.GenericValue;
-import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
@@ -89,13 +87,13 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
   }
 
   @Autowired
-  CollectionApi collectionApi;
+  private CollectionApi collectionApi;
   @Autowired
-  ObjectApi objectApi;
+  private ObjectApi objectApi;
   @Autowired
-  ObjectDefinitionApi objectDefinitionApi;
+  private ObjectDefinitionApi objectDefinitionApi;
   @Autowired
-  ObjectLayoutApi objectLayoutApi;
+  private ObjectLayoutApi objectLayoutApi;
 
   @Override
   public URI create(String definitionName, List<ObjectPropertyDescriptor> propertyDescriptors) {
@@ -640,13 +638,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
       // if type is boolean, it's a radio button group:
       if (isPlainPropertyOfType(Boolean.class)) {
-        return SmartLayoutItem.ofFormElement(ObjectLayoutBuilder.radioButtonGroup(key, key, null)
-            .addValuesItem(new Value()
-                .code("true")
-                .displayValue("true"))
-            .addValuesItem(new Value()
-                .code("false")
-                .displayValue("false"))); // TODO: TEST!
+        return SmartLayoutItem.ofFormElement(ObjectLayoutBuilder.toggle(key, key));
       }
 
       // if a value set is present, it can be a select or a multi-select depending on the struct:
