@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -36,7 +37,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -83,23 +83,24 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode loadLatest(URI objectUri, URI branchUri) {
-    return loadInternal(objectUri, branchUri, RetrievalMode.NORMAL, true);
+    return loadInternal(this, objectUri, branchUri, RetrievalMode.NORMAL, true);
   }
 
   @Override
   public ObjectNode load(URI objectUri, URI branchUri) {
-    return loadInternal(objectUri, branchUri, RetrievalMode.NORMAL, false);
+    return loadInternal(this, objectUri, branchUri, RetrievalMode.NORMAL, false);
   }
 
-  private ObjectNode loadInternal(URI objectUri, URI branchUri, RetrievalMode retrievalMode,
+  static ObjectNode loadInternal(ObjectApi objectApi, URI objectUri, URI branchUri,
+      RetrievalMode retrievalMode,
       boolean loadLatest) {
     RetrievalRequest request =
         new RetrievalRequest(
-            this,
-            objectDefinitionApi.definition(objectUri),
+            objectApi,
+            objectApi.definition(objectUri),
             retrievalMode);
     request.setLoadLatest(loadLatest);
-    return load(request, objectUri, branchUri);
+    return objectApi.load(request, objectUri, branchUri);
   }
 
   @Override

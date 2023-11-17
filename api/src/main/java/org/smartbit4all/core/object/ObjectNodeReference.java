@@ -81,11 +81,12 @@ public class ObjectNodeReference {
       return node;
     }
     if (objectUri != null) {
-      RetrievalRequest request =
-          referrerNode.objectApi.request(referenceDefinition.getTarget().getClazz());
-      request.setLoadLatest(
+      node = ObjectApiImpl.loadInternal(
+          referrerNode.objectApi,
+          objectUri,
+          referrerNode.branchUri,
+          RetrievalMode.NORMAL,
           RetrievalRequest.calcLoadLatest(referenceDefinition, RetrievalMode.NORMAL));
-      node = referrerNode.objectApi.load(request, objectUri, referrerNode.branchUri);
       isLoaded = true;
     }
     return node;
