@@ -2,7 +2,6 @@ package org.smartbit4all.api.view.grid;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +52,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import com.google.common.base.Strings;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -1035,10 +1035,12 @@ public class GridModelApiImpl implements GridModelApi {
   public List<GridRow> getSelectedRows(UUID viewUuid, String gridId) {
     Objects.nonNull(viewUuid);
     Objects.nonNull(gridId);
-    return getGridServerModel(viewUuid, gridId)
-        .getSelectedRows()
-        .values().stream()
-        .collect(toList());
+    GridServerModel gridModel = getGridServerModel(viewUuid, gridId);
+    return gridModel != null
+        ? gridModel.getSelectedRows()
+            .values().stream()
+            .collect(toList())
+        : Collections.emptyList();
   }
 
   private GridModel getGridModel(UUID viewUuid, String gridId) {
