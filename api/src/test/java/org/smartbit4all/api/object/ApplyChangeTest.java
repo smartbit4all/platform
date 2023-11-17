@@ -16,6 +16,7 @@ import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.object.ObjectApi;
@@ -798,14 +799,14 @@ class ApplyChangeTest {
   @Disabled
   void inlineRefListCanBeSetAsValues_inRefOfAggregateRoot_whenImmediateParentIsAlreadyPersisted() {
     // @formatter:off
-    // +------------------+           *----------------+             +-----------------+
-    // | SampleLinkObject | --item--> | SampleCategory | --links--*> | SampleLinkObject|
-    // +------------------+           *----------------+             +-----------------+
-    //        root                          child                           links
+    // +------------------------+              *----------------+             +-----------------+
+    // | SampleGenericContainer | --content--> | SampleCategory | --links--*> | SampleLinkObject|
+    // +------------------------+              *----------------+             +-----------------+
+    //            root                               child                           links
     // @formatter:on
 
     // given:
-    ObjectNode root = objectApi.create(MY_SCHEME, new SampleLinkObject());
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleGenericContainer());
     ObjectNode child = objectApi.create(MY_SCHEME, new SampleCategory());
 
     List<SampleLinkObject> links = IntStream.range(0, 3)
@@ -820,21 +821,22 @@ class ApplyChangeTest {
     // an object already exists as saved:
     URI childUri = objectApi.save(child);
     // it is set as a reference in URI form:
-    root.ref(SampleLinkObject.ITEM).set(childUri);
+    root.ref(SampleGenericContainer.CONTENT).set(childUri);
     // the reference is accessed through the aggregate root and values are set in it:
-    root.ref(SampleLinkObject.ITEM).get().setValues(valuesToSet);
+    root.ref(SampleGenericContainer.CONTENT).get().setValues(valuesToSet);
     final URI rootUri = objectApi.save(root);
     assertThat(rootUri).isNotNull(); // TODO: THIS ASSERTION FAILS! (save failure)
 
     root = objectApi.loadLatest(rootUri);
 
     // then:
-    final ObjectNodeList list = root.list(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    final ObjectNodeList list = root.list(SampleGenericContainer.CONTENT, SampleCategory.LINKS);
     assertThat(list).isNotNull();
+    // TODO: Failure incoming because each list element has NULL node (and of course no objectUri):
     assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
         .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
 
-    final Object listObj = root.getValue(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    final Object listObj = root.getValue(SampleGenericContainer.CONTENT, SampleCategory.LINKS);
     assertThat(listObj)
         .isNotNull()
         .isInstanceOf(ObjectNodeList.class)
@@ -845,14 +847,14 @@ class ApplyChangeTest {
   @Disabled
   void inlineRefListCanBeSetAsValues_inRefOfAggregateRoot_whenImmediateParentIsHasNotYetBeenPersisted() {
     // @formatter:off
-    // +------------------+           *----------------+             +-----------------+
-    // | SampleLinkObject | --item--> | SampleCategory | --links--*> | SampleLinkObject|
-    // +------------------+           *----------------+             +-----------------+
-    //        root                          child                           links
+    // +------------------------+              *----------------+             +-----------------+
+    // | SampleGenericContainer | --content--> | SampleCategory | --links--*> | SampleLinkObject|
+    // +------------------------+              *----------------+             +-----------------+
+    //            root                               child                           links
     // @formatter:on
 
     // given:
-    ObjectNode root = objectApi.create(MY_SCHEME, new SampleLinkObject());
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleGenericContainer());
     ObjectNode child = objectApi.create(MY_SCHEME, new SampleCategory());
 
     List<SampleLinkObject> links = IntStream.range(0, 3)
@@ -865,22 +867,23 @@ class ApplyChangeTest {
 
     // when:
     // a reference is set:
-    root.ref(SampleLinkObject.ITEM).set(child);
+    root.ref(SampleGenericContainer.CONTENT).set(child);
     // the reference is accessed later (without interim storage access) through the aggregate root
     // and values are set in it:
-    root.ref(SampleLinkObject.ITEM).get().setValues(valuesToSet);
+    root.ref(SampleGenericContainer.CONTENT).get().setValues(valuesToSet);
     final URI rootUri = objectApi.save(root);
     assertThat(rootUri).isNotNull(); // TODO: THIS ASSERTION FAILS! (save failure)
 
     root = objectApi.loadLatest(rootUri);
 
     // then:
-    final ObjectNodeList list = root.list(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    final ObjectNodeList list = root.list(SampleGenericContainer.CONTENT, SampleCategory.LINKS);
     assertThat(list).isNotNull();
+    // TODO: Failure incoming because each list element has NULL node (and of course no objectUri):
     assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
         .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
 
-    final Object listObj = root.getValue(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    final Object listObj = root.getValue(SampleGenericContainer.CONTENT, SampleCategory.LINKS);
     assertThat(listObj)
         .isNotNull()
         .isInstanceOf(ObjectNodeList.class)

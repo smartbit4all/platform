@@ -192,3 +192,15 @@ components:
           type: array
           items:
             type: string
+
+    SampleGenericContainer:
+      description: |
+        An example object which refers to another of unknown type.
+      properties:
+        uri:
+          type: string
+          format: uri
+        content:
+          type: string
+          format: uri
+          description: Reference to PersistableObject (generic unknown type).
