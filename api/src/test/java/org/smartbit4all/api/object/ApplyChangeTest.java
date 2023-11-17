@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
@@ -22,17 +24,19 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -703,4 +707,183 @@ class ApplyChangeTest {
     return (URI) result.getProcessedRequests().get(ocrContainer);
   }
 
+  @Test
+  void inlineRefListCanBeSetAsObjectNodeList_canBeLoadedAsNodeList() {
+    // given:
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleCategory());
+
+    // when:
+    ObjectNodeList list = root.list(SampleCategory.LINKS);
+    IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject().linkName(String.valueOf(i)))
+        .map(o -> objectApi.create(MY_SCHEME, o))
+        .forEach(list::add);
+    final URI rootUri = objectApi.save(root);
+
+    root = objectApi.loadLatest(rootUri);
+
+    // then:
+    list = root.list(SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
+
+  @Test
+  void inlineRefListCanBeSetAsObjectProperty_canBeLoadedAsNodeList() {
+    // given:
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleCategory());
+    List<SampleLinkObject> links = IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject()
+            .linkName(String.valueOf(i)))
+        .collect(toList());
+
+    // when:
+    root.modify(SampleCategory.class, rootObject -> rootObject.links(links));
+    final URI rootUri = objectApi.save(root);
+
+    root = objectApi.loadLatest(rootUri);
+
+    // then:
+    final ObjectNodeList list = root.list(SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
+
+  @Test
+  void inlineRefListCanBeSetAsValues_canBeLoadedAsObjectNodeList() {
+    // given:
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleCategory());
+    List<SampleLinkObject> links = IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject()
+            .linkName(String.valueOf(i)))
+        .collect(toList());
+
+    final Map<String, Object> valuesToSet = new HashMap<>();
+    valuesToSet.put(SampleCategory.LINKS, links);
+
+    // when:
+    root.setValues(valuesToSet);
+    final URI rootUri = objectApi.save(root);
+
+    root = objectApi.loadLatest(rootUri);
+
+    // then:
+    final ObjectNodeList list = root.list(SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
+
+  @Test
+  @Disabled
+  void inlineRefListCanBeSetAsValues_inRefOfAggregateRoot_whenImmediateParentIsAlreadyPersisted() {
+    // @formatter:off
+    // +------------------+           *----------------+             +-----------------+
+    // | SampleLinkObject | --item--> | SampleCategory | --links--*> | SampleLinkObject|
+    // +------------------+           *----------------+             +-----------------+
+    //        root                          child                           links
+    // @formatter:on
+
+    // given:
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleLinkObject());
+    ObjectNode child = objectApi.create(MY_SCHEME, new SampleCategory());
+
+    List<SampleLinkObject> links = IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject()
+            .linkName(String.valueOf(i)))
+        .collect(toList());
+
+    final Map<String, Object> valuesToSet = new HashMap<>();
+    valuesToSet.put(SampleCategory.LINKS, links);
+
+    // when:
+    // an object already exists as saved:
+    URI childUri = objectApi.save(child);
+    // it is set as a reference in URI form:
+    root.ref(SampleLinkObject.ITEM).set(childUri);
+    // the reference is accessed through the aggregate root and values are set in it:
+    root.ref(SampleLinkObject.ITEM).get().setValues(valuesToSet);
+    final URI rootUri = objectApi.save(root);
+    assertThat(rootUri).isNotNull(); // TODO: THIS ASSERTION FAILS! (save failure)
+
+    root = objectApi.loadLatest(rootUri);
+
+    // then:
+    final ObjectNodeList list = root.list(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
+
+  @Test
+  @Disabled
+  void inlineRefListCanBeSetAsValues_inRefOfAggregateRoot_whenImmediateParentIsHasNotYetBeenPersisted() {
+    // @formatter:off
+    // +------------------+           *----------------+             +-----------------+
+    // | SampleLinkObject | --item--> | SampleCategory | --links--*> | SampleLinkObject|
+    // +------------------+           *----------------+             +-----------------+
+    //        root                          child                           links
+    // @formatter:on
+
+    // given:
+    ObjectNode root = objectApi.create(MY_SCHEME, new SampleLinkObject());
+    ObjectNode child = objectApi.create(MY_SCHEME, new SampleCategory());
+
+    List<SampleLinkObject> links = IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject()
+            .linkName(String.valueOf(i)))
+        .collect(toList());
+
+    final Map<String, Object> valuesToSet = new HashMap<>();
+    valuesToSet.put(SampleCategory.LINKS, links);
+
+    // when:
+    // a reference is set:
+    root.ref(SampleLinkObject.ITEM).set(child);
+    // the reference is accessed later (without interim storage access) through the aggregate root
+    // and values are set in it:
+    root.ref(SampleLinkObject.ITEM).get().setValues(valuesToSet);
+    final URI rootUri = objectApi.save(root);
+    assertThat(rootUri).isNotNull(); // TODO: THIS ASSERTION FAILS! (save failure)
+
+    root = objectApi.loadLatest(rootUri);
+
+    // then:
+    final ObjectNodeList list = root.list(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleLinkObject.ITEM, SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
 }
