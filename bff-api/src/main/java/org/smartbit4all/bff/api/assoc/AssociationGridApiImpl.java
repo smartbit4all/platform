@@ -35,7 +35,6 @@ import org.smartbit4all.bff.api.search.SearchPageApiImpl;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
-import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,31 +151,12 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
 
   private ParentAndChildList getRefObjectNodeList(ObjectNode objectNode,
       AssociationGridConfig config) {
-    Object o = objectNode;
-    ObjectNode parent = null;
-    for (String p : config.pathToAssocList()) {
-      if (o == null) {
-        return null;
-      } else if (o instanceof ObjectNode) {
-        ObjectNode node = (ObjectNode) o;
-        URI uri = node.getObjectUri();
-        node = objectApi.loadLatest(uri); // re-draw definition
-        parent = node;
-        o = node.getValue(p);
-      } else if (o instanceof ObjectNodeReference) {
-        URI uri = ((ObjectNodeReference) o).getObjectUri();
-        if (uri == null) {
-          return null;
-        }
+    String[] pathToAssocList = config.pathToAssocList();
+    String[] pathToAssocListParent = new String[pathToAssocList.length - 1];
+    System.arraycopy(pathToAssocList, 0, pathToAssocListParent, 0, pathToAssocListParent.length);
 
-        ObjectNode node = objectApi.loadLatest(uri);
-        parent = node;
-        o = node.getValue(p);
-      } else if (o instanceof ObjectNodeList) {
-        break;
-      }
-    }
-    return new ParentAndChildList(parent, ((ObjectNodeList) o));
+    return new ParentAndChildList(objectNode.ref(pathToAssocListParent).get(),
+        objectNode.list(pathToAssocList));
   }
 
   private Stream<URI> streamReferencedObjectUris(List<ObjectNode> refObjectNodes) {
@@ -245,15 +225,16 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
 
   @Override
   public GridPage onGridPageRender(GridPage gridPage, AssociationGridConfig config) {
-    final List<String> widgetActionCodes = config.supportedWidgetActions();
-    final String configName = config.name();
-    if (widgetActionCodes != null && !widgetActionCodes.isEmpty() && gridPage.getRows() != null) {
-      gridPage.getRows().forEach(row -> row.setActions(widgetActionCodes.stream()
-          .map(code -> new UiAction()
-              .path(configName)
-              .code(code))
-          .collect(toList())));
-    }
+    // final List<String> widgetActionCodes = config.supportedWidgetActions();
+    // final String configName = config.name();
+    // if (widgetActionCodes != null && !widgetActionCodes.isEmpty() && gridPage.getRows() != null)
+    // {
+    // gridPage.getRows().forEach(row -> row.setActions(widgetActionCodes.stream()
+    // .map(code -> new UiAction()
+    // .path(configName)
+    // .code(code))
+    // .collect(toList())));
+    // }
     return gridPage;
   }
 
