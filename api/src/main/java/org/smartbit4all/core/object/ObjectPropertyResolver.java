@@ -107,6 +107,12 @@ public final class ObjectPropertyResolver {
       this.uri = uri;
     }
 
+    ContextObject(String name, ObjectNode node) {
+      super();
+      this.name = name;
+      this.loadedObjectNode = node;
+    }
+
     ObjectNode objectNode() {
       if (loadedObjectNode == null) {
         loadedObjectNode = objectApi().load(uri);
@@ -162,6 +168,35 @@ public final class ObjectPropertyResolver {
   public ObjectPropertyResolver addContextObject(String name, URI objectUri) {
     if (name != null && objectUri != null) {
       contextObjects.putIfAbsent(name, new ContextObject(name, objectUri));
+    }
+    return this;
+  }
+
+  /**
+   * Adds the specified node to the resolver's context with the provided name.
+   *
+   * <p>
+   * The material to be resolved may contain URIs with schema corresponding to the provided name. If
+   * such a URI is encountered, the provided node will be used to find the value corresponding to
+   * the template URI.
+   *
+   * <p>
+   * This overload is useful when the resolution happens in memory in one session, or a URI for the
+   * given node is not available (as is the case with nodes loaded as inline references.
+   *
+   * <p>
+   * If any of the provided parameters is {@code null}, no operation is performed, and this instance
+   * is returned as is.
+   *
+   * @param name the {@code String} name to refer to the provided context object in the material to
+   *             be resolved; if null, no operation is performed
+   * @param node the {@link ObjectNode} representation of an object to be introduced in the
+   *             resolver's context; if null, no operation is performed
+   * @return this instance
+   */
+  public ObjectPropertyResolver addContextObject(String name, ObjectNode node) {
+    if (name != null && node != null) {
+      contextObjects.putIfAbsent(name, new ContextObject(name, node));
     }
     return this;
   }
