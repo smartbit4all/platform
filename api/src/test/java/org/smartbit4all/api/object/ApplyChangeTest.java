@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
@@ -749,6 +750,37 @@ class ApplyChangeTest {
     final URI rootUri = objectApi.save(root);
 
     root = objectApi.loadLatest(rootUri);
+
+    // then:
+    final ObjectNodeList list = root.list(SampleCategory.LINKS);
+    assertThat(list).isNotNull();
+    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+
+    final Object listObj = root.getValue(SampleCategory.LINKS);
+    assertThat(listObj)
+        .isNotNull()
+        .isInstanceOf(ObjectNodeList.class)
+        .isEqualTo(list);
+  }
+
+  @Test
+  @Disabled
+  void inlineRefListCanBePresentAsObjectProperty_beforeNodeCreation_canBeLoadedAsObjectNodeList() {
+    // given:
+    final SampleCategory category = new SampleCategory();
+    List<SampleLinkObject> links = IntStream.range(0, 3)
+        .mapToObj(i -> new SampleLinkObject()
+            .linkName(String.valueOf(i)))
+        .collect(toList());
+    category.setLinks(links);
+
+    // when:
+    // TODO: Saved data is incomplete! List is saved as [null, null, null]
+    final URI rootUri = objectApi.saveAsNew(MY_SCHEME, category);
+    assertThat(rootUri).isNotNull(); // This is OK.
+    // TODO: Loading fails with NPE at ObjectNode#102
+    final ObjectNode root = objectApi.loadLatest(rootUri);
 
     // then:
     final ObjectNodeList list = root.list(SampleCategory.LINKS);
