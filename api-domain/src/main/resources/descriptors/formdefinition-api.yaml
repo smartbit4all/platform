@@ -117,6 +117,19 @@ components:
         matrix:
           description: Matrix model used for matrix widget
           $ref: '#/components/schemas/SmartMatrixModel'
+        hint:
+          description: This object define hint text and its position for the widget
+          $ref: '#/components/schemas/SmartWidgetHint'
+    SmartWidgetHint:
+      type: object
+      properties:
+        text:
+          type: string
+        position:
+          type: string
+          enum:
+            - UNDER_LABEL
+            - UNDER_INPUT
     SmartFormWidgetDirection:
       type: string
       enum:
