@@ -55,6 +55,7 @@ public class CollectionApiTest {
   public static final String FIRST = "first";
   public static final String MY_MAP = "myMap";
   public static final String MY_LIST = "myList";
+  public static final String MY_LIST_CACHED = "myListCached";
   public static final String BRANCHED_LIST = "branchedList";
   public static final String MY_LIST_RECENT = "myListRecent";
   public static final String MY_REF = "myRef";
@@ -153,6 +154,51 @@ public class CollectionApiTest {
 
     Assertions.assertEquals(datasheet1Uri, list.uris().get(0));
 
+  }
+
+  @Test
+  void testCachedList() throws Exception {
+    StoredList list = collectionApi.list(SCHEMA, MY_LIST_CACHED);
+
+    Assertions.assertTrue(list.uris().isEmpty());
+
+    List<String> values = new ArrayList<>();
+    int count = 10;
+    for (int i = 0; i < count; i++) {
+      values.add("datasheet " + 1);
+      list.add(
+          objectApi.saveAsNew(SCHEMA, new SampleDataSheet().name(values.get(values.size() - 1))));
+    }
+
+    Assertions.assertEquals(list.uris().size(), count);
+
+    org.assertj.core.api.Assertions
+        .assertThat(list.nodesFromCache().map(n -> n.getValueAsString(SampleDataSheet.NAME)))
+        .containsExactlyInAnyOrderElementsOf(values);
+
+    org.assertj.core.api.Assertions
+        .assertThat(list.nodesFromCache().count())
+        .isEqualTo(count);
+
+
+    values.add("new one");
+    list.add(objectApi.saveAsNew(SCHEMA, new SampleDataSheet().name("new one")));
+
+    // To ensure the cache refresh.
+    Thread.sleep(count);
+
+    org.assertj.core.api.Assertions
+        .assertThat(list.nodesFromCache().map(n -> n.getValueAsString(SampleDataSheet.NAME)))
+        .containsExactlyInAnyOrderElementsOf(values);
+
+    list.update(l -> new ArrayList<>());
+
+    // To ensure the cache refresh.
+    Thread.sleep(count);
+
+    org.assertj.core.api.Assertions
+        .assertThat(list.nodesFromCache().count())
+        .isEqualTo(0);
   }
 
   @Test

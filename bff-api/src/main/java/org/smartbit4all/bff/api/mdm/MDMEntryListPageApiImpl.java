@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +55,8 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -319,7 +319,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       StoredList inactiveList = ctx.entryApi.getInactiveList();
       StoredList list = ctx.inactives ? inactiveList : ctx.entryApi.getList();
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexPublished.executeSearchOn(list.uris().stream(),
+          ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(),
               null));
     }
 

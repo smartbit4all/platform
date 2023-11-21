@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,16 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   private OperationMode operationMode = OperationMode.NORMAL;
 
+  /**
+   * The last refreshment time of the cache.
+   */
+  private long lastCacheRefreshmentTime = System.currentTimeMillis();
+
+  /**
+   * The cached nodes in atomic reference to avoid duoble loading at a given time.
+   */
+  private AtomicReference<List<ObjectNode>> cacheRef = new AtomicReference<>();
+
   StoredListStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
       ObjectApi objectApi,
       BranchApi branchApi) {
@@ -44,6 +55,17 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     } catch (ObjectNotFoundException e) {
       return Collections.emptyList();
     }
+  }
+
+  @Override
+  public Stream<ObjectNode> nodesFromCache() {
+    return cacheRef.updateAndGet(cache -> {
+      if (cache == null || objectApi.getLastModified(uri) > lastCacheRefreshmentTime) {
+        lastCacheRefreshmentTime = System.currentTimeMillis();
+        return nodes().collect(toList());
+      }
+      return cache;
+    }).stream();
   }
 
   @Override

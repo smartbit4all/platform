@@ -17,7 +17,19 @@ public interface StoredList {
 
   List<URI> uris();
 
+  /**
+   * @return The node stream constructed by reading the {@link #uris()} of the list.
+   */
   Stream<ObjectNode> nodes();
+
+  /**
+   * Retrieves the nodes from cache if the list is not updated in the meantime.
+   * 
+   * @return The node stream from the cache that is updated before if it was necessary. Be careful,
+   *         because the cached objects are the same in memory constructs. <b>NO NOT USE THEM FOR
+   *         MODIFICATION. READ ONLY.</b>
+   */
+  Stream<ObjectNode> nodesFromCache();
 
   void add(URI uri);
 

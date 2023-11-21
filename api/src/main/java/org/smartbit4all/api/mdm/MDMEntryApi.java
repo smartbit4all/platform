@@ -63,9 +63,9 @@ public interface MDMEntryApi {
    * Save new objects from list according to the current state of the branch entry. If a branch is
    * initiated then the save will appear on the branch.
    *
-   * @param objectNode List of objectNode. The object node to save as draft. We check if this object
-   *        is a totally new one, a an object to modify and now we have to make the branched object
-   *        also. Or the given object is already included in the branch.
+   * @param objectNode The object node to save as draft. We check if this object is a totally new
+   *        one, a an object to modify and now we have to make the branched object also. Or the
+   *        given object is already included in the branch.
    * 
    * @return The list of URI for the saved draft / final version. More than one if we have a
    *         hierarchical entry when the {@link MDMEntryDescriptor#SELF_CONTAINED_REF_LIST} is set.
