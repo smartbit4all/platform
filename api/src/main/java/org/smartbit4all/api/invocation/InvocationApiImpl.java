@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -251,8 +253,19 @@ public final class InvocationApiImpl implements InvocationApi {
   public Object executeScript(String scriptEngine, String script,
       Map<String, ObjectNode> contextObjects, Map<String, Object> inputParams)
       throws ScriptException {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(scriptEngine, "scriptEngine cannot be null!");
+    Objects.requireNonNull(script, "script cannot be null!");
+
+    final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    if (contextObjects != null && !contextObjects.isEmpty()) {
+      contextObjects.forEach(scriptEngineManager::put);
+    }
+    if (inputParams != null && !inputParams.isEmpty()) {
+      inputParams.forEach(scriptEngineManager::put);
+    }
+
+    ScriptEngine engine = scriptEngineManager.getEngineByName(scriptEngine);
+    return engine.eval(script);
   }
 
 }
