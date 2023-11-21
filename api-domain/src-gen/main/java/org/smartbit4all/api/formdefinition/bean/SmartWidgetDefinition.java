@@ -28,6 +28,7 @@ import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetHint;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -56,7 +57,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.CHILDREN_COMPONENTS,
   SmartWidgetDefinition.SELECTION,
   SmartWidgetDefinition.DIRECTION,
-  SmartWidgetDefinition.MATRIX
+  SmartWidgetDefinition.MATRIX,
+  SmartWidgetDefinition.HINT
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -114,6 +116,9 @@ public class SmartWidgetDefinition {
 
   public static final String MATRIX = "matrix";
   private SmartMatrixModel matrix;
+
+  public static final String HINT = "hint";
+  private SmartWidgetHint hint;
 
   public SmartWidgetDefinition() { 
   }
@@ -629,6 +634,34 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition hint(SmartWidgetHint hint) {
+    
+    this.hint = hint;
+    return this;
+  }
+
+   /**
+   * Get hint
+   * @return hint
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(HINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SmartWidgetHint getHint() {
+    return hint;
+  }
+
+
+  @JsonProperty(HINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHint(SmartWidgetHint hint) {
+    this.hint = hint;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -655,12 +688,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.childrenComponents, smartWidgetDefinition.childrenComponents) &&
         Objects.equals(this.selection, smartWidgetDefinition.selection) &&
         Objects.equals(this.direction, smartWidgetDefinition.direction) &&
-        Objects.equals(this.matrix, smartWidgetDefinition.matrix);
+        Objects.equals(this.matrix, smartWidgetDefinition.matrix) &&
+        Objects.equals(this.hint, smartWidgetDefinition.hint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint);
   }
 
   @Override
@@ -685,6 +719,7 @@ public class SmartWidgetDefinition {
     sb.append("    selection: ").append(toIndentedString(selection)).append("\n");
     sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
     sb.append("    matrix: ").append(toIndentedString(matrix)).append("\n");
+    sb.append("    hint: ").append(toIndentedString(hint)).append("\n");
     sb.append("}");
     return sb.toString();
   }

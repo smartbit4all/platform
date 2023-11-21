@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
@@ -136,6 +140,12 @@ public class InvocationApiTestStatic {
     vars.put("x", 2);
     vars.put("y", 1);
     vars.put("z", 3);
+    CompiledScript compiledScript = ((Compilable) engine).compile("x + y + z");
+
+    Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+    org.assertj.core.api.Assertions.assertThat(bindings.keySet()).containsExactlyInAnyOrder("x",
+        "y", "z");
+
     System.out.println("result = " + engine.eval("x + y + z", new SimpleBindings(vars)));
 
     Assertions.assertEquals(6.0,
