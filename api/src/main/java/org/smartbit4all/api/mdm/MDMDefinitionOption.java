@@ -1,5 +1,6 @@
 package org.smartbit4all.api.mdm;
 
+import java.util.Arrays;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -45,7 +46,7 @@ public class MDMDefinitionOption {
     MDMEntryDescriptor result =
         new MDMEntryDescriptor().schema(definition.getName())
             .name(ObjectDefinitionData.class.getSimpleName())
-            .addUniqueIdentifierPathItem(ObjectDefinitionData.QUALIFIED_NAME)
+            .addUniquePropertyPathsItem(Arrays.asList(ObjectDefinitionData.QUALIFIED_NAME))
             .typeQualifiedName(ObjectDefinitionData.class.getName())
             .uriConstructor(new InvocationRequest()
                 .interfaceClass(ObjectDefinitionProvidedApi.class.getName())

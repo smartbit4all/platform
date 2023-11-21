@@ -1,5 +1,10 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -76,9 +81,6 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -185,6 +187,14 @@ class MDMApiTest {
     URI publishedSecond = typeApi.save(objectApi.create(SCHEMA, second)).get(0);
     typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type three")
         .description("This is the third category type.")));
+
+    ObjectNode sameNameCategoryNode =
+        objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type four")
+            .description("This is the four category type with the same code with type 3."));
+    assertThrows(IllegalArgumentException.class, () -> typeApi.save(sameNameCategoryNode),
+        "MDMEntryApi don't check unique properties properly");
+
+
     URI publishedToDelete = typeApi
         .save(objectApi.create(SCHEMA,
             new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
@@ -231,8 +241,12 @@ class MDMApiTest {
             typeApi.getList().nodes().filter(n -> draftNew.equals(n.getObjectUri())).findFirst())
         .isNotPresent();
 
-    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
-        .description("This is the fourth category type.")));
+    try {
+      typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
+          .description("This is the fourth category type.")));
+    } catch (IllegalArgumentException e) {
+      fail("The unique property map doesn't remove the used unique values on remove entry.", e);
+    }
 
     List<BranchedObjectEntry> publishedAndDraftObjects =
         typeApi.getBranchingList();

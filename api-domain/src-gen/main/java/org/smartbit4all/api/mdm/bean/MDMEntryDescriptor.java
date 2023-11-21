@@ -47,8 +47,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
   MDMEntryDescriptor.INACTIVE_MGMT,
-  MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
-  MDMEntryDescriptor.PUBLISHED_MAP_NAME,
+  MDMEntryDescriptor.UNIQUE_PROPERTY_PATHS,
   MDMEntryDescriptor.TABLE_COLUMNS,
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
   MDMEntryDescriptor.LIST_PAGE_GRID_VIEWS,
@@ -87,11 +86,8 @@ public class MDMEntryDescriptor {
   public static final String INACTIVE_MGMT = "inactiveMgmt";
   private Boolean inactiveMgmt = true;
 
-  public static final String UNIQUE_IDENTIFIER_PATH = "uniqueIdentifierPath";
-  private List<String> uniqueIdentifierPath = null;
-
-  public static final String PUBLISHED_MAP_NAME = "publishedMapName";
-  private String publishedMapName;
+  public static final String UNIQUE_PROPERTY_PATHS = "uniquePropertyPaths";
+  private List<List<String>> uniquePropertyPaths = null;
 
   public static final String TABLE_COLUMNS = "tableColumns";
   private List<MDMTableColumnDescriptor> tableColumns = new ArrayList<>();
@@ -344,65 +340,39 @@ public class MDMEntryDescriptor {
   }
 
 
-  public MDMEntryDescriptor uniqueIdentifierPath(List<String> uniqueIdentifierPath) {
+  public MDMEntryDescriptor uniquePropertyPaths(List<List<String>> uniquePropertyPaths) {
     
-    this.uniqueIdentifierPath = uniqueIdentifierPath;
+    this.uniquePropertyPaths = uniquePropertyPaths;
     return this;
   }
 
-  public MDMEntryDescriptor addUniqueIdentifierPathItem(String uniqueIdentifierPathItem) {
-    if (this.uniqueIdentifierPath == null) {
-      this.uniqueIdentifierPath = new ArrayList<>();
+  public MDMEntryDescriptor addUniquePropertyPathsItem(List<String> uniquePropertyPathsItem) {
+    if (this.uniquePropertyPaths == null) {
+      this.uniquePropertyPaths = new ArrayList<>();
     }
-    this.uniqueIdentifierPath.add(uniqueIdentifierPathItem);
+    this.uniquePropertyPaths.add(uniquePropertyPathsItem);
     return this;
   }
 
    /**
-   * The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list. 
-   * @return uniqueIdentifierPath
+   * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values.  
+   * @return uniquePropertyPaths
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar. If this property is set then a map is generated for the published list. ")
-  @JsonProperty(UNIQUE_IDENTIFIER_PATH)
+  @Valid
+  @ApiModelProperty(value = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values.  ")
+  @JsonProperty(UNIQUE_PROPERTY_PATHS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getUniqueIdentifierPath() {
-    return uniqueIdentifierPath;
+  public List<List<String>> getUniquePropertyPaths() {
+    return uniquePropertyPaths;
   }
 
 
-  @JsonProperty(UNIQUE_IDENTIFIER_PATH)
+  @JsonProperty(UNIQUE_PROPERTY_PATHS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUniqueIdentifierPath(List<String> uniqueIdentifierPath) {
-    this.uniqueIdentifierPath = uniqueIdentifierPath;
-  }
-
-
-  public MDMEntryDescriptor publishedMapName(String publishedMapName) {
-    
-    this.publishedMapName = publishedMapName;
-    return this;
-  }
-
-   /**
-   * Name of Collection.map in which published entries will be stored. 
-   * @return publishedMapName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Name of Collection.map in which published entries will be stored. ")
-  @JsonProperty(PUBLISHED_MAP_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getPublishedMapName() {
-    return publishedMapName;
-  }
-
-
-  @JsonProperty(PUBLISHED_MAP_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPublishedMapName(String publishedMapName) {
-    this.publishedMapName = publishedMapName;
+  public void setUniquePropertyPaths(List<List<String>> uniquePropertyPaths) {
+    this.uniquePropertyPaths = uniquePropertyPaths;
   }
 
 
@@ -718,8 +688,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
         Objects.equals(this.inactiveMgmt, mdMEntryDescriptor.inactiveMgmt) &&
-        Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
-        Objects.equals(this.publishedMapName, mdMEntryDescriptor.publishedMapName) &&
+        Objects.equals(this.uniquePropertyPaths, mdMEntryDescriptor.uniquePropertyPaths) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
         Objects.equals(this.listPageGridViews, mdMEntryDescriptor.listPageGridViews) &&
@@ -734,7 +703,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniqueIdentifierPath, publishedMapName, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
   }
 
   @Override
@@ -749,8 +718,7 @@ public class MDMEntryDescriptor {
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
     sb.append("    inactiveMgmt: ").append(toIndentedString(inactiveMgmt)).append("\n");
-    sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
-    sb.append("    publishedMapName: ").append(toIndentedString(publishedMapName)).append("\n");
+    sb.append("    uniquePropertyPaths: ").append(toIndentedString(uniquePropertyPaths)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
     sb.append("    listPageGridViews: ").append(toIndentedString(listPageGridViews)).append("\n");

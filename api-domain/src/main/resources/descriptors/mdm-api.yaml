@@ -99,18 +99,14 @@ components:
           description: |
             The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the
             removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched.
-        uniqueIdentifierPath:
+        uniquePropertyPaths:
           type: array
           description: |
-            The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String
-            element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar.
-            If this property is set then a map is generated for the published list.
+            The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. 
           items:
-            type: string
-        publishedMapName:
-          type: string
-          description: |
-            Name of Collection.map in which published entries will be stored.
+            type: array
+            items:
+              type: string
         tableColumns:
           type: array
           description: |
