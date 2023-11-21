@@ -200,7 +200,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     if (selectionConfig.getContainer() != null) {
       StoredList list = collectionApi.list(selectionConfig.getContainer());
       if (list != null) {
-        tableData = searchIndex.executeSearchOn(list.uris().stream(),
+        tableData = searchIndex.executeSearchOnNodes(list.nodesFromCache(),
             expressionList,
             selectionConfig.getGridViewOptions().get(0).getOrderByList());
       }

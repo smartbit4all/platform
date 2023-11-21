@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.search;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -191,7 +191,8 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     } else if (ctx.list != null) {
       // We have a stored list the query is working on.
       gridContent =
-          ctx.searchIndex.executeSearchOn(ctx.list.uris().stream(), filters, getOrderByList(ctx));
+          ctx.searchIndex.executeSearchOnNodes(ctx.list.nodesFromCache(), filters,
+              getOrderByList(ctx));
     } else {
       // We try the database or read all.
       gridContent = ctx.searchIndex.executeSearch(filters, getOrderByList(ctx));
