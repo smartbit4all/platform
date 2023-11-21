@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression2Operand;
@@ -63,6 +65,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
  * @author Peter Boros
  */
 final class SQLQueryExecution {
+  private static final Logger log = LoggerFactory.getLogger(SQLQueryExecution.class);
 
   /**
    * The alias prefix for the tables in the from section of the select.
@@ -227,6 +230,9 @@ final class SQLQueryExecution {
       public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
         PreparedStatement stmt = con.prepareStatement(builder.getStatement());
         select.bind(builder, stmt);
+        if (log.isDebugEnabled()) {
+          log.debug(stmt.toString());
+        }
         return stmt;
       }
     }, new ResultSetExtractor<QueryOutput>() {
