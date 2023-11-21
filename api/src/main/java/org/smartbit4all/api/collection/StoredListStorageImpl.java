@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,23 +26,17 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   private OperationMode operationMode = OperationMode.NORMAL;
 
-  /**
-   * The last refreshment time of the cache.
-   */
-  private long lastCacheRefreshmentTime = System.currentTimeMillis();
-
-  /**
-   * The cached nodes in atomic reference to avoid duoble loading at a given time.
-   */
-  private AtomicReference<List<ObjectNode>> cacheRef = new AtomicReference<>();
+  private StoredListCacheEntry cacheEntry;
 
   StoredListStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
       ObjectApi objectApi,
-      BranchApi branchApi) {
+      BranchApi branchApi,
+      StoredListCacheEntry cacheEntry) {
     super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
         .collectionType(CollectionTypeEnum.LIST), uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
+    this.cacheEntry = cacheEntry;
   }
 
   @Override
@@ -59,9 +52,9 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   @Override
   public Stream<ObjectNode> nodesFromCache() {
-    return cacheRef.updateAndGet(cache -> {
-      if (cache == null || objectApi.getLastModified(uri) > lastCacheRefreshmentTime) {
-        lastCacheRefreshmentTime = System.currentTimeMillis();
+    return cacheEntry.cacheRef.updateAndGet(cache -> {
+      if (cache == null || objectApi.getLastModified(uri) > cacheEntry.lastCacheRefreshmentTime) {
+        cacheEntry.lastCacheRefreshmentTime = System.currentTimeMillis();
         return nodes().collect(toList());
       }
       return cache;

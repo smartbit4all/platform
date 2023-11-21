@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -17,6 +19,8 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -25,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Peter Boros
  */
 public class CollectionApiStorageImpl implements CollectionApi, InitializingBean {
+
+  private static final Logger log = LoggerFactory.getLogger(CollectionApiStorageImpl.class);
 
   public static final String STOREDMAP = "storedmap";
   public static final String STOREDLIST = "storedlist";
@@ -53,6 +59,8 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   private Map<String, SearchIndex<?>> searchIndexByName = new HashMap<>();
 
+  private Cache<String, StoredListCacheEntry> listCacheEntries = CacheBuilder.newBuilder().build();
+
   public CollectionApiStorageImpl() {
     super();
   }
@@ -80,7 +88,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(schema, constructGlobalUri(schema, name, STOREDLIST),
         name, null, objectApi,
-        branchApi);
+        branchApi, getListCacheEntry(logicalSchema, name));
   }
 
   @Override
@@ -89,7 +97,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     return new StoredListStorageImpl(schema, constructScopedUri(schema,
         name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name,
         scopeObjectUri, objectApi,
-        branchApi);
+        branchApi, getListCacheEntry(logicalSchema, name));
   }
 
   @Override
@@ -131,7 +139,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject) {
     @SuppressWarnings("unchecked")
     SearchIndex<O> result =
-        (SearchIndex<O>) searchIndexByName.get(getQualifiedNameOfSearchIndex(logicalSchema, name));
+        (SearchIndex<O>) searchIndexByName.get(getQualifiedName(logicalSchema, name));
     Objects.requireNonNull(result, "The " + name + " search index is not available.");
     return result;
   }
@@ -139,7 +147,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public SearchIndex<?> searchIndex(String logicalSchema, String name) {
     SearchIndex<?> result =
-        searchIndexByName.get(getQualifiedNameOfSearchIndex(logicalSchema, name));
+        searchIndexByName.get(getQualifiedName(logicalSchema, name));
     Objects.requireNonNull(result, "The " + name + " search index is not available.");
     return result;
   }
@@ -205,7 +213,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
     for (SearchIndex<?> searchIndex : searchIndices) {
       searchIndexByName.put(
-          getQualifiedNameOfSearchIndex(searchIndex.logicalSchema(), searchIndex.name()),
+          getQualifiedName(searchIndex.logicalSchema(), searchIndex.name()),
           searchIndex);
     }
   }
@@ -215,12 +223,24 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public <T> SearchIndex<T> searchIndexComputeIfAbsent(String logicalSchema, String name,
       Supplier<SearchIndex<T>> searchIndexSupplier, Class<T> clazz) {
     return (SearchIndex<T>) searchIndexByName.computeIfAbsent(
-        getQualifiedNameOfSearchIndex(logicalSchema, name),
+        getQualifiedName(logicalSchema, name),
         s -> (SearchIndex<T>) searchIndexSupplier.get());
   }
 
-  private final String getQualifiedNameOfSearchIndex(String logicalSchema, String name) {
+  private final String getQualifiedName(String logicalSchema, String name) {
     return logicalSchema + StringConstant.DOT + name;
+  }
+
+  private final StoredListCacheEntry getListCacheEntry(String logicalSchema, String name) {
+    StoredListCacheEntry cacheEntry;
+    try {
+      cacheEntry = listCacheEntries.get(getQualifiedName(logicalSchema, name),
+          StoredListCacheEntry::new);
+    } catch (Exception e) {
+      log.error("Unable to initiate cache entry.", e);
+      cacheEntry = new StoredListCacheEntry();
+    }
+    return cacheEntry;
   }
 
 }

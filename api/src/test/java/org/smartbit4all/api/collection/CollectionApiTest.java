@@ -180,6 +180,7 @@ public class CollectionApiTest {
         .assertThat(list.nodesFromCache().count())
         .isEqualTo(count);
 
+    list = collectionApi.list(SCHEMA, MY_LIST_CACHED);
 
     values.add("new one");
     list.add(objectApi.saveAsNew(SCHEMA, new SampleDataSheet().name("new one")));
@@ -191,10 +192,14 @@ public class CollectionApiTest {
         .assertThat(list.nodesFromCache().map(n -> n.getValueAsString(SampleDataSheet.NAME)))
         .containsExactlyInAnyOrderElementsOf(values);
 
+    list = collectionApi.list(SCHEMA, MY_LIST_CACHED);
+
     list.update(l -> new ArrayList<>());
 
     // To ensure the cache refresh.
     Thread.sleep(count);
+
+    list = collectionApi.list(SCHEMA, MY_LIST_CACHED);
 
     org.assertj.core.api.Assertions
         .assertThat(list.nodesFromCache().count())
