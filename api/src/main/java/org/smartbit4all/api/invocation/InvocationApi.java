@@ -184,4 +184,16 @@ public interface InvocationApi {
    */
   InvocationRequest prepareByName(InvocationRequest request, Map<String, Object> parameters);
 
+  /**
+   * Executes a script via an available script engine from the current JVM.
+   * 
+   * @param scriptEngine The name of the script engine.
+   * @param script The text of the script itself.
+   * @param contextObjects The context objects to use to set the input parameters of the script. The
+   *        input variable identified by the name of the context objects. Their names are starting
+   *        with the names of the context objects.
+   * @return The value of the evaluation.
+   */
+  Object executeScript(String scriptEngine, String script, Map<String, ObjectNode> contextObjects);
+
 }

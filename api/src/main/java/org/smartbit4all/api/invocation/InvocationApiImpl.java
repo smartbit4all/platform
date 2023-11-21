@@ -245,4 +245,10 @@ public final class InvocationApiImpl implements InvocationApi {
     return result;
   }
 
+  @Override
+  public Object executeScript(String scriptEngine, String script,
+      Map<String, ObjectNode> contextObjects) {
+    return null;
+  }
+
 }
