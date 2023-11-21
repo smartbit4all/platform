@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import javax.script.ScriptException;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -192,8 +193,10 @@ public interface InvocationApi {
    * @param contextObjects The context objects to use to set the input parameters of the script. The
    *        input variable identified by the name of the context objects. Their names are starting
    *        with the names of the context objects.
+   * @param inputParams The input
    * @return The value of the evaluation.
    */
-  Object executeScript(String scriptEngine, String script, Map<String, ObjectNode> contextObjects);
+  Object executeScript(String scriptEngine, String script, Map<String, ObjectNode> contextObjects,
+      Map<String, Object> inputParams) throws ScriptException;
 
 }

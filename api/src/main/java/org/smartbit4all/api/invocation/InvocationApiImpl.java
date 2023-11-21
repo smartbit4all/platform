@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApiData;
@@ -245,9 +246,12 @@ public final class InvocationApiImpl implements InvocationApi {
     return result;
   }
 
+
   @Override
   public Object executeScript(String scriptEngine, String script,
-      Map<String, ObjectNode> contextObjects) {
+      Map<String, ObjectNode> contextObjects, Map<String, Object> inputParams)
+      throws ScriptException {
+    // TODO Auto-generated method stub
     return null;
   }
 
