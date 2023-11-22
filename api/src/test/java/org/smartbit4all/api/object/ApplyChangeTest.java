@@ -1,13 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +30,14 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -799,31 +799,62 @@ class ApplyChangeTest {
   void inlineRefListCanBeSetAsValues_canBeLoadedAsObjectNodeList() {
     // given:
     ObjectNode root = objectApi.create(MY_SCHEME, new SampleCategory());
-    List<SampleLinkObject> links = IntStream.range(0, 3)
-        .mapToObj(i -> new SampleLinkObject()
-            .linkName(String.valueOf(i)))
-        .collect(toList());
+    {
+      List<SampleLinkObject> links = IntStream.range(0, 3)
+          .mapToObj(i -> new SampleLinkObject()
+              .linkName(String.valueOf(i)))
+          .collect(toList());
 
-    final Map<String, Object> valuesToSet = new HashMap<>();
-    valuesToSet.put(SampleCategory.LINKS, links);
+      final Map<String, Object> valuesToSet = new HashMap<>();
+      valuesToSet.put(SampleCategory.LINKS, links);
 
-    // when:
-    root.setValues(valuesToSet);
-    final URI rootUri = objectApi.save(root);
+      // when:
+      root.setValues(valuesToSet);
+      final URI rootUri = objectApi.save(root);
 
-    root = objectApi.loadLatest(rootUri);
+      root = objectApi.loadLatest(rootUri);
 
-    // then:
-    final ObjectNodeList list = root.list(SampleCategory.LINKS);
-    assertThat(list).isNotNull();
-    assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
-        .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
+      // then:
+      final ObjectNodeList list = root.list(SampleCategory.LINKS);
+      assertThat(list).isNotNull();
+      assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+          .containsExactly(StringConstant.ZERO, StringConstant.ONE, "2");
 
-    final Object listObj = root.getValue(SampleCategory.LINKS);
-    assertThat(listObj)
-        .isNotNull()
-        .isInstanceOf(ObjectNodeList.class)
-        .isEqualTo(list);
+      final Object listObj = root.getValue(SampleCategory.LINKS);
+      assertThat(listObj)
+          .isNotNull()
+          .isInstanceOf(ObjectNodeList.class)
+          .isEqualTo(list);
+    }
+
+    {
+      List<SampleLinkObject> links = IntStream.range(1, 6)
+          .mapToObj(i -> new SampleLinkObject()
+              .linkName(String.valueOf(i)))
+          .collect(toList());
+
+      final Map<String, Object> valuesToSet = new HashMap<>();
+      valuesToSet.put(SampleCategory.LINKS, links);
+
+      // when:
+      root.setValuesWithReference(valuesToSet);
+      final URI rootUri = objectApi.save(root);
+
+      root = objectApi.loadLatest(rootUri);
+
+      // then:
+      final ObjectNodeList list = root.list(SampleCategory.LINKS);
+      assertThat(list).isNotNull();
+      assertThat(list.stream(SampleLinkObject.class).map(SampleLinkObject::getLinkName))
+          .containsExactly("1", "2", "3", "4", "5");
+
+      final Object listObj = root.getValue(SampleCategory.LINKS);
+      assertThat(listObj)
+          .isNotNull()
+          .isInstanceOf(ObjectNodeList.class)
+          .isEqualTo(list);
+    }
+
   }
 
   @Test

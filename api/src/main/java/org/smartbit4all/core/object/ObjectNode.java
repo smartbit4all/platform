@@ -302,6 +302,28 @@ public class ObjectNode {
     return this;
   }
 
+  public ObjectNode setValuesWithReference(Map<String, Object> values) {
+    if (values != null) {
+      Map<String, Object> myValues = new HashMap<>(values);
+      for (Entry<String, ObjectNodeList> listEntry : getReferenceLists().entrySet()) {
+        Object object = myValues.remove(listEntry.getKey());
+        if (object instanceof List) {
+          listEntry.getValue().clear();
+          List list = (List) object;
+          for (Object listItem : list) {
+            if (listItem instanceof URI) {
+              listEntry.getValue().add((URI) listItem);
+            } else {
+              listEntry.getValue().addNewObject(listItem);
+            }
+          }
+        }
+      }
+      data.getObjectAsMap().putAll(myValues);
+      setModified();
+    }
+    return this;
+  }
   // /**
   // * Set the value directly into the data.
   // *
