@@ -547,6 +547,10 @@ public class ViewContextServiceImpl implements ViewContextService {
     View view = getViewFromCurrentViewContext(viewUuid);
     Objects.requireNonNull(view, "View not found!");
     Object data = getModel(viewUuid, null);
+    return createComponentModel(view, data);
+  }
+
+  private ComponentModel createComponentModel(View view, Object data) {
     List<ComponentConstraint> constraints;
     if (view.getConstraint() != null) {
       constraints = view.getConstraint().getComponentConstraints();
@@ -792,7 +796,13 @@ public class ViewContextServiceImpl implements ViewContextService {
       return null;
     }
     ViewComparisonResult result = new ViewComparisonResult();
-    ComponentModel afterComponentModel = getComponentModel(after.getUuid());
+    ComponentModel afterComponentModel;
+    try {
+      afterComponentModel = getComponentModel(after.getUuid());
+    } catch (IllegalArgumentException e) {
+      // not PageApi, model is not available
+      afterComponentModel = createComponentModel(after, after.getModel());
+    }
     result.change = new ComponentModelChange()
         .uuid(after.getUuid())
         .path(StringConstant.EMPTY)
