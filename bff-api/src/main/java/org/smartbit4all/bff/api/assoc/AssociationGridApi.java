@@ -3,8 +3,6 @@ package org.smartbit4all.bff.api.assoc;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-
-import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -30,5 +28,5 @@ public interface AssociationGridApi {
 
   void updateGrid(List<GridRow> gridRows, String configName, UUID viewUuid);
 
-  GridPage onGridPageRender(GridPage gridPage, AssociationGridConfig config);
+  // GridPage onGridPageRender(GridPage gridPage, AssociationGridConfig config);
 }
