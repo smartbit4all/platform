@@ -49,7 +49,7 @@ public final class ObjectPropertyResolver {
 
   public static final class PropertyPath {
 
-    private static final String PATH_REGEX = "^(?:([^#?]+))?(?:\\#([^#?]*))?(?:\\?([^?]*))?$";
+    private static final String PATH_REGEX = "^(?:([^#?]+))?(?:\\#([^#?]*))?(?:\\?(.+))?$";
     private static final Pattern PATH_PTRN = Pattern.compile(PATH_REGEX);
 
     public final String original;
@@ -189,9 +189,9 @@ public final class ObjectPropertyResolver {
    * is returned as is.
    *
    * @param name the {@code String} name to refer to the provided context object in the material to
-   *             be resolved; if null, no operation is performed
+   *        be resolved; if null, no operation is performed
    * @param node the {@link ObjectNode} representation of an object to be introduced in the
-   *             resolver's context; if null, no operation is performed
+   *        resolver's context; if null, no operation is performed
    * @return this instance
    */
   public ObjectPropertyResolver addContextObject(String name, ObjectNode node) {
