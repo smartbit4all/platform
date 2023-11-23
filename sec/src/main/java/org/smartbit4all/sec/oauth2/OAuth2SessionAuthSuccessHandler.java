@@ -34,6 +34,7 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -52,6 +53,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
   private static final Logger log = LoggerFactory.getLogger(OAuth2SessionAuthSuccessHandler.class);
 
+  public static final String AI_PARAM_ID_TOKEN = "idToken";
   protected static final String REDIRECT_PARAMETER = "redirectParameterKey";
 
   @Autowired
@@ -107,7 +109,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
           tokenFromRequest == null ? null : sessionTokenHandler.getSubject(tokenFromRequest);
 
       // looking for sb4SessionToken in stored OAuth2AuthorizationRequest
-      if (ObjectUtils.isEmpty(sessionUriTxt) && authorizationRequestRepository != null) {
+      if (ObjectUtils.isEmpty(sessionUriTxt)/* && authorizationRequestRepository != null */) {
 
         String httpSessionStateParam = request.getParameter(OAuth2ParameterNames.STATE);
         HttpSession httpSession = request.getSession(false);
@@ -221,6 +223,11 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     accountInfo.putParametersItem("registrationId", registrationId);
     accountInfo.putParametersItem("expiresAt",
         "" + authorizedClient.getAccessToken().getExpiresAt().toEpochMilli());
+    if (oauthToken.getPrincipal() instanceof OidcUser) {
+      // FIXME it might be not so good to store here... but for now there is no better option
+      accountInfo.putParametersItem(AI_PARAM_ID_TOKEN,
+          ((OidcUser) oauthToken.getPrincipal()).getIdToken().getTokenValue());
+    }
     List<String> roles = accountInfo.getRoles();
     if (roles == null) {
       roles = new ArrayList<>();
