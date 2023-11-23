@@ -46,8 +46,7 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
   @Override
   public void saveGroup(UUID viewUuid, UiActionRequest request) {
 
-    GroupEditingModel pageModel =
-        objectApi.asType(GroupEditingModel.class, request.getParams().get("formModel"));
+    GroupEditingModel pageModel = extractClientModel(request);
 
     if (orgApi.getAllGroups().stream().map(Group::getName).collect(Collectors.toList())
         .contains(pageModel.getGroup().getName())) {
@@ -76,8 +75,8 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
   }
 
   protected List<UiAction> getGroupEditorActions() {
-    return Arrays.asList(new UiAction().code(SAVE_GROUP),
-        new UiAction().code(CANCEL_GROUP));
+    return Arrays.asList(new UiAction().code(SAVE_GROUP).submit(true),
+        new UiAction().code(CANCEL));
   }
 
 }

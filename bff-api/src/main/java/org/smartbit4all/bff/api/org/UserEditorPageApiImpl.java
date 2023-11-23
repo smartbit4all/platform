@@ -57,7 +57,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   @Override
   public void saveUser(UUID viewUuid, UiActionRequest request) {
 
-    UserEditingModel pageModel = getModel(viewUuid);
+    UserEditingModel pageModel = extractClientModel(request);
 
     User user = pageModel.getUser();
 
@@ -85,8 +85,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   }
 
   protected List<UiAction> getUserEditorActions() {
-    return Arrays.asList(new UiAction().code(SAVE_USER),
-        new UiAction().code(CANCEL_EDITING));
+    return Arrays.asList(new UiAction().code(SAVE_USER).submit(true),
+        new UiAction().code(CANCEL));
   }
 
 }

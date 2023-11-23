@@ -10,12 +10,12 @@ public interface GroupEditorPageApi extends PageApi<GroupEditingModel> {
 
 
   public static final String SAVE_GROUP = "SAVE_GROUP";
-  public static final String CANCEL_GROUP = "CANCEL_GROUP";
+  public static final String CANCEL = "CANCEL";
 
   @ActionHandler(SAVE_GROUP)
   void saveGroup(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(CANCEL_GROUP)
+  @ActionHandler(CANCEL)
   void cancelGroupEdit(UUID viewUuid, UiActionRequest request);
 
 }
