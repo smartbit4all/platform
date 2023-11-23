@@ -23,7 +23,6 @@ import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.RefObject;
-import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -124,7 +123,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     setGridData(gridIdentifier, viewUuid, searchIndex, nodes);
 
     // we managed to initialise data, set actions now:
-    UiActions.add(view, newElementAction(associationConf), deleteElementAction(associationConf));
+    // UiActions.add(view, newElementAction(associationConf), deleteElementAction(associationConf));
   }
 
   private void setGridData(String gridIdentifier, final UUID viewUuid,
@@ -143,7 +142,6 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
   private List<ObjectNode> getRefObjectNodes(ObjectNode objectNode,
       AssociationGridConfig config) {
     ObjectNodeList refObjectNodeList = getRefObjectNodeList(objectNode, config).childList;
-    refObjectNodeList.stream().map(ref -> ref.get());
     return refObjectNodeList == null
         ? Collections.emptyList()
         : refObjectNodeList.nodeStream().collect(toList());
@@ -247,5 +245,6 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
       this.childList = childList;
     }
   }
+
 
 }
