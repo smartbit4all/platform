@@ -16,7 +16,6 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
-import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
@@ -114,9 +113,9 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
       gridModelApi.addGridPageCallback(viewUuid, gridIdentifier,
           config.onGridSelectionChangedCallback());
     } else {
-      gridModelApi.addGridPageCallback(viewUuid, gridIdentifier, invocationApi
-          .builder(AssociationGridApi.class)
-          .build(a -> a.onGridPageRender(null, config)));
+      // gridModelApi.addGridPageCallback(viewUuid, gridIdentifier, invocationApi
+      // .builder(AssociationGridApi.class)
+      // .build(a -> a.onGridPageRender(null, config)));
     }
     final List<ObjectNode> nodes =
         getRefObjectNodes(objectNode, config);
@@ -219,21 +218,6 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     objectApi.save(refObjectNodeList.parentNode);
     setGridData(configName, viewUuid, config.searchIndex(collectionApi),
         refObjectNodeList.childList.nodeStream());
-  }
-
-  @Override
-  public GridPage onGridPageRender(GridPage gridPage, AssociationGridConfig config) {
-    // final List<String> widgetActionCodes = config.supportedWidgetActions();
-    // final String configName = config.name();
-    // if (widgetActionCodes != null && !widgetActionCodes.isEmpty() && gridPage.getRows() != null)
-    // {
-    // gridPage.getRows().forEach(row -> row.setActions(widgetActionCodes.stream()
-    // .map(code -> new UiAction()
-    // .path(configName)
-    // .code(code))
-    // .collect(toList())));
-    // }
-    return gridPage;
   }
 
   private static final class ParentAndChildList {

@@ -11,7 +11,7 @@ import org.smartbit4all.api.view.bean.View;
 public interface GroupListPageApi extends PageApi<Object> {
 
   public static final String GROUP_GRID = "GROUP_GRID";
-  public static final String OPEN_GROUP_EDITOR = "OPEN_USER_EDITOR";
+  public static final String OPEN_GROUP_EDITOR = "OPEN_GROUP_EDITOR";
   public static final String ADD_GROUP = "ADD_GROUP";
 
   Object createPageModel(View view);
