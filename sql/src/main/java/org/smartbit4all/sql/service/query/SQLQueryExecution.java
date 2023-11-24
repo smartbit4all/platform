@@ -231,7 +231,7 @@ final class SQLQueryExecution {
         PreparedStatement stmt = con.prepareStatement(builder.getStatement());
         select.bind(builder, stmt);
         if (log.isDebugEnabled()) {
-          log.debug(stmt.toString());
+          log.debug(builder.getStatement());
         }
         return stmt;
       }
