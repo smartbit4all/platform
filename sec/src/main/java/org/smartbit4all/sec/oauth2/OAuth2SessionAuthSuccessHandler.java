@@ -51,9 +51,11 @@ import org.springframework.util.ObjectUtils;
  */
 public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+
   private static final Logger log = LoggerFactory.getLogger(OAuth2SessionAuthSuccessHandler.class);
 
   public static final String AI_PARAM_ID_TOKEN = "idToken";
+  public static final String SESSION_PARAM_SMARTLINK_REDIRECT = "smartlinkRedirect";
   protected static final String REDIRECT_PARAMETER = "redirectParameterKey";
 
   @Autowired
@@ -161,6 +163,21 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     response.setStatus(302);
 
     super.onAuthenticationSuccess(request, response, authentication);
+  }
+
+  @Override
+  protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,
+      Authentication authentication) {
+    // String smartlinkRedirectUri = sessionApi.getParameterObject("smartlinkRedirect",
+    // String.class);
+    HttpSession session = request.getSession();
+    String smartlinkRedirectUri =
+        (String) session.getAttribute(SESSION_PARAM_SMARTLINK_REDIRECT);
+    if (!ObjectUtils.isEmpty(smartlinkRedirectUri)) {
+      session.removeAttribute(SESSION_PARAM_SMARTLINK_REDIRECT);
+      return smartlinkRedirectUri;
+    }
+    return super.determineTargetUrl(request, response, authentication);
   }
 
   protected void handleAuthorizationFailure(HttpServletRequest request,
