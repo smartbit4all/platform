@@ -283,7 +283,14 @@ public final class ObjectPropertyResolver {
       // omit the empty first element referring to the root node itself:
       routeParts = Arrays.copyOfRange(routeParts, 1, routeParts.length);
       fillLanguagePlaceholder(routeParts, language);
-      targetNode = objectNode.ref(routeParts).get();
+      Object routeTerminal = objectNode.getValue(routeParts);
+      if (routeTerminal instanceof ObjectNodeReference) {
+        targetNode = ((ObjectNodeReference) routeTerminal).get();
+      } else if (routeTerminal instanceof  ObjectNodeList) {
+        return routeTerminal;
+      } else {
+        targetNode = objectNode.ref(routeParts).get();
+      }
     }
 
     if (targetNode == null) {
@@ -334,6 +341,12 @@ public final class ObjectPropertyResolver {
   public ObjectNode getContextObjectNode(String objectName) {
     ContextObject contextObject = contextObjects.get(objectName);
     return contextObject != null ? contextObject.objectNode() : null;
+  }
+
+  public Map<String, ObjectNode> getContextNodes() {
+    final Map<String, ObjectNode> result = new HashMap<>();
+    contextObjects.forEach((k, v) -> result.put(k, v.objectNode()));
+    return result;
   }
 
   /**
