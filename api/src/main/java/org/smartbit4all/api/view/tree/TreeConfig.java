@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view.tree;
 
 import java.util.List;
+import org.smartbit4all.api.object.bean.VersionStrategy;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -24,6 +25,8 @@ import org.smartbit4all.core.object.ObjectNode;
  */
 public interface TreeConfig {
 
+  static final String VERSION_STRATEGY = "VERSION_STRATEGY";
+
   String getName();
 
   List<UiTreeNode> readChildrenNodes(UiTreeState treeState, UiTreeNode treeNode);
@@ -37,5 +40,9 @@ public interface TreeConfig {
   void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action);
 
   UiTreeNode getConfigNode(UiTreeState treeState);
+
+  default VersionStrategy versionStrategy(UiTreeState treeState) {
+    return VersionStrategy.BYDEFINITION;
+  }
 
 }

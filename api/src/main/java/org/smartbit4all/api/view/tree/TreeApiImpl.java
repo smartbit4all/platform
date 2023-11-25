@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.tree;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.VersionStrategy;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
@@ -25,7 +27,6 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.base.Strings;
 
 public class TreeApiImpl implements TreeApi {
 
@@ -157,7 +158,10 @@ public class TreeApiImpl implements TreeApi {
     }
     List<UiTreePathPart> parts = path.getParts();
     UiTreePathPart part = parts.get(0);
-    URI objectUri = objectApi.getLatestUri(part.getObjectUri());
+    VersionStrategy versionStrategy = objectApi.asType(VersionStrategy.class,
+        treeState.getParams().get(TreeConfig.VERSION_STRATEGY));
+    URI objectUri = VersionStrategy.EXACT.equals(versionStrategy) ? part.getObjectUri()
+        : objectApi.getLatestUri(part.getObjectUri());
     String nodeType = part.getNodeType();
     if (objectUri == null && Strings.isNullOrEmpty(nodeType)) {
       throw new IllegalArgumentException(

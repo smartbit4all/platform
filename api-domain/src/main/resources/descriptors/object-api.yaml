@@ -771,3 +771,5 @@ components:
           $ref: '#/components/schemas/LangString'
     ObjectValidationSeverity:
       enum: [BLOCKER, ERROR, WARNING, INFO, OK]
+    VersionStrategy:
+      enum: [LATEST, EXACT, BYDEFINITION]

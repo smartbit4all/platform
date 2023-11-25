@@ -92,6 +92,22 @@ public class ObjectNodeReference {
     return node;
   }
 
+  public ObjectNode getVersioned() {
+    if (isLoaded) {
+      return node;
+    }
+    if (objectUri != null) {
+      node = ObjectApiImpl.loadInternal(
+          referrerNode.objectApi,
+          objectUri,
+          referrerNode.branchUri,
+          RetrievalMode.NORMAL,
+          false);
+      isLoaded = true;
+    }
+    return node;
+  }
+
   public URI getObjectUri() {
     return objectUri;
   }

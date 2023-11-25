@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import static java.util.stream.Collectors.toList;
 
 public final class ObjectNodeList {
 
@@ -69,6 +69,10 @@ public final class ObjectNodeList {
 
   public Stream<ObjectNode> nodeStream() {
     return stream().map(ObjectNodeReference::get);
+  }
+
+  public Stream<ObjectNode> nodeStreamVersioned() {
+    return stream().map(ObjectNodeReference::getVersioned);
   }
 
   public <T> Stream<T> stream(Class<T> clazz) {

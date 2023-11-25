@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.VersionStrategy;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -72,7 +73,9 @@ public abstract class TreeRelationImpl implements TreeRelation {
         .caption(nodeType)
         .level(level)
         .hasChildren(false)
-        .objectUri(objectApi.getLatestUri(object.getObjectUri()))
+        .objectUri(VersionStrategy.EXACT.equals(treeConfig.versionStrategy(treeState))
+            ? object.getObjectUri()
+            : objectApi.getLatestUri(object.getObjectUri()))
         .nodeType(nodeType)
         .actions(actions);
     return renderer.renderNode(treeState, nodeType, object, template);
