@@ -1,6 +1,7 @@
 package org.smartbit4all.api.org;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -781,6 +782,23 @@ public class OrgApiStorageImpl implements OrgApi {
       return null;
     }
     return storage.get().exists(userUri) ? storage.get().read(userUri, User.class) : null;
+  }
+
+  @Override
+  public User getUserByUsernameIgnoreCase(String username) {
+    ObjectMap activeObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
+
+    try {
+      Map<String, URI> uris = activeObjectMap.getUris().entrySet().stream()
+          .collect(toMap(e -> e.getKey().toLowerCase(), Entry::getValue));
+      URI userUri = uris.get(username.toLowerCase());
+      if (userUri == null) {
+        return null;
+      }
+      return storage.get().exists(userUri) ? storage.get().read(userUri, User.class) : null;
+    } catch (Exception e) {
+      return getUserByUsername(username);
+    }
   }
 
   @Override

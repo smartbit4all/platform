@@ -220,6 +220,12 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   }
 
   @Override
+  public User getUserByUsernameIgnoreCase(String username) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   public URI saveUser(User user) {
     // TODO Auto-generated method stub
     return null;

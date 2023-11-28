@@ -85,6 +85,12 @@ public interface OrgApi {
   User getUserByUsername(String username);
 
   /**
+   * Get all information of user. During the search ignores username's difference between upper and
+   * lower case letters.
+   */
+  User getUserByUsernameIgnoreCase(String username);
+
+  /**
    * Adds User to storage
    *
    * @param user
