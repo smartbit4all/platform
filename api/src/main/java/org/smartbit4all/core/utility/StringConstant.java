@@ -125,6 +125,8 @@ public class StringConstant {
 
   public static final String SPACE_ARROW_SPACE = " -> ";
 
+  public static final String SPACE_COLON_SPACE = " : ";
+
   public static final String SPACE_HYPHEN_SPACE = " - ";
 
   public static final String TAB = "\t";
