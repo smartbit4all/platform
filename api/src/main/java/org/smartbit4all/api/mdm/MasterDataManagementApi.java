@@ -18,6 +18,11 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
  */
 public interface MasterDataManagementApi {
 
+  /**
+   * The deafault global definition name.
+   */
+  static final String MDM_DEFINITION_GLOBAL = "globalMdmDefinition";
+
   /** The canonical name of this API, used by listeners to identify this service. */
   static final String API = "org.smartbit4all.api.mdm.MasterDataManagementApi";
 
