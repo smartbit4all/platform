@@ -75,7 +75,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   }
 
   private FilterExpressionData handleLikeExpressions(FilterExpressionData expression) {
-    if (expression.getCurrentOperation() == FilterExpressionOperation.LIKE) {
+    if (expression.getCurrentOperation() == FilterExpressionOperation.LIKE
+        || expression.getCurrentOperation() == FilterExpressionOperation.NOT_LIKE) {
       augmentLikeOperand(expression.getOperand1());
       augmentLikeOperand(expression.getOperand2());
       augmentLikeOperand(expression.getOperand3());
