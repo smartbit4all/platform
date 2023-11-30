@@ -797,6 +797,7 @@ public class OrgApiStorageImpl implements OrgApi {
       }
       return storage.get().exists(userUri) ? storage.get().read(userUri, User.class) : null;
     } catch (Exception e) {
+      log.warn("The same username present with different cases.", e);
       return getUserByUsername(username);
     }
   }
