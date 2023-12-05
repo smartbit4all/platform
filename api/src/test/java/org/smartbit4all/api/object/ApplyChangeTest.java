@@ -19,6 +19,9 @@ import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
+import org.smartbit4all.api.sample.bean.SampleProperties;
+import org.smartbit4all.api.sample.bean.SamplePropertyContainer;
+import org.smartbit4all.api.sample.bean.SampleStandaloneObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
@@ -30,14 +33,14 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -950,4 +953,102 @@ class ApplyChangeTest {
         .isInstanceOf(ObjectNodeList.class)
         .isEqualTo(list);
   }
+
+  // replica of an obscure bug in p020:
+  @Test
+  @Disabled
+  void callingSetValueOnDeeplyNestedInlineMap_correctlyUpdatesTheValuesOfTheInlineMap() {
+    // given:
+    final SampleStandaloneObject o = new SampleStandaloneObject()
+        .favouriteNumber(32L)
+        .propertyContainer(new SamplePropertyContainer()
+            .name("spc-name")
+            .props(new SampleProperties()
+                .primary("alpha")
+                .secondary("beta")
+                .putEtcItem("1", "one")
+                .putEtcItem("2", "two")
+                .putEtcItem("3", "three")
+                .putEtcItem("4", "four")
+                .putEtcItem("5", "five")));
+    ObjectNode node = objectApi.create(MY_SCHEME, o);
+    URI uri = objectApi.save(node);
+
+    // when:
+    node = objectApi.loadLatest(uri);
+    Map<String, String> etc = node.getValueAsMap(String.class,
+        SampleStandaloneObject.PROPERTY_CONTAINER,
+        SamplePropertyContainer.PROPS,
+        SampleProperties.ETC);
+    assertThat(etc).containsExactlyEntriesOf(mapOf("1", "one",
+        "2", "two",
+        "3", "three",
+        "4", "four",
+        "5", "five"));
+
+    etc.replace("4", "tessera");
+    assertThat(etc).containsExactlyEntriesOf(mapOf("1", "one",
+        "2", "two",
+        "3", "three",
+        "4", "tessera",
+        "5", "five"));
+
+
+    node.setValue(etc, // TODO: FIXME: setValue does nothing here!
+        SampleStandaloneObject.PROPERTY_CONTAINER,
+        SamplePropertyContainer.PROPS,
+        SampleProperties.ETC);
+
+    // then:
+    assertThat(node
+        .getValueAsMap(String.class,
+            SampleStandaloneObject.PROPERTY_CONTAINER,
+            SamplePropertyContainer.PROPS,
+            SampleProperties.ETC))
+                .containsEntry("4", "tessera");
+
+    uri = objectApi.save(node);
+    node = objectApi.loadLatest(uri);
+    etc = node.getValueAsMap(String.class,
+        SampleStandaloneObject.PROPERTY_CONTAINER,
+        SamplePropertyContainer.PROPS,
+        SampleProperties.ETC);
+    assertThat(etc).containsExactlyEntriesOf(mapOf("1", "one",
+        "2", "two",
+        "3", "three",
+        "4", "tessera",
+        "5", "five"));
+  }
+
+  @Test
+  void longValuesCanBeRetrievedAsLong() {
+    SampleStandaloneObject o = new SampleStandaloneObject().favouriteNumber(Long.MAX_VALUE - 1);
+    ObjectNode node = objectApi.create(MY_SCHEME, o);
+    long num = node.getValue(Long.class, SampleStandaloneObject.FAVOURITE_NUMBER);
+    assertThat(num)
+        .isNotNull()
+        .isEqualTo(Long.MAX_VALUE - 1);
+
+    o = new SampleStandaloneObject().favouriteNumber(3L);
+    node = objectApi.create(MY_SCHEME, o);
+    num = node.getValue(Long.class, SampleStandaloneObject.FAVOURITE_NUMBER);
+    assertThat(num)
+        .isNotNull()
+        .isEqualTo(3L);
+
+  }
+
+  private static <K, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4,
+      K k5, V v5) {
+    Map<K, V> map = new HashMap<>();
+
+    map.put(k1, v1);
+    map.put(k2, v2);
+    map.put(k3, v3);
+    map.put(k4, v4);
+    map.put(k5, v5);
+
+    return map;
+  }
+
 }
