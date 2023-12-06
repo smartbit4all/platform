@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.search;
 
 import java.util.UUID;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -26,6 +27,8 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
    * The generic query action that will run the execute search with the current filter expressions.
    */
   static final String ACTION_QUERY = "QUERY";
+
+  static final String ACTION_CLEAR = "ACTION_CLEAR";
 
   /**
    * The close action that will close the list.
@@ -80,6 +83,17 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
   static final String PARAM_GRID_PAGE_RENDER_CALLBACK = "GRID_PAGE_RENDER_CALLBACK";
 
   /**
+   * The FilterBuilderModel rendering callback parameter.
+   *
+   * <p>
+   * An {@link FilterExpressionBuilderModel} is expected to be passed under this parameter key. If
+   * the FilterExpressionBuilderModel is provided the page renders the filter editor widget
+   */
+  static final String PARAM_FILTER_MODEL = "PARAM_FILTER_MODEL";
+
+  static final String FILTER_BUILDER_WIDGET_ID = "FILTER_BUILDER_WIDGET";
+
+  /**
    * The identifier of the grid that contains the result of the search index query.
    */
   static final String WIDGET_RESULT_GRID = "RESULT_GRID";
@@ -122,5 +136,8 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
    */
   @ActionHandler(ACTION_RETURN_SELECTED_ROWS)
   void performReturnSelectedRows(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_CLEAR)
+  void performClear(UUID viewUuid, UiActionRequest request);
 
 }

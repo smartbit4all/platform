@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view.filterexpression;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,7 +78,8 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
         break;
     }
 
-    viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid, filterIdentifier,
+    viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid,
+        filterIdentifier,
         model);
 
     return model;
@@ -106,6 +108,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionBuilderUiModel uiModel =
         new FilterExpressionBuilderUiModel().model(model);
 
+    setFilterFieldIds(uiModel.getModel().getWorkplaceList().getFilters());
     if (Objects.isNull(config)) {
       return uiModel;
     }
@@ -118,7 +121,18 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
           .map(code -> new UiAction().code(code)).collect(Collectors.toList()));
     }
 
+
     return uiModel;
+  }
+
+  private void setFilterFieldIds(List<FilterExpressionField> filterFields) {
+    filterFields.forEach(field -> {
+      if (Objects.nonNull(field.getSubFieldList())
+          && !field.getSubFieldList().getFilters().isEmpty()) {
+        setFilterFieldIds(field.getSubFieldList().getFilters());
+      }
+      field.setId(UUID.randomUUID().toString());
+    });
   }
 
   @Override
@@ -133,8 +147,14 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
   @Override
   public FilterExpressionFieldList getFilterExpressionFieldList(UUID viewUuid,
       String filterIdentifier) {
-    return getModel(viewUuid, filterIdentifier)
+    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterIdentifier);
+    FilterExpressionFieldList workplaceList = model
         .getModel().getWorkplaceList();
+
+    viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid, filterIdentifier,
+        model);
+
+    return workplaceList;
   }
 
   @Override

@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.acl;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -170,6 +170,31 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     view.getLayouts().get(ACL_MATRIX).setWidgets(aclMatrixWidget(acl, operations));
 
     setModel(viewUuid, acl);
+  }
+
+
+
+  @Override
+  public void removeRowFromSubjectMatrix(UUID viewUuid, UiActionRequest request) {
+    View view = viewApi.getView(viewUuid);
+    Value entryToRemove = actionRequestHelper(request).get(UiActions.INPUT, Value.class);
+
+    ACL acl = getAcl(view);
+    ObjectMapHelper parameters = parameters(view);
+
+    acl.getRootEntry().getEntries()
+        .removeIf(entry -> entry.getSubject().getRef().equals(URI.create(entryToRemove.getCode())));
+
+    List<String> operations = parameters.getAsList(OPERATIONS, String.class);
+
+    view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
+        .addWidgetsItem(
+            new SmartWidgetDefinition().label(localeSettingApi.get(ACL)).key(ACL_MATRIX)
+                .type(SmartFormWidgetType.MATRIX)
+                .matrix(consturctMatrixModel(acl, operations))));
+
+    setModel(viewUuid, acl);
+
   }
 
   private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {

@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view.filterexpression;
 
-import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +11,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFieldUiConverter {
 
@@ -43,21 +43,21 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
   }
 
   private SmartFormWidgetType getLayoutTypeFromField(FilterExpressionField field) {
-    if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE)) {
-      switch (field.getFilterFieldType()) {
-        case NUMBER:
-          return SmartFormWidgetType.TEXT_FIELD_NUMBER;
-        case STRING:
-          return SmartFormWidgetType.TEXT_FIELD;
-        case DATE:
-          return SmartFormWidgetType.DATE_PICKER;
-        case DATE_TIME:
-          return SmartFormWidgetType.DATE_TIME_PICKER;
-        default:
-          break;
-      }
+
+    switch (field.getFilterFieldType()) {
+      case NUMBER:
+        return SmartFormWidgetType.TEXT_FIELD_NUMBER;
+      case STRING:
+        return SmartFormWidgetType.TEXT_FIELD;
+      case DATE:
+        return SmartFormWidgetType.DATE_PICKER;
+      case DATE_TIME:
+        return SmartFormWidgetType.DATE_TIME_PICKER;
+      default:
+        return SmartFormWidgetType.fromValue(field.getWidgetType().getValue());
     }
-    return SmartFormWidgetType.fromValue(field.getWidgetType().getValue());
+
+
   }
 
   private List<SmartWidgetDefinition> convertRangeFilter(FilterExpressionField field) {

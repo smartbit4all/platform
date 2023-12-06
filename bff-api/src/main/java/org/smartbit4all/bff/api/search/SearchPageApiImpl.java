@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -12,6 +13,8 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -30,6 +33,7 @@ import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
@@ -59,6 +63,9 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   @Autowired
   private InvocationApi invocationApi;
 
+  @Autowired
+  private FilterExpressionBuilderApi filterExpressionBuilderApi;
+
   protected class PageContext {
 
     public PageContext(UUID viewUUID) {
@@ -87,6 +94,8 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       gridPageRenderCallback = parameters.get(
           PARAM_GRID_PAGE_RENDER_CALLBACK,
           InvocationRequest.class);
+      filterExpressionBuilderModel =
+          parameters.get(PARAM_FILTER_MODEL, FilterExpressionBuilderModel.class);
     }
 
     protected UUID viewUUID;
@@ -105,7 +114,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
     protected InvocationRequest gridPageRenderCallback;
 
-
+    protected FilterExpressionBuilderModel filterExpressionBuilderModel;
   }
 
   public SearchPageApiImpl() {
@@ -118,7 +127,9 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
     // Setup the available actions.
     ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true))
-        .addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false));
+        .addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false))
+    // .addActionsItem(new UiAction().code(ACTION_CLEAR)
+    ;
 
     GridModel gridModel = gridModelApi.createGridModel(
         ctx.searchIndex.getDefinition().getDefinition(),
@@ -157,10 +168,24 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     if (filterModel != null) {
       pageTitle = filterModel.getLabel();
       filters = filterModel.getWorkplaceList();
+      // TODO pass FilterExpressionBuilderApiConfig
+      FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+          filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
+
+      if (Objects.nonNull(filterExpressionBuilderUiModel.getModel().getGroups())
+          && !filterExpressionBuilderUiModel.getModel().getGroups().isEmpty()) {
+        filterExpressionBuilderUiModel.setType(TypeEnum.COMPLEX);
+        filterExpressionBuilderUiModel.showGroups(true);
+        filterExpressionBuilderUiModel.readOnly(false);
+      } else {
+        filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
+      }
+
+      filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
+          filterExpressionBuilderUiModel);
     }
-    // if (filters == null) {
-    // filters = ctx.searchIndex.allFilterFields();
-    // }
+
+
     return new SearchPageModel()
         .pageTitle(pageTitle)
         .filters(filters);
@@ -240,7 +265,11 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     if (ctx.pageConfig.getFilterModel() == null) {
       ctx.pageConfig.filterModel(new FilterExpressionBuilderModel());
     }
-    ctx.pageConfig.getFilterModel().workplaceList(model.getFilters());
+
+    FilterExpressionFieldList filterExpressionFieldList =
+        filterExpressionBuilderApi.getFilterExpressionFieldList(viewUuid, FILTER_BUILDER_WIDGET_ID);
+
+    ctx.pageConfig.getFilterModel().workplaceList(filterExpressionFieldList);
     refreshGrid(ctx);
   }
 
@@ -263,5 +292,14 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     }
     performClose(viewUuid, request);
   }
+
+  @Override
+  public void performClear(UUID viewUuid, UiActionRequest request) {
+    FilterExpressionBuilderUiModel widgetModelFromView = viewApi.getWidgetModelFromView(
+        FilterExpressionBuilderUiModel.class, viewUuid, FILTER_BUILDER_WIDGET_ID);
+    widgetModelFromView.getModel().getWorkplaceList().getFilters().stream()
+        .forEach(field -> field.getExpressionData().getOperand2().valueAsString(""));
+  }
+
 
 }

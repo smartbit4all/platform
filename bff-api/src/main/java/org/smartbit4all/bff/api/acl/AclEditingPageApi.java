@@ -25,4 +25,9 @@ public interface AclEditingPageApi extends PageApi<ACL> {
   void openSubjectSelector(UUID viewUuid, UiActionRequest request);
 
   void handleSubjectSelected(UUID viewUuid, List<URI> subjectUriList);
+
+  String REMOVE_MATRIX_ROW = "REMOVE_MATRIX_ROW";
+
+  @ActionHandler(REMOVE_MATRIX_ROW)
+  void removeRowFromSubjectMatrix(UUID viewUuid, UiActionRequest request);
 }
