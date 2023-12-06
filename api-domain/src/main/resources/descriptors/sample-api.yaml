@@ -204,3 +204,37 @@ components:
           type: string
           format: uri
           description: Reference to PersistableObject (generic unknown type).
+
+    SampleStandaloneObject:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        favouriteNumber:
+          type: integer
+          format: int64
+        propertyContainer:
+          $ref: '#/components/schemas/SamplePropertyContainer'
+
+    SamplePropertyContainer:
+      type: object
+      properties:
+        name:
+          type: string
+        props:
+          $ref: '#/components/schemas/SampleProperties'
+
+    SampleProperties:
+      description: |
+        An example object containing some named inline fields and an inline string-string map.
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+        etc:
+          type: object
+          additionalProperties:
+            type: string
