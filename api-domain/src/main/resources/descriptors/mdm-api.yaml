@@ -222,3 +222,25 @@ components:
         branchedObject:
           type: object
           description: The branched object loaded if any.
+
+    MDMModificationRequest:
+      type: object
+      description: |
+        .
+      required: [uri, data]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        data:
+          description: .
+          $ref: '#/components/schemas/MDMModificationRequestData'
+    MDMModificationRequestData:
+      type: object
+      description: |
+        .
+      required: [uri, created, objects]
+      properties:
+        definition:
+          type: string
