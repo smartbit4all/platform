@@ -149,7 +149,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     return uri;
   }
 
-  private void initGrid(SubjectTypeDescriptor subjectTypeDescriptor, UUID viewUuid) {
+  protected void initGrid(SubjectTypeDescriptor subjectTypeDescriptor, UUID viewUuid) {
     SearchPageConfig selectionConfig = subjectTypeDescriptor.getSelectionConfig();
 
     SearchIndex<?> searchIndex =
