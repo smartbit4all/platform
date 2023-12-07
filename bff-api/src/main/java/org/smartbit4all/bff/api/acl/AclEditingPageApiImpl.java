@@ -41,7 +41,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
   protected static final String ACL = "ACL";
-  protected static final String OPERATIONS = "OPERATIONS";
+  public static final String OPERATIONS = "OPERATIONS";
 
   public AclEditingPageApiImpl() {
     super(ACL.class);
