@@ -441,8 +441,12 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     } else {
       return descriptor
           .getUniquePropertyPaths().stream()
-          .collect(toMap(Function.identity(), path -> collectionApi.map(descriptor.getSchema(),
-              getUniqueMapName(path))));
+          .collect(toMap(Function.identity(), path -> {
+            StoredMap uniqueMap = collectionApi.map(descriptor.getSchema(),
+                getUniqueMapName(path));
+            uniqueMap.branch(getBranchUri());
+            return uniqueMap;
+          }));
     }
   }
 
