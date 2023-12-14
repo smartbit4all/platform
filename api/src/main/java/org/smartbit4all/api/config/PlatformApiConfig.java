@@ -61,6 +61,8 @@ import org.smartbit4all.api.setting.ApplicationInfo;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
+import org.smartbit4all.api.view.ActionManagementApi;
+import org.smartbit4all.api.view.ActionManagementApiImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
 import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -448,4 +450,10 @@ public class PlatformApiConfig {
   public FilterExpressionFieldUiConverter filterExpressionFieldUiConverter() {
     return new FilterExpressionFieldUiConverterImpl();
   }
+
+  @Bean
+  public ActionManagementApi documentActionManagementApi() {
+    return new ActionManagementApiImpl();
+  }
+
 }

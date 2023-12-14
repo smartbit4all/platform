@@ -1,12 +1,12 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -15,6 +15,8 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.View;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public final class UiActions {
 
@@ -42,6 +44,20 @@ public final class UiActions {
     return new UiActionBuilder();
   }
 
+  public static UiActionBuilder builder(List<UiAction> actions) {
+    return new UiActionBuilder(actions);
+  }
+
+  /**
+   * Initiate a builder for the {@link UiAction#getSubActions()}.
+   * 
+   * @param action The sub menu action.
+   * @return
+   */
+  public static UiActionBuilder builder(UiAction action) {
+    return new UiActionBuilder(action);
+  }
+
   /**
    * Checks whether a {@code UiAction} with the specified code is present in the provided list of
    * actions.
@@ -55,6 +71,17 @@ public final class UiActions {
     Objects.requireNonNull(code, "code cannot be null!");
 
     return actions.stream().anyMatch(actionCode(code));
+  }
+
+  public static final List<UiAction> flatSubMenuStructure(List<UiAction> actions) {
+    return actions.stream().flatMap(a -> {
+      if (a.getDescriptor() != null && a.getSubActions() != null
+          && UiActionButtonType.SUBMENU.equals(a.getDescriptor().getType())) {
+        return flatSubMenuStructure(a.getSubActions()).stream();
+      } else {
+        return Stream.of(a);
+      }
+    }).collect(toList());
   }
 
   private static Predicate<? super UiAction> actionCode(String code) {
@@ -401,6 +428,17 @@ public final class UiActions {
       this.actions = new ArrayList<>();
     }
 
+    private UiActionBuilder(List<UiAction> actions) {
+      this.actions = actions;
+    }
+
+    private UiActionBuilder(UiAction subMenu) {
+      if (subMenu.getSubActions() == null) {
+        subMenu.setSubActions(new ArrayList<>());
+      }
+      this.actions = subMenu.getSubActions();
+    }
+
     public UiActionBuilder add(String action) {
       return add(new UiAction().code(action));
     }
@@ -430,8 +468,44 @@ public final class UiActions {
       return this.add(separator());
     }
 
+    /**
+     * Return the builder for the sub menu!
+     * 
+     * @param action
+     * @param conditions
+     * @return The sub menu builder if the action was added or null if net!!!
+     */
+    public UiActionBuilder addSubMenu(String action, boolean... conditions) {
+      for (boolean c : conditions) {
+        if (!c)
+          return this;
+      }
+      Optional<UiAction> existingSubMenu =
+          actions.stream().filter(a -> Objects.equals(action, a.getCode())).findFirst();
+      return builder(existingSubMenu.orElseGet(() -> {
+        UiAction sma = subMenu(action);
+        add(sma);
+        return sma;
+      }));
+    }
+
+    public boolean remove(String action) {
+      return actions.removeIf(a -> Objects.equals(a.getCode(), action));
+    }
+
+    public boolean removeAll(String... actionCodes) {
+      if (!Objects.isNull(actionCodes)) {
+        for (int i = 0; i < actionCodes.length; i++) {
+          String actionCode = actionCodes[i];
+          actions.removeIf(a -> Objects.equals(a.getCode(), actionCode));
+        }
+        return true;
+      }
+      return false;
+    }
+
     public List<UiAction> build() {
-      return this.actions;
+      return actions;
     }
   }
 
@@ -441,4 +515,12 @@ public final class UiActions {
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.SEPARATOR));
   }
+
+  public static UiAction subMenu(String action) {
+    return new UiAction()
+        .code(action)
+        .descriptor(new UiActionDescriptor()
+            .type(UiActionButtonType.SUBMENU));
+  }
+
 }

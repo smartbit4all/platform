@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,8 @@ import javax.validation.Valid;
   UiAction.MODEL,
   UiAction.CONFIRM,
   UiAction.PARAMS,
-  UiAction.DESCRIPTOR
+  UiAction.DESCRIPTOR,
+  UiAction.SUB_ACTIONS
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -79,6 +81,9 @@ public class UiAction {
 
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor;
+
+  public static final String SUB_ACTIONS = "subActions";
+  private List<UiAction> subActions = null;
 
   public UiAction() { 
   }
@@ -364,6 +369,42 @@ public class UiAction {
   }
 
 
+  public UiAction subActions(List<UiAction> subActions) {
+    
+    this.subActions = subActions;
+    return this;
+  }
+
+  public UiAction addSubActionsItem(UiAction subActionsItem) {
+    if (this.subActions == null) {
+      this.subActions = new ArrayList<>();
+    }
+    this.subActions.add(subActionsItem);
+    return this;
+  }
+
+   /**
+   * The sub action are set if and only if this action is a sub menu. The sub actions can be null.
+   * @return subActions
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The sub action are set if and only if this action is a sub menu. The sub actions can be null.")
+  @JsonProperty(SUB_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<UiAction> getSubActions() {
+    return subActions;
+  }
+
+
+  @JsonProperty(SUB_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubActions(List<UiAction> subActions) {
+    this.subActions = subActions;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -382,12 +423,13 @@ public class UiAction {
         Objects.equals(this.model, uiAction.model) &&
         Objects.equals(this.confirm, uiAction.confirm) &&
         Objects.equals(this.params, uiAction.params) &&
-        Objects.equals(this.descriptor, uiAction.descriptor);
+        Objects.equals(this.descriptor, uiAction.descriptor) &&
+        Objects.equals(this.subActions, uiAction.subActions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions);
   }
 
   @Override
@@ -404,6 +446,7 @@ public class UiAction {
     sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
+    sb.append("    subActions: ").append(toIndentedString(subActions)).append("\n");
     sb.append("}");
     return sb.toString();
   }

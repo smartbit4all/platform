@@ -898,6 +898,11 @@ components:
           additionalProperties: true
         descriptor:
           $ref: '#/components/schemas/UiActionDescriptor'
+        subActions:
+          description: The sub action are set if and only if this action is a sub menu. The sub actions can be null.
+          type: array
+          items:
+            $ref: '#/components/schemas/UiAction'
     UiActionInputType:
       type: string
       default: none
@@ -1039,6 +1044,7 @@ components:
         - MINI_FAB
         - FAB
         - SEPARATOR
+        - SUBMENU
     UiActionButtonIconPos:
       type: string
       description: |
