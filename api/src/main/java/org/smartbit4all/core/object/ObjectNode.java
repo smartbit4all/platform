@@ -362,9 +362,17 @@ public class ObjectNode {
       ((ObjectNode) targetObject).setValue(value, valuePath);
     } else if (targetObject instanceof Map<?, ?>) {
       if (value instanceof Map<?, ?>) {
-        // If we set values to a map then it is a put all not a replacement of the whole map. In
-        // this case we ignore the rest of the value path.
-        ((Map<String, Object>) targetObject).putAll((Map<String, Object>) value);
+        Map<String, Object> targetObjectAsMap = (Map<String, Object>) targetObject;
+        Object targetProp = targetObjectAsMap.get(valuePath);
+        if (targetProp instanceof Map<?, ?>) {
+          // If we set values to a map then it is a put all not a replacement of the whole map. In
+          // this case we ignore the rest of the value path.
+          ((Map<String, Object>) targetProp).putAll((Map<String, Object>) value);
+        } else {
+          // if the target to put the map is not a map itself (primitive/null) set the value as
+          // usual:
+          targetObjectAsMap.put(valuePath, value);
+        }
       } else {
         setValueInMap((Map<String, Object>) targetObject, value, valuePath);
       }
