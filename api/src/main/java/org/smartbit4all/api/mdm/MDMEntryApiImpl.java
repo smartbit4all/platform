@@ -28,6 +28,8 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.BranchApi;
@@ -132,13 +134,10 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     list.update(l -> {
       Map<URI, URI> savedUriByOriginal = new HashMap<>();
 
-      Map<List<String>, StoredMap> uniqueMaps = getUniqueMapsByProperties();
-      Map<List<String>, String[]> uniquePaths = !uniqueMaps.isEmpty()
-          ? getUniquePathArrayByPathList()
-          : null;
+      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints = getUniqueMapsByconstraints();
 
-      if (!uniqueMaps.isEmpty()) {
-        checkIfUniquePropertyUsed(objectNodes, uniqueMaps, uniquePaths);
+      if (!uniqueMapsByConstraints.isEmpty()) {
+        checkIfUniquePropertyUsed(objectNodes, uniqueMapsByConstraints);
       }
 
       for (ObjectNode objectNode : objectNodes) {
@@ -161,19 +160,18 @@ public class MDMEntryApiImpl implements MDMEntryApi {
             savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
           }
         }
-
-
       }
 
       // save new unique property values to StoredMaps
-      if (uniquePaths != null) {
-        uniquePaths.entrySet().forEach(e -> {
+      if (uniqueMapsByConstraints != null) {
+        uniqueMapsByConstraints.entrySet().forEach(e -> {
+          String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
           Map<String, URI> updateUniqueMap =
-              objectNodes.stream().filter(n -> n.getValue(e.getValue()) != null)
+              objectNodes.stream().filter(n -> n.getValue(pathArr) != null)
                   .collect(
-                      toMap(n -> n.getValue(e.getValue()).toString(), ObjectNode::getResultUri));
+                      toMap(n -> n.getValue(pathArr).toString(), ObjectNode::getResultUri));
 
-          StoredMap uniqueMap = uniqueMaps.get(e.getKey());
+          StoredMap uniqueMap = uniqueMapsByConstraints.get(e.getKey());
           uniqueMap.putAll(updateUniqueMap);
         });
       }
@@ -210,29 +208,43 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void checkIfUniquePropertyUsed(List<ObjectNode> objectNodes,
-      Map<List<String>, StoredMap> uniqueMaps, Map<List<String>, String[]> uniquePaths) {
-    for (ObjectNode nodeToSave : objectNodes) {
-      descriptor.getUniquePropertyPaths().forEach(uniquePath -> {
-        String[] path = uniquePaths.get(uniquePath);
+      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+
+    uniqueMapsByConstraints.entrySet().forEach(e -> {
+      MDMEntryConstraint constraint = e.getKey();
+      boolean caseInsensitive = constraint.getKind() == KindEnum.UNIQUECASEINSENSITIVE;
+      Map<String, URI> uniqueMap = e.getValue().uris();
+      if (caseInsensitive) {
+        // map the stored map keys (values) case insensitive
+        uniqueMap = uniqueMap.entrySet().stream()
+            .collect(toMap(uniqueE -> uniqueE.getKey().toLowerCase(),
+                Entry::getValue));
+      }
+
+      // we store the new values to keep uniqueness between the new objects
+      List<String> uniqueValues = new ArrayList<>();
+
+      for (ObjectNode nodeToSave : objectNodes) {
+        String[] path = constraint.getPath().stream().toArray(String[]::new);
         Object uniqueValue = nodeToSave.getValue(path);
 
         if (uniqueValue != null) {
-          StoredMap storedMap = uniqueMaps.get(uniquePath);
-          URI uriToUniqueValue = storedMap.uris().get(uniqueValue);
-
-          boolean newNodesHasTheSameValue = objectNodes.stream()
-              .anyMatch(n -> n.getValue(path).equals(uniqueValue) && n.getObjectUri() != null
-                  && !n.getObjectUri().equals(nodeToSave.getObjectUri()));
+          String uniqueValueStr = caseInsensitive
+              ? uniqueValue.toString().toLowerCase()
+              : uniqueValue.toString();
+          URI uriToUniqueValue = uniqueMap.get(uniqueValueStr);
 
           if ((uriToUniqueValue != null && !uriToUniqueValue.equals(nodeToSave.getObjectUri()))
-              || (newNodesHasTheSameValue)) {
+              || uniqueValues.contains(uniqueValueStr)) {
             throw new IllegalArgumentException(
                 localeSettingApi.get("mdm", descriptor.getName(), "notunique",
                     String.join(".", path)));
+          } else {
+            uniqueValues.add(uniqueValueStr);
           }
         }
-      });
-    }
+      }
+    });
   }
 
   private final Stream<URI> getResultsUrisBySelfContainedList(ObjectNode objectNode, String list,
@@ -335,13 +347,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (!remove) {
       return false;
     } else {
-      Map<List<String>, StoredMap> uniqueMaps = getUniqueMapsByProperties();
+      Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
       if (!uniqueMaps.isEmpty()) {
         // remove unique values from StoredMaps
-        Map<List<String>, String[]> uniquePaths = getUniquePathArrayByPathList();
         ObjectNode objectNode = objectApi.load(objectUri);
-        uniquePaths.entrySet().forEach(e -> {
-          Object uniqueValue = objectNode.getValue(e.getValue());
+        uniqueMaps.entrySet().forEach(e -> {
+          Object uniqueValue =
+              objectNode.getValue(e.getKey().getPath().stream().toArray(String[]::new));
           if (uniqueValue != null) {
             StoredMap uniqueMap = uniqueMaps.get(e.getKey());
             uniqueMap.remove(uniqueValue.toString());
@@ -361,11 +373,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       inactiveList.add(objectUri);
     }
     return true;
-  }
-
-  protected Map<List<String>, String[]> getUniquePathArrayByPathList() {
-    return descriptor.getUniquePropertyPaths().stream()
-        .collect(toMap(Function.identity(), path -> path.stream().toArray(String[]::new)));
   }
 
   @Override
@@ -435,19 +442,32 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return collectionApi.list(descriptor.getSchema(), getListName());
   }
 
-  private Map<List<String>, StoredMap> getUniqueMapsByProperties() {
-    if (descriptor.getUniquePropertyPaths() == null) {
-      return Collections.emptyMap();
-    } else {
-      return descriptor
-          .getUniquePropertyPaths().stream()
-          .collect(toMap(Function.identity(), path -> {
-            StoredMap uniqueMap = collectionApi.map(descriptor.getSchema(),
-                getUniqueMapName(path));
-            uniqueMap.branch(getBranchUri());
-            return uniqueMap;
-          }));
+  private Map<MDMEntryConstraint, StoredMap> getUniqueMapsByconstraints() {
+    List<MDMEntryConstraint> uniqueConstraints = Collections.emptyList();
+
+    if (descriptor.getConstraints() != null) {
+      uniqueConstraints = descriptor.getConstraints().stream()
+          .filter(
+              c -> c.getKind() == KindEnum.UNIQUE || c.getKind() == KindEnum.UNIQUECASEINSENSITIVE)
+          .collect(toList());
+    } else if (descriptor.getUniquePropertyPaths() != null) {
+      uniqueConstraints = descriptor.getUniquePropertyPaths().stream()
+          .map(path -> new MDMEntryConstraint().path(path).kind(KindEnum.UNIQUE))
+          .collect(toList());
     }
+
+    if (descriptor.getConstraints() != null && descriptor.getUniquePropertyPaths() != null) {
+      log.warn(
+          "Constraints and uniquePropertyPaths defined in the [{}] entry descriptor. The uniqueness will be calculated by the constraints property only.",
+          descriptor.getName());
+    }
+
+    return uniqueConstraints.stream().collect(toMap(Function.identity(), c -> {
+      StoredMap uniqueMap = collectionApi.map(descriptor.getSchema(),
+          getUniqueMapName(c.getPath()));
+      uniqueMap.branch(getBranchUri());
+      return uniqueMap;
+    }));
   }
 
   private String getUniqueMapName(List<String> path) {

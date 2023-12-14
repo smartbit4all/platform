@@ -27,6 +27,7 @@ import java.util.List;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -48,6 +49,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.PUBLISHED_LIST_NAME,
   MDMEntryDescriptor.INACTIVE_MGMT,
   MDMEntryDescriptor.UNIQUE_PROPERTY_PATHS,
+  MDMEntryDescriptor.CONSTRAINTS,
   MDMEntryDescriptor.TABLE_COLUMNS,
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
   MDMEntryDescriptor.LIST_PAGE_GRID_VIEWS,
@@ -88,6 +90,9 @@ public class MDMEntryDescriptor {
 
   public static final String UNIQUE_PROPERTY_PATHS = "uniquePropertyPaths";
   private List<List<String>> uniquePropertyPaths = null;
+
+  public static final String CONSTRAINTS = "constraints";
+  private List<MDMEntryConstraint> constraints = null;
 
   public static final String TABLE_COLUMNS = "tableColumns";
   private List<MDMTableColumnDescriptor> tableColumns = new ArrayList<>();
@@ -355,12 +360,14 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values.  
+   * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead!  
    * @return uniquePropertyPaths
+   * @deprecated
   **/
+  @Deprecated
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values.  ")
+  @ApiModelProperty(value = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead!  ")
   @JsonProperty(UNIQUE_PROPERTY_PATHS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -373,6 +380,42 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUniquePropertyPaths(List<List<String>> uniquePropertyPaths) {
     this.uniquePropertyPaths = uniquePropertyPaths;
+  }
+
+
+  public MDMEntryDescriptor constraints(List<MDMEntryConstraint> constraints) {
+    
+    this.constraints = constraints;
+    return this;
+  }
+
+  public MDMEntryDescriptor addConstraintsItem(MDMEntryConstraint constraintsItem) {
+    if (this.constraints == null) {
+      this.constraints = new ArrayList<>();
+    }
+    this.constraints.add(constraintsItem);
+    return this;
+  }
+
+   /**
+   * The new or edited entryies should comply the constraints. 
+   * @return constraints
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The new or edited entryies should comply the constraints. ")
+  @JsonProperty(CONSTRAINTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<MDMEntryConstraint> getConstraints() {
+    return constraints;
+  }
+
+
+  @JsonProperty(CONSTRAINTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstraints(List<MDMEntryConstraint> constraints) {
+    this.constraints = constraints;
   }
 
 
@@ -689,6 +732,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.publishedListName, mdMEntryDescriptor.publishedListName) &&
         Objects.equals(this.inactiveMgmt, mdMEntryDescriptor.inactiveMgmt) &&
         Objects.equals(this.uniquePropertyPaths, mdMEntryDescriptor.uniquePropertyPaths) &&
+        Objects.equals(this.constraints, mdMEntryDescriptor.constraints) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
         Objects.equals(this.listPageGridViews, mdMEntryDescriptor.listPageGridViews) &&
@@ -703,7 +747,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
   }
 
   @Override
@@ -719,6 +763,7 @@ public class MDMEntryDescriptor {
     sb.append("    publishedListName: ").append(toIndentedString(publishedListName)).append("\n");
     sb.append("    inactiveMgmt: ").append(toIndentedString(inactiveMgmt)).append("\n");
     sb.append("    uniquePropertyPaths: ").append(toIndentedString(uniquePropertyPaths)).append("\n");
+    sb.append("    constraints: ").append(toIndentedString(constraints)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
     sb.append("    listPageGridViews: ").append(toIndentedString(listPageGridViews)).append("\n");

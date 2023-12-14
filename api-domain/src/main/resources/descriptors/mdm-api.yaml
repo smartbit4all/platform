@@ -102,11 +102,18 @@ components:
         uniquePropertyPaths:
           type: array
           description: |
-            The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. 
+            The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! 
           items:
             type: array
             items:
               type: string
+          deprecated: true
+        constraints:
+          type: array
+          description: |
+            The new or edited entryies should comply the constraints.
+          items:
+            $ref: '#/components/schemas/MDMEntryConstraint' 
         tableColumns:
           type: array
           description: |
@@ -244,3 +251,16 @@ components:
       properties:
         definition:
           type: string
+    MDMEntryConstraint:
+      type: object
+      required: [kind, path]
+      properties:
+        kind:
+          type: string
+          enum:
+            - UNIQUE
+            - UNIQUECASEINSENSITIVE
+        path:
+          type: array
+          items:
+            type: string
