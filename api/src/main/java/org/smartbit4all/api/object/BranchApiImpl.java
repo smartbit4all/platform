@@ -1,5 +1,8 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +17,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.collection.bean.StoredListData;
+import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
@@ -32,9 +37,6 @@ import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -291,25 +293,52 @@ public class BranchApiImpl implements BranchApi {
       Lock lock = objectApi.getLock(branchedObject.getSourceObjectLatestUri());
       lock.lock();
       try {
-        objectApi.save(
-            objectApi.load(branchedObject.getSourceObjectLatestUri()).modify(StoredListData.class,
-                l -> {
-                  ObjectNode branchedNode =
-                      objectApi.load(branchedObject.getBranchedObjectLatestUri());
-                  List<URI> branchedUris =
-                      branchedNode.getValueAsList(URI.class, StoredListData.URIS);
-                  for (int i = 0; i < branchedUris.size(); i++) {
-                    URI refUriOnBranch = branchedUris.get(i);
-                    BranchedObjectProcessingEntry referredEntry = processingEntiesByBranchUri
-                        .get(objectApi.getLatestUri(refUriOnBranch));
-                    if (referredEntry != null) {
-                      branchedUris.set(i, referredEntry.newUri);
-                    } else {
-                      branchedUris.set(i, objectApi.loadLatest(refUriOnBranch).getObjectUri());
-                    }
+        ObjectNode collectionNode = objectApi.load(branchedObject.getSourceObjectLatestUri());
+        if (branchedObject.getCollectionDescriptor()
+            .getCollectionType() == CollectionTypeEnum.LIST) {
+          collectionNode.modify(StoredListData.class,
+              l -> {
+                ObjectNode branchedNode =
+                    objectApi.load(branchedObject.getBranchedObjectLatestUri());
+                List<URI> branchedUris =
+                    branchedNode.getValueAsList(URI.class, StoredListData.URIS);
+                for (int i = 0; i < branchedUris.size(); i++) {
+                  URI refUriOnBranch = branchedUris.get(i);
+                  BranchedObjectProcessingEntry referredEntry = processingEntiesByBranchUri
+                      .get(objectApi.getLatestUri(refUriOnBranch));
+                  if (referredEntry != null) {
+                    branchedUris.set(i, referredEntry.newUri);
+                  } else {
+                    branchedUris.set(i, objectApi.loadLatest(refUriOnBranch).getObjectUri());
                   }
-                  return l.uris(branchedUris);
-                }));
+                }
+                return l.uris(branchedUris);
+              });
+        } else if (branchedObject.getCollectionDescriptor()
+            .getCollectionType() == CollectionTypeEnum.MAP) {
+          collectionNode.modify(StoredMapData.class,
+              m -> {
+                ObjectNode branchedNode =
+                    objectApi.load(branchedObject.getBranchedObjectLatestUri());
+                Map<String, URI> branchedUris =
+                    branchedNode.getValueAsMap(URI.class, StoredMapData.URIS);
+
+                branchedUris.entrySet().forEach(e -> {
+                  URI refUriOnBranch = e.getValue();
+                  BranchedObjectProcessingEntry referredEntry = processingEntiesByBranchUri
+                      .get(objectApi.getLatestUri(refUriOnBranch));
+                  if (referredEntry != null) {
+                    branchedUris.put(e.getKey(), referredEntry.newUri);
+                  } else {
+                    branchedUris.put(e.getKey(),
+                        objectApi.loadLatest(refUriOnBranch).getObjectUri());
+                  }
+                });
+
+                return m.uris(branchedUris);
+              });
+        }
+        objectApi.save(collectionNode);
       } finally {
         lock.unlock();
       }

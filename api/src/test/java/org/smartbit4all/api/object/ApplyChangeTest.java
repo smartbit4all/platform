@@ -956,7 +956,6 @@ class ApplyChangeTest {
 
   // replica of an obscure bug in p020:
   @Test
-  @Disabled
   void callingSetValueOnDeeplyNestedInlineMap_correctlyUpdatesTheValuesOfTheInlineMap() {
     // given:
     final SampleStandaloneObject o = new SampleStandaloneObject()
@@ -1005,7 +1004,7 @@ class ApplyChangeTest {
             SampleStandaloneObject.PROPERTY_CONTAINER,
             SamplePropertyContainer.PROPS,
             SampleProperties.ETC))
-                .containsEntry("4", "tessera");
+        .containsEntry("4", "tessera");
 
     uri = objectApi.save(node);
     node = objectApi.loadLatest(uri);

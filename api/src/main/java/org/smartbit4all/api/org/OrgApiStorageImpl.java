@@ -1,7 +1,8 @@
 package org.smartbit4all.api.org;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -20,6 +21,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +55,6 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -203,7 +203,6 @@ public class OrgApiStorageImpl implements OrgApi {
 
   /**
    * If there is no Group for the SecurtyGroup, then create one.
-   *
    */
   private Group checkGroupExist(SecurityGroup securityGroup) {
     Group group = getGroupByName(securityGroup.getName());
@@ -933,6 +932,10 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public void restoreDeletedUser(URI userUri) {
     final String username = getUser(userUri).getUsername();
+    if (username == null) {
+      throw new IllegalArgumentException(
+          "User " + userUri + " cannot be restored, because they lack a username!");
+    }
     final boolean usernameIsAlreadyTaken = getActiveUsers().stream()
         .map(User::getUsername)
         .anyMatch(username::equals);

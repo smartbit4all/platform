@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +55,9 @@ import org.smartbit4all.core.object.ObjectExtensionApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -116,7 +117,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   protected class PageContext {
 
     View view;
-    MDMEntryDescriptor entryDescriptor;
+    public MDMEntryDescriptor entryDescriptor;
     public MDMDefinition definition;
     MDMEntryApi entryApi;
     SearchIndex<BranchedObjectEntry> searchIndexAdmin;
@@ -309,12 +310,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         list = ctx.entryApi.getBranchingList();
       }
       gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexAdmin
-              .executeSearchOnNodes(list.stream().map(i -> {
-                ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
-                return objectApi.create(ctx.definition.getName(), objectDefinition,
-                    objectDefinition.toMap(i));
-              }), null));
+          createTableDataForGrid(ctx, list));
     } else {
       StoredList inactiveList = ctx.entryApi.getInactiveList();
       StoredList list = ctx.inactives ? inactiveList : ctx.entryApi.getList();
@@ -323,6 +319,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               null));
     }
 
+  }
+
+  protected TableData<?> createTableDataForGrid(PageContext ctx, List<BranchedObjectEntry> list) {
+    return ctx.searchIndexAdmin
+        .executeSearchOnNodes(list.stream().map(i -> {
+          ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
+          return objectApi.create(ctx.definition.getName(), objectDefinition,
+              objectDefinition.toMap(i));
+        }), null);
   }
 
   @Override

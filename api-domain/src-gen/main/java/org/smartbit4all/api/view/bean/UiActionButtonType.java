@@ -43,7 +43,9 @@ public enum UiActionButtonType {
   
   FAB("FAB"),
   
-  SEPARATOR("SEPARATOR");
+  SEPARATOR("SEPARATOR"),
+  
+  SUBMENU("SUBMENU");
 
   private String value;
 
