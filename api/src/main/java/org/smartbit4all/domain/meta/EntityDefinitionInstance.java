@@ -268,12 +268,15 @@ class EntityDefinitionInstance implements EntityDefinition {
       }
     });
     if (property instanceof PropertyOwned) {
-      // String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
+      // String name, Class<T> type, Comparator comparator , String defaultDbExpression,
+      // JDBCDataConverter<T, ?> typeHandler
       PropertyOwned<?> p = (PropertyOwned<?>) property;
       return (P) e.create(
-          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class,
+          new Class<?>[] {String.class, Class.class, java.util.Comparator.class, String.class,
+              JDBCDataConverter.class,
               ColumnTypeDefinition.class, Boolean.class},
-          new Object[] {p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter(),
+          new Object[] {p.getName(), p.type(), p.getComparator(), p.getDbExpression().get(null),
+              p.jdbcConverter(),
               p.getColumnType(), p.isMandatory()});
     } else if (property instanceof PropertyRef) {
       // String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty

@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -122,9 +123,10 @@ public class PropertyOwned<T> extends Property<T> {
     columnType = constructDefaultColumnDefinition();
   }
 
-  PropertyOwned(String name, Class<T> type, String defaultDbExpression,
+  PropertyOwned(String name, Class<T> type, Comparator<? super T> comparator,
+      String defaultDbExpression,
       JDBCDataConverter<T, ?> typeHandler, ColumnTypeDefinition columnType, Boolean isMandatory) {
-    super(name, type, typeHandler);
+    super(name, type, typeHandler, comparator);
     setDbExpression(defaultDbExpression);
     this.columnType = columnType;
     this.isMandatory = isMandatory;

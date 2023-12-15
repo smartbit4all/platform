@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.meta;
 
 import static java.util.stream.Collectors.toList;
+import java.util.Comparator;
 import java.util.List;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
@@ -58,20 +59,30 @@ public class EntityDefinitionBuilder {
 
   @SuppressWarnings("unchecked")
   public <T> EntityDefinitionBuilder ownedProperty(String name, Class<T> typeClass) {
-    addOwnedProperty(name, typeClass, -1, false);
+    addOwnedProperty(name, typeClass, -1, null, false);
     return this;
   }
 
   @SuppressWarnings("unchecked")
   public <T> PropertyOwned<T> addOwnedProperty(String name, Class<T> typeClass, int length) {
-    return addOwnedProperty(name, typeClass, length, false);
+    return addOwnedProperty(name, typeClass, length, null, false);
   }
 
   @SuppressWarnings("unchecked")
   public <T> PropertyOwned<T> addOwnedProperty(String name, Class<T> typeClass, int length,
       boolean primaryKey) {
+    return addOwnedProperty(name, typeClass, length, null, primaryKey);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> PropertyOwned<T> addOwnedProperty(String name, Class<T> typeClass, int length,
+      Comparator<? super T> comparator,
+      boolean primaryKey) {
     PropertyOwned<T> result =
         PropertyOwned.create(name, typeClass, length, false, name, instance.dataConverterHelper);
+    if (comparator != null) {
+      result.setComparator(comparator);
+    }
     PropertyOwned<T> resultProxy = instance.createPropertyProxy(result, PropertyOwned.class);
     instance.registerProperty(resultProxy);
 

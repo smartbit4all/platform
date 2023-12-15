@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +19,14 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -38,12 +44,10 @@ import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -574,6 +578,34 @@ public class CollectionApiTest {
 
     SearchIndex<SampleCategory> searchIndex =
         collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_CATEGORY, SampleCategory.class);
+    {
+      List<FilterExpressionOrderBy> orderList = Arrays.asList(
+          new FilterExpressionOrderBy().propertyName(SampleCategory.NAME).order(OrderEnum.ASC));
+      FilterExpressionList filterExpressions = new FilterExpressionList().addExpressionsItem(
+          new FilterExpressionData().boolOperator(FilterExpressionBoolOperator.AND)
+              .currentOperation(FilterExpressionOperation.LIKE)
+              .operand1(new FilterExpressionOperandData().isDataName(true)
+                  .valueAsString(SampleCategory.NAME))
+              .operand2(
+                  new FilterExpressionOperandData().isDataName(false)
+                      .valueAsString("category %%")));
+      {
+        PropertySet allProperties = searchIndex.getDefinition().getDefinition().allProperties();
+        TableData<?> tableData = searchIndex.executeSearch(filterExpressions, orderList);
+
+        List<String> categoryNameInOrder =
+            Arrays.asList(
+                "category 0", "category 1", "category 2", "category 3", "category 4", "category 5",
+                "category 6", "category 7", "category 8", "category 9", "category 10",
+                "category 11", "category 12", "category 13", "category 14", "category 15",
+                "category 16", "category 17", "category 18", "category 19", "category 20",
+                "category 21", "category 22", "category 23", "category 24");
+        DataColumn<?> colName =
+            tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
+        List<?> nameValues = tableData.values(colName);
+        assertEquals(categoryNameInOrder, nameValues);
+      }
+    }
     {
       FilterExpressionList filterExpressions = new FilterExpressionList()
           .addExpressionsItem(

@@ -1,14 +1,15 @@
 package org.smartbit4all.domain.meta;
 
+import java.util.Comparator;
+
 public class PropertyObject extends Property<Object> {
 
   private Property<?> basic;
 
   public PropertyObject(Property<?> basic) {
-    super(basic.getName(), Object.class, null);
+    super(basic.getName(), Object.class, null, (Comparator<? super Object>) basic.getComparator());
     this.jdbcConverter = (JDBCDataConverter<Object, ?>) basic.jdbcConverter();
     this.basic = basic;
-    createComparator(basic.type());
   }
 
   public final Property<?> getBasic() {

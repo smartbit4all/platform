@@ -94,6 +94,18 @@ public abstract class Property<T> {
     }
   }
 
+  public Property(String name, Class<T> type, JDBCDataConverter<T, ?> jdbcConverter,
+      Comparator<? super T> comparator) {
+    this.name = name;
+    this.type = type;
+    this.jdbcConverter = jdbcConverter;
+    this.comparator = comparator;
+    if (this.jdbcConverter == null && this instanceof PropertyOwned) {
+      throw new NullPointerException(
+          "The JDBCDataConverter must be specified! (" + name + ": " + type.getName() + ")");
+    }
+  }
+
   public String getName() {
     return name;
   }

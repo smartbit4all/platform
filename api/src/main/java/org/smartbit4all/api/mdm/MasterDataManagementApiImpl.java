@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.DefaultComparatorProvider;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
@@ -49,8 +52,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -109,6 +110,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   private MasterDataManagementApi self;
+
+  @Autowired
+  private DefaultComparatorProvider comparatorProvider;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -508,7 +512,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     // Setup the result index and call the init to initialize all the inner constructions.
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi);
+        filterExpressionApi, comparatorProvider);
     try {
       result.afterPropertiesSet();
     } catch (Exception e) {
@@ -574,7 +578,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     // Setup the result index and call the init to initialize all the inner constructions.
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi);
+        filterExpressionApi, comparatorProvider);
     try {
       result.afterPropertiesSet();
     } catch (Exception e) {
