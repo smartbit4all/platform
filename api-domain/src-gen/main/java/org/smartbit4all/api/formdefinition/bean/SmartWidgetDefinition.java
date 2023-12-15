@@ -58,7 +58,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.SELECTION,
   SmartWidgetDefinition.DIRECTION,
   SmartWidgetDefinition.MATRIX,
-  SmartWidgetDefinition.HINT
+  SmartWidgetDefinition.HINT,
+  SmartWidgetDefinition.WIDGET_DESCRIPTION
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -119,6 +120,9 @@ public class SmartWidgetDefinition {
 
   public static final String HINT = "hint";
   private SmartWidgetHint hint;
+
+  public static final String WIDGET_DESCRIPTION = "widgetDescription";
+  private String widgetDescription;
 
   public SmartWidgetDefinition() { 
   }
@@ -662,6 +666,33 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition widgetDescription(String widgetDescription) {
+    
+    this.widgetDescription = widgetDescription;
+    return this;
+  }
+
+   /**
+   * Get widgetDescription
+   * @return widgetDescription
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(WIDGET_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getWidgetDescription() {
+    return widgetDescription;
+  }
+
+
+  @JsonProperty(WIDGET_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWidgetDescription(String widgetDescription) {
+    this.widgetDescription = widgetDescription;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -689,12 +720,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.selection, smartWidgetDefinition.selection) &&
         Objects.equals(this.direction, smartWidgetDefinition.direction) &&
         Objects.equals(this.matrix, smartWidgetDefinition.matrix) &&
-        Objects.equals(this.hint, smartWidgetDefinition.hint);
+        Objects.equals(this.hint, smartWidgetDefinition.hint) &&
+        Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription);
   }
 
   @Override
@@ -720,6 +752,7 @@ public class SmartWidgetDefinition {
     sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
     sb.append("    matrix: ").append(toIndentedString(matrix)).append("\n");
     sb.append("    hint: ").append(toIndentedString(hint)).append("\n");
+    sb.append("    widgetDescription: ").append(toIndentedString(widgetDescription)).append("\n");
     sb.append("}");
     return sb.toString();
   }

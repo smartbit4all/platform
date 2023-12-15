@@ -108,7 +108,10 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionBuilderUiModel uiModel =
         new FilterExpressionBuilderUiModel().model(model);
 
-    setFilterFieldIds(uiModel.getModel().getWorkplaceList().getFilters());
+    if (Objects.nonNull(uiModel.getModel().getWorkplaceList())) {
+      setFilterFieldIds(uiModel.getModel().getWorkplaceList().getFilters());
+    }
+
     if (Objects.isNull(config)) {
       return uiModel;
     }

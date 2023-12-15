@@ -120,6 +120,8 @@ components:
         hint:
           description: This object define hint text and its position for the widget
           $ref: '#/components/schemas/SmartWidgetHint'
+        widgetDescription:
+          type: string
     SmartWidgetHint:
       type: object
       properties:
