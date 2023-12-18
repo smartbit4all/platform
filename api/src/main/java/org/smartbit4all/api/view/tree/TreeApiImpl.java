@@ -2,7 +2,6 @@ package org.smartbit4all.api.view.tree;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +26,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class TreeApiImpl implements TreeApi {
 
@@ -369,6 +369,9 @@ public class TreeApiImpl implements TreeApi {
   @Override
   public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
     UiTreeState treeState = viewApi.getWidgetModelFromView(UiTreeState.class, viewUuid, treeId);
+    if (treeState == null) {
+      return null;
+    }
     treeState.setViewUuid(viewUuid);
     T result = treeCall.apply(treeState);
     viewApi.setWidgetModelInView(UiTreeState.class, viewUuid, treeId, treeState);
