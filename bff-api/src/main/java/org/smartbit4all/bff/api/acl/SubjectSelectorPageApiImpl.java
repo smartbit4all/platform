@@ -77,8 +77,10 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SUBMIT_SELECTION)
-        .descriptor(new UiActionDescriptor().title(localeSettingApi.get(SUBMIT_SELECTION))
-            .color("primary").type(UiActionButtonType.RAISED)));
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(SUBMIT_SELECTION))
+            .color(UiActions.Color.PRIMARY)
+            .type(UiActionButtonType.RAISED)));
 
     return new SubjectSelectorPageModel()
         .descriptors(

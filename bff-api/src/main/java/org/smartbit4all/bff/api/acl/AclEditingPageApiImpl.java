@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.acl;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -68,9 +68,12 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SAVE));
     view.addActionsItem(
-        new UiAction().code(OPEN_SUBJECT_SELECTOR).descriptor(new UiActionDescriptor()
-            .title(localeSettingApi.get(OPEN_SUBJECT_SELECTOR)).color("primary")
-            .type(UiActionButtonType.RAISED)));
+        new UiAction()
+            .code(OPEN_SUBJECT_SELECTOR)
+            .descriptor(new UiActionDescriptor()
+                .title(localeSettingApi.get(OPEN_SUBJECT_SELECTOR))
+                .color(UiActions.Color.PRIMARY)
+                .type(UiActionButtonType.RAISED)));
 
 
     return acl;
