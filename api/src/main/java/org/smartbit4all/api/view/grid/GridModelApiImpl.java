@@ -138,8 +138,13 @@ public class GridModelApiImpl implements GridModelApi {
     List<GridColumnMeta> headers = new ArrayList<>();
     for (String column : columns) {
       keys[idxLastKey] = column;
-      Class<?> columnClass = entityDefinition.getProperty(column).type();
-      // }
+
+      Class<?> columnClass;
+      try {
+        columnClass = entityDefinition.getProperty(column).type();
+      } catch (IllegalArgumentException e) {
+        columnClass = String.class;
+      }
       headers.add(new GridColumnMeta().propertyName(column)
           .label(localeSettingApi.get(keys))
           .typeClass(columnClass.getName()));
