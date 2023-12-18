@@ -12,6 +12,7 @@ import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -92,14 +93,14 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
         .map(e -> new UiAction()
             .code(OPEN_LIST_PREFIX + e.getName())
-            .descriptor(getUiActionDescriptor(e)))
+            .descriptor(getUiActionDescriptor(e, e.getName())))
         .collect(toList()));
   }
 
-  protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e) {
+  protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e, String title) {
     return new UiActionDescriptor()
-        .title(getTitle(e))
-        .color("primary")
+        .title(e == null ? title : getTitle(e))
+        .color(UiActions.Color.PRIMARY)
         .type(UiActionButtonType.NORMAL);
   }
 
@@ -136,7 +137,20 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     View listView = new View().viewName(getListViewName())
         .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
         .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, descriptor);
+    styleViewActions(ctx.view, code);
     viewApi.showView(listView);
+  }
+
+  protected void styleViewActions(View view, String currentSelection) {
+    view.getActions().stream()
+        .filter(action -> action.getDescriptor() != null)
+        .forEach(action -> styleAction(action, currentSelection.equals(action.getCode())));
+  }
+
+  protected void styleAction(UiAction action, boolean isCurrentSelection) {
+    action.getDescriptor()
+        .type(isCurrentSelection ? UiActionButtonType.RAISED : UiActionButtonType.NORMAL)
+        .color(isCurrentSelection ? UiActions.Color.SECONDARY : UiActions.Color.PRIMARY);
   }
 
   protected String getListViewName() {
