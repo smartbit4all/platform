@@ -109,7 +109,7 @@ public class FileIO {
    * @param waitTime
    * @return
    */
-  private static long getNextRandomWaitTime(long waitTime) {
+  public static long getNextRandomWaitTime(long waitTime) {
     return waitTime * (rnd.nextInt(3) + 1);
   }
 

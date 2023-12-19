@@ -849,12 +849,15 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", storageObjectDataFile);
-        waitTime = waitTime * rnd.nextInt(4);
+        log.debug("Read error, waiting " + waitTime, e);
+        waitTime = FileIO.getNextRandomWaitTime(waitTime);
       } catch (IllegalStateException e) {
         if (e.getCause() instanceof IOException) {
           log.debug("Unable to read {}", storageObjectDataFile);
-          waitTime = waitTime * rnd.nextInt(4);
+          log.debug("Embedded read error, waiting " + waitTime, e);
+          waitTime = FileIO.getNextRandomWaitTime(waitTime);
         } else {
+          log.debug("Embedded read error, throwing", e);
           throw e;
         }
       }
@@ -885,7 +888,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", objectDataFile);
-        waitTime = waitTime * rnd.nextInt(4);
+        waitTime = FileIO.getNextRandomWaitTime(waitTime);
+        log.debug("Read error, waiting " + waitTime, e);
       }
       try {
         Thread.sleep(waitTime);
