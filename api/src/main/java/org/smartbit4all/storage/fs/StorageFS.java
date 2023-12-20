@@ -12,6 +12,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import com.fasterxml.jackson.core.JsonParseException;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -638,7 +640,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           versionDataSerialNo, options);
       storageObject =
           instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
-              storageObjectData, objectVersion);
+              objectVersion);
       storageObject.setAspects(objectVersion.getAspects());
       // }
 
@@ -840,12 +842,19 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
         Map<String, Object> obj = null;
         if (dataParts.get(1).length() != 0) {
-          obj = definition.deserializeAsMap(dataParts.get(1));
-          if (BinaryDataObject.class.equals(definition.getClazz())) {
+          try {
+            obj = definition.deserializeAsMap(dataParts.get(1));
+          } catch (JsonParseException e) {
+            log.error("Unable to deserialize " + storageObjectDataFile.toString(), e);
+            obj = new HashMap<>();
+            obj.put("uri", uri);
+          }
+          if (obj != null && BinaryDataObject.class.equals(definition.getClazz())) {
             obj.put("uri", uri);
           }
         }
-        return instanceOf(storage, definition, obj, dataObject, dataObject.getCurrentVersion());
+        return instanceOf(storage, definition, obj,
+            dataObject == null ? null : dataObject.getCurrentVersion());
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", storageObjectDataFile);
