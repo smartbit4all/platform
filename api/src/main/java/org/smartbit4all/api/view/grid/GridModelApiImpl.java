@@ -64,8 +64,6 @@ public class GridModelApiImpl implements GridModelApi {
 
   private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
 
-  private static final String SERVER_MODEL_POSTFIX = "_serverModel";
-
   private static final String EXPAND_POSTFIX = "_expandCallback";
 
   private static final String GRIDROW_POSTFIX = "_gridrowCallback";
@@ -202,7 +200,7 @@ public class GridModelApiImpl implements GridModelApi {
     gridModel.setViewUuid(viewUuid);
     loadGridDataForUser(viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
-    viewApi.setWidgetModelInView(GridServerModel.class, viewUuid, gridId + SERVER_MODEL_POSTFIX,
+    viewApi.setWidgetServerModelInView(GridServerModel.class, viewUuid, gridId,
         new GridServerModel());
   }
 
@@ -1059,9 +1057,7 @@ public class GridModelApiImpl implements GridModelApi {
     if (viewUuid == null) {
       return null;
     }
-    return viewApi.getWidgetModelFromView(GridServerModel.class, viewUuid,
-        gridId + SERVER_MODEL_POSTFIX);
+    return viewApi.getWidgetServerModelFromView(GridServerModel.class, viewUuid, gridId);
   }
-
 
 }

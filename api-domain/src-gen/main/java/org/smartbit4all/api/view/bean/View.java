@@ -61,6 +61,7 @@ import javax.validation.Valid;
   View.ACTIONS,
   View.EVENT_HANDLERS,
   View.WIDGET_MODELS,
+  View.WIDGET_SERVER_MODELS,
   View.VALUE_SETS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE,
   View.CALLBACKS,
@@ -117,6 +118,9 @@ public class View {
 
   public static final String WIDGET_MODELS = "widgetModels";
   private Map<String, Object> widgetModels = new HashMap<>();
+
+  public static final String WIDGET_SERVER_MODELS = "widgetServerModels";
+  private Map<String, Object> widgetServerModels = new HashMap<>();
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = new HashMap<>();
@@ -625,6 +629,39 @@ public class View {
   }
 
 
+  public View widgetServerModels(Map<String, Object> widgetServerModels) {
+    
+    this.widgetServerModels = widgetServerModels;
+    return this;
+  }
+
+  public View putWidgetServerModelsItem(String key, Object widgetServerModelsItem) {
+    this.widgetServerModels.put(key, widgetServerModelsItem);
+    return this;
+  }
+
+   /**
+   * Get widgetServerModels
+   * @return widgetServerModels
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(WIDGET_SERVER_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getWidgetServerModels() {
+    return widgetServerModels;
+  }
+
+
+  @JsonProperty(WIDGET_SERVER_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWidgetServerModels(Map<String, Object> widgetServerModels) {
+    this.widgetServerModels = widgetServerModels;
+  }
+
+
   public View valueSets(Map<String, ValueSet> valueSets) {
     
     this.valueSets = valueSets;
@@ -812,6 +849,7 @@ public class View {
         Objects.equals(this.actions, view.actions) &&
         Objects.equals(this.eventHandlers, view.eventHandlers) &&
         Objects.equals(this.widgetModels, view.widgetModels) &&
+        Objects.equals(this.widgetServerModels, view.widgetServerModels) &&
         Objects.equals(this.valueSets, view.valueSets) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose) &&
         Objects.equals(this.callbacks, view.callbacks) &&
@@ -821,7 +859,7 @@ public class View {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts);
   }
 
   @Override
@@ -844,6 +882,7 @@ public class View {
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    eventHandlers: ").append(toIndentedString(eventHandlers)).append("\n");
     sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
+    sb.append("    widgetServerModels: ").append(toIndentedString(widgetServerModels)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("    callbacks: ").append(toIndentedString(callbacks)).append("\n");

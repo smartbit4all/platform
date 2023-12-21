@@ -523,7 +523,7 @@ components:
           type: object
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,valueSets,callbacks,eventHandlers,layouts,componentLayouts]
+      required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,widgetServerModels,valueSets,callbacks,eventHandlers,layouts,componentLayouts]
       properties:
         uuid:
           type: string
@@ -574,6 +574,10 @@ components:
           items:
             $ref: '#/components/schemas/ViewEventHandler'
         widgetModels:
+          type: string
+          additionalProperties:
+            type: object
+        widgetServerModels:
           type: string
           additionalProperties:
             type: object

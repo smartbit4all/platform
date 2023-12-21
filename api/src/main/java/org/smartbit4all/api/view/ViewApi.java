@@ -117,7 +117,12 @@ public interface ViewApi {
 
   <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String widgetId);
 
+  <T> T getWidgetServerModelFromView(Class<T> clazz, UUID viewUuid, String widgetId);
+
   <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String widgetId, T widgetModel);
+
+  <T> void setWidgetServerModelInView(Class<T> clazz, UUID viewUuid, String widgetId,
+      T widgetModel);
 
   BinaryData downloadItem(UUID uuid, String item);
 

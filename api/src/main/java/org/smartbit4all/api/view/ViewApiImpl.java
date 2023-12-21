@@ -374,6 +374,14 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
+  public <T> T getWidgetServerModelFromView(Class<T> clazz, UUID viewUuid, String widgetId) {
+    View view = getView(viewUuid);
+    T widgetModel = objectApi.asType(clazz, view.getWidgetServerModels().get(widgetId));
+    view.getWidgetServerModels().put(widgetId, widgetModel);
+    return widgetModel;
+  }
+
+  @Override
   public <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String widgetId) {
     String[] paths = getPathParts(widgetId);
     String location = paths[0];
@@ -397,6 +405,13 @@ public class ViewApiImpl implements ViewApi {
     } else {
       throw new IllegalArgumentException("Invalid path");
     }
+  }
+
+  @Override
+  public <T> void setWidgetServerModelInView(Class<T> clazz, UUID viewUuid, String widgetId,
+      T widgetModel) {
+    View view = getView(viewUuid);
+    view.getWidgetServerModels().put(widgetId, widgetModel);
   }
 
   @Override
