@@ -37,9 +37,8 @@ public class ApiInvocationHandler<A> implements InvocationHandler {
       InvocationApi invocationApi) {
     ApiInvocationHandler<A> invocationHandler =
         new ApiInvocationHandler<>(class1, name, invocationApi);
-    A apiProxy = (A) Proxy.newProxyInstance(class1.getClassLoader(),
+    return (A) Proxy.newProxyInstance(class1.getClassLoader(),
         new Class[] {class1}, invocationHandler);
-    return apiProxy;
   }
 
   @Override

@@ -408,11 +408,13 @@ components:
         event:
           type: string
           description: The name of the publised event.
-        subscriptions:
+        parameters:
           type: array
-          description: All the apis subscribed for the given event.
+          description: |
+            The parameters of the given event. These parameteres are requiered for the subscribed
+            methods.
           items:
-            $ref: '#/components/schemas/EventSubscriptionData'
+            $ref: '#/components/schemas/ParameterData'
     EventSubscriptionData:
       type: object
       description: |
@@ -463,9 +465,12 @@ components:
       description: |
         The method of an api that can be called.
       properties:
-        uri:
+        id:
           type: string
-          format: uri
+          description: |
+            The unique identifier of the given method inside its api. It consists of the name and the
+            names of the parameter types. It must be unique by definition even for the runtime envorinment
+            to be able to invoke the proper method.
         name:
           type: string
         returnType:

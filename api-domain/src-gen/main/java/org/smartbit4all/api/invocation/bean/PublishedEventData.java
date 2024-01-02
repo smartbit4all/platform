@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
+import org.smartbit4all.api.invocation.bean.ParameterData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,7 +37,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   PublishedEventData.API,
   PublishedEventData.EVENT,
-  PublishedEventData.SUBSCRIPTIONS
+  PublishedEventData.PARAMETERS
 })
 @JsonTypeName("PublishedEventData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,8 +48,8 @@ public class PublishedEventData {
   public static final String EVENT = "event";
   private String event;
 
-  public static final String SUBSCRIPTIONS = "subscriptions";
-  private List<EventSubscriptionData> subscriptions = new ArrayList<>();
+  public static final String PARAMETERS = "parameters";
+  private List<ParameterData> parameters = null;
 
   public PublishedEventData() { 
   }
@@ -110,37 +110,39 @@ public class PublishedEventData {
   }
 
 
-  public PublishedEventData subscriptions(List<EventSubscriptionData> subscriptions) {
+  public PublishedEventData parameters(List<ParameterData> parameters) {
     
-    this.subscriptions = subscriptions;
+    this.parameters = parameters;
     return this;
   }
 
-  public PublishedEventData addSubscriptionsItem(EventSubscriptionData subscriptionsItem) {
-    this.subscriptions.add(subscriptionsItem);
+  public PublishedEventData addParametersItem(ParameterData parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new ArrayList<>();
+    }
+    this.parameters.add(parametersItem);
     return this;
   }
 
    /**
-   * All the apis subscribed for the given event.
-   * @return subscriptions
+   * The parameters of the given event. These parameteres are requiered for the subscribed methods. 
+   * @return parameters
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "All the apis subscribed for the given event.")
-  @JsonProperty(SUBSCRIPTIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "The parameters of the given event. These parameteres are requiered for the subscribed methods. ")
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<EventSubscriptionData> getSubscriptions() {
-    return subscriptions;
+  public List<ParameterData> getParameters() {
+    return parameters;
   }
 
 
-  @JsonProperty(SUBSCRIPTIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSubscriptions(List<EventSubscriptionData> subscriptions) {
-    this.subscriptions = subscriptions;
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParameters(List<ParameterData> parameters) {
+    this.parameters = parameters;
   }
 
 
@@ -155,12 +157,12 @@ public class PublishedEventData {
     PublishedEventData publishedEventData = (PublishedEventData) o;
     return Objects.equals(this.api, publishedEventData.api) &&
         Objects.equals(this.event, publishedEventData.event) &&
-        Objects.equals(this.subscriptions, publishedEventData.subscriptions);
+        Objects.equals(this.parameters, publishedEventData.parameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(api, event, subscriptions);
+    return Objects.hash(api, event, parameters);
   }
 
   @Override
@@ -169,7 +171,7 @@ public class PublishedEventData {
     sb.append("class PublishedEventData {\n");
     sb.append("    api: ").append(toIndentedString(api)).append("\n");
     sb.append("    event: ").append(toIndentedString(event)).append("\n");
-    sb.append("    subscriptions: ").append(toIndentedString(subscriptions)).append("\n");
+    sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("}");
     return sb.toString();
   }

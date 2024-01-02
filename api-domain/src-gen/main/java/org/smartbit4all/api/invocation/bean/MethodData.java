@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.ParameterData;
@@ -36,7 +35,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The method of an api that can be called. ")
 @JsonPropertyOrder({
-  MethodData.URI,
+  MethodData.ID,
   MethodData.NAME,
   MethodData.RETURN_TYPE,
   MethodData.PARAMETERS
@@ -44,8 +43,8 @@ import javax.validation.Valid;
 @JsonTypeName("MethodData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MethodData {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String ID = "id";
+  private String id;
 
   public static final String NAME = "name";
   private String name;
@@ -59,32 +58,30 @@ public class MethodData {
   public MethodData() { 
   }
 
-  public MethodData uri(URI uri) {
+  public MethodData id(String id) {
     
-    this.uri = uri;
+    this.id = id;
     return this;
   }
 
    /**
-   * Get uri
-   * @return uri
+   * The unique identifier of the given method inside its api. It consists of the name and the names of the parameter types. It must be unique by definition even for the runtime envorinment to be able to invoke the proper method. 
+   * @return id
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The unique identifier of the given method inside its api. It consists of the name and the names of the parameter types. It must be unique by definition even for the runtime envorinment to be able to invoke the proper method. ")
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getUri() {
-    return uri;
+  public String getId() {
+    return id;
   }
 
 
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(String id) {
+    this.id = id;
   }
 
 
@@ -186,7 +183,7 @@ public class MethodData {
       return false;
     }
     MethodData methodData = (MethodData) o;
-    return Objects.equals(this.uri, methodData.uri) &&
+    return Objects.equals(this.id, methodData.id) &&
         Objects.equals(this.name, methodData.name) &&
         Objects.equals(this.returnType, methodData.returnType) &&
         Objects.equals(this.parameters, methodData.parameters);
@@ -194,14 +191,14 @@ public class MethodData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, returnType, parameters);
+    return Objects.hash(id, name, returnType, parameters);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MethodData {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    returnType: ").append(toIndentedString(returnType)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
