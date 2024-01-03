@@ -8,6 +8,8 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
 import org.smartbit4all.api.collection.StorageSequenceApi;
 import org.smartbit4all.api.collection.StorageSequenceApiImpl;
+import org.smartbit4all.api.collection.VectorDbManagementApi;
+import org.smartbit4all.api.collection.VectorDbManagementApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
@@ -374,6 +376,11 @@ public class PlatformApiConfig {
   @Bean
   public StorageSequenceApi storageSequenceApi() {
     return new StorageSequenceApiImpl();
+  }
+
+  @Bean
+  public VectorDbManagementApi vectorDbManagementApi() {
+    return new VectorDbManagementApiImpl();
   }
 
   @Bean
