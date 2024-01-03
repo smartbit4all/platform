@@ -99,7 +99,7 @@ components:
         The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture 
         or whatever else. It is normally constructed by a Converter that creates the result from the input object.
       type: object
-      required: [inputType, vector]
+      required: [inputType, inputObject, vector]
       properties:
         inputType:
           description: The type of the input object.
@@ -107,6 +107,7 @@ components:
         inputObject:
           description: The input object itself.
           type: object
+          additionalProperties: true
         conversion:
           description: The name fo the conversion algorithm like ada2 in case of string.
           type: string
@@ -115,3 +116,15 @@ components:
           items:
             type: number
             format: float
+    VectorSearchResultItem:
+      description: |
+        The vector search result items.
+      type: object
+      required: [inputType, inputObject, vector]
+      properties:
+        id:
+          description: The unique identifier of the object found.
+        score:
+          description: The score of the found item.
+        value:          
+          $ref: '#/components/schemas/VectorValue'

@@ -23,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -46,7 +48,7 @@ public class VectorValue {
   private String inputType;
 
   public static final String INPUT_OBJECT = "inputObject";
-  private Object inputObject;
+  private Map<String, Object> inputObject = new HashMap<>();
 
   public static final String CONVERSION = "conversion";
   private String conversion;
@@ -85,9 +87,14 @@ public class VectorValue {
   }
 
 
-  public VectorValue inputObject(Object inputObject) {
+  public VectorValue inputObject(Map<String, Object> inputObject) {
     
     this.inputObject = inputObject;
+    return this;
+  }
+
+  public VectorValue putInputObjectItem(String key, Object inputObjectItem) {
+    this.inputObject.put(key, inputObjectItem);
     return this;
   }
 
@@ -95,19 +102,20 @@ public class VectorValue {
    * The input object itself.
    * @return inputObject
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The input object itself.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The input object itself.")
   @JsonProperty(INPUT_OBJECT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
-  public Object getInputObject() {
+  public Map<String, Object> getInputObject() {
     return inputObject;
   }
 
 
   @JsonProperty(INPUT_OBJECT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInputObject(Object inputObject) {
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+  public void setInputObject(Map<String, Object> inputObject) {
     this.inputObject = inputObject;
   }
 

@@ -1,21 +1,22 @@
 package org.smartbit4all.api.collection;
 
 import java.util.List;
-import java.util.Map;
+import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
+import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
 public interface VectorDbApi extends ContributionApi {
 
-  String addPoint(String collectionName, List<Float> vector, Map<String, Object> payload,
-      ServiceConnection dbConnection);
+  String addPoint(ServiceConnection dbConnection, String collectionName, VectorValue value);
 
-  String createCollection(String name, ServiceConnection dbConnection);
+  String createCollection(ServiceConnection dbConnection, String name);
 
-  String deleteCollection(String name, ServiceConnection dbConnection);
+  String deleteCollection(ServiceConnection dbConnection, String name);
 
-  boolean collectionExists(String name, ServiceConnection dbConnection);
+  boolean collectionExists(ServiceConnection dbConnection, String name);
 
-  String search(String collectionName, List<Float> searchVector, ServiceConnection dbConnection);
+  List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
+      VectorValue searchVector, int limit);
 
 }
