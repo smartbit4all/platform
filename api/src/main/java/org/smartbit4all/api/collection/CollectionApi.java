@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.function.Supplier;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.core.object.ObjectNodeReference;
 
 /**
@@ -148,5 +149,8 @@ public interface CollectionApi {
    * @return
    */
   StoredSequence sequence(String logicalSchema, String name);
+
+  VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
+      ServiceConnection embeddingConnection);
 
 }

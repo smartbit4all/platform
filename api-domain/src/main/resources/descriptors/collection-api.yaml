@@ -94,3 +94,24 @@ components:
           format: uri
         collectionType:
           enum: [LIST, MAP, REFERENCE]
+    VectorValue:
+      description: |
+        The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture 
+        or whatever else. It is normally constructed by a Converter that creates the result from the input object.
+      type: object
+      required: [inputType, vector]
+      properties:
+        inputType:
+          description: The type of the input object.
+          type: string
+        inputObject:
+          description: The input object itself.
+          type: object
+        conversion:
+          description: The name fo the conversion algorithm like ada2 in case of string.
+          type: string
+        vector:
+          type: array
+          items:
+            type: number
+            format: float

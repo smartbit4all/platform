@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -52,8 +52,6 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
 
   private Class<O> indexedObjectDefinitionClass;
-
-
 
   protected SearchIndexMappingObject objectMapping = new SearchIndexMappingObject();
 

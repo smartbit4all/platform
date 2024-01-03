@@ -567,3 +567,34 @@ components:
           items:
             type: string
             format: uri
+    ServiceConnection:
+      type: object
+      description: |
+        This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary
+        parameters. It can be managed as MDM entry for different purposes.
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          description: The identifier name of the AI service.
+          type: string
+        apiName:
+          description: |
+            The name of the local api to access the given endpoint. Usually it is the name of a contribution api.
+          type: string
+        authToken:
+          description: |
+            As a crucial parameter for the access the authentication token (bearer token or similar).
+          type: string
+        apiVersion:
+          description: |
+            The optional version parameter of the api endpoint.
+          type: string
+        endpoint:
+          description: |
+            The endpoint URL typically.
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true

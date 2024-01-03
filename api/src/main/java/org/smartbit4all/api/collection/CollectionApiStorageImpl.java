@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
@@ -241,6 +242,13 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
       cacheEntry = new StoredListCacheEntry();
     }
     return cacheEntry;
+  }
+
+  @Override
+  public VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
+      ServiceConnection embeddingConnection) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
