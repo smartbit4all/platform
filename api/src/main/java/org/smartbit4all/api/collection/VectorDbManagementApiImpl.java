@@ -14,9 +14,10 @@ public class VectorDbManagementApiImpl extends PrimaryApiImpl<VectorDbApi>
   }
 
   @Override
-  public String addPoint(ServiceConnection dbConnection, String collectionName, VectorValue value) {
+  public String addPoint(ServiceConnection dbConnection, String collectionName, String id,
+      VectorValue value) {
     return getContributionApi(dbConnection.getApiName()).addPoint(dbConnection, collectionName,
-        value);
+        id, value);
   }
 
   @Override

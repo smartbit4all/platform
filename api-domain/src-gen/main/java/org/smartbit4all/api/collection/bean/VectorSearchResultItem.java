@@ -22,11 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.smartbit4all.api.collection.bean.VectorValue;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -45,10 +41,10 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class VectorSearchResultItem {
   public static final String ID = "id";
-  private JsonNullable<Object> id = JsonNullable.<Object>of(null);
+  private String id;
 
   public static final String SCORE = "score";
-  private JsonNullable<Object> score = JsonNullable.<Object>of(null);
+  private Float score;
 
   public static final String VALUE = "value";
   private VectorValue value;
@@ -56,9 +52,9 @@ public class VectorSearchResultItem {
   public VectorSearchResultItem() { 
   }
 
-  public VectorSearchResultItem id(Object id) {
-    this.id = JsonNullable.<Object>of(id);
+  public VectorSearchResultItem id(String id) {
     
+    this.id = id;
     return this;
   }
 
@@ -68,32 +64,24 @@ public class VectorSearchResultItem {
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "The unique identifier of the object found.")
-  @JsonIgnore
-
-  public Object getId() {
-        return id.orElse(null);
-  }
-
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public JsonNullable<Object> getId_JsonNullable() {
+  public String getId() {
     return id;
   }
-  
+
+
   @JsonProperty(ID)
-  public void setId_JsonNullable(JsonNullable<Object> id) {
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(String id) {
     this.id = id;
   }
 
-  public void setId(Object id) {
-    this.id = JsonNullable.<Object>of(id);
-  }
 
-
-  public VectorSearchResultItem score(Object score) {
-    this.score = JsonNullable.<Object>of(score);
+  public VectorSearchResultItem score(Float score) {
     
+    this.score = score;
     return this;
   }
 
@@ -103,26 +91,18 @@ public class VectorSearchResultItem {
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "The score of the found item.")
-  @JsonIgnore
-
-  public Object getScore() {
-        return score.orElse(null);
-  }
-
   @JsonProperty(SCORE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public JsonNullable<Object> getScore_JsonNullable() {
+  public Float getScore() {
     return score;
   }
-  
-  @JsonProperty(SCORE)
-  public void setScore_JsonNullable(JsonNullable<Object> score) {
-    this.score = score;
-  }
 
-  public void setScore(Object score) {
-    this.score = JsonNullable.<Object>of(score);
+
+  @JsonProperty(SCORE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScore(Float score) {
+    this.score = score;
   }
 
 
@@ -163,25 +143,14 @@ public class VectorSearchResultItem {
       return false;
     }
     VectorSearchResultItem vectorSearchResultItem = (VectorSearchResultItem) o;
-    return equalsNullable(this.id, vectorSearchResultItem.id) &&
-        equalsNullable(this.score, vectorSearchResultItem.score) &&
+    return Objects.equals(this.id, vectorSearchResultItem.id) &&
+        Objects.equals(this.score, vectorSearchResultItem.score) &&
         Objects.equals(this.value, vectorSearchResultItem.value);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(id), hashCodeNullable(score), value);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+    return Objects.hash(id, score, value);
   }
 
   @Override

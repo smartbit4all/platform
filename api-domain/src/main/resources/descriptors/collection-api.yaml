@@ -123,8 +123,11 @@ components:
       required: [inputType, inputObject, vector]
       properties:
         id:
+          type: string
           description: The unique identifier of the object found.
         score:
+          type: number
+          format: float
           description: The score of the found item.
         value:          
           $ref: '#/components/schemas/VectorValue'
