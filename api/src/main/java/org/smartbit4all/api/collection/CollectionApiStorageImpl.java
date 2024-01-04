@@ -50,6 +50,12 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Autowired
   private StorageSequenceApi sequenceApi;
 
+  @Autowired
+  private VectorDBApi vectorDBApi;
+
+  @Autowired
+  private EmbeddingApi embeddingApi;
+
   /**
    * This map contains the already used {@link Storage} instances mapped by the schema name.
    */
@@ -247,8 +253,8 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
       ServiceConnection embeddingConnection) {
-    // TODO Auto-generated method stub
-    return null;
+    return new VectorCollectionImpl(vectorDBApi, vectorDBConnection, embeddingApi,
+        embeddingConnection, name);
   }
 
 }

@@ -6,11 +6,11 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public class VectorDbManagementApiImpl extends PrimaryApiImpl<VectorDbApi>
-    implements VectorDbManagementApi {
+public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi>
+    implements VectorDBApi {
 
-  public VectorDbManagementApiImpl() {
-    super(VectorDbApi.class);
+  public VectorDDBApiImpl() {
+    super(VectorDBContibutionApi.class);
   }
 
   @Override

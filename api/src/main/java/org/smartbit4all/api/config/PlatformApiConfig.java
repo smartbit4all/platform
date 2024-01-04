@@ -4,12 +4,14 @@ import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.EmbeddingApi;
+import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
 import org.smartbit4all.api.collection.StorageSequenceApi;
 import org.smartbit4all.api.collection.StorageSequenceApiImpl;
-import org.smartbit4all.api.collection.VectorDbManagementApi;
-import org.smartbit4all.api.collection.VectorDbManagementApiImpl;
+import org.smartbit4all.api.collection.VectorDBApi;
+import org.smartbit4all.api.collection.VectorDDBApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
@@ -379,8 +381,13 @@ public class PlatformApiConfig {
   }
 
   @Bean
-  public VectorDbManagementApi vectorDbManagementApi() {
-    return new VectorDbManagementApiImpl();
+  public VectorDBApi vectorDbManagementApi() {
+    return new VectorDDBApiImpl();
+  }
+
+  @Bean
+  public EmbeddingApi embeddingManagementApi() {
+    return new EmbeddingApiImpl();
   }
 
   @Bean

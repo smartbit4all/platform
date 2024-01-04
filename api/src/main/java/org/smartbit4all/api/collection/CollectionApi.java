@@ -150,6 +150,15 @@ public interface CollectionApi {
    */
   StoredSequence sequence(String logicalSchema, String name);
 
+  /**
+   * Provides a vector collection that refers to a {@link VectorDBContibutionApi} and an
+   * {@link EmbeddingContributionApi} named by the two {@link ServiceConnection}.
+   * 
+   * @param name The name of the collection in the Vector DB.
+   * @param vectorDBConnection
+   * @param embeddingConnection
+   * @return The {@link VectorCollection} ready to use.
+   */
   VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
       ServiceConnection embeddingConnection);
 

@@ -3,12 +3,10 @@ package org.smartbit4all.api.collection;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
-import org.smartbit4all.api.contribution.PrimaryApi;
+import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public interface VectorDbManagementApi extends PrimaryApi<VectorDbApi> {
-
-  static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
+public interface VectorDBContibutionApi extends ContributionApi {
 
   String addPoint(ServiceConnection dbConnection, String collectionName, String id,
       VectorValue value);
