@@ -1,10 +1,14 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
@@ -87,14 +91,25 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   }
 
   protected void refreshUiActions(PageContext context) {
-    context.view.actions(context.definition.getDescriptors().values().stream()
+    List<UiAction> actions = new ArrayList<>();
+    if (context.definition.getBranchingStrategy() != null
+        && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
+      actions.add(new UiAction()
+          .code(ACTION_OPEN_MDM_CHANGES)
+          .descriptor(getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
+    }
+
+    List<UiAction> openListActions = context.definition.getDescriptors().values().stream()
         .filter(this::filterDescriptor)
         .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
         .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
         .map(e -> new UiAction()
             .code(OPEN_LIST_PREFIX + e.getName())
             .descriptor(getUiActionDescriptor(e, e.getName())))
-        .collect(toList()));
+        .collect(toList());
+    actions.addAll(openListActions);
+
+    context.view.actions(actions);
   }
 
   protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e, String title) {
@@ -160,6 +175,16 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   @Override
   public void performNewEntry(UUID viewUuid, UiActionRequest request) {
     // NOP
+  }
+
+  @Override
+  public void performOpenChanges(UUID viewUuid, UiActionRequest request) {
+    View view = viewApi.getView(viewUuid);
+    PageContext context = getContextByView(view);
+    viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
+        .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
+            context.definition.getName()));
+    styleViewActions(view, ACTION_OPEN_MDM_CHANGES);
   }
 
 }

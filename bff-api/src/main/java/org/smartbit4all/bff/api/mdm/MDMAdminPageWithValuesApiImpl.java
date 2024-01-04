@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -13,8 +14,13 @@ public class MDMAdminPageWithValuesApiImpl extends MDMAdminPageApiImpl
   @Override
   protected void refreshUiActions(PageContext context) {
     super.refreshUiActions(context);
+    int idxToInsert = context.view.getActions().isEmpty()
+        || !UiActions.contains(context.view.getActions(), ACTION_OPEN_MDM_CHANGES)
+            ? 0
+            : 1;
+
     context.view.getActions().add(
-        0,
+        idxToInsert,
         new UiAction()
             .code(ACTION_OPEN_VALUES)
             .descriptor(getUiActionDescriptor(null,

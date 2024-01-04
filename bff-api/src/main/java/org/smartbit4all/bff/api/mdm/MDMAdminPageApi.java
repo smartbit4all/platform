@@ -28,14 +28,14 @@ public interface MDMAdminPageApi extends PageApi<Object> {
   static final String MDM_EDIT = MDMConstants.MDM_EDIT;
 
   /**
-   * Open the given MDMListPage for the descriptor.
-   */
-  static final String ACTION_OPEN_LIST = "OPEN_LIST";
-
-  /**
    * The identifier of of the {@link MDMDefinition} object parameter.
    */
   static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
+
+  /**
+   * Open the given MDMListPage for the descriptor.
+   */
+  static final String ACTION_OPEN_LIST = "OPEN_LIST";
 
   /**
    * The identifier of of the {@link MDMEntryDescriptor} object parameter.
@@ -47,10 +47,18 @@ public interface MDMAdminPageApi extends PageApi<Object> {
    */
   static final String ACTION_ADD_NEW_ENTRY = "ADD_NEW_ENTRY";
 
+  /**
+   * The identifier of the open mdm changes page.
+   */
+  static final String ACTION_OPEN_MDM_CHANGES = "OPEN_MDM_CHANGES";
+
   @ActionHandler
   void openList(UUID viewUuid, UiActionRequest request);
 
   @ActionHandler(ACTION_ADD_NEW_ENTRY)
   void performNewEntry(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_OPEN_MDM_CHANGES)
+  void performOpenChanges(UUID viewUuid, UiActionRequest request);
 
 }
