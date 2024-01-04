@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -437,6 +437,25 @@ public class ObjectApiImpl implements ObjectApi {
           "Object on path is not Map<>!" + String.join(",", paths));
     }
     return asMap(clazz, (Map<String, ?>) map);
+  }
+
+  @Override
+  @Deprecated
+  public Object setValueIntoObjectMap(Map<String, Object> map, Object newValue, String... paths) {
+    if (map == null) {
+      return null;
+    }
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      Object prevValue = map.get(path);
+      if (paths.length == 1) {
+        map.put(path, newValue);
+        return prevValue;
+      }
+      // TODO Add optional parameter and use it to set the value if isPresent
+      return continueFromFirstValue(prevValue, paths);
+    }
+    return map;
   }
 
   @Override

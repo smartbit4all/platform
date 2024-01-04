@@ -300,7 +300,23 @@ public interface ObjectApi {
 
   <V> Map<String, V> getMapFromObject(Class<V> clazz, Object object, String... paths);
 
+  /**
+   * Get the value located on a given path in the parameter map.
+   * 
+   * @param map The map that contains the property values of an object.
+   * @param paths The path of the property to set.
+   * @return The value on the given path.
+   */
   Object getValueFromObjectMap(Map<String, Object> map, String... paths);
+
+  /**
+   * Set the value located on a given path in the parameter map.
+   * 
+   * @param map The map that contains the property values of an object.
+   * @param paths The path of the property to set.
+   * @return The previous value on the given path.
+   */
+  Object setValueIntoObjectMap(Map<String, Object> map, Object value, String... paths);
 
   boolean equalsIgnoreVersion(URI a, URI b);
 

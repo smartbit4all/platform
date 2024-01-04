@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import java.util.List;
+
 /**
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
  * dependence on libraries like Google Guava or Apache Commons. This list of constants were inspired
@@ -149,6 +151,13 @@ public class StringConstant {
       result.append(s);
     }
     return result.toString();
+  }
+
+  public static final String[] toArray(List<String> stringList) {
+    if (stringList == null) {
+      return StringConstant.EMPTY_ARRAY;
+    }
+    return stringList.toArray(StringConstant.EMPTY_ARRAY);
   }
 
 }
