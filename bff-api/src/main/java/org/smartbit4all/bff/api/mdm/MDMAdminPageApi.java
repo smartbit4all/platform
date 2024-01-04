@@ -7,6 +7,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.core.utility.StringConstant;
 
 
 /**
@@ -33,9 +34,17 @@ public interface MDMAdminPageApi extends PageApi<Object> {
   static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
 
   /**
+   * The code of the already selected action. Use it when we show a subpage under admin page
+   * immediately.
+   */
+  static final String PARAM_ALREADY_SELECTED_ACTION_CODE = "ALREADY_SELECTED_ACTION_CODE";
+
+  /**
    * Open the given MDMListPage for the descriptor.
    */
   static final String ACTION_OPEN_LIST = "OPEN_LIST";
+
+  static final String OPEN_LIST_PREFIX = ACTION_OPEN_LIST + StringConstant.UNDERLINE;
 
   /**
    * The identifier of of the {@link MDMEntryDescriptor} object parameter.

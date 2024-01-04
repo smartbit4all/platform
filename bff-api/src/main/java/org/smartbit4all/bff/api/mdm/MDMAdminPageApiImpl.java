@@ -22,13 +22,11 @@ import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
-
-  protected static final String OPEN_LIST_PREFIX = ACTION_OPEN_LIST + StringConstant.UNDERLINE;
 
   @Autowired
   protected MasterDataManagementApi masterDataManagementApi;
@@ -51,14 +49,21 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
     View view;
     public MDMDefinition definition;
+    public String alreadySelectedActionCode;
 
     PageContext loadByView() {
-      definition = masterDataManagementApi.getDefinition(getDefinition(view));
+      ObjectMapHelper parameters = parameters(view);
+      definition = masterDataManagementApi.getDefinition(getDefinition(parameters));
+      alreadySelectedActionCode = getAlreadySelectedActionCode(parameters);
       return this;
     }
 
-    private final String getDefinition(View view) {
-      return extractParam(String.class, PARAM_MDM_DEFINITION, view.getParameters());
+    private final String getDefinition(ObjectMapHelper parameters) {
+      return parameters.require(PARAM_MDM_DEFINITION, String.class);
+    }
+
+    private final String getAlreadySelectedActionCode(ObjectMapHelper parameters) {
+      return parameters.get(PARAM_ALREADY_SELECTED_ACTION_CODE, String.class);
     }
 
     public boolean checkAdmin() {
@@ -87,6 +92,11 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public Object initModel(View view) {
     PageContext context = getContextByView(view);
     refreshUiActions(context);
+
+    if (!Strings.isNullOrEmpty(context.alreadySelectedActionCode)) {
+      styleViewActions(view, context.alreadySelectedActionCode);
+    }
+
     return new HashMap<String, Object>();
   }
 
