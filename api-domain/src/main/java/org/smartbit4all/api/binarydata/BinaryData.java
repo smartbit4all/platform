@@ -293,6 +293,23 @@ public class BinaryData {
     }
   }
 
+  /**
+   * If we would like to read the whole binary content then we can do this using this input stream.
+   * This version throws IOException instead of constructEmptyData()
+   *
+   * @return
+   */
+  public InputStream inputStream2() throws IOException {
+    if (data != null) {
+      // In this case we have all the data in memory. We can use the ByteArrayInputStream
+      return new ByteArrayInputStream(data);
+    } else if (byteSource != null) {
+      return new AutoCloseInputStream(byteSource.openStream());
+    } else {
+      return new AutoCloseInputStream(getDataFileInputStream());
+    }
+  }
+
   private FileInputStream getDataFileInputStream() throws FileNotFoundException {
     File file = getDataFile();
     if (file == null || !file.exists() || !file.isFile()) {
