@@ -102,7 +102,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected void refreshUiActions(PageContext context) {
     List<UiAction> actions = new ArrayList<>();
-    if (context.definition.getBranchingStrategy() != null
+    if (context.checkAdmin() && context.definition.getBranchingStrategy() != null
         && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
       actions.add(new UiAction()
           .code(ACTION_OPEN_MDM_CHANGES)
@@ -191,6 +191,9 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public void performOpenChanges(UUID viewUuid, UiActionRequest request) {
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
+    if (!context.checkAdmin()) {
+      throw new IllegalAccessError("Only admins can view MDM changes!");
+    }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
         .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
             context.definition.getName()));
