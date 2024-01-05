@@ -23,6 +23,7 @@ import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
+import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -64,8 +65,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
 
   private static final Logger log = LoggerFactory.getLogger(MDMEntryListPageApiImpl.class);
-
-  private static final String PROPERTY_URI = "uri";
 
   private static final String VARIABLE_INACTIVES = "inactives";
 
@@ -214,8 +213,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
     GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
         BranchedObjectEntry.BRANCH_URI);
-    if (columns.contains(PROPERTY_URI)) {
-      GridModels.hideColumns(entryGridModel, PROPERTY_URI);
+    if (columns.contains(MDMConstants.PROPERTY_URI)) {
+      GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
     }
     final List<GridView> gridViewOptions = context.entryDescriptor.getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
