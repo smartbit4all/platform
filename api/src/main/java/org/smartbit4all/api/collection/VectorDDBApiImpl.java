@@ -14,10 +14,17 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
   }
 
   @Override
-  public String addPoint(ServiceConnection dbConnection, String collectionName, String id,
+  public String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value) {
     return getContributionApi(dbConnection.getApiName()).addPoint(dbConnection, collectionName,
-        id, value);
+        value);
+  }
+
+  @Override
+  public String addPoints(ServiceConnection dbConnection, String collectionName,
+      List<VectorValue> values) {
+    return getContributionApi(dbConnection.getApiName()).addPoints(dbConnection, collectionName,
+        values);
   }
 
   @Override

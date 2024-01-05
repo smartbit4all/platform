@@ -50,7 +50,7 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @Override
   public void addObject(String id, Object obj) {
-    vectorDBApi.addPoint(vectorDBService, collectionName, id, embed(obj));
+    vectorDBApi.addPoint(vectorDBService, collectionName, embed(obj).id(id));
   }
 
   @Override

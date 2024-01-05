@@ -36,6 +36,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture  or whatever else. It is normally constructed by a Converter that creates the result from the input object. ")
 @JsonPropertyOrder({
+  VectorValue.ID,
   VectorValue.INPUT_TYPE,
   VectorValue.INPUT_OBJECT,
   VectorValue.CONVERSION,
@@ -44,6 +45,9 @@ import javax.validation.Valid;
 @JsonTypeName("VectorValue")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class VectorValue {
+  public static final String ID = "id";
+  private String id;
+
   public static final String INPUT_TYPE = "inputType";
   private String inputType;
 
@@ -58,6 +62,33 @@ public class VectorValue {
 
   public VectorValue() { 
   }
+
+  public VectorValue id(String id) {
+    
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * A unique identifier of the VectorValue.
+   * @return id
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "A unique identifier of the VectorValue.")
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(String id) {
+    this.id = id;
+  }
+
 
   public VectorValue inputType(String inputType) {
     
@@ -189,7 +220,8 @@ public class VectorValue {
       return false;
     }
     VectorValue vectorValue = (VectorValue) o;
-    return Objects.equals(this.inputType, vectorValue.inputType) &&
+    return Objects.equals(this.id, vectorValue.id) &&
+        Objects.equals(this.inputType, vectorValue.inputType) &&
         Objects.equals(this.inputObject, vectorValue.inputObject) &&
         Objects.equals(this.conversion, vectorValue.conversion) &&
         Objects.equals(this.vector, vectorValue.vector);
@@ -197,13 +229,14 @@ public class VectorValue {
 
   @Override
   public int hashCode() {
-    return Objects.hash(inputType, inputObject, conversion, vector);
+    return Objects.hash(id, inputType, inputObject, conversion, vector);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class VectorValue {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("    inputObject: ").append(toIndentedString(inputObject)).append("\n");
     sb.append("    conversion: ").append(toIndentedString(conversion)).append("\n");

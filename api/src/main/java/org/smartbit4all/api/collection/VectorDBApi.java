@@ -10,8 +10,11 @@ public interface VectorDBApi extends PrimaryApi<VectorDBContibutionApi> {
 
   static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
 
-  String addPoint(ServiceConnection dbConnection, String collectionName, String id,
+  String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value);
+
+  String addPoints(ServiceConnection dbConnection, String collectionName,
+      List<VectorValue> values);
 
   String deletePoint(ServiceConnection dbConnection, String collectionName, String id);
 
