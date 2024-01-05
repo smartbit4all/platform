@@ -44,6 +44,7 @@ smartbit4all {
   		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
   		"SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
   		"LangString": "org.smartbit4all.api.object.bean.LangString",
+  		"VectorCollectionDescriptor": "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
   		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource"
   	]
   }

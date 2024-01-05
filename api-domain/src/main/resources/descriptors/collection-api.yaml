@@ -94,6 +94,25 @@ components:
           format: uri
         collectionType:
           enum: [LIST, MAP, REFERENCE]
+    VectorCollectionDescriptor:
+      type: object
+      description: |
+        This object can be used as parameter object to name a vector collection managed by the CollectionApi.
+      required: [uri, name]
+      properties:
+        vectorCollectionName:
+          type: string
+          description: |
+            The name of the Vector collection managed by the MDM Entry. It is maintained for the published version the under construction
+            state is not working.
+        vectorDBConnection:
+          type: string
+          description: |
+            The name of the VectorDB connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition.
+        embeddingConnection:
+          type: string
+          description: |
+            The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition.
     VectorValue:
       description: |
         The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture 

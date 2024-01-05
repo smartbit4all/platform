@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -59,7 +60,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.EVENT_HANDLERS_BEFORE_SAVE,
   MDMEntryDescriptor.IS_VALUE_SET,
   MDMEntryDescriptor.BRANCHING_STRATEGY,
-  MDMEntryDescriptor.SELF_CONTAINED_REF_LIST
+  MDMEntryDescriptor.SELF_CONTAINED_REF_LIST,
+  MDMEntryDescriptor.VECTOR_COLLECTION
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -123,6 +125,9 @@ public class MDMEntryDescriptor {
 
   public static final String SELF_CONTAINED_REF_LIST = "selfContainedRefList";
   private String selfContainedRefList;
+
+  public static final String VECTOR_COLLECTION = "vectorCollection";
+  private VectorCollectionDescriptor vectorCollection = null;
 
   public MDMEntryDescriptor() { 
   }
@@ -694,11 +699,11 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The name of the self contained reference list like childer list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. 
+   * The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. 
    * @return selfContainedRefList
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the self contained reference list like childer list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. ")
+  @ApiModelProperty(value = "The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. ")
   @JsonProperty(SELF_CONTAINED_REF_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -711,6 +716,34 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelfContainedRefList(String selfContainedRefList) {
     this.selfContainedRefList = selfContainedRefList;
+  }
+
+
+  public MDMEntryDescriptor vectorCollection(VectorCollectionDescriptor vectorCollection) {
+    
+    this.vectorCollection = vectorCollection;
+    return this;
+  }
+
+   /**
+   * The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction state is not working. 
+   * @return vectorCollection
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction state is not working. ")
+  @JsonProperty(VECTOR_COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public VectorCollectionDescriptor getVectorCollection() {
+    return vectorCollection;
+  }
+
+
+  @JsonProperty(VECTOR_COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVectorCollection(VectorCollectionDescriptor vectorCollection) {
+    this.vectorCollection = vectorCollection;
   }
 
 
@@ -742,12 +775,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.eventHandlersBeforeSave, mdMEntryDescriptor.eventHandlersBeforeSave) &&
         Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet) &&
         Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy) &&
-        Objects.equals(this.selfContainedRefList, mdMEntryDescriptor.selfContainedRefList);
+        Objects.equals(this.selfContainedRefList, mdMEntryDescriptor.selfContainedRefList) &&
+        Objects.equals(this.vectorCollection, mdMEntryDescriptor.vectorCollection);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection);
   }
 
   @Override
@@ -774,6 +808,7 @@ public class MDMEntryDescriptor {
     sb.append("    isValueSet: ").append(toIndentedString(isValueSet)).append("\n");
     sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("    selfContainedRefList: ").append(toIndentedString(selfContainedRefList)).append("\n");
+    sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
     sb.append("}");
     return sb.toString();
   }
