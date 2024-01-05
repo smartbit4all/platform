@@ -253,7 +253,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
       ServiceConnection embeddingConnection) {
-    return new VectorCollectionImpl(vectorDBApi, vectorDBConnection, embeddingApi,
+    return new VectorCollectionImpl(objectApi, vectorDBApi, vectorDBConnection, embeddingApi,
         embeddingConnection, name);
   }
 

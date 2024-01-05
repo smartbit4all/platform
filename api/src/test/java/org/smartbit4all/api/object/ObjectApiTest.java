@@ -17,8 +17,10 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
+import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
@@ -29,6 +31,7 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.object.ObjectApi;
@@ -37,6 +40,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
+import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -456,6 +460,83 @@ class ObjectApiTest {
             .propertyUri(URI.create("object:/singleLink#linkName"))));
 
     Assertions.assertEquals("Root (link)", resolve);
+  }
+
+  @Test
+  void testObjectPropertyMapperSameObject() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")));
+    URI uriFrom = objectApi.save(fromNode);
+    ObjectNode toNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("To category").color(ColorEnum.GREEN)
+            .singleLink(new SampleLinkObject().linkName("to link")));
+    URI uriTo = objectApi.save(toNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+    toNode = objectApi.loadLatest(uriTo);
+
+    ObjectPropertyMapper mapper = objectApi.mapper()
+        .mapping(new ObjectMappingDefinition()
+            .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
+            .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.NAME)
+                .addToPathItem(SampleCategory.NAME))
+            .addMappingsItem(
+                new ObjectPropertyMapping().addFromPathItem(SampleCategory.SINGLE_LINK)
+                    .addFromPathItem(SampleLinkObject.LINK_NAME)
+                    .addToPathItem(SampleCategory.SINGLE_LINK)
+                    .addToPathItem(SampleLinkObject.LINK_NAME)));
+
+    Map<String, Object> expectedResult = new HashMap<>(fromNode.getObjectAsMap());
+    expectedResult.put(SampleCategory.COLOR, ColorEnum.GREEN.toString());
+    expectedResult.remove(SampleCategory.URI);
+
+    Map<String, Object> result =
+        mapper.copyAllValues(fromNode.getObjectAsMap(), toNode.getObjectAsMap());
+
+    org.assertj.core.api.Assertions.assertThat(result)
+        .containsAllEntriesOf(expectedResult);
+
+  }
+
+  @Test
+  void testObjectPropertyMapperDifferentObject() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").cost(Long.valueOf(100)).color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")));
+    URI uriFrom = objectApi.save(fromNode);
+    ObjectNode toNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategoryType().name("name").description("description"));
+    URI uriTo = objectApi.save(toNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+    toNode = objectApi.loadLatest(uriTo);
+
+    ObjectPropertyMapper mapper = objectApi.mapper()
+        .mapping(new ObjectMappingDefinition()
+            .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
+            .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.NAME)
+                .addToPathItem(SampleCategoryType.NAME))
+            .addMappingsItem(
+                new ObjectPropertyMapping().addFromPathItem(SampleCategory.SINGLE_LINK)
+                    .addFromPathItem(SampleLinkObject.LINK_NAME)
+                    .addToPathItem(SampleCategoryType.DESCRIPTION))
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)
+                .addToPathItem(SampleCategoryType.CODE)));
+
+    Map<String, Object> expectedResult = new HashMap<>();
+    expectedResult.put(SampleCategoryType.NAME, "From category");
+    expectedResult.put(SampleCategoryType.DESCRIPTION, "from link");
+    expectedResult.put(SampleCategoryType.CODE, Integer.valueOf(100));
+
+    Map<String, Object> result =
+        mapper.copyAllValues(fromNode.getObjectAsMap(), toNode.getObjectAsMap());
+
+    org.assertj.core.api.Assertions.assertThat(result)
+        .containsAllEntriesOf(expectedResult);
+
   }
 
   @Test

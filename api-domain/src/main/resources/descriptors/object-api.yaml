@@ -780,9 +780,9 @@ components:
       type: object
       required: [mappings]
       properties:
-        sourceTypeQualifiedName:
+        fromTypeQualifiedName:
           type: string
-        targetTypeQualifiedName:
+        toTypeQualifiedName:
           type: string
         mappings:
           type: array
@@ -794,11 +794,11 @@ components:
       type: object
       required: []
       properties:
-        sourcePath:
+        fromPath:
           type: array
           items:
             type: string
-        targetPath:
+        toPath:
           type: array
           items:
             type: string

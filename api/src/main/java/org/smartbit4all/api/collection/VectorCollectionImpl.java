@@ -3,11 +3,15 @@ package org.smartbit4all.api.collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
+import org.smartbit4all.api.collection.bean.ObjectLookupResult;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertySet;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ObjectDefinitionApi;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -21,9 +25,10 @@ public class VectorCollectionImpl implements VectorCollection {
 
   private String collectionName;
 
-  private ObjectDefinitionApi objectDefinitionApi;
+  private ObjectApi objectApi;
 
-  public VectorCollectionImpl(VectorDBApi vectorDBApi, ServiceConnection vectorDBService,
+  public VectorCollectionImpl(ObjectApi objectApi, VectorDBApi vectorDBApi,
+      ServiceConnection vectorDBService,
       EmbeddingApi embeddingApi, ServiceConnection embeddingService, String collectionName) {
     super();
     this.vectorDBApi = vectorDBApi;
@@ -46,7 +51,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public boolean deletObject(String id) {
+  public boolean deleteObject(String id) {
     // TODO implement remove on Vector DB api!!!
     return false;
   }
@@ -61,7 +66,7 @@ public class VectorCollectionImpl implements VectorCollection {
       return embeddingApi.embed(embeddingService, (String) obj);
     } else {
       // Try to form a Map from the object we have.
-      ObjectDefinition objectDefinition = objectDefinitionApi.definition(obj.getClass());
+      ObjectDefinition objectDefinition = objectApi.definition(obj.getClass());
       return embeddingApi.embed(embeddingService, objectDefinition.toMap(obj));
     }
   }
@@ -69,6 +74,26 @@ public class VectorCollectionImpl implements VectorCollection {
   @Override
   public List<VectorSearchResultItem> search(Object obj, int limit) {
     return vectorDBApi.search(vectorDBService, collectionName, embed(obj), limit);
+  }
+
+  @Override
+  public ObjectLookup lookup(ObjectPropertySet searchProperties,
+      ObjectMappingDefinition copyBackMapping) {
+    return null;
+  }
+
+  private static final class ObjectLookupVector extends ObjectLookup {
+
+    ObjectLookupVector(ObjectApi objectApi) {
+      super(objectApi);
+    }
+
+    @Override
+    public ObjectLookupResult lookup(Object object, ObjectLookupParameter parameter) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
   }
 
 }

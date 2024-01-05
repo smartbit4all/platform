@@ -35,18 +35,18 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This is a mapping definition that describes the mapping between two domain object. ")
 @JsonPropertyOrder({
-  ObjectMappingDefinition.SOURCE_TYPE_QUALIFIED_NAME,
-  ObjectMappingDefinition.TARGET_TYPE_QUALIFIED_NAME,
+  ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
+  ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.MAPPINGS
 })
 @JsonTypeName("ObjectMappingDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectMappingDefinition {
-  public static final String SOURCE_TYPE_QUALIFIED_NAME = "sourceTypeQualifiedName";
-  private String sourceTypeQualifiedName;
+  public static final String FROM_TYPE_QUALIFIED_NAME = "fromTypeQualifiedName";
+  private String fromTypeQualifiedName;
 
-  public static final String TARGET_TYPE_QUALIFIED_NAME = "targetTypeQualifiedName";
-  private String targetTypeQualifiedName;
+  public static final String TO_TYPE_QUALIFIED_NAME = "toTypeQualifiedName";
+  private String toTypeQualifiedName;
 
   public static final String MAPPINGS = "mappings";
   private List<ObjectPropertyMapping> mappings = new ArrayList<>();
@@ -54,57 +54,57 @@ public class ObjectMappingDefinition {
   public ObjectMappingDefinition() { 
   }
 
-  public ObjectMappingDefinition sourceTypeQualifiedName(String sourceTypeQualifiedName) {
+  public ObjectMappingDefinition fromTypeQualifiedName(String fromTypeQualifiedName) {
     
-    this.sourceTypeQualifiedName = sourceTypeQualifiedName;
+    this.fromTypeQualifiedName = fromTypeQualifiedName;
     return this;
   }
 
    /**
-   * Get sourceTypeQualifiedName
-   * @return sourceTypeQualifiedName
+   * Get fromTypeQualifiedName
+   * @return fromTypeQualifiedName
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(SOURCE_TYPE_QUALIFIED_NAME)
+  @JsonProperty(FROM_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getSourceTypeQualifiedName() {
-    return sourceTypeQualifiedName;
+  public String getFromTypeQualifiedName() {
+    return fromTypeQualifiedName;
   }
 
 
-  @JsonProperty(SOURCE_TYPE_QUALIFIED_NAME)
+  @JsonProperty(FROM_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSourceTypeQualifiedName(String sourceTypeQualifiedName) {
-    this.sourceTypeQualifiedName = sourceTypeQualifiedName;
+  public void setFromTypeQualifiedName(String fromTypeQualifiedName) {
+    this.fromTypeQualifiedName = fromTypeQualifiedName;
   }
 
 
-  public ObjectMappingDefinition targetTypeQualifiedName(String targetTypeQualifiedName) {
+  public ObjectMappingDefinition toTypeQualifiedName(String toTypeQualifiedName) {
     
-    this.targetTypeQualifiedName = targetTypeQualifiedName;
+    this.toTypeQualifiedName = toTypeQualifiedName;
     return this;
   }
 
    /**
-   * Get targetTypeQualifiedName
-   * @return targetTypeQualifiedName
+   * Get toTypeQualifiedName
+   * @return toTypeQualifiedName
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(TARGET_TYPE_QUALIFIED_NAME)
+  @JsonProperty(TO_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getTargetTypeQualifiedName() {
-    return targetTypeQualifiedName;
+  public String getToTypeQualifiedName() {
+    return toTypeQualifiedName;
   }
 
 
-  @JsonProperty(TARGET_TYPE_QUALIFIED_NAME)
+  @JsonProperty(TO_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTargetTypeQualifiedName(String targetTypeQualifiedName) {
-    this.targetTypeQualifiedName = targetTypeQualifiedName;
+  public void setToTypeQualifiedName(String toTypeQualifiedName) {
+    this.toTypeQualifiedName = toTypeQualifiedName;
   }
 
 
@@ -151,22 +151,22 @@ public class ObjectMappingDefinition {
       return false;
     }
     ObjectMappingDefinition objectMappingDefinition = (ObjectMappingDefinition) o;
-    return Objects.equals(this.sourceTypeQualifiedName, objectMappingDefinition.sourceTypeQualifiedName) &&
-        Objects.equals(this.targetTypeQualifiedName, objectMappingDefinition.targetTypeQualifiedName) &&
+    return Objects.equals(this.fromTypeQualifiedName, objectMappingDefinition.fromTypeQualifiedName) &&
+        Objects.equals(this.toTypeQualifiedName, objectMappingDefinition.toTypeQualifiedName) &&
         Objects.equals(this.mappings, objectMappingDefinition.mappings);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceTypeQualifiedName, targetTypeQualifiedName, mappings);
+    return Objects.hash(fromTypeQualifiedName, toTypeQualifiedName, mappings);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectMappingDefinition {\n");
-    sb.append("    sourceTypeQualifiedName: ").append(toIndentedString(sourceTypeQualifiedName)).append("\n");
-    sb.append("    targetTypeQualifiedName: ").append(toIndentedString(targetTypeQualifiedName)).append("\n");
+    sb.append("    fromTypeQualifiedName: ").append(toIndentedString(fromTypeQualifiedName)).append("\n");
+    sb.append("    toTypeQualifiedName: ").append(toIndentedString(toTypeQualifiedName)).append("\n");
     sb.append("    mappings: ").append(toIndentedString(mappings)).append("\n");
     sb.append("}");
     return sb.toString();

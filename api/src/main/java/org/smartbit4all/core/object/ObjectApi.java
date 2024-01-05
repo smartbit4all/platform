@@ -10,6 +10,7 @@ import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
@@ -334,6 +335,15 @@ public interface ObjectApi {
    * @return
    */
   ObjectPropertyResolver resolver();
+
+  /**
+   * Constructs an object property mapper instance. The object property mapper is the central logic
+   * that can help to copy values from one object to another. To perform resolution we have to pass
+   * an {@link ObjectMappingDefinition}.
+   * 
+   * @return
+   */
+  ObjectPropertyMapper mapper();
 
   /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the

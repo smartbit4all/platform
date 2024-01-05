@@ -34,88 +34,88 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
-  ObjectPropertyMapping.SOURCE_PATH,
-  ObjectPropertyMapping.TARGET_PATH
+  ObjectPropertyMapping.FROM_PATH,
+  ObjectPropertyMapping.TO_PATH
 })
 @JsonTypeName("ObjectPropertyMapping")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectPropertyMapping {
-  public static final String SOURCE_PATH = "sourcePath";
-  private List<String> sourcePath = null;
+  public static final String FROM_PATH = "fromPath";
+  private List<String> fromPath = null;
 
-  public static final String TARGET_PATH = "targetPath";
-  private List<String> targetPath = null;
+  public static final String TO_PATH = "toPath";
+  private List<String> toPath = null;
 
   public ObjectPropertyMapping() { 
   }
 
-  public ObjectPropertyMapping sourcePath(List<String> sourcePath) {
+  public ObjectPropertyMapping fromPath(List<String> fromPath) {
     
-    this.sourcePath = sourcePath;
+    this.fromPath = fromPath;
     return this;
   }
 
-  public ObjectPropertyMapping addSourcePathItem(String sourcePathItem) {
-    if (this.sourcePath == null) {
-      this.sourcePath = new ArrayList<>();
+  public ObjectPropertyMapping addFromPathItem(String fromPathItem) {
+    if (this.fromPath == null) {
+      this.fromPath = new ArrayList<>();
     }
-    this.sourcePath.add(sourcePathItem);
+    this.fromPath.add(fromPathItem);
     return this;
   }
 
    /**
-   * Get sourcePath
-   * @return sourcePath
+   * Get fromPath
+   * @return fromPath
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(SOURCE_PATH)
+  @JsonProperty(FROM_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getSourcePath() {
-    return sourcePath;
+  public List<String> getFromPath() {
+    return fromPath;
   }
 
 
-  @JsonProperty(SOURCE_PATH)
+  @JsonProperty(FROM_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSourcePath(List<String> sourcePath) {
-    this.sourcePath = sourcePath;
+  public void setFromPath(List<String> fromPath) {
+    this.fromPath = fromPath;
   }
 
 
-  public ObjectPropertyMapping targetPath(List<String> targetPath) {
+  public ObjectPropertyMapping toPath(List<String> toPath) {
     
-    this.targetPath = targetPath;
+    this.toPath = toPath;
     return this;
   }
 
-  public ObjectPropertyMapping addTargetPathItem(String targetPathItem) {
-    if (this.targetPath == null) {
-      this.targetPath = new ArrayList<>();
+  public ObjectPropertyMapping addToPathItem(String toPathItem) {
+    if (this.toPath == null) {
+      this.toPath = new ArrayList<>();
     }
-    this.targetPath.add(targetPathItem);
+    this.toPath.add(toPathItem);
     return this;
   }
 
    /**
-   * Get targetPath
-   * @return targetPath
+   * Get toPath
+   * @return toPath
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(TARGET_PATH)
+  @JsonProperty(TO_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getTargetPath() {
-    return targetPath;
+  public List<String> getToPath() {
+    return toPath;
   }
 
 
-  @JsonProperty(TARGET_PATH)
+  @JsonProperty(TO_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTargetPath(List<String> targetPath) {
-    this.targetPath = targetPath;
+  public void setToPath(List<String> toPath) {
+    this.toPath = toPath;
   }
 
 
@@ -128,21 +128,21 @@ public class ObjectPropertyMapping {
       return false;
     }
     ObjectPropertyMapping objectPropertyMapping = (ObjectPropertyMapping) o;
-    return Objects.equals(this.sourcePath, objectPropertyMapping.sourcePath) &&
-        Objects.equals(this.targetPath, objectPropertyMapping.targetPath);
+    return Objects.equals(this.fromPath, objectPropertyMapping.fromPath) &&
+        Objects.equals(this.toPath, objectPropertyMapping.toPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourcePath, targetPath);
+    return Objects.hash(fromPath, toPath);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectPropertyMapping {\n");
-    sb.append("    sourcePath: ").append(toIndentedString(sourcePath)).append("\n");
-    sb.append("    targetPath: ").append(toIndentedString(targetPath)).append("\n");
+    sb.append("    fromPath: ").append(toIndentedString(fromPath)).append("\n");
+    sb.append("    toPath: ").append(toIndentedString(toPath)).append("\n");
     sb.append("}");
     return sb.toString();
   }

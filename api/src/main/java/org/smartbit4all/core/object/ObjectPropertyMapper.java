@@ -2,8 +2,6 @@ package org.smartbit4all.core.object;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.core.utility.StringConstant;
@@ -15,16 +13,18 @@ import org.smartbit4all.core.utility.StringConstant;
  */
 public final class ObjectPropertyMapper {
 
-  private static final Logger log = LoggerFactory.getLogger(ObjectPropertyMapper.class);
-
   private WeakReference<ObjectApi> objectApiRef;
 
   private ObjectMappingDefinition mapping;
 
-  ObjectPropertyMapper(ObjectApi objectApi, ObjectMappingDefinition mapping) {
+  ObjectPropertyMapper(ObjectApi objectApi) {
     super();
     this.objectApiRef = new WeakReference<>(objectApi);
+  }
+
+  public ObjectPropertyMapper mapping(ObjectMappingDefinition mapping) {
     this.mapping = mapping;
+    return this;
   }
 
   private ObjectApi objectApi() {
@@ -35,9 +35,9 @@ public final class ObjectPropertyMapper {
     ObjectApi objectApi = objectApi();
     for (ObjectPropertyMapping propertyMapping : mapping.getMappings()) {
       Object value = objectApi.getValueFromObjectMap(from,
-          StringConstant.toArray(propertyMapping.getSourcePath()));
+          StringConstant.toArray(propertyMapping.getFromPath()));
       objectApi.setValueIntoObjectMap(to, value,
-          StringConstant.toArray(propertyMapping.getTargetPath()));
+          StringConstant.toArray(propertyMapping.getToPath()));
     }
     return to;
   }
