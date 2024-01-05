@@ -11,6 +11,13 @@ public interface VectorDBContibutionApi extends ContributionApi {
   String addPoint(ServiceConnection dbConnection, String collectionName, String id,
       VectorValue value);
 
+  // String addPoints(ServiceConnection dbConnection, String collectionName, String id,
+  // VectorValue value);
+
+  String deletePoint(ServiceConnection dbConnection, String collectionName, String id);
+
+  String deletePoints(ServiceConnection dbConnection, String collectionName, List<String> ids);
+
   String createCollection(ServiceConnection dbConnection, String name);
 
   String deleteCollection(ServiceConnection dbConnection, String name);

@@ -21,6 +21,21 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
   }
 
   @Override
+  public String deletePoint(ServiceConnection dbConnection, String collectionName, String id) {
+    return getContributionApi(dbConnection.getApiName()).deletePoint(dbConnection, collectionName,
+        id);
+  }
+
+
+
+  @Override
+  public String deletePoints(ServiceConnection dbConnection, String collectionName,
+      List<String> ids) {
+    return getContributionApi(dbConnection.getApiName()).deletePoints(dbConnection, collectionName,
+        ids);
+  }
+
+  @Override
   public String createCollection(ServiceConnection dbConnection, String name) {
     return getContributionApi(dbConnection.getApiName()).createCollection(dbConnection, name);
   }
