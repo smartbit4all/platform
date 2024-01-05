@@ -67,6 +67,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
+import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
@@ -513,7 +514,7 @@ class MDMApiTest {
 
       // Call the finalize action.
       viewContextService.performAction(uuid,
-          new UiActionRequest().code(MDMEntryListPageApi.ACTION_FINALIZE_CHANGES));
+          new UiActionRequest().code(MDMActions.ACTION_FINALIZE_CHANGES));
 
       {
         GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
