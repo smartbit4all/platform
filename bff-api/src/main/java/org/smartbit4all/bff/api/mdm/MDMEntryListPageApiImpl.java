@@ -48,6 +48,7 @@ import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDisplay;
@@ -249,6 +250,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean branchActive = ctx.entryApi.hasBranch();
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.entryDescriptor.getInactiveMgmt());
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
+    boolean globalBranching = ctx.branchingStrategy == MDMBranchingStrategy.GLOBAL;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     UiActionBuilder uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY);
@@ -262,28 +264,34 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
-          .addIf(new UiAction().code(ACTION_START_EDITING).confirm(true),
-              isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
-          .addIf(new UiAction().code(ACTION_CANCEL_CHANGES).confirm(true),
-              canEdit, branchingEnabled, branchActive, !ctx.inactives)
-          .addIf(new UiAction().code(ACTION_SEND_FOR_APPROVAL).confirm(true),
+          .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
+              isAdmin, branchingEnabled, !branchActive, !ctx.inactives, !globalBranching)
+          .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
+              canEdit, branchingEnabled, branchActive, !ctx.inactives, !globalBranching)
+          .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
               isAdmin, !underApproval, branchingEnabled, branchActive,
-              !ctx.inactives)
-          .addIf(new UiAction().code(ACTION_ADMIN_APPROVE_OK).confirm(true),
+              !ctx.inactives, !globalBranching)
+          .addIf(new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),
               isApprover, underApproval, branchingEnabled, branchActive,
-              !ctx.inactives)
+              !ctx.inactives, !globalBranching)
           .addIf(
-              new UiAction().code(ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
+              new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
                   .input2Type(UiActionInputType.TEXTAREA),
               isApprover, underApproval, branchingEnabled,
               branchActive,
-              !ctx.inactives);
+              !ctx.inactives, !globalBranching);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-          .addIf(ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive, !ctx.inactives)
-          .addIf(ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives)
-          .addIf(ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive, !ctx.inactives);
+          .addIf(MDMActions.ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive,
+              !ctx.inactives,
+              !globalBranching)
+          .addIf(MDMActions.ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive,
+              !ctx.inactives,
+              !globalBranching)
+          .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive,
+              !ctx.inactives,
+              !globalBranching);
     }
 
     uiActions
