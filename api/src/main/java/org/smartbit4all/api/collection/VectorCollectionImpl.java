@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
+import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
@@ -12,6 +13,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -31,6 +33,7 @@ public class VectorCollectionImpl implements VectorCollection {
       ServiceConnection vectorDBService,
       EmbeddingApi embeddingApi, ServiceConnection embeddingService, String collectionName) {
     super();
+    this.objectApi = objectApi;
     this.vectorDBApi = vectorDBApi;
     this.vectorDBService = vectorDBService;
     this.embeddingApi = embeddingApi;
@@ -57,7 +60,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private final VectorValue embed(Object obj) {
+  final VectorValue embed(Object obj) {
     Objects.requireNonNull(obj, "Unable to use null in vector db.");
     if (obj instanceof Map) {
       Map<String, Object> map = (Map<String, Object>) obj;
@@ -79,10 +82,10 @@ public class VectorCollectionImpl implements VectorCollection {
   @Override
   public ObjectLookup lookup(ObjectPropertySet searchProperties,
       ObjectMappingDefinition copyBackMapping) {
-    return null;
+    return new ObjectLookupVector(objectApi);
   }
 
-  private static final class ObjectLookupVector extends ObjectLookup {
+  private final class ObjectLookupVector extends ObjectLookup {
 
     ObjectLookupVector(ObjectApi objectApi) {
       super(objectApi);
@@ -90,8 +93,11 @@ public class VectorCollectionImpl implements VectorCollection {
 
     @Override
     public ObjectLookupResult lookup(Object object, ObjectLookupParameter parameter) {
-      // TODO Auto-generated method stub
-      return null;
+      List<VectorSearchResultItem> result = search(object, parameter.getLimit());
+      return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
+          .stream().map(si -> new ObjectLookupResultItem().id(si.getId())
+              .scoreInPercent(si.getScore()).objectAsMap(si.getValue().getInputObject()))
+          .collect(toList()));
     }
 
   }
