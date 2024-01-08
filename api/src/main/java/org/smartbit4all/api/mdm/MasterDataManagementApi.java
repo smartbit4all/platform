@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mdm;
 
 import java.net.URI;
+import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchEntry;
@@ -116,5 +117,8 @@ public interface MasterDataManagementApi {
   void approvalRejectedGlobal(String definitionName);
 
   URI addNewEntries(MDMDefinitionOption o);
+
+  void saveVectorCollectionDescriptor(String definitionName, String entryName,
+      VectorCollectionDescriptor vectorCollectionDescriptor);
 
 }

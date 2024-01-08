@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -261,6 +262,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
+      // vectorCollection
+
+      MDMEntryApi embeddingEntryApi =
+          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+              PlatformApiConfig.EMBEDDING_CONNECTIONS);
+      MDMEntryApi vectorEntryApi =
+          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+              PlatformApiConfig.VECTOR_DB_CONNECTIONS);
+
+      String mdmDef = parameters(ctx.view).get(PARAM_MDM_DEFINITION, String.class);
+      String currentEntryDescriptor =
+          parameters(ctx.view).get(PARAM_ENTRY_DESCRIPTOR, String.class);
+
+      MDMEntryApi currentEntryApi = masterDataManagementApi.getApi(mdmDef, currentEntryDescriptor);
+
+      boolean isEmbeddingEntryListNotEmpty = !embeddingEntryApi.getList().uris().isEmpty();
+      boolean isVectorEntryListNotEmpty = vectorEntryApi.getList().uris().isEmpty();
+      boolean currentEntryListNotEmpty = currentEntryApi.getList().uris().isEmpty();
+
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
           .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
@@ -278,7 +298,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                   .input2Type(UiActionInputType.TEXTAREA),
               isApprover, underApproval, branchingEnabled,
               branchActive,
-              !ctx.inactives, !globalBranching);
+              !ctx.inactives, !globalBranching)
+          .addIf(new UiAction().code(ACTION_SHOW_VECTOR_COLLECTION_SETUP),
+              isEmbeddingEntryListNotEmpty && isVectorEntryListNotEmpty)
+          .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
+              isEmbeddingEntryListNotEmpty && isVectorEntryListNotEmpty
+                  && currentEntryListNotEmpty);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
@@ -532,6 +557,29 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         },
         (u, ctx) -> ctx.entryApi.restore(u));
     refreshGrid(context);
+  }
+
+  @Override
+  public void showVectorDatabaseSetupDialog(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    View view = viewApi.getView(viewUuid);
+    MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
+    MDMDefinition mdmDefinition = context.getDefinition(view);
+    viewApi.showView(
+        new View().viewName("mingy").type(ViewType.DIALOG)
+            .putParametersItem(PARAM_ENTRY_DESCRIPTOR, entryDescriptor.getName())
+            .putParametersItem(PARAM_MDM_DEFINITION, mdmDefinition.getName()));
+  }
+
+  @Override
+  public void recreateIndex(UUID viewUuid, UiActionRequest request) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    View view = viewApi.getView(viewUuid);
+    MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
+    MDMDefinition mdmDefinition = context.getDefinition(view);
+    MDMEntryApi entryApi =
+        masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName());
+    entryApi.updateAllIndices();
   }
 
   @Override
