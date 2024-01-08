@@ -816,3 +816,28 @@ components:
             type: array
             items:
               type: string
+    ObjectPropertyValueSet:
+      description: |
+        This is a set of value from an object. It can denote the type of the object but not necessarily. If we need
+        a subset of properties from an object then it is the best way to extract a value set and use this as a parameter.
+      type: object
+      required: [properties]
+      properties:
+        qualifiedName:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectPropertyValue'
+    ObjectPropertyValue:
+      description: |
+        This is a key - value pair where the key is a property path.
+      type: object
+      required: [path]
+      properties:
+        path:
+          type: array
+          items:
+            type: string
+        value:
+          type: object

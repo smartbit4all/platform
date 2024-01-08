@@ -3,7 +3,9 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.collection.ObjectLookup;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -46,6 +48,14 @@ public interface MDMEntryApi {
    * @return The inactive list if the {@link MDMEntryDescriptor#INACTIVE_MGMT} is set true.
    */
   StoredList getInactiveList();
+
+  /**
+   * Tries to find the unique map for the given path.
+   * 
+   * @param path The path of the property the unique property belongs to.
+   * @return The {@link StoredMap} if any or null.
+   */
+  StoredMap getUniqueMap(String... path);
 
   /**
    * Save a new object according to the current state of the branch entry. If a branch is initiated
@@ -154,5 +164,18 @@ public interface MDMEntryApi {
    * @return
    */
   String getDisplayNameForm();
+
+  /**
+   * Returns an optimized lookup for the objects of in the given entry.
+   * 
+   * @return
+   */
+  ObjectLookup lookup();
+
+  /**
+   * The MDM entry can have several defined index. It can have some vector index, normal SQL based
+   * index and even some full text index.
+   */
+  void updateAllIndices();
 
 }

@@ -20,6 +20,8 @@ public interface VectorCollection {
 
   boolean deleteObject(String id);
 
+  void clear();
+
   List<VectorSearchResultItem> search(Object obj, int limit);
 
   /**

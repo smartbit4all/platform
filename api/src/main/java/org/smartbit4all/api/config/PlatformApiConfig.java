@@ -32,6 +32,8 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.navigation.NavigationApi;
@@ -262,6 +264,9 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(EMBEDDING_CONNECTIONS)
           .name(EMBEDDING_CONNECTIONS)
+          .constraints(List.of(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .path(List.of(ServiceConnection.NAME))))
           .editorViewName(MDMConstants.MDM_EDIT)
           .displayNameList(new LangString().defaultValue("Embedding connections")
               .putValueByLocaleItem("hu", "AI beágyazó kapcsolatok")
@@ -294,6 +299,9 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(VECTOR_DB_CONNECTIONS)
           .name(VECTOR_DB_CONNECTIONS)
+          .constraints(List.of(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .path(List.of(ServiceConnection.NAME))))
           .editorViewName(MDMConstants.MDM_EDIT)
           .displayNameList(new LangString().defaultValue("Vector database connections")
               .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolatok")

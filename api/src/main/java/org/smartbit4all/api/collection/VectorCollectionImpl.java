@@ -59,6 +59,11 @@ public class VectorCollectionImpl implements VectorCollection {
     return false;
   }
 
+  @Override
+  public void clear() {
+    vectorDBApi.createCollection(vectorDBService, collectionName);
+  }
+
   @SuppressWarnings({"unchecked", "rawtypes"})
   final VectorValue embed(Object obj) {
     Objects.requireNonNull(obj, "Unable to use null in vector db.");
@@ -92,8 +97,9 @@ public class VectorCollectionImpl implements VectorCollection {
     }
 
     @Override
-    public ObjectLookupResult lookup(Object object, ObjectLookupParameter parameter) {
-      List<VectorSearchResultItem> result = search(object, parameter.getLimit());
+    public ObjectLookupResult lookup(Object values,
+        ObjectLookupParameter parameter) {
+      List<VectorSearchResultItem> result = search(values, parameter.getLimit());
       return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
           .stream().map(si -> new ObjectLookupResultItem().id(si.getId())
               .scoreInPercent(si.getScore()).objectAsMap(si.getValue().getInputObject()))
