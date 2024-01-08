@@ -70,8 +70,6 @@ import static java.util.stream.Collectors.toSet;
  */
 public class MDMEntryApiImpl implements MDMEntryApi {
 
-  private static final List<String> URI_PROPERTY_PATH = List.of(ObjectDefinition.URI_PROPERTY);
-
   /**
    * The postfix of the inactive list.
    */
@@ -576,14 +574,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     }
   }
 
-  private List<String> getPrimaryId() {
+  private String[] getPrimaryId() {
     Map<MDMEntryConstraint, StoredMap> uniqueMapsByconstraints = getUniqueMapsByconstraints();
     if (uniqueMapsByconstraints.isEmpty()) {
-      return URI_PROPERTY_PATH;
+      return uriPath;
     }
-    Optional<List<String>> first = uniqueMapsByconstraints.keySet().stream()
-        .filter(c -> c.getKind() == KindEnum.UNIQUE).map(c -> c.getPath()).findFirst();
-    return first.orElse(URI_PROPERTY_PATH);
+    Optional<String[]> first = uniqueMapsByconstraints.keySet().stream()
+        .filter(c -> c.getKind() == KindEnum.UNIQUE).map(c -> StringConstant.toArray(c.getPath()))
+        .findFirst();
+    return first.orElse(uriPath);
   }
 
   @Override
@@ -591,7 +590,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
-      String[] primaryId = StringConstant.toArray(getPrimaryId());
+      String[] primaryId = getPrimaryId();
       VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
       vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
@@ -638,14 +637,14 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     MDMEntryApi vectorDBEntryApi =
         api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
             PlatformApiConfig.VECTOR_DB_CONNECTIONS);
-    MDMEntryApi embeddingEntryApi =
-        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-            PlatformApiConfig.EMBEDDING_CONNECTIONS);
     ServiceConnection vectorDBConnection =
         objectApi.asType(ServiceConnection.class,
             vectorDBEntryApi.lookup().findByUnique(new ObjectPropertyValue()
                 .addPathItem(ServiceConnection.NAME)
                 .value(vectorCollectionDescriptor.getVectorDBConnection())));
+    MDMEntryApi embeddingEntryApi =
+        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            PlatformApiConfig.EMBEDDING_CONNECTIONS);
     ServiceConnection embeddingConnection = objectApi.asType(ServiceConnection.class,
         embeddingEntryApi.lookup().findByUnique(new ObjectPropertyValue()
             .addPathItem(ServiceConnection.NAME)

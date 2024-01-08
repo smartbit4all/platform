@@ -1,6 +1,5 @@
 package org.smartbit4all.api.config;
 
-import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -264,9 +263,9 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(EMBEDDING_CONNECTIONS)
           .name(EMBEDDING_CONNECTIONS)
-          .constraints(List.of(new MDMEntryConstraint()
+          .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
-              .path(List.of(ServiceConnection.NAME))))
+              .addPathItem(ServiceConnection.NAME))
           .editorViewName(MDMConstants.MDM_EDIT)
           .displayNameList(new LangString().defaultValue("Embedding connections")
               .putValueByLocaleItem("hu", "AI beágyazó kapcsolatok")
@@ -276,22 +275,26 @@ public class PlatformApiConfig {
               .putValueByLocaleItem("en", "Embedding connection"))
           .order(200l)
           .typeQualifiedName(ServiceConnection.class.getName())
-          .tableColumns(List.of(
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Name")
-                  .path(List.of(ServiceConnection.NAME)),
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API name")
-                  .path(List.of(ServiceConnection.API_NAME)),
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Endpoint")
-                  .path(List.of(ServiceConnection.ENDPOINT)),
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .path(List.of(ServiceConnection.API_VERSION)),
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Authentication token")
-                  .path(List.of(ServiceConnection.AUTH_TOKEN))));
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
       result.addDescriptor(entry);
     }
     {
@@ -299,9 +302,9 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(VECTOR_DB_CONNECTIONS)
           .name(VECTOR_DB_CONNECTIONS)
-          .constraints(List.of(new MDMEntryConstraint()
+          .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
-              .path(List.of(ServiceConnection.NAME))))
+              .addPathItem(ServiceConnection.NAME))
           .editorViewName(MDMConstants.MDM_EDIT)
           .displayNameList(new LangString().defaultValue("Vector database connections")
               .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolatok")
@@ -311,22 +314,26 @@ public class PlatformApiConfig {
               .putValueByLocaleItem("en", "Vector database connection"))
           .order(200l)
           .typeQualifiedName(ServiceConnection.class.getName())
-          .tableColumns(List.of(
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Name")
-                  .path(List.of(ServiceConnection.NAME)),
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API name")
-                  .path(List.of(ServiceConnection.API_NAME)),
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Endpoint")
-                  .path(List.of(ServiceConnection.ENDPOINT)),
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .path(List.of(ServiceConnection.API_VERSION)),
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Authentication token")
-                  .path(List.of(ServiceConnection.AUTH_TOKEN))));
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
       result.addDescriptor(entry);
     }
     return result;
