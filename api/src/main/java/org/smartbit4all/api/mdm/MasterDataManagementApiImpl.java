@@ -20,6 +20,7 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
@@ -738,6 +739,26 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     fireModificationStarted(MODIFICATION_REJECTED, null, getDefinition(definitionName).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
+
+
+
+  @Override
+  public void saveVectorCollectionDescriptor(String definitionName, String entryName,
+      VectorCollectionDescriptor vectorCollectionDescriptor) {
+    MDMDefinition definition = getDefinition(definitionName);
+    Lock lock = objectApi.getLock(definition.getUri());
+    lock.lock();
+    try {
+      ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
+      definitionNode.map(MDMDefinition.DESCRIPTORS).get(entryName).get()
+          .setValue(vectorCollectionDescriptor, MDMEntryDescriptor.VECTOR_COLLECTION);
+      objectApi.save(definitionNode);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+
 
   private static class MDMDefitionStateWrapper {
     MDMDefinitionState currentState;

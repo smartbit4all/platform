@@ -118,6 +118,19 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   static final String ACTION_RESTORE_ENTRY = "RESTORE_ENTRY";
 
   /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action opens a dialog, where you can setup a vector database, where all entries in this list
+   * will be stored.
+   */
+  static final String ACTION_SHOW_VECTOR_COLLECTION_SETUP = "ACTION_SHOW_VECTOR_COLLECTION_SETUP";
+
+  /**
+   * If the current user is administrator of the given entry then this action can be performed. The
+   * action recreates the vector database connected to the given list of entries.
+   */
+  static final String ACTION_RECREATE_INDEX = "ACTION_RECREATE_INDEX";
+
+  /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
    * administrator then we can see the draft objects also.
    *
@@ -242,6 +255,12 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   @WidgetActionHandler(value = ACTION_RESTORE_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performRestoreEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
+
+  @ActionHandler(ACTION_SHOW_VECTOR_COLLECTION_SETUP)
+  void showVectorDatabaseSetupDialog(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_RECREATE_INDEX)
+  void recreateIndex(UUID viewUuid, UiActionRequest request);
 
   /**
    * This callback function is responsible for saving an object into the MDM entry list we are
