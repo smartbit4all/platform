@@ -61,6 +61,7 @@ class BinaryDataTest {
 
   @Test
   void testTempFilePurge() throws Exception {
+    BinaryData.DELAY_OF_DELETE = 5000;
     List<BinaryData> binaryDataRefList = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       BinaryDataOutputStream os = new BinaryDataOutputStream(0);
@@ -76,6 +77,7 @@ class BinaryDataTest {
     binaryDataRefList.clear();
 
     Runtime.getRuntime().gc();
+    Runtime.getRuntime().gc();
     Thread.sleep(100);
 
     // Call the purge
@@ -84,8 +86,28 @@ class BinaryDataTest {
     // Check the existence of the temp files
     for (String tempPath : tempFiles) {
       File file = new File(tempPath);
-      Assertions.assertFalse(file.exists(), "The temp file exists after the purge " + file);
+      Assertions.assertTrue(file.exists(),
+          "The temp file doesn't exist after 100 the purge " + file);
     }
+
+    Thread.sleep(3000);
+    BinaryData.purgeDataFiles();
+    // Check the existence of the temp files
+    for (String tempPath : tempFiles) {
+      File file = new File(tempPath);
+      Assertions.assertTrue(file.exists(),
+          "The temp file doesn't exist after 3100 the purge " + file);
+    }
+
+    Thread.sleep(3000);
+    BinaryData.purgeDataFiles();
+    // Check the existence of the temp files
+    for (String tempPath : tempFiles) {
+      File file = new File(tempPath);
+      Assertions.assertFalse(file.exists(),
+          "The temp file exists after 6100 the purge " + file);
+    }
+
   }
 
   private void testWrite(BinaryDataOutputStream os) throws IOException {
