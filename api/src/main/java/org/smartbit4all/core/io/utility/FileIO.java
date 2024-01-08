@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -41,6 +40,10 @@ public class FileIO {
   private static final Logger log = LoggerFactory.getLogger(FileIO.class);
 
   private static Random rnd = new Random();
+
+  private static interface InputStreamSupplier {
+    InputStream get() throws IOException;
+  }
 
   public static BinaryData read(File rootFolder, URI uri) {
     if (uri == null || uri.getPath() == null) {
@@ -63,10 +66,10 @@ public class FileIO {
   }
 
   public static void write(File newFile, BinaryData content) {
-    writeFile(newFile, content::inputStream);
+    writeFile(newFile, content::inputStream2);
   }
 
-  private static void writeFile(File file, Supplier<InputStream> inputStream) {
+  private static void writeFile(File file, InputStreamSupplier inputStream) {
     long waitTime = 2;
     long fullWaitTime = 0;
     try {
@@ -109,7 +112,7 @@ public class FileIO {
    * @param waitTime
    * @return
    */
-  private static long getNextRandomWaitTime(long waitTime) {
+  public static long getNextRandomWaitTime(long waitTime) {
     return waitTime * (rnd.nextInt(3) + 1);
   }
 
@@ -132,19 +135,12 @@ public class FileIO {
 
         @Override
         public InputStream openStream() throws IOException {
-          return binaryData.inputStream();
+          return binaryData.inputStream2();
         }
       });
     }
     ByteSource byteSource = ByteSource.concat(byteSources);
-    writeFile(newFile, () -> {
-      try {
-        return byteSource.openStream();
-      } catch (IOException e) {
-        log.error("Error on ByteSource.concat for file " + newFile, e);
-        return null;
-      }
-    });
+    writeFile(newFile, byteSource::openStream);
   }
 
   /**
@@ -176,7 +172,7 @@ public class FileIO {
         length = Long.BYTES;
         sliceLen = byteSource.slice(offset, length);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new IllegalStateException("Unable to read multipart file " + file, e);
     }
     return result != null ? result : Collections.emptyList();

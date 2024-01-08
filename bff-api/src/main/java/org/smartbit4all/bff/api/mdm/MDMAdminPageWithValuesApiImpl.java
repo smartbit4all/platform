@@ -1,7 +1,9 @@
 package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -10,10 +12,19 @@ public class MDMAdminPageWithValuesApiImpl extends MDMAdminPageApiImpl
     implements MDMAdminPageWithValuesApi {
 
   @Override
-  public Object initModel(View view) {
-    Object model = super.initModel(view);
-    view.getActions().add(0, new UiAction().code(ACTION_OPEN_VALUES));
-    return model;
+  protected void refreshUiActions(PageContext context) {
+    super.refreshUiActions(context);
+    int idxToInsert = context.view.getActions().isEmpty()
+        || !UiActions.contains(context.view.getActions(), ACTION_OPEN_MDM_CHANGES)
+            ? 0
+            : 1;
+
+    context.view.getActions().add(
+        idxToInsert,
+        new UiAction()
+            .code(ACTION_OPEN_VALUES)
+            .descriptor(getUiActionDescriptor(null,
+                localeSettingApi.get(MasterDataManagementApi.SCHEMA, ACTION_OPEN_VALUES))));
   }
 
   @Override
@@ -23,7 +34,9 @@ public class MDMAdminPageWithValuesApiImpl extends MDMAdminPageApiImpl
 
   @Override
   public void openValues(UUID viewUuid, UiActionRequest request) {
-    String mdmDefinitionName = getContextByViewUUID(viewUuid).definition.getName();
+    PageContext ctx = getContextByViewUUID(viewUuid);
+    String mdmDefinitionName = ctx.definition.getName();
+    styleViewActions(ctx.view, ACTION_OPEN_VALUES);
     viewApi.showView(new View().viewName(getAdminValueViewName())
         .putParametersItem(MDMAdminPageApi.PARAM_MDM_DEFINITION, mdmDefinitionName));
   }

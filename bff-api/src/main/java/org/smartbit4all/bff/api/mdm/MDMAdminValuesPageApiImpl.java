@@ -36,9 +36,18 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   }
 
   @Override
-  protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e) {
-    return super.getUiActionDescriptor(e)
+  protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e, String title) {
+    return super.getUiActionDescriptor(e, title)
+        .color(UiActions.Color.SECONDARY)
         .type(UiActionButtonType.RAISED);
+  }
+
+  @Override
+  protected void styleAction(UiAction action, boolean isCurrentSelection) {
+    if (!ACTION_ADD_NEW_ENTRY.equals(action.getCode())) {
+      action.getDescriptor()
+          .color(isCurrentSelection ? UiActions.Color.PRIMARY : UiActions.Color.SECONDARY);
+    }
   }
 
   @Override
@@ -50,7 +59,7 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
         .inputType(UiActionInputType.TEXTFIELD).input2Type(UiActionInputType.TEXTFIELD)
         .descriptor(new UiActionDescriptor()
             .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, ACTION_ADD_NEW_ENTRY))
-            .color("secondary")
+            .color(UiActions.Color.ACCENT)
             .type(UiActionButtonType.RAISED)
             .inputDialog(new UiActionDialogDescriptor()
                 .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, VALUE_SET_NAME))
@@ -62,6 +71,8 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
                 .cancelButton(cancelButton()))));
   }
 
+
+
   private UiActionButtonDescriptor cancelButton() {
     return new UiActionButtonDescriptor()
         .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "cancel"))
@@ -71,13 +82,13 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   private UiActionButtonDescriptor nextButton() {
     return new UiActionButtonDescriptor()
         .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "next"))
-        .color("primary");
+        .color(UiActions.Color.PRIMARY);
   }
 
   private UiActionButtonDescriptor finishButton() {
     return new UiActionButtonDescriptor()
         .caption(localeSettingApi.get(MasterDataManagementApi.SCHEMA, "finish"))
-        .color("accent");
+        .color(UiActions.Color.ACCENT);
   }
 
   @Override

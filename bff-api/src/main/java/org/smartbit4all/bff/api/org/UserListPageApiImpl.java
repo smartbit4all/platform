@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.org;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -121,8 +122,9 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected List<UiAction> getUserListActions() {
-    return Arrays.asList(
-        new UiAction().code(ADD_USER));
+    List<UiAction> actions = new ArrayList<>();
+    actions.add(new UiAction().code(ADD_USER));
+    return actions;
   }
 
 }

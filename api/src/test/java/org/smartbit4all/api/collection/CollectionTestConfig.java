@@ -1,7 +1,11 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.text.Collator;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
@@ -25,6 +29,7 @@ import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -109,12 +114,28 @@ public class CollectionTestConfig {
     return index;
   }
 
+  private Comparator<Object> categoryNameComparator() {
+    return (Comparator<Object>) (local, other) -> {
+      if (local == null && other == null) {
+        return 0;
+      } else if (local == null) {
+        return -1;
+      } else if (other == null) {
+        return 1;
+      } else {
+        Integer localNumber = Integer.parseInt(local.toString().split("\\s+")[1]);
+        Integer otherNumber = Integer.parseInt(other.toString().split("\\s+")[1]);
+        return localNumber.compareTo(otherNumber);
+      }
+    };
+  }
+
   @Bean
   public SearchIndex<SampleCategory> sampleMasterDetailIndex() {
     SearchIndexImpl<SampleCategory> index = new SearchIndexImpl<>(
         CollectionApiTest.SCHEMA,
         CollectionApiTest.SAMPLE_CATEGORY, CollectionApiTest.SCHEMA, SampleCategory.class)
-            .map(SampleCategory.NAME, SampleCategory.NAME)
+            .map(SampleCategory.NAME, String.class, categoryNameComparator(), SampleCategory.NAME)
             .map(SampleCategory.URI, SampleCategory.URI)
             .detailListOfValue(TestCategoryFilter.KEYWORDS, SampleCategory.URI, String.class,
                 120, SampleCategory.KEY_WORDS)
@@ -127,8 +148,8 @@ public class CollectionTestConfig {
             .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120,
                 SampleCategory.KEY_WORDS);
     index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI, SampleCategory.CONTAINER_ITEMS)
-        .map(SampleContainerItem.NAME, String.class, 150,
-            SampleContainerItem.NAME)
+        // .MAP(SAMPLECONTAINERITEM.NAME, STRING.CLASS, 150,
+        // SAMPLECONTAINERITEM.NAME)
         .map(SampleContainerItem.DATASHEET, String.class, 150, SampleContainerItem.DATASHEET,
             SampleDataSheet.NAME);
     index.expressionDetail(TestCategoryFilter.KEYWORDS,
@@ -153,6 +174,30 @@ public class CollectionTestConfig {
               .name(SampleCategory.KEY_WORDS);
         });
     return index;
+  }
+
+  @Bean
+  @Primary
+  public DefaultComparatorProvider defaultComparatorProvider() {
+    return new DefaultComparatorProvider() {
+
+      @Override
+      public Map<String, Comparator<Object>> getComparators() {
+        Map<String, Comparator<Object>> map = new HashMap<>();
+        map.put(List.class.getName(), (Comparator<Object>) (local, other) -> {
+          if (local == null && other == null) {
+            return 0;
+          } else if (local == null) {
+            return -1;
+          } else if (other == null) {
+            return 1;
+          } else {
+            return Collator.getInstance().compare(local.toString(), other.toString());
+          }
+        });
+        return map;
+      }
+    };
   }
 
   @Bean

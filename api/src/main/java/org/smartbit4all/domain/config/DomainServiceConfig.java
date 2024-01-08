@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.smartbit4all.api.collection.DefaultComparatorProvider;
+import org.smartbit4all.api.collection.DefaultComparatorProviderImpl;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
@@ -50,6 +52,7 @@ import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.TransferServiceImpl;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
 import org.smartbit4all.domain.service.transfer.convert.ConverterImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -244,6 +247,12 @@ public class DomainServiceConfig {
   @Bean
   public TableDataApi tableDataApi(StorageApi storageApi) {
     return new TableDataApiImpl(storageApi);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DefaultComparatorProvider platformDefaultComparatorProvider() {
+    return new DefaultComparatorProviderImpl();
   }
 
 }

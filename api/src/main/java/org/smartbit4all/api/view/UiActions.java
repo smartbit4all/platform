@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,8 +17,6 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.View;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 public final class UiActions {
 
@@ -38,6 +38,16 @@ public final class UiActions {
 
   public static final String SEPARATOR = "_actionSeparator_";
 
+  public static class Color {
+    private Color() {};
+
+    public static final String PRIMARY = "primary";
+    public static final String SECONDARY = "secondary";
+    public static final String ACCENT = "accent";
+    public static final String ERROR = "error";
+    public static final String WARN = "warn";
+  }
+
   private UiActions() {}
 
   public static UiActionBuilder builder() {
@@ -50,7 +60,7 @@ public final class UiActions {
 
   /**
    * Initiate a builder for the {@link UiAction#getSubActions()}.
-   * 
+   *
    * @param action The sub menu action.
    * @return
    */
@@ -470,7 +480,7 @@ public final class UiActions {
 
     /**
      * Return the builder for the sub menu!
-     * 
+     *
      * @param action
      * @param conditions
      * @return The sub menu builder if the action was added or null if net!!!

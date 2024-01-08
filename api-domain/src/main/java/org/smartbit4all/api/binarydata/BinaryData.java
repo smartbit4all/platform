@@ -110,16 +110,34 @@ public class BinaryData {
   private String mimeType;
 
   /**
+   * We wait 1 minutes to delete e file that was the file of a finalized BinaryData.
+   */
+  static long DELAY_OF_DELETE = 60 * 1000;
+
+  /**
    * The reference queue for queuing the temp files to delete after finalizing the
    * {@link BinaryData} itself.
    */
-  public static final BlockingQueue<File> dataFilesPurgeQueue =
+  protected static final BlockingQueue<FileDeletionEntry> dataFilesPurgeQueue =
       new LinkedBlockingQueue<>();
 
-  public static final int purgeDataFiles() {
+  private static class FileDeletionEntry {
+
     File file;
-    int removed = 0;
-    while ((file = dataFilesPurgeQueue.poll()) != null) {
+
+    long time;
+
+    public FileDeletionEntry(File file, long time) {
+      super();
+      this.file = file;
+      this.time = time;
+    }
+
+    boolean toDelete(long currentTime) {
+      return (currentTime - time) > DELAY_OF_DELETE;
+    }
+
+    void delete() {
       if (file != null && file.exists()) {
         try {
           file.delete();
@@ -127,7 +145,20 @@ public class BinaryData {
           log.warn("Unable to delete temp file " + file);
         }
       }
+    }
+
+  }
+
+  public static final int purgeDataFiles() {
+    File file;
+    int removed = 0;
+    FileDeletionEntry deletionEntry = dataFilesPurgeQueue.peek();
+    long currentTime = System.currentTimeMillis();
+    while (deletionEntry != null && deletionEntry.toDelete(currentTime)) {
+      deletionEntry = dataFilesPurgeQueue.poll();
+      deletionEntry.delete();
       removed++;
+      deletionEntry = dataFilesPurgeQueue.peek();
     }
     return removed;
   }
@@ -174,7 +205,7 @@ public class BinaryData {
   protected void finalize() throws Throwable {
     super.finalize();
     if (deleteDataFile) {
-      dataFilesPurgeQueue.add(dataFile);
+      dataFilesPurgeQueue.add(new FileDeletionEntry(dataFile, System.currentTimeMillis()));
     }
   }
 
@@ -290,6 +321,23 @@ public class BinaryData {
             "The BinaryData doesn't have the temp file with the content. Assume that the content is empty!",
             e);
       }
+    }
+  }
+
+  /**
+   * If we would like to read the whole binary content then we can do this using this input stream.
+   * This version throws IOException instead of constructEmptyData()
+   *
+   * @return
+   */
+  public InputStream inputStream2() throws IOException {
+    if (data != null) {
+      // In this case we have all the data in memory. We can use the ByteArrayInputStream
+      return new ByteArrayInputStream(data);
+    } else if (byteSource != null) {
+      return new AutoCloseInputStream(byteSource.openStream());
+    } else {
+      return new AutoCloseInputStream(getDataFileInputStream());
     }
   }
 

@@ -96,6 +96,13 @@ public final class ObjectLayoutBuilder {
         .direction(layoutDirection);
   }
 
+  public static SmartWidgetDefinition label(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.LABEL)
+        .key(key)
+        .label(label);
+  }
+
   public static SmartWidgetDefinition textfield(String key, String label) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.TEXT_FIELD)

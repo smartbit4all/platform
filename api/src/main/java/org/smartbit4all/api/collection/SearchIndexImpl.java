@@ -1,9 +1,10 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -51,8 +53,6 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private Class<O> indexedObjectDefinitionClass;
 
-
-
   protected SearchIndexMappingObject objectMapping = new SearchIndexMappingObject();
 
   /**
@@ -60,6 +60,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
    * lambda for this.
    */
   protected Map<String, CustomExpressionMapping> expressionByPropertyName = new LinkedHashMap<>();
+
+  protected Map<String, Comparator<Object>> comparatorsByClass;
 
   protected String indexedObjectSchema;
 
@@ -93,9 +95,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Autowired
   protected FilterExpressionApi filterExpressionApi;
 
+  @Autowired
+  protected DefaultComparatorProvider comparatorProvider;
+
+  private boolean isComparatorSetExplicitly = false;
+
   public void setup(ObjectApi objectApi, StorageApi storageApi, CrudApi crudApi,
       TableDataApi tableDataApi, ApplicationContext ctx, EntityManager entityManager,
-      LocaleSettingApi localeSettingApi, FilterExpressionApi filterExpressionApi) {
+      LocaleSettingApi localeSettingApi, FilterExpressionApi filterExpressionApi,
+      DefaultComparatorProvider comparatorProvider) {
     this.objectApi = objectApi;
     this.storageApi = storageApi;
     this.crudApi = crudApi;
@@ -104,6 +112,46 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     this.entityManager = entityManager;
     this.localeSettingApi = localeSettingApi;
     this.filterExpressionApi = filterExpressionApi;
+    this.comparatorProvider = comparatorProvider;
+  }
+
+
+  /**
+   * Set SearchIndex level comparators for properties by classes. This SearchIndex will not get
+   * implicit comparators after this is used.
+   * 
+   * @param comparators The map to use when comparing values of properties. Comparators by classes.
+   */
+  public void setComparators(Map<String, Comparator<Object>> comparators) {
+    this.comparatorsByClass = comparators;
+    isComparatorSetExplicitly = true;
+  }
+
+  /**
+   * Set SearchIndex level comparators for properties by classes. This SearchIndex will not get
+   * implicit comparators after this is used.
+   * 
+   * @param comparators The map to use when comparing values of properties. Comparators by classes.
+   */
+  public SearchIndexImpl<O> comparators(Map<String, Comparator<Object>> comparators) {
+    this.comparatorsByClass = comparators;
+    isComparatorSetExplicitly = true;
+    return this;
+  }
+
+  /**
+   * Put SearchIndex level comparator for properties by class. This SearchIndex will still get
+   * implicit comparators after this is used.
+   * 
+   * @param clazz The class that will use the comparator.
+   * @param comparator The comparator to be used.
+   */
+  public SearchIndexImpl<O> putComparator(Class<?> clazz, Comparator<Object> comparator) {
+    if (comparatorsByClass == null) {
+      comparatorsByClass = new HashMap<>();
+    }
+    this.comparatorsByClass.put(clazz.getName(), comparator);
+    return this;
   }
 
   @Override
@@ -239,16 +287,29 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   private void initObjectMapping() {
-    objectMapping.init(ctx, entityManager, objectApi, extensionStrategy);
+    objectMapping.init(ctx, entityManager, objectApi, extensionStrategy, comparatorsByClass);
+  }
+
+  private void initComparators() {
+    if (comparatorProvider != null && comparatorProvider.getComparators() != null
+        && !isComparatorSetExplicitly) {
+      if (comparatorsByClass == null) {
+        comparatorsByClass = new HashMap<>();
+      }
+      comparatorProvider.getComparators()
+          .forEach((clazz, comp) -> comparatorsByClass.putIfAbsent(clazz, comp));
+    }
   }
 
   @Override
   public SearchEntityDefinition getDefinition() {
+    initComparators();
     initObjectMapping();
     return objectMapping.getDefinition();
   }
 
   private SearchIndexMappingObject getObjectMapping() {
+    initComparators();
     initObjectMapping();
     return objectMapping;
   }
@@ -308,49 +369,86 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
-    objectMapping.map(propertyName, null, -1, pathes);
+    objectMapping.map(propertyName, null, -1, null, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, String... pathes) {
-    objectMapping.map(propertyName, dataType, -1, pathes);
+    objectMapping.map(propertyName, dataType, -1, null, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, int length,
       String... pathes) {
-    objectMapping.map(propertyName, dataType, length, pathes);
+    objectMapping.map(propertyName, dataType, length, null, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> map(String propertyName, Class<?> dataType,
+      Comparator<Object> comparator, String... pathes) {
+    objectMapping.map(propertyName, dataType, -1, comparator, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      String... pathes) {
+    objectMapping.map(propertyName, dataType, length, comparator, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapProcessed(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
-    objectMapping.mapProcessed(propertyName, null, -1, processor, pathes);
+    objectMapping.mapProcessed(propertyName, null, -1, null, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType,
       UnaryOperator<Object> processor, String... pathes) {
-    objectMapping.mapProcessed(propertyName, dataType, -1, processor, pathes);
+    objectMapping.mapProcessed(propertyName, dataType, -1, null, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType, int length,
       UnaryOperator<Object> processor, String... pathes) {
-    objectMapping.mapProcessed(propertyName, dataType, length, processor, pathes);
+    objectMapping.mapProcessed(propertyName, dataType, length, null, processor, pathes);
+    return this;
+  }
+
+
+
+  public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType,
+      Comparator<Object> comparator,
+      UnaryOperator<Object> processor, String... pathes) {
+    objectMapping.mapProcessed(propertyName, dataType, -1, comparator, processor, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      UnaryOperator<Object> processor, String... pathes) {
+    objectMapping.mapProcessed(propertyName, dataType, length, comparator, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapComplex(String propertyName,
       Function<ObjectNode, Object> complexProcessor) {
-    objectMapping.mapComplex(propertyName, String.class, -1, complexProcessor);
+    objectMapping.mapComplex(propertyName, String.class, -1, null, complexProcessor);
     return this;
   }
 
   public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
       Function<ObjectNode, Object> complexProcessor) {
-    objectMapping.mapComplex(propertyName, dataType, length, complexProcessor);
+    objectMapping.mapComplex(propertyName, dataType, length, null, complexProcessor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+
+      Function<ObjectNode, Object> complexProcessor) {
+    objectMapping.mapComplex(propertyName, dataType, length, comparator, complexProcessor);
     return this;
   }
 
@@ -435,6 +533,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    initComparators();
     initObjectMapping();
   }
 

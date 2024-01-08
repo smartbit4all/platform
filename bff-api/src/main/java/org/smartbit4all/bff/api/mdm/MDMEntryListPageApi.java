@@ -10,6 +10,7 @@ import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -64,31 +65,9 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
-   * action start an editing phase for the entries.
-   */
-  static final String ACTION_START_EDITING = "START_EDITING";
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
-   * action cancels all the draft editing object and we will have the published object list.
-   */
-  static final String ACTION_CANCEL_CHANGES = "CANCEL_CHANGES";
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
    * action toggle between the normal and the inactive list.
    */
   static final String ACTION_TOGGLE_INACTIVES = "TOGGLE_INACTIVES";
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
-   * action publishes all the draft editing object and the changes will be available for every user.
-   */
-  static final String ACTION_FINALIZE_CHANGES = "FINALIZE_CHANGES";
-
-  static final String ACTION_SEND_FOR_APPROVAL = "SEND_FOR_APPROVAL";
-  static final String ACTION_ADMIN_APPROVE_OK = "ADMIN_APPROVE_OK";
-  static final String ACTION_ADMIN_APPROVE_NOT_OK = "ADMIN_APPROVE_NOT_OK";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -155,7 +134,7 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(ACTION_START_EDITING)
+  @ActionHandler(MDMActions.ACTION_START_EDITING)
   void startEditing(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -165,7 +144,7 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(ACTION_CANCEL_CHANGES)
+  @ActionHandler(MDMActions.ACTION_CANCEL_CHANGES)
   void cancelChanges(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -186,16 +165,16 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(ACTION_FINALIZE_CHANGES)
+  @ActionHandler(MDMActions.ACTION_FINALIZE_CHANGES)
   void finalizeChanges(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(ACTION_SEND_FOR_APPROVAL)
+  @ActionHandler(MDMActions.ACTION_SEND_FOR_APPROVAL)
   void sendForApproval(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(ACTION_ADMIN_APPROVE_OK)
+  @ActionHandler(MDMActions.ACTION_ADMIN_APPROVE_OK)
   void adminApproveOk(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(ACTION_ADMIN_APPROVE_NOT_OK)
+  @ActionHandler(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK)
   void adminApproveNotOk(UUID viewUuid, UiActionRequest request);
 
   /**

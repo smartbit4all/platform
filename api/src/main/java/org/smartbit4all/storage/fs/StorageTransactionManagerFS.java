@@ -183,6 +183,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
     if (status.getTransaction() instanceof StorageTransaction) {
       finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.FAIL);
+      invocations.remove();
     }
   }
 

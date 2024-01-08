@@ -4,10 +4,14 @@ import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.EmbeddingApi;
+import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
 import org.smartbit4all.api.collection.StorageSequenceApi;
 import org.smartbit4all.api.collection.StorageSequenceApiImpl;
+import org.smartbit4all.api.collection.VectorDBApi;
+import org.smartbit4all.api.collection.VectorDDBApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
@@ -20,10 +24,17 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
@@ -47,6 +58,7 @@ import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.SubjectContributionApi;
@@ -109,6 +121,10 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Configuration
 @Import({DomainConfig.class, PlatformApiScheduledConfig.class})
 public class PlatformApiConfig {
+
+  public static final String EMBEDDING_CONNECTIONS = "embeddingConnections";
+
+  public static final String VECTOR_DB_CONNECTIONS = "vectorDbConnections";
 
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
@@ -234,6 +250,93 @@ public class PlatformApiConfig {
   @Bean
   public MasterDataManagementApi masterDataManagementApi() {
     return new MasterDataManagementApiImpl();
+  }
+
+  @Bean
+  MDMDefinitionOption systemIntegrationPlatformMdmOption(LocaleSettingApi localeSettingApi) {
+    MDMDefinition mdmDefinition =
+        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION);
+    MDMDefinitionOption result =
+        new MDMDefinitionOption(mdmDefinition);
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(EMBEDDING_CONNECTIONS)
+          .name(EMBEDDING_CONNECTIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ServiceConnection.NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Embedding connections")
+              .putValueByLocaleItem("hu", "AI beágyazó kapcsolatok")
+              .putValueByLocaleItem("en", "Embedding connections"))
+          .displayNameForm(new LangString().defaultValue("Embedding connection")
+              .putValueByLocaleItem("hu", "AI beágyazó kapcsolat")
+              .putValueByLocaleItem("en", "Embedding connection"))
+          .order(200l)
+          .typeQualifiedName(ServiceConnection.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API name")
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Endpoint")
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API version")
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Authentication token")
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(VECTOR_DB_CONNECTIONS)
+          .name(VECTOR_DB_CONNECTIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ServiceConnection.NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Vector database connections")
+              .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolatok")
+              .putValueByLocaleItem("en", "Vector database connections"))
+          .displayNameForm(new LangString().defaultValue("Embedding Connection")
+              .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolat")
+              .putValueByLocaleItem("en", "Vector database connection"))
+          .order(200l)
+          .typeQualifiedName(ServiceConnection.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API name")
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Endpoint")
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API version")
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Authentication token")
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    return result;
   }
 
   @Bean
@@ -374,6 +477,16 @@ public class PlatformApiConfig {
   @Bean
   public StorageSequenceApi storageSequenceApi() {
     return new StorageSequenceApiImpl();
+  }
+
+  @Bean
+  public VectorDBApi vectorDbManagementApi() {
+    return new VectorDDBApiImpl();
+  }
+
+  @Bean
+  public EmbeddingApi embeddingManagementApi() {
+    return new EmbeddingApiImpl();
   }
 
   @Bean

@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.DefaultComparatorProvider;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
@@ -49,8 +52,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -109,6 +110,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   private MasterDataManagementApi self;
+
+  @Autowired
+  private DefaultComparatorProvider comparatorProvider;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -508,7 +512,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     // Setup the result index and call the init to initialize all the inner constructions.
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi);
+        filterExpressionApi, comparatorProvider);
     try {
       result.afterPropertiesSet();
     } catch (Exception e) {
@@ -574,7 +578,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     // Setup the result index and call the init to initialize all the inner constructions.
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi);
+        filterExpressionApi, comparatorProvider);
     try {
       result.afterPropertiesSet();
     } catch (Exception e) {
@@ -596,7 +600,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Override
   public URI initiateGlobalBranch(String definitionName, String branchCaption) {
-    MDMDefinitionState resultState = modifyDefinitionState(definitionName, state -> {
+    MDMDefitionStateWrapper resultStateWrapper = modifyDefinitionState(definitionName, state -> {
       UserActivityLog createActivityLog = null;
       if (sessionApi == null) {
         log.warn("Unable to create created activity log. The Sessionapi is missing!");
@@ -623,8 +627,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
     });
     fireModificationStarted(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
-        resultState.getUri());
-    return resultState.getUri();
+        resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState);
+    return resultStateWrapper.getCurrentStateUri();
   }
 
   @Override
@@ -635,29 +639,32 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Override
   public URI mergeGlobal(String definitionName) {
-    URI stateUri = modifyDefinitionState(definitionName, state -> {
+    MDMDefitionStateWrapper stateWrapper = mergeGlobalInner(definitionName);
+    return stateWrapper.getCurrentStateUri();
+  }
+
+  protected MDMDefitionStateWrapper mergeGlobalInner(String definitionName) {
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       branchApi.merge(state.getGlobalModification().getBranchUri());
       return state
           .globalModification(null);
-    }, state -> noGlobalBranchValidation(definitionName, state))
-        .getUri();
+    }, state -> noGlobalBranchValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_FINALIZED, null,
         getDefinition(definitionName).getUri(),
-        stateUri);
-    return stateUri;
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+    return stateWrapper;
   }
 
   @Override
   public URI dropGlobal(String definitionName) {
-    URI stateUri = modifyDefinitionState(definitionName, state -> {
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       return state
           .globalModification(null);
-    }, state -> noGlobalBranchValidation(definitionName, state))
-        .getUri();
+    }, state -> noGlobalBranchValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_CANCELLED, null,
         getDefinition(definitionName).getUri(),
-        stateUri);
-    return stateUri;
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+    return stateWrapper.getCurrentStateUri();
   }
 
   private void noGlobalBranchValidation(String definitionName, MDMDefinitionState state) {
@@ -669,7 +676,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @SafeVarargs
-  private final MDMDefinitionState modifyDefinitionState(String definitionName,
+  private final MDMDefitionStateWrapper modifyDefinitionState(String definitionName,
       UnaryOperator<MDMDefinitionState> modification, Consumer<MDMDefinitionState>... validations) {
     MDMDefinition definition = getDefinition(definitionName);
     Lock lock = objectApi.getLock(definition.getUri());
@@ -687,49 +694,64 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       stateNode.modify(MDMDefinitionState.class,
           modification);
       objectApi.save(stateNode);
-      return stateNode.getObject(MDMDefinitionState.class);
+      return new MDMDefitionStateWrapper(stateNode.getObject(MDMDefinitionState.class),
+          stateNode.getObjectUri());
     } finally {
       lock.unlock();
     }
   }
 
-  private void fireModificationStarted(String event, String scope, URI definition, URI state) {
+  private void fireModificationStarted(String event, String scope, URI definition, URI state,
+      URI prevState) {
     invocationApi
         .publisher(
             MasterDataManagementApi.class,
             MDMSubscriberApi.class,
             STATE_CHANGED)
-        .publish(api -> api.stateChanged(event, scope, definition, state));
+        .publish(api -> api.stateChanged(event, scope, definition, state, prevState));
   }
 
   @Override
   public void sendForApprovalGlobal(String definitionName, URI approver) {
-    URI stateUri = modifyDefinitionState(definitionName, state -> {
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       state.getGlobalModification().approver(approver);
       return state;
-    }, state -> noGlobalBranchValidation(definitionName, state))
-        .getUri();
+    }, state -> noGlobalBranchValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_SENT_FOR_APPROVAL, null,
         getDefinition(definitionName).getUri(),
-        stateUri);
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
   @Override
   public void approvalAcceptedGlobal(String definitionName) {
-    URI stateUri = mergeGlobal(definitionName);
+    MDMDefitionStateWrapper stateWrapper = mergeGlobalInner(definitionName);
     fireModificationStarted(MODIFICATION_APPROVED, null, getDefinition(definitionName).getUri(),
-        stateUri);
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
   @Override
   public void approvalRejectedGlobal(String definitionName) {
-    URI stateUri = modifyDefinitionState(definitionName, state -> {
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       state.getGlobalModification().approver(null);
       return state;
-    }, state -> noGlobalBranchValidation(definitionName, state))
-        .getUri();
+    }, state -> noGlobalBranchValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_REJECTED, null, getDefinition(definitionName).getUri(),
-        stateUri);
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+  }
+
+  private static class MDMDefitionStateWrapper {
+    MDMDefinitionState currentState;
+    URI prevState;
+
+    public URI getCurrentStateUri() {
+      return currentState.getUri();
+    }
+
+    public MDMDefitionStateWrapper(MDMDefinitionState currentState, URI prevState) {
+      java.util.Objects.requireNonNull(currentState);
+      this.currentState = currentState;
+      this.prevState = prevState;
+    }
   }
 
 }

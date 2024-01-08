@@ -1,15 +1,21 @@
 package org.smartbit4all.api.invocation;
 
-import static java.util.stream.Collectors.toList;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
+import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
+import org.smartbit4all.api.invocation.bean.MethodData;
+import org.smartbit4all.api.invocation.bean.ParameterData;
+import org.smartbit4all.api.invocation.bean.PublishedEventData;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import static java.util.stream.Collectors.toList;
 
 /**
  * If an api is provided by an application instance then a Proxy with this invocation handler should
@@ -94,25 +100,59 @@ public class ProviderApiInvocationHandler<T> {
     return apiInstance;
   }
 
+  /**
+   * @return Collect the information about the given api via Reflection. Identifies the methods, the
+   *         published events and the subscriptions.
+   */
   ApiData getData() {
     // Collects the subscriptions from the interface class.
-    Map<EventSubscription, Method> subscriptions = new HashMap<>();
-    ReflectionUtility.allMethods(interfaceClass, m -> {
-      EventSubscription subscription =
-          ReflectionUtility.getNearestAnnotation(m, EventSubscription.class);
-      if (subscription != null) {
-        subscriptions.put(subscription, m);
-        return true;
+    Set<Method> allMethods = ReflectionUtility.allMethods(interfaceClass);
+    List<MethodData> methods = allMethods.stream().map(m -> {
+      List<ParameterData> parameters = new ArrayList<>();
+      StringBuilder sbParams = new StringBuilder();
+      for (int i = 0; i < m.getParameterCount(); i++) {
+        Parameter p = m.getParameters()[i];
+        parameters.add(new ParameterData().name(p.getName()).typeName(p.getType().getName())
+            .kind(InvocationParameterKind.BYVALUE));
+        if (sbParams.length() != 0) {
+          sbParams.append(StringConstant.COMMA);
+        }
+        sbParams.append(p.getType().getName());
       }
-      return false;
-    });
-    return new ApiData().interfaceName(interfaceClass.getName()).name(name).uri(uri)
-        .eventSubscriptions(subscriptions.entrySet().stream().map(e -> {
-          EventSubscription s = e.getKey();
-          return new EventSubscriptionData().api(s.api()).event(s.event())
+      return new MethodData().name(m.getName())
+          .id(m.getName() + StringConstant.LEFT_PARENTHESIS + sbParams.toString()
+              + StringConstant.RIGHT_PARENTHESIS)
+          .returnType(m.getReturnType().getName())
+          .parameters(parameters);
+    }).collect(toList());
+    List<PublishedEventData> publishers = allMethods.stream().map(m -> {
+      PublishedEvent p =
+          ReflectionUtility.getNearestAnnotation(m, PublishedEvent.class);
+      if (p != null) {
+        List<ParameterData> parameters = new ArrayList<>();
+        for (int i = 0; i < m.getParameterCount(); i++) {
+          Parameter param = m.getParameters()[i];
+          parameters
+              .add(new ParameterData().name(param.getName()).typeName(param.getType().getName())
+                  .kind(InvocationParameterKind.BYVALUE));
+        }
+        return new PublishedEventData().api(interfaceClass.getName())
+            .event(p.event()).parameters(parameters);
+      }
+      return null;
+    }).filter(p -> p != null).collect(toList());
+    List<EventSubscriptionData> subscriptions = allMethods.stream().map(m -> {
+      EventSubscription s =
+          ReflectionUtility.getNearestAnnotation(m, EventSubscription.class);
+      return s == null ? null
+          : new EventSubscriptionData().api(s.api()).event(s.event())
               .asynchronous(s.asynchronous()).channel(s.channel()).type(s.type())
-              .subscribedApi(interfaceClass.getName()).subscribedMethod(e.getValue().getName());
-        }).collect(toList()));
+              .subscribedApi(interfaceClass.getName()).subscribedMethod(m.getName());
+    }).filter(s -> s != null).collect(toList());
+    return new ApiData().interfaceName(interfaceClass.getName()).name(name).uri(uri)
+        .methods(methods)
+        .publishedEvents(publishers)
+        .eventSubscriptions(subscriptions);
   }
 
 }

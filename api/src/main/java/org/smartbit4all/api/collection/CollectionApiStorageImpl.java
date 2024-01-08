@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
@@ -48,6 +49,12 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Autowired
   private StorageSequenceApi sequenceApi;
+
+  @Autowired
+  private VectorDBApi vectorDBApi;
+
+  @Autowired
+  private EmbeddingApi embeddingApi;
 
   /**
    * This map contains the already used {@link Storage} instances mapped by the schema name.
@@ -241,6 +248,13 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
       cacheEntry = new StoredListCacheEntry();
     }
     return cacheEntry;
+  }
+
+  @Override
+  public VectorCollection vectorCollection(String name, ServiceConnection vectorDBConnection,
+      ServiceConnection embeddingConnection) {
+    return new VectorCollectionImpl(objectApi, vectorDBApi, vectorDBConnection, embeddingApi,
+        embeddingConnection, name);
   }
 
 }

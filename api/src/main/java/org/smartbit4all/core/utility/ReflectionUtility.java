@@ -99,6 +99,17 @@ public class ReflectionUtility {
    * and classes.
    * 
    * @param clazz The class to discover.
+   * @return
+   */
+  public static Set<Method> allMethods(Class<?> clazz) {
+    return allMethods(clazz, null);
+  }
+
+  /**
+   * Retrieves all the fields of a given class. Including the fields of the super. super interfaces
+   * and classes.
+   * 
+   * @param clazz The class to discover.
    * @param tester The tester {@link Predicate} to define if the
    * @return
    */

@@ -1,8 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -19,12 +17,19 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.ObjectLookup;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredList.OperationMode;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.VectorCollection;
+import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
+import org.smartbit4all.api.collection.bean.ObjectLookupResult;
+import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
@@ -38,6 +43,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -46,6 +52,10 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -442,6 +452,14 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return collectionApi.list(descriptor.getSchema(), getListName());
   }
 
+  @Override
+  public StoredMap getUniqueMap(String... path) {
+    if (path == null || path.length == 0) {
+      return null;
+    }
+    return collectionApi.map(descriptor.getSchema(), getUniqueMapName(Arrays.asList(path)));
+  }
+
   private Map<MDMEntryConstraint, StoredMap> getUniqueMapsByconstraints() {
     List<MDMEntryConstraint> uniqueConstraints = Collections.emptyList();
 
@@ -534,4 +552,107 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     }
     return null;
   }
+
+  /**
+   * Updates the denoted {@link VectorCollection} of the given entry if any.
+   * 
+   * @param toUpdate The list of object nodes to update in the {@link VectorCollection}.
+   * 
+   * 
+   *        TODO Later on we need some update result with the success code and the problematic
+   *        records.
+   */
+  private final void updateVectorCollection(List<ObjectNode> toUpdate) {
+    VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
+    if (vectorCollectionDescriptor == null) {
+      return;
+    }
+    // Resolve the service connections defined in the MDM_DEFINITION_SYSTEM_INTEGRATION definition.
+    VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
+    for (ObjectNode objectNode : toUpdate) {
+      vectorCollection.addObject(INACTIVE_POSTFIX, objectNode);
+    }
+  }
+
+  private String[] getPrimaryId() {
+    Map<MDMEntryConstraint, StoredMap> uniqueMapsByconstraints = getUniqueMapsByconstraints();
+    if (uniqueMapsByconstraints.isEmpty()) {
+      return uriPath;
+    }
+    Optional<String[]> first = uniqueMapsByconstraints.keySet().stream()
+        .filter(c -> c.getKind() == KindEnum.UNIQUE).map(c -> StringConstant.toArray(c.getPath()))
+        .findFirst();
+    return first.orElse(uriPath);
+  }
+
+  @Override
+  public void updateAllIndices() {
+    VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
+    if (vectorCollectionDescriptor != null) {
+      // Remove the whole collection and fill again with all the object.
+      String[] primaryId = getPrimaryId();
+      VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
+      vectorCollection.clear();
+      getList().nodesFromCache().forEach(n -> {
+        vectorCollection.addObject(n.getValueAsString(primaryId), n.getObjectAsMap());
+      });
+    }
+  }
+
+  @Override
+  public ObjectLookup lookup() {
+    return new ObjectLookupMDMEntry(objectApi);
+  }
+
+  private final class ObjectLookupMDMEntry extends ObjectLookup {
+
+    ObjectLookupMDMEntry(ObjectApi objectApi) {
+      super(objectApi);
+      // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public ObjectLookupResult lookup(Object valueObject, ObjectLookupParameter parameter) {
+      // TODO implement later on - If we have a map and a value inside that is
+      return null;
+    }
+
+    @Override
+    public Map<String, Object> findByUnique(ObjectPropertyValue value) {
+      if (value == null || value.getPath() == null || value.getPath().isEmpty()) {
+        return Collections.emptyMap();
+      }
+      // If we have the proper unique id
+      StoredMap uniqueMap = getUniqueMap(StringConstant.toArray(value.getPath()));
+      if (uniqueMap == null) {
+        return Collections.emptyMap();
+      }
+      return objectApi.loadLatest(uniqueMap.uris().get(value.getValue())).getObjectAsMap();
+    }
+
+  }
+
+  private final VectorCollection getVectorCollection(
+      VectorCollectionDescriptor vectorCollectionDescriptor) {
+    MDMEntryApi vectorDBEntryApi =
+        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            PlatformApiConfig.VECTOR_DB_CONNECTIONS);
+    ServiceConnection vectorDBConnection =
+        objectApi.asType(ServiceConnection.class,
+            vectorDBEntryApi.lookup().findByUnique(new ObjectPropertyValue()
+                .addPathItem(ServiceConnection.NAME)
+                .value(vectorCollectionDescriptor.getVectorDBConnection())));
+    MDMEntryApi embeddingEntryApi =
+        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            PlatformApiConfig.EMBEDDING_CONNECTIONS);
+    ServiceConnection embeddingConnection = objectApi.asType(ServiceConnection.class,
+        embeddingEntryApi.lookup().findByUnique(new ObjectPropertyValue()
+            .addPathItem(ServiceConnection.NAME)
+            .value(vectorCollectionDescriptor.getEmbeddingConnection())));
+    VectorCollection vectorCollection =
+        collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
+            vectorDBConnection, embeddingConnection);
+    return vectorCollection;
+  }
+
 }

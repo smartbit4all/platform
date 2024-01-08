@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toSet;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    */
   Map<String, SearchIndexMapping> mappingsByPropertyName = new LinkedHashMap<>();
 
+  Map<String, Comparator<Object>> comparatorsByClass;
+
   /**
    * The filter class is not necessary. If we have this then we can set the type of the given
    * property based on the property of this class.
@@ -166,12 +169,18 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public SearchIndexMappingObject map(String propertyName, Class<?> dataType, int length,
       String... pathes) {
+    return map(propertyName, dataType, length, null, pathes);
+  }
+
+  public SearchIndexMappingObject map(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
 
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, null, null));
+              dataType == null ? getType(propertyName) : dataType, length, comparator, null, null));
     }
     return this;
   }
@@ -179,11 +188,18 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType, int length,
       UnaryOperator<Object> processor,
       String... pathes) {
+    return mapProcessed(propertyName, dataType, length, null, processor, pathes);
+  }
+
+  public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      UnaryOperator<Object> processor,
+      String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, processor,
+              dataType == null ? getType(propertyName) : dataType, length, comparator, processor,
               null));
     }
     return this;
@@ -191,9 +207,15 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
       Function<ObjectNode, Object> complexProcessor) {
+    return mapComplex(propertyName, dataType, length, null, complexProcessor);
+  }
+
+  public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
     mappingsByPropertyName.put(propertyName,
-        new SearchIndexMappingProperty(propertyName, null, dataType, length, null,
+        new SearchIndexMappingProperty(propertyName, null, dataType, length, comparator, null,
             complexProcessor));
     return this;
   }
@@ -215,7 +237,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         new SearchIndexMappingObject().master(masterReferenceQualified,
             masterReferenceQualified,
             uniqueIdName);
-    detail.init(ctx, entityManager, objectApi, extensionStrategy);
+    detail.init(ctx, entityManager, objectApi, extensionStrategy, comparatorsByClass);
     detail.logicalSchema = logicalSchema;
     detail.name = name + StringConstant.UNDERLINE + propertyName;
     mappingsByPropertyName.put(propertyName,
@@ -268,7 +290,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       for (Entry<String, SearchIndexMapping> entry : mappingsByPropertyName.entrySet()) {
         if (entry.getValue() instanceof SearchIndexMappingProperty) {
           SearchIndexMappingProperty property = (SearchIndexMappingProperty) entry.getValue();
+          Comparator<Object> defComparator = null;
+          if (comparatorsByClass != null) {
+            defComparator = comparatorsByClass.get(property.type.getName());
+          }
           builder.addOwnedProperty(property.name, property.type, property.length,
+              property.comparator != null ? property.comparator
+                  : defComparator,
               isPrimaryKey(property.name));
         }
       }
@@ -418,15 +446,17 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   public final void init(ApplicationContext ctx, EntityManager entityManager, ObjectApi objectApi,
-      SearchIndexMappingExtensionStrategy extensionStrategy) {
+      SearchIndexMappingExtensionStrategy extensionStrategy,
+      Map<String, Comparator<Object>> comparatorsByClass) {
     this.ctx = ctx;
     this.entityManager = entityManager;
     this.objectApi = objectApi;
     this.extensionStrategy = extensionStrategy;
+    this.comparatorsByClass = comparatorsByClass;
     for (SearchIndexMapping detailMapping : mappingsByPropertyName.values()) {
       if (detailMapping instanceof SearchIndexMappingObject) {
         ((SearchIndexMappingObject) detailMapping).init(ctx, entityManager, objectApi,
-            extensionStrategy);
+            extensionStrategy, comparatorsByClass);
       }
     }
   }

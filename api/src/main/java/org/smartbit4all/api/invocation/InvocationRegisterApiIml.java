@@ -1,7 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
+import org.smartbit4all.api.invocation.bean.PublishedEventData;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelRegistry;
@@ -58,6 +57,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -121,7 +122,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private final Map<String, Map<String, ApiDescriptor>> apiRegister = new HashMap<>();
 
   /**
-   * All api instances that our application provides in case invocation request.
+   * All api instances that our application provides for invoke an api call.
    */
   private final Map<URI, Object> apiInstanceByApiDataUri = new HashMap<>();
 
@@ -131,17 +132,23 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   private Map<URI, List<UUID>> runtimesByApis = new HashMap<>();
 
+  /**
+   * The {@link #eventSubscriptionsByApis} is a constantly maintained map for the event
+   * subscriptions of an api. The value is a list of event subscription that can be filtered by the
+   * name of the event.
+   */
   private Map<String, List<EventSubscriptionData>> eventSubscriptionsByApis = new HashMap<>();
+
+  /**
+   * The {@link #publishedEventsByApis} is a constantly maintained map for the published events of
+   * an api. The value is a list of published event that can be filtered by the name of the event.
+   */
+  private Map<String, List<PublishedEventData>> publishedEventsByApis = new HashMap<>();
 
   /**
    * Prevent from accessing the registry before the first maintain cycle.
    */
   private CountDownLatch maintainLatch = new CountDownLatch(1);
-
-  /**
-   * All {@link ApiData} uri that our application runtime provides.
-   */
-  private Set<URI> apis = new HashSet<>();
 
   /**
    * All the api providers that are provided by the given application.
@@ -234,7 +241,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           } else {
             storage.get().update(apiData.getUri(), ApiData.class, a -> apiData);
           }
-          apis.add(apiData.getUri());
           addToApiRegister(apiData);
           apiInstanceByApiDataUri.put(apiData.getUri(), entry.getKey().getApiInstance());
         }
@@ -264,7 +270,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     // update runtime with our provided apis
     if (applicationRuntimeApi != null) {
-      applicationRuntimeApi.setApis(new ArrayList<>(apis));
+      applicationRuntimeApi.setApis(new ArrayList<>(apiInstanceByApiDataUri.keySet()));
       URI runtimeUri = applicationRuntimeApi.self().getUri();
 
       // Save the async channels for the runtime.
@@ -320,15 +326,14 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     Set<URI> activeApis = new HashSet<>();
     Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
     // First of all fill our own apis. We don't need the getApis call to know what we are providing.
-    if (!CollectionUtils.isEmpty(apis)) {
-      for (URI api : apis) {
-        List<UUID> runtimes =
-            activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
-        runtimes.add(myRuntimeUUID);
-      }
-
-      activeApis.addAll(apis);
+    for (URI api : apiInstanceByApiDataUri.keySet()) {
+      List<UUID> runtimes =
+          activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
+      runtimes.add(myRuntimeUUID);
     }
+
+    // Add our apis to the active apis. They are obviously active ones.
+    activeApis.addAll(apiInstanceByApiDataUri.keySet());
 
     for (ApplicationRuntime applicationRuntime : activeOtherRuntimes) {
       List<URI> runtimeApis = applicationRuntimeApi.getApis(applicationRuntime.getUuid());
@@ -452,6 +457,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     OffsetDateTime limitTime = OffsetDateTime.now().minusSeconds(5);
     if (refScheduled.exists()) {
       refScheduled.update(scheduledList -> {
+        // check if list exists
+        scheduledList =
+            scheduledList == null ? new AsyncChannelScheduledInvocationList() : scheduledList;
         // The list of invocation is always ordered by the schedule time.
         List<ScheduledInvocationRequest> toExecute = new ArrayList<>();
         for (int idx = 0; idx < scheduledList.getInvocationRequests().size(); idx++) {
@@ -579,6 +587,14 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
   }
 
+  /**
+   * Adds the given {@link ApiData} to the local in memory register. It can be the startup of this
+   * runtime from the {@link #initRegistry()} call or it can be a {@link #refreshRegistry()} when
+   * the available apis are read from the storage.
+   * 
+   * @param apiData
+   * @return
+   */
   private ApiDescriptor addToApiRegister(ApiData apiData) {
     Map<String, ApiDescriptor> apisByName =
         apiRegister.computeIfAbsent(apiData.getInterfaceName(), n -> new HashMap<>());
@@ -588,6 +604,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       List<EventSubscriptionData> subscriptionsByApi =
           eventSubscriptionsByApis.computeIfAbsent(subscription.getApi(), n -> new ArrayList<>());
       subscriptionsByApi.add(subscription);
+    }
+    List<PublishedEventData> eventsByApi =
+        publishedEventsByApis.computeIfAbsent(apiData.getInterfaceName(), n -> new ArrayList<>());
+    for (PublishedEventData event : apiData.getPublishedEvents()) {
+      eventsByApi.add(event);
     }
 
     return apiDescriptor;

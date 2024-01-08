@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.search;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -167,6 +167,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     FilterExpressionFieldList filters = null;
     if (filterModel != null) {
       pageTitle = filterModel.getLabel();
+      filterModel.label(null);
       filters = filterModel.getWorkplaceList();
       // TODO pass FilterExpressionBuilderApiConfig
       FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
@@ -193,7 +194,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   /**
    * Override this to add specific list of object for the search page.
-   * 
+   *
    * @return
    */
   protected Stream<ObjectNode> getNodesToQuery() {

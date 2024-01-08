@@ -94,3 +94,116 @@ components:
           format: uri
         collectionType:
           enum: [LIST, MAP, REFERENCE]
+    VectorCollectionDescriptor:
+      type: object
+      description: |
+        This object can be used as parameter object to name a vector collection managed by the CollectionApi.
+      required: [uri, name]
+      properties:
+        vectorCollectionName:
+          type: string
+          description: |
+            The name of the Vector collection managed by the MDM Entry. It is maintained for the published version the under construction
+            state is not working.
+        vectorDBConnection:
+          type: string
+          description: |
+            The name of the VectorDB connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition.
+        embeddingConnection:
+          type: string
+          description: |
+            The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition.
+    VectorValue:
+      description: |
+        The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture 
+        or whatever else. It is normally constructed by a Converter that creates the result from the input object.
+      type: object
+      required: [inputType, inputObject, vector]
+      properties:
+        id:
+          description: A unique identifier of the VectorValue.
+          type: string
+        inputType:
+          description: The type of the input object.
+          type: string
+        inputObject:
+          description: The input object itself.
+          type: object
+          additionalProperties: true
+        conversion:
+          description: The name fo the conversion algorithm like ada2 in case of string.
+          type: string
+        vector:
+          type: array
+          items:
+            type: number
+            format: float
+    VectorSearchResultItem:
+      description: |
+        The vector search result items.
+      type: object
+      required: [inputType, inputObject, vector]
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the object found.
+        score:
+          type: number
+          format: float
+          description: The score of the found item.
+        value:          
+          $ref: '#/components/schemas/VectorValue'
+    ObjectLookupParameter:
+      description: |
+        The parameters of an Object lookup.
+      type: object
+      required: []
+      properties:
+        limit:
+          description: |
+            The limit of items in the result.
+          type: integer
+        relevanceLimitPercent:
+          description: |
+            The limit of relevance in percent. If the relevance doesn't reach this level then it won't appear in the result.
+          type: number
+          format: float
+        relevanceLimitRange:
+          description: |
+            The limit of relevance range in percent. The most relevant result are closer to the first one then this limit. If we
+            set this properly then we can see the most relevant as the numberOfRelevant in the result will set to 1.
+          type: number
+          format: float
+    ObjectLookupResult:
+      description: |
+        The result an Object lookup.
+      type: object
+      required: [items]
+      properties:
+        numberOfRelevant:
+          description: |
+            The number of relevant items that are more or less on the same level of relevance. The lookup can accept a percentage 
+            as value to calculate which items are relevant. If one item should be selected then the most relevant will be selected but
+            it is important to know if there are any more relevant or the selected one is obviously the one we are looking for.
+          type: integer
+        items:
+          type: array
+          items:          
+            $ref: '#/components/schemas/ObjectLookupResultItem'
+    ObjectLookupResultItem:
+      description: |
+        The result item of an Object lookup.
+      type: object
+      required: [inputType, inputObject, vector]
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the object found.
+        scoreInPercent:
+          type: number
+          format: float
+          description: The score of the found item converted to percent. 100% means that the given result is the one tat we are looking for.
+        objectAsMap:
+          description: The object itself.
+          type: object
+          additionalProperties: true
