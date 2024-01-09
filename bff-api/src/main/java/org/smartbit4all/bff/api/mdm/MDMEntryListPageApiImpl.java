@@ -271,15 +271,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
               PlatformApiConfig.VECTOR_DB_CONNECTIONS);
 
-      String mdmDef = parameters(ctx.view).get(PARAM_MDM_DEFINITION, String.class);
-      String currentEntryDescriptor =
-          parameters(ctx.view).get(PARAM_ENTRY_DESCRIPTOR, String.class);
-
-      MDMEntryApi currentEntryApi = masterDataManagementApi.getApi(mdmDef, currentEntryDescriptor);
-
       boolean isEmbeddingEntryListNotEmpty = !embeddingEntryApi.getList().uris().isEmpty();
       boolean isVectorEntryListNotEmpty = vectorEntryApi.getList().uris().isEmpty();
-      boolean currentEntryListNotEmpty = currentEntryApi.getList().uris().isEmpty();
+      boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
