@@ -270,8 +270,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
-      boolean isEmbeddingEntryListNotEmpty = !ctx.embeddingEntryApi.getList().uris().isEmpty();
-      boolean isVectorEntryListNotEmpty = ctx.vectorEntryApi.getList().uris().isEmpty();
+      boolean isEmbeddingEntryListNotEmpty =
+          ctx.embeddingEntryApi != null && !ctx.embeddingEntryApi.getList().uris().isEmpty();
+      boolean isVectorEntryListNotEmpty =
+          ctx.vectorEntryApi != null && ctx.vectorEntryApi.getList().uris().isEmpty();
       boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
 
       uiActions
