@@ -121,6 +121,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     public MDMEntryDescriptor entryDescriptor;
     public MDMDefinition definition;
     MDMEntryApi entryApi;
+    MDMEntryApi vectorEntryApi;
+    MDMEntryApi embeddingEntryApi;
     SearchIndex<BranchedObjectEntry> searchIndexAdmin;
     SearchIndex<Object> searchIndexPublished;
     boolean inactives = false;
@@ -131,6 +133,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       definition = getDefinition(view);
       entryApi =
           masterDataManagementApi.getApi(definition.getName(), entryDescriptor.getName());
+      vectorEntryApi =
+          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+              PlatformApiConfig.VECTOR_DB_CONNECTIONS);
+      embeddingEntryApi =
+          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+              PlatformApiConfig.EMBEDDING_CONNECTIONS);
 
       searchIndexAdmin =
           collectionApi.searchIndex(definition.getName(),
@@ -262,17 +270,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
-      // vectorCollection
-
-      MDMEntryApi embeddingEntryApi =
-          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-              PlatformApiConfig.EMBEDDING_CONNECTIONS);
-      MDMEntryApi vectorEntryApi =
-          masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-              PlatformApiConfig.VECTOR_DB_CONNECTIONS);
-
-      boolean isEmbeddingEntryListNotEmpty = !embeddingEntryApi.getList().uris().isEmpty();
-      boolean isVectorEntryListNotEmpty = vectorEntryApi.getList().uris().isEmpty();
+      boolean isEmbeddingEntryListNotEmpty = !ctx.embeddingEntryApi.getList().uris().isEmpty();
+      boolean isVectorEntryListNotEmpty = ctx.vectorEntryApi.getList().uris().isEmpty();
       boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
 
       uiActions
@@ -294,10 +293,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               branchActive,
               !ctx.inactives, !globalBranching)
           .addIf(new UiAction().code(ACTION_SHOW_VECTOR_COLLECTION_SETUP),
-              isEmbeddingEntryListNotEmpty && isVectorEntryListNotEmpty)
+              isEmbeddingEntryListNotEmpty, isVectorEntryListNotEmpty)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isEmbeddingEntryListNotEmpty && isVectorEntryListNotEmpty
-                  && currentEntryListNotEmpty);
+              isEmbeddingEntryListNotEmpty, isVectorEntryListNotEmpty, currentEntryListNotEmpty);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
