@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
@@ -96,7 +97,14 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
     Map<String, URI> result = new HashMap<>();
     modifyOnBranch(on -> {
       on.modify(StoredMapData.class, data -> {
-        result.putAll(update.apply(getFromData(data)));
+        Map<String, URI> original = getFromData(data);
+        Map<String, URI> copyOfOriginal = new HashMap<>(original);
+        Map<String, URI> updated = update.apply(original);
+        if (updated == null || Objects.equals(copyOfOriginal, updated)) {
+          result.putAll(copyOfOriginal);
+          return null;
+        }
+        result.putAll(updated);
         return data.uris(result);
       });
     });

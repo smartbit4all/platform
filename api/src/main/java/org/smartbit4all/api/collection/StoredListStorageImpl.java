@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -115,9 +116,15 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     List<URI> result = new ArrayList<>();
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
-        result.addAll(update.apply(data.getUris()));
-        data.setUris(result);
-        return data;
+        List<URI> original = data.getUris();
+        List<URI> copyOfOriginal = new ArrayList<>(original);
+        List<URI> updated = update.apply(original);
+        if (updated == null || Objects.equals(copyOfOriginal, updated)) {
+          result.addAll(copyOfOriginal);
+          return null;
+        }
+        result.addAll(updated);
+        return data.uris(result);
       });
     });
     return result;
