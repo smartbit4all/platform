@@ -750,8 +750,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     lock.lock();
     try {
       ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
-      definitionNode.map(MDMDefinition.DESCRIPTORS).get(entryName).get()
-          .setValue(vectorCollectionDescriptor, MDMEntryDescriptor.VECTOR_COLLECTION);
+      definitionNode.modify(MDMDefinition.class, def -> {
+        MDMEntryDescriptor entryDescriptor = def.getDescriptors().get(entryName);
+        entryDescriptor.vectorCollection(vectorCollectionDescriptor);
+        return def;
+      });
       objectApi.save(definitionNode);
     } finally {
       lock.unlock();

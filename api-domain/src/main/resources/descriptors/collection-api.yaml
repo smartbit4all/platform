@@ -120,9 +120,11 @@ components:
       type: object
       required: [inputType, inputObject, vector]
       properties:
-        id:
+        idPath:
           description: A unique identifier of the VectorValue.
-          type: string
+          type: array
+          items:
+            type: string
         inputType:
           description: The type of the input object.
           type: string

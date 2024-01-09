@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -560,20 +561,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
     viewApi.showView(
-        new View().viewName("mingy").type(ViewType.DIALOG)
+        new View().viewName(MDMConstants.MDM_VECTOR_COLLECTION_SETUP).type(ViewType.DIALOG)
             .putParametersItem(PARAM_ENTRY_DESCRIPTOR, entryDescriptor.getName())
             .putParametersItem(PARAM_MDM_DEFINITION, mdmDefinition.getName()));
   }
 
   @Override
   public void recreateIndex(UUID viewUuid, UiActionRequest request) {
+    String idPath = actionRequestHelper(request).get(UiActions.INPUT, String.class);
+    String[] path = idPath.split(",");
     PageContext context = getContextByViewUUID(viewUuid);
     View view = viewApi.getView(viewUuid);
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
     MDMEntryApi entryApi =
         masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName());
-    entryApi.updateAllIndices();
+    entryApi.updateAllIndices(Arrays.asList(path));
   }
 
   @Override

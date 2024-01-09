@@ -49,8 +49,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MDMApiTestConfig extends TestFSCleaner {
 
 
-  static final String TEST = "Test";
-  static final String SAMPLE = "sample";
+  public static final String TEST = "Test";
+  public static final String SAMPLE = "sample";
 
   public static final String MDM_EDITING_PAGE = "MDMEditingPage";
   public static final String MDM_LIST_PAGE = "MDMListPage";

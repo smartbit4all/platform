@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +56,6 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -562,7 +562,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
    *        TODO Later on we need some update result with the success code and the problematic
    *        records.
    */
-  private final void updateVectorCollection(List<ObjectNode> toUpdate) {
+  private final void updateVectorCollection(List<String> idPath, List<ObjectNode> toUpdate) {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
     if (vectorCollectionDescriptor == null) {
       return;
@@ -570,7 +570,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     // Resolve the service connections defined in the MDM_DEFINITION_SYSTEM_INTEGRATION definition.
     VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
     for (ObjectNode objectNode : toUpdate) {
-      vectorCollection.addObject(INACTIVE_POSTFIX, objectNode);
+      vectorCollection.addObject(idPath, objectNode);
     }
   }
 
@@ -586,15 +586,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public void updateAllIndices() {
+  public void updateAllIndices(List<String> idPath) {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
-      String[] primaryId = getPrimaryId();
+      // String[] primaryId = getPrimaryId();
       VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
       vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
-        vectorCollection.addObject(n.getValueAsString(primaryId), n.getObjectAsMap());
+        vectorCollection.addObject(idPath, n.getObjectAsMap());
       });
     }
   }

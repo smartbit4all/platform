@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +14,6 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
-import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -49,8 +49,8 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public void addObject(String id, Object obj) {
-    vectorDBApi.addPoint(vectorDBService, collectionName, embed(obj).id(id));
+  public void addObject(List<String> idPath, Object obj) {
+    vectorDBApi.addPoint(vectorDBService, collectionName, embed(obj).idPath(idPath));
   }
 
   @Override
