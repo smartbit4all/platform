@@ -18,18 +18,22 @@ public class BinaryDataMaintenanceApiImpl implements BinaryDataMaintenanceApi {
 
   private static final Logger log = LoggerFactory.getLogger(BinaryDataMaintenanceApiImpl.class);
 
-
   private static final Thread shutdownHook = new Thread(() -> {
     BinaryData.isJVMShutdownInProgress = true;
     log.info("JVM shutdown signal received");
   });
 
+  private static boolean shutdownHookRegistered = false;
+
   @Override
   @EventListener(ApplicationReadyEvent.class)
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public void registerJVMShutdownHook() {
-    Runtime.getRuntime().addShutdownHook(shutdownHook);
-    log.info("JVM shutdown hook registered");
+    if (!shutdownHookRegistered) {
+      Runtime.getRuntime().addShutdownHook(shutdownHook);
+      shutdownHookRegistered = true;
+      log.info("JVM shutdown hook registered");
+    }
   }
 
   @Override
