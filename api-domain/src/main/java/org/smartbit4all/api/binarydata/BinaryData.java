@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,6 +56,8 @@ import com.google.common.io.ByteStreams;
  * @author Peter Boros
  */
 public class BinaryData {
+
+  static boolean isJVMShutdownInProgress = false;
 
   private static final byte[] EMPTY_BYTES = new byte[0];
 
@@ -140,17 +143,19 @@ public class BinaryData {
     void delete() {
       if (file != null && file.exists()) {
         try {
-          file.delete();
+          if (!isJVMShutdownInProgress) {
+            Files.delete(file.toPath());
+          } else {
+            log.info("Skipping delete of {}, JVM is shutting down", file);
+          }
         } catch (Exception e) {
-          log.warn("Unable to delete temp file " + file);
+          log.warn("Unable to delete temp file " + file, e);
         }
       }
     }
-
   }
 
   public static final int purgeDataFiles() {
-    File file;
     int removed = 0;
     FileDeletionEntry deletionEntry = dataFilesPurgeQueue.peek();
     long currentTime = System.currentTimeMillis();
@@ -335,9 +340,9 @@ public class BinaryData {
       // In this case we have all the data in memory. We can use the ByteArrayInputStream
       return new ByteArrayInputStream(data);
     } else if (byteSource != null) {
-      return new AutoCloseInputStream(byteSource.openStream());
+      return byteSource.openStream();
     } else {
-      return new AutoCloseInputStream(getDataFileInputStream());
+      return getDataFileInputStream();
     }
   }
 
