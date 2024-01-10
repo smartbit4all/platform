@@ -1182,3 +1182,6 @@ components:
           type: string
         color:
           type: string
+        style:
+          type: object
+          additionalProperties: true
