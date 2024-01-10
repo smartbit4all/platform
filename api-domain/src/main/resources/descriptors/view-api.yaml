@@ -987,6 +987,17 @@ components:
           type: string
         upload:
           $ref: '#/components/schemas/UiActionUploadDescriptor'
+        tooltip:
+          type: string
+        tooltipPosition:
+          type: string
+          enum:
+            - AFTER
+            - BEFORE
+            - ABOVE
+            - BELOW
+            - LEFT
+            - RIGHT
     UiActionUploadDescriptor:
       type: object
       description: |

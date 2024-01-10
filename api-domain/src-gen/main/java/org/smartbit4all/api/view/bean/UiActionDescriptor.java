@@ -49,7 +49,9 @@ import javax.validation.Valid;
   UiActionDescriptor.INPUT2_DIALOG,
   UiActionDescriptor.FEEDBACK_TYPE,
   UiActionDescriptor.FEEDBACK_TEXT,
-  UiActionDescriptor.UPLOAD
+  UiActionDescriptor.UPLOAD,
+  UiActionDescriptor.TOOLTIP,
+  UiActionDescriptor.TOOLTIP_POSITION
 })
 @JsonTypeName("UiActionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -92,6 +94,55 @@ public class UiActionDescriptor {
 
   public static final String UPLOAD = "upload";
   private UiActionUploadDescriptor upload;
+
+  public static final String TOOLTIP = "tooltip";
+  private String tooltip;
+
+  /**
+   * Gets or Sets tooltipPosition
+   */
+  public enum TooltipPositionEnum {
+    AFTER("AFTER"),
+    
+    BEFORE("BEFORE"),
+    
+    ABOVE("ABOVE"),
+    
+    BELOW("BELOW"),
+    
+    LEFT("LEFT"),
+    
+    RIGHT("RIGHT");
+
+    private String value;
+
+    TooltipPositionEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TooltipPositionEnum fromValue(String value) {
+      for (TooltipPositionEnum b : TooltipPositionEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String TOOLTIP_POSITION = "tooltipPosition";
+  private TooltipPositionEnum tooltipPosition;
 
   public UiActionDescriptor() { 
   }
@@ -458,6 +509,60 @@ public class UiActionDescriptor {
   }
 
 
+  public UiActionDescriptor tooltip(String tooltip) {
+    
+    this.tooltip = tooltip;
+    return this;
+  }
+
+   /**
+   * Get tooltip
+   * @return tooltip
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTooltip() {
+    return tooltip;
+  }
+
+
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTooltip(String tooltip) {
+    this.tooltip = tooltip;
+  }
+
+
+  public UiActionDescriptor tooltipPosition(TooltipPositionEnum tooltipPosition) {
+    
+    this.tooltipPosition = tooltipPosition;
+    return this;
+  }
+
+   /**
+   * Get tooltipPosition
+   * @return tooltipPosition
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOOLTIP_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public TooltipPositionEnum getTooltipPosition() {
+    return tooltipPosition;
+  }
+
+
+  @JsonProperty(TOOLTIP_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTooltipPosition(TooltipPositionEnum tooltipPosition) {
+    this.tooltipPosition = tooltipPosition;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -479,12 +584,14 @@ public class UiActionDescriptor {
         Objects.equals(this.input2Dialog, uiActionDescriptor.input2Dialog) &&
         Objects.equals(this.feedbackType, uiActionDescriptor.feedbackType) &&
         Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText) &&
-        Objects.equals(this.upload, uiActionDescriptor.upload);
+        Objects.equals(this.upload, uiActionDescriptor.upload) &&
+        Objects.equals(this.tooltip, uiActionDescriptor.tooltip) &&
+        Objects.equals(this.tooltipPosition, uiActionDescriptor.tooltipPosition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, upload);
+    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, upload, tooltip, tooltipPosition);
   }
 
   @Override
@@ -504,6 +611,8 @@ public class UiActionDescriptor {
     sb.append("    feedbackType: ").append(toIndentedString(feedbackType)).append("\n");
     sb.append("    feedbackText: ").append(toIndentedString(feedbackText)).append("\n");
     sb.append("    upload: ").append(toIndentedString(upload)).append("\n");
+    sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
+    sb.append("    tooltipPosition: ").append(toIndentedString(tooltipPosition)).append("\n");
     sb.append("}");
     return sb.toString();
   }
