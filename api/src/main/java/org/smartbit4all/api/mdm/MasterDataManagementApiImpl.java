@@ -676,6 +676,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
   }
 
+  private void globalBranchUnderApprovalValidation(String definitionName,
+      MDMDefinitionState state) {
+    if (state.getGlobalModification() != null
+        && state.getGlobalModification().getApprover() != null) {
+      throw new IllegalStateException(MessageFormat.format(
+          localeSettingApi.get("mdm.globalbranch.underapproval"),
+          definitionName));
+    }
+  }
+
   @SafeVarargs
   private final MDMDefitionStateWrapper modifyDefinitionState(String definitionName,
       UnaryOperator<MDMDefinitionState> modification, Consumer<MDMDefinitionState>... validations) {
@@ -717,7 +727,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       state.getGlobalModification().approver(approver);
       return state;
-    }, state -> noGlobalBranchValidation(definitionName, state));
+    }, state -> noGlobalBranchValidation(definitionName, state),
+        state -> globalBranchUnderApprovalValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_SENT_FOR_APPROVAL, null,
         getDefinition(definitionName).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
