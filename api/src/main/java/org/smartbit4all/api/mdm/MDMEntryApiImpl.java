@@ -228,7 +228,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         // map the stored map keys (values) case insensitive
         uniqueMap = uniqueMap.entrySet().stream()
             .collect(toMap(uniqueE -> uniqueE.getKey().toLowerCase(),
-                Entry::getValue));
+                Entry::getValue, (objectUriForUniqueValue1, objectUriForUniqueValue2) -> {
+                  log.warn(
+                      "There is a duplicated key in [{}] unique constraint map, because same unique values"
+                          + " were saved with different cases before the constraint becamed uniqueCaseInsensitive.",
+                      getUniqueMapName(constraint.getPath()));
+                  return objectUriForUniqueValue1;
+                }));
       }
 
       // we store the new values to keep uniqueness between the new objects
