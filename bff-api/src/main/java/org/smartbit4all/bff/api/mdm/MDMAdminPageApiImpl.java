@@ -70,6 +70,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
       return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
     }
 
+    public boolean checkAdminApprover() {
+      return OrgUtils.securityPredicate(sessionApi, definition.getAdminApproverGroupName());
+    }
+
     public View getView() {
       return view;
     }
@@ -102,7 +106,8 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected void refreshUiActions(PageContext context) {
     List<UiAction> actions = new ArrayList<>();
-    if (context.checkAdmin() && context.definition.getBranchingStrategy() != null
+    if ((context.checkAdmin() || context.checkAdminApprover())
+        && context.definition.getBranchingStrategy() != null
         && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
       actions.add(new UiAction()
           .code(ACTION_OPEN_MDM_CHANGES)
