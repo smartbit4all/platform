@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.container;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
@@ -53,8 +55,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     implements MDMEntryChangesPageApi {
@@ -162,18 +162,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
 
     return new HashMap<String, Object>();
   }
-
-  // private SmartComponentLayoutDefinition createChangesLayout(PageContext ctx) {
-  // SmartComponentLayoutDefinition changesLayout =
-  // container(LayoutDirection.VERTICAL);
-  //
-  // ctx.entryApisWithChanges.forEach(entryApi -> changesLayout
-  // .addComponentsItem(
-  // form(LayoutDirection.VERTICAL, label(null, entryApi.getDisplayNameList())))
-  // .addComponentsItem(grid(entryApi.getName())));
-  //
-  // return changesLayout;
-  // }
 
   protected void refreshActions(PageContext ctx) {
     if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.GLOBAL) {
