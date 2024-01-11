@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +60,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -708,9 +708,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       }
       if (icon != null) {
         row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
-            new ImageResource()
+            Arrays.asList(new ImageResource()
                 .source("smart-icon")
-                .identifier(icon));
+                .identifier(icon)));
       }
     });
     return page;

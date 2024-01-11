@@ -318,7 +318,9 @@ components:
         icons:
           type: string
           additionalProperties:
-            type: ImageResource
+            type: array
+            items:
+              type: ImageResource
         parent:
           description: |
             If the grid can be hierarchical then the parent contains the identifiers of the

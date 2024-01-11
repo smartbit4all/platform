@@ -1,13 +1,12 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.container;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +53,8 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     implements MDMEntryChangesPageApi {
@@ -405,9 +406,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
       }
       if (icon != null) {
         row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
-            new ImageResource()
+            Arrays.asList(new ImageResource()
                 .source("smart-icon")
-                .identifier(icon));
+                .identifier(icon)));
       }
     });
     return page;
