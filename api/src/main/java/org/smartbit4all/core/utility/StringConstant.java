@@ -36,6 +36,8 @@ public class StringConstant {
 
   public static final String ASTERISK = "*";
 
+  public static final String DOUBLE_ASTERISK = "**";
+
   public static final String AT = "@";
 
   public static final String BACK_ARROW = "<-";

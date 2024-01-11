@@ -594,10 +594,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   @Override
   public void updateAllIndices(List<String> idPath) {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
+    // TODO ha valami nem kerek a getVectorCollection-ben, akkor IllegalArgumentException
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
       // String[] primaryId = getPrimaryId();
       VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
+      if (vectorCollection == null) {
+        throw new IllegalArgumentException(
+            "A frissítéshez érvényes vektoradatbázis kapcsolat és érvényes beágyazó kapcsolat szükséges.");
+      }
       vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
         vectorCollection.addObject(idPath, n.getObjectAsMap());
@@ -655,10 +660,11 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         embeddingEntryApi.lookup().findByUnique(new ObjectPropertyValue()
             .addPathItem(ServiceConnection.NAME)
             .value(vectorCollectionDescriptor.getEmbeddingConnection())));
-    VectorCollection vectorCollection =
-        collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
-            vectorDBConnection, embeddingConnection);
-    return vectorCollection;
+    if (vectorDBConnection == null || embeddingConnection == null) {
+      return null;
+    }
+    return collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
+        vectorDBConnection, embeddingConnection);
   }
 
 }

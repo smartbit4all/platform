@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
@@ -62,6 +63,7 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import org.springframework.util.ObjectUtils;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -102,6 +104,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  VectorDBApi vectorDBApi;
 
   @Autowired(required = false)
   private MDMApprovalApi mdmApprovalApi;
@@ -263,19 +268,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     UiActionBuilder uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY);
-    // if API present, approving enabled
     boolean approvingEnabled = mdmApprovalApi != null;
+    boolean isEntryEditable =
+        Boolean.TRUE.equals(ctx.getEntryDescriptor(ctx.view).getIsValueSet());
+
+    boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
+    boolean isValueApiPresent = !ObjectUtils.isEmpty(vectorDBApi.getContributionApis());
+
+
+    // if API present, approving enabled
     if (approvingEnabled) {
       URI approver = ctx.entryApi.getApprover();
       boolean underApproval = approver != null;
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
-      boolean isEmbeddingEntryListNotEmpty =
-          ctx.embeddingEntryApi != null && !ctx.embeddingEntryApi.getList().uris().isEmpty();
-      boolean isVectorEntryListNotEmpty =
-          ctx.vectorEntryApi != null && ctx.vectorEntryApi.getList().uris().isEmpty();
-      boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
+
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
@@ -295,10 +303,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               isApprover, underApproval, branchingEnabled,
               branchActive,
               !ctx.inactives, !globalBranching)
-          .addIf(new UiAction().code(ACTION_SHOW_VECTOR_COLLECTION_SETUP),
-              isEmbeddingEntryListNotEmpty, isVectorEntryListNotEmpty)
+          .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
+              isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isEmbeddingEntryListNotEmpty, isVectorEntryListNotEmpty, currentEntryListNotEmpty);
+              isValueApiPresent, currentEntryListNotEmpty);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
@@ -310,7 +318,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               !globalBranching)
           .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive,
               !ctx.inactives,
-              !globalBranching);
+              !globalBranching)
+          .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
+              isEntryEditable)
+          .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
+              currentEntryListNotEmpty);
     }
 
     uiActions
@@ -555,15 +567,20 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void showVectorDatabaseSetupDialog(UUID viewUuid, UiActionRequest request) {
+  public void showEntryDescriptorPage(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     View view = viewApi.getView(viewUuid);
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
+    // TODO refresh the actions on the sidebar
+    // InvocationRequest refreshCallBack = invocationApi.builder(MDMAdminValuesPageApi.class)
+    // .build(api -> api.refreshUiActions(viewUuid));
     viewApi.showView(
-        new View().viewName(MDMConstants.MDM_VECTOR_COLLECTION_SETUP).type(ViewType.DIALOG)
-            .putParametersItem(PARAM_ENTRY_DESCRIPTOR, entryDescriptor.getName())
-            .putParametersItem(PARAM_MDM_DEFINITION, mdmDefinition.getName()));
+        new View().viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR).type(ViewType.DIALOG)
+            .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_ENTRY_DESCRIPTOR,
+                entryDescriptor.getName())
+            .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_DEFINITION,
+                mdmDefinition.getName()));
   }
 
   @Override

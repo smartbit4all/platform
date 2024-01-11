@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -30,12 +31,12 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   @Autowired
   protected MasterDataManagementApi masterDataManagementApi;
-
   @Autowired
   private SessionApi sessionApi;
-
   @Autowired
   protected LocaleSettingApi localeSettingApi;
+  @Autowired
+  protected InvocationApi invocationApi;
 
   public MDMAdminPageApiImpl() {
     super(Object.class);
@@ -203,6 +204,12 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
             context.definition.getName()));
     styleViewActions(view, ACTION_OPEN_MDM_CHANGES);
+  }
+
+  @Override
+  public void refreshUiActions(UUID viewUuid) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    refreshUiActions(context);
   }
 
 }

@@ -754,8 +754,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
-
-
   @Override
   public void saveVectorCollectionDescriptor(String definitionName, String entryName,
       VectorCollectionDescriptor vectorCollectionDescriptor) {
@@ -775,7 +773,23 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
   }
 
-
+  @Override
+  public void modifyEntry(String definitionName,
+      MDMEntryDescriptor entry) {
+    MDMDefinition definition = getDefinition(definitionName);
+    Lock lock = objectApi.getLock(definition.getUri());
+    lock.lock();
+    try {
+      ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
+      definitionNode.modify(MDMDefinition.class, def -> {
+        def.putDescriptorsItem(entry.getName(), entry);
+        return def;
+      });
+      objectApi.save(definitionNode);
+    } finally {
+      lock.unlock();
+    }
+  }
 
   private static class MDMDefitionStateWrapper {
     MDMDefinitionState currentState;
