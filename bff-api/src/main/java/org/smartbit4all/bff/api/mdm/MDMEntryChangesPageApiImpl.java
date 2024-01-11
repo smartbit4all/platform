@@ -196,6 +196,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
             .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchActive);
       }
 
+      uiActions.add(MDMActions.REFRESH);
       ctx.view.actions(uiActions.build());
     }
   }
@@ -296,6 +297,11 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
 
   protected boolean canEdit(boolean isAdmin, boolean underApproval, boolean isApprover) {
     return (isAdmin && !underApproval) || (isApprover && underApproval);
+  }
+
+  @Override
+  public void refresh(UUID viewUuid, UiActionRequest request) {
+    setModel(viewUuid, initModel(viewApi.getView(viewUuid)));
   }
 
   @Override

@@ -17,6 +17,10 @@ public interface MDMEntryChangesPageApi extends PageApi<Object> {
 
   public static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
 
+  @ActionHandler(MDMActions.REFRESH)
+  void refresh(UUID viewUuid, UiActionRequest request);
+
+
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action start an editing phase for the entries.
