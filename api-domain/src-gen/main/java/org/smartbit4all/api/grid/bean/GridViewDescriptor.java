@@ -44,7 +44,9 @@ import javax.validation.Valid;
   GridViewDescriptor.SELECTION_MODE,
   GridViewDescriptor.SELECTION_TYPE,
   GridViewDescriptor.PRESERVE_SELECTION_ON_PAGE_CHANGE,
-  GridViewDescriptor.SHOW_EDIT_COLUMNS
+  GridViewDescriptor.SHOW_EDIT_COLUMNS,
+  GridViewDescriptor.HIGHLIGHT_PROPERTY,
+  GridViewDescriptor.HIGHLIGHT_CLASS
 })
 @JsonTypeName("GridViewDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -109,6 +111,12 @@ public class GridViewDescriptor {
 
   public static final String SHOW_EDIT_COLUMNS = "showEditColumns";
   private Boolean showEditColumns;
+
+  public static final String HIGHLIGHT_PROPERTY = "highlightProperty";
+  private String highlightProperty;
+
+  public static final String HIGHLIGHT_CLASS = "highlightClass";
+  private String highlightClass;
 
   public GridViewDescriptor() { 
   }
@@ -338,6 +346,60 @@ public class GridViewDescriptor {
   }
 
 
+  public GridViewDescriptor highlightProperty(String highlightProperty) {
+    
+    this.highlightProperty = highlightProperty;
+    return this;
+  }
+
+   /**
+   * Get highlightProperty
+   * @return highlightProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HIGHLIGHT_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getHighlightProperty() {
+    return highlightProperty;
+  }
+
+
+  @JsonProperty(HIGHLIGHT_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHighlightProperty(String highlightProperty) {
+    this.highlightProperty = highlightProperty;
+  }
+
+
+  public GridViewDescriptor highlightClass(String highlightClass) {
+    
+    this.highlightClass = highlightClass;
+    return this;
+  }
+
+   /**
+   * Get highlightClass
+   * @return highlightClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HIGHLIGHT_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getHighlightClass() {
+    return highlightClass;
+  }
+
+
+  @JsonProperty(HIGHLIGHT_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHighlightClass(String highlightClass) {
+    this.highlightClass = highlightClass;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -354,12 +416,14 @@ public class GridViewDescriptor {
         Objects.equals(this.selectionMode, gridViewDescriptor.selectionMode) &&
         Objects.equals(this.selectionType, gridViewDescriptor.selectionType) &&
         Objects.equals(this.preserveSelectionOnPageChange, gridViewDescriptor.preserveSelectionOnPageChange) &&
-        Objects.equals(this.showEditColumns, gridViewDescriptor.showEditColumns);
+        Objects.equals(this.showEditColumns, gridViewDescriptor.showEditColumns) &&
+        Objects.equals(this.highlightProperty, gridViewDescriptor.highlightProperty) &&
+        Objects.equals(this.highlightClass, gridViewDescriptor.highlightClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange, showEditColumns);
+    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange, showEditColumns, highlightProperty, highlightClass);
   }
 
   @Override
@@ -374,6 +438,8 @@ public class GridViewDescriptor {
     sb.append("    selectionType: ").append(toIndentedString(selectionType)).append("\n");
     sb.append("    preserveSelectionOnPageChange: ").append(toIndentedString(preserveSelectionOnPageChange)).append("\n");
     sb.append("    showEditColumns: ").append(toIndentedString(showEditColumns)).append("\n");
+    sb.append("    highlightProperty: ").append(toIndentedString(highlightProperty)).append("\n");
+    sb.append("    highlightClass: ").append(toIndentedString(highlightClass)).append("\n");
     sb.append("}");
     return sb.toString();
   }

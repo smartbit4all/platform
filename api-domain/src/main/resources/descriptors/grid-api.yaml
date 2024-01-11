@@ -379,6 +379,10 @@ components:
           type: boolean
         showEditColumns:
           type: boolean
+        highlightProperty:
+          type: string
+        highlightClass:
+          type: string
     GridSelectionMode:
       type: string
       enum:
