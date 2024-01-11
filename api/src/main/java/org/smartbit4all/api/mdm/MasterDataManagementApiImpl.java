@@ -264,7 +264,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           // TODO merge later.
           def.putDescriptorsItem(descEntry.getKey(), descEntry.getValue());
         }
-        return def;
+        return def
+            .branchingStrategy(o.getDefinition().getBranchingStrategy())
+            .adminGroupName(o.getDefinition().getAdminGroupName())
+            .adminApproverGroupName(o.getDefinition().getAdminApproverGroupName());
       });
       objectApi.save(definitionNode);
     }

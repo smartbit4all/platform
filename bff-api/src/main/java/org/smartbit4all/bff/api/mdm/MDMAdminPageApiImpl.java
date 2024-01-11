@@ -196,7 +196,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public void performOpenChanges(UUID viewUuid, UiActionRequest request) {
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
-    if (!context.checkAdmin()) {
+    if (!(context.checkAdmin() || context.checkAdminApprover())) {
       throw new IllegalAccessError("Only admins can view MDM changes!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
