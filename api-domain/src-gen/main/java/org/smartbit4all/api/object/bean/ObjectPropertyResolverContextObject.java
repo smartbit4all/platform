@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "The context object of a property value resolution with the name of the object in the given context and the uri of this. ")
 @JsonPropertyOrder({
   ObjectPropertyResolverContextObject.NAME,
-  ObjectPropertyResolverContextObject.URI
+  ObjectPropertyResolverContextObject.URI,
+  ObjectPropertyResolverContextObject.OBJECT_AS_MAP
 })
 @JsonTypeName("ObjectPropertyResolverContextObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -44,6 +48,9 @@ public class ObjectPropertyResolverContextObject {
 
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String OBJECT_AS_MAP = "objectAsMap";
+  private Map<String, Object> objectAsMap = null;
 
   public ObjectPropertyResolverContextObject() { 
   }
@@ -82,12 +89,12 @@ public class ObjectPropertyResolverContextObject {
   }
 
    /**
-   * Get uri
+   * The uri of the storage object to use for resolve.
    * @return uri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The uri of the storage object to use for resolve.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,6 +110,41 @@ public class ObjectPropertyResolverContextObject {
   }
 
 
+  public ObjectPropertyResolverContextObject objectAsMap(Map<String, Object> objectAsMap) {
+    
+    this.objectAsMap = objectAsMap;
+    return this;
+  }
+
+  public ObjectPropertyResolverContextObject putObjectAsMapItem(String key, Object objectAsMapItem) {
+    if (this.objectAsMap == null) {
+      this.objectAsMap = new HashMap<>();
+    }
+    this.objectAsMap.put(key, objectAsMapItem);
+    return this;
+  }
+
+   /**
+   * The inline object as value to use for resolve.
+   * @return objectAsMap
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The inline object as value to use for resolve.")
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getObjectAsMap() {
+    return objectAsMap;
+  }
+
+
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectAsMap(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -113,12 +155,13 @@ public class ObjectPropertyResolverContextObject {
     }
     ObjectPropertyResolverContextObject objectPropertyResolverContextObject = (ObjectPropertyResolverContextObject) o;
     return Objects.equals(this.name, objectPropertyResolverContextObject.name) &&
-        Objects.equals(this.uri, objectPropertyResolverContextObject.uri);
+        Objects.equals(this.uri, objectPropertyResolverContextObject.uri) &&
+        Objects.equals(this.objectAsMap, objectPropertyResolverContextObject.objectAsMap);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, uri);
+    return Objects.hash(name, uri, objectAsMap);
   }
 
   @Override
@@ -127,6 +170,7 @@ public class ObjectPropertyResolverContextObject {
     sb.append("class ObjectPropertyResolverContextObject {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("}");
     return sb.toString();
   }

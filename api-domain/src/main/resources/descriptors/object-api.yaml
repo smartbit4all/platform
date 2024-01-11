@@ -367,8 +367,13 @@ components:
         name:
           type: string
         uri:
+          description: The uri of the storage object to use for resolve.
           type: string
           format: uri
+        objectAsMap:
+          description: The inline object as value to use for resolve.
+          type: object
+          additionalProperties: true
     BranchEntry:
       type: object
       description: |
