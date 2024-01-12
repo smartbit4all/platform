@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view.grid;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +51,8 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -602,6 +602,13 @@ public class GridModelApiImpl implements GridModelApi {
       }
     }
     model.getView().setOrderByList(update.getOrderByList());
+
+    if (Objects.nonNull(update.getPageSize())
+        && model.getPageSizeOptions().contains(update.getPageSize())) {
+      model.setPageSize(update.getPageSize());
+    } else {
+      model.setPageSize(null);
+    }
   }
 
   private void saveGridDataToUser(UUID viewUuid, String gridId, GridUpdateData update) {

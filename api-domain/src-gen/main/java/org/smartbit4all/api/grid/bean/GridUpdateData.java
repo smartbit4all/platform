@@ -36,7 +36,8 @@ import javax.validation.Valid;
 @ApiModel(description = "Update request for grid's current view's behaviour. ")
 @JsonPropertyOrder({
   GridUpdateData.ORDERED_COLUMN_NAMES,
-  GridUpdateData.ORDER_BY_LIST
+  GridUpdateData.ORDER_BY_LIST,
+  GridUpdateData.PAGE_SIZE
 })
 @JsonTypeName("GridUpdateData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +47,9 @@ public class GridUpdateData {
 
   public static final String ORDER_BY_LIST = "orderByList";
   private List<FilterExpressionOrderBy> orderByList = new ArrayList<>();
+
+  public static final String PAGE_SIZE = "pageSize";
+  private Integer pageSize;
 
   public GridUpdateData() { 
   }
@@ -117,6 +121,33 @@ public class GridUpdateData {
   }
 
 
+  public GridUpdateData pageSize(Integer pageSize) {
+    
+    this.pageSize = pageSize;
+    return this;
+  }
+
+   /**
+   * Get pageSize
+   * @return pageSize
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPageSize() {
+    return pageSize;
+  }
+
+
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -127,12 +158,13 @@ public class GridUpdateData {
     }
     GridUpdateData gridUpdateData = (GridUpdateData) o;
     return Objects.equals(this.orderedColumnNames, gridUpdateData.orderedColumnNames) &&
-        Objects.equals(this.orderByList, gridUpdateData.orderByList);
+        Objects.equals(this.orderByList, gridUpdateData.orderByList) &&
+        Objects.equals(this.pageSize, gridUpdateData.pageSize);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(orderedColumnNames, orderByList);
+    return Objects.hash(orderedColumnNames, orderByList, pageSize);
   }
 
   @Override
@@ -141,6 +173,7 @@ public class GridUpdateData {
     sb.append("class GridUpdateData {\n");
     sb.append("    orderedColumnNames: ").append(toIndentedString(orderedColumnNames)).append("\n");
     sb.append("    orderByList: ").append(toIndentedString(orderByList)).append("\n");
+    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("}");
     return sb.toString();
   }

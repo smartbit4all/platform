@@ -431,3 +431,6 @@ components:
           type: array
           items:
             type: FilterExpressionOrderBy
+        pageSize:
+          type: integer
+          format: int32
