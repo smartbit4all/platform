@@ -38,6 +38,7 @@ import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
@@ -335,7 +336,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isValueApiPresent, currentEntryListNotEmpty);
+              isValueApiPresent, currentEntryListNotEmpty, isEntryEditable);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
@@ -351,7 +352,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              currentEntryListNotEmpty);
+              currentEntryListNotEmpty, isValueApiPresent);
     }
 
     uiActions
@@ -614,15 +615,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void recreateIndex(UUID viewUuid, UiActionRequest request) {
-    String idPath = actionRequestHelper(request).get(UiActions.INPUT, String.class);
-    String[] path = idPath.split(",");
     PageContext context = getContextByViewUUID(viewUuid);
     View view = viewApi.getView(viewUuid);
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
     MDMEntryApi entryApi =
         masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName());
-    entryApi.updateAllIndices(Arrays.asList(path));
+    entryApi.updateAllIndices(Arrays.asList(GenericValue.CODE));
   }
 
   @Override
