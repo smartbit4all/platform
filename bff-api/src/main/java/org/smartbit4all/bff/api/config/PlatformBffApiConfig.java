@@ -9,6 +9,8 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
+import org.smartbit4all.bff.api.generic.GenericPageApi;
+import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,4 +55,14 @@ public class PlatformBffApiConfig {
     return Invocations.asProvider(AssociationGridApi.class, associationGridApi());
   }
 
+  @Bean
+  GenericPageApi genericPageApiImpl() {
+    return new GenericPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<GenericPageApi> genericPageApiProvider(
+      GenericPageApi genericPageApi) {
+    return Invocations.asProvider(GenericPageApi.class, genericPageApi);
+  }
 }
