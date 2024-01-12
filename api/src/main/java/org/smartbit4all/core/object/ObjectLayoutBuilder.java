@@ -110,6 +110,13 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition textbox(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.TEXT_BOX)
+        .key(key)
+        .label(label);
+  }
+
   public static SmartWidgetDefinition integralNumberField(String key, String label) {
     return textfield(key, label).mask("9*");
   }
