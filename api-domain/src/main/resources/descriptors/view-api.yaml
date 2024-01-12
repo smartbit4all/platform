@@ -616,8 +616,11 @@ components:
             type: string
         viewEventType:
           enum: [before, instead, after]
-        invocationRequestDefinition:
-          type: InvocationRequestDefinition
+        invocationRequest:
+          description: |
+            This is the method to call when the event occurs. It's signature is the same as the event which
+            it specifies, like ActionHandler or WidgetActionHandler.
+          type: InvocationRequest
     ViewData:
       type: object
       required: [uuid,viewName,state,type]
