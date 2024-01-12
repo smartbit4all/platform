@@ -256,7 +256,8 @@ public class PlatformApiConfig {
   @Bean
   MDMDefinitionOption systemIntegrationPlatformMdmOption(LocaleSettingApi localeSettingApi) {
     MDMDefinition mdmDefinition =
-        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION);
+        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
+            .adminGroupName(PlatformSecurityOption.admin.getName());
     MDMDefinitionOption result =
         new MDMDefinitionOption(mdmDefinition);
     {
