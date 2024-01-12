@@ -61,6 +61,7 @@ import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.org.SecurityOption;
 import org.smartbit4all.api.org.SubjectContributionApi;
 import org.smartbit4all.api.org.SubjectContributionByGroup;
 import org.smartbit4all.api.org.SubjectContributionByUser;
@@ -567,6 +568,11 @@ public class PlatformApiConfig {
   @Bean
   public ActionManagementApi documentActionManagementApi() {
     return new ActionManagementApiImpl();
+  }
+
+  @Bean
+  public SecurityOption platformSecurityOption() {
+    return new PlatformSecurityOption();
   }
 
 }
