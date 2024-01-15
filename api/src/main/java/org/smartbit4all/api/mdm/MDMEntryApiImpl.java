@@ -594,7 +594,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   @Override
   public void updateAllIndices(List<String> idPath) {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
-    // TODO ha valami nem kerek a getVectorCollection-ben, akkor IllegalArgumentException
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
       // String[] primaryId = getPrimaryId();
