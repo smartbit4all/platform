@@ -112,7 +112,8 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
       actions.add(new UiAction()
           .code(ACTION_OPEN_MDM_CHANGES)
-          .descriptor(getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
+          .descriptor(
+              getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
     }
 
     List<UiAction> openListActions = context.definition.getDescriptors().values().stream()
