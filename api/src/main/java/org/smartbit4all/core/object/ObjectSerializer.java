@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * for object definitions and storages. This interface contains the two method for the
  * serialization. It can be configured for every {@link ObjectDefinition} but the {@link ObjectApi}
  * will define a default one also.
- * 
+ *
  * @author Peter Boros
  */
 public interface ObjectSerializer {
@@ -20,16 +20,18 @@ public interface ObjectSerializer {
 
   /**
    * Serialize a domain object and produce a {@link BinaryData} with the binary content.
-   * 
+   *
    * @param obj The object.
    * @param clazz The class of the object.
    * @return The result {@link BinaryData}.
    */
   BinaryData serialize(Object obj, Class<?> clazz);
 
+  BinaryData serialize(Object obj, Class<?> clazz, int memorylimit);
+
   /**
    * Read a domain object from a {@link BinaryData} into an object.
-   * 
+   *
    * @param <T> The class type template.
    * @param data The binary format of the object.
    * @param clazz The expected class of the object.
@@ -42,7 +44,7 @@ public interface ObjectSerializer {
 
   /**
    * Read a domain object from a String into an object.
-   * 
+   *
    * @param <T> The class type template.
    * @param data The string format of the object.
    * @param clazz The expected class of the object.
@@ -55,7 +57,7 @@ public interface ObjectSerializer {
 
   /**
    * Transform the object to a Map.
-   * 
+   *
    * @param object The object to transform.
    * @return The map as the result of the object values. (Typical JSON like mapping) Returns empty
    *         map if the object is null.
@@ -64,7 +66,7 @@ public interface ObjectSerializer {
 
   /**
    * Constructs the object from the values of map.
-   * 
+   *
    * @param <T>
    * @param map The map with the values
    * @return The object as a result. Returns null if the map is null.
@@ -73,7 +75,7 @@ public interface ObjectSerializer {
 
   /**
    * Can be used to serialize any Java object as a String.
-   * 
+   *
    * @param object The object to serialize
    * @return The result string. Typical JSON like mapping. Returns null if the object is null.
    * @throws JsonProcessingException

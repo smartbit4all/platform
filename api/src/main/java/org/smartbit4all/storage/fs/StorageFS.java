@@ -79,6 +79,8 @@ import com.fasterxml.jackson.core.JsonParseException;
  */
 public class StorageFS extends ObjectStorageImpl implements ApplicationContextAware {
 
+  private static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
+
   private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
@@ -552,12 +554,13 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       throws IOException {
     // Write the data temporary file
     File objectDataFileTemp = getObjectTransactionFile(object.getUri());
-    BinaryData binaryData = storageObjectDataDef.serialize(storageObjectData);
+    BinaryData binaryData = storageObjectDataDef.getDefaultSerializer()
+        .serialize(storageObjectData, storageObjectDataDef.getClazz(), SINGLEVERSION_MEMORYLIMIT);
     if (binaryData == null) {
       binaryData = new BinaryData(EMPTY_BYTE_ARRAY);
     }
     FileIO.writeMultipart(objectDataFileTemp, binaryData,
-        object.serialize());
+        object.serialize(SINGLEVERSION_MEMORYLIMIT));
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
     try {

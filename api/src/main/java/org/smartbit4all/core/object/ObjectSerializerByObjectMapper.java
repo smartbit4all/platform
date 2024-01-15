@@ -72,6 +72,11 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
 
   @Override
   public BinaryData serialize(Object obj, Class<?> clazz) {
+    return serialize(obj, clazz, MEMORYLIMIT);
+  }
+
+  @Override
+  public BinaryData serialize(Object obj, Class<?> clazz, int memorylimit) {
     if (obj == null) {
       return null;
     }
@@ -79,7 +84,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     OutputStreamWriter osw = null;
     BinaryDataOutputStream os = null;
     try {
-      os = new BinaryDataOutputStream(MEMORYLIMIT);
+      os = new BinaryDataOutputStream(memorylimit);
       // We write and read in UTF-8 to enable international characters.
       osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
       objectMapper.writeValue(osw, obj);
