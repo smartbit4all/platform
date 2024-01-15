@@ -17,4 +17,9 @@ public class CronExpressionUtility {
     return next.toInstant().atOffset(baseTime.getOffset());
   }
 
+  public static boolean isValidExpression(String cronExpression) {
+    return CronSequenceGenerator.isValidExpression(cronExpression);
+  }
+
+
 }
