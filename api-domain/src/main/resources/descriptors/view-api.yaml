@@ -991,6 +991,11 @@ components:
         upload:
           $ref: '#/components/schemas/UiActionUploadDescriptor'
         tooltip:
+          $ref: '#/components/schemas/UiActionTooltip'
+    UiActionTooltip:
+      type: object
+      properties:
+        tooltip:
           type: string
         tooltipPosition:
           type: string
@@ -1001,6 +1006,9 @@ components:
             - BELOW
             - LEFT
             - RIGHT
+        tooltipDelay:
+          type: integer
+          format: int64
     UiActionUploadDescriptor:
       type: object
       description: |
