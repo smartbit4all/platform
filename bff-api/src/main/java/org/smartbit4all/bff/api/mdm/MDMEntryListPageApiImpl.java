@@ -25,6 +25,7 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
@@ -304,7 +305,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean isEntryEditable =
         Boolean.TRUE.equals(ctx.getEntryDescriptor(ctx.view).getIsValueSet());
 
-    boolean currentEntryListNotEmpty = ctx.entryApi.getList().uris().isEmpty();
+    boolean currentEntryListNotEmpty = !ctx.entryApi.getList().uris().isEmpty();
     boolean isValueApiPresent = !ObjectUtils.isEmpty(vectorDBApi.getContributionApis());
 
 
@@ -352,7 +353,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              currentEntryListNotEmpty, isValueApiPresent);
+              isValueApiPresent, currentEntryListNotEmpty, isEntryEditable);
     }
 
     uiActions
@@ -366,6 +367,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             isAdmin, inactiveEnabled);
 
     ctx.getView().actions(uiActions.build());
+  }
+
+  @Override
+  public void refreshActions(UUID viewUuid) {
+    PageContext ctx = getContextByViewUUID(viewUuid);
+    refreshActions(ctx);
   }
 
   protected final void refreshGrid(PageContext ctx) {
@@ -603,14 +610,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
     // TODO refresh the actions on the sidebar
-    // InvocationRequest refreshCallBack = invocationApi.builder(MDMAdminValuesPageApi.class)
-    // .build(api -> api.refreshUiActions(viewUuid));
+    InvocationRequest refreshCallBack = invocationApi.builder(MDMEntryListPageApi.class)
+        .build(api -> api.refreshActions(viewUuid));
     viewApi.showView(
         new View().viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR).type(ViewType.DIALOG)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_ENTRY_DESCRIPTOR,
                 entryDescriptor.getName())
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_DEFINITION,
-                mdmDefinition.getName()));
+                mdmDefinition.getName())
+            .putCallbacksItem(MDMEntryDescriptorPageApi.CALLBACK_REFRESH_ACTIONS, refreshCallBack));
   }
 
   @Override

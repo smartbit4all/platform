@@ -282,4 +282,6 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 
+  void refreshActions(UUID viewUuid);
+
 }

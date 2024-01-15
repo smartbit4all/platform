@@ -91,10 +91,16 @@ public class MDMEntryDescriptorPageApiImpl
 
   @Override
   public MDMEntryDescriptorPageModel initModel(View view) {
+    PageContext ctx = getContextByView(view);
     UiActions.add(view, ACTION_SAVE, new UiAction().code(DEFAULT_CLOSE));
     view.putLayoutsItem(LAYOUT, getLayout());
     view.constraint(getViewConstraint(view.getUuid()));
-    return new MDMEntryDescriptorPageModel();
+
+    VectorCollectionDescriptor vectorCollectionDescriptor =
+        Boolean.TRUE.equals(ctx.isNewEntry) || ctx.entryDescriptor.getVectorCollection() == null
+            ? new VectorCollectionDescriptor()
+            : ctx.entryDescriptor.getVectorCollection();
+    return new MDMEntryDescriptorPageModel().vectorCollection(vectorCollectionDescriptor);
   }
 
   private SmartLayoutDefinition getLayout() {
@@ -144,9 +150,8 @@ public class MDMEntryDescriptorPageApiImpl
     String code =
         Boolean.TRUE.equals(ctx.isNewEntry) ? clientModel.getCode() : ctx.entryDescriptor.getName();
     String name = clientModel.getName();
-
     VectorCollectionDescriptor vectorCollectionDescriptor =
-        Boolean.TRUE.equals(ctx.isNewEntry) ? clientModel.getVectorCollection()
+        clientModel.getVectorCollection() != null ? clientModel.getVectorCollection()
             : ctx.entryDescriptor.getVectorCollection();
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
@@ -170,7 +175,6 @@ public class MDMEntryDescriptorPageApiImpl
       try {
         invocationApi.invoke(ctx.refreashActionsCallback);
       } catch (ApiNotFoundException e) {
-        // TODO
         log.error(e.getMessage(), e);
       }
     }
