@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,8 +63,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import org.springframework.util.ObjectUtils;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
@@ -103,7 +103,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private ObjectLayoutApi objectLayoutApi;
 
   @Autowired
-  private LocaleSettingApi localeSettingApi;
+  protected LocaleSettingApi localeSettingApi;
 
   @Autowired
   VectorDBApi vectorDBApi;
@@ -124,8 +124,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   protected class PageContext {
 
     View view;
-    public MDMEntryDescriptor entryDescriptor;
-    public MDMDefinition definition;
+    MDMEntryDescriptor entryDescriptor;
+    MDMDefinition definition;
     MDMEntryApi entryApi;
     MDMEntryApi vectorEntryApi;
     MDMEntryApi embeddingEntryApi;
@@ -133,12 +133,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     SearchIndex<Object> searchIndexPublished;
     boolean inactives = false;
     MDMBranchingStrategy branchingStrategy;
+    boolean underApproval;
+    boolean isApprover;
 
     PageContext loadByView() {
-      entryDescriptor = getEntryDescriptor(view);
-      definition = getDefinition(view);
+      entryDescriptor = getEntryDescriptor(getView());
+      definition = getDefinition(getView());
       entryApi =
-          masterDataManagementApi.getApi(definition.getName(), entryDescriptor.getName());
+          masterDataManagementApi.getApi(getDefinition().getName(), getEntryDescriptor().getName());
       vectorEntryApi =
           masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
               PlatformApiConfig.VECTOR_DB_CONNECTIONS);
@@ -147,19 +149,23 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               PlatformApiConfig.EMBEDDING_CONNECTIONS);
 
       searchIndexAdmin =
-          collectionApi.searchIndex(definition.getName(),
-              entryDescriptor.getSearchIndexForEntries(),
+          collectionApi.searchIndex(getDefinition().getName(),
+              getEntryDescriptor().getSearchIndexForEntries(),
               BranchedObjectEntry.class);
       searchIndexPublished =
-          collectionApi.searchIndex(definition.getName(), entryDescriptor.getName(),
+          collectionApi.searchIndex(getDefinition().getName(), getEntryDescriptor().getName(),
               Object.class);
-      inactives = Boolean.TRUE.equals(variables(view).get(VARIABLE_INACTIVES, Boolean.class));
+      inactives = Boolean.TRUE.equals(variables(getView()).get(VARIABLE_INACTIVES, Boolean.class));
 
-      branchingStrategy = entryDescriptor.getBranchingStrategy();
+      branchingStrategy = getEntryDescriptor().getBranchingStrategy();
       if (branchingStrategy == null) {
         log.warn("branchingStrategy null, using default NONE");
         branchingStrategy = MDMBranchingStrategy.NONE;
       }
+
+      URI approver = getEntryApi().getApprover();
+      underApproval = approver != null;
+      isApprover = approver != null && approver.equals(sessionApi.getUserUri());
 
       return this;
     }
@@ -173,22 +179,47 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     public boolean checkAdmin() {
-      return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName());
+      return OrgUtils.securityPredicate(sessionApi, getEntryDescriptor().getAdminGroupName());
     }
 
     public void setInactives(boolean inactives) {
       this.inactives = inactives;
-      variables(view).put(VARIABLE_INACTIVES, inactives);
+      variables(getView()).put(VARIABLE_INACTIVES, inactives);
     }
 
     ObjectDefinition<?> getBranchedObjectDefinition() {
       String constructObjectDefinitionName =
-          masterDataManagementApi.constructObjectDefinitionName(definition, entryDescriptor);
+          masterDataManagementApi.constructObjectDefinitionName(getDefinition(),
+              getEntryDescriptor());
       return objectApi.definition(constructObjectDefinitionName);
     }
 
     ObjectDefinition<?> getObjectDefinition() {
-      return objectApi.definition(entryDescriptor.getTypeQualifiedName());
+      return objectApi.definition(getEntryDescriptor().getTypeQualifiedName());
+    }
+
+    public View getView() {
+      return view;
+    }
+
+    public MDMEntryApi getEntryApi() {
+      return entryApi;
+    }
+
+    public MDMEntryDescriptor getEntryDescriptor() {
+      return entryDescriptor;
+    }
+
+    public MDMDefinition getDefinition() {
+      return definition;
+    }
+
+    public boolean isUnderApproval() {
+      return underApproval;
+    }
+
+    public boolean isApprover() {
+      return isApprover;
     }
 
   }
@@ -216,7 +247,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
-            context.definition.getName(), context.entryDescriptor.getName());
+            context.getDefinition().getName(), context.getEntryDescriptor().getName());
     if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
       List<String> newCols = new ArrayList<>();
       newCols.add(BranchedObjectEntry.BRANCHING_STATE);
@@ -231,7 +262,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     if (columns.contains(MDMConstants.PROPERTY_URI)) {
       GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
     }
-    final List<GridView> gridViewOptions = context.entryDescriptor.getListPageGridViews();
+    final List<GridView> gridViewOptions = context.getEntryDescriptor().getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       entryGridModel.setView(gridViewOptions.get(0));
       entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
@@ -251,7 +282,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   private String getPageTitle(PageContext context) {
-    String pageTitle = context.entryApi.getDisplayNameList();
+    String pageTitle = context.getEntryApi().getDisplayNameList();
     if (Boolean.TRUE.equals(context.inactives)) {
       pageTitle += StringConstant.SPACE_HYPHEN_SPACE
           + localeSettingApi.get(MasterDataManagementApi.SCHEMA, VARIABLE_INACTIVES);
@@ -261,8 +292,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected void refreshActions(PageContext ctx) {
     boolean isAdmin = ctx.checkAdmin();
-    boolean branchActive = ctx.entryApi.hasBranch();
-    boolean inactiveEnabled = Boolean.TRUE.equals(ctx.entryDescriptor.getInactiveMgmt());
+    boolean branchActive = ctx.getEntryApi().hasBranch();
+    boolean inactiveEnabled = Boolean.TRUE.equals(ctx.getEntryDescriptor().getInactiveMgmt());
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
     boolean globalBranching = ctx.branchingStrategy == MDMBranchingStrategy.GLOBAL;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
@@ -278,12 +309,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     // if API present, approving enabled
     if (approvingEnabled) {
-      URI approver = ctx.entryApi.getApprover();
+      URI approver = ctx.getEntryApi().getApprover();
       boolean underApproval = approver != null;
       boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
-
-
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
@@ -335,25 +364,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                             VARIABLE_INACTIVES))),
             isAdmin, inactiveEnabled);
 
-    ctx.view.actions(uiActions.build());
+    ctx.getView().actions(uiActions.build());
   }
 
   protected final void refreshGrid(PageContext ctx) {
 
-    if (ctx.checkAdmin() && ctx.entryApi.hasBranch()) {
+    if (ctx.checkAdmin() && ctx.getEntryApi().hasBranch()) {
       List<BranchedObjectEntry> list;
       if (ctx.inactives) {
-        StoredList inactiveList = ctx.entryApi.getInactiveList();
-        list = inactiveList.compareWithBranch(ctx.entryApi.getBranchUri());
+        StoredList inactiveList = ctx.getEntryApi().getInactiveList();
+        list = inactiveList.compareWithBranch(ctx.getEntryApi().getBranchUri());
       } else {
-        list = ctx.entryApi.getBranchingList();
+        list = ctx.getEntryApi().getBranchingList();
       }
-      gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
+      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
           createTableDataForGrid(ctx, list));
     } else {
-      StoredList inactiveList = ctx.entryApi.getInactiveList();
-      StoredList list = ctx.inactives ? inactiveList : ctx.entryApi.getList();
-      gridModelApi.setData(ctx.view.getUuid(), WIDGET_ENTRY_GRID,
+      StoredList inactiveList = ctx.getEntryApi().getInactiveList();
+      StoredList list = ctx.inactives ? inactiveList : ctx.getEntryApi().getList();
+      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
           ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(),
               null));
     }
@@ -364,7 +393,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     return ctx.searchIndexAdmin
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
-          return objectApi.create(ctx.definition.getName(), objectDefinition,
+          return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
               objectDefinition.toMap(i));
         }), null);
   }
@@ -378,7 +407,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void startEditing(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.initiateGlobalBranch(context.definition.getName(),
+    masterDataManagementApi.initiateGlobalBranch(context.getDefinition().getName(),
         String.valueOf(System.currentTimeMillis()));
     refreshActions(context);
     refreshGrid(context);
@@ -387,7 +416,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.dropGlobal(context.definition.getName());
+    masterDataManagementApi.dropGlobal(context.getDefinition().getName());
     refreshActions(context);
     refreshGrid(context);
   }
@@ -412,7 +441,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.mergeGlobal(context.definition.getName());
+    masterDataManagementApi.mergeGlobal(context.getDefinition().getName());
     refreshGrid(context);
     refreshActions(context);
   }
@@ -423,13 +452,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     if (mdmApprovalApi == null) {
       throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
     }
-    String definition = context.definition.getName();
+    String definition = context.getDefinition().getName();
     List<URI> approvers = mdmApprovalApi.getApprovers(definition);
     if (approvers == null || approvers.size() != 1) {
       throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
     }
     masterDataManagementApi.sendForApprovalGlobal(
-        context.definition.getName(),
+        context.getDefinition().getName(),
         approvers.get(0));
     refreshGrid(context);
     refreshActions(context);
@@ -438,7 +467,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.approvalAcceptedGlobal(context.definition.getName());
+    masterDataManagementApi.approvalAcceptedGlobal(context.getDefinition().getName());
     refreshGrid(context);
     refreshActions(context);
   }
@@ -447,7 +476,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     // TODO send and store reason
-    masterDataManagementApi.approvalRejectedGlobal(context.definition.getName());
+    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName());
     refreshGrid(context);
     refreshActions(context);
   }
@@ -482,7 +511,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean isViewOriginal = ACTION_VIEW_ORIGINAL_ENTRY.equals(actionCode);
 
     // Model:
-    URI branchUri = isViewOriginal ? null : ctx.entryApi.getBranchUri();
+    URI branchUri = isViewOriginal ? null : ctx.getEntryApi().getBranchUri();
     URI objectLatestUri =
         (!isViewOriginal && branchedObjectEntry.getBranchUri() != null) // branchedObjectEntry
                                                                         // contains latest uris
@@ -490,7 +519,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             : branchedObjectEntry.getOriginalUri();
 
     final ObjectNode modelNode = (objectLatestUri == null)
-        ? createNewObject(ctx.entryDescriptor)
+        ? createNewObject(ctx.getEntryDescriptor())
         : objectApi.load(objectLatestUri, branchUri);
 
     // Layout:
@@ -513,8 +542,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .objectUri(modelNode.getObjectUri())
         .branchUri(branchUri)
         .putLayoutsItem("layout", layout)
-        .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
-        .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
+        .putParametersItem(PARAM_MDM_DEFINITION, ctx.getDefinition())
+        .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.getEntryDescriptor())
         .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
         .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
         .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap())
@@ -535,7 +564,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       return BranchedObjectEntry.ORIGINAL_URI;
     },
         (u, ctx) -> {
-          ctx.entryApi.remove(u);
+          ctx.getEntryApi().remove(u);
         });
     refreshGrid(context);
   }
@@ -545,7 +574,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId, row -> BranchedObjectEntry.BRANCH_URI,
-        (u, ctx) -> ctx.entryApi.cancel(u));
+        (u, ctx) -> ctx.getEntryApi().cancel(u));
     refreshGrid(context);
   }
 
@@ -562,7 +591,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           }
           return BranchedObjectEntry.ORIGINAL_URI;
         },
-        (u, ctx) -> ctx.entryApi.restore(u));
+        (u, ctx) -> ctx.getEntryApi().restore(u));
     refreshGrid(context);
   }
 
@@ -604,7 +633,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     ObjectNode objectNode;
     if (objectUri == null) {
       objectNode = objectApi.create(
-          context.entryApi.getDescriptor().getSchema(),
+          context.getEntryApi().getDescriptor().getSchema(),
           objectDefinition,
           editingObjectAsMap);
     } else {
@@ -620,14 +649,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   protected void saveObjectInternal(PageContext context, ObjectNode objectNode) {
-    context.entryApi.save(objectNode);
+    context.getEntryApi().save(objectNode);
     refreshGrid(context);
   }
 
   private final void performActionOnGridRow(PageContext context, String gridId, String rowId,
       BiConsumer<GridRow, PageContext> action) {
     GridModel gridModel =
-        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
+        viewApi.getWidgetModelFromView(GridModel.class, context.getView().getUuid(), gridId);
     Optional<GridRow> gridRow = GridModels.findGridRowById(gridModel, rowId);
     gridRow.ifPresent(r -> action.accept(r, context));
   }
@@ -652,21 +681,18 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   private final String getEditorViewName(PageContext context) {
-    return context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
-        : context.entryDescriptor.getEditorViewName();
+    return context.getEntryDescriptor().getEditorViewName() == null ? defaultEditorViewName
+        : context.getEntryDescriptor().getEditorViewName();
   }
 
   @Override
   public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
     boolean isAdmin = ctx.checkAdmin();
-    boolean branchActive = ctx.entryApi.hasBranch();
+    boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     boolean approvingEnabled = mdmApprovalApi != null;
-    URI approver = ctx.entryApi.getApprover();
-    boolean underApproval = approver != null;
-    boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
 
     page.getRows().forEach(row -> {
       boolean isOnBranch =
@@ -680,7 +706,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
-        boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
+        boolean canEdit = canEdit(isAdmin, ctx.isUnderApproval(), ctx.isApprover());
         uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
             .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
                 !deletedOnBranch)
@@ -691,7 +717,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch)
-            .addIf(ACTION_VIEW_ENTRY, (isAdmin || isApprover));
+            .addIf(ACTION_VIEW_ENTRY, (isAdmin || ctx.isApprover()));
       } else {
         uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
             .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
