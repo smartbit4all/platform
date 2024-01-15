@@ -607,7 +607,7 @@ public class GridModelApiImpl implements GridModelApi {
         && model.getPageSizeOptions().contains(update.getPageSize())) {
       model.setPageSize(update.getPageSize());
     } else {
-      model.setPageSize(null);
+      update.setPageSize(null);
     }
   }
 
