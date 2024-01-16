@@ -257,6 +257,9 @@ components:
           format: int32
         allRowsSelected:
           type: boolean
+        pageIndex:
+          type: integer
+          format: int32
         pageSize:
           type: integer
           format: int32

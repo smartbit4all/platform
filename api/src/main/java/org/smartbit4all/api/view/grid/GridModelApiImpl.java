@@ -491,6 +491,7 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public GridModel loadPage(UUID viewUuid, String gridId, int offset, int limit) {
     return executeGridCall(viewUuid, gridId, model -> {
+      model.setPageIndex(offset / limit);
       if (model.getAccessConfig() == null) {
         // TODO update / setPageSize?
         return model;
