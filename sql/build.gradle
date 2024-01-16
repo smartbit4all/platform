@@ -5,6 +5,7 @@ plugins {
 dependencies {
 	api project(':api')
 	api 'org.springframework:spring-jdbc'
+	api 'org.springframework.boot:spring-boot-starter-jdbc'
 	
 	testImplementation 'com.h2database:h2:1.4.200'
     testImplementation testFixtures(project(':api'))
