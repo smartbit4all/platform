@@ -1,8 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +53,9 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -618,7 +618,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
     ObjectLookupMDMEntry(ObjectApi objectApi) {
       super(objectApi);
-      // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -629,15 +628,32 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
     @Override
     public Map<String, Object> findByUnique(ObjectPropertyValue value) {
-      if (value == null || value.getPath() == null || value.getPath().isEmpty()) {
+      ObjectNode objectNode = findByUniqueInternal(value);
+      if (objectNode == null) {
         return Collections.emptyMap();
+      }
+      return objectNode.getObjectAsMap();
+    }
+
+    @Override
+    public <T> T findByUnique(ObjectPropertyValue value, Class<T> clazz) {
+      ObjectNode objectNode = findByUniqueInternal(value);
+      if (objectNode == null) {
+        return null;
+      }
+      return objectNode.getObject(clazz);
+    }
+
+    protected ObjectNode findByUniqueInternal(ObjectPropertyValue value) {
+      if (value == null || value.getPath() == null || value.getPath().isEmpty()) {
+        return null;
       }
       // If we have the proper unique id
       StoredMap uniqueMap = getUniqueMap(StringConstant.toArray(value.getPath()));
       if (uniqueMap == null) {
-        return Collections.emptyMap();
+        return null;
       }
-      return objectApi.loadLatest(uniqueMap.uris().get(value.getValue())).getObjectAsMap();
+      return objectApi.loadLatest(uniqueMap.uris().get(value.getValue()));
     }
 
   }
