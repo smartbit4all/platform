@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +37,8 @@ import javax.validation.Valid;
   ImageResource.KIND,
   ImageResource.SOURCE,
   ImageResource.IDENTIFIER,
-  ImageResource.COLOR
+  ImageResource.COLOR,
+  ImageResource.STYLE
 })
 @JsonTypeName("ImageResource")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -87,6 +91,9 @@ public class ImageResource {
 
   public static final String COLOR = "color";
   private String color;
+
+  public static final String STYLE = "style";
+  private Map<String, Object> style = null;
 
   public ImageResource() { 
   }
@@ -199,6 +206,41 @@ public class ImageResource {
   }
 
 
+  public ImageResource style(Map<String, Object> style) {
+    
+    this.style = style;
+    return this;
+  }
+
+  public ImageResource putStyleItem(String key, Object styleItem) {
+    if (this.style == null) {
+      this.style = new HashMap<>();
+    }
+    this.style.put(key, styleItem);
+    return this;
+  }
+
+   /**
+   * Get style
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Map<String, Object> style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -211,12 +253,13 @@ public class ImageResource {
     return Objects.equals(this.kind, imageResource.kind) &&
         Objects.equals(this.source, imageResource.source) &&
         Objects.equals(this.identifier, imageResource.identifier) &&
-        Objects.equals(this.color, imageResource.color);
+        Objects.equals(this.color, imageResource.color) &&
+        Objects.equals(this.style, imageResource.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, source, identifier, color);
+    return Objects.hash(kind, source, identifier, color, style);
   }
 
   @Override
@@ -227,6 +270,7 @@ public class ImageResource {
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -82,6 +82,18 @@ public abstract class ObjectLookup {
   }
 
   public Map<String, Object> findByUnique(ObjectPropertyValue value) {
+    ObjectLookupResult lookupResult = findByUniqueResult(value);
+    return lookupResult.getItems().isEmpty() ? null
+        : lookupResult.getItems().get(0).getObjectAsMap();
+  }
+
+  public <T> T findByUnique(ObjectPropertyValue value, Class<T> clazz) {
+    ObjectLookupResult lookupResult = findByUniqueResult(value);
+    return lookupResult.getItems().isEmpty() ? null
+        : objectApi.asType(clazz, lookupResult.getItems().get(0).getObjectAsMap());
+  }
+
+  protected final ObjectLookupResult findByUniqueResult(ObjectPropertyValue value) {
     if (value == null) {
       return null;
     }
@@ -89,8 +101,7 @@ public abstract class ObjectLookup {
     valueObject.put(value.getPath().stream().collect(joining(StringConstant.SPACE_HYPHEN_SPACE)),
         value.getValue());
     ObjectLookupResult lookupResult = lookup(valueObject, new ObjectLookupParameter().limit(1));
-    return lookupResult.getItems().isEmpty() ? null
-        : lookupResult.getItems().get(0).getObjectAsMap();
+    return lookupResult;
   }
 
 }

@@ -26,8 +26,6 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.CompareApi;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
@@ -620,11 +618,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
-    ObjectPropertyResolverContext resolverContext =
-        new ObjectPropertyResolverContext().addObjectsItem(
-            new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
     List<ViewComparisonResult> comparisons =
-        invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, request);
+        invokeMethodInternal(eventDescriptor, method, api, viewUuid, request);
     return createViewContextChange(comparisons, null); // ActionHandler is void
   }
 
@@ -646,14 +641,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
-    ObjectPropertyResolverContext resolverContext =
-        new ObjectPropertyResolverContext();
-    // TODO Resolve to use a ObjectNode instead of an URI. In this case we use view.getModel() or
-    // other part of the view directly.
-    // .addObjectsItem(
-    // new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
     List<ViewComparisonResult> comparisons =
-        invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, widgetId,
+        invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
     return createViewContextChange(comparisons, null); // WidgetActionHandler is void
   }
@@ -664,13 +653,16 @@ public class ViewContextServiceImpl implements ViewContextService {
    * @return
    */
   private List<ViewComparisonResult> invokeMethodInternal(ViewEventDescriptor eventDescriptor,
-      ObjectPropertyResolverContext resolverContext, Method method,
+      Method method,
       Object api, Object... args) {
     InvocationRequest insteadOfRequest = null;
     if (eventDescriptor.getInsteadOf() != null) {
-      // TODO resolve with the args.
-      insteadOfRequest = invocationApi.resolve(
-          eventDescriptor.getInsteadOf().getInvocationRequestDefinition(), resolverContext);
+      insteadOfRequest = eventDescriptor.getInsteadOf().getInvocationRequest();
+    }
+
+    if (insteadOfRequest == null && method == null) {
+      // this is handled before calling this method, but we're playing safe here
+      throw new IllegalStateException("Neither insteadOfRequest or method found!");
     }
 
     ObjectNode before = beforeInvoke(getMethodName(insteadOfRequest, method));
@@ -680,39 +672,31 @@ public class ViewContextServiceImpl implements ViewContextService {
       // exception then the execution is interrupted. If we would like to continue the execution of
       // TODO the before events then we have to throw some special exception or so.
       for (ViewEventHandler eventHandler : eventDescriptor.getBeforeEvents()) {
-        invocationRequest = invocationApi.resolve(
-            eventHandler.getInvocationRequestDefinition(), resolverContext);
-        try {
-          invocationApi.invoke(invocationRequest);
-        } catch (ApiNotFoundException e) {
-          log.error("Unable to call " + invocationRequest, e);
-          throw new IllegalAccessException(e.getMessage());
-        }
+        invocationRequest = eventHandler.getInvocationRequest();
+        invocationApi.invoke(invocationRequest, args);
       }
 
       if (insteadOfRequest == null) {
         method.invoke(api, args);
       } else {
-        try {
-          invocationRequest = insteadOfRequest;
-          invocationApi.invoke(invocationRequest);
-        } catch (ApiNotFoundException e) {
-          log.error("Unable to call " + invocationRequest, e);
-          throw new IllegalAccessException(e.getMessage());
-        }
+        invocationRequest = insteadOfRequest;
+        invocationApi.invoke(invocationRequest, args);
       }
 
       // These event won't block the execution. Their exceptions and error are logged but the
       // execution continues.
       for (ViewEventHandler eventHandler : eventDescriptor.getAfterEvents()) {
-        invocationRequest = invocationApi.resolve(
-            eventHandler.getInvocationRequestDefinition(), resolverContext);
+        invocationRequest = eventHandler.getInvocationRequest();
         try {
-          invocationApi.invoke(invocationRequest);
+          invocationApi.invoke(invocationRequest, args);
         } catch (Exception e) {
-          log.error("Unable to call " + invocationRequest, e);
+          log.error("Error in afterEventHandler " + invocationRequest, e);
         }
       }
+    } catch (ApiNotFoundException e) {
+      throw new RuntimeException(
+          "ApiNotFoundException when calling method " + getMethodName(invocationRequest, method),
+          e);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
           "IllegalAccessException when calling method " + getMethodName(invocationRequest, method),
@@ -735,7 +719,10 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   private final String getMethodName(InvocationRequest request, Method method) {
-    return request != null ? request.toString() : (method != null ? method.getName() : "unknown");
+    if (request != null) {
+      return request.toString();
+    }
+    return method != null ? method.getName() : "unknown";
   }
 
   private ObjectNode beforeInvoke(String methodName) {

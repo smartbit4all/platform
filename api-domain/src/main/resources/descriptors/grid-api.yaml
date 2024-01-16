@@ -257,6 +257,9 @@ components:
           format: int32
         allRowsSelected:
           type: boolean
+        pageIndex:
+          type: integer
+          format: int32
         pageSize:
           type: integer
           format: int32
@@ -318,7 +321,9 @@ components:
         icons:
           type: string
           additionalProperties:
-            type: ImageResource
+            type: array
+            items:
+              type: ImageResource
         parent:
           description: |
             If the grid can be hierarchical then the parent contains the identifiers of the
@@ -377,6 +382,10 @@ components:
           type: boolean
         showEditColumns:
           type: boolean
+        highlightProperty:
+          type: string
+        highlightClass:
+          type: string
     GridSelectionMode:
       type: string
       enum:
@@ -425,3 +434,6 @@ components:
           type: array
           items:
             type: FilterExpressionOrderBy
+        pageSize:
+          type: integer
+          format: int32

@@ -119,10 +119,9 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
-   * action opens a dialog, where you can setup a vector database, where all entries in this list
-   * will be stored.
+   * action opens a dialog, where you can edit the entry descriptor.
    */
-  static final String ACTION_SHOW_VECTOR_COLLECTION_SETUP = "ACTION_SHOW_VECTOR_COLLECTION_SETUP";
+  static final String ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE = "SHOW_ENTRY_DESCRIPTOR_PAGE";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -256,8 +255,8 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   @WidgetActionHandler(value = ACTION_RESTORE_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performRestoreEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
-  @ActionHandler(ACTION_SHOW_VECTOR_COLLECTION_SETUP)
-  void showVectorDatabaseSetupDialog(UUID viewUuid, UiActionRequest request);
+  @ActionHandler(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE)
+  void showEntryDescriptorPage(UUID viewUuid, UiActionRequest request);
 
   @ActionHandler(ACTION_RECREATE_INDEX)
   void recreateIndex(UUID viewUuid, UiActionRequest request);
@@ -282,5 +281,7 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   void saveObject(UUID viewUuid, ObjectNode objectNode);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
+
+  void refreshActions(UUID viewUuid);
 
 }

@@ -62,7 +62,7 @@ public interface InvocationApi {
    * @param request
    * @throws ApiNotFoundException
    */
-  InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException;
+  InvocationParameter invoke(InvocationRequest request, Object... args) throws ApiNotFoundException;
 
   /**
    * The generic api call executed synchronously.
@@ -165,29 +165,29 @@ public interface InvocationApi {
 
   /**
    * Constructs a new invocation request copy and set the parameters by position.
-   * 
+   *
    * @param request The original request
    * @param parameters At a given position we can use the {@link #LEAVE} constant. This is the
    *        constant object to use when we don't want to override the parameter of an
    *        INvocationRequest.
-   * @return The result request that can be used for the {@link #invoke(InvocationRequest)} for
-   *         example.
+   * @return The result request that can be used for the
+   *         {@link #invoke(InvocationRequest, Object...)} for example.
    */
   InvocationRequest prepareByPosition(InvocationRequest request, Object... parameters);
 
   /**
    * Constructs a new invocation request copy and set the parameters by position.
-   * 
+   *
    * @param request The original request
    * @param parameters The parameters in a map. The key is the name of the parameter.
-   * @return The result request that can be used for the {@link #invoke(InvocationRequest)} for
-   *         example.
+   * @return The result request that can be used for the
+   *         {@link #invoke(InvocationRequest, Object...)} for example.
    */
   InvocationRequest prepareByName(InvocationRequest request, Map<String, Object> parameters);
 
   /**
    * Executes a script via an available script engine from the current JVM.
-   * 
+   *
    * @param scriptEngine The name of the script engine.
    * @param script The text of the script itself.
    * @param contextObjects The context objects to use to set the input parameters of the script. The

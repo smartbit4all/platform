@@ -264,7 +264,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           // TODO merge later.
           def.putDescriptorsItem(descEntry.getKey(), descEntry.getValue());
         }
-        return def;
+        return def
+            .branchingStrategy(o.getDefinition().getBranchingStrategy())
+            .adminGroupName(o.getDefinition().getAdminGroupName())
+            .adminApproverGroupName(o.getDefinition().getAdminApproverGroupName());
       });
       objectApi.save(definitionNode);
     }
@@ -676,6 +679,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
   }
 
+  private void globalBranchUnderApprovalValidation(String definitionName,
+      MDMDefinitionState state) {
+    if (state.getGlobalModification() != null
+        && state.getGlobalModification().getApprover() != null) {
+      throw new IllegalStateException(MessageFormat.format(
+          localeSettingApi.get("mdm.globalbranch.underapproval"),
+          definitionName));
+    }
+  }
+
   @SafeVarargs
   private final MDMDefitionStateWrapper modifyDefinitionState(String definitionName,
       UnaryOperator<MDMDefinitionState> modification, Consumer<MDMDefinitionState>... validations) {
@@ -717,7 +730,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       state.getGlobalModification().approver(approver);
       return state;
-    }, state -> noGlobalBranchValidation(definitionName, state));
+    }, state -> noGlobalBranchValidation(definitionName, state),
+        state -> globalBranchUnderApprovalValidation(definitionName, state));
     fireModificationStarted(MODIFICATION_SENT_FOR_APPROVAL, null,
         getDefinition(definitionName).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
@@ -740,8 +754,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
-
-
   @Override
   public void saveVectorCollectionDescriptor(String definitionName, String entryName,
       VectorCollectionDescriptor vectorCollectionDescriptor) {
@@ -761,7 +773,23 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
   }
 
-
+  @Override
+  public void modifyEntry(String definitionName,
+      MDMEntryDescriptor entry) {
+    MDMDefinition definition = getDefinition(definitionName);
+    Lock lock = objectApi.getLock(definition.getUri());
+    lock.lock();
+    try {
+      ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
+      definitionNode.modify(MDMDefinition.class, def -> {
+        def.putDescriptorsItem(entry.getName(), entry);
+        return def;
+      });
+      objectApi.save(definitionNode);
+    } finally {
+      lock.unlock();
+    }
+  }
 
   private static class MDMDefitionStateWrapper {
     MDMDefinitionState currentState;

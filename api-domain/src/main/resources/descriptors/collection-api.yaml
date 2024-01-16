@@ -209,3 +209,6 @@ components:
           description: The object itself.
           type: object
           additionalProperties: true
+        object:
+          description: The object itself alternatively if it can be defined.
+          type: object

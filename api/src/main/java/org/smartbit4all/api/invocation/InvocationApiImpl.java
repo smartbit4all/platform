@@ -33,9 +33,10 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * The implementation of the {@link InvocationApi}. It collects all the
- * {@link InvocationExecutionApi} we have. If we call the {@link #invoke(InvocationRequest)} then
- * there is routing to the appropriate execution api. We always have a local execution api
- * 
+ * {@link InvocationExecutionApi} we have. If we call the
+ * {@link #invoke(InvocationRequest, Object...)} then there is routing to the appropriate execution
+ * api. We always have a local execution api
+ *
  * @author Peter Boros
  */
 public final class InvocationApiImpl implements InvocationApi {
@@ -67,12 +68,18 @@ public final class InvocationApiImpl implements InvocationApi {
   private InvocationApi self;;
 
   @Override
-  public InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException {
+  public InvocationParameter invoke(InvocationRequest request, Object... args)
+      throws ApiNotFoundException {
     ApiDescriptor apiDescriptor =
         invocationRegisterApi.getApi(request.getInterfaceClass(), request.getName());
 
     if (apiDescriptor == null) {
       throw new ApiNotFoundException(request);
+    }
+    if (args != null) {
+      for (int i = 0; i < args.length; i++) {
+        request.getParameters().get(i).setValue(args[i]);
+      }
     }
 
     return invoke(apiDescriptor, request);

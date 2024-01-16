@@ -37,7 +37,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectLookupResultItem.ID,
   ObjectLookupResultItem.SCORE_IN_PERCENT,
-  ObjectLookupResultItem.OBJECT_AS_MAP
+  ObjectLookupResultItem.OBJECT_AS_MAP,
+  ObjectLookupResultItem.OBJECT
 })
 @JsonTypeName("ObjectLookupResultItem")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,6 +51,9 @@ public class ObjectLookupResultItem {
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
   private Map<String, Object> objectAsMap = null;
+
+  public static final String OBJECT = "object";
+  private Object _object;
 
   public ObjectLookupResultItem() { 
   }
@@ -143,6 +147,33 @@ public class ObjectLookupResultItem {
   }
 
 
+  public ObjectLookupResultItem _object(Object _object) {
+    
+    this._object = _object;
+    return this;
+  }
+
+   /**
+   * The object itself alternatively if it can be defined.
+   * @return _object
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The object itself alternatively if it can be defined.")
+  @JsonProperty(OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getObject() {
+    return _object;
+  }
+
+
+  @JsonProperty(OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObject(Object _object) {
+    this._object = _object;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -154,12 +185,13 @@ public class ObjectLookupResultItem {
     ObjectLookupResultItem objectLookupResultItem = (ObjectLookupResultItem) o;
     return Objects.equals(this.id, objectLookupResultItem.id) &&
         Objects.equals(this.scoreInPercent, objectLookupResultItem.scoreInPercent) &&
-        Objects.equals(this.objectAsMap, objectLookupResultItem.objectAsMap);
+        Objects.equals(this.objectAsMap, objectLookupResultItem.objectAsMap) &&
+        Objects.equals(this._object, objectLookupResultItem._object);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, scoreInPercent, objectAsMap);
+    return Objects.hash(id, scoreInPercent, objectAsMap, _object);
   }
 
   @Override
@@ -169,6 +201,7 @@ public class ObjectLookupResultItem {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    scoreInPercent: ").append(toIndentedString(scoreInPercent)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
+    sb.append("    _object: ").append(toIndentedString(_object)).append("\n");
     sb.append("}");
     return sb.toString();
   }

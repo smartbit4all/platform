@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -30,12 +31,12 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   @Autowired
   protected MasterDataManagementApi masterDataManagementApi;
-
   @Autowired
   private SessionApi sessionApi;
-
   @Autowired
   protected LocaleSettingApi localeSettingApi;
+  @Autowired
+  protected InvocationApi invocationApi;
 
   public MDMAdminPageApiImpl() {
     super(Object.class);
@@ -70,6 +71,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
       return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
     }
 
+    public boolean checkAdminApprover() {
+      return OrgUtils.securityPredicate(sessionApi, definition.getAdminApproverGroupName());
+    }
+
     public View getView() {
       return view;
     }
@@ -102,11 +107,13 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected void refreshUiActions(PageContext context) {
     List<UiAction> actions = new ArrayList<>();
-    if (context.checkAdmin() && context.definition.getBranchingStrategy() != null
+    if ((context.checkAdmin() || context.checkAdminApprover())
+        && context.definition.getBranchingStrategy() != null
         && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
       actions.add(new UiAction()
           .code(ACTION_OPEN_MDM_CHANGES)
-          .descriptor(getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
+          .descriptor(
+              getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
     }
 
     List<UiAction> openListActions = context.definition.getDescriptors().values().stream()
@@ -191,13 +198,19 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public void performOpenChanges(UUID viewUuid, UiActionRequest request) {
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
-    if (!context.checkAdmin()) {
+    if (!(context.checkAdmin() || context.checkAdminApprover())) {
       throw new IllegalAccessError("Only admins can view MDM changes!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
         .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
             context.definition.getName()));
     styleViewActions(view, ACTION_OPEN_MDM_CHANGES);
+  }
+
+  @Override
+  public void refreshUiActions(UUID viewUuid) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    refreshUiActions(context);
   }
 
 }

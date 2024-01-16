@@ -1,0 +1,25 @@
+openapi: 3.0.1
+info:
+  title: Mdm PageApi
+  description: Mdm page api models.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: MdmPageApi
+paths: {}
+components:
+  schemas:
+    MDMEntryDescriptorPageModel:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The name of the entry.
+        name:
+          type: string
+          description: The display name of the entry.
+        vectorCollection:
+          type: VectorCollectionDescriptor
+          description: The descriptor of the VectorCollection bound to this entry.

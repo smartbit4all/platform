@@ -17,7 +17,8 @@ smartbit4all {
      "Group": "org.smartbit4all.api.org.bean.Group",
      "FilterExpressionBuilderModel": "org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel",
      "FilterExpressionFieldList": "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",
-     "SubjectTypeDescriptor" : "org.smartbit4all.api.org.bean.SubjectTypeDescriptor"
+     "SubjectTypeDescriptor" : "org.smartbit4all.api.org.bean.SubjectTypeDescriptor",
+     "VectorCollectionDescriptor" : "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
     ]
   }
 }

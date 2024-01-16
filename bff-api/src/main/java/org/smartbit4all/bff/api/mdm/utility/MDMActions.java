@@ -3,6 +3,8 @@ package org.smartbit4all.bff.api.mdm.utility;
 public class MDMActions {
   private MDMActions() {}
 
+  public static final String REFRESH = "REFRESH";
+
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action start an editing phase for the entries.

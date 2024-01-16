@@ -66,7 +66,7 @@ public class GridRow {
   private Boolean selected;
 
   public static final String ICONS = "icons";
-  private Map<String, ImageResource> icons = new HashMap<>();
+  private Map<String, List<ImageResource>> icons = new HashMap<>();
 
   public static final String PARENT = "parent";
   private String parent;
@@ -219,13 +219,13 @@ public class GridRow {
   }
 
 
-  public GridRow icons(Map<String, ImageResource> icons) {
+  public GridRow icons(Map<String, List<ImageResource>> icons) {
     
     this.icons = icons;
     return this;
   }
 
-  public GridRow putIconsItem(String key, ImageResource iconsItem) {
+  public GridRow putIconsItem(String key, List<ImageResource> iconsItem) {
     this.icons.put(key, iconsItem);
     return this;
   }
@@ -241,14 +241,14 @@ public class GridRow {
   @JsonProperty(ICONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, ImageResource> getIcons() {
+  public Map<String, List<ImageResource>> getIcons() {
     return icons;
   }
 
 
   @JsonProperty(ICONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIcons(Map<String, ImageResource> icons) {
+  public void setIcons(Map<String, List<ImageResource>> icons) {
     this.icons = icons;
   }
 

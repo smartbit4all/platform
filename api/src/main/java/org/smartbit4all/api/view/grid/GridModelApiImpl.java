@@ -491,6 +491,7 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public GridModel loadPage(UUID viewUuid, String gridId, int offset, int limit) {
     return executeGridCall(viewUuid, gridId, model -> {
+      model.setPageIndex(offset / limit);
       if (model.getAccessConfig() == null) {
         // TODO update / setPageSize?
         return model;
@@ -569,23 +570,37 @@ public class GridModelApiImpl implements GridModelApi {
     });
   }
 
-  private void updateGridInternal(UUID viewUuid, String gridId, GridModel model,
+  private boolean updateGridInternal(UUID viewUuid, String gridId, GridModel model,
       GridUpdateData update) {
+    boolean updateModified = false;
+    // set pageSize first
+    if (update.getPageSize() != null
+        && model.getPageSizeOptions().contains(update.getPageSize())) {
+      model.setPageSize(update.getPageSize());
+    } else {
+      update.setPageSize(null);
+    }
     // check update to match existing columns
     List<@NotNull String> validColumns = model.getView().getDescriptor().getColumns().stream()
         .map(col -> col.getPropertyName())
         .collect(toList());
-    if (update.getOrderedColumnNames().stream()
-        .anyMatch(col -> !validColumns.contains(col))) {
-      throw new IllegalArgumentException("Invalid ordered columnName in update");
+    if (!update.getOrderedColumnNames().isEmpty()) {
+      if (update.getOrderedColumnNames().stream()
+          .anyMatch(col -> !validColumns.contains(col))) {
+        update.getOrderedColumnNames().clear();
+        updateModified = true;
+        log.debug("Invalid ordered columnName in update {}", update);
+      } else {
+        model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
+      }
     }
-    // any check??
-    model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
     if (!update.getOrderByList().isEmpty()) {
       if (update.getOrderByList().stream()
           .map(col -> col.getPropertyName())
           .anyMatch(col -> !validColumns.contains(col))) {
-        throw new IllegalArgumentException("Invalid orderByList columnName in update");
+        update.getOrderByList().clear();
+        updateModified = true;
+        log.debug("Invalid orderByList columnName in update {}", update);
       }
       if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
         TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
@@ -602,6 +617,8 @@ public class GridModelApiImpl implements GridModelApi {
       }
     }
     model.getView().setOrderByList(update.getOrderByList());
+
+    return updateModified;
   }
 
   private void saveGridDataToUser(UUID viewUuid, String gridId, GridUpdateData update) {
@@ -624,12 +641,9 @@ public class GridModelApiImpl implements GridModelApi {
         if (ref != null && ref.exists()) {
           GridUpdateData update = ref.get();
           if (update != null) {
-            try {
-              updateGridInternal(viewUuid, gridId, gridModel, update);
-            } catch (IllegalArgumentException e) {
-              // invalid column name in saved data, clear ref
-              ref.clear();
-              log.warn("{} {}", e.getMessage(), update);
+            boolean updateModified = updateGridInternal(viewUuid, gridId, gridModel, update);
+            if (updateModified) {
+              ref.set(update);
             }
           }
         }

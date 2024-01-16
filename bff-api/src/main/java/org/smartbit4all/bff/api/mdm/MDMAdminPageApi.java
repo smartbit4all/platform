@@ -70,4 +70,6 @@ public interface MDMAdminPageApi extends PageApi<Object> {
   @ActionHandler(ACTION_OPEN_MDM_CHANGES)
   void performOpenChanges(UUID viewUuid, UiActionRequest request);
 
+  void refreshUiActions(UUID viewUuid);
+
 }

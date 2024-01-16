@@ -8,6 +8,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,18 +163,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     return new HashMap<String, Object>();
   }
 
-  // private SmartComponentLayoutDefinition createChangesLayout(PageContext ctx) {
-  // SmartComponentLayoutDefinition changesLayout =
-  // container(LayoutDirection.VERTICAL);
-  //
-  // ctx.entryApisWithChanges.forEach(entryApi -> changesLayout
-  // .addComponentsItem(
-  // form(LayoutDirection.VERTICAL, label(null, entryApi.getDisplayNameList())))
-  // .addComponentsItem(grid(entryApi.getName())));
-  //
-  // return changesLayout;
-  // }
-
   protected void refreshActions(PageContext ctx) {
     if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.GLOBAL) {
       boolean isAdmin = ctx.checkAdmin();
@@ -207,6 +196,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
             .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchActive);
       }
 
+      uiActions.add(MDMActions.REFRESH);
       ctx.view.actions(uiActions.build());
     }
   }
@@ -310,6 +300,11 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
   }
 
   @Override
+  public void refresh(UUID viewUuid, UiActionRequest request) {
+    setModel(viewUuid, initModel(viewApi.getView(viewUuid)));
+  }
+
+  @Override
   public void startEditing(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.initiateGlobalBranch(context.definition.getName(),
@@ -405,9 +400,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
       }
       if (icon != null) {
         row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
-            new ImageResource()
+            Arrays.asList(new ImageResource()
                 .source("smart-icon")
-                .identifier(icon));
+                .identifier(icon)));
       }
     });
     return page;

@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,7 +37,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ViewEventHandler.PATH,
   ViewEventHandler.VIEW_EVENT_TYPE,
-  ViewEventHandler.INVOCATION_REQUEST_DEFINITION
+  ViewEventHandler.INVOCATION_REQUEST
 })
 @JsonTypeName("ViewEventHandler")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -85,8 +85,8 @@ public class ViewEventHandler {
   public static final String VIEW_EVENT_TYPE = "viewEventType";
   private ViewEventTypeEnum viewEventType;
 
-  public static final String INVOCATION_REQUEST_DEFINITION = "invocationRequestDefinition";
-  private InvocationRequestDefinition invocationRequestDefinition = null;
+  public static final String INVOCATION_REQUEST = "invocationRequest";
+  private InvocationRequest invocationRequest = null;
 
   public ViewEventHandler() { 
   }
@@ -153,31 +153,31 @@ public class ViewEventHandler {
   }
 
 
-  public ViewEventHandler invocationRequestDefinition(InvocationRequestDefinition invocationRequestDefinition) {
+  public ViewEventHandler invocationRequest(InvocationRequest invocationRequest) {
     
-    this.invocationRequestDefinition = invocationRequestDefinition;
+    this.invocationRequest = invocationRequest;
     return this;
   }
 
    /**
-   * Get invocationRequestDefinition
-   * @return invocationRequestDefinition
+   * This is the method to call when the event occurs. It&#39;s signature is the same as the event which it specifies, like ActionHandler or WidgetActionHandler. 
+   * @return invocationRequest
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(INVOCATION_REQUEST_DEFINITION)
+  @ApiModelProperty(value = "This is the method to call when the event occurs. It's signature is the same as the event which it specifies, like ActionHandler or WidgetActionHandler. ")
+  @JsonProperty(INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public InvocationRequestDefinition getInvocationRequestDefinition() {
-    return invocationRequestDefinition;
+  public InvocationRequest getInvocationRequest() {
+    return invocationRequest;
   }
 
 
-  @JsonProperty(INVOCATION_REQUEST_DEFINITION)
+  @JsonProperty(INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInvocationRequestDefinition(InvocationRequestDefinition invocationRequestDefinition) {
-    this.invocationRequestDefinition = invocationRequestDefinition;
+  public void setInvocationRequest(InvocationRequest invocationRequest) {
+    this.invocationRequest = invocationRequest;
   }
 
 
@@ -192,12 +192,12 @@ public class ViewEventHandler {
     ViewEventHandler viewEventHandler = (ViewEventHandler) o;
     return Objects.equals(this.path, viewEventHandler.path) &&
         Objects.equals(this.viewEventType, viewEventHandler.viewEventType) &&
-        Objects.equals(this.invocationRequestDefinition, viewEventHandler.invocationRequestDefinition);
+        Objects.equals(this.invocationRequest, viewEventHandler.invocationRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, viewEventType, invocationRequestDefinition);
+    return Objects.hash(path, viewEventType, invocationRequest);
   }
 
   @Override
@@ -206,7 +206,7 @@ public class ViewEventHandler {
     sb.append("class ViewEventHandler {\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    viewEventType: ").append(toIndentedString(viewEventType)).append("\n");
-    sb.append("    invocationRequestDefinition: ").append(toIndentedString(invocationRequestDefinition)).append("\n");
+    sb.append("    invocationRequest: ").append(toIndentedString(invocationRequest)).append("\n");
     sb.append("}");
     return sb.toString();
   }

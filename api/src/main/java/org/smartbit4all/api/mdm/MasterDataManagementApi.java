@@ -121,4 +121,6 @@ public interface MasterDataManagementApi {
   void saveVectorCollectionDescriptor(String definitionName, String entryName,
       VectorCollectionDescriptor vectorCollectionDescriptor);
 
+  void modifyEntry(String definitionName, MDMEntryDescriptor entry);
+
 }
