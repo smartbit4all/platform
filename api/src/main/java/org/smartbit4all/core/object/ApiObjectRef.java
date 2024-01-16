@@ -31,6 +31,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.Factory;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
 /**
@@ -244,6 +245,8 @@ public class ApiObjectRef implements DomainObjectRef {
     return unwrappedObject;
   }
 
+  private final String FOSZAM = "foszam";
+
   private void processNewValues(Object unwrappedObject, boolean setObjectValue) {
     for (PropertyEntry entry : properties.values()) {
       switch (entry.getMeta().getKind()) {
@@ -259,7 +262,12 @@ public class ApiObjectRef implements DomainObjectRef {
             }
           }
           Object newValue = entry.getMeta().getValue(unwrappedObject);
-          if (!Objects.equals(oldValue, newValue)) { // TODO maybe oldValue != newValue?
+          // Sorry!!
+          if (FOSZAM.equalsIgnoreCase(entry.getPath())) {
+            if (ObjectUtils.isEmpty(oldValue) && !Objects.equals(oldValue, newValue)) {
+              setValueInner(newValue, entry, setObjectValue);
+            }
+          } else if (!Objects.equals(oldValue, newValue)) { // TODO maybe oldValue != newValue?
             setValueInner(newValue, entry, setObjectValue);
           }
           break;
