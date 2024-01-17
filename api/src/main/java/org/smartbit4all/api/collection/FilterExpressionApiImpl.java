@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +30,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.base.Strings;
 
 public class FilterExpressionApiImpl implements FilterExpressionApi {
 
@@ -188,7 +188,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
       if (exp == null) {
         // Construct the Expression from the FilterExpressionData
         exp =
-            convertFilterExpression(fed, searchEntityDef, entityDef);
+            convertFilterExpression(fed, searchEntityDef, entityDef, searchIndexMappingObject,
+                searchExpressionByPropertyName);
       }
       if (exp != null) {
         if (currentExpression != null && prevFed != null) {
@@ -268,14 +269,16 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   }
 
   private Expression convertFilterExpression(FilterExpressionData fed,
-      SearchEntityDefinition searchEntityDef, EntityDefinition entityDef) {
+      SearchEntityDefinition searchEntityDef, EntityDefinition entityDef,
+      SearchIndexMappingObject searchIndexMappingObject,
+      Map<String, CustomExpressionMapping> searchExpressionByPropertyName) {
 
     // expression
     if (fed.getCurrentOperation().equals(FilterExpressionOperation.EXPRESSION)) {
       // TODO detail entitydef?
       Expression innerExpression =
           constructExpressionInner(fed.getSubExpression(), searchEntityDef, entityDef,
-              null, null);
+              searchIndexMappingObject, searchExpressionByPropertyName);
       return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
     }
 
