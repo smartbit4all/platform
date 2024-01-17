@@ -21,6 +21,7 @@ components:
       type: string
       enum:
         - CHECK_BOX
+        - CHECK_BOX_2
         - CONTAINER
         - DATE_PICKER
         - DATE_TIME_PICKER
@@ -47,6 +48,7 @@ components:
         - SORTABLE
         - MATRIX
         - MONTH_PICKER
+        - YOUTUBE_PLAYER
     SmartLayoutDefinition:
       type: object
       required: [widgets]
@@ -86,6 +88,9 @@ components:
         iconColor:
           type: string
           description: Material theme class of the icon
+        iconPosition:
+          type: IconPosition
+          description: Position of the icon (pre/post)
         showLabel:
           type: boolean
           description: Defines if the label appears above the widget or not

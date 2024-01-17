@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.view.bean.UiActionButtonIconPos;
+import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
@@ -72,7 +72,7 @@ public class UiActionDescriptor {
   private String iconColor;
 
   public static final String ICON_POSITION = "iconPosition";
-  private UiActionButtonIconPos iconPosition;
+  private IconPosition iconPosition;
 
   public static final String DIALOG = "dialog";
   private UiActionDialogDescriptor dialog;
@@ -240,7 +240,7 @@ public class UiActionDescriptor {
   }
 
 
-  public UiActionDescriptor iconPosition(UiActionButtonIconPos iconPosition) {
+  public UiActionDescriptor iconPosition(IconPosition iconPosition) {
     
     this.iconPosition = iconPosition;
     return this;
@@ -256,14 +256,14 @@ public class UiActionDescriptor {
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UiActionButtonIconPos getIconPosition() {
+  public IconPosition getIconPosition() {
     return iconPosition;
   }
 
 
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIconPosition(UiActionButtonIconPos iconPosition) {
+  public void setIconPosition(IconPosition iconPosition) {
     this.iconPosition = iconPosition;
   }
 

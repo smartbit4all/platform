@@ -30,6 +30,8 @@ public enum SmartFormWidgetType {
   
   CHECK_BOX("CHECK_BOX"),
   
+  CHECK_BOX_2("CHECK_BOX_2"),
+  
   CONTAINER("CONTAINER"),
   
   DATE_PICKER("DATE_PICKER"),
@@ -80,7 +82,9 @@ public enum SmartFormWidgetType {
   
   MATRIX("MATRIX"),
   
-  MONTH_PICKER("MONTH_PICKER");
+  MONTH_PICKER("MONTH_PICKER"),
+  
+  YOUTUBE_PLAYER("YOUTUBE_PLAYER");
 
   private String value;
 

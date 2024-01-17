@@ -975,7 +975,7 @@ components:
         iconColor:
           type: string
         iconPosition:
-          $ref: '#/components/schemas/UiActionButtonIconPos'
+          $ref: '#/components/schemas/IconPosition'
         dialog:
           $ref: '#/components/schemas/UiActionDialogDescriptor'
         confirmDialog:
@@ -1071,7 +1071,7 @@ components:
         - FAB
         - SEPARATOR
         - SUBMENU
-    UiActionButtonIconPos:
+    IconPosition:
       type: string
       description: |
         Defines the position of an icon related to the button's label.
@@ -1196,3 +1196,20 @@ components:
         style:
           type: object
           additionalProperties: true
+    Style:
+      type: object
+      description: Style data holder for client
+      required: [style,classesToAdd,classesToRemove]
+      properties:
+        style:
+          type: string
+          additionalProperties:
+            type: string
+        classesToAdd:
+          type: array
+          items:
+            type: string
+        classesToRemove:
+          type: array
+          items:
+            type: string
