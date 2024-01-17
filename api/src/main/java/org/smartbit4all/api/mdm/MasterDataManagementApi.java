@@ -114,7 +114,7 @@ public interface MasterDataManagementApi {
 
   void approvalAcceptedGlobal(String definitionName);
 
-  void approvalRejectedGlobal(String definitionName);
+  void approvalRejectedGlobal(String definitionName, String reason);
 
   URI addNewEntries(MDMDefinitionOption o);
 

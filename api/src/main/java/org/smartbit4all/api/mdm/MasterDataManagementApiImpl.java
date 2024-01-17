@@ -26,6 +26,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -745,8 +746,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
-  public void approvalRejectedGlobal(String definitionName) {
+  public void approvalRejectedGlobal(String definitionName, String reason) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
+      state.getGlobalModification().addNotesItem(new MDMModificationNote()
+          .created(sessionApi.createActivityLog())
+          .note(reason));
       state.getGlobalModification().approver(null);
       return state;
     }, state -> noGlobalBranchValidation(definitionName, state));

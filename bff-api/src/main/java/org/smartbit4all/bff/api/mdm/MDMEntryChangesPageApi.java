@@ -5,6 +5,7 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 
 /**
@@ -13,7 +14,7 @@ import org.smartbit4all.bff.api.mdm.utility.MDMActions;
  * @author zslipcsei
  *
  */
-public interface MDMEntryChangesPageApi extends PageApi<Object> {
+public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel> {
 
   public static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
 

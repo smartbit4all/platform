@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -36,7 +39,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMModification.BRANCH_URI,
   MDMModification.CREATED,
-  MDMModification.APPROVER
+  MDMModification.APPROVER,
+  MDMModification.NOTES
 })
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -49,6 +53,9 @@ public class MDMModification {
 
   public static final String APPROVER = "approver";
   private URI approver;
+
+  public static final String NOTES = "notes";
+  private List<MDMModificationNote> notes = null;
 
   public MDMModification() { 
   }
@@ -137,6 +144,42 @@ public class MDMModification {
   }
 
 
+  public MDMModification notes(List<MDMModificationNote> notes) {
+    
+    this.notes = notes;
+    return this;
+  }
+
+  public MDMModification addNotesItem(MDMModificationNote notesItem) {
+    if (this.notes == null) {
+      this.notes = new ArrayList<>();
+    }
+    this.notes.add(notesItem);
+    return this;
+  }
+
+   /**
+   * Get notes
+   * @return notes
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(NOTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<MDMModificationNote> getNotes() {
+    return notes;
+  }
+
+
+  @JsonProperty(NOTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNotes(List<MDMModificationNote> notes) {
+    this.notes = notes;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -148,12 +191,13 @@ public class MDMModification {
     MDMModification mdMModification = (MDMModification) o;
     return Objects.equals(this.branchUri, mdMModification.branchUri) &&
         Objects.equals(this.created, mdMModification.created) &&
-        Objects.equals(this.approver, mdMModification.approver);
+        Objects.equals(this.approver, mdMModification.approver) &&
+        Objects.equals(this.notes, mdMModification.notes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchUri, created, approver);
+    return Objects.hash(branchUri, created, approver, notes);
   }
 
   @Override
@@ -163,6 +207,7 @@ public class MDMModification {
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
+    sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("}");
     return sb.toString();
   }

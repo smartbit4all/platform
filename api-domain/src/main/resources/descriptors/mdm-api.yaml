@@ -217,7 +217,17 @@ components:
         approver:
           type: string
           format: uri
-        
+        notes:
+          type: list
+          items:
+            $ref: '#/components/schemas/MDMModificationNote'
+    MDMModificationNote:
+      type: object
+      properties:
+        created:
+          type: UserActivityLog
+        note:
+          type: string
     MDMEntryEditingObject:
       type: object
       description: |

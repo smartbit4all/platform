@@ -483,8 +483,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    // TODO send and store reason
-    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName());
+    String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
+    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
     refreshGrid(context);
     refreshActions(context);
   }

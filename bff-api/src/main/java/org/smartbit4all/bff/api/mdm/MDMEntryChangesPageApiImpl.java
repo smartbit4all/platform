@@ -6,10 +6,10 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.container;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +20,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridView;
@@ -31,6 +32,8 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
+import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.org.OrgUtils;
@@ -41,23 +44,31 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLa
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
+public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageModel>
     implements MDMEntryChangesPageApi {
+
+  protected static final String LATEST_MODIFICATION_NOTE_KEY =
+      MDMEntryChangesPageModel.LATEST_MODIFICATION_NOTE + StringConstant.DOT
+          + MDMModificationNote.NOTE;
 
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
@@ -90,6 +101,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     public MDMDefinition definition;
     List<MDMEntryApi> entryApisWithChanges;
     Map<String, SearchIndex<BranchedObjectEntry>> searchIndexAdminsByDescriptorName;
+    List<MDMModificationNote> modificationNotes;
+    MDMModificationNote latestModificationNote;
 
     public PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
@@ -105,18 +118,30 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
               e -> collectionApi.searchIndex(definition.getName(),
                   e.getDescriptor().getSearchIndexForEntries(),
                   BranchedObjectEntry.class)));
+      setModificationNotes(definition);
 
       return this;
     }
 
+
     public PageContext loadOnlyDefinitionByView() {
       setDefition(parameters(view));
+      setModificationNotes(definition);
       return this;
     }
 
     private final void setDefition(ObjectMapHelper parameters) {
       definition = masterDataManagementApi
           .getDefinition(parameters.require(PARAM_MDM_DEFINITION, String.class));
+    }
+
+    private void setModificationNotes(MDMDefinition definition) {
+      ObjectNode state = objectApi.loadLatest(definition.getState());
+      modificationNotes = state.getValueAsList(MDMModificationNote.class,
+          MDMDefinitionState.GLOBAL_MODIFICATION, MDMModification.NOTES);
+      if (!modificationNotes.isEmpty()) {
+        latestModificationNote = modificationNotes.get(modificationNotes.size() - 1);
+      }
     }
 
     public boolean checkAdmin() {
@@ -149,18 +174,29 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
   }
 
   public MDMEntryChangesPageApiImpl() {
-    super(Object.class);
+    super(MDMEntryChangesPageModel.class);
   }
 
   @Override
-  public Object initModel(View view) {
+  public MDMEntryChangesPageModel initModel(View view) {
     PageContext pageContext = new PageContext();
     pageContext.view = view;
     pageContext.loadByView();
+    view.constraint(createViewConstraint(view));
     refreshActions(pageContext);
-    createOrRefreshGrids(pageContext);
+    createLayout(pageContext);
 
-    return new HashMap<String, Object>();
+    MDMEntryChangesPageModel model = new MDMEntryChangesPageModel();
+    model.setLatestModificationNote(pageContext.latestModificationNote);
+    return model;
+  }
+
+  protected ViewConstraint createViewConstraint(View view) {
+    return new ViewConstraint().componentConstraints(Arrays.asList(
+        new ComponentConstraint()
+            .dataName(LATEST_MODIFICATION_NOTE_KEY)
+            .enabled(false)
+            .visible(true)));
   }
 
   protected void refreshActions(PageContext ctx) {
@@ -201,14 +237,35 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     }
   }
 
-  protected final void createOrRefreshGrids(PageContext ctx) {
+  protected void createLayout(PageContext ctx) {
     SmartComponentLayoutDefinition changesLayout =
         container(LayoutDirection.VERTICAL);
 
+    MDMDefinition mdmDefinition = masterDataManagementApi.getDefinition(ctx.definition.getName());
+    SmartWidgetDefinition modificationNoteTextField = null;
+
+    if (mdmDefinition.getState() != null) {
+      ObjectNode state = objectApi.loadLatest(mdmDefinition.getState());
+      List<MDMModificationNote> modificationNotes = state.getValueAsList(MDMModificationNote.class,
+          MDMDefinitionState.GLOBAL_MODIFICATION, MDMModification.NOTES);
+      modificationNoteTextField = !modificationNotes.isEmpty()
+          ? textbox(LATEST_MODIFICATION_NOTE_KEY,
+              localeSettingApi.get("mdm.changes.latestModification"))
+          : null;
+    }
+
     if (ctx.entryApisWithChanges.isEmpty()) {
-      changesLayout.addComponentsItem(
-          form(LayoutDirection.HORIZONTAL, label(null, localeSettingApi.get("mdm.changes.nop"))));
+      SmartComponentLayoutDefinition emptyForm = form(LayoutDirection.HORIZONTAL);
+      if (modificationNoteTextField != null) {
+        emptyForm.addFormItem(modificationNoteTextField);
+      }
+      emptyForm.addFormItem(label(null, localeSettingApi.get("mdm.changes.nop")));
+      changesLayout.addComponentsItem(emptyForm);
     } else {
+      if (modificationNoteTextField != null) {
+        changesLayout.addComponentsItem(
+            form(LayoutDirection.HORIZONTAL, modificationNoteTextField));
+      }
       ctx.entryApisWithChanges.forEach(entryApi -> {
         GridModel entryGridModel =
             viewApi.getWidgetModelFromView(GridModel.class, ctx.view.getUuid(),
@@ -225,7 +282,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
             .addComponentsItem(
                 form(LayoutDirection.VERTICAL, label(null, entryApi.getDisplayNameList())))
             .addComponentsItem(grid(entryApi.getName()));
-
       });
     }
 
@@ -320,7 +376,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
   protected PageContext getContextByViewUUID(UUID viewUuid, boolean loadOnlyDefition) {
     PageContext result = new PageContext();
     result.view = viewApi.getView(viewUuid);
-    return loadOnlyDefition ? result.loadOnlyDefinitionByView() : result.loadByView();
+    return loadOnlyDefition ? result.loadOnlyDefinitionByView()
+        : result.loadByView();
   }
 
   @Override
@@ -329,7 +386,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     masterDataManagementApi.dropGlobal(context.definition.getName());
     context.loadByView();
     refreshActions(context);
-    createOrRefreshGrids(context);
+    createLayout(context);
   }
 
   @Override
@@ -338,7 +395,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     masterDataManagementApi.mergeGlobal(context.definition.getName());
     context.loadByView();
     refreshActions(context);
-    createOrRefreshGrids(context);
+    createLayout(context);
   }
 
   @Override
@@ -356,7 +413,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
         context.definition.getName(),
         approvers.get(0));
     context.loadByView();
-    createOrRefreshGrids(context);
+    createLayout(context);
     refreshActions(context);
   }
 
@@ -365,16 +422,19 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<Object>
     PageContext context = getContextByViewUUID(viewUuid, true);
     masterDataManagementApi.approvalAcceptedGlobal(context.definition.getName());
     context.loadByView();
-    createOrRefreshGrids(context);
+    createLayout(context);
     refreshActions(context);
   }
 
   @Override
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    // TODO send and store reason
-    masterDataManagementApi.approvalRejectedGlobal(context.definition.getName());
+    String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
+    masterDataManagementApi.approvalRejectedGlobal(context.definition.getName(), reason);
     refreshActions(context);
+    createLayout(context);
+    context.loadOnlyDefinitionByView();
+    getModel(viewUuid).latestModificationNote(context.latestModificationNote);
   }
 
   @Override
