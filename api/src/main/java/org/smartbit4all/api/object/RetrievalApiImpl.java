@@ -1,9 +1,12 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +17,7 @@ import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -25,7 +29,6 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The abstract implementation of the retrieval. It will use contribution apis to access objects.
@@ -60,7 +63,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
     if (uri != null) {
       data = readDataByUri(objRequest, uri, branchEntry);
     } else {
-      data = readDataByValue(objRequest.getDefinition(), value, valueScheme);
+      data = readDataByValue(objRequest.getDefinition(), value, valueScheme, branchEntry);
     }
     String scheme = data.getStorageSchema();
     // Recursive read of all referred objects.
@@ -120,13 +123,13 @@ public final class RetrievalApiImpl implements RetrievalApi {
             && !data.getReferences().containsKey(referenceName)) {
           data.putReferencesItem(
               referenceName,
-              readDataByValue(ref.getTarget(), sourceValue, scheme));
+              readDataByValue(ref.getTarget(), sourceValue, scheme, branchEntry));
         } else if (refKind == ReferencePropertyKind.LIST
             && !data.getReferenceLists().containsKey(referenceName)) {
           data.putReferenceListsItem(
               referenceName,
               ((List<?>) sourceValue).stream()
-                  .map(v -> readDataByValue(ref.getTarget(), v, scheme))
+                  .map(v -> readDataByValue(ref.getTarget(), v, scheme, branchEntry))
                   .collect(Collectors.toList()));
         } else if (refKind == ReferencePropertyKind.MAP
             && !data.getReferenceMaps().containsKey(referenceName)) {
@@ -135,7 +138,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
               ((Map<String, ?>) sourceValue).entrySet().stream()
                   .collect(toMap(
                       Entry::getKey,
-                      e -> readDataByValue(ref.getTarget(), e.getValue(), scheme))));
+                      e -> readDataByValue(ref.getTarget(), e.getValue(), scheme, branchEntry))));
         }
       }
     }
@@ -143,8 +146,65 @@ public final class RetrievalApiImpl implements RetrievalApi {
     return data;
   }
 
+  private void correctReferencesOnBranch(ObjectDefinition<?> objectDefinition, ObjectNodeData data,
+      BranchEntry branchEntry) {
+    if (branchEntry != null) {
+      for (Entry<String, ReferenceDefinition> refEntry : objectDefinition
+          .getOutgoingReferences().entrySet()) {
+        ReferenceDefinition ref = refEntry.getValue();
+        if (ref.getAggregation() != AggregationKind.INLINE) {
+          // inline will be read and handled separately
+          Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
+          if (sourceValue != null) {
+            ReferencePropertyKind refKind = ref.getReferencePropertyKind();
+            boolean loadLatest = RetrievalRequest.calcLoadLatest(ref, RetrievalMode.NORMAL);
+            if (refKind == ReferencePropertyKind.REFERENCE) {
+              URI uri = UriUtils.asUri(sourceValue);
+              URI uriFromBranch = getUriFromBranchIfExists(uri, loadLatest, branchEntry);
+              if (!Objects.equals(uriFromBranch, uri)) {
+                sourceValue = uriFromBranch;
+                ref.setSourceValue(data.getObjectAsMap(), sourceValue);
+              }
+            } else if (refKind == ReferencePropertyKind.LIST) {
+              List<URI> uris = UriUtils.asUriList((List<?>) sourceValue);
+              List<URI> urisFromBranch = uris.stream()
+                  .map(uri -> getUriFromBranchIfExists(uri, loadLatest, branchEntry))
+                  .collect(toList());
+              if (!Objects.equals(urisFromBranch, uris)) {
+                sourceValue = urisFromBranch;
+                ref.setSourceValue(data.getObjectAsMap(), sourceValue);
+              }
+            } else if (refKind == ReferencePropertyKind.MAP) {
+              @SuppressWarnings("unchecked")
+              Map<String, URI> uris = UriUtils.asUriMap((Map<String, ?>) sourceValue);
+              Map<String, URI> urisFromBranch = uris.entrySet().stream()
+                  .collect(toMap(
+                      Entry::getKey,
+                      entry -> getUriFromBranchIfExists(entry.getValue(), loadLatest,
+                          branchEntry)));
+              if (!Objects.equals(urisFromBranch, uris)) {
+                sourceValue = urisFromBranch;
+                ref.setSourceValue(data.getObjectAsMap(), sourceValue);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private URI getUriFromBranchIfExists(URI uri, boolean loadLatest, BranchEntry branchEntry) {
+    URI uriFromBranch = getUriToRead(uri, loadLatest, branchEntry);
+    if (Objects.equals(
+        ObjectStorageImpl.getUriWithoutVersion(uri),
+        ObjectStorageImpl.getUriWithoutVersion(uriFromBranch))) {
+      return uri;
+    }
+    return uriFromBranch;
+  }
+
   private ObjectNodeData readDataByValue(ObjectDefinition<?> definition, Object value,
-      String valueScheme) {
+      String valueScheme, BranchEntry branchEntry) {
     ObjectNodeData data;
     data = new ObjectNodeData()
         .objectUri(null)
@@ -152,6 +212,8 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .storageSchema(valueScheme)
         .objectAsMap((Map<String, Object>) value)
         .versionNr(null);
+    // overwrite references based on branch
+    correctReferencesOnBranch(definition, data, branchEntry);
     return data;
   }
 
@@ -162,7 +224,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
 
     StorageObject<?> storageObject = storageApi.load(readUri);
     ObjectVersion version = storageObject.getVersion();
-    return new ObjectNodeData()
+    ObjectNodeData data = new ObjectNodeData()
         .objectUri(storageObject.getVersionUri())
         .qualifiedName(storageObject.definition().getQualifiedName())
         .storageSchema(storageObject.getStorage().getScheme())
@@ -170,6 +232,9 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .aspects(storageObject.getAspects())
         .versionNr(version == null ? null : version.getSerialNoData())
         .lastModified(storageObject.getLastModified());
+    // overwrite references based on branch
+    correctReferencesOnBranch(objRequest.getDefinition(), data, branchEntry);
+    return data;
   }
 
   private final URI getUriToRead(URI uri, boolean loadLatest, BranchEntry branchEntry) {
