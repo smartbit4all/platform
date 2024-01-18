@@ -13,31 +13,31 @@ public final class ObjectValidations {
       if (a == null && b == null) {
         return 0;
       }
-      
-      if (a== null) {
+
+      if (a == null) {
         return 1;
       }
-      
+
       if (b == null) {
         return -1;
       }
-      
+
       final ObjectValidationSeverity sA = a.getSeverity();
       final ObjectValidationSeverity sB = b.getSeverity();
       if (sA == null && sB == null) {
         return 0;
       }
-      
+
       if (sA == null) {
         return 1;
       }
-      
+
       if (sB == null) {
         return -1;
       }
-      
+
       return sB.ordinal() - sA.ordinal();
-    }
+    };
   }
 
 }
