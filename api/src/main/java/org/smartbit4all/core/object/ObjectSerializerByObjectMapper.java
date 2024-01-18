@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
+import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.serialize.UriDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
@@ -85,6 +86,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     BinaryDataOutputStream os = null;
     try {
       os = new BinaryDataOutputStream(memorylimit);
+      os.crcCheckSum(FileIO.crcChecksumFunction);
       // We write and read in UTF-8 to enable international characters.
       osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
       objectMapper.writeValue(osw, obj);

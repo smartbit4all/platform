@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -479,6 +479,11 @@ public final class ObjectDefinition<T> {
       return false;
     }
     return instanceClazz.getName().equals(qualifiedName);
+  }
+
+  @Override
+  public String toString() {
+    return "ObjectDefinition: " + qualifiedName;
   }
 
 }

@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
 import com.google.common.io.BaseEncoding;
 
 /**
@@ -103,6 +105,18 @@ public class BinaryDataOutputStream extends OutputStream {
   private MessageDigest messageDigest;
 
   /**
+   * If we set this {@link Hasher} then the crc checksum is calculated while writing and set to the
+   * {@link BinaryData#setCrcCheckSum(int, HashFunction)}
+   */
+  private Hasher crcCheckSumHasher;
+
+  /**
+   * If we set this {@link HashFunction} then the crc checksum is calculated while writing and set
+   * to the {@link BinaryData#setCrcCheckSum(int, HashFunction)}
+   */
+  private HashFunction crcCheckSumHasherFunction;
+
+  /**
    * The result of the construction stream after the {@link #close()}.
    */
   private BinaryData data = null;
@@ -156,6 +170,13 @@ public class BinaryDataOutputStream extends OutputStream {
     }
   }
 
+  public BinaryDataOutputStream crcCheckSum(HashFunction crcCheckSumFunction) {
+    this.crcCheckSumHasherFunction = crcCheckSumFunction;
+    // We initiate it for the subsequent write operations.
+    this.crcCheckSumHasher = crcCheckSumFunction.newHasher();
+    return this;
+  }
+
   @Override
   public void write(int b) throws IOException {
     if (closed) {
@@ -166,6 +187,9 @@ public class BinaryDataOutputStream extends OutputStream {
     counter++;
     if (messageDigest != null) {
       messageDigest.update((byte) (b & 0xFF));
+    }
+    if (crcCheckSumHasher != null) {
+      crcCheckSumHasher.putInt(b);
     }
   }
 
@@ -180,6 +204,9 @@ public class BinaryDataOutputStream extends OutputStream {
     if (messageDigest != null) {
       messageDigest.update(b, off, len);
     }
+    if (crcCheckSumHasher != null) {
+      crcCheckSumHasher.putBytes(b, off, len);
+    }
   }
 
   @Override
@@ -192,6 +219,9 @@ public class BinaryDataOutputStream extends OutputStream {
     counter += b.length;
     if (messageDigest != null) {
       messageDigest.update(b);
+    }
+    if (crcCheckSumHasher != null) {
+      crcCheckSumHasher.putBytes(b);
     }
   }
 
@@ -221,6 +251,9 @@ public class BinaryDataOutputStream extends OutputStream {
     if (messageDigest != null) {
       // Using Guava
       data.setHash(BaseEncoding.base16().lowerCase().encode(messageDigest.digest()));
+    }
+    if (crcCheckSumHasher != null) {
+      data.setCrcCheckSum(crcCheckSumHasher.hash().asInt(), crcCheckSumHasherFunction);
     }
     closed = true;
   }
