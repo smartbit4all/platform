@@ -273,7 +273,7 @@ public class BinaryDataOutputStream extends OutputStream {
         // TODO Parameterization
         try {
           initTempFile();
-          osFile.write(osByteArray.toByteArray());
+          osActive.write(osByteArray.toByteArray());
           osByteArray = null;
         } catch (Throwable e) {
           log.error("Unable to create or use temp file. Using memory byte[] instead.", e);
