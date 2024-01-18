@@ -83,6 +83,11 @@ public class MimeTypeApi implements InitializingBean {
     if (Strings.isNullOrEmpty(filename)) {
       return "file.pdf";
     }
+
+    if (filename.toLowerCase().endsWith(".pdf")) {
+      return filename;
+    }
+
     if (filename.toLowerCase().endsWith(".docx")) {
       return filename.substring(0, filename.length() - ".docx".length()) + ".pdf";
     }
