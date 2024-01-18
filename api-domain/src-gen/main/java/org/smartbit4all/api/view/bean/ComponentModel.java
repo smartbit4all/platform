@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -50,7 +51,8 @@ import javax.validation.Valid;
   ComponentModel.COMPONENT_LAYOUTS,
   ComponentModel.ACTIONS,
   ComponentModel.VALUE_SETS,
-  ComponentModel.WIDGETS
+  ComponentModel.WIDGETS,
+  ComponentModel.STYLE
 })
 @JsonTypeName("ComponentModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -81,6 +83,9 @@ public class ComponentModel {
 
   public static final String WIDGETS = "widgets";
   private List<String> widgets = null;
+
+  public static final String STYLE = "style";
+  private Style style;
 
   public ComponentModel() { 
   }
@@ -378,6 +383,34 @@ public class ComponentModel {
   }
 
 
+  public ComponentModel style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * Get style
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -395,12 +428,13 @@ public class ComponentModel {
         Objects.equals(this.componentLayouts, componentModel.componentLayouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
         Objects.equals(this.valueSets, componentModel.valueSets) &&
-        Objects.equals(this.widgets, componentModel.widgets);
+        Objects.equals(this.widgets, componentModel.widgets) &&
+        Objects.equals(this.style, componentModel.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets);
+    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets, style);
   }
 
   @Override
@@ -416,6 +450,7 @@ public class ComponentModel {
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.ViewConstraint;
@@ -66,7 +67,8 @@ import javax.validation.Valid;
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE,
   View.CALLBACKS,
   View.LAYOUTS,
-  View.COMPONENT_LAYOUTS
+  View.COMPONENT_LAYOUTS,
+  View.STYLE
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -136,6 +138,9 @@ public class View {
 
   public static final String COMPONENT_LAYOUTS = "componentLayouts";
   private Map<String, SmartComponentLayoutDefinition> componentLayouts = new HashMap<>();
+
+  public static final String STYLE = "style";
+  private Style style;
 
   public View() { 
   }
@@ -824,6 +829,34 @@ public class View {
   }
 
 
+  public View style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * Get style
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -854,12 +887,13 @@ public class View {
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose) &&
         Objects.equals(this.callbacks, view.callbacks) &&
         Objects.equals(this.layouts, view.layouts) &&
-        Objects.equals(this.componentLayouts, view.componentLayouts);
+        Objects.equals(this.componentLayouts, view.componentLayouts) &&
+        Objects.equals(this.style, view.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style);
   }
 
   @Override
@@ -888,6 +922,7 @@ public class View {
     sb.append("    callbacks: ").append(toIndentedString(callbacks)).append("\n");
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }

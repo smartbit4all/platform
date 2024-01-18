@@ -599,6 +599,8 @@ components:
           description: The components layouts defined in the view. This named layouts can be used by the UI to render 
           additionalProperties: 
             type: SmartComponentLayoutDefinition
+        style:
+          $ref: '#/components/schemas/Style'
     ViewEventHandler:
       type: object
       description: |
@@ -688,6 +690,8 @@ components:
           type: array
           items:
             type: string
+        style:
+          $ref: '#/components/schemas/Style'
     ComponentModelChange:
       type: object
       description: |
