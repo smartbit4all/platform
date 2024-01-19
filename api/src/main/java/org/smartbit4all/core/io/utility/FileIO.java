@@ -3,6 +3,7 @@ package org.smartbit4all.core.io.utility;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -32,6 +33,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Longs;
 
 /**
@@ -88,7 +90,11 @@ public class FileIO {
     long waitTime = 2;
     long fullWaitTime = 0;
     try {
-      file.mkdirs();
+      if(file.getParentFile() != null){
+        file.getParentFile().mkdirs();
+      } else {
+        file.mkdirs();
+      }
     } catch (Exception e) {
       throw new IllegalArgumentException("Cannot create file's dir: " + file, e);
     }
