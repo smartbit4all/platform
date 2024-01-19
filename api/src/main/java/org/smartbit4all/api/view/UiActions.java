@@ -83,6 +83,22 @@ public final class UiActions {
     return actions.stream().anyMatch(actionCode(code));
   }
 
+  /**
+   * Checks whether a submenu with the specified code is present in the provided list of actions.
+   *
+   * @param actions the {@code List} of actions to search through, not null
+   * @param code {@code String} {@link UiAction#getCode()} to search for, not null
+   * @return true if the list contains a matching action, false otherwise
+   */
+  public static boolean containsSubmenu(Collection<UiAction> actions, String code) {
+    Objects.requireNonNull(actions, "actions cannot be null!");
+    Objects.requireNonNull(code, "code cannot be null!");
+
+    return actions.stream().filter(
+        a -> a.getDescriptor() != null && a.getDescriptor().getType() == UiActionButtonType.SUBMENU)
+        .anyMatch(actionCode(code));
+  }
+
   public static final List<UiAction> flatSubMenuStructure(List<UiAction> actions) {
     return actions.stream().flatMap(a -> {
       if (a.getDescriptor() != null && a.getSubActions() != null
@@ -497,6 +513,15 @@ public final class UiActions {
         add(sma);
         return sma;
       }));
+    }
+
+    public boolean removeIf(String action, boolean... conditions) {
+      for (boolean c : conditions) {
+        if (!c)
+          return false;
+      }
+
+      return actions.removeIf(a -> Objects.equals(a.getCode(), action));
     }
 
     public boolean remove(String action) {
