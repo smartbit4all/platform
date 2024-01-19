@@ -1,0 +1,30 @@
+openapi: 3.0.1
+info:
+  title: ValidationResult api
+  description: Definition of the ValidationResult page and api.
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: ValidationResult
+paths: {}
+components:
+  schemas:
+    ValidationResultPageModel:
+      type: object
+      properties:
+        validationItems:
+          description: List of ValidationItem holds the severity 
+            | and the localized message from the origin ObjectValidationItem
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationItem'
+    ValidationItem:
+      type: object
+      properties:
+        severity:
+          type: ObjectValidationSeverity
+        message:
+          type: string
+                 
+         
