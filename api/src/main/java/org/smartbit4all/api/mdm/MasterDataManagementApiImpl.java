@@ -27,6 +27,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -127,7 +128,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
     return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
         invocationApi, branchApi,
-        valueSetApi, localeSettingApi);
+        valueSetApi, localeSettingApi, sessionApi);
 
   }
 
@@ -498,7 +499,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           tcd -> {
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
             addEntryPropertyToSearchIndex(result, tcd.getName(),
-                objectDefinitionApi.getTypeOfProperty(objectDefinition, String.class, path),
+                getTypeOfColumn(objectDefinition, tcd),
                 -1,
                 path);
           });
@@ -558,10 +559,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
-            String[] pathes = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
+            String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
             result.map(tcd.getName(),
-                objectDefinitionApi.getTypeOfProperty(objectDefinition, String.class, pathes),
-                pathes);
+                getTypeOfColumn(objectDefinition, tcd),
+                path);
           });
     } else {
       // Navigate to the nearest referred object.
@@ -591,6 +592,24 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           entryDescriptor);
     }
     return (SearchIndex<Object>) result;
+  }
+
+  private Class<?> getTypeOfColumn(ObjectDefinition<?> objectDefinition,
+      MDMTableColumnDescriptor tcd) {
+    Class<?> type = null;
+    if (!Strings.isEmpty(tcd.getTypeClass())) {
+      try {
+        type = Class.forName(tcd.getTypeClass());
+      } catch (ClassNotFoundException e) {
+        log.warn("ClassNotFound by table columns typeClass: {}, {}",
+            tcd.getName(), tcd.getTypeClass());
+      }
+    }
+    if (type == null) {
+      type = objectDefinitionApi.getTypeOfProperty(objectDefinition, String.class,
+          tcd.getPath().toArray(StringConstant.EMPTY_ARRAY));
+    }
+    return type;
   }
 
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
@@ -650,6 +669,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   protected MDMDefitionStateWrapper mergeGlobalInner(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
+      // TODO update merged MDMEntryDescriptors MDMEntryApi.Props.MERGED property
       branchApi.merge(state.getGlobalModification().getBranchUri());
       return state
           .globalModification(null);

@@ -166,12 +166,14 @@ public class MDMEntryDescriptorPageApiImpl
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
-      option.addDefaultDescriptor(GenericValue.class, code).name(code)
-          .displayNameForm(new LangString().defaultValue(name))
-          .displayNameList(new LangString().defaultValue(name))
-          .listPageGridViews(Collections.emptyList())
-          .isValueSet(Boolean.TRUE)
-          .vectorCollection(vectorCollectionDescriptor);
+      MDMEntryDescriptor descriptor =
+          option.addDefaultDescriptor(GenericValue.class, code).name(code)
+              .displayNameForm(new LangString().defaultValue(name))
+              .displayNameList(new LangString().defaultValue(name))
+              .listPageGridViews(Collections.emptyList())
+              .isValueSet(Boolean.TRUE)
+              .vectorCollection(vectorCollectionDescriptor);
+      MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       masterDataManagementApi.addNewEntries(option);
     } else {
       MDMEntryDescriptor entryDescriptorToEdit =

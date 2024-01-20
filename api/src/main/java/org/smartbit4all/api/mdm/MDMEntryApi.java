@@ -33,6 +33,18 @@ import org.smartbit4all.core.object.ObjectNode;
 public interface MDMEntryApi {
 
   /**
+   * Props contains all the constants which can be used in
+   * {@link MDMEntryDescriptor#PROPERTY_MAPPINGS}.
+   */
+  final class Props {
+    private Props() {};
+
+    public static final String CREATED = "created";
+    public static final String UPDATED = "updated";
+    public static final String MERGED = "approved";
+  }
+
+  /**
    * @return The name of the given entry
    */
   String getName();
@@ -51,7 +63,7 @@ public interface MDMEntryApi {
 
   /**
    * Tries to find the unique map for the given path.
-   * 
+   *
    * @param path The path of the property the unique property belongs to.
    * @return The {@link StoredMap} if any or null.
    */
@@ -76,7 +88,7 @@ public interface MDMEntryApi {
    * @param objectNode The object node to save as draft. We check if this object is a totally new
    *        one, a an object to modify and now we have to make the branched object also. Or the
    *        given object is already included in the branch.
-   * 
+   *
    * @return The list of URI for the saved draft / final version. More than one if we have a
    *         hierarchical entry when the {@link MDMEntryDescriptor#SELF_CONTAINED_REF_LIST} is set.
    */
@@ -167,7 +179,7 @@ public interface MDMEntryApi {
 
   /**
    * Returns an optimized lookup for the objects of in the given entry.
-   * 
+   *
    * @return
    */
   ObjectLookup lookup();

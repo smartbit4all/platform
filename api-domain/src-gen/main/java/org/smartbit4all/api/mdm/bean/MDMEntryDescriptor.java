@@ -23,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -61,7 +63,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.IS_VALUE_SET,
   MDMEntryDescriptor.BRANCHING_STRATEGY,
   MDMEntryDescriptor.SELF_CONTAINED_REF_LIST,
-  MDMEntryDescriptor.VECTOR_COLLECTION
+  MDMEntryDescriptor.VECTOR_COLLECTION,
+  MDMEntryDescriptor.PROPERTY_MAPPINGS
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -128,6 +131,9 @@ public class MDMEntryDescriptor {
 
   public static final String VECTOR_COLLECTION = "vectorCollection";
   private VectorCollectionDescriptor vectorCollection = null;
+
+  public static final String PROPERTY_MAPPINGS = "propertyMappings";
+  private Map<String, String> propertyMappings = null;
 
   public MDMEntryDescriptor() { 
   }
@@ -747,6 +753,41 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor propertyMappings(Map<String, String> propertyMappings) {
+    
+    this.propertyMappings = propertyMappings;
+    return this;
+  }
+
+  public MDMEntryDescriptor putPropertyMappingsItem(String key, String propertyMappingsItem) {
+    if (this.propertyMappings == null) {
+      this.propertyMappings = new HashMap<>();
+    }
+    this.propertyMappings.put(key, propertyMappingsItem);
+    return this;
+  }
+
+   /**
+   * This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties.  
+   * @return propertyMappings
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties.  ")
+  @JsonProperty(PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getPropertyMappings() {
+    return propertyMappings;
+  }
+
+
+  @JsonProperty(PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPropertyMappings(Map<String, String> propertyMappings) {
+    this.propertyMappings = propertyMappings;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -776,12 +817,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.isValueSet, mdMEntryDescriptor.isValueSet) &&
         Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy) &&
         Objects.equals(this.selfContainedRefList, mdMEntryDescriptor.selfContainedRefList) &&
-        Objects.equals(this.vectorCollection, mdMEntryDescriptor.vectorCollection);
+        Objects.equals(this.vectorCollection, mdMEntryDescriptor.vectorCollection) &&
+        Objects.equals(this.propertyMappings, mdMEntryDescriptor.propertyMappings);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings);
   }
 
   @Override
@@ -809,6 +851,7 @@ public class MDMEntryDescriptor {
     sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("    selfContainedRefList: ").append(toIndentedString(selfContainedRefList)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
+    sb.append("    propertyMappings: ").append(toIndentedString(propertyMappings)).append("\n");
     sb.append("}");
     return sb.toString();
   }

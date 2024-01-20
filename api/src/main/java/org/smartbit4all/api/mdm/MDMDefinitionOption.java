@@ -1,13 +1,19 @@
 package org.smartbit4all.api.mdm;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The object that can be registered into the spring context to define a definition. It will be able
@@ -84,4 +90,30 @@ public class MDMDefinitionOption {
     this.definition = definition;
   }
 
+  public static void addCreatedUpdatedExtraProperties(MDMEntryDescriptor descriptor) {
+    List<MDMTableColumnDescriptor> columns = new ArrayList<>();
+    if (descriptor.getTableColumns() != null) {
+      columns.addAll(descriptor.getTableColumns());
+    }
+    columns.addAll(List.of(
+        new MDMTableColumnDescriptor()
+            .name(MDMEntryApi.Props.CREATED + StringConstant.UNDERLINE + UserActivityLog.NAME)
+            .typeClass(String.class.getName())
+            .path(List.of(MDMEntryApi.Props.CREATED, UserActivityLog.NAME)),
+        new MDMTableColumnDescriptor()
+            .name(MDMEntryApi.Props.CREATED + StringConstant.UNDERLINE
+                + UserActivityLog.TIMESTAMP)
+            .typeClass(OffsetDateTime.class.getName())
+            .path(List.of(MDMEntryApi.Props.CREATED, UserActivityLog.TIMESTAMP)),
+        new MDMTableColumnDescriptor()
+            .name(MDMEntryApi.Props.UPDATED + StringConstant.UNDERLINE + UserActivityLog.NAME)
+            .typeClass(String.class.getName())
+            .path(List.of(MDMEntryApi.Props.UPDATED, UserActivityLog.NAME)),
+        new MDMTableColumnDescriptor()
+            .name(MDMEntryApi.Props.UPDATED + StringConstant.UNDERLINE
+                + UserActivityLog.TIMESTAMP)
+            .typeClass(OffsetDateTime.class.getName())
+            .path(List.of(MDMEntryApi.Props.UPDATED, UserActivityLog.TIMESTAMP))));
+    descriptor.tableColumns(columns);
+  }
 }

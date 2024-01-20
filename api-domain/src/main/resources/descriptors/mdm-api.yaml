@@ -168,6 +168,14 @@ components:
           description: |
             The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction
             state is not working.
+        propertyMappings:
+          description: |
+            This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will 
+            be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used, 
+            this is only a possibility to specify non-default properties. 
+          type: string
+          additionalProperties:
+            type: string
     MDMTableColumnDescriptor:
       type: object
       description: |
@@ -179,6 +187,9 @@ components:
         name:
           type: string
           description: The name of the given column.
+        typeClass:
+          type: string
+          description: The given column's type's class name.
         path:
           type: array
           description: The path to access the object property of the column.

@@ -33,6 +33,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
@@ -243,9 +244,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByView(view);
     refreshActions(context);
 
-    List<String> columns =
+    List<String> columns;
+    List<String> searchIndexColumns =
         context.searchIndexAdmin.getDefinition().getDefinition().allProperties().stream()
             .map(Property::getName).collect(toList());
+    if (context.entryDescriptor.getTableColumns() != null) {
+      List<String> tableColumns = context.entryDescriptor.getTableColumns().stream()
+          .map(MDMTableColumnDescriptor::getName)
+          .filter(col -> searchIndexColumns.contains(col)) // valid columnNames only!
+          .collect(toList());
+
+      List<String> extraColumns = searchIndexColumns.stream()
+          .filter(col -> !tableColumns.contains(col))
+          .collect(toList());
+      columns = new ArrayList<>();
+      columns.addAll(tableColumns);
+      columns.addAll(extraColumns);
+    } else {
+      columns = searchIndexColumns;
+    }
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,

@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +47,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -53,9 +57,6 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -97,6 +98,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   private LocaleSettingApi localeSettingApi;
 
+  private SessionApi sessionApi;
+
   /**
    * If the given MDM ap is managing a list of published values then this list forms a value set
    * definition by default. If it is true then the next access will try to refresh the value set
@@ -113,7 +116,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   public MDMEntryApiImpl(MasterDataManagementApi api, MDMDefinition definition,
       MDMEntryDescriptor descriptor,
       ObjectApi objectApi, CollectionApi collectionApi, InvocationApi invocationApi,
-      BranchApi branchApi, ValueSetApi valueSetApi, LocaleSettingApi localeSettingApi) {
+      BranchApi branchApi, ValueSetApi valueSetApi, LocaleSettingApi localeSettingApi,
+      SessionApi sessionApi) {
     super();
     Objects.requireNonNull(descriptor, "Unable to initiate master data entry without descriptor.");
     this.api = api;
@@ -127,6 +131,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     this.branchApi = branchApi;
     this.valueSetApi = valueSetApi;
     this.localeSettingApi = localeSettingApi;
+    this.sessionApi = sessionApi;
   }
 
   @Override
@@ -156,6 +161,9 @@ public class MDMEntryApiImpl implements MDMEntryApi {
           objectNode
               .setValues(fireBeforeSaveNew(objectApi.definition(descriptor.getTypeQualifiedName()),
                   objectNode.getObjectAsMap(), descriptor));
+          updatePropertyWithUserActiviyLog(objectNode, Props.CREATED);
+        } else {
+          updatePropertyWithUserActiviyLog(objectNode, Props.UPDATED);
         }
         objectApi.save(objectNode, branchUri);
         if (descriptor.getSelfContainedRefList() != null && objectNode.getDefinition()
@@ -215,6 +223,17 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       return merged;
     });
     return results;
+  }
+
+  private void updatePropertyWithUserActiviyLog(ObjectNode objectNode, String property) {
+    if (sessionApi != null) {
+      String prop = property;
+      if (descriptor.getPropertyMappings() != null
+          && descriptor.getPropertyMappings().containsKey(Props.CREATED)) {
+        prop = descriptor.getPropertyMappings().get(Props.CREATED);
+      }
+      objectNode.setValue(sessionApi.createActivityLog(), prop);
+    }
   }
 
   protected void checkIfUniquePropertyUsed(List<ObjectNode> objectNodes,
@@ -561,10 +580,10 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   /**
    * Updates the denoted {@link VectorCollection} of the given entry if any.
-   * 
+   *
    * @param toUpdate The list of object nodes to update in the {@link VectorCollection}.
-   * 
-   * 
+   *
+   *
    *        TODO Later on we need some update result with the success code and the problematic
    *        records.
    */
