@@ -41,7 +41,7 @@ public interface MDMEntryApi {
 
     public static final String CREATED = "created";
     public static final String UPDATED = "updated";
-    public static final String MERGED = "approved";
+    public static final String MERGED = "merged";
   }
 
   /**
