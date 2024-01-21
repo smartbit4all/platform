@@ -90,7 +90,7 @@ public class FileIO {
     long waitTime = 2;
     long fullWaitTime = 0;
     try {
-      if(file.getParentFile() != null){
+      if (file.getParentFile() != null) {
         file.getParentFile().mkdirs();
       } else {
         file.mkdirs();
@@ -99,13 +99,16 @@ public class FileIO {
       throw new IllegalArgumentException("Cannot create file's dir: " + file, e);
     }
     while (true) {
-      try (InputStream in = inputStream.get()) {
-        if (in != null) {
-          Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      try (InputStream in = inputStream.get();
+          FileOutputStream fos = new FileOutputStream(file)) {
+        if (in == null) {
+          log.error("Unable to open InputStream for reading the content of {}", file);
         } else {
-          log.warn("No stream specified for writing file {}", file);
+          ByteStreams.copy(in, fos);
+          fos.flush();
+          fos.getFD().sync();
+          return;
         }
-        return;
       } catch (FileNotFoundException e) {
         throw new IllegalStateException(
             "Cannot write file because some of the temporary files are missing: " + file, e);
@@ -365,10 +368,9 @@ public class FileIO {
         if (!lockFile.exists()) {
           lockFile.createNewFile();
         }
-        RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
-        FileChannel fileChannel = randomAccessFile.getChannel();
-        FileLock fileLock = fileChannel.lock();
-        try {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
+            FileChannel fileChannel = randomAccessFile.getChannel();
+            FileLock fileLock = fileChannel.lock()) {
           FileLockData lockData = readFileLockData(fileChannel);
           // Check the validity of the lock. If it's valid then initiate wait. If it's invalid or
           // null
@@ -381,14 +383,11 @@ public class FileIO {
             }
           } else {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
+            fileChannel.force(true);
             fileChannel.position(0);
             writeFileLockData(fileChannel, newLockData);
             return newLockData;
           }
-        } finally {
-          fileLock.release();
-          fileChannel.close();
-          randomAccessFile.close();
         }
 
       } catch (IOException e) {
