@@ -394,6 +394,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected final void refreshGrid(PageContext ctx) {
 
+    TableData<?> data;
     if (ctx.checkAdmin() && ctx.getEntryApi().hasBranch()) {
       List<BranchedObjectEntry> list;
       if (ctx.inactives) {
@@ -402,25 +403,34 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       } else {
         list = ctx.getEntryApi().getBranchingList();
       }
-      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
-          createTableDataForGrid(ctx, list));
+      data = createTableDataForAdminGrid(ctx, list);
     } else {
       StoredList inactiveList = ctx.getEntryApi().getInactiveList();
       StoredList list = ctx.inactives ? inactiveList : ctx.getEntryApi().getList();
-      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(),
-              null));
+      data = createTableDataForPublishedGrid(ctx, list);
     }
+    data = postProcessTableDataForGrid(ctx, data);
+    gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID, data);
 
   }
 
-  protected TableData<?> createTableDataForGrid(PageContext ctx, List<BranchedObjectEntry> list) {
+  protected TableData<?> postProcessTableDataForGrid(PageContext ctx, TableData<?> data) {
+    return data;
+  }
+
+  protected TableData<?> createTableDataForAdminGrid(PageContext ctx,
+      List<BranchedObjectEntry> list) {
     return ctx.searchIndexAdmin
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
           return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
               objectDefinition.toMap(i));
         }), null);
+  }
+
+  protected TableData<?> createTableDataForPublishedGrid(PageContext ctx,
+      StoredList list) {
+    return ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(), null);
   }
 
   @Override
