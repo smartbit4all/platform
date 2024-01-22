@@ -368,9 +368,10 @@ public class FileIO {
         if (!lockFile.exists()) {
           lockFile.createNewFile();
         }
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
-            FileChannel fileChannel = randomAccessFile.getChannel();
-            FileLock fileLock = fileChannel.lock()) {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
+        FileChannel fileChannel = randomAccessFile.getChannel();
+        FileLock fileLock = fileChannel.lock();
+        try {
           FileLockData lockData = readFileLockData(fileChannel);
           // Check the validity of the lock. If it's valid then initiate wait. If it's invalid or
           // null
@@ -383,12 +384,14 @@ public class FileIO {
             }
           } else {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
-            fileChannel.force(true);
             fileChannel.position(0);
             writeFileLockData(fileChannel, newLockData);
-            randomAccessFile.getFD().sync();
             return newLockData;
           }
+        } finally {
+          fileLock.release();
+          fileChannel.close();
+          randomAccessFile.close();
         }
 
       } catch (IOException e) {
