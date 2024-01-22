@@ -386,6 +386,7 @@ public class FileIO {
             fileChannel.force(true);
             fileChannel.position(0);
             writeFileLockData(fileChannel, newLockData);
+            randomAccessFile.getFD().sync();
             return newLockData;
           }
         }
