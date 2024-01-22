@@ -228,7 +228,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
             .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
                 isAdmin, !branchActive)
             .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
-                canEdit, branchActive)
+                canEdit, !underApproval, branchActive)
             .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
                 isAdmin, !underApproval, branchActive)
             .addIf(new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),

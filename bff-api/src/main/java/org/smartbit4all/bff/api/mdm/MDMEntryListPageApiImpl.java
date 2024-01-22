@@ -338,7 +338,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
               isAdmin, branchingEnabled, !branchActive, !ctx.inactives, !globalBranching)
           .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
-              canEdit, branchingEnabled, branchActive, !ctx.inactives, !globalBranching)
+              !underApproval, canEdit, branchingEnabled, branchActive, !ctx.inactives,
+              !globalBranching)
           .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
               isAdmin, !underApproval, branchingEnabled, branchActive,
               !ctx.inactives, !globalBranching)
