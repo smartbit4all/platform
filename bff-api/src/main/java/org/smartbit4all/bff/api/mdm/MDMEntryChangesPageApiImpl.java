@@ -143,9 +143,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ObjectNode state = objectApi.loadLatest(definition.getState());
       modificationNotes = state.getValueAsList(MDMModificationNote.class,
           MDMDefinitionState.GLOBAL_MODIFICATION, MDMModification.NOTES);
-      if (!modificationNotes.isEmpty()) {
-        latestModificationNote = modificationNotes.get(modificationNotes.size() - 1);
-      }
+      latestModificationNote = !modificationNotes.isEmpty()
+          ? modificationNotes.get(modificationNotes.size() - 1)
+          : null;
     }
 
     public boolean checkAdmin() {
