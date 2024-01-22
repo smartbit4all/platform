@@ -408,7 +408,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     masterDataManagementApi.initiateGlobalBranch(context.getDefinition().getName(),
         String.valueOf(System.currentTimeMillis()));
     refreshActions(context);
-
   }
 
   protected PageContext getContextByViewUUID(UUID viewUuid) {
@@ -427,8 +426,14 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext context = getContextByViewUUID(viewUuid, true);
     masterDataManagementApi.dropGlobal(context.getDefinition().getName());
     context.loadByView();
+    refreshViewProperties(context);
+  }
+
+  protected void refreshViewProperties(PageContext context) {
     refreshActions(context);
     createLayout(context);
+    context.view.constraint(createViewConstraint(context));
+    setModel(context.view.getUuid(), createModel(context));
   }
 
   @Override
@@ -436,8 +441,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext context = getContextByViewUUID(viewUuid, true);
     masterDataManagementApi.mergeGlobal(context.getDefinition().getName());
     context.loadByView();
-    refreshActions(context);
-    createLayout(context);
+    refreshViewProperties(context);
   }
 
   @Override
@@ -455,8 +459,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         context.getDefinition().getName(),
         approvers.get(0));
     context.loadByView();
-    createLayout(context);
-    refreshActions(context);
+    refreshViewProperties(context);
   }
 
   @Override
@@ -464,8 +467,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext context = getContextByViewUUID(viewUuid, true);
     masterDataManagementApi.approvalAcceptedGlobal(context.getDefinition().getName());
     context.loadByView();
-    createLayout(context);
-    refreshActions(context);
+    refreshViewProperties(context);
   }
 
   @Override
@@ -473,10 +475,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext context = getContextByViewUUID(viewUuid);
     String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
     masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
-    refreshActions(context);
-    createLayout(context);
     context.loadOnlyDefinitionByView();
-    getModel(viewUuid).latestModificationNote(context.latestModificationNote);
+    refreshViewProperties(context);
   }
 
   @Override
