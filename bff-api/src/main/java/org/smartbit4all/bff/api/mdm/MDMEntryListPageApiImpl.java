@@ -723,6 +723,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
+    return addWidgetEntryGridActionsInner(page, ctx);
+  }
+
+  protected GridPage addWidgetEntryGridActionsInner(GridPage page, PageContext ctx) {
     boolean isAdmin = ctx.checkAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
