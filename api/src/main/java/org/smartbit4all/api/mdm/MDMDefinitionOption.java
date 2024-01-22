@@ -95,25 +95,25 @@ public class MDMDefinitionOption {
     if (descriptor.getTableColumns() != null) {
       columns.addAll(descriptor.getTableColumns());
     }
-    columns.addAll(List.of(
+    columns.addAll(Arrays.asList(
         new MDMTableColumnDescriptor()
             .name(MDMEntryApi.Props.CREATED + StringConstant.UNDERLINE + UserActivityLog.NAME)
             .typeClass(String.class.getName())
-            .path(List.of(MDMEntryApi.Props.CREATED, UserActivityLog.NAME)),
+            .path(Arrays.asList(MDMEntryApi.Props.CREATED, UserActivityLog.NAME)),
         new MDMTableColumnDescriptor()
             .name(MDMEntryApi.Props.CREATED + StringConstant.UNDERLINE
                 + UserActivityLog.TIMESTAMP)
             .typeClass(OffsetDateTime.class.getName())
-            .path(List.of(MDMEntryApi.Props.CREATED, UserActivityLog.TIMESTAMP)),
+            .path(Arrays.asList(MDMEntryApi.Props.CREATED, UserActivityLog.TIMESTAMP)),
         new MDMTableColumnDescriptor()
             .name(MDMEntryApi.Props.UPDATED + StringConstant.UNDERLINE + UserActivityLog.NAME)
             .typeClass(String.class.getName())
-            .path(List.of(MDMEntryApi.Props.UPDATED, UserActivityLog.NAME)),
+            .path(Arrays.asList(MDMEntryApi.Props.UPDATED, UserActivityLog.NAME)),
         new MDMTableColumnDescriptor()
             .name(MDMEntryApi.Props.UPDATED + StringConstant.UNDERLINE
                 + UserActivityLog.TIMESTAMP)
             .typeClass(OffsetDateTime.class.getName())
-            .path(List.of(MDMEntryApi.Props.UPDATED, UserActivityLog.TIMESTAMP))));
+            .path(Arrays.asList(MDMEntryApi.Props.UPDATED, UserActivityLog.TIMESTAMP))));
     descriptor.tableColumns(columns);
   }
 }
