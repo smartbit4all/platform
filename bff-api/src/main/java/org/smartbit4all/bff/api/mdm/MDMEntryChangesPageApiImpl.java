@@ -270,7 +270,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     SmartWidgetDefinition modificationNoteTextField = textbox(LATEST_MODIFICATION_NOTE_KEY,
         localeSettingApi.get("mdm.changes.latestModification"));
     SmartWidgetDefinition selectedApproverLabel = textfield(MDMEntryChangesPageModel.APPROVER_NAME,
-        localeSettingApi.get("mdm.changes.approverLabel"));
+        localeSettingApi.get("mdm.changes.approver"));
 
     if (ctx.getEntryApisWithChanges().isEmpty()) {
       SmartComponentLayoutDefinition emptyForm =
