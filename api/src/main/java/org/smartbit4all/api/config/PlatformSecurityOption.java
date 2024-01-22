@@ -8,4 +8,9 @@ public class PlatformSecurityOption implements SecurityOption {
   public static final SecurityGroup admin =
       SecurityGroup.of().title("Platform admin").description("Plaform level administrator")
           .builtIn(true);
+
+  public static final SecurityGroup userAdminSetPrimaryAccount =
+      SecurityGroup.of().title("User account set primary account")
+          .description("User administrator ability to set the primary account")
+          .builtIn(true);
 }

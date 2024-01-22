@@ -169,6 +169,10 @@ components:
           type: object
           additionalProperties:
             type: string
+        primaryAccount:
+          type: string
+          format: uri
+          description: The reference to the primary account if any.
     Group:
       type: object
       required: [uri, name, kind, children]

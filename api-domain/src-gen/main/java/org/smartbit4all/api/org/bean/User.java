@@ -41,7 +41,8 @@ import javax.validation.Valid;
   User.EMAIL,
   User.PASSWORD,
   User.INACTIVE,
-  User.ATTRIBUTES
+  User.ATTRIBUTES,
+  User.PRIMARY_ACCOUNT
 })
 @JsonTypeName("User")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -66,6 +67,9 @@ public class User {
 
   public static final String ATTRIBUTES = "attributes";
   private Map<String, String> attributes = new HashMap<>();
+
+  public static final String PRIMARY_ACCOUNT = "primaryAccount";
+  private URI primaryAccount;
 
   public User() { 
   }
@@ -267,6 +271,34 @@ public class User {
   }
 
 
+  public User primaryAccount(URI primaryAccount) {
+    
+    this.primaryAccount = primaryAccount;
+    return this;
+  }
+
+   /**
+   * The reference to the primary account if any.
+   * @return primaryAccount
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The reference to the primary account if any.")
+  @JsonProperty(PRIMARY_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getPrimaryAccount() {
+    return primaryAccount;
+  }
+
+
+  @JsonProperty(PRIMARY_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPrimaryAccount(URI primaryAccount) {
+    this.primaryAccount = primaryAccount;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -282,12 +314,13 @@ public class User {
         Objects.equals(this.email, user.email) &&
         Objects.equals(this.password, user.password) &&
         Objects.equals(this.inactive, user.inactive) &&
-        Objects.equals(this.attributes, user.attributes);
+        Objects.equals(this.attributes, user.attributes) &&
+        Objects.equals(this.primaryAccount, user.primaryAccount);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, username, name, email, password, inactive, attributes);
+    return Objects.hash(uri, username, name, email, password, inactive, attributes, primaryAccount);
   }
 
   @Override
@@ -301,6 +334,7 @@ public class User {
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    inactive: ").append(toIndentedString(inactive)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
+    sb.append("    primaryAccount: ").append(toIndentedString(primaryAccount)).append("\n");
     sb.append("}");
     return sb.toString();
   }
