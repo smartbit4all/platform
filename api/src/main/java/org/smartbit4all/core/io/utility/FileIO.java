@@ -386,7 +386,7 @@ public class FileIO {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
             fileChannel.position(0);
             writeFileLockData(fileChannel, newLockData);
-            randomAccessFile.getFD().sync();
+            // randomAccessFile.getFD().sync();
             return newLockData;
           }
         } finally {
