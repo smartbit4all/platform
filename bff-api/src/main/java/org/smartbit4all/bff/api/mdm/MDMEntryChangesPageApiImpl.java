@@ -100,7 +100,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected class PageContext {
 
     View view;
-    public MDMDefinition definition;
+    MDMDefinition definition;
     List<MDMEntryApi> entryApisWithChanges;
     Map<String, SearchIndex<BranchedObjectEntry>> searchIndexAdminsByDescriptorName;
     List<MDMModificationNote> modificationNotes;
@@ -109,18 +109,18 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     public PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
       setDefition(parameters);
-      entryApisWithChanges = definition.getDescriptors().keySet().stream()
-          .map(descriptorName -> masterDataManagementApi.getApi(definition.getName(),
+      entryApisWithChanges = getDefinition().getDescriptors().keySet().stream()
+          .map(descriptorName -> masterDataManagementApi.getApi(getDefinition().getName(),
               descriptorName))
           .filter(entryApi -> entryApi.getBranchingList().stream()
               .anyMatch(e -> e.getBranchingState() != BranchingStateEnum.NOP))
           .collect(toList());
-      searchIndexAdminsByDescriptorName = entryApisWithChanges.stream()
+      searchIndexAdminsByDescriptorName = getEntryApisWithChanges().stream()
           .collect(toMap(MDMEntryApi::getName,
-              e -> collectionApi.searchIndex(definition.getName(),
+              e -> collectionApi.searchIndex(getDefinition().getName(),
                   e.getDescriptor().getSearchIndexForEntries(),
                   BranchedObjectEntry.class)));
-      setModificationNotes(definition);
+      setModificationNotes(getDefinition());
 
       return this;
     }
@@ -128,7 +128,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     public PageContext loadOnlyDefinitionByView() {
       setDefition(parameters(view));
-      setModificationNotes(definition);
+      setModificationNotes(getDefinition());
       return this;
     }
 
@@ -147,18 +147,18 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     }
 
     public boolean checkAdmin() {
-      return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
+      return OrgUtils.securityPredicate(sessionApi, getDefinition().getAdminGroupName());
     }
 
     public boolean getBranchActive() {
-      ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
+      ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
       ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
       MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
       return mdmDefinitionState.getGlobalModification() != null;
     }
 
     public URI getApprover() {
-      ObjectNode definitionNode = objectApi.loadLatest(definition.getUri());
+      ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
       ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
       MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
       if (mdmDefinitionState.getGlobalModification() != null) {
@@ -171,6 +171,16 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     public View getView() {
       return view;
+    }
+
+
+    public List<MDMEntryApi> getEntryApisWithChanges() {
+      return entryApisWithChanges;
+    }
+
+
+    public MDMDefinition getDefinition() {
+      return definition;
     }
 
   }
@@ -202,7 +212,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   }
 
   protected void refreshActions(PageContext ctx) {
-    if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.GLOBAL) {
+    if (ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL) {
       boolean isAdmin = ctx.checkAdmin();
       boolean branchActive = ctx.getBranchActive();
       // if API present, approving enabled
@@ -243,7 +253,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     SmartComponentLayoutDefinition changesLayout =
         container(LayoutDirection.VERTICAL);
 
-    MDMDefinition mdmDefinition = masterDataManagementApi.getDefinition(ctx.definition.getName());
+    MDMDefinition mdmDefinition =
+        masterDataManagementApi.getDefinition(ctx.getDefinition().getName());
     SmartWidgetDefinition modificationNoteTextField = null;
 
     if (mdmDefinition.getState() != null) {
@@ -256,7 +267,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
           : null;
     }
 
-    if (ctx.entryApisWithChanges.isEmpty()) {
+    if (ctx.getEntryApisWithChanges().isEmpty()) {
       SmartComponentLayoutDefinition emptyForm = form(LayoutDirection.HORIZONTAL);
       if (modificationNoteTextField != null) {
         emptyForm.addFormItem(modificationNoteTextField);
@@ -268,7 +279,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         changesLayout.addComponentsItem(
             form(LayoutDirection.HORIZONTAL, modificationNoteTextField));
       }
-      ctx.entryApisWithChanges.forEach(entryApi -> {
+      ctx.getEntryApisWithChanges().forEach(entryApi -> {
         GridModel entryGridModel =
             viewApi.getWidgetModelFromView(GridModel.class, ctx.view.getUuid(),
                 entryApi.getName());
@@ -317,7 +328,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     GridModel entryGridModel =
         gridModelApi.createGridModel(searchIndexAdmin.getDefinition().getDefinition(),
-            columns, ctx.definition.getName(), entryApi.getName());
+            columns, ctx.getDefinition().getName(), entryApi.getName());
     if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
       List<String> newCols = new ArrayList<>();
       newCols.add(BranchedObjectEntry.BRANCHING_STATE);
@@ -350,7 +361,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected TableData<?> createTableDataForGrid(PageContext ctx, MDMEntryApi entryApi,
       List<BranchedObjectEntry> list) {
     String constructObjectDefinitionName =
-        masterDataManagementApi.constructObjectDefinitionName(ctx.definition,
+        masterDataManagementApi.constructObjectDefinitionName(ctx.getDefinition(),
             entryApi.getDescriptor());
     ObjectDefinition<?> branchedObjectDefinition =
         objectApi.definition(constructObjectDefinitionName);
@@ -358,7 +369,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     return ctx.searchIndexAdminsByDescriptorName.get(entryApi.getName())
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = branchedObjectDefinition;
-          return objectApi.create(ctx.definition.getName(), objectDefinition,
+          return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
               objectDefinition.toMap(i));
         }), new FilterExpressionList().addExpressionsItem(
             new FilterExpressionData().currentOperation(FilterExpressionOperation.NOT_EQUAL)
@@ -384,7 +395,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   @Override
   public void startEditing(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.initiateGlobalBranch(context.definition.getName(),
+    masterDataManagementApi.initiateGlobalBranch(context.getDefinition().getName(),
         String.valueOf(System.currentTimeMillis()));
     refreshActions(context);
 
@@ -404,7 +415,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   @Override
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.dropGlobal(context.definition.getName());
+    masterDataManagementApi.dropGlobal(context.getDefinition().getName());
     context.loadByView();
     refreshActions(context);
     createLayout(context);
@@ -413,7 +424,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.mergeGlobal(context.definition.getName());
+    masterDataManagementApi.mergeGlobal(context.getDefinition().getName());
     context.loadByView();
     refreshActions(context);
     createLayout(context);
@@ -425,13 +436,13 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     if (mdmApprovalApi == null) {
       throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
     }
-    String definition = context.definition.getName();
+    String definition = context.getDefinition().getName();
     List<URI> approvers = mdmApprovalApi.getApprovers(definition);
     if (approvers == null || approvers.size() != 1) {
       throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
     }
     masterDataManagementApi.sendForApprovalGlobal(
-        context.definition.getName(),
+        context.getDefinition().getName(),
         approvers.get(0));
     context.loadByView();
     createLayout(context);
@@ -441,7 +452,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   @Override
   public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.approvalAcceptedGlobal(context.definition.getName());
+    masterDataManagementApi.approvalAcceptedGlobal(context.getDefinition().getName());
     context.loadByView();
     createLayout(context);
     refreshActions(context);
@@ -451,7 +462,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
-    masterDataManagementApi.approvalRejectedGlobal(context.definition.getName(), reason);
+    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
     refreshActions(context);
     createLayout(context);
     context.loadOnlyDefinitionByView();
