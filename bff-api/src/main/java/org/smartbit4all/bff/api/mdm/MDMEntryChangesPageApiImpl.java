@@ -7,6 +7,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.org.OrgUtils;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
@@ -194,21 +196,33 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext pageContext = new PageContext();
     pageContext.view = view;
     pageContext.loadByView();
-    view.constraint(createViewConstraint(view));
     refreshActions(pageContext);
     createLayout(pageContext);
+    view.constraint(createViewConstraint(pageContext));
 
+    return createModel(pageContext);
+  }
+
+  protected MDMEntryChangesPageModel createModel(PageContext pageContext) {
     MDMEntryChangesPageModel model = new MDMEntryChangesPageModel();
     model.setLatestModificationNote(pageContext.latestModificationNote);
+    URI approver = pageContext.getApprover();
+    if (approver != null) {
+      model.approverName(objectApi.loadLatest(approver).getValueAsString(User.NAME));
+    }
     return model;
   }
 
-  protected ViewConstraint createViewConstraint(View view) {
+  protected ViewConstraint createViewConstraint(PageContext pageContext) {
     return new ViewConstraint().componentConstraints(Arrays.asList(
         new ComponentConstraint()
             .dataName(LATEST_MODIFICATION_NOTE_KEY)
             .enabled(false)
-            .visible(true)));
+            .visible(pageContext.latestModificationNote != null),
+        new ComponentConstraint()
+            .dataName(MDMEntryChangesPageModel.APPROVER_NAME)
+            .enabled(false)
+            .visible(pageContext.getApprover() != null)));
   }
 
   protected void refreshActions(PageContext ctx) {
@@ -253,32 +267,28 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     SmartComponentLayoutDefinition changesLayout =
         container(LayoutDirection.VERTICAL);
 
-    MDMDefinition mdmDefinition =
-        masterDataManagementApi.getDefinition(ctx.getDefinition().getName());
-    SmartWidgetDefinition modificationNoteTextField = null;
-
-    if (mdmDefinition.getState() != null) {
-      ObjectNode state = objectApi.loadLatest(mdmDefinition.getState());
-      List<MDMModificationNote> modificationNotes = state.getValueAsList(MDMModificationNote.class,
-          MDMDefinitionState.GLOBAL_MODIFICATION, MDMModification.NOTES);
-      modificationNoteTextField = !modificationNotes.isEmpty()
-          ? textbox(LATEST_MODIFICATION_NOTE_KEY,
-              localeSettingApi.get("mdm.changes.latestModification"))
-          : null;
-    }
+    SmartWidgetDefinition modificationNoteTextField = textbox(LATEST_MODIFICATION_NOTE_KEY,
+        localeSettingApi.get("mdm.changes.latestModification"));
+    SmartWidgetDefinition selectedApproverLabel = textfield(MDMEntryChangesPageModel.APPROVER_NAME,
+        localeSettingApi.get("mdm.changes.approverLabel"));
 
     if (ctx.getEntryApisWithChanges().isEmpty()) {
-      SmartComponentLayoutDefinition emptyForm = form(LayoutDirection.HORIZONTAL);
-      if (modificationNoteTextField != null) {
-        emptyForm.addFormItem(modificationNoteTextField);
-      }
-      emptyForm.addFormItem(label(null, localeSettingApi.get("mdm.changes.nop")));
+      SmartComponentLayoutDefinition emptyForm =
+          form(LayoutDirection.VERTICAL,
+              selectedApproverLabel,
+              modificationNoteTextField,
+              label(null, localeSettingApi.get("mdm.changes.nop")));
       changesLayout.addComponentsItem(emptyForm);
     } else {
-      if (modificationNoteTextField != null) {
-        changesLayout.addComponentsItem(
-            form(LayoutDirection.HORIZONTAL, modificationNoteTextField));
-      }
+      SmartComponentLayoutDefinition modificationForm =
+          form(LayoutDirection.VERTICAL,
+              selectedApproverLabel,
+              modificationNoteTextField);
+      changesLayout.addComponentsItem(modificationForm);
+      // modificationForm.addFormItem(selectedApproverLabel);
+      // modificationForm.addFormItem(modificationNoteTextField);
+      // if (modificationForm.getForm() != null && !modificationForm.getForm().isEmpty()) {
+      // }
       ctx.getEntryApisWithChanges().forEach(entryApi -> {
         GridModel entryGridModel =
             viewApi.getWidgetModelFromView(GridModel.class, ctx.view.getUuid(),

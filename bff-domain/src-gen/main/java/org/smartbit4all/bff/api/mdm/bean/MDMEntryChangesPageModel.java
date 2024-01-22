@@ -32,13 +32,17 @@ import javax.validation.Valid;
  * MDMEntryChangesPageModel
  */
 @JsonPropertyOrder({
-  MDMEntryChangesPageModel.LATEST_MODIFICATION_NOTE
+  MDMEntryChangesPageModel.LATEST_MODIFICATION_NOTE,
+  MDMEntryChangesPageModel.APPROVER_NAME
 })
 @JsonTypeName("MDMEntryChangesPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MDMEntryChangesPageModel {
   public static final String LATEST_MODIFICATION_NOTE = "latestModificationNote";
   private MDMModificationNote latestModificationNote = null;
+
+  public static final String APPROVER_NAME = "approverName";
+  private String approverName;
 
   public MDMEntryChangesPageModel() { 
   }
@@ -71,6 +75,33 @@ public class MDMEntryChangesPageModel {
   }
 
 
+  public MDMEntryChangesPageModel approverName(String approverName) {
+    
+    this.approverName = approverName;
+    return this;
+  }
+
+   /**
+   * Get approverName
+   * @return approverName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(APPROVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getApproverName() {
+    return approverName;
+  }
+
+
+  @JsonProperty(APPROVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApproverName(String approverName) {
+    this.approverName = approverName;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -80,12 +111,13 @@ public class MDMEntryChangesPageModel {
       return false;
     }
     MDMEntryChangesPageModel mdMEntryChangesPageModel = (MDMEntryChangesPageModel) o;
-    return Objects.equals(this.latestModificationNote, mdMEntryChangesPageModel.latestModificationNote);
+    return Objects.equals(this.latestModificationNote, mdMEntryChangesPageModel.latestModificationNote) &&
+        Objects.equals(this.approverName, mdMEntryChangesPageModel.approverName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(latestModificationNote);
+    return Objects.hash(latestModificationNote, approverName);
   }
 
   @Override
@@ -93,6 +125,7 @@ public class MDMEntryChangesPageModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMEntryChangesPageModel {\n");
     sb.append("    latestModificationNote: ").append(toIndentedString(latestModificationNote)).append("\n");
+    sb.append("    approverName: ").append(toIndentedString(approverName)).append("\n");
     sb.append("}");
     return sb.toString();
   }

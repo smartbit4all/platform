@@ -28,3 +28,5 @@ components:
       properties:
         latestModificationNote:
           type: MDMModificationNote
+        approverName:
+          type: string
