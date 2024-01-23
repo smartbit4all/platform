@@ -11,6 +11,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -394,8 +395,7 @@ public class FileIO {
           fileChannel.close();
           randomAccessFile.close();
         }
-
-      } catch (IOException e) {
+      } catch (IOException | OverlappingFileLockException e) {
         long currentTimeMillis = System.currentTimeMillis();
         if (!(waitUntil == -1 || (currentTimeMillis - start) < waitUntil)) {
           throw new FileLocked(null);
@@ -437,7 +437,7 @@ public class FileIO {
           fileChannel.close();
           randomAccessFile.close();
         }
-      } catch (IOException e) {
+      } catch (IOException | OverlappingFileLockException e) {
         long currentTimeMillis = System.currentTimeMillis();
         if (!(waitUntil == -1 || (currentTimeMillis - start) < waitUntil)) {
           throw new FileLocked(null);
