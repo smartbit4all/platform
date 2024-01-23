@@ -1,271 +1,296 @@
 openapi: 3.0.3
 info:
-  title: MasterDataManagement api
-  description:
-  termsOfService: ''
-  contact:
-    email: info@it4all.hu
-  version: 1.0.0
-tags:
-  - name: MasterDataManagement
+    title: MasterDataManagement api
     description:
+    termsOfService: ""
+    contact:
+        email: info@it4all.hu
+    version: 1.0.0
+tags:
+    - name: MasterDataManagement
+      description:
 paths: {}
 components:
-  schemas:
-    MDMDefinition:
-      type: object
-      description: |
-        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
-        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
-        CollectionApi.reference to be able to identify by name.
-      required: [uri, descriptors]
-      properties:
-        uri:
-          type: string
-          format: uri
-          description: The uri of the object.
-        name:
-          type: string
-          description: The logical name of the given mdm definition. This is also the default name of the schema.
-        adminGroupName:
-          type: string
-          description: |
-            The name of the administration group. If a user is involved in the group then can administer all the entries inside the
-            definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one.
-            It is mandatory to set this group name or else the master data management won't be able to setup the rights.
-        adminApproverGroupName:
-          type: string
-          description: |
-            The name of the administration approver group. Optional, if we don't set it then admin approver functionality won't be available.
-        state:
-          type: string
-          format: uri
-          description: The reference to the current state of the definition. It contains the necessary runtime informations.
-        branchingStrategy:
-          description: |
-            Branching strategy of this MDMDefinition. This will be the default for all contained MDMEntityDescriptors,
-            but can be overriden if needed. If not set, NONE will be used.
-          $ref: '#/components/schemas/MDMBranchingStrategy'
-        descriptors:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MDMEntryDescriptor'
-    MDMBranchingStrategy:
-      type: string
-      enum:
-        - none
-        - entry
-        - group
-        - global
-    MDMEntryDescriptor:
-      type: object
-      description: |
-        The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of
-        the given list of object.
-      required: [uri, tableColumns, state, listPageGridViews]
-      properties:
-        name:
-          type: string
-          description: |
-            The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the
-            qualified name of the given class. It is easy to identify in the message...properties.
-        displayNameList:
-          type: LangString
-        displayNameForm:
-          type: LangString
-        order:
-          description: |
-            An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries.
-          type: integer
-          format: int64
-        adminGroupName:
-          type: string
-          description: |
-            The name of the administration group. Optional, if we don't set it then the group defined in the definition will be the master group for this
-            entry. The security group of the entry is named like mdm.definition.entry.
-        typeQualifiedName:
-          type: string
-          default: 'org.smartbit4all.api.value.bean.GenericValue'
-          description: |
-            The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
-            GenericValue object is used.
-        publishedListName:
-          type: string
-          description: |
-            Name of Collection.list in which published entries will be stored.
-        inactiveMgmt:
-          type: boolean
-          default: true
-          description: |
-            The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the
-            removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched.
-        uniquePropertyPaths:
-          type: array
-          description: |
-            The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! 
-          items:
-            type: array
-            items:
-              type: string
-          deprecated: true
-        constraints:
-          type: array
-          description: |
-            The new or edited entryies should comply the constraints.
-          items:
-            $ref: '#/components/schemas/MDMEntryConstraint' 
-        tableColumns:
-          type: array
-          description: |
-            The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be
-            hidden and the order is the default column order on the screen.
-          items:
-            $ref: '#/components/schemas/MDMTableColumnDescriptor'
-        editorViewName:
-          type: string
-          description: The name of the view editor view to open. If empty then we use the default in the application.
-        listPageGridViews:
-          description: |
-            The supported GridViews for presenting the MDM Entry List Page.
-            If none are provided, all table columns are rendered. If more than one GridViews are 
-            provided, it is the PageApi implementation's responsibility to provide actions for 
-            switching between grid views.
-          type: array
-          items:
-            type: GridView
-        searchIndexForEntries:
-          type: string
-          description: The name of search index that provides the entries.
-        schema:
-          type: string
-          description: |
-            The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used.
-        uriConstructor:
-          type: InvocationRequest
-          description: |
-            It can be a function that produces the URI for the given object by the other property values.
-        eventHandlersBeforeSave:
-          type: array
-          description: |
-            These functions are event handlers to manage the save before event about the given object.
-          items:
-            type: InvocationRequest
-        isValueSet:
-          type: boolean
-          default: false
-          description: |
-            Indicates if this entry is treated as a generic value set (it's not necessary for the type 
-            to be a GenericValue, but usually it will be)
-        branchingStrategy:
-          $ref: '#/components/schemas/MDMBranchingStrategy'
-        selfContainedRefList:
-          type: string
-          description: |
-            The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex 
-            hierarchy is saved via the MDMEntryApi.
-        vectorCollection:
-          type: VectorCollectionDescriptor
-          description: |
-            The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction
-            state is not working.
-    MDMTableColumnDescriptor:
-      type: object
-      description: |
-        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
-        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
-        CollectionApi.reference to be able to identify by name.
-      required: [name]
-      properties:
-        name:
-          type: string
-          description: The name of the given column.
-        path:
-          type: array
-          description: The path to access the object property of the column.
-          items:
+    schemas:
+        MDMDefinition:
+            type: object
+            description: |
+                This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+                application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+                CollectionApi.reference to be able to identify by name.
+            required: [uri, descriptors]
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                    description: The uri of the object.
+                name:
+                    type: string
+                    description: The logical name of the given mdm definition. This is also the default name of the schema.
+                adminGroupName:
+                    type: string
+                    description: |
+                        The name of the administration group. If a user is involved in the group then can administer all the entries inside the
+                        definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one.
+                        It is mandatory to set this group name or else the master data management won't be able to setup the rights.
+                adminApproverGroupName:
+                    type: string
+                    description: |
+                        The name of the administration approver group. Optional, if we don't set it then admin approver functionality won't be available.
+                state:
+                    type: string
+                    format: uri
+                    description: The reference to the current state of the definition. It contains the necessary runtime informations.
+                branchingStrategy:
+                    description: |
+                        Branching strategy of this MDMDefinition. This will be the default for all contained MDMEntityDescriptors,
+                        but can be overriden if needed. If not set, NONE will be used.
+                    $ref: "#/components/schemas/MDMBranchingStrategy"
+                descriptors:
+                    type: object
+                    additionalProperties:
+                        $ref: "#/components/schemas/MDMEntryDescriptor"
+        MDMBranchingStrategy:
             type: string
-    MDMDefinitionState:
-      type: object
-      description: |
-        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
-        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
-        CollectionApi.reference to be able to identify by name.
-      required: [uri, branchForEntries]
-      properties:
-        uri:
-          type: string
-          format: uri
-          description: The uri of the object.
-        globalModification:
-          description: The global branch modification if any.
-          $ref: '#/components/schemas/MDMModification'
-        modificationsForEntries:
-          type: string
-          additionalProperties:
-            $ref: '#/components/schemas/MDMModification'
-    MDMModification:
-      type: object
-      description: |
-        This object represents an ongoing modification in an MDMDefinition. It is strored inline in 
-        the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy).
-      properties:
-        branchUri:
-          type: string
-          format: uri
-        created:
-          type: UserActivityLog
-        approver:
-          type: string
-          format: uri
-        
-    MDMEntryEditingObject:
-      type: object
-      description: |
-        A generic object to use as the editing object for the master data management page apis. The list page constructs
-        this object and pass to the editor page. When saving the editing the list can decide what to do.
-      required: [uri, created, objects]
-      properties:
-        branchObjectEntry:
-          type: BranchedObjectEntry
-          description: The BranchedObjectEntry that is the original data we have.
-        originalObject:
-          type: object
-          description: The original object loaded if any.
-        branchedObject:
-          type: object
-          description: The branched object loaded if any.
+            enum:
+                - none
+                - entry
+                - group
+                - global
+        MDMEntryDescriptor:
+            type: object
+            description: |
+                The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of
+                the given list of object.
+            required: [uri, tableColumns, state, listPageGridViews]
+            properties:
+                name:
+                    type: string
+                    description: |
+                        The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the
+                        qualified name of the given class. It is easy to identify in the message...properties.
+                displayNameList:
+                    type: LangString
+                displayNameForm:
+                    type: LangString
+                order:
+                    description: |
+                        An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries.
+                    type: integer
+                    format: int64
+                adminGroupName:
+                    type: string
+                    description: |
+                        The name of the administration group. Optional, if we don't set it then the group defined in the definition will be the master group for this
+                        entry. The security group of the entry is named like mdm.definition.entry.
+                typeQualifiedName:
+                    type: string
+                    default: "org.smartbit4all.api.value.bean.GenericValue"
+                    description: |
+                        The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
+                        GenericValue object is used.
+                publishedListName:
+                    type: string
+                    description: |
+                        Name of Collection.list in which published entries will be stored.
+                inactiveMgmt:
+                    type: boolean
+                    default: true
+                    description: |
+                        The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the
+                        removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched.
+                uniquePropertyPaths:
+                    type: array
+                    description: |
+                        The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead!
+                    items:
+                        type: array
+                        items:
+                            type: string
+                    deprecated: true
+                constraints:
+                    type: array
+                    description: |
+                        The new or edited entryies should comply the constraints.
+                    items:
+                        $ref: "#/components/schemas/MDMEntryConstraint"
+                tableColumns:
+                    type: array
+                    description: |
+                        The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be
+                        hidden and the order is the default column order on the screen.
+                    items:
+                        $ref: "#/components/schemas/MDMTableColumnDescriptor"
+                editorViewName:
+                    type: string
+                    description: The name of the view editor view to open. If empty then we use the default in the application.
+                listPageGridViews:
+                    description: |
+                        The supported GridViews for presenting the MDM Entry List Page.
+                        If none are provided, all table columns are rendered. If more than one GridViews are 
+                        provided, it is the PageApi implementation's responsibility to provide actions for 
+                        switching between grid views.
+                    type: array
+                    items:
+                        type: GridView
+                searchIndexForEntries:
+                    type: string
+                    description: The name of search index that provides the entries.
+                schema:
+                    type: string
+                    description: |
+                        The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used.
+                uriConstructor:
+                    type: InvocationRequest
+                    description: |
+                        It can be a function that produces the URI for the given object by the other property values.
+                eventHandlersBeforeSave:
+                    type: array
+                    description: |
+                        These functions are event handlers to manage the save before event about the given object.
+                    items:
+                        type: InvocationRequest
+                isValueSet:
+                    type: boolean
+                    default: false
+                    description: |
+                        Indicates if this entry is treated as a generic value set (it's not necessary for the type 
+                        to be a GenericValue, but usually it will be)
+                branchingStrategy:
+                    $ref: "#/components/schemas/MDMBranchingStrategy"
+                selfContainedRefList:
+                    type: string
+                    description: |
+                        The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex 
+                        hierarchy is saved via the MDMEntryApi.
+                vectorCollection:
+                    type: VectorCollectionDescriptor
+                    description: |
+                        The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction
+                        state is not working.
+        MDMTableColumnDescriptor:
+            type: object
+            description: |
+                This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+                application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+                CollectionApi.reference to be able to identify by name.
+            required: [name]
+            properties:
+                name:
+                    type: string
+                    description: The name of the given column.
+                path:
+                    type: array
+                    description: The path to access the object property of the column.
+                    items:
+                        type: string
+        MDMDefinitionState:
+            type: object
+            description: |
+                This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+                application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+                CollectionApi.reference to be able to identify by name.
+            required: [uri, branchForEntries]
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                    description: The uri of the object.
+                globalModification:
+                    description: The global branch modification if any.
+                    $ref: "#/components/schemas/MDMModification"
+                modificationsForEntries:
+                    type: string
+                    additionalProperties:
+                        $ref: "#/components/schemas/MDMModification"
+        MDMModification:
+            type: object
+            description: |
+                This object represents an ongoing modification in an MDMDefinition. It is strored inline in 
+                the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy).
+            properties:
+                branchUri:
+                    type: string
+                    format: uri
+                created:
+                    type: UserActivityLog
+                approver:
+                    type: string
+                    format: uri
 
-    MDMModificationRequest:
-      type: object
-      description: |
-        .
-      required: [uri, data]
-      properties:
-        uri:
-          type: string
-          format: uri
-          description: The uri of the object.
-        data:
-          description: .
-          $ref: '#/components/schemas/MDMModificationRequestData'
-    MDMModificationRequestData:
-      type: object
-      description: |
-        .
-      required: [uri, created, objects]
-      properties:
-        definition:
-          type: string
-    MDMEntryConstraint:
-      type: object
-      required: [kind, path]
-      properties:
-        kind:
-          type: string
-          enum:
-            - UNIQUE
-            - UNIQUECASEINSENSITIVE
-        path:
-          type: array
-          items:
-            type: string
+        MDMEntryEditingObject:
+            type: object
+            description: |
+                A generic object to use as the editing object for the master data management page apis. The list page constructs
+                this object and pass to the editor page. When saving the editing the list can decide what to do.
+            required: [uri, created, objects]
+            properties:
+                branchObjectEntry:
+                    type: BranchedObjectEntry
+                    description: The BranchedObjectEntry that is the original data we have.
+                originalObject:
+                    type: object
+                    description: The original object loaded if any.
+                branchedObject:
+                    type: object
+                    description: The branched object loaded if any.
+
+        MDMModificationRequest:
+            type: object
+            description: .
+            required: [uri, data]
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                    description: The uri of the object.
+                data:
+                    description: .
+                    $ref: "#/components/schemas/MDMModificationRequestData"
+        MDMModificationRequestData:
+            type: object
+            description: .
+            properties:
+                definition:
+                    type: array
+                    items:
+                        type: object
+                        additionalProperties:
+                            type: string
+
+        MDMErrorLog:
+            type: object
+            description: Import and export operation error log.
+            required: [uri, data]
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                    description: The uri of the object.
+                data:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/MDMErrorLogData"
+        MDMErrorLogData:
+            type: object
+            description: Import and export operation error log data.
+            properties:
+                rowNum:
+                    type: integer
+                column:
+                    type: string
+                error:
+                    type: string
+        MDMEntryConstraint:
+            type: object
+            required: [kind, path]
+            properties:
+                kind:
+                    type: string
+                    enum:
+                        - UNIQUE
+                        - UNIQUECASEINSENSITIVE
+                path:
+                    type: array
+                    items:
+                        type: string

@@ -22,15 +22,18 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * . 
+ * .
  */
-@ApiModel(description = ". ")
+@ApiModel(description = ".")
 @JsonPropertyOrder({
   MDMModificationRequestData.DEFINITION
 })
@@ -38,14 +41,22 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MDMModificationRequestData {
   public static final String DEFINITION = "definition";
-  private String definition;
+  private List<Map<String, String>> definition = null;
 
   public MDMModificationRequestData() { 
   }
 
-  public MDMModificationRequestData definition(String definition) {
+  public MDMModificationRequestData definition(List<Map<String, String>> definition) {
     
     this.definition = definition;
+    return this;
+  }
+
+  public MDMModificationRequestData addDefinitionItem(Map<String, String> definitionItem) {
+    if (this.definition == null) {
+      this.definition = new ArrayList<>();
+    }
+    this.definition.add(definitionItem);
     return this;
   }
 
@@ -54,18 +65,19 @@ public class MDMModificationRequestData {
    * @return definition
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getDefinition() {
+  public List<Map<String, String>> getDefinition() {
     return definition;
   }
 
 
   @JsonProperty(DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefinition(String definition) {
+  public void setDefinition(List<Map<String, String>> definition) {
     this.definition = definition;
   }
 

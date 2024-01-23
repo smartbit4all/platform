@@ -23,33 +23,35 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.mdm.bean.MDMModificationRequestData;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.mdm.bean.MDMErrorLogData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * .
+ * Import and export operation error log.
  */
-@ApiModel(description = ".")
+@ApiModel(description = "Import and export operation error log.")
 @JsonPropertyOrder({
-  MDMModificationRequest.URI,
-  MDMModificationRequest.DATA
+  MDMErrorLog.URI,
+  MDMErrorLog.DATA
 })
-@JsonTypeName("MDMModificationRequest")
+@JsonTypeName("MDMErrorLog")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class MDMModificationRequest {
+public class MDMErrorLog {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String DATA = "data";
-  private MDMModificationRequestData data;
+  private List<MDMErrorLogData> data = new ArrayList<>();
 
-  public MDMModificationRequest() { 
+  public MDMErrorLog() { 
   }
 
-  public MDMModificationRequest uri(URI uri) {
+  public MDMErrorLog uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -78,9 +80,14 @@ public class MDMModificationRequest {
   }
 
 
-  public MDMModificationRequest data(MDMModificationRequestData data) {
+  public MDMErrorLog data(List<MDMErrorLogData> data) {
     
     this.data = data;
+    return this;
+  }
+
+  public MDMErrorLog addDataItem(MDMErrorLogData dataItem) {
+    this.data.add(dataItem);
     return this;
   }
 
@@ -95,14 +102,14 @@ public class MDMModificationRequest {
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public MDMModificationRequestData getData() {
+  public List<MDMErrorLogData> getData() {
     return data;
   }
 
 
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setData(MDMModificationRequestData data) {
+  public void setData(List<MDMErrorLogData> data) {
     this.data = data;
   }
 
@@ -115,9 +122,9 @@ public class MDMModificationRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MDMModificationRequest mdMModificationRequest = (MDMModificationRequest) o;
-    return Objects.equals(this.uri, mdMModificationRequest.uri) &&
-        Objects.equals(this.data, mdMModificationRequest.data);
+    MDMErrorLog mdMErrorLog = (MDMErrorLog) o;
+    return Objects.equals(this.uri, mdMErrorLog.uri) &&
+        Objects.equals(this.data, mdMErrorLog.data);
   }
 
   @Override
@@ -128,7 +135,7 @@ public class MDMModificationRequest {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MDMModificationRequest {\n");
+    sb.append("class MDMErrorLog {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");
