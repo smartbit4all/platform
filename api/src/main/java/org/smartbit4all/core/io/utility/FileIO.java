@@ -2,6 +2,8 @@ package org.smartbit4all.core.io.utility;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -27,7 +29,11 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.base.Strings;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Longs;
 
 /**
@@ -36,6 +42,17 @@ import com.google.common.primitives.Longs;
  * @author Peter Boros
  */
 public class FileIO {
+
+  private FileIO() {
+    // static utility
+  }
+
+  /**
+   * This crc checksum algorithm is used for validating the temporary files managed by the
+   * application. It is necessary to avoid the corrupted BinaryData contents because these belongs
+   * to the memory of the application.
+   */
+  public static final HashFunction crcChecksumFunction = Hashing.crc32();
 
   private static final Logger log = LoggerFactory.getLogger(FileIO.class);
 
@@ -73,18 +90,28 @@ public class FileIO {
     long waitTime = 2;
     long fullWaitTime = 0;
     try {
-      file.mkdirs();
+      if (file.getParentFile() != null) {
+        file.getParentFile().mkdirs();
+      } else {
+        file.mkdirs();
+      }
     } catch (Exception e) {
       throw new IllegalArgumentException("Cannot create file's dir: " + file, e);
     }
     while (true) {
-      try (InputStream in = inputStream.get()) {
-        if (in != null) {
-          Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      try (InputStream in = inputStream.get();
+          FileOutputStream fos = new FileOutputStream(file)) {
+        if (in == null) {
+          log.error("Unable to open InputStream for reading the content of {}", file);
         } else {
-          log.warn("No stream specified for writing file {}", file);
+          ByteStreams.copy(in, fos);
+          fos.flush();
+          fos.getFD().sync();
+          return;
         }
-        return;
+      } catch (FileNotFoundException e) {
+        throw new IllegalStateException(
+            "Cannot write file because some of the temporary files are missing: " + file, e);
       } catch (IOException e) {
         if (fullWaitTime > 1000) {
           // we waited enough, and still doesn't work, show last exception
@@ -116,6 +143,29 @@ public class FileIO {
     return waitTime * (rnd.nextInt(3) + 1);
   }
 
+  private static class BinaryDataCRCRecord {
+
+    BinaryData binaryData;
+
+    HashingInputStream hashingInputStream;
+
+    public BinaryDataCRCRecord(BinaryData binaryData, HashingInputStream hashingInputStream) {
+      super();
+      this.binaryData = binaryData;
+      this.hashingInputStream = hashingInputStream;
+    }
+
+    void check() {
+      if (binaryData.getCrcCheckSum() != null && hashingInputStream != null) {
+        if (hashingInputStream.hash().asInt() != binaryData.getCrcCheckSum()) {
+          throw new IllegalStateException("CRC checksum error (" + binaryData.getCrcCheckSum()
+              + " != " + hashingInputStream.hash().asInt() + ") in " + binaryData.toString());
+        }
+      }
+    }
+
+  }
+
   /**
    * Special write that concatenates multiple {@link BinaryData}s into one single file. To be able
    * to read the contents again the length appears in front of every content.
@@ -128,6 +178,7 @@ public class FileIO {
       return;
     }
     List<ByteSource> byteSources = new ArrayList<>(contents.length * 2);
+    List<BinaryDataCRCRecord> crcRecords = new ArrayList<>(contents.length);
     for (BinaryData binaryData : contents) {
       // Write the length first and the content next.
       byteSources.add(ByteSource.wrap(Longs.toByteArray(binaryData.length())));
@@ -135,12 +186,19 @@ public class FileIO {
 
         @Override
         public InputStream openStream() throws IOException {
-          return binaryData.inputStream2();
+          InputStream inputStream = binaryData.inputStream2();
+          if (inputStream instanceof HashingInputStream) {
+            crcRecords.add(new BinaryDataCRCRecord(binaryData, (HashingInputStream) inputStream));
+          }
+          return inputStream;
         }
       });
     }
     ByteSource byteSource = ByteSource.concat(byteSources);
     writeFile(newFile, byteSource::openStream);
+    for (BinaryDataCRCRecord binaryDataCRCRecord : crcRecords) {
+      binaryDataCRCRecord.check();
+    }
   }
 
   /**
@@ -328,6 +386,7 @@ public class FileIO {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
             fileChannel.position(0);
             writeFileLockData(fileChannel, newLockData);
+            // randomAccessFile.getFD().sync();
             return newLockData;
           }
         } finally {

@@ -18,6 +18,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
@@ -46,6 +47,8 @@ public class MDMEntryDescriptorPageApiImpl
   VectorDBApi vectorDBApi;
   @Autowired
   InvocationApi invocationApi;
+  @Autowired
+  LocaleSettingApi localeSettingApi;
 
 
   private static final Logger log =
@@ -106,23 +109,30 @@ public class MDMEntryDescriptorPageApiImpl
   private SmartLayoutDefinition getLayout() {
     return new SmartLayoutDefinition().widgets(Arrays.asList(
         new SmartWidgetDefinition().key(MDMEntryDescriptorPageModel.NAME)
-            .label(MDMEntryDescriptorPageModel.NAME).type(SmartFormWidgetType.TEXT_FIELD),
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                MDMEntryDescriptorPageModel.NAME))
+            .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition().key(MDMEntryDescriptorPageModel.CODE)
-            .label(MDMEntryDescriptorPageModel.CODE).type(SmartFormWidgetType.TEXT_FIELD),
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                MDMEntryDescriptorPageModel.CODE))
+            .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition()
             .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
-            .label(VectorCollectionDescriptor.VECTOR_COLLECTION_NAME)
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
             .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition()
             .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION))
-            .label(VectorCollectionDescriptor.VECTOR_D_B_CONNECTION)
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION))
             .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition()
             .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION))
-            .label(VectorCollectionDescriptor.EMBEDDING_CONNECTION)
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.EMBEDDING_CONNECTION))
             .type(SmartFormWidgetType.TEXT_FIELD)));
   }
 
@@ -156,12 +166,14 @@ public class MDMEntryDescriptorPageApiImpl
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
-      option.addDefaultDescriptor(GenericValue.class, code).name(code)
-          .displayNameForm(new LangString().defaultValue(name))
-          .displayNameList(new LangString().defaultValue(name))
-          .listPageGridViews(Collections.emptyList())
-          .isValueSet(Boolean.TRUE)
-          .vectorCollection(vectorCollectionDescriptor);
+      MDMEntryDescriptor descriptor =
+          option.addDefaultDescriptor(GenericValue.class, code).name(code)
+              .displayNameForm(new LangString().defaultValue(name))
+              .displayNameList(new LangString().defaultValue(name))
+              .listPageGridViews(Collections.emptyList())
+              .isValueSet(Boolean.TRUE)
+              .vectorCollection(vectorCollectionDescriptor);
+      MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       masterDataManagementApi.addNewEntries(option);
     } else {
       MDMEntryDescriptor entryDescriptorToEdit =

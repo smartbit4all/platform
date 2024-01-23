@@ -16,6 +16,7 @@ import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 
 /**
@@ -627,6 +628,12 @@ public final class StorageObject<T> {
 
   public final void setAspects(Map<String, ObjectAspect> aspects) {
     this.aspects = aspects;
+  }
+
+  @Override
+  public String toString() {
+    return "StorageObject: " + uri + " ("
+        + (definition != null ? definition : StringConstant.UNKNOWN) + ")";
   }
 
 }

@@ -33,6 +33,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
@@ -243,9 +244,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByView(view);
     refreshActions(context);
 
-    List<String> columns =
+    List<String> columns;
+    List<String> searchIndexColumns =
         context.searchIndexAdmin.getDefinition().getDefinition().allProperties().stream()
             .map(Property::getName).collect(toList());
+    if (context.entryDescriptor.getTableColumns() != null) {
+      List<String> tableColumns = context.entryDescriptor.getTableColumns().stream()
+          .map(MDMTableColumnDescriptor::getName)
+          .filter(col -> searchIndexColumns.contains(col)) // valid columnNames only!
+          .collect(toList());
+
+      List<String> extraColumns = searchIndexColumns.stream()
+          .filter(col -> !tableColumns.contains(col))
+          .collect(toList());
+      columns = new ArrayList<>();
+      columns.addAll(tableColumns);
+      columns.addAll(extraColumns);
+    } else {
+      columns = searchIndexColumns;
+    }
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
@@ -321,7 +338,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
               isAdmin, branchingEnabled, !branchActive, !ctx.inactives, !globalBranching)
           .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
-              canEdit, branchingEnabled, branchActive, !ctx.inactives, !globalBranching)
+              !underApproval, canEdit, branchingEnabled, branchActive, !ctx.inactives,
+              !globalBranching)
           .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
               isAdmin, !underApproval, branchingEnabled, branchActive,
               !ctx.inactives, !globalBranching)
@@ -377,6 +395,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected final void refreshGrid(PageContext ctx) {
 
+    TableData<?> data;
     if (ctx.checkAdmin() && ctx.getEntryApi().hasBranch()) {
       List<BranchedObjectEntry> list;
       if (ctx.inactives) {
@@ -385,25 +404,34 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       } else {
         list = ctx.getEntryApi().getBranchingList();
       }
-      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
-          createTableDataForGrid(ctx, list));
+      data = createTableDataForAdminGrid(ctx, list);
     } else {
       StoredList inactiveList = ctx.getEntryApi().getInactiveList();
       StoredList list = ctx.inactives ? inactiveList : ctx.getEntryApi().getList();
-      gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID,
-          ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(),
-              null));
+      data = createTableDataForPublishedGrid(ctx, list);
     }
+    data = postProcessTableDataForGrid(ctx, data);
+    gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID, data);
 
   }
 
-  protected TableData<?> createTableDataForGrid(PageContext ctx, List<BranchedObjectEntry> list) {
+  protected TableData<?> postProcessTableDataForGrid(PageContext ctx, TableData<?> data) {
+    return data;
+  }
+
+  protected TableData<?> createTableDataForAdminGrid(PageContext ctx,
+      List<BranchedObjectEntry> list) {
     return ctx.searchIndexAdmin
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
           return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
               objectDefinition.toMap(i));
         }), null);
+  }
+
+  protected TableData<?> createTableDataForPublishedGrid(PageContext ctx,
+      StoredList list) {
+    return ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(), null);
   }
 
   @Override
@@ -483,8 +511,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    // TODO send and store reason
-    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName());
+    String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
+    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
     refreshGrid(context);
     refreshActions(context);
   }
@@ -695,6 +723,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
+    return addWidgetEntryGridActionsInner(page, ctx);
+  }
+
+  protected GridPage addWidgetEntryGridActionsInner(GridPage page, PageContext ctx) {
     boolean isAdmin = ctx.checkAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;

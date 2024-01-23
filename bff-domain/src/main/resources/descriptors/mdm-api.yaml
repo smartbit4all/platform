@@ -23,3 +23,10 @@ components:
         vectorCollection:
           type: VectorCollectionDescriptor
           description: The descriptor of the VectorCollection bound to this entry.
+    MDMEntryChangesPageModel:
+      type: object
+      properties:
+        latestModificationNote:
+          type: MDMModificationNote
+        approverName:
+          type: string

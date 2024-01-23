@@ -21,6 +21,7 @@ smartbit4all {
     	"LocalDate": "java.time.LocalDate",
     	"LocalTime": "java.time.LocalTime",
     	"UiAction": "org.smartbit4all.api.view.bean.UiAction",
+    	"IconPosition": "org.smartbit4all.api.view.bean.IconPosition",
   		"Value": "org.smartbit4all.api.value.bean.Value",
   		"ValueSetData": "org.smartbit4all.api.value.bean.ValueSetData",
   		"ValueSet": "org.smartbit4all.api.view.bean.ValueSet",

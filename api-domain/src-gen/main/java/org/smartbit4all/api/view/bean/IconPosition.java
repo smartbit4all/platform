@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Defines the position of an icon related to the button&#39;s label. 
  */
-public enum UiActionButtonIconPos {
+public enum IconPosition {
   
   PRE("PRE"),
   
@@ -35,7 +35,7 @@ public enum UiActionButtonIconPos {
 
   private String value;
 
-  UiActionButtonIconPos(String value) {
+  IconPosition(String value) {
     this.value = value;
   }
 
@@ -50,8 +50,8 @@ public enum UiActionButtonIconPos {
   }
 
   @JsonCreator
-  public static UiActionButtonIconPos fromValue(String value) {
-    for (UiActionButtonIconPos b : UiActionButtonIconPos.values()) {
+  public static IconPosition fromValue(String value) {
+    for (IconPosition b : IconPosition.values()) {
       if (b.value.equals(value)) {
         return b;
       }

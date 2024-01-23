@@ -29,8 +29,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.hash.Funnels;
+import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
@@ -56,6 +58,14 @@ import com.google.common.io.ByteStreams;
  * @author Peter Boros
  */
 public class BinaryData {
+
+  private static final String N_A = "N/A";
+
+  private static final String DATA_FILE = "Data file: ";
+
+  private static final String BYTE_SOURCE = "Byte source: ";
+
+  private static final String IN_MEMORY_BYTE_ARRAY = "In memory byte array";
 
   static boolean isJVMShutdownInProgress = false;
 
@@ -104,6 +114,14 @@ public class BinaryData {
    * during the streaming process. In HEX format.
    */
   private String hash;
+
+  /**
+   * If we would like to validate if the given BinaryData is still the same then we set this check
+   * sum to be able to compare with the given binary data with the previously saved stream of data.
+   */
+  private Integer crcCheckSum;
+
+  private HashFunction crcHashFunction;
 
   /**
    * The binary content usually contains the binary data of a file with known mime type. It could be
@@ -342,7 +360,11 @@ public class BinaryData {
     } else if (byteSource != null) {
       return byteSource.openStream();
     } else {
-      return getDataFileInputStream();
+      FileInputStream fileInputStream = getDataFileInputStream();
+      if (crcCheckSum != null && crcHashFunction != null) {
+        return new HashingInputStream(crcHashFunction, fileInputStream);
+      }
+      return fileInputStream;
     }
   }
 
@@ -572,6 +594,28 @@ public class BinaryData {
       }
     }
     return false;
+  }
+
+  public final Integer getCrcCheckSum() {
+    return crcCheckSum;
+  }
+
+  final void setCrcCheckSum(int crcCheckSum, HashFunction crcHashFunction) {
+    this.crcCheckSum = crcCheckSum;
+    this.crcHashFunction = crcHashFunction;
+  }
+
+  @Override
+  public String toString() {
+    if (data != null) {
+      // In this case we have all the data in memory. We can use the ByteArrayInputStream
+      return IN_MEMORY_BYTE_ARRAY;
+    } else if (byteSource != null) {
+      return BYTE_SOURCE + byteSource.toString();
+    } else if (dataFile != null) {
+      return DATA_FILE + dataFile;
+    }
+    return N_A;
   }
 
 }

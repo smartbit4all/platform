@@ -30,6 +30,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetHint;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.api.view.bean.IconPosition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -49,6 +50,7 @@ import javax.validation.Valid;
   SmartWidgetDefinition.MASK,
   SmartWidgetDefinition.ICON,
   SmartWidgetDefinition.ICON_COLOR,
+  SmartWidgetDefinition.ICON_POSITION,
   SmartWidgetDefinition.SHOW_LABEL,
   SmartWidgetDefinition.CSS_CLASS,
   SmartWidgetDefinition.CSS_LABEL_CLASS,
@@ -90,6 +92,9 @@ public class SmartWidgetDefinition {
 
   public static final String ICON_COLOR = "iconColor";
   private String iconColor;
+
+  public static final String ICON_POSITION = "iconPosition";
+  private IconPosition iconPosition = null;
 
   public static final String SHOW_LABEL = "showLabel";
   private Boolean showLabel = true;
@@ -371,6 +376,34 @@ public class SmartWidgetDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIconColor(String iconColor) {
     this.iconColor = iconColor;
+  }
+
+
+  public SmartWidgetDefinition iconPosition(IconPosition iconPosition) {
+    
+    this.iconPosition = iconPosition;
+    return this;
+  }
+
+   /**
+   * Position of the icon (pre/post)
+   * @return iconPosition
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Position of the icon (pre/post)")
+  @JsonProperty(ICON_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public IconPosition getIconPosition() {
+    return iconPosition;
+  }
+
+
+  @JsonProperty(ICON_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIconPosition(IconPosition iconPosition) {
+    this.iconPosition = iconPosition;
   }
 
 
@@ -711,6 +744,7 @@ public class SmartWidgetDefinition {
         Objects.equals(this.mask, smartWidgetDefinition.mask) &&
         Objects.equals(this.icon, smartWidgetDefinition.icon) &&
         Objects.equals(this.iconColor, smartWidgetDefinition.iconColor) &&
+        Objects.equals(this.iconPosition, smartWidgetDefinition.iconPosition) &&
         Objects.equals(this.showLabel, smartWidgetDefinition.showLabel) &&
         Objects.equals(this.cssClass, smartWidgetDefinition.cssClass) &&
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
@@ -726,7 +760,7 @@ public class SmartWidgetDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription);
   }
 
   @Override
@@ -742,6 +776,7 @@ public class SmartWidgetDefinition {
     sb.append("    mask: ").append(toIndentedString(mask)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    iconColor: ").append(toIndentedString(iconColor)).append("\n");
+    sb.append("    iconPosition: ").append(toIndentedString(iconPosition)).append("\n");
     sb.append("    showLabel: ").append(toIndentedString(showLabel)).append("\n");
     sb.append("    cssClass: ").append(toIndentedString(cssClass)).append("\n");
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");

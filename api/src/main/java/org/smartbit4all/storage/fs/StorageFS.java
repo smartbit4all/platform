@@ -112,6 +112,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   private static final String SO_TRANSACTIONFILEEXTENSION = ".t";
 
   /**
+   * The backup file of the .o file to store the last known good state of the original data.
+   */
+  private static final String SO_BACKUPFILEEXTENSION = ".b";
+
+  /**
    * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
    * {@link StorageApi}.
    */
@@ -218,6 +223,18 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    */
   private File getObjectLockFile(URI objectUri) {
     return getDataFileByUri(objectUri, SO_LOCKFILEEXTENSION);
+  }
+
+  /**
+   * The lock file for the object uri.
+   *
+   * @param originalFile The original file with a .character extension.
+   * @return The backup file that is the same like the object file itself but with
+   *         {@link #SO_BACKUPFILEEXTENSION}.
+   */
+  private File getBackupFile(File originalFile) {
+    String path = originalFile.getPath();
+    return new File(path.substring(0, path.length() - 2) + SO_BACKUPFILEEXTENSION);
   }
 
   /**
@@ -564,6 +581,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
     try {
+      // if (objectDataFile.exists()) {
+      // Files.copy(objectDataFile.toPath(), getBackupFile(objectDataFile).toPath(),
+      // StandardCopyOption.REPLACE_EXISTING);
+      // }
       FileIO.finalizeWrite(objectDataFileTemp, objectDataFile);
     } catch (InterruptedException e) {
       throw new IOException("Unable to finalize the " + object + " write.", e);
@@ -765,7 +786,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       } catch (IOException e) {
         log.debug("Unable to read all the objects from the set.", e);
       }
-      cleanupEmptyDirs(emptyDirOrderedList);
+      // cleanupEmptyDirs(emptyDirOrderedList);
       return objects;
     }
 

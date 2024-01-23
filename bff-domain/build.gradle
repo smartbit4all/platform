@@ -19,6 +19,8 @@ smartbit4all {
      "FilterExpressionFieldList": "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",
      "SubjectTypeDescriptor" : "org.smartbit4all.api.org.bean.SubjectTypeDescriptor",
      "VectorCollectionDescriptor" : "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
+     "MDMModificationNote": "org.smartbit4all.api.mdm.bean.MDMModificationNote",
+     "ObjectValidationSeverity": " org.smartbit4all.api.object.bean.ObjectValidationSeverity"
     ]
   }
 }

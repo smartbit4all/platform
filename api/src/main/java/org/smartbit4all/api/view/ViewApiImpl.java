@@ -21,6 +21,7 @@ import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageOption;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.SmartLinkData;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -56,6 +57,9 @@ public class ViewApiImpl implements ViewApi {
     view.setUuid(UUID.randomUUID());
     if (view.getConstraint() == null) {
       view.setConstraint(new ViewConstraint());
+    }
+    if (view.getStyle() == null) {
+      view.setStyle(new Style());
     }
     return showViewInternal(view);
   }
