@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -32,7 +32,7 @@ import com.google.common.io.BaseEncoding;
  * The {@link BinaryData} can be constructed using this {@link OutputStream} with the same pattern
  * as the byte[] can be constructed using the {@link ByteArrayOutputStream}. Instead of using byte
  * array to store large amount of bytes use this to avoid memory consumption problems.
- * 
+ *
  * @author Peter Boros
  */
 public class BinaryDataOutputStream extends OutputStream {
@@ -44,8 +44,8 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
-   * 
+   *
+   *
    * TODO Parameterization!
    */
   private int memoryLimit = 0;
@@ -126,7 +126,7 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
+   *
    */
   public BinaryDataOutputStream() {
     this(-1, null);
@@ -137,7 +137,7 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
+   *
    * @param memoryLimit
    */
   public BinaryDataOutputStream(int memoryLimit) {
@@ -149,7 +149,7 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
+   *
    * @param memoryLimit
    */
   public BinaryDataOutputStream(int memoryLimit, MessageDigest messageDigest) {
@@ -227,7 +227,9 @@ public class BinaryDataOutputStream extends OutputStream {
 
   @Override
   public final void flush() throws IOException {
-    osActive.flush();
+    if (osActive != null) {
+      osActive.flush();
+    }
   }
 
   @Override
@@ -261,7 +263,7 @@ public class BinaryDataOutputStream extends OutputStream {
   /**
    * This function will analyze the situation and decide if it's necessary to change from memory
    * target to temp file.
-   * 
+   *
    * @param bytesToWrite
    */
   private final void control(int bytesToWrite) {
@@ -295,17 +297,30 @@ public class BinaryDataOutputStream extends OutputStream {
   private void closeFileStreams() {
     if (osBuffered != null) {
       try {
+        osBuffered.flush();
+      } catch (IOException e1) {
+        // Already closed may be.
+      }
+      try {
         osBuffered.close();
       } catch (IOException e1) {
-        // Already closed my be.
+        // Already closed may be.
       }
       osBuffered = null;
     }
     if (osFile != null) {
       try {
+        osFile.flush();
+        if (osFile.getFD() != null) {
+          osFile.getFD().sync();
+        }
+      } catch (IOException e1) {
+        // Already closed may be.
+      }
+      try {
         osFile.close();
       } catch (IOException e1) {
-        // Already closed my be.
+        // Already closed may be.
       }
       osFile = null;
     }
@@ -316,7 +331,7 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
+   *
    * @return
    */
   public int getMemoryLimit() {
@@ -328,7 +343,7 @@ public class BinaryDataOutputStream extends OutputStream {
    * switch to temp file and copy the currently available content into this new temp file. The 0
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
-   * 
+   *
    * @param memoryLimit
    */
   public void setMemoryLimit(int memoryLimit) {
@@ -345,7 +360,7 @@ public class BinaryDataOutputStream extends OutputStream {
 
   /**
    * The number of bytes that were written into the stream.
-   * 
+   *
    * @return
    */
   public long counter() {
