@@ -787,6 +787,8 @@ components:
           type: string
         text:
           type: string
+        textType:
+          $ref: '#/components/schemas/MessageTextType'
         options:
           type: array
           items:
@@ -798,6 +800,11 @@ components:
         - question
         - warning
         - error
+    MessageTextType:
+      type: string
+      enum:
+        - plain
+        - html
     MessageOption:
       type: object
       required: [code, label]
