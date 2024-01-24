@@ -33,7 +33,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   UiActionTooltip.TOOLTIP,
   UiActionTooltip.TOOLTIP_POSITION,
-  UiActionTooltip.TOOLTIP_DELAY
+  UiActionTooltip.TOOLTIP_DELAY,
+  UiActionTooltip.TOOLTIP_HIDE_DELAY
 })
 @JsonTypeName("UiActionTooltip")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -89,6 +90,9 @@ public class UiActionTooltip {
 
   public static final String TOOLTIP_DELAY = "tooltipDelay";
   private Long tooltipDelay;
+
+  public static final String TOOLTIP_HIDE_DELAY = "tooltipHideDelay";
+  private Long tooltipHideDelay;
 
   public UiActionTooltip() { 
   }
@@ -174,6 +178,33 @@ public class UiActionTooltip {
   }
 
 
+  public UiActionTooltip tooltipHideDelay(Long tooltipHideDelay) {
+    
+    this.tooltipHideDelay = tooltipHideDelay;
+    return this;
+  }
+
+   /**
+   * Get tooltipHideDelay
+   * @return tooltipHideDelay
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOOLTIP_HIDE_DELAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getTooltipHideDelay() {
+    return tooltipHideDelay;
+  }
+
+
+  @JsonProperty(TOOLTIP_HIDE_DELAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTooltipHideDelay(Long tooltipHideDelay) {
+    this.tooltipHideDelay = tooltipHideDelay;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -185,12 +216,13 @@ public class UiActionTooltip {
     UiActionTooltip uiActionTooltip = (UiActionTooltip) o;
     return Objects.equals(this.tooltip, uiActionTooltip.tooltip) &&
         Objects.equals(this.tooltipPosition, uiActionTooltip.tooltipPosition) &&
-        Objects.equals(this.tooltipDelay, uiActionTooltip.tooltipDelay);
+        Objects.equals(this.tooltipDelay, uiActionTooltip.tooltipDelay) &&
+        Objects.equals(this.tooltipHideDelay, uiActionTooltip.tooltipHideDelay);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(tooltip, tooltipPosition, tooltipDelay);
+    return Objects.hash(tooltip, tooltipPosition, tooltipDelay, tooltipHideDelay);
   }
 
   @Override
@@ -200,6 +232,7 @@ public class UiActionTooltip {
     sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
     sb.append("    tooltipPosition: ").append(toIndentedString(tooltipPosition)).append("\n");
     sb.append("    tooltipDelay: ").append(toIndentedString(tooltipDelay)).append("\n");
+    sb.append("    tooltipHideDelay: ").append(toIndentedString(tooltipHideDelay)).append("\n");
     sb.append("}");
     return sb.toString();
   }

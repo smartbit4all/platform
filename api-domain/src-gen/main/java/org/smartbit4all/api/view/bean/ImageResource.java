@@ -22,9 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.smartbit4all.api.view.bean.Style;
+import org.smartbit4all.api.view.bean.UiActionTooltip;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +37,8 @@ import javax.validation.Valid;
   ImageResource.SOURCE,
   ImageResource.IDENTIFIER,
   ImageResource.COLOR,
-  ImageResource.STYLE
+  ImageResource.STYLE,
+  ImageResource.TOOLTIP
 })
 @JsonTypeName("ImageResource")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -93,7 +93,10 @@ public class ImageResource {
   private String color;
 
   public static final String STYLE = "style";
-  private Map<String, Object> style = null;
+  private Style style;
+
+  public static final String TOOLTIP = "tooltip";
+  private UiActionTooltip tooltip;
 
   public ImageResource() { 
   }
@@ -206,17 +209,9 @@ public class ImageResource {
   }
 
 
-  public ImageResource style(Map<String, Object> style) {
+  public ImageResource style(Style style) {
     
     this.style = style;
-    return this;
-  }
-
-  public ImageResource putStyleItem(String key, Object styleItem) {
-    if (this.style == null) {
-      this.style = new HashMap<>();
-    }
-    this.style.put(key, styleItem);
     return this;
   }
 
@@ -225,19 +220,48 @@ public class ImageResource {
    * @return style
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(STYLE)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, Object> getStyle() {
+  public Style getStyle() {
     return style;
   }
 
 
   @JsonProperty(STYLE)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStyle(Map<String, Object> style) {
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
     this.style = style;
+  }
+
+
+  public ImageResource tooltip(UiActionTooltip tooltip) {
+    
+    this.tooltip = tooltip;
+    return this;
+  }
+
+   /**
+   * Get tooltip
+   * @return tooltip
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionTooltip getTooltip() {
+    return tooltip;
+  }
+
+
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTooltip(UiActionTooltip tooltip) {
+    this.tooltip = tooltip;
   }
 
 
@@ -254,12 +278,13 @@ public class ImageResource {
         Objects.equals(this.source, imageResource.source) &&
         Objects.equals(this.identifier, imageResource.identifier) &&
         Objects.equals(this.color, imageResource.color) &&
-        Objects.equals(this.style, imageResource.style);
+        Objects.equals(this.style, imageResource.style) &&
+        Objects.equals(this.tooltip, imageResource.tooltip);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, source, identifier, color, style);
+    return Objects.hash(kind, source, identifier, color, style, tooltip);
   }
 
   @Override
@@ -271,6 +296,7 @@ public class ImageResource {
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
+    sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
     sb.append("}");
     return sb.toString();
   }
