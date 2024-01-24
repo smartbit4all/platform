@@ -148,12 +148,12 @@ public final class Storage {
 
   /**
    * Constructs a new {@link StorageObject} instance based on a given {@link ObjectDefinition}.
-   * 
+   *
    * <p>
    * Some domain objects may not have a corresponding Java class, if their definition is dynamically
    * created/modified during runtime. Supplying an object definition directly ensures the storage
    * mechanism may succeed for these objects as well.
-   * 
+   *
    * @param <T> the Java type of the persisted object, if any
    * @param objectDefinition the {@link ObjectDefinition} of the persisted domain object, not null
    * @return a new {@link StorageObject} instance with an {@code URI}, but without any internal
@@ -165,16 +165,16 @@ public final class Storage {
 
   /**
    * Constructs a new {@link StorageObject} instance based on a given {@link ObjectDefinition}.
-   * 
+   *
    * <p>
    * Some domain objects may not have a corresponding Java class, if their definition is dynamically
    * created/modified during runtime. Supplying an object definition directly ensures the storage
    * mechanism may succeed for these objects as well.
-   * 
+   *
    * <p>
    * Persistence operations conducted through the returned instance operate on the set identified by
    * the provided {@code setName}.
-   * 
+   *
    * @param <T> the Java type of the persisted object, if any
    * @param objectDefinition the {@link ObjectDefinition} of the persisted domain object, not null
    * @param setName String
@@ -466,6 +466,10 @@ public final class Storage {
    */
   public <T> List<URI> readAllUris(Class<T> clazz) {
     return objectStorage.readAllUris(this, null, clazz);
+  }
+
+  public <T> List<URI> readAllUris(String setName, Class<T> clazz) {
+    return objectStorage.readAllUris(this, setName, clazz);
   }
 
   /**
