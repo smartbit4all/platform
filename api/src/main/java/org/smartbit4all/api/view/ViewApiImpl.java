@@ -188,6 +188,7 @@ public class ViewApiImpl implements ViewApi {
             while (parentView != null && !parentView.getClosedChildrenViews().isEmpty()) {
               View viewToShow = parentView.getClosedChildrenViews().remove(0);
               if (viewToShow != null) {
+                clearViewIfNecessary(viewToShow);
                 showViewInternal(viewToShow);
               }
               parentView = viewToShow;
@@ -269,26 +270,7 @@ public class ViewApiImpl implements ViewApi {
               if (parentView != null) {
                 View viewToClose = getView(uuidToClose);
                 if (viewToClose != null) {
-                  if (!Boolean.TRUE.equals(viewToClose.getKeepModelOnImplicitClose())) {
-                    // TODO clearView()?
-                    viewToClose.setModel(null);
-                    if (viewToClose.getActions() != null) {
-                      viewToClose.getActions().clear();
-                    }
-                    if (viewToClose.getCallbacks() != null) {
-                      viewToClose.getCallbacks().clear();
-                    }
-                    if (viewToClose.getValueSets() != null) {
-                      viewToClose.getValueSets().clear();
-                    }
-                    if (viewToClose.getWidgetModels() != null) {
-                      viewToClose.getWidgetModels().clear();
-                    }
-                    if (viewToClose.getVariables() != null) {
-                      viewToClose.getVariables().clear();
-                    }
-                  }
-                  viewToClose.setConstraint(new ViewConstraint());
+                  clearViewIfNecessary(viewToClose);
                   parentView.getClosedChildrenViews().add(0, viewToClose);
                 }
               }
@@ -312,6 +294,28 @@ public class ViewApiImpl implements ViewApi {
             context.setOpenPendingData(null);
             return context;
           });
+    }
+  }
+
+  private void clearViewIfNecessary(View view) {
+    if (!Boolean.TRUE.equals(view.getKeepModelOnImplicitClose())) {
+      view.setModel(null);
+      if (view.getActions() != null) {
+        view.getActions().clear();
+      }
+      if (view.getCallbacks() != null) {
+        view.getCallbacks().clear();
+      }
+      if (view.getValueSets() != null) {
+        view.getValueSets().clear();
+      }
+      if (view.getWidgetModels() != null) {
+        view.getWidgetModels().clear();
+      }
+      if (view.getVariables() != null) {
+        view.getVariables().clear();
+      }
+      view.setConstraint(new ViewConstraint());
     }
   }
 
