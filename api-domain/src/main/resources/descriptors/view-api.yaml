@@ -787,6 +787,8 @@ components:
           type: string
         text:
           type: string
+        textType:
+          $ref: '#/components/schemas/MessageTextType'
         options:
           type: array
           items:
@@ -798,6 +800,11 @@ components:
         - question
         - warning
         - error
+    MessageTextType:
+      type: string
+      enum:
+        - plain
+        - html
     MessageOption:
       type: object
       required: [code, label]
@@ -1013,6 +1020,9 @@ components:
         tooltipDelay:
           type: integer
           format: int64
+        tooltipHideDelay:
+          type: integer
+          format: int64
     UiActionUploadDescriptor:
       type: object
       description: |
@@ -1198,8 +1208,9 @@ components:
         color:
           type: string
         style:
-          type: object
-          additionalProperties: true
+          $ref: '#/components/schemas/Style'
+        tooltip:
+          $ref: '#/components/schemas/UiActionTooltip'
     Style:
       type: object
       description: Style data holder for client

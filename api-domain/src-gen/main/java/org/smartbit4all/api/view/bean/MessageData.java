@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.MessageOption;
+import org.smartbit4all.api.view.bean.MessageTextType;
 import org.smartbit4all.api.view.bean.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -41,6 +42,7 @@ import javax.validation.Valid;
   MessageData.TYPE,
   MessageData.HEADER,
   MessageData.TEXT,
+  MessageData.TEXT_TYPE,
   MessageData.OPTIONS
 })
 @JsonTypeName("MessageData")
@@ -60,6 +62,9 @@ public class MessageData {
 
   public static final String TEXT = "text";
   private String text;
+
+  public static final String TEXT_TYPE = "textType";
+  private MessageTextType textType;
 
   public static final String OPTIONS = "options";
   private List<MessageOption> options = null;
@@ -207,6 +212,34 @@ public class MessageData {
   }
 
 
+  public MessageData textType(MessageTextType textType) {
+    
+    this.textType = textType;
+    return this;
+  }
+
+   /**
+   * Get textType
+   * @return textType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TEXT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MessageTextType getTextType() {
+    return textType;
+  }
+
+
+  @JsonProperty(TEXT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTextType(MessageTextType textType) {
+    this.textType = textType;
+  }
+
+
   public MessageData options(List<MessageOption> options) {
     
     this.options = options;
@@ -257,12 +290,13 @@ public class MessageData {
         Objects.equals(this.type, messageData.type) &&
         Objects.equals(this.header, messageData.header) &&
         Objects.equals(this.text, messageData.text) &&
+        Objects.equals(this.textType, messageData.textType) &&
         Objects.equals(this.options, messageData.options);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewUuid, type, header, text, options);
+    return Objects.hash(uuid, viewUuid, type, header, text, textType, options);
   }
 
   @Override
@@ -274,6 +308,7 @@ public class MessageData {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    header: ").append(toIndentedString(header)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
+    sb.append("    textType: ").append(toIndentedString(textType)).append("\n");
     sb.append("    options: ").append(toIndentedString(options)).append("\n");
     sb.append("}");
     return sb.toString();
