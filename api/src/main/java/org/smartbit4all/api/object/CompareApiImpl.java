@@ -35,7 +35,7 @@ public class CompareApiImpl implements CompareApi {
   private void checkReferences(Map<String, Object> map, ObjectNode node) {
     if (node != null) {
       for (Entry<String, ObjectNodeReference> referenceEntries : node.getReferences().entrySet()) {
-        if (referenceEntries.getValue().get() != null) {
+        if (referenceEntries.getValue().isPresent()) {
           map.put(referenceEntries.getKey(), referenceEntries.getValue().get().getObjectAsMap());
         }
       }
@@ -170,27 +170,48 @@ public class CompareApiImpl implements CompareApi {
     return path;
   }
 
+  private enum ChangeValueSelector {
+    NEW, OLD, BOTH
+  }
+
   @Override
   public Map<String, Object> toMap(ObjectChangeData objectChange, String path, boolean newValues) {
     Map<String, Object> changes = new HashMap<>();
-    addChanges(objectChange, path, changes, newValues);
+    addChanges(objectChange, path, changes,
+        (newValues) ? ChangeValueSelector.NEW : ChangeValueSelector.OLD);
     return changes;
   }
 
-  private void addChanges(ObjectChangeData objectChange, String path, Map<String, Object> changes,
-      boolean newValues) {
+  @Override
+  public Map<String, PropertyChangeData> flattenChanges(ObjectChangeData objectChange,
+      String pathPrefix) {
+    final Map<String, PropertyChangeData> ret = new HashMap<>();
+    addChanges(objectChange, pathPrefix, ret, ChangeValueSelector.BOTH);
+    return ret;
+  }
+
+  @SuppressWarnings({"rawtypes"})
+  private void addChanges(ObjectChangeData objectChange, String path,
+      Map changes,
+      ChangeValueSelector valueSelector) {
     String pathPrefix = Strings.isNullOrEmpty(path) ? "" : path + StringConstant.DOT;
     for (PropertyChangeData prop : objectChange.getProperties()) {
       String key = pathPrefix + prop.getPath();
-      if (newValues) {
-        changes.put(key, prop.getNewValue());
-      } else {
-        changes.put(key, prop.getOldValue());
+      switch (valueSelector) {
+        case NEW:
+          changes.put(key, prop.getNewValue());
+          break;
+        case OLD:
+          changes.put(key, prop.getOldValue());
+          break;
+        case BOTH:
+          changes.put(key, prop);
+          break;
       }
     }
     for (ReferenceChangeData ref : objectChange.getReferences()) {
       String key = pathPrefix + ref.getPath();
-      addChanges(ref.getObjectChange(), key, changes, newValues);
+      addChanges(ref.getObjectChange(), key, changes, valueSelector);
     }
   }
 
