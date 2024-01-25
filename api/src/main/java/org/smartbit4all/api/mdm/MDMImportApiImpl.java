@@ -100,18 +100,20 @@ public class MDMImportApiImpl implements MDMImportApi {
                   subTypesDeclaredFields.put(fields[0], subTypeDeclaredFields);
                 }
                 // create an object as a type of field
-                Object value = objectApi.asType(subTypeDeclaredFields.get(fields[1]).getType(),
+                Object value = getValue(subTypeDeclaredFields.get(fields[1]).getType(),
                     entry.getValue());
-                // set field value
+                // create setter method's name
                 String methodName =
                     "set" + fields[1].substring(0, 1).toUpperCase() + fields[1].substring(1);
+                // call setter method
                 subType.getClass()
                     .getMethod(methodName, subTypeDeclaredFields.get(fields[1]).getType())
                     .invoke(subType, value);
               } else {
-                // if field type not equal String, create a new object with specified type
-                Object value = objectApi.asType(declaredFields.get(entry.getKey()).getType(),
+                // create a new object with specified type
+                Object value = getValue(declaredFields.get(entry.getKey()).getType(),
                     entry.getValue());
+                // set value
                 existNode.setValue(value, entry.getKey());
               }
             } catch (Exception e) {
@@ -144,10 +146,20 @@ public class MDMImportApiImpl implements MDMImportApi {
 
   private Object getValue(Class<?> type, String value) {
     Object retVal = null;
+    // if type is URI
     if (URI.class.equals(type)) {
+      // value = class:identifier:value
       String[] fields = value.split(":");
       if (fields.length >= 3) {
-        // TODO: get uri from specified mdm list
+        // create an MDM api for specified class
+        MDMEntryApi entryApi = api.getApi(MasterDataManagementApi.MDM_DEFINITION_GLOBAL, fields[0]);
+        // locate ObjectNode by identifier and value
+        ObjectNode existEntry = entryApi.getList().nodes()
+            .filter(n -> fields[2].equals(n.getValueAsString(fields[1]))).findFirst().orElse(null);
+        // if found it set retVal
+        if (existEntry != null) {
+          retVal = existEntry.getObjectUri();
+        }
       }
     } else {
       retVal = objectApi.asType(type, value);
