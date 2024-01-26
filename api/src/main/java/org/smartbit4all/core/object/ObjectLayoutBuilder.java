@@ -112,6 +112,13 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition textfieldNumber(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.TEXT_FIELD_NUMBER)
+        .key(key)
+        .label(label);
+  }
+
   public static SmartWidgetDefinition textbox(String key, String label) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.TEXT_BOX)
@@ -120,11 +127,11 @@ public final class ObjectLayoutBuilder {
   }
 
   public static SmartWidgetDefinition integralNumberField(String key, String label) {
-    return textfield(key, label).mask("9*");
+    return textfieldNumber(key, label).mask("9*");
   }
 
   public static SmartWidgetDefinition floatingPointNumberField(String key, String label) {
-    return textfield(key, label).mask("9*.9*");
+    return textfieldNumber(key, label).mask("9*.9*");
   }
 
   public static SmartWidgetDefinition richTextEditor(String key, String label) {
