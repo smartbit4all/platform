@@ -203,7 +203,7 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public Iterator<ObjectNode> objectHistory(URI objectUri, URI branchUri) {
+  public ObjectHistoryIterator objectHistory(URI objectUri) {
     java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
 
     URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(objectUri);
@@ -211,26 +211,7 @@ public class ObjectApiImpl implements ObjectApi {
     ObjectNode lastObject = loadLatest(uriWithoutVersion);
     long lastVersion = lastObject.getVersionNr();
 
-    return new Iterator<ObjectNode>() {
-
-      private long i = -1;
-
-      @Override
-      public ObjectNode next() {
-        i++;
-        if (i > lastVersion) {
-          throw new NoSuchElementException(
-              "There is no object with version greater than " + lastVersion);
-        }
-        URI currentObjectUri = ObjectStorageImpl.getUriWithVersion(uriWithoutVersion, i);
-        return load(currentObjectUri, branchUri);
-      }
-
-      @Override
-      public boolean hasNext() {
-        return i < lastVersion;
-      }
-    };
+    return new ObjectHistoryIterator(self, lastVersion, uriWithoutVersion);
   }
 
   @Override

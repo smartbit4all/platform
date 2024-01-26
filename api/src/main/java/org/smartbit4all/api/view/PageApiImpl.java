@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -47,6 +48,30 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   protected void setModel(UUID viewUuid, M model) {
     viewApi.getView(viewUuid).setModel(model);
+  }
+
+  /**
+   * Executes a modification on the model.
+   * 
+   * @param view The view.
+   * @param modelModification The modification lambda. The model can be modified by reference (no
+   *        replace)
+   */
+  protected final void execute(View view, Consumer<M> modelModification) {
+    execute(view.getUuid(), modelModification);
+  }
+
+  /**
+   * Executes a modification on the model.
+   * 
+   * @param uuid The uuid of the view.
+   * @param modelModification The modification lambda. The model can be modified by reference (no
+   *        replace)
+   */
+  protected final void execute(UUID uuid, Consumer<M> modelModification) {
+    M model = getModel(uuid);
+    modelModification.accept(model);
+    setModel(uuid, model);
   }
 
   @Override

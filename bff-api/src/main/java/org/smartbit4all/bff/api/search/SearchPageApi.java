@@ -36,6 +36,21 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
   static final String ACTION_CLOSE = "CLOSE_SEARCH_PAGE";
 
   /**
+   * The generic action that will page to the previous history page.
+   */
+  static final String ACTION_HISTORY_PREV = "HISTORY_PREV_PAGE";
+
+  /**
+   * The generic action that will page to the next history page.
+   */
+  static final String ACTION_HISTORY_NEXT = "HISTORY_NEXT_PAGE";
+
+  /**
+   * The generic action that will double the page size of the history range.
+   */
+  static final String ACTION_HISTORY_EXPAND = "HISTORY_EXPAND_RANGE";
+
+  /**
    * The action that will close the list and pass the selected rows to the caller view.
    * 
    * <p>

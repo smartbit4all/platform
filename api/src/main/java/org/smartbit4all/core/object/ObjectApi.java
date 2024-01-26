@@ -255,20 +255,13 @@ public interface ObjectApi {
   boolean isLatestUri(URI uri);
 
   /**
-   * @see #objectHistory(URI)
-   */
-  Iterator<ObjectNode> objectHistory(URI objectUri, URI branchUri);
-
-  /**
    * Returns an iterator of the given object's version list. The returned iterator iterates from the
    * very first object to the last.
    * 
    * @param objectUri The Unified Resource Identifier of the object we want the history of.
    * @return An iterator of the object versions from the first one.
    */
-  default Iterator<ObjectNode> objectHistory(URI objectUri) {
-    return objectHistory(objectUri, null);
-  }
+  ObjectHistoryIterator objectHistory(URI objectUri);
 
   /**
    * @see ObjectApi#objectHistoryReverse(URI)

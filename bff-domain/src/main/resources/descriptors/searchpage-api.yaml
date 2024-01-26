@@ -19,3 +19,8 @@ components:
           description: Title of this page.
         filters:
           type: FilterExpressionFieldList
+        historyRange:
+          type: ObjectHistoryRangeData
+        historyPageSize:
+          type: integer
+          format: int32

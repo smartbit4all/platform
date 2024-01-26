@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.object.bean.ObjectHistoryRangeData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,7 +34,9 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   SearchPageModel.PAGE_TITLE,
-  SearchPageModel.FILTERS
+  SearchPageModel.FILTERS,
+  SearchPageModel.HISTORY_RANGE,
+  SearchPageModel.HISTORY_PAGE_SIZE
 })
 @JsonTypeName("SearchPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,6 +46,12 @@ public class SearchPageModel {
 
   public static final String FILTERS = "filters";
   private FilterExpressionFieldList filters = null;
+
+  public static final String HISTORY_RANGE = "historyRange";
+  private ObjectHistoryRangeData historyRange = null;
+
+  public static final String HISTORY_PAGE_SIZE = "historyPageSize";
+  private Integer historyPageSize;
 
   public SearchPageModel() { 
   }
@@ -102,6 +111,61 @@ public class SearchPageModel {
   }
 
 
+  public SearchPageModel historyRange(ObjectHistoryRangeData historyRange) {
+    
+    this.historyRange = historyRange;
+    return this;
+  }
+
+   /**
+   * Get historyRange
+   * @return historyRange
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(HISTORY_RANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ObjectHistoryRangeData getHistoryRange() {
+    return historyRange;
+  }
+
+
+  @JsonProperty(HISTORY_RANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryRange(ObjectHistoryRangeData historyRange) {
+    this.historyRange = historyRange;
+  }
+
+
+  public SearchPageModel historyPageSize(Integer historyPageSize) {
+    
+    this.historyPageSize = historyPageSize;
+    return this;
+  }
+
+   /**
+   * Get historyPageSize
+   * @return historyPageSize
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HISTORY_PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getHistoryPageSize() {
+    return historyPageSize;
+  }
+
+
+  @JsonProperty(HISTORY_PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryPageSize(Integer historyPageSize) {
+    this.historyPageSize = historyPageSize;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,12 +176,14 @@ public class SearchPageModel {
     }
     SearchPageModel searchPageModel = (SearchPageModel) o;
     return Objects.equals(this.pageTitle, searchPageModel.pageTitle) &&
-        Objects.equals(this.filters, searchPageModel.filters);
+        Objects.equals(this.filters, searchPageModel.filters) &&
+        Objects.equals(this.historyRange, searchPageModel.historyRange) &&
+        Objects.equals(this.historyPageSize, searchPageModel.historyPageSize);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pageTitle, filters);
+    return Objects.hash(pageTitle, filters, historyRange, historyPageSize);
   }
 
   @Override
@@ -126,6 +192,8 @@ public class SearchPageModel {
     sb.append("class SearchPageModel {\n");
     sb.append("    pageTitle: ").append(toIndentedString(pageTitle)).append("\n");
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
+    sb.append("    historyRange: ").append(toIndentedString(historyRange)).append("\n");
+    sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
     sb.append("}");
     return sb.toString();
   }

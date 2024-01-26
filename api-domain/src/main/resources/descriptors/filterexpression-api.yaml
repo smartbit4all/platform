@@ -349,6 +349,25 @@ components:
         container:
           description: The conteiner to run the query against.
           type: StoredCollectionDescriptor
+        historyObjectUri:
+          description: If we set this property then the given search page is iterating through the version of this object.
+          type: string
+          format: uri
+        historyLowerBound:
+          description: If we set this property then the page is loading the given version as the oldest one.
+          type: integer
+          format: int64
+        historyUpperBound:
+          description: If we set this property then the page is loading the given version as the newest one.
+          type: integer
+          format: int64
+        historyPageSize:
+          description: |
+            If we set this property and skip any or all of the lower or upper bound then we load this this
+            number of versions after the lower bound or before the upper bound or before the latest version.
+            It will be the initial size of the pageing while iteration through the history entries.
+          type: integer
+          format: int32
         gridViewOptions:
           description: |
             The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear.
@@ -367,7 +386,7 @@ components:
         model:
           type: FilterExpressionBuilderModel
         selectedField:
-          type: FilterExpressionField
+          $ref: '#/components/schemas/FilterExpressionField'
         selectedFieldEditor:
           $ref: "#/components/schemas/FilterExpressionFieldEditor"
         selectUiAction:

@@ -218,6 +218,45 @@ components:
       type: string
       default: NOP
       enum: [NOP, NEW, MODIFIED, REMOVED]
+    ObjectHistoryRangeData:
+      description: |
+        This object represents the rage of an object history. The history can be a huge list where the uris of the history items
+        computed from the original object uri and the version number. It must be easy to compute the version uri because there is no
+        single object that contains all the histories. The history range can be used to store our iteration while we are walking on
+        the history to display or analyze it. If we create a list for iterating over the history then this object can be the model of the
+        given page.
+      type: object
+      properties:
+        objectUri:
+          description: The uri (let it be latest or version) of the object. The range refers its history.
+          type: string
+          format: uri
+        lowerBound:
+          description: The iterator of the lower bound.
+          $ref: '#/components/schemas/ObjectHistoryIteratorData'
+        upperBound:
+          description: The iterator of the upper bound.
+          $ref: '#/components/schemas/ObjectHistoryIteratorData'          
+    ObjectHistoryIteratorData:
+      description: |
+        This object represents an object version from the object history. The history can be a huge list where the uris of the history items
+        computed from the original object uri and the version number. It must be easy to compute the version uri because there is no
+        single object that contains all the histories. If we create a list for iterating over the history then this object can be the model of the
+        given page.
+      type: object
+      properties:
+        versionUri:
+          description: The uri version uri of the object history entry.
+          type: string
+          format: uri
+        versionNr:
+          description: The serial version number of the object history entry.
+          type: integer
+          format: int64
+        created:
+          description: The version creation information.
+          type: UserActivityLog
+         
     RetrievalMode:
       type: string
       default: NORMAL
