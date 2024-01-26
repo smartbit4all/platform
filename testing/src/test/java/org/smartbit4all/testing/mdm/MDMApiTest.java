@@ -1,12 +1,8 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +78,11 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -632,6 +633,132 @@ class MDMApiTest {
     authService.logout();
   }
 
+  private final void update(URI uri, SampleCategory cat) {
+    ObjectNode objNode = objectApi.loadLatest(uri);
+    objNode.modify(SampleCategory.class, c -> cat);
+    objectApi.save(objNode);
+  }
+
+  @Test
+  @Order(4)
+  void testSearchIndexResultPageApiHistory() throws Exception {
+    authService.login(normal_user, "asd");
+
+    URI uri = objectApi.saveAsNew(MDMApiTestConfig.TEST,
+        new SampleCategory().name("Category 1").color(ColorEnum.RED));
+    update(uri, new SampleCategory().name("Category 2").color(ColorEnum.BLACK));
+    update(uri, new SampleCategory().name("Category 3").color(ColorEnum.GREEN));
+    update(uri, new SampleCategory().name("Category 4").color(ColorEnum.WHITE));
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      SearchPageConfig config =
+          new SearchPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
+              .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
+              .historyPageSize(10)
+              .historyObjectUri(uri)
+              .addGridViewOptionsItem(new GridView()
+                  .orderedColumnNames(
+                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR, SampleCategory.URI))
+                  .addOrderByListItem(new FilterExpressionOrderBy()
+                      .propertyName(SampleCategory.NAME).order(OrderEnum.DESC)));
+
+      View querySetView = new View().viewName(MDMApiTestConfig.SEARCHINDEX_LIST_PAGE)
+          .objectUri(objectApi.getLatestUri(objectApi.saveAsNew(MDMApiTestConfig.TEST, config)));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      View view = viewApi.getView(uuid);
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            SearchPageApi.WIDGET_RESULT_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        // The changed list is visible for the normal user also.
+        Assertions.assertThat(typeNames).containsExactly(
+            "Category 4", "Category 3", "Category 2", "Category 1");
+
+      }
+
+    });
+
+    authService.logout();
+  }
+
+  @Test
+  @Order(5)
+  void testSearchIndexResultPageApiHistoryHighVolume() throws Exception {
+    authService.login(normal_user, "asd");
+
+    URI uri = null;
+
+    for (int i = 0; i < 250; i++) {
+      if (uri == null) {
+        uri = objectApi.saveAsNew(MDMApiTestConfig.TEST,
+            new SampleCategory().name("Category " + i).color(ColorEnum.RED));
+      } else {
+        update(uri, new SampleCategory().name("Category " + i).color(ColorEnum.BLACK));
+      }
+    }
+
+    final URI historyUri = uri;
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      SearchPageConfig config =
+          new SearchPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
+              .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
+              .historyPageSize(10)
+              .historyObjectUri(historyUri)
+              .addGridViewOptionsItem(new GridView()
+                  .orderedColumnNames(
+                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR, SampleCategory.URI))
+                  .addOrderByListItem(new FilterExpressionOrderBy()
+                      .propertyName(SampleCategory.NAME).order(OrderEnum.DESC)));
+
+      View querySetView = new View().viewName(MDMApiTestConfig.SEARCHINDEX_LIST_PAGE)
+          .objectUri(objectApi.getLatestUri(objectApi.saveAsNew(MDMApiTestConfig.TEST, config)));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      View view = viewApi.getView(uuid);
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            SearchPageApi.WIDGET_RESULT_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        // The changed list is visible for the normal user also.
+        List<String> requiredNames = new ArrayList<>();
+        for (int i = 249; i >= 240; i--) {
+          requiredNames.add("Category " + i);
+        }
+        Assertions.assertThat(typeNames)
+            .containsExactly(requiredNames.toArray(StringConstant.EMPTY_ARRAY));
+
+      }
+
+    });
+
+    authService.logout();
+  }
 
   private static final String getRowIdByPropertyValue(GridModel model, String propertyName,
       String propertyValue) {

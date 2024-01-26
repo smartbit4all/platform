@@ -10,7 +10,11 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
 
   private long i = -1;
 
+  private boolean reverese = false;
+
   private long latestVersionNr;
+
+  private long firstVersion;
 
   private long lastVersion;
 
@@ -32,7 +36,7 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
   }
 
   private final void checkRange(long versionNr) {
-    if (versionNr < 0 || versionNr >= latestVersionNr) {
+    if (versionNr < -1 || versionNr > latestVersionNr + 1) {
       throw new ArrayIndexOutOfBoundsException(
           "The " + versionNr + " is not a valid version number for the " + uriWithoutVersion
               + " it must be greater or equal than 0 and less then " + lastVersion);
@@ -42,6 +46,29 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
   public ObjectHistoryIterator lastVersion(long lastVersionNr) {
     checkRange(lastVersionNr);
     lastVersion = lastVersionNr;
+    return this;
+  }
+
+  public ObjectHistoryIterator firstIndex(long index) {
+    checkRange(index);
+    firstVersion = index;
+    i = index;
+    return this;
+  }
+
+  /**
+   * Set the reverse value and initiate the index to the proper end of the stream.
+   * 
+   * @param rev
+   * @return
+   */
+  public ObjectHistoryIterator reverse(boolean rev) {
+    this.reverese = rev;
+    if (reverese) {
+      index(lastVersion + 1);
+    } else {
+      index(firstVersion - 1);
+    }
     return this;
   }
 
@@ -63,8 +90,8 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
 
   @Override
   public ObjectNode next() {
-    i++;
-    if (i > lastVersion) {
+    i = reverese ? i - 1 : i + 1;
+    if (reverese ? i < firstVersion : i > lastVersion) {
       throw new NoSuchElementException(
           "There is no object with version greater than " + lastVersion);
     }
@@ -74,11 +101,37 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
 
   @Override
   public boolean hasNext() {
-    return i < lastVersion;
+    return reverese ? i > firstVersion : i < lastVersion;
   }
 
   private final ObjectApi objectApi() {
     return objectApiRef.get();
   }
+
+  public final long getIndex() {
+    return i;
+  }
+
+  public final long getLatestVersionNr() {
+    return latestVersionNr;
+  }
+
+  public final long getLastVersion() {
+    return lastVersion;
+  }
+
+  public final URI getUriWithoutVersion() {
+    return uriWithoutVersion;
+  }
+
+  public final URI getBranchUri() {
+    return branchUri;
+  }
+
+  public final boolean isUseCache() {
+    return useCache;
+  }
+
+
 
 }

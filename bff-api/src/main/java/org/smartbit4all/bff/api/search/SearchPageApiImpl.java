@@ -171,18 +171,25 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     // Initiate the history selection if it is set in the parameters.
 
     SearchPageModel model = new SearchPageModel();
-    // TODO Which api to parameterize about the history?
     if (ctx.pageConfig.getHistoryObjectUri() != null) {
 
       model.historyPageSize(
           ctx.pageConfig.getHistoryPageSize() != null ? ctx.pageConfig.getHistoryPageSize()
               : defaultHistoryPageSize);
+      ObjectHistoryIterator historyIterator =
+          objectApi.objectHistory(ctx.pageConfig.getHistoryObjectUri());
+
       model.historyRange(
           new ObjectHistoryRangeData().objectUri(ctx.pageConfig.getHistoryObjectUri())
               .lowerBound(new ObjectHistoryIteratorData()
-                  .versionNr(ctx.pageConfig.getHistoryLowerBound()))
+                  .versionNr(ctx.pageConfig.getHistoryLowerBound() != null
+                      ? ctx.pageConfig.getHistoryLowerBound()
+                      : Math.max(historyIterator.getLatestVersionNr() - model.getHistoryPageSize(),
+                          0)))
               .upperBound(new ObjectHistoryIteratorData()
-                  .versionNr(ctx.pageConfig.getHistoryUpperBound())));
+                  .versionNr(ctx.pageConfig.getHistoryUpperBound() != null
+                      ? ctx.pageConfig.getHistoryUpperBound()
+                      : historyIterator.getLatestVersionNr())));
     }
 
     refreshGrid(model, ctx);
@@ -247,9 +254,11 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     } else if (model.getHistoryRange() != null) {
       // We have an object history the query is working on.
       URI objectUri = model.getHistoryRange().getObjectUri();
+      // Update the lowerBound if empty
       ObjectHistoryIterator historyIterator = objectApi.objectHistory(objectUri)
-          .index(model.getHistoryRange().getLowerBound().getVersionNr())
-          .lastVersion(model.getHistoryRange().getUpperBound().getVersionNr()).useCache(true);
+          .firstIndex(model.getHistoryRange().getLowerBound().getVersionNr())
+          .lastVersion(model.getHistoryRange().getUpperBound().getVersionNr()).reverse(true)
+          .useCache(true);
       gridContent =
           ctx.searchIndex.executeSearchOnNodes(Streams.stream(historyIterator), filters,
               getOrderByList(ctx));
