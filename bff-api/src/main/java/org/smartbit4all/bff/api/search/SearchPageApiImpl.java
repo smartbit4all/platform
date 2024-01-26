@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.search;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +29,8 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.bean.ObjectHistoryIteratorData;
+import org.smartbit4all.api.object.bean.ObjectHistoryRangeData;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -37,11 +38,15 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
+import org.smartbit4all.core.object.ObjectHistoryIterator;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import com.google.common.collect.Streams;
+import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -65,6 +70,9 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private FilterExpressionBuilderApi filterExpressionBuilderApi;
+
+  @Value("${searchpage.historyPageSize:50}")
+  private int defaultHistoryPageSize = 50;
 
   protected class PageContext {
 
@@ -160,7 +168,24 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
           ctx.gridPageRenderCallback);
     }
 
-    refreshGrid(ctx);
+    // Initiate the history selection if it is set in the parameters.
+
+    SearchPageModel model = new SearchPageModel();
+    // TODO Which api to parameterize about the history?
+    if (ctx.pageConfig.getHistoryObjectUri() != null) {
+
+      model.historyPageSize(
+          ctx.pageConfig.getHistoryPageSize() != null ? ctx.pageConfig.getHistoryPageSize()
+              : defaultHistoryPageSize);
+      model.historyRange(
+          new ObjectHistoryRangeData().objectUri(ctx.pageConfig.getHistoryObjectUri())
+              .lowerBound(new ObjectHistoryIteratorData()
+                  .versionNr(ctx.pageConfig.getHistoryLowerBound()))
+              .upperBound(new ObjectHistoryIteratorData()
+                  .versionNr(ctx.pageConfig.getHistoryUpperBound())));
+    }
+
+    refreshGrid(model, ctx);
 
     FilterExpressionBuilderModel filterModel = ctx.pageConfig.getFilterModel();
     String pageTitle = "";
@@ -187,7 +212,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
 
-    return new SearchPageModel()
+    return model
         .pageTitle(pageTitle)
         .filters(filters);
   }
@@ -201,7 +226,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     return null;
   }
 
-  private void refreshGrid(PageContext ctx) {
+  private void refreshGrid(SearchPageModel model, PageContext ctx) {
     TableData<?> gridContent = null;
     FilterExpressionList filters = getFilterExpressionList(ctx);
 
@@ -218,6 +243,15 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       // We have a stored list the query is working on.
       gridContent =
           ctx.searchIndex.executeSearchOnNodes(ctx.list.nodesFromCache(), filters,
+              getOrderByList(ctx));
+    } else if (model.getHistoryRange() != null) {
+      // We have an object history the query is working on.
+      URI objectUri = model.getHistoryRange().getObjectUri();
+      ObjectHistoryIterator historyIterator = objectApi.objectHistory(objectUri)
+          .index(model.getHistoryRange().getLowerBound().getVersionNr())
+          .lastVersion(model.getHistoryRange().getUpperBound().getVersionNr()).useCache(true);
+      gridContent =
+          ctx.searchIndex.executeSearchOnNodes(Streams.stream(historyIterator), filters,
               getOrderByList(ctx));
     } else {
       // We try the database or read all.
@@ -271,7 +305,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         filterExpressionBuilderApi.getFilterExpressionFieldList(viewUuid, FILTER_BUILDER_WIDGET_ID);
 
     ctx.pageConfig.getFilterModel().workplaceList(filterExpressionFieldList);
-    refreshGrid(ctx);
+    refreshGrid(model, ctx);
   }
 
   @Override

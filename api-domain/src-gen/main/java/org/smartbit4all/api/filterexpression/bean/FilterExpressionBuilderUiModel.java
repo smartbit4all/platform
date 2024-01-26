@@ -63,7 +63,7 @@ public class FilterExpressionBuilderUiModel {
   private FilterExpressionBuilderModel model = null;
 
   public static final String SELECTED_FIELD = "selectedField";
-  private FilterExpressionField selectedField = null;
+  private FilterExpressionField selectedField;
 
   public static final String SELECTED_FIELD_EDITOR = "selectedFieldEditor";
   private FilterExpressionFieldEditor selectedFieldEditor;

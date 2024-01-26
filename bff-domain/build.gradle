@@ -20,7 +20,8 @@ smartbit4all {
      "SubjectTypeDescriptor" : "org.smartbit4all.api.org.bean.SubjectTypeDescriptor",
      "VectorCollectionDescriptor" : "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
      "MDMModificationNote": "org.smartbit4all.api.mdm.bean.MDMModificationNote",
-     "ObjectValidationSeverity": " org.smartbit4all.api.object.bean.ObjectValidationSeverity"
+     "ObjectValidationSeverity": "org.smartbit4all.api.object.bean.ObjectValidationSeverity",
+     "ObjectHistoryRangeData": "org.smartbit4all.api.object.bean.ObjectHistoryRangeData"
     ]
   }
 }

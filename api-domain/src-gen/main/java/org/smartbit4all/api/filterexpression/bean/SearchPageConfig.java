@@ -43,6 +43,10 @@ import javax.validation.Valid;
   SearchPageConfig.SEARCH_INDEX_SCHEMA,
   SearchPageConfig.SEARCH_INDEX_NAME,
   SearchPageConfig.CONTAINER,
+  SearchPageConfig.HISTORY_OBJECT_URI,
+  SearchPageConfig.HISTORY_LOWER_BOUND,
+  SearchPageConfig.HISTORY_UPPER_BOUND,
+  SearchPageConfig.HISTORY_PAGE_SIZE,
   SearchPageConfig.GRID_VIEW_OPTIONS
 })
 @JsonTypeName("SearchPageConfig")
@@ -62,6 +66,18 @@ public class SearchPageConfig {
 
   public static final String CONTAINER = "container";
   private StoredCollectionDescriptor container = null;
+
+  public static final String HISTORY_OBJECT_URI = "historyObjectUri";
+  private URI historyObjectUri;
+
+  public static final String HISTORY_LOWER_BOUND = "historyLowerBound";
+  private Long historyLowerBound;
+
+  public static final String HISTORY_UPPER_BOUND = "historyUpperBound";
+  private Long historyUpperBound;
+
+  public static final String HISTORY_PAGE_SIZE = "historyPageSize";
+  private Integer historyPageSize;
 
   public static final String GRID_VIEW_OPTIONS = "gridViewOptions";
   private List<GridView> gridViewOptions = new ArrayList<>();
@@ -207,6 +223,115 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig historyObjectUri(URI historyObjectUri) {
+    
+    this.historyObjectUri = historyObjectUri;
+    return this;
+  }
+
+   /**
+   * If we set this property then the given search page is iterating through the version of this object.
+   * @return historyObjectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If we set this property then the given search page is iterating through the version of this object.")
+  @JsonProperty(HISTORY_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getHistoryObjectUri() {
+    return historyObjectUri;
+  }
+
+
+  @JsonProperty(HISTORY_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryObjectUri(URI historyObjectUri) {
+    this.historyObjectUri = historyObjectUri;
+  }
+
+
+  public SearchPageConfig historyLowerBound(Long historyLowerBound) {
+    
+    this.historyLowerBound = historyLowerBound;
+    return this;
+  }
+
+   /**
+   * If we set this property then the page is loading the given version as the oldest one.
+   * @return historyLowerBound
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If we set this property then the page is loading the given version as the oldest one.")
+  @JsonProperty(HISTORY_LOWER_BOUND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getHistoryLowerBound() {
+    return historyLowerBound;
+  }
+
+
+  @JsonProperty(HISTORY_LOWER_BOUND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryLowerBound(Long historyLowerBound) {
+    this.historyLowerBound = historyLowerBound;
+  }
+
+
+  public SearchPageConfig historyUpperBound(Long historyUpperBound) {
+    
+    this.historyUpperBound = historyUpperBound;
+    return this;
+  }
+
+   /**
+   * If we set this property then the page is loading the given version as the newest one.
+   * @return historyUpperBound
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If we set this property then the page is loading the given version as the newest one.")
+  @JsonProperty(HISTORY_UPPER_BOUND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getHistoryUpperBound() {
+    return historyUpperBound;
+  }
+
+
+  @JsonProperty(HISTORY_UPPER_BOUND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryUpperBound(Long historyUpperBound) {
+    this.historyUpperBound = historyUpperBound;
+  }
+
+
+  public SearchPageConfig historyPageSize(Integer historyPageSize) {
+    
+    this.historyPageSize = historyPageSize;
+    return this;
+  }
+
+   /**
+   * If we set this property and skip any or all of the lower or upper bound then we load this this number of versions after the lower bound or before the upper bound or before the latest version. It will be the initial size of the pageing while iteration through the history entries. 
+   * @return historyPageSize
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If we set this property and skip any or all of the lower or upper bound then we load this this number of versions after the lower bound or before the upper bound or before the latest version. It will be the initial size of the pageing while iteration through the history entries. ")
+  @JsonProperty(HISTORY_PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getHistoryPageSize() {
+    return historyPageSize;
+  }
+
+
+  @JsonProperty(HISTORY_PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryPageSize(Integer historyPageSize) {
+    this.historyPageSize = historyPageSize;
+  }
+
+
   public SearchPageConfig gridViewOptions(List<GridView> gridViewOptions) {
     
     this.gridViewOptions = gridViewOptions;
@@ -255,12 +380,16 @@ public class SearchPageConfig {
         Objects.equals(this.searchIndexSchema, searchPageConfig.searchIndexSchema) &&
         Objects.equals(this.searchIndexName, searchPageConfig.searchIndexName) &&
         Objects.equals(this.container, searchPageConfig.container) &&
+        Objects.equals(this.historyObjectUri, searchPageConfig.historyObjectUri) &&
+        Objects.equals(this.historyLowerBound, searchPageConfig.historyLowerBound) &&
+        Objects.equals(this.historyUpperBound, searchPageConfig.historyUpperBound) &&
+        Objects.equals(this.historyPageSize, searchPageConfig.historyPageSize) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, filterModel, searchIndexSchema, searchIndexName, container, gridViewOptions);
+    return Objects.hash(uri, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyPageSize, gridViewOptions);
   }
 
   @Override
@@ -272,6 +401,10 @@ public class SearchPageConfig {
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
     sb.append("    searchIndexName: ").append(toIndentedString(searchIndexName)).append("\n");
     sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("    historyObjectUri: ").append(toIndentedString(historyObjectUri)).append("\n");
+    sb.append("    historyLowerBound: ").append(toIndentedString(historyLowerBound)).append("\n");
+    sb.append("    historyUpperBound: ").append(toIndentedString(historyUpperBound)).append("\n");
+    sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("}");
     return sb.toString();
