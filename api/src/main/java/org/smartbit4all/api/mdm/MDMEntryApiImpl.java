@@ -57,6 +57,7 @@ import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.util.ObjectUtils;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -630,13 +631,20 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public ObjectLookup lookup() {
-    return new ObjectLookupMDMEntry(objectApi);
+    return new ObjectLookupMDMEntry(objectApi, this);
   }
 
   private final class ObjectLookupMDMEntry extends ObjectLookup {
 
+    private MDMEntryApi entryApi;
+
     ObjectLookupMDMEntry(ObjectApi objectApi) {
       super(objectApi);
+    }
+
+    ObjectLookupMDMEntry(ObjectApi objectApi, MDMEntryApi entryApi) {
+      super(objectApi);
+      this.entryApi = entryApi;
     }
 
     @Override
@@ -667,12 +675,26 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       if (value == null || value.getPath() == null || value.getPath().isEmpty()) {
         return null;
       }
-      // If we have the proper unique id
-      StoredMap uniqueMap = getUniqueMap(StringConstant.toArray(value.getPath()));
-      if (uniqueMap == null) {
-        return null;
+
+      ObjectNode node = null;
+      if (entryApi.getDescriptor() != null
+          && !ObjectUtils.isEmpty(entryApi.getDescriptor().getSelfContainedRefList())) {
+        node = entryApi.getList().nodes()
+            .filter(n -> value.getValue().equals(n.getValueAsString(value.getPath().get(0))))
+            .findFirst().orElse(null);
+      } else {
+        // If we have the proper unique id
+        StoredMap uniqueMap = getUniqueMap(StringConstant.toArray(value.getPath()));
+        if (uniqueMap == null) {
+          return null;
+        }
+
+        URI uri = uniqueMap.uris().get(value.getValue());
+        if (uri != null) {
+          node = objectApi.loadLatest(uri);
+        }
       }
-      return objectApi.loadLatest(uniqueMap.uris().get(value.getValue()));
+      return node;
     }
 
   }

@@ -16,6 +16,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMErrorLog;
 import org.smartbit4all.api.mdm.bean.MDMErrorLogData;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
+import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.util.ObjectUtils;
@@ -117,6 +118,7 @@ public class MDMImportApiImpl implements MDMImportApi {
                 existNode.setValue(value, entry.getKey());
               }
             } catch (Exception e) {
+              log.error(e.getMessage(), e);
               errorLog
                   .addDataItem(new MDMErrorLogData().rowNum(rowNum).column(entry.getKey())
                       .error(e.getMessage()));
@@ -137,7 +139,7 @@ public class MDMImportApiImpl implements MDMImportApi {
         api.dropGlobal(definition.getName());
       }
     } catch (Exception e) {
-      log.error(e.getLocalizedMessage(), e);
+      log.error(e.getMessage(), e);
       errorLog.addDataItem(new MDMErrorLogData().error(e.getMessage()));
       api.dropGlobal(definition.getName());
     }
@@ -148,17 +150,20 @@ public class MDMImportApiImpl implements MDMImportApi {
     Object retVal = null;
     // if type is URI
     if (URI.class.equals(type)) {
-      // value = class:identifier:value
+      // value = definition:class:identifier:value
       String[] fields = value.split(":");
-      if (fields.length >= 3) {
+      if (fields.length >= 4) {
         // create an MDM api for specified class
-        MDMEntryApi entryApi = api.getApi(MasterDataManagementApi.MDM_DEFINITION_GLOBAL, fields[0]);
+        MDMEntryApi entryApi = api.getApi(fields[0], fields[1]);
         // locate ObjectNode by identifier and value
-        ObjectNode existEntry = entryApi.getList().nodes()
-            .filter(n -> fields[2].equals(n.getValueAsString(fields[1]))).findFirst().orElse(null);
+        // ObjectNode existEntry = entryApi.getList().nodes()
+        // .filter(n -> fields[3].equals(n.getValueAsString(fields[2]))).findFirst().orElse(null);
+        Map<String, Object> existEntry = entryApi.lookup().findByUnique(
+            new ObjectPropertyValue().path(Arrays.asList(fields[2])).value(fields[3]));
         // if found it set retVal
         if (existEntry != null) {
-          retVal = existEntry.getObjectUri();
+          // retVal = existEntry.getObjectUri();
+          retVal = existEntry.get("uri");
         }
       }
     } else {
