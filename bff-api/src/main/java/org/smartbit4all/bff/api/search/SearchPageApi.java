@@ -51,6 +51,12 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
   static final String ACTION_HISTORY_EXPAND = "HISTORY_EXPAND_RANGE";
 
   /**
+   * The generic action that will make half the page size of the history range. The remaining range
+   * will be the latest part.
+   */
+  static final String ACTION_HISTORY_SRINK = "HISTORY_SRINK_RANGE";
+
+  /**
    * The action that will close the list and pass the selected rows to the caller view.
    * 
    * <p>
@@ -154,5 +160,24 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
 
   @ActionHandler(ACTION_CLEAR)
   void performClear(UUID viewUuid, UiActionRequest request);
+
+  /**
+   * Executes the query action and read the next (the later versions) history page from the storage.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @ActionHandler(ACTION_HISTORY_NEXT)
+  void performHistoryNext(UUID viewUuid, UiActionRequest request);
+
+  /**
+   * Executes the query action and read the previous (the earlier versions) history page from the
+   * storage.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @ActionHandler(ACTION_HISTORY_PREV)
+  void performHistoryPrev(UUID viewUuid, UiActionRequest request);
 
 }

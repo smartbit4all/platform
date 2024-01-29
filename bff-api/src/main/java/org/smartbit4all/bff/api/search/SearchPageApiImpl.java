@@ -134,8 +134,13 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext ctx = new PageContext(view.getUuid());
 
     // Setup the available actions.
-    ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true))
-        .addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false))
+    if (ctx.pageConfig.getHistoryObjectUri() == null) {
+      ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true));
+    } else {
+      // In history mode we have the history control commands.
+    }
+
+    ctx.view.addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false))
     // .addActionsItem(new UiAction().code(ACTION_CLEAR)
     ;
 
@@ -345,5 +350,50 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         .forEach(field -> field.getExpressionData().getOperand2().valueAsString(""));
   }
 
+  @Override
+  public void performHistoryNext(UUID viewUuid, UiActionRequest request) {
+    SearchPageModel model = extractClientModel(request);
+    setModel(viewUuid, model);
+    PageContext ctx = new PageContext(viewUuid);
+    // TODO The filter is not working now!
+    // We calculate the next history range
+    Long actualLowerBound = model.getHistoryRange().getLowerBound().getVersionNr();
+    Long actualUpperBound = model.getHistoryRange().getUpperBound().getVersionNr();
+    Objects.requireNonNull(actualLowerBound, "History range - lower bound is missing.");
+    Objects.requireNonNull(actualUpperBound, "History range - upper bound is missing.");
+    ObjectHistoryIterator historyIterator =
+        objectApi.objectHistory(ctx.pageConfig.getHistoryObjectUri());
+    long newUpperBound = Math.min(actualUpperBound + model.getHistoryPageSize(),
+        historyIterator.getLatestVersionNr());
+    long shift = newUpperBound - actualUpperBound;
+    if (shift > 0) {
+      long newLowerBound = actualLowerBound + shift;
+      model.getHistoryRange().getLowerBound().setVersionNr(newLowerBound);
+      model.getHistoryRange().getUpperBound().setVersionNr(newUpperBound);
+      refreshGrid(model, ctx);
+    }
+  }
+
+  @Override
+  public void performHistoryPrev(UUID viewUuid, UiActionRequest request) {
+    SearchPageModel model = extractClientModel(request);
+    setModel(viewUuid, model);
+    PageContext ctx = new PageContext(viewUuid);
+    // TODO The filter is not working now!
+    // We calculate the next history range
+    Long actualLowerBound = model.getHistoryRange().getLowerBound().getVersionNr();
+    Long actualUpperBound = model.getHistoryRange().getUpperBound().getVersionNr();
+    Objects.requireNonNull(actualLowerBound, "History range - lower bound is missing.");
+    Objects.requireNonNull(actualUpperBound, "History range - upper bound is missing.");
+    long newLowerBound = Math.max(actualLowerBound - model.getHistoryPageSize(),
+        0);
+    long shift = actualLowerBound - newLowerBound;
+    if (shift > 0) {
+      long newUpperBound = actualUpperBound - shift;
+      model.getHistoryRange().getLowerBound().setVersionNr(newLowerBound);
+      model.getHistoryRange().getUpperBound().setVersionNr(newUpperBound);
+      refreshGrid(model, ctx);
+    }
+  }
 
 }
