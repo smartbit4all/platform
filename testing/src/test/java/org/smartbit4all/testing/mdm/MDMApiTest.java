@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
@@ -65,6 +66,7 @@ import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApi;
+import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -673,21 +675,10 @@ class MDMApiTest {
 
       View view = viewApi.getView(uuid);
 
-      {
-        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
-            SearchPageApi.WIDGET_RESULT_GRID);
+      List<String> requiredNames =
+          Stream.of("Category 4", "Category 3", "Category 2", "Category 1").collect(toList());
 
-        GridPage page = gridModel.getPage();
-
-        List<String> typeNames = page.getRows().stream()
-            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
-            .collect(toList());
-
-        // The changed list is visible for the normal user also.
-        Assertions.assertThat(typeNames).containsExactly(
-            "Category 4", "Category 3", "Category 2", "Category 1");
-
-      }
+      checkTypeNames(uuid, requiredNames);
 
     });
 
@@ -735,29 +726,57 @@ class MDMApiTest {
 
       View view = viewApi.getView(uuid);
 
+      // The changed list is visible for the normal user also.
       {
-        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
-            SearchPageApi.WIDGET_RESULT_GRID);
-
-        GridPage page = gridModel.getPage();
-
-        List<String> typeNames = page.getRows().stream()
-            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
-            .collect(toList());
-
-        // The changed list is visible for the normal user also.
         List<String> requiredNames = new ArrayList<>();
         for (int i = 249; i >= 240; i--) {
           requiredNames.add("Category " + i);
         }
-        Assertions.assertThat(typeNames)
-            .containsExactly(requiredNames.toArray(StringConstant.EMPTY_ARRAY));
+        checkTypeNames(uuid, requiredNames);
+      }
 
+      {
+        SearchPageModel model = (SearchPageModel) view.getModel();
+        viewContextService.performAction(querySetView.getUuid(),
+            new UiActionRequest().code(SearchPageApi.ACTION_HISTORY_PREV).putParamsItem("model",
+                model));
+      }
+      {
+        List<String> requiredNames = new ArrayList<>();
+        for (int i = 239; i >= 230; i--) {
+          requiredNames.add("Category " + i);
+        }
+        checkTypeNames(uuid, requiredNames);
+      }
+      {
+        SearchPageModel model = (SearchPageModel) view.getModel();
+        model.setHistoryPageSize(25);
+        viewContextService.performAction(querySetView.getUuid(),
+            new UiActionRequest().code(SearchPageApi.ACTION_HISTORY_NEXT).putParamsItem("model",
+                model));
+      }
+      {
+        List<String> requiredNames = new ArrayList<>();
+        for (int i = 249; i >= 240; i--) {
+          requiredNames.add("Category " + i);
+        }
+        checkTypeNames(uuid, requiredNames);
       }
 
     });
 
     authService.logout();
+  }
+
+  private void checkTypeNames(UUID uuid, List<String> requiredNames) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+        SearchPageApi.WIDGET_RESULT_GRID);
+    GridPage page = gridModel.getPage();
+    List<String> typeNames = page.getRows().stream()
+        .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+        .collect(toList());
+    Assertions.assertThat(typeNames)
+        .containsExactly(requiredNames.toArray(StringConstant.EMPTY_ARRAY));
   }
 
   private static final String getRowIdByPropertyValue(GridModel model, String propertyName,
