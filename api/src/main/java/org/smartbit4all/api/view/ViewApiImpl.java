@@ -88,7 +88,8 @@ public class ViewApiImpl implements ViewApi {
   private boolean isActiveView(View view) {
     return view.getType() == ViewType.NORMAL
         && (view.getState() == ViewState.OPENED
-            || view.getState() == ViewState.TO_OPEN);
+            || view.getState() == ViewState.TO_OPEN
+            || view.getState() == ViewState.OPEN_PENDING);
   }
 
   private ViewContext addViewToViewContext(ViewContext context, View view) {
