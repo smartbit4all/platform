@@ -338,8 +338,6 @@ public class ViewContextServiceImpl implements ViewContextService {
     } catch (Exception e) {
       // message not found -> log error and remove message to avoid infinite loop
       log.error("Unexpected error when retreiving message", e);
-      updateCurrentViewContext(
-          c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
       return null;
     }
     View view;
