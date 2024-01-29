@@ -1,12 +1,11 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -14,11 +13,16 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
@@ -52,10 +56,12 @@ import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
+import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDisplay;
@@ -67,6 +73,8 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -76,6 +84,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private static final String VARIABLE_INACTIVES = "inactives";
 
   private static final String VARIABLE_ACTIVES = "actives";
+
 
   public MDMEntryListPageApiImpl() {
     super(SearchPageModel.class);
@@ -108,8 +117,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Autowired
   protected LocaleSettingApi localeSettingApi;
 
+
   @Autowired
   VectorDBApi vectorDBApi;
+
+  @Autowired
+  protected FilterExpressionApi filterExpressionApi;
+
+  @Autowired
+  protected FilterExpressionBuilderApi filterExpressionBuilderApi;
 
   @Autowired(required = false)
   private MDMApprovalApi mdmApprovalApi;
@@ -138,6 +154,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMBranchingStrategy branchingStrategy;
     boolean underApproval;
     boolean isApprover;
+    FilterExpressionBuilderModel filterModel;
 
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(getView());
@@ -164,6 +181,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       if (branchingStrategy == null) {
         log.warn("branchingStrategy null, using default NONE");
         branchingStrategy = MDMBranchingStrategy.NONE;
+      }
+
+
+      filterModel = entryDescriptor.getFilterModel();
+      if (checkAdmin()) {
+        FilterExpressionBuilderModel filterModelAdmin =
+            entryDescriptor.getFilterModelAdmin();
+        if (filterModelAdmin != null) {
+          filterModel = filterModelAdmin;
+        }
       }
 
       URI approver = getEntryApi().getApprover();
@@ -211,6 +238,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     public MDMEntryDescriptor getEntryDescriptor() {
       return entryDescriptor;
+    }
+
+    public FilterExpressionBuilderModel getFilterModel() {
+      return filterModel;
     }
 
     public MDMDefinition getDefinition() {
@@ -291,13 +322,33 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
-
+    initFilterModel(context);
     refreshGrid(context);
 
-    FilterExpressionFieldList filters = null;
     return new SearchPageModel()
-        .pageTitle(getPageTitle(context))
-        .filters(null);
+        .pageTitle(getPageTitle(context));
+  }
+
+  private void initFilterModel(PageContext ctx) {
+
+    FilterExpressionBuilderModel filterModel = ctx.getFilterModel();
+    if (filterModel != null) {
+      FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+          filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
+      if (Objects.nonNull(filterExpressionBuilderUiModel.getModel().getGroups())
+          && !filterExpressionBuilderUiModel.getModel().getGroups().isEmpty()) {
+        filterExpressionBuilderUiModel.setType(TypeEnum.COMPLEX);
+        filterExpressionBuilderUiModel.showGroups(true);
+        filterExpressionBuilderUiModel.readOnly(false);
+      } else {
+        filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
+      }
+
+      filterExpressionBuilderApi.initFilterBuilderInView(ctx.getView().getUuid(),
+          SearchPageApi.FILTER_BUILDER_WIDGET_ID,
+          filterExpressionBuilderUiModel);
+    }
+
   }
 
   private String getPageTitle(PageContext context) {
@@ -394,7 +445,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   protected final void refreshGrid(PageContext ctx) {
-
     TableData<?> data;
     if (ctx.checkAdmin() && ctx.getEntryApi().hasBranch()) {
       List<BranchedObjectEntry> list;
@@ -410,10 +460,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       StoredList list = ctx.inactives ? inactiveList : ctx.getEntryApi().getList();
       data = createTableDataForPublishedGrid(ctx, list);
     }
+
     data = postProcessTableDataForGrid(ctx, data);
     gridModelApi.setData(ctx.getView().getUuid(), WIDGET_ENTRY_GRID, data);
 
   }
+
+
 
   protected TableData<?> postProcessTableDataForGrid(PageContext ctx, TableData<?> data) {
     return data;
@@ -421,17 +474,32 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected TableData<?> createTableDataForAdminGrid(PageContext ctx,
       List<BranchedObjectEntry> list) {
+    FilterExpressionList filters = null;
+    filters = createFilterExpressionIfPresent(ctx, filters);
     return ctx.searchIndexAdmin
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = ctx.getBranchedObjectDefinition();
           return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
               objectDefinition.toMap(i));
-        }), null);
+        }), filters);
   }
 
   protected TableData<?> createTableDataForPublishedGrid(PageContext ctx,
       StoredList list) {
-    return ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(), null);
+    FilterExpressionList filters = null;
+    filters = createFilterExpressionIfPresent(ctx, filters);
+    return ctx.searchIndexPublished.executeSearchOnNodes(list.nodesFromCache(), filters);
+  }
+
+  private FilterExpressionList createFilterExpressionIfPresent(PageContext ctx,
+      FilterExpressionList filters) {
+    if (ctx.getFilterModel() != null) {
+      FilterExpressionFieldList filterExpressionFieldList =
+          filterExpressionBuilderApi.getFilterExpressionFieldList(ctx.getView().getUuid(),
+              SearchPageApi.FILTER_BUILDER_WIDGET_ID);
+      filters = filterExpressionApi.of(filterExpressionFieldList);
+    }
+    return filters;
   }
 
   @Override

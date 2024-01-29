@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -64,7 +65,9 @@ import javax.validation.Valid;
   MDMEntryDescriptor.BRANCHING_STRATEGY,
   MDMEntryDescriptor.SELF_CONTAINED_REF_LIST,
   MDMEntryDescriptor.VECTOR_COLLECTION,
-  MDMEntryDescriptor.PROPERTY_MAPPINGS
+  MDMEntryDescriptor.PROPERTY_MAPPINGS,
+  MDMEntryDescriptor.FILTER_MODEL,
+  MDMEntryDescriptor.FILTER_MODEL_ADMIN
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -134,6 +137,12 @@ public class MDMEntryDescriptor {
 
   public static final String PROPERTY_MAPPINGS = "propertyMappings";
   private Map<String, String> propertyMappings = null;
+
+  public static final String FILTER_MODEL = "filterModel";
+  private FilterExpressionBuilderModel filterModel = null;
+
+  public static final String FILTER_MODEL_ADMIN = "filterModelAdmin";
+  private FilterExpressionBuilderModel filterModelAdmin = null;
 
   public MDMEntryDescriptor() { 
   }
@@ -371,14 +380,14 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead!  
+   * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! 
    * @return uniquePropertyPaths
    * @deprecated
   **/
   @Deprecated
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead!  ")
+  @ApiModelProperty(value = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! ")
   @JsonProperty(UNIQUE_PROPERTY_PATHS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -768,11 +777,11 @@ public class MDMEntryDescriptor {
   }
 
    /**
-   * This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties.  
+   * This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties. 
    * @return propertyMappings
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties.  ")
+  @ApiModelProperty(value = "This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties. ")
   @JsonProperty(PROPERTY_MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -785,6 +794,62 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPropertyMappings(Map<String, String> propertyMappings) {
     this.propertyMappings = propertyMappings;
+  }
+
+
+  public MDMEntryDescriptor filterModel(FilterExpressionBuilderModel filterModel) {
+    
+    this.filterModel = filterModel;
+    return this;
+  }
+
+   /**
+   * If null, the list cannot be searched in published mode, and there are no filters.
+   * @return filterModel
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If null, the list cannot be searched in published mode, and there are no filters.")
+  @JsonProperty(FILTER_MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionBuilderModel getFilterModel() {
+    return filterModel;
+  }
+
+
+  @JsonProperty(FILTER_MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterModel(FilterExpressionBuilderModel filterModel) {
+    this.filterModel = filterModel;
+  }
+
+
+  public MDMEntryDescriptor filterModelAdmin(FilterExpressionBuilderModel filterModelAdmin) {
+    
+    this.filterModelAdmin = filterModelAdmin;
+    return this;
+  }
+
+   /**
+   * if null, but filterModel is present, filterModel is applied.
+   * @return filterModelAdmin
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "if null, but filterModel is present, filterModel is applied.")
+  @JsonProperty(FILTER_MODEL_ADMIN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionBuilderModel getFilterModelAdmin() {
+    return filterModelAdmin;
+  }
+
+
+  @JsonProperty(FILTER_MODEL_ADMIN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterModelAdmin(FilterExpressionBuilderModel filterModelAdmin) {
+    this.filterModelAdmin = filterModelAdmin;
   }
 
 
@@ -818,12 +883,14 @@ public class MDMEntryDescriptor {
         Objects.equals(this.branchingStrategy, mdMEntryDescriptor.branchingStrategy) &&
         Objects.equals(this.selfContainedRefList, mdMEntryDescriptor.selfContainedRefList) &&
         Objects.equals(this.vectorCollection, mdMEntryDescriptor.vectorCollection) &&
-        Objects.equals(this.propertyMappings, mdMEntryDescriptor.propertyMappings);
+        Objects.equals(this.propertyMappings, mdMEntryDescriptor.propertyMappings) &&
+        Objects.equals(this.filterModel, mdMEntryDescriptor.filterModel) &&
+        Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin);
   }
 
   @Override
@@ -852,6 +919,8 @@ public class MDMEntryDescriptor {
     sb.append("    selfContainedRefList: ").append(toIndentedString(selfContainedRefList)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
     sb.append("    propertyMappings: ").append(toIndentedString(propertyMappings)).append("\n");
+    sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
+    sb.append("    filterModelAdmin: ").append(toIndentedString(filterModelAdmin)).append("\n");
     sb.append("}");
     return sb.toString();
   }

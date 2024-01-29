@@ -176,6 +176,12 @@ components:
                     type: string
                     additionalProperties:
                         type: string
+                filterModel:
+                    description: "If null, the list cannot be searched in published mode, and there are no filters."
+                    type: FilterExpressionBuilderModel
+                filterModelAdmin:
+                    description: "if null, but filterModel is present, filterModel is applied."
+                    type: FilterExpressionBuilderModel
         MDMTableColumnDescriptor:
             type: object
             description: |
