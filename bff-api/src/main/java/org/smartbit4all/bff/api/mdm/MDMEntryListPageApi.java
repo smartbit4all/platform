@@ -255,6 +255,18 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   @WidgetActionHandler(value = ACTION_RESTORE_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performRestoreEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
+  /**
+   * Default widget action handler, might be used to implement custom wigdet handling behaviour.
+   *
+   * @param viewUuid The unique identifier of the view in the current context.
+   * @param gridId The identifier of the grid widget in the given page.
+   * @param rowId The identifier of the row.
+   * @param request The action request that contains every information about the triggering action.
+   */
+  @WidgetActionHandler
+  default void performCustomWidgetAction(UUID viewUuid, String gridId, String rowId,
+      UiActionRequest request) {}
+
   @ActionHandler(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE)
   void showEntryDescriptorPage(UUID viewUuid, UiActionRequest request);
 
