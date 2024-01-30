@@ -22,7 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.collection.bean.VectorValue;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,51 +35,20 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The vector search result items. ")
 @JsonPropertyOrder({
-  VectorSearchResultItem.ID,
   VectorSearchResultItem.SCORE,
   VectorSearchResultItem.VALUE
 })
 @JsonTypeName("VectorSearchResultItem")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class VectorSearchResultItem {
-  public static final String ID = "id";
-  private String id;
-
   public static final String SCORE = "score";
   private Float score;
 
   public static final String VALUE = "value";
-  private VectorValue value;
+  private Map<String, Object> value = null;
 
   public VectorSearchResultItem() { 
   }
-
-  public VectorSearchResultItem id(String id) {
-    
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * The unique identifier of the object found.
-   * @return id
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the object found.")
-  @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getId() {
-    return id;
-  }
-
-
-  @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setId(String id) {
-    this.id = id;
-  }
-
 
   public VectorSearchResultItem score(Float score) {
     
@@ -106,9 +77,17 @@ public class VectorSearchResultItem {
   }
 
 
-  public VectorSearchResultItem value(VectorValue value) {
+  public VectorSearchResultItem value(Map<String, Object> value) {
     
     this.value = value;
+    return this;
+  }
+
+  public VectorSearchResultItem putValueItem(String key, Object valueItem) {
+    if (this.value == null) {
+      this.value = new HashMap<>();
+    }
+    this.value.put(key, valueItem);
     return this;
   }
 
@@ -117,19 +96,18 @@ public class VectorSearchResultItem {
    * @return value
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-  public VectorValue getValue() {
+  public Map<String, Object> getValue() {
     return value;
   }
 
 
   @JsonProperty(VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValue(VectorValue value) {
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValue(Map<String, Object> value) {
     this.value = value;
   }
 
@@ -143,21 +121,19 @@ public class VectorSearchResultItem {
       return false;
     }
     VectorSearchResultItem vectorSearchResultItem = (VectorSearchResultItem) o;
-    return Objects.equals(this.id, vectorSearchResultItem.id) &&
-        Objects.equals(this.score, vectorSearchResultItem.score) &&
+    return Objects.equals(this.score, vectorSearchResultItem.score) &&
         Objects.equals(this.value, vectorSearchResultItem.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, score, value);
+    return Objects.hash(score, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class VectorSearchResultItem {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    score: ").append(toIndentedString(score)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");

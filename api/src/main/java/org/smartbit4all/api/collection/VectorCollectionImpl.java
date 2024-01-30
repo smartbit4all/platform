@@ -101,8 +101,8 @@ public class VectorCollectionImpl implements VectorCollection {
         ObjectLookupParameter parameter) {
       List<VectorSearchResultItem> result = search(values, parameter.getLimit());
       return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
-          .stream().map(si -> new ObjectLookupResultItem().id(si.getId())
-              .scoreInPercent(si.getScore()).objectAsMap(si.getValue().getInputObject()))
+          .stream().map(si -> new ObjectLookupResultItem()
+              .scoreInPercent(si.getScore()).objectAsMap(si.getValue()))
           .collect(toList()));
     }
 

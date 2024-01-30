@@ -22,6 +22,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.mdm.bean.MDMEntryEditingObjectMDMEntryConstraint;
+import org.smartbit4all.api.mdm.bean.MDMEntryEditingObjectMDMErrorLog;
+import org.smartbit4all.api.mdm.bean.MDMEntryEditingObjectMDMErrorLogData;
+import org.smartbit4all.api.mdm.bean.MDMEntryEditingObjectMDMModificationRequest;
+import org.smartbit4all.api.mdm.bean.MDMEntryEditingObjectMDMModificationRequestData;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,7 +40,12 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMEntryEditingObject.BRANCH_OBJECT_ENTRY,
   MDMEntryEditingObject.ORIGINAL_OBJECT,
-  MDMEntryEditingObject.BRANCHED_OBJECT
+  MDMEntryEditingObject.BRANCHED_OBJECT,
+  MDMEntryEditingObject.MD_M_MODIFICATION_REQUEST,
+  MDMEntryEditingObject.MD_M_MODIFICATION_REQUEST_DATA,
+  MDMEntryEditingObject.MD_M_ERROR_LOG,
+  MDMEntryEditingObject.MD_M_ERROR_LOG_DATA,
+  MDMEntryEditingObject.MD_M_ENTRY_CONSTRAINT
 })
 @JsonTypeName("MDMEntryEditingObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +58,21 @@ public class MDMEntryEditingObject {
 
   public static final String BRANCHED_OBJECT = "branchedObject";
   private Object branchedObject;
+
+  public static final String MD_M_MODIFICATION_REQUEST = "MDMModificationRequest";
+  private MDMEntryEditingObjectMDMModificationRequest mdMModificationRequest;
+
+  public static final String MD_M_MODIFICATION_REQUEST_DATA = "MDMModificationRequestData";
+  private MDMEntryEditingObjectMDMModificationRequestData mdMModificationRequestData;
+
+  public static final String MD_M_ERROR_LOG = "MDMErrorLog";
+  private MDMEntryEditingObjectMDMErrorLog mdMErrorLog;
+
+  public static final String MD_M_ERROR_LOG_DATA = "MDMErrorLogData";
+  private MDMEntryEditingObjectMDMErrorLogData mdMErrorLogData;
+
+  public static final String MD_M_ENTRY_CONSTRAINT = "MDMEntryConstraint";
+  private MDMEntryEditingObjectMDMEntryConstraint mdMEntryConstraint;
 
   public MDMEntryEditingObject() { 
   }
@@ -134,6 +159,146 @@ public class MDMEntryEditingObject {
   }
 
 
+  public MDMEntryEditingObject mdMModificationRequest(MDMEntryEditingObjectMDMModificationRequest mdMModificationRequest) {
+    
+    this.mdMModificationRequest = mdMModificationRequest;
+    return this;
+  }
+
+   /**
+   * Get mdMModificationRequest
+   * @return mdMModificationRequest
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MD_M_MODIFICATION_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMEntryEditingObjectMDMModificationRequest getMdMModificationRequest() {
+    return mdMModificationRequest;
+  }
+
+
+  @JsonProperty(MD_M_MODIFICATION_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMdMModificationRequest(MDMEntryEditingObjectMDMModificationRequest mdMModificationRequest) {
+    this.mdMModificationRequest = mdMModificationRequest;
+  }
+
+
+  public MDMEntryEditingObject mdMModificationRequestData(MDMEntryEditingObjectMDMModificationRequestData mdMModificationRequestData) {
+    
+    this.mdMModificationRequestData = mdMModificationRequestData;
+    return this;
+  }
+
+   /**
+   * Get mdMModificationRequestData
+   * @return mdMModificationRequestData
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MD_M_MODIFICATION_REQUEST_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMEntryEditingObjectMDMModificationRequestData getMdMModificationRequestData() {
+    return mdMModificationRequestData;
+  }
+
+
+  @JsonProperty(MD_M_MODIFICATION_REQUEST_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMdMModificationRequestData(MDMEntryEditingObjectMDMModificationRequestData mdMModificationRequestData) {
+    this.mdMModificationRequestData = mdMModificationRequestData;
+  }
+
+
+  public MDMEntryEditingObject mdMErrorLog(MDMEntryEditingObjectMDMErrorLog mdMErrorLog) {
+    
+    this.mdMErrorLog = mdMErrorLog;
+    return this;
+  }
+
+   /**
+   * Get mdMErrorLog
+   * @return mdMErrorLog
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MD_M_ERROR_LOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMEntryEditingObjectMDMErrorLog getMdMErrorLog() {
+    return mdMErrorLog;
+  }
+
+
+  @JsonProperty(MD_M_ERROR_LOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMdMErrorLog(MDMEntryEditingObjectMDMErrorLog mdMErrorLog) {
+    this.mdMErrorLog = mdMErrorLog;
+  }
+
+
+  public MDMEntryEditingObject mdMErrorLogData(MDMEntryEditingObjectMDMErrorLogData mdMErrorLogData) {
+    
+    this.mdMErrorLogData = mdMErrorLogData;
+    return this;
+  }
+
+   /**
+   * Get mdMErrorLogData
+   * @return mdMErrorLogData
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MD_M_ERROR_LOG_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMEntryEditingObjectMDMErrorLogData getMdMErrorLogData() {
+    return mdMErrorLogData;
+  }
+
+
+  @JsonProperty(MD_M_ERROR_LOG_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMdMErrorLogData(MDMEntryEditingObjectMDMErrorLogData mdMErrorLogData) {
+    this.mdMErrorLogData = mdMErrorLogData;
+  }
+
+
+  public MDMEntryEditingObject mdMEntryConstraint(MDMEntryEditingObjectMDMEntryConstraint mdMEntryConstraint) {
+    
+    this.mdMEntryConstraint = mdMEntryConstraint;
+    return this;
+  }
+
+   /**
+   * Get mdMEntryConstraint
+   * @return mdMEntryConstraint
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MD_M_ENTRY_CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMEntryEditingObjectMDMEntryConstraint getMdMEntryConstraint() {
+    return mdMEntryConstraint;
+  }
+
+
+  @JsonProperty(MD_M_ENTRY_CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMdMEntryConstraint(MDMEntryEditingObjectMDMEntryConstraint mdMEntryConstraint) {
+    this.mdMEntryConstraint = mdMEntryConstraint;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -145,12 +310,17 @@ public class MDMEntryEditingObject {
     MDMEntryEditingObject mdMEntryEditingObject = (MDMEntryEditingObject) o;
     return Objects.equals(this.branchObjectEntry, mdMEntryEditingObject.branchObjectEntry) &&
         Objects.equals(this.originalObject, mdMEntryEditingObject.originalObject) &&
-        Objects.equals(this.branchedObject, mdMEntryEditingObject.branchedObject);
+        Objects.equals(this.branchedObject, mdMEntryEditingObject.branchedObject) &&
+        Objects.equals(this.mdMModificationRequest, mdMEntryEditingObject.mdMModificationRequest) &&
+        Objects.equals(this.mdMModificationRequestData, mdMEntryEditingObject.mdMModificationRequestData) &&
+        Objects.equals(this.mdMErrorLog, mdMEntryEditingObject.mdMErrorLog) &&
+        Objects.equals(this.mdMErrorLogData, mdMEntryEditingObject.mdMErrorLogData) &&
+        Objects.equals(this.mdMEntryConstraint, mdMEntryEditingObject.mdMEntryConstraint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchObjectEntry, originalObject, branchedObject);
+    return Objects.hash(branchObjectEntry, originalObject, branchedObject, mdMModificationRequest, mdMModificationRequestData, mdMErrorLog, mdMErrorLogData, mdMEntryConstraint);
   }
 
   @Override
@@ -160,6 +330,11 @@ public class MDMEntryEditingObject {
     sb.append("    branchObjectEntry: ").append(toIndentedString(branchObjectEntry)).append("\n");
     sb.append("    originalObject: ").append(toIndentedString(originalObject)).append("\n");
     sb.append("    branchedObject: ").append(toIndentedString(branchedObject)).append("\n");
+    sb.append("    mdMModificationRequest: ").append(toIndentedString(mdMModificationRequest)).append("\n");
+    sb.append("    mdMModificationRequestData: ").append(toIndentedString(mdMModificationRequestData)).append("\n");
+    sb.append("    mdMErrorLog: ").append(toIndentedString(mdMErrorLog)).append("\n");
+    sb.append("    mdMErrorLogData: ").append(toIndentedString(mdMErrorLogData)).append("\n");
+    sb.append("    mdMEntryConstraint: ").append(toIndentedString(mdMEntryConstraint)).append("\n");
     sb.append("}");
     return sb.toString();
   }
