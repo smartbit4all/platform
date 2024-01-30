@@ -950,6 +950,17 @@ public class ViewContextServiceImpl implements ViewContextService {
       // wildcard handler
       method = widgetMethods.get("");
     }
+    if (method == null) {
+      // go back to wildcard grid, and try from there
+      widgetMethods = methods.get("");
+      if (widgetMethods != null) {
+        method = widgetMethods.get(code);
+        if (method == null) {
+          // wildcard handler
+          method = widgetMethods.get("");
+        }
+      }
+    }
     return method;
   }
 
