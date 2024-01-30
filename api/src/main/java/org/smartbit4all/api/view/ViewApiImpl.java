@@ -182,18 +182,32 @@ public class ViewApiImpl implements ViewApi {
     Objects.requireNonNull(viewUuid, "UUID must be not null");
     viewContextService.updateCurrentViewContext(
         context -> {
-          ViewContexts.updateViewState(context, viewUuid, ViewState.TO_CLOSE);
           View viewToClose = ViewContexts.getView(context, viewUuid);
           if (viewToClose != null && viewToClose.getType() == ViewType.NORMAL) {
+            ViewContexts.updateViewState(context, viewUuid, ViewState.CLOSE_PENDING);
             View parentView = getParentView(viewToClose);
             while (parentView != null && !parentView.getClosedChildrenViews().isEmpty()) {
               View viewToShow = parentView.getClosedChildrenViews().remove(0);
               if (viewToShow != null) {
                 clearViewIfNecessary(viewToShow);
                 showViewInternal(viewToShow);
+                if (context.getOpenPendingData() != null) {
+                  // if no pending result, showViewinternal will clear openPendingData
+                  // since it's not the case, we have to store currently removed child
+                  context.getOpenPendingData().putClosedChildrenItem(
+                      parentView.getUuid().toString(),
+                      viewToShow);
+                }
               }
               parentView = viewToShow;
             }
+            if (context.getOpenPendingData() == null) {
+              ViewContexts.updateViewState(context, viewUuid, ViewState.TO_CLOSE);
+            } else {
+              context.getOpenPendingData().addViewsToCloseItem(viewUuid);
+            }
+          } else {
+            ViewContexts.updateViewState(context, viewUuid, ViewState.TO_CLOSE);
           }
           return context;
         });
@@ -292,6 +306,15 @@ public class ViewApiImpl implements ViewApi {
             data.getViewsToOpen().stream()
                 .map(v -> ViewContexts.getView(context, v))
                 .forEach(v -> v.setState(ViewState.CLOSED));
+            data.getClosedChildren().entrySet().forEach(
+                closed -> {
+                  try {
+                    ViewContexts.getView(context, UUID.fromString(closed.getKey()))
+                        .getClosedChildrenViews().add(0, closed.getValue());
+                  } catch (Exception e) {
+                    log.warn("ClosedChildren restore failed on view {}", closed.getKey());
+                  }
+                });
             context.setOpenPendingData(null);
             return context;
           });

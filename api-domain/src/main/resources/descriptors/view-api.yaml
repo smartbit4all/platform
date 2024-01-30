@@ -865,7 +865,7 @@ components:
     OpenPendingData:
       type: object
       description: All information regarding opening a view (and possible it's parents).
-      required: [viewsToOpen,viewsToClose,results]
+      required: [viewsToOpen,viewsToClose,results,closedChildren]
       properties:
         viewsToOpen:
           type: array
@@ -880,6 +880,11 @@ components:
         results:
           additionalProperties:
             $ref: '#/components/schemas/CloseResult'
+        closedChildren:
+          description: This map holds the 'used' closed children which should be restored on reject.
+          type: string
+          additionalProperties: 
+            $ref: '#/components/schemas/View'
     CloseResult:
       type: string
       default: pending

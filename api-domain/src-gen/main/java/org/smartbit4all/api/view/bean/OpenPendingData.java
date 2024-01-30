@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -40,7 +41,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   OpenPendingData.VIEWS_TO_OPEN,
   OpenPendingData.VIEWS_TO_CLOSE,
-  OpenPendingData.RESULTS
+  OpenPendingData.RESULTS,
+  OpenPendingData.CLOSED_CHILDREN
 })
 @JsonTypeName("OpenPendingData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -53,6 +55,9 @@ public class OpenPendingData {
 
   public static final String RESULTS = "results";
   private Map<String, CloseResult> results = new HashMap<>();
+
+  public static final String CLOSED_CHILDREN = "closedChildren";
+  private Map<String, View> closedChildren = new HashMap<>();
 
   public OpenPendingData() { 
   }
@@ -159,6 +164,40 @@ public class OpenPendingData {
   }
 
 
+  public OpenPendingData closedChildren(Map<String, View> closedChildren) {
+    
+    this.closedChildren = closedChildren;
+    return this;
+  }
+
+  public OpenPendingData putClosedChildrenItem(String key, View closedChildrenItem) {
+    this.closedChildren.put(key, closedChildrenItem);
+    return this;
+  }
+
+   /**
+   * This map holds the &#39;used&#39; closed children which should be restored on reject.
+   * @return closedChildren
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "This map holds the 'used' closed children which should be restored on reject.")
+  @JsonProperty(CLOSED_CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, View> getClosedChildren() {
+    return closedChildren;
+  }
+
+
+  @JsonProperty(CLOSED_CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setClosedChildren(Map<String, View> closedChildren) {
+    this.closedChildren = closedChildren;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -170,12 +209,13 @@ public class OpenPendingData {
     OpenPendingData openPendingData = (OpenPendingData) o;
     return Objects.equals(this.viewsToOpen, openPendingData.viewsToOpen) &&
         Objects.equals(this.viewsToClose, openPendingData.viewsToClose) &&
-        Objects.equals(this.results, openPendingData.results);
+        Objects.equals(this.results, openPendingData.results) &&
+        Objects.equals(this.closedChildren, openPendingData.closedChildren);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewsToOpen, viewsToClose, results);
+    return Objects.hash(viewsToOpen, viewsToClose, results, closedChildren);
   }
 
   @Override
@@ -185,6 +225,7 @@ public class OpenPendingData {
     sb.append("    viewsToOpen: ").append(toIndentedString(viewsToOpen)).append("\n");
     sb.append("    viewsToClose: ").append(toIndentedString(viewsToClose)).append("\n");
     sb.append("    results: ").append(toIndentedString(results)).append("\n");
+    sb.append("    closedChildren: ").append(toIndentedString(closedChildren)).append("\n");
     sb.append("}");
     return sb.toString();
   }
