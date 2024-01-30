@@ -94,7 +94,7 @@ class ObjectExtensionTest {
             .returns(SmartFormWidgetType.TEXT_FIELD, SmartWidgetDefinition::getType))
         .anySatisfy(w -> assertThat(w)
             .returns(SampleExtensibleObject.COST, SmartWidgetDefinition::getKey)
-            .returns(SmartFormWidgetType.TEXT_FIELD, SmartWidgetDefinition::getType)
+            .returns(SmartFormWidgetType.TEXT_FIELD_NUMBER, SmartWidgetDefinition::getType)
             .satisfies(x -> assertThat(x.getMask()).isNotEmpty()))
         .anySatisfy(w -> assertThat(w)
             .returns(SampleExtensibleObject.CREATED_AT, SmartWidgetDefinition::getKey)
