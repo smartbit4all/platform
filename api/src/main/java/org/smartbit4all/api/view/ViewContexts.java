@@ -44,11 +44,7 @@ public class ViewContexts {
   }
 
   public static ViewContext updateViewState(ViewContext context, UUID viewUuid, ViewState state) {
-    context.getViews().stream()
-        .filter(v -> viewUuid.equals(v.getUuid()))
-        .findFirst()
-        .ifPresent(view -> view.setState(state));
-    return context;
+    return updateViewData(context, viewUuid, view -> view.state(state));
   }
 
   public static ViewContext updateViewData(ViewContext context, UUID viewUuid,
