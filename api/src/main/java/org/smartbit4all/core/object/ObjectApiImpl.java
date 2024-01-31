@@ -1,10 +1,16 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,11 +39,6 @@ import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -313,7 +314,11 @@ public class ObjectApiImpl implements ObjectApi {
       if (StringConstant.EMPTY.equals(value)) {
         return null;
       }
-      return (T) LocalDateTime.parse((String) value);
+      try {
+        return (T) LocalDateTime.parse((String) value);
+      } catch (DateTimeParseException e) {
+        return (T) OffsetDateTime.parse((String) value).toLocalDateTime();
+      }
     }
     if (value instanceof Map) {
       // Try to retrieve the proper object
