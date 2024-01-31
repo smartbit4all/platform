@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.filterexpression;
 
+import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +12,6 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFieldUiConverter {
 
@@ -60,6 +60,13 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
 
   }
 
+  private SmartFormWidgetType getSelectLayoutTypeFromField(FilterExpressionField field) {
+    if (field.getWidgetType() == null) {
+      return getLayoutTypeFromField(field);
+    }
+    return SmartFormWidgetType.fromValue(field.getWidgetType().getValue());
+  }
+
   private List<SmartWidgetDefinition> convertRangeFilter(FilterExpressionField field) {
     return new ArrayList<>(Arrays.asList(new SmartWidgetDefinition()
         .key(EXPRESSION_DATA_OPERAND2)
@@ -74,13 +81,15 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
   }
 
   private List<SmartWidgetDefinition> convertSelectFilter(FilterExpressionField field) {
-    return Arrays.asList(
-        new SmartWidgetDefinition()
-            .key(EXPRESSION_DATA_OPERAND2)
-            .type(getLayoutTypeFromField(field))
-            .label(field.getLabel())
-            .placeholder(field.getLabel())
-            .values(field.getPossibleValues()));
+
+    List<SmartWidgetDefinition> result = new ArrayList<>();
+    result.add(new SmartWidgetDefinition()
+        .key(EXPRESSION_DATA_OPERAND2)
+        .type(getSelectLayoutTypeFromField(field))
+        .label(field.getLabel())
+        .placeholder(field.getLabel())
+        .values(field.getPossibleValues()));
+    return result;
   }
 
   private SmartWidgetDefinition getPossibleOperations(FilterExpressionField field) {
