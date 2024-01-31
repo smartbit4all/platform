@@ -803,6 +803,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
       boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
       boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
+      boolean isNewEntry =
+          Objects.equals(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE),
+              BranchedObjectEntry.BranchingStateEnum.NEW);
 
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
@@ -816,7 +819,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
-                !ctx.inactives, isOnBranch)
+                !ctx.inactives, isOnBranch, !isNewEntry)
             .addIf(ACTION_VIEW_ENTRY, (isAdmin || ctx.isApprover()));
       } else {
         uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
@@ -828,7 +831,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
-                !ctx.inactives, isOnBranch);
+                !ctx.inactives, isOnBranch, !isNewEntry);
       }
       row.setActions(uiActions.build());
       String icon;
