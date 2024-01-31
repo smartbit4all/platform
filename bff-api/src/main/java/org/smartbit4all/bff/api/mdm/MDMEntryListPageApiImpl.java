@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,8 +75,6 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -85,6 +85,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   private static final String VARIABLE_ACTIVES = "actives";
 
+  protected static Function<GridRow, String> branchedObjectUriGetter = row -> {
+    Object oBranchUri =
+        GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+    if (oBranchUri != null) {
+      return BranchedObjectEntry.BRANCH_URI;
+    }
+    return BranchedObjectEntry.ORIGINAL_URI;
+  };
 
   public MDMEntryListPageApiImpl() {
     super(SearchPageModel.class);
@@ -659,14 +667,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, row -> {
-      Object oBranchUri =
-          GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
-      if (oBranchUri != null) {
-        return BranchedObjectEntry.BRANCH_URI;
-      }
-      return BranchedObjectEntry.ORIGINAL_URI;
-    },
+    performActionOnEntry(context, gridId, rowId, branchedObjectUriGetter,
         (u, ctx) -> {
           ctx.getEntryApi().remove(u);
         });
@@ -686,15 +687,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performRestoreEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId,
-        row -> {
-          Object oBranchUri =
-              GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
-          if (oBranchUri != null) {
-            return BranchedObjectEntry.BRANCH_URI;
-          }
-          return BranchedObjectEntry.ORIGINAL_URI;
-        },
+    performActionOnEntry(context, gridId, rowId, branchedObjectUriGetter,
         (u, ctx) -> ctx.getEntryApi().restore(u));
     refreshGrid(context);
   }
@@ -764,7 +757,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     gridRow.ifPresent(r -> action.accept(r, context));
   }
 
-  private final void performActionOnEntry(PageContext context, String gridId, String rowId,
+  protected final void performActionOnEntry(PageContext context, String gridId, String rowId,
       Function<GridRow, String> uriPropertyGetter, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
       Object valueFromGridRow =
