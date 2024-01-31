@@ -174,7 +174,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
               searchExpressionByPropertyName.get(propertyName);
           if (customExpressionMapping.complexExpressionProcessor != null) {
             exp = customExpressionMapping.complexExpressionProcessor
-                .apply(value, searchEntityDef.definition).BRACKET();
+                .apply(value, searchEntityDef.definition, searchIndexMappingObject).BRACKET();
           } else if (customExpressionMapping.expressionProcessor != null && property != null) {
             exp = customExpressionMapping.expressionProcessor.apply(value, property);
           } else if (customExpressionMapping.detailExpressionProcessor != null) {

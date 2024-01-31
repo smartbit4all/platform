@@ -65,7 +65,7 @@ public class CollectionTestConfig {
                 (name, nameProp) -> ((Property<String>) nameProp)
                     .like("%" + name.toString() + "%"))
             .expressionComplex(TestFilter.CAPTION,
-                (caption, entityDef) -> {
+                (caption, entityDef, searchIndexMappingObject) -> {
                   ExpressionClause exp = Expression.createAndClause()
                       .add(((Property<String>) entityDef.getProperty(TestFilter.CAPTION))
                           .like("%" + caption.toString() + "%"));

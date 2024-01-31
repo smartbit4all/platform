@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.TriFunction;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -40,7 +42,6 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -504,7 +505,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   public SearchIndexImpl<O> expressionComplex(String propertyName,
-      BiFunction<Object, EntityDefinition, Expression> complexExpression) {
+      TriFunction<Object, EntityDefinition, SearchIndexMappingObject, Expression> complexExpression) {
     Objects.requireNonNull(complexExpression);
     expressionByPropertyName.put(propertyName,
         new CustomExpressionMapping(null, complexExpression, null));
