@@ -28,7 +28,8 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
     if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE)) {
       layoutDefinition.widgets(convertRangeFilter(field));
     } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT)
-        || field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT_MULTIPLE)) {
+        || field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT_MULTIPLE)
+        || field.getWidgetType().equals(FilterExpressionFieldWidgetType.RADIO_BUTTON)) {
       layoutDefinition.widgets(convertSelectFilter(field));
     } else {
       layoutDefinition.addWidgetsItem(
