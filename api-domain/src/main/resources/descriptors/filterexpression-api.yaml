@@ -368,6 +368,9 @@ components:
             It will be the initial size of the pageing while iteration through the history entries.
           type: integer
           format: int32
+        skipInitialQuery:
+          description: Execute query right after the page is opened or not.
+          type: boolean
         gridViewOptions:
           description: |
             The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear.

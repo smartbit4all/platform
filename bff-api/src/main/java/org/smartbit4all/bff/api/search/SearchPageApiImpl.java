@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.search;
 
 import static java.util.stream.Collectors.toList;
+import com.google.common.collect.Streams;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +47,6 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import com.google.common.collect.Streams;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -197,7 +197,9 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
                       : historyIterator.getLatestVersionNr())));
     }
 
-    refreshGrid(model, ctx);
+    if (!Boolean.TRUE.equals(ctx.pageConfig.getSkipInitialQuery())) {
+      refreshGrid(model, ctx);
+    }
 
     FilterExpressionBuilderModel filterModel = ctx.pageConfig.getFilterModel();
     String pageTitle = "";
