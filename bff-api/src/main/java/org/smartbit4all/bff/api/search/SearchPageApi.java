@@ -58,15 +58,15 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
 
   /**
    * The action that will close the list and pass the selected rows to the caller view.
-   * 
+   *
    * <p>
    * This function requires the {@link #PARAM_SELECTION_CALLBACK} parameter with a callback
    * {@link InvocationRequest} The <strong>first parameter</strong> of the supplied invocation
    * request must be a {@code List} of {@link GridRow}s, subsequent parameters are left untouched.
-   * 
+   *
    * <p>
    * An example selection callback may be defined as such:
-   * 
+   *
    * <pre>
    * <code>
    * view.putParametersItem(
@@ -76,7 +76,7 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
           .build(a -> a.onRowSelected(Invocations.listOf(Collections.emptyList(), GridRow.class))));
    * </code>
    * </pre>
-   * 
+   *
    * <p>
    * Failing to provide an appropriate callback will result in an unchecked exception being thrown.
    */
@@ -86,7 +86,7 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
    * We can pass this parameter to this view and in this case the
    * {@link #ACTION_RETURN_SELECTED_ROWS} action will be enabled. If the action performed then the
    * callback view will be called with the selected rows.
-   * 
+   *
    * <p>
    * On the exact signature of the callback, please refer to {@link #ACTION_RETURN_SELECTED_ROWS}.
    */
@@ -179,5 +179,7 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
    */
   @ActionHandler(ACTION_HISTORY_PREV)
   void performHistoryPrev(UUID viewUuid, UiActionRequest request);
+
+  void refreshGridData(UUID viewUuid);
 
 }
