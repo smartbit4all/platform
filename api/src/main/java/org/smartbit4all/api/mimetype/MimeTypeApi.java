@@ -29,6 +29,19 @@ public class MimeTypeApi implements InitializingBean {
 
   public static final String XLSX_MIMETYPE = MediaType.OOXML_SHEET.toString();
 
+  public static final String PDF_EXT = MediaType.PDF.subtype();
+  public static final String DOCX_EXT = "docx";
+
+  public static final String TXT_EXT = "txt";
+  public static final String HTML_EXT = "html";
+
+  public static final String PNG_EXT = "png";
+  public static final String JPEG_EXT = "jpg";
+  public static final String GIF_EXT = "gif";
+
+  public static final String XLSX_EXT = "xlsx";
+
+
   /**
    * Includes the mimeTypes that can be recognized by the {@link MimetypesFileTypeMap}.
    */
