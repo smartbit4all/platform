@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.storage.bean.TransactionState;
+import org.smartbit4all.api.view.bean.ImageResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +19,9 @@ class LocaleSettingApiOptionTest {
 
   @Autowired
   private LocaleSettingApi localeSettings;
+
+  @Autowired
+  private ImageSettingApi imageSettingApi;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
@@ -96,6 +100,18 @@ class LocaleSettingApiOptionTest {
     localeSettings.setDefaultLocale(Locale.ENGLISH);
     assertEquals("Failed",
         localeSettings.get(TransactionState.FAIL));
+  }
+
+  @Test
+  void testImageFullPath() {
+    ImageResource imageResource = imageSettingApi.get("smartbit4all", "defaulticon");
+    assertEquals(imageResource.getIdentifier(), "smartbit4allicon");
+  }
+
+  @Test
+  void testImageLastPathElement() {
+    ImageResource imageResource = imageSettingApi.get("smartbit4all", "defaultfavicon");
+    assertEquals(imageResource.getIdentifier(), "smartbit4allicon");
   }
 
 }

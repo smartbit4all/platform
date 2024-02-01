@@ -71,6 +71,8 @@ import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.ApplicationInfo;
+import org.smartbit4all.api.setting.ImageSettingApi;
+import org.smartbit4all.api.setting.ImageSettingApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
@@ -141,6 +143,11 @@ public class PlatformApiConfig {
   @Bean
   public LocaleSettingApi localSettingApi() {
     return new LocaleSettingApi();
+  }
+
+  @Bean
+  public ImageSettingApi imageSettingApi() {
+    return new ImageSettingApiImpl();
   }
 
   @Bean
@@ -433,6 +440,16 @@ public class PlatformApiConfig {
   public MessageSource messageResource(
       @Value("${spring.messages.basename:messages-platform}") String baseName,
       @Value("${spring.messages.encoding:UTF-8}") String defaultEncoding) {
+    ResourceBundleMessageSource messageBundleResrc = new ResourceBundleMessageSource();
+    messageBundleResrc.addBasenames(baseName.split(","));
+    messageBundleResrc.setDefaultEncoding(defaultEncoding);
+    return messageBundleResrc;
+  }
+
+  @Bean(name = "smartbit4all.imageresource")
+  public MessageSource imagesResource(
+      @Value("${spring.images.basename:images-platform}") String baseName,
+      @Value("${spring.images.encoding:UTF-8}") String defaultEncoding) {
     ResourceBundleMessageSource messageBundleResrc = new ResourceBundleMessageSource();
     messageBundleResrc.addBasenames(baseName.split(","));
     messageBundleResrc.setDefaultEncoding(defaultEncoding);

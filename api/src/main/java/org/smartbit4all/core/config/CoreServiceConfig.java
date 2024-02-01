@@ -66,7 +66,7 @@ public class CoreServiceConfig {
   }
 
   @Bean
-  public ObjectSerializer objectMapperSerializer() {
+  public ObjectSerializerByObjectMapper objectMapperSerializer() {
     return new ObjectSerializerByObjectMapper();
   }
 
