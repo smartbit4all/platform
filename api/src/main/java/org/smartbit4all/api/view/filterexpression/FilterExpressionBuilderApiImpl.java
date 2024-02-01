@@ -257,6 +257,9 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionField expressionField =
         actionRequestHelper(request).get(UiActions.MODEL, FilterExpressionField.class);
     model.setSelectedField(expressionField);
+    model.setSelectedFieldEditor(
+        new FilterExpressionFieldEditor().layoutDef(createLayoutDef(expressionField))
+            .possibleActions(SELECTED_EXPRESSION_ACTIONS));
 
     deepSave(model.getModel().getWorkplaceList(), expressionField);
   }
