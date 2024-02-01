@@ -35,6 +35,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMTableColumnDescriptor.NAME,
+  MDMTableColumnDescriptor.ASPECT_NAME,
   MDMTableColumnDescriptor.TYPE_CLASS,
   MDMTableColumnDescriptor.PATH
 })
@@ -43,6 +44,9 @@ import javax.validation.Valid;
 public class MDMTableColumnDescriptor {
   public static final String NAME = "name";
   private String name;
+
+  public static final String ASPECT_NAME = "aspectName";
+  private String aspectName;
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
@@ -78,6 +82,33 @@ public class MDMTableColumnDescriptor {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public MDMTableColumnDescriptor aspectName(String aspectName) {
+    
+    this.aspectName = aspectName;
+    return this;
+  }
+
+   /**
+   * The name of the aspect object to extract.
+   * @return aspectName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the aspect object to extract.")
+  @JsonProperty(ASPECT_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAspectName() {
+    return aspectName;
+  }
+
+
+  @JsonProperty(ASPECT_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAspectName(String aspectName) {
+    this.aspectName = aspectName;
   }
 
 
@@ -153,13 +184,14 @@ public class MDMTableColumnDescriptor {
     }
     MDMTableColumnDescriptor mdMTableColumnDescriptor = (MDMTableColumnDescriptor) o;
     return Objects.equals(this.name, mdMTableColumnDescriptor.name) &&
+        Objects.equals(this.aspectName, mdMTableColumnDescriptor.aspectName) &&
         Objects.equals(this.typeClass, mdMTableColumnDescriptor.typeClass) &&
         Objects.equals(this.path, mdMTableColumnDescriptor.path);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeClass, path);
+    return Objects.hash(name, aspectName, typeClass, path);
   }
 
   @Override
@@ -167,6 +199,7 @@ public class MDMTableColumnDescriptor {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMTableColumnDescriptor {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    aspectName: ").append(toIndentedString(aspectName)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("}");

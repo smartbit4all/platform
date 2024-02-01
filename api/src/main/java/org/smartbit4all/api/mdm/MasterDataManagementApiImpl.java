@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -39,6 +37,7 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
@@ -55,6 +54,8 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -498,10 +499,21 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
-            addEntryPropertyToSearchIndex(result, tcd.getName(),
-                getTypeOfColumn(objectDefinition, tcd),
-                -1,
-                path);
+            if (tcd.getAspectName() == null) {
+              result.map(tcd.getName(),
+                  getTypeOfColumn(objectDefinition, tcd),
+                  -1,
+                  path);
+            } else {
+              result.mapComplex(tcd.getName(),
+                  node -> {
+                    ObjectAspect objectAspect = node.aspects().get().get(tcd.getAspectName());
+                    // Get an ObjectNode to resolve
+                    ObjectNode objectNode =
+                        objectApi.create(StringConstant.EMPTY, objectAspect.getObjectAsMap());
+                    return objectNode.getValue(getTypeOfColumn(objectDefinition, tcd), path);
+                  });
+            }
           });
     } else {
       // Navigate to the nearest referred object.
@@ -560,9 +572,21 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
-            result.map(tcd.getName(),
-                getTypeOfColumn(objectDefinition, tcd),
-                path);
+            if (tcd.getAspectName() == null) {
+              result.map(tcd.getName(),
+                  getTypeOfColumn(objectDefinition, tcd),
+                  path);
+            } else {
+              result.mapComplex(tcd.getName(),
+                  node -> {
+                    ObjectAspect objectAspect = node.aspects().get().get(tcd.getAspectName());
+                    // Get an ObjectNode to resolve
+                    ObjectNode objectNode = objectApi.create(StringConstant.EMPTY,
+                        objectDefinitionApi.definition(objectAspect.getTypeQualifiedName()),
+                        objectAspect.getObjectAsMap());
+                    return objectNode.getValue(getTypeOfColumn(objectDefinition, tcd), path);
+                  });
+            }
           });
     } else {
       // Navigate to the nearest referred object.
