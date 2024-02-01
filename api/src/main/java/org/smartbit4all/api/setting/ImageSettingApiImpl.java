@@ -57,6 +57,14 @@ public class ImageSettingApiImpl implements ImageSettingApi {
     return get(locale, subKeys);
   }
 
+  @Override
+  public ImageResource get(Enum<?> enumValue) {
+    if (enumValue == null) {
+      return null;
+    }
+    return get(enumValue.getClass().getName(), enumValue.name());
+  }
+
   private final ImageResource getInternal(Locale locale, String key) {
     String image = StringConstant.EMPTY;
     try {

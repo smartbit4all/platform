@@ -39,4 +39,12 @@ public interface ImageSettingApi {
    */
   ImageResource get(Locale locale, String... keys);
 
+  /**
+   * Retrieve the relevant image for the enum value.
+   * 
+   * @param enumValue
+   * @return
+   */
+  ImageResource get(Enum<?> enumValue);
+
 }
