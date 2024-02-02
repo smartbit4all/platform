@@ -926,6 +926,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UiAction'
+        toolbar:
+          description: The id of toolbar which this UiAction should be placed on.
+          type: string
     UiActionInputType:
       type: string
       default: none

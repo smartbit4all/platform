@@ -47,7 +47,8 @@ import javax.validation.Valid;
   UiAction.CONFIRM,
   UiAction.PARAMS,
   UiAction.DESCRIPTOR,
-  UiAction.SUB_ACTIONS
+  UiAction.SUB_ACTIONS,
+  UiAction.TOOLBAR
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -84,6 +85,9 @@ public class UiAction {
 
   public static final String SUB_ACTIONS = "subActions";
   private List<UiAction> subActions = null;
+
+  public static final String TOOLBAR = "toolbar";
+  private String toolbar;
 
   public UiAction() { 
   }
@@ -405,6 +409,33 @@ public class UiAction {
   }
 
 
+  public UiAction toolbar(String toolbar) {
+    
+    this.toolbar = toolbar;
+    return this;
+  }
+
+   /**
+   * The id of toolbar which this UiAction should be placed on.
+   * @return toolbar
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The id of toolbar which this UiAction should be placed on.")
+  @JsonProperty(TOOLBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getToolbar() {
+    return toolbar;
+  }
+
+
+  @JsonProperty(TOOLBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setToolbar(String toolbar) {
+    this.toolbar = toolbar;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -424,12 +455,13 @@ public class UiAction {
         Objects.equals(this.confirm, uiAction.confirm) &&
         Objects.equals(this.params, uiAction.params) &&
         Objects.equals(this.descriptor, uiAction.descriptor) &&
-        Objects.equals(this.subActions, uiAction.subActions);
+        Objects.equals(this.subActions, uiAction.subActions) &&
+        Objects.equals(this.toolbar, uiAction.toolbar);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions, toolbar);
   }
 
   @Override
@@ -447,6 +479,7 @@ public class UiAction {
     sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    subActions: ").append(toIndentedString(subActions)).append("\n");
+    sb.append("    toolbar: ").append(toIndentedString(toolbar)).append("\n");
     sb.append("}");
     return sb.toString();
   }
