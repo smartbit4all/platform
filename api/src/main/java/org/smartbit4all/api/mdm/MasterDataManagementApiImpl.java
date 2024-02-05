@@ -474,9 +474,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       ObjectNode objectNode;
 
       if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
-        objectNode = getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri());
+        objectNode =
+            getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri());
       } else {
-        objectNode = getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri());
+        objectNode =
+            getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri());
       }
       return objectNode.getValue(path);
     });
