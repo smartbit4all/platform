@@ -129,6 +129,8 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   static final String ACTION_RECREATE_INDEX = "ACTION_RECREATE_INDEX";
 
+  static final String ACTION_IMPORT_ENTRIES = "IMPORT_ENTRIES";
+
   /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
    * administrator then we can see the draft objects also.
@@ -272,6 +274,9 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   @ActionHandler(ACTION_RECREATE_INDEX)
   void recreateIndex(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_IMPORT_ENTRIES)
+  void importEntries(UUID viewUuid, UiActionRequest request);
 
   /**
    * This callback function is responsible for saving an object into the MDM entry list we are

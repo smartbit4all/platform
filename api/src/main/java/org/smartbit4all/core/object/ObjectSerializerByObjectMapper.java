@@ -50,7 +50,11 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
 
   public ObjectSerializerByObjectMapper() {
     super();
-    objectMapper = new ObjectMapper();
+    objectMapper = setupObjectMapper();
+  }
+
+  private static ObjectMapper setupObjectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     SimpleModule module = new SimpleModule();
     module.addDeserializer(LocalDate.class, ZonedLocalDateDeserializer.INSTANCE);
@@ -64,6 +68,11 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
     // We might use it to avoid writing null values.
     // objectMapper.setSerializationInclusion(Include.NON_NULL);
+    return objectMapper;
+  }
+
+  public ObjectMapper getObjectMapper() {
+    return setupObjectMapper();
   }
 
   @Override

@@ -35,6 +35,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMImportApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -125,7 +126,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Autowired
   protected LocaleSettingApi localeSettingApi;
 
-
   @Autowired
   VectorDBApi vectorDBApi;
 
@@ -134,6 +134,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   protected FilterExpressionBuilderApi filterExpressionBuilderApi;
+
+  @Autowired
+  MDMImportApi mdmImportApi;
 
   @Autowired(required = false)
   private MDMApprovalApi mdmApprovalApi;
@@ -433,6 +436,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               isValueApiPresent, currentEntryListNotEmpty, isEntryEditable);
     }
 
+    // uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
+    // isAdmin);
+
     uiActions
         .addIf(
             new UiAction().code(ACTION_TOGGLE_INACTIVES).descriptor(
@@ -719,6 +725,18 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryApi entryApi =
         masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName());
     entryApi.updateAllIndices(Arrays.asList(GenericValue.CODE));
+  }
+
+
+  @Override
+  public void importEntries(UUID viewUuid, UiActionRequest request) {
+    // PageContext context = getContextByViewUUID(viewUuid);
+    // UploadedFile uploadedFile =
+    // actionRequestHelper(request).get(UiActions.INPUT, UploadedFile.class);
+    // BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+    // new BufferedInputStream(uploadedFile.getData().inputStream()), Charset.defaultCharset()));
+    // List<Map<String, String>> definition = new ArrayList<>();
+    // String line = bufferedReader.readLine();
   }
 
   @Override
