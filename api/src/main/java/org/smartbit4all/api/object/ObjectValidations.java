@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
+import org.smartbit4all.api.object.bean.ObjectValidationResult;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
+import static java.util.stream.Collectors.toList;
 
 public final class ObjectValidations {
 
@@ -114,6 +116,15 @@ public final class ObjectValidations {
         .max(bySeverity())
         .map(ObjectValidationItem::getSeverity)
         .orElse(ObjectValidationSeverity.OK);
+  }
+
+  public static final ObjectValidationResult of(Collection<ObjectValidationItem> items) {
+    return new ObjectValidationResult().items(items.stream().sorted(bySeverity()).collect(toList()))
+        .severity(getTopSeverity(items));
+  }
+
+  public static final ObjectValidationResult OK() {
+    return new ObjectValidationResult().severity(ObjectValidationSeverity.OK);
   }
 
 }
