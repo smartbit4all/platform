@@ -1,7 +1,9 @@
 package org.smartbit4all.core.utility;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.SimpleTimeZone;
 import java.util.concurrent.ExecutionException;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import com.google.common.cache.Cache;
@@ -16,9 +18,14 @@ public class CronExpressionUtility {
     super();
   }
 
-  private static final CronSequenceGenerator get(String cronExpression) {
+  private static final CronSequenceGenerator get(String cronExpression, ZoneOffset offset) {
+    // fyi: by default the CronSequenceGenerator uses the default
+    // TimeZone which handles day light saving causing calculation errors when parsing to
+    // OffsetDateTime. To avoid this, we explicitly set the TimeZone based on a given offset.
     try {
-      return cache.get(cronExpression, () -> new CronSequenceGenerator(cronExpression));
+      return cache.get(cronExpression + offset.getTotalSeconds(),
+          () -> new CronSequenceGenerator(cronExpression,
+              new SimpleTimeZone(offset.getTotalSeconds() * 1000, "cronTimeZone")));
     } catch (ExecutionException e) {
       throw new IllegalArgumentException(
           "Unable to initiate CronSequenceGenerator with the " + cronExpression + " pattern.");
@@ -26,7 +33,7 @@ public class CronExpressionUtility {
   }
 
   public static OffsetDateTime computeNext(String cronExpression, OffsetDateTime baseTime) {
-    CronSequenceGenerator sequenceGenerator = get(cronExpression);
+    CronSequenceGenerator sequenceGenerator = get(cronExpression, baseTime.getOffset());
     Date next = sequenceGenerator.next(Date.from(baseTime.toInstant()));
     return next.toInstant().atOffset(baseTime.getOffset());
   }
