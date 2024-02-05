@@ -10,7 +10,7 @@ import org.smartbit4all.bff.api.validationresult.bean.ValidationResultPageModel;
 
 @ViewApi(PlatformViewNames.VALIDATION_RESULT_PAGE)
 public interface ValidationResultPageApi extends PageApi<ValidationResultPageModel> {
-  String VALIDATION_PAGE_MODEL = "VALIDATION_PAGE_MODEL";
+  String VALIDATION_RESULT = "VALIDATION_RESULT";
   String VALIDATION_PAGE_INVOCATION_REQUEST = "VALIDATION_PAGE_INVOCATION_REQUEST";
 
   String OK = "OK";

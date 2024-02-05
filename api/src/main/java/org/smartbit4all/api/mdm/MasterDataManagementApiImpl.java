@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -56,6 +54,8 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -456,28 +456,43 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
    *
    * @param searchIndex
    * @param propertyName
+   * @param aspect The aspect of the shadow object that contains the last known integration version
+   *        of the given object.
    * @param typeClass
    * @param length
    * @param path
    */
   private final void addEntryPropertyToSearchIndex(SearchIndexImpl<?> searchIndex,
-      String propertyName, Class<?> typeClass, int length, String... path) {
+      String propertyName, String aspect, Class<?> typeClass, int length, String... path) {
     // The object node is an BranchedObjectEntry.definition.entry node and can be used by the
     // ObjectApi
     // to navigate to every property let it be original or branched.
     searchIndex.mapComplex(propertyName, typeClass, length, node -> {
       BranchingStateEnum stateEnum =
           node.getValue(BranchingStateEnum.class, BranchedObjectEntry.BRANCHING_STATE);
-      ObjectNode nodeObject;
+
+      ObjectNode objectNode;
+
       if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
-        URI originalUri = node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri();
-        nodeObject = objectApi.load(originalUri);
+        objectNode = getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri());
       } else {
-        URI branchedUri = node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri();
-        nodeObject = objectApi.load(branchedUri);
+        objectNode = getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri());
       }
-      return nodeObject.getValue(path);
+      return objectNode.getValue(path);
     });
+  }
+
+  private final ObjectNode getNodeOrElseAspect(String aspect, URI branchedUri) {
+    ObjectNode objectNode;
+    objectNode = objectApi.load(branchedUri);
+    ObjectAspect objectAspect;
+    // Get an ObjectNode to resolve
+    if (objectNode.aspects().get() != null
+        && (objectAspect = objectNode.aspects().get().get(aspect)) != null) {
+      objectNode =
+          objectApi.create(StringConstant.EMPTY, objectAspect.getObjectAsMap());
+    }
+    return objectNode;
   }
 
   private final SearchIndex<BranchedObjectEntry> createSearchIndexForEntryInstance(
@@ -499,24 +514,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
-            if (tcd.getAspectName() == null) {
-              result.map(tcd.getName(),
-                  getTypeOfColumn(objectDefinition, tcd),
-                  -1,
-                  path);
-            } else {
-              result.mapComplex(tcd.getName(),
-                  node -> {
-                    ObjectAspect objectAspect = node.aspects().get().get(tcd.getAspectName());
-                    // Get an ObjectNode to resolve
-                    if (objectAspect == null) {
-                      return null;
-                    }
-                    ObjectNode objectNode =
-                        objectApi.create(StringConstant.EMPTY, objectAspect.getObjectAsMap());
-                    return objectNode.getValue(getTypeOfColumn(objectDefinition, tcd), path);
-                  });
-            }
+            addEntryPropertyToSearchIndex(result, tcd.getName(),
+                tcd.getAspectName(), getTypeOfColumn(objectDefinition, tcd), -1,
+                path);
           });
     } else {
       // Navigate to the nearest referred object.
@@ -526,7 +526,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           .forEach(e -> {
             if (!outgoingReferences.containsKey(e.getKey())) {
               Class<?> typeClass = getClazz(e.getValue().getTypeClass(), String.class);
-              addEntryPropertyToSearchIndex(result, e.getValue().getName(), typeClass, -1,
+              addEntryPropertyToSearchIndex(result, e.getValue().getName(), null, typeClass, -1,
                   e.getValue().getName());
             }
           });

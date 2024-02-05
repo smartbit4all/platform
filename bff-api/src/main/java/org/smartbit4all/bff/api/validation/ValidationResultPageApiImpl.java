@@ -55,7 +55,7 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
 
   private ValidationResultPageModel mapObjectValidationResult(ObjectMapHelper parameters) {
     ObjectValidationResult result =
-        parameters.get(VALIDATION_PAGE_MODEL, ObjectValidationResult.class);
+        parameters.get(VALIDATION_RESULT, ObjectValidationResult.class);
     return new ValidationResultPageModel().validationItems(
         result.getItems().stream().map(item -> new ValidationItem().severity(item.getSeverity())
             .message(getMessage(item))).collect(toList()));
