@@ -582,11 +582,17 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             } else {
               result.mapComplex(tcd.getName(),
                   node -> {
-                    ObjectAspect objectAspect = node.aspects().get().get(tcd.getAspectName());
+                    final Map<String, ObjectAspect> map = node.aspects().get();
+                    if (map == null || map.isEmpty()) {
+                      return null;
+                    }
+
+                    ObjectAspect objectAspect = map.get(tcd.getAspectName());
                     // Get an ObjectNode to resolve
                     if (objectAspect == null) {
                       return null;
                     }
+
                     ObjectNode objectNode = objectApi.create(StringConstant.EMPTY,
                         objectDefinitionApi.definition(objectAspect.getTypeQualifiedName()),
                         objectAspect.getObjectAsMap());
