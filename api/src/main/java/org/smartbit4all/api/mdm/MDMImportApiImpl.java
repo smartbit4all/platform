@@ -26,11 +26,11 @@ public class MDMImportApiImpl implements MDMImportApi {
 
   private static final Logger log = LoggerFactory.getLogger(MDMImportApi.class);
 
-  private MasterDataManagementApi api;
+  private MasterDataManagementApi masterDataManagementApi;
   private ObjectApi objectApi;
 
-  public MDMImportApiImpl(MasterDataManagementApi api, ObjectApi objectApi) {
-    this.api = api;
+  public MDMImportApiImpl(MasterDataManagementApi masterDataManagementApi, ObjectApi objectApi) {
+    this.masterDataManagementApi = masterDataManagementApi;
     this.objectApi = objectApi;
   }
 
@@ -38,19 +38,27 @@ public class MDMImportApiImpl implements MDMImportApi {
   public <T> MDMErrorLog importData(MDMDefinition definition, MDMEntryDescriptor descriptor,
       MDMModificationRequest modificationRequest, Class<T> clazz) {
     MDMErrorLog errorLog = new MDMErrorLog();
+    boolean globalBranchInit = false;
     try {
-      MDMEntryApi entryApi = api.getApi(definition.getName(), descriptor.getName());
-      api.initiateGlobalBranch(definition.getName(), "Import session 1");
+      MDMEntryApi entryApi =
+          masterDataManagementApi.getApi(definition.getName(), descriptor.getName());
 
-      URI branchUri = entryApi.getBranchUri();
+      URI branchUri = masterDataManagementApi.getGlobalBranch(definition.getName());
+
+      if (branchUri == null) {
+        branchUri =
+            masterDataManagementApi.initiateGlobalBranch(definition.getName(), "Import session 1");
+        globalBranchInit = true;
+      }
+
+      final URI branchUriFinal = branchUri;
 
       if (!ObjectUtils.isEmpty(descriptor.getUniquePropertyPaths())) {
-
         // TODO: unlimited identifier
         String identifier = descriptor.getUniquePropertyPaths().get(0).get(0);
         // Collect exist entries
         Map<String, ObjectNode> existEntries = entryApi.getBranchingList().stream()
-            .map(u -> u.getOriginalUri()).map(u -> objectApi.load(u, branchUri)).collect(
+            .map(u -> u.getOriginalUri()).map(u -> objectApi.load(u, branchUriFinal)).collect(
                 Collectors.toMap(
                     n -> n.getValueAsString(identifier),
                     n -> n));
@@ -133,15 +141,19 @@ public class MDMImportApiImpl implements MDMImportApi {
           rowNum++;
         }
       }
-      if (errorLog.getData().isEmpty()) {
-        api.mergeGlobal(definition.getName());
-      } else {
-        api.dropGlobal(definition.getName());
+      if (globalBranchInit) {
+        if (errorLog.getData().isEmpty()) {
+          masterDataManagementApi.mergeGlobal(definition.getName());
+        } else {
+          masterDataManagementApi.dropGlobal(definition.getName());
+        }
       }
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       errorLog.addDataItem(new MDMErrorLogData().error(e.getMessage()));
-      api.dropGlobal(definition.getName());
+      if (globalBranchInit) {
+        masterDataManagementApi.dropGlobal(definition.getName());
+      }
     }
     return errorLog;
   }
@@ -154,7 +166,7 @@ public class MDMImportApiImpl implements MDMImportApi {
       String[] fields = value.split(":");
       if (fields.length >= 4) {
         // create an MDM api for specified class
-        MDMEntryApi entryApi = api.getApi(fields[0], fields[1]);
+        MDMEntryApi entryApi = masterDataManagementApi.getApi(fields[0], fields[1]);
         // locate ObjectNode by identifier and value
         // ObjectNode existEntry = entryApi.getList().nodes()
         // .filter(n -> fields[3].equals(n.getValueAsString(fields[2]))).findFirst().orElse(null);

@@ -88,6 +88,8 @@ public interface MasterDataManagementApi {
 
   URI initiateGlobalBranch(String definition, String title);
 
+  URI getGlobalBranch(String definition);
+
   URI initiateBranchForEntry(String definition, String title, String entryName);
 
   /**

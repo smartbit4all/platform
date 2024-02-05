@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
@@ -168,11 +170,18 @@ public class MDMEntryDescriptorPageApiImpl
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
       MDMEntryDescriptor descriptor =
           option.addDefaultDescriptor(GenericValue.class, code).name(code)
+              .tableColumns(List.of(new MDMTableColumnDescriptor().name("Code")
+                  .addPathItem(GenericValue.CODE),
+                  new MDMTableColumnDescriptor().name("Name")
+                      .addPathItem(GenericValue.NAME),
+                  new MDMTableColumnDescriptor().name("Icon")
+                      .addPathItem(GenericValue.ICON)))
               .displayNameForm(new LangString().defaultValue(name))
               .displayNameList(new LangString().defaultValue(name))
               .listPageGridViews(Collections.emptyList())
               .isValueSet(Boolean.TRUE)
-              .vectorCollection(vectorCollectionDescriptor);
+              .vectorCollection(vectorCollectionDescriptor)
+              .uniquePropertyPaths(List.of(List.of(GenericValue.CODE)));
       MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       masterDataManagementApi.addNewEntries(option);
     } else {
