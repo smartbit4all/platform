@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.validation;
 
+import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.utility.StringConstant.DOT;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,13 +23,14 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.bff.api.validationresult.bean.ValidationItem;
 import org.smartbit4all.bff.api.validationresult.bean.ValidationResultPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
-import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPageModel>
     implements ValidationResultPageApi {
-  final String LOCALE_PREFIX = "ValidationResultPage.";
+
+  private static final String LOCALE_PREFIX = "ValidationResultPage";
+  private static final String CONTINUE_OK = CONTINUE + DOT + ObjectValidationSeverity.OK;
+  private static final String CONTINUE_WARNING = CONTINUE + DOT + ObjectValidationSeverity.WARNING;
 
   @Autowired
   private LocaleSettingApi localeSettingApi;
@@ -60,18 +63,10 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
 
   private String getMessage(ObjectValidationItem item) {
     LangString message = item.getMessage();
-
-    if (Objects.isNull(message)) {
+    if (message == null) {
       return "";
     }
-
-    if (Objects.nonNull(message.getDefaultValue())) {
-      return item.getMessage().getDefaultValue();
-    } else if (Objects.nonNull(item.getMessage().getValueByLocale())) {
-      return localeSettingApi.get(item.getMessage());
-    } else {
-      return "";
-    }
+    return localeSettingApi.get(message);
   }
 
   @Override
@@ -93,31 +88,22 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
 
   protected void addUiActions(View view, ValidationResultPageModel model) {
     List<ValidationItem> items = model.getValidationItems();
+    boolean hasAnyWarning = hasAny(items, ObjectValidationSeverity.WARNING);
+    boolean hasAnyError = hasAny(items, ObjectValidationSeverity.ERROR);
     view.actions(
         UiActions.builder()
             .addIf(
-                new UiAction().code(OK)
-                    .descriptor(getUiActionDescriptor(LOCALE_PREFIX + OK, UiActions.Color.PRIMARY)),
-                hasAny(items, ObjectValidationSeverity.ERROR))
+                uiAction(OK, OK, UiActions.Color.PRIMARY),
+                hasAnyError)
             .addIf(
-                new UiAction()
-                    .code(CONTINUE)
-                    .descriptor(
-                        getUiActionDescriptor(LOCALE_PREFIX + CONTINUE + StringConstant.DOT
-                            + ObjectValidationSeverity.WARNING, UiActions.Color.PRIMARY)),
-                !hasAny(items, ObjectValidationSeverity.ERROR)
-                    && hasAny(items, ObjectValidationSeverity.WARNING))
-            .addIf(new UiAction()
-                .code(CONTINUE)
-                .descriptor(
-                    getUiActionDescriptor(
-                        LOCALE_PREFIX + CONTINUE + StringConstant.DOT + ObjectValidationSeverity.OK,
-                        UiActions.Color.PRIMARY)),
-                !hasAny(items, ObjectValidationSeverity.ERROR)
-                    && !hasAny(items, ObjectValidationSeverity.WARNING))
-            .addIf(new UiAction().code(CANCEL).descriptor(
-                getUiActionDescriptor(LOCALE_PREFIX + CANCEL, UiActions.Color.ACCENT)),
-                !hasAny(items, ObjectValidationSeverity.ERROR))
+                uiAction(CONTINUE, CONTINUE_WARNING, UiActions.Color.PRIMARY),
+                !hasAnyError && hasAnyWarning)
+            .addIf(
+                uiAction(CONTINUE, CONTINUE_OK, UiActions.Color.PRIMARY),
+                !hasAnyError && !hasAnyWarning)
+            .addIf(
+                uiAction(CANCEL, CANCEL, UiActions.Color.ACCENT),
+                !hasAnyError)
             .build());
   }
 
@@ -125,8 +111,16 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
     return items.stream().anyMatch(item -> item.getSeverity().equals(severity));
   }
 
+  private UiAction uiAction(String code, String title, String color) {
+    return new UiAction()
+        .code(code)
+        .descriptor(getUiActionDescriptor(title, color));
+  }
+
   private UiActionDescriptor getUiActionDescriptor(String title, String color) {
-    return new UiActionDescriptor().title(localeSettingApi.get(title)).color(color)
+    return new UiActionDescriptor()
+        .title(localeSettingApi.get(LOCALE_PREFIX, title))
+        .color(color)
         .type(UiActionButtonType.RAISED);
   }
 }
