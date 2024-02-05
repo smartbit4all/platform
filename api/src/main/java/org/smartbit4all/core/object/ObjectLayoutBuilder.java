@@ -35,11 +35,7 @@ public final class ObjectLayoutBuilder {
    * @return a {@link SmartComponentLayoutDefinition} representing a grid
    */
   public static SmartComponentLayoutDefinition grid(String gridIdentifier) {
-    return new SmartComponentLayoutDefinition()
-        .type(ComponentType.WIDGET)
-        .widget(new SmartComponentWidgetDefinition()
-            .type(ComponentWidgetType.GRID)
-            .gridIdentifier(gridIdentifier));
+    return widget(ComponentWidgetType.GRID, gridIdentifier);
   }
 
   /**
@@ -65,18 +61,34 @@ public final class ObjectLayoutBuilder {
   }
 
   /**
-   * Constructs a grid layout definition with the provided tree identifier.
+   * Constructs a tree definition with the provided tree identifier.
    *
    * @param treeIdentifier the {@code String} tree identifier for the tree's service to use
    *
    * @return a {@link SmartComponentLayoutDefinition} representing a tree
    */
   public static SmartComponentLayoutDefinition tree(String treeIdentifier) {
+    return widget(ComponentWidgetType.TREE, treeIdentifier);
+  }
+
+  /**
+   * Constructs a toolbar definition with the provided tree identifier.
+   *
+   * @param toolbarIdentifier the {@code String} tree identifier for the tree's service to use
+   *
+   * @return a {@link SmartComponentLayoutDefinition} representing a tree
+   */
+  public static SmartComponentLayoutDefinition toolbar(String toolbarIdentifier) {
+    return widget(ComponentWidgetType.TOOLBAR, toolbarIdentifier);
+  }
+
+  private static SmartComponentLayoutDefinition widget(ComponentWidgetType type,
+      String toolbarIdentifier) {
     return new SmartComponentLayoutDefinition()
         .type(ComponentType.WIDGET)
         .widget(new SmartComponentWidgetDefinition()
-            .type(ComponentWidgetType.GRID)
-            .treeIdentifier(treeIdentifier));
+            .type(type)
+            .identifier(toolbarIdentifier));
   }
 
   /**

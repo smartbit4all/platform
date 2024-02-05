@@ -176,7 +176,7 @@ public final class ObjectDisplay {
         // Java 9+ would enable a more succinct way, but alas...
         final Optional<String> opt = Optional.ofNullable(compLayoutDef
             .getWidget()
-            .getGridIdentifier());
+            .getIdentifier());
         return !opt.isPresent() ? Stream.empty() : Stream.of(opt.get());
       case CONTAINER:
         return compLayoutDef.getComponents().stream().flatMap(this::grids);

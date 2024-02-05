@@ -32,7 +32,9 @@ public enum ComponentWidgetType {
   
   FILTER("filter"),
   
-  TREE("tree");
+  TREE("tree"),
+  
+  TOOLBAR("toolbar");
 
   private String value;
 
