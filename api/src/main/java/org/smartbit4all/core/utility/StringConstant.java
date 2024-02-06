@@ -82,6 +82,10 @@ public class StringConstant {
 
   public static final String HASH = "#";
 
+  public static final String HTML_PARAGRAPH = "<p>";
+
+  public static final String HTML_PARAGRAPH_END = "</p>";
+
   public static final String HYPHEN = "-";
 
   public static final String[] INVALID_FILE_CHARS =
