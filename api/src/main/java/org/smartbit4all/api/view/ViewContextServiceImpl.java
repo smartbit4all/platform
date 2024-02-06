@@ -358,8 +358,15 @@ public class ViewContextServiceImpl implements ViewContextService {
       try {
         // TODO examine signature, try to support many variations
         method.invoke(api, viewUuid, messageUuid, messageResult);
-      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      } catch (IllegalAccessException | IllegalArgumentException e) {
         log.error("Error when calling MessageHandler method " + method.getName(), e);
+      } catch (InvocationTargetException e) {
+        if (e.getCause() instanceof RuntimeException) {
+          throw (RuntimeException) e.getCause();
+        }
+        log.error(
+            "InvocationTargetException when calling MessageHandler method " + method.getName(),
+            e.getCause());
       }
     }
     updateCurrentViewContext(
