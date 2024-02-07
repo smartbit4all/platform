@@ -361,7 +361,8 @@ components:
       description: |
         The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized
         by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one
-        parametereization entry for the given object and can bind the 
+        parametereization entry for the given object and can bind the
+      required: [map] 
       properties:    
         uri: 
           type: string
@@ -371,6 +372,12 @@ components:
             For historical reason the acl property is named in the definition but there is no difference between this ACL and all other.
             The application can decide how to use this ACL.
           $ref: '#/components/schemas/ACL'
+        map:
+          description: |
+            The named acls.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ACL'
     ACL:
       type: object
       description: |

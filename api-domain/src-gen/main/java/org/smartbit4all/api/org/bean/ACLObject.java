@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.org.bean.ACL;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -30,12 +33,13 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the  
+ * The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the 
  */
-@ApiModel(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the  ")
+@ApiModel(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the ")
 @JsonPropertyOrder({
   ACLObject.URI,
-  ACLObject.ACL
+  ACLObject.ACL,
+  ACLObject.MAP
 })
 @JsonTypeName("ACLObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +49,9 @@ public class ACLObject {
 
   public static final String ACL = "acl";
   private ACL acl;
+
+  public static final String MAP = "map";
+  private Map<String, ACL> map = new HashMap<>();
 
   public ACLObject() { 
   }
@@ -105,6 +112,40 @@ public class ACLObject {
   }
 
 
+  public ACLObject map(Map<String, ACL> map) {
+    
+    this.map = map;
+    return this;
+  }
+
+  public ACLObject putMapItem(String key, ACL mapItem) {
+    this.map.put(key, mapItem);
+    return this;
+  }
+
+   /**
+   * The named acls. 
+   * @return map
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The named acls. ")
+  @JsonProperty(MAP)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, ACL> getMap() {
+    return map;
+  }
+
+
+  @JsonProperty(MAP)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setMap(Map<String, ACL> map) {
+    this.map = map;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -115,12 +156,13 @@ public class ACLObject {
     }
     ACLObject acLObject = (ACLObject) o;
     return Objects.equals(this.uri, acLObject.uri) &&
-        Objects.equals(this.acl, acLObject.acl);
+        Objects.equals(this.acl, acLObject.acl) &&
+        Objects.equals(this.map, acLObject.map);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, acl);
+    return Objects.hash(uri, acl, map);
   }
 
   @Override
@@ -129,6 +171,7 @@ public class ACLObject {
     sb.append("class ACLObject {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    acl: ").append(toIndentedString(acl)).append("\n");
+    sb.append("    map: ").append(toIndentedString(map)).append("\n");
     sb.append("}");
     return sb.toString();
   }
