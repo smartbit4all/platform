@@ -41,6 +41,11 @@ public class ImageSettingApiImpl implements ImageSettingApi {
 
   @Override
   public ImageResource get(Locale locale, String... keys) {
+    ImageResource result = getRec(locale, keys);
+    return result == null ? getDefaultImage(keys) : result;
+  }
+
+  private final ImageResource getRec(Locale locale, String... keys) {
     if (keys == null || keys.length == 0) {
       return null;
     }
@@ -51,10 +56,10 @@ public class ImageSettingApiImpl implements ImageSettingApi {
       return value;
     }
     if (keys.length == 1) {
-      return getDefaultImage(keys);
+      return null;
     }
     String[] subKeys = Arrays.copyOfRange(keys, 1, keys.length);
-    return get(locale, subKeys);
+    return getRec(locale, subKeys);
   }
 
   @Override
