@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,6 +41,7 @@ import javax.validation.Valid;
   ACLEntry.SUBJECT_CONDITION,
   ACLEntry.SET_OPERATION,
   ACLEntry.OPERATIONS,
+  ACLEntry.OPERATION_OBJECTS,
   ACLEntry.ENTRIES
 })
 @JsonTypeName("ACLEntry")
@@ -169,6 +171,9 @@ public class ACLEntry {
   public static final String OPERATIONS = "operations";
   private List<String> operations = new ArrayList<>();
 
+  public static final String OPERATION_OBJECTS = "operationObjects";
+  private List<ACLOperation> operationObjects = new ArrayList<>();
+
   public static final String ENTRIES = "entries";
   private List<ACLEntry> entries = new ArrayList<>();
 
@@ -297,12 +302,12 @@ public class ACLEntry {
   }
 
    /**
-   * The unique identifiers of the operations defined in the given application.
+   * The unique identifiers of the operations defined in the given application. This list contains all the operation names attached to this subject. For historical reason this list and the operationObjects are stored paralel. 
    * @return operations
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique identifiers of the operations defined in the given application.")
+  @ApiModelProperty(required = true, value = "The unique identifiers of the operations defined in the given application. This list contains all the operation names attached to this subject. For historical reason this list and the operationObjects are stored paralel. ")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -315,6 +320,40 @@ public class ACLEntry {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperations(List<String> operations) {
     this.operations = operations;
+  }
+
+
+  public ACLEntry operationObjects(List<ACLOperation> operationObjects) {
+    
+    this.operationObjects = operationObjects;
+    return this;
+  }
+
+  public ACLEntry addOperationObjectsItem(ACLOperation operationObjectsItem) {
+    this.operationObjects.add(operationObjectsItem);
+    return this;
+  }
+
+   /**
+   * The list of operation objects attached to the subject of this entry. It will be the primary option for attaching operation to the subject but for historical reason the operations list is also maintained. 
+   * @return operationObjects
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The list of operation objects attached to the subject of this entry. It will be the primary option for attaching operation to the subject but for historical reason the operations list is also maintained. ")
+  @JsonProperty(OPERATION_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<ACLOperation> getOperationObjects() {
+    return operationObjects;
+  }
+
+
+  @JsonProperty(OPERATION_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setOperationObjects(List<ACLOperation> operationObjects) {
+    this.operationObjects = operationObjects;
   }
 
 
@@ -366,12 +405,13 @@ public class ACLEntry {
         Objects.equals(this.subjectCondition, acLEntry.subjectCondition) &&
         Objects.equals(this.setOperation, acLEntry.setOperation) &&
         Objects.equals(this.operations, acLEntry.operations) &&
+        Objects.equals(this.operationObjects, acLEntry.operationObjects) &&
         Objects.equals(this.entries, acLEntry.entries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(entryKind, subject, subjectCondition, setOperation, operations, entries);
+    return Objects.hash(entryKind, subject, subjectCondition, setOperation, operations, operationObjects, entries);
   }
 
   @Override
@@ -383,6 +423,7 @@ public class ACLEntry {
     sb.append("    subjectCondition: ").append(toIndentedString(subjectCondition)).append("\n");
     sb.append("    setOperation: ").append(toIndentedString(setOperation)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
+    sb.append("    operationObjects: ").append(toIndentedString(operationObjects)).append("\n");
     sb.append("    entries: ").append(toIndentedString(entries)).append("\n");
     sb.append("}");
     return sb.toString();

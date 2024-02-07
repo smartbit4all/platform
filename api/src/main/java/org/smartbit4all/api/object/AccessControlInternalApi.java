@@ -7,6 +7,7 @@ import java.util.Set;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
+import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -64,7 +65,11 @@ public interface AccessControlInternalApi {
   boolean getMatchingSubjects(String modelName, ACL acl, List<Subject> subjects,
       List<String> requiredOperations, List<String> forbiddenOperations);
 
-  Map<String, List<Subject>> getSubjectsByOperations(String modelName, List<String> operations,
+  Map<String, List<ACLSubject>> getSubjectsByOperations(List<String> operations,
       ACL acl);
+
+  List<ACLSubject> getSubjects(ACL acl, String operation);
+
+  ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation);
 
 }

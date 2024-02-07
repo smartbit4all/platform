@@ -6,6 +6,7 @@ import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The ACL management api is responsible for integration of the {@link SubjectContributionApi}s and
@@ -72,5 +73,12 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    * @return The distinct list of the user URI belongs to the
    */
   List<URI> getUsersOf(String modelName, List<Subject> subjects);
+
+  default String toString(Subject subject) {
+    if (subject == null) {
+      return StringConstant.EMPTY;
+    }
+    return subject.getType() + StringConstant.DOT + subject.getRef();
+  }
 
 }

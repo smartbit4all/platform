@@ -30,8 +30,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ACLObject
+ * The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the  
  */
+@ApiModel(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the  ")
 @JsonPropertyOrder({
   ACLObject.URI,
   ACLObject.ACL

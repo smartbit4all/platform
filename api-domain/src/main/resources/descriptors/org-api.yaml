@@ -358,11 +358,18 @@ components:
           $ref: '#/components/schemas/BulkUpdateOperation'
     ACLObject:
       type: object
+      description: |
+        The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized
+        by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one
+        parametereization entry for the given object and can bind the 
       properties:    
         uri: 
           type: string
           format: uri
         acl:
+          description: |
+            For historical reason the acl property is named in the definition but there is no difference between this ACL and all other.
+            The application can decide how to use this ACL.
           $ref: '#/components/schemas/ACL'
     ACL:
       type: object
@@ -380,7 +387,7 @@ components:
         The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit 
         for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF.
         It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation.
-      required: [entryKind, entries, operations]
+      required: [entryKind, entries, operations, operationObjects]
       properties:
         entryKind:
           description: |
@@ -402,16 +409,57 @@ components:
           enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]
           default: UNION
         operations:
-          description: The unique identifiers of the operations defined in the given application.
+          description: |
+            The unique identifiers of the operations defined in the given application. This list contains all the operation names attached
+            to this subject. For historical reason this list and the operationObjects are stored paralel.
           type: array
           items:
             type: string
+        operationObjects:
+          description: |
+            The list of operation objects attached to the subject of this entry. It will be the primary option for
+            attaching operation to the subject but for historical reason the operations list is also maintained.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLOperation'
         entries:
           description: |
             The list if entries in the given set if the kind is SET.
           type: array
           items:
             $ref: '#/components/schemas/ACLEntry'
+    ACLOperation:
+      type: object
+      description: |
+        If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object
+        is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters
+        in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of
+        having this operation set for the given subject.
+      required: [name]
+      properties:
+        name:
+          description: The name of the operation that is the same as the one stored in the operations list.
+          type: string
+        comment:
+          description: |
+            The only property that is named is a comment that can be set to specify the reason of
+            having this operation set for the given subject.
+          type: string
+    ACLSubject:
+      type: object
+      description: |
+        This object is a transient one but can be used for UI editing and caching also. It contains the subject and the ACLOperations 
+        if the given subject and the operation is attached.
+      required: [name, operation]
+      properties:
+        subject:
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
+        operation:
+          description: |
+            The operation object of the given subject.
+          $ref: '#/components/schemas/ACLOperation'
     SubjectList:
       type: object
       description: |

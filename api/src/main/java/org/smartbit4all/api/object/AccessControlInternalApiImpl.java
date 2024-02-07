@@ -2,11 +2,14 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.org.OrgApi;
@@ -14,6 +17,8 @@ import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.SubjectConditionEnum;
+import org.smartbit4all.api.org.bean.ACLOperation;
+import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
@@ -22,7 +27,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -141,7 +145,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
     if (inList != null && !inList.isEmpty()) {
       // We construct the subjects for every operation
-      result = getUsersByOpartion(modelName, operations, inList);
+      result = getUsersByOperation(modelName, operations, inList);
     } else {
       List<User> allUsers = orgApi.getAllUsers();
       List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
@@ -152,7 +156,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
     if (notInLIst != null && !notInLIst.isEmpty()) {
       Map<String, List<URI>> forbiddenUsersByOperation =
-          getUsersByOpartion(modelName, operations, notInLIst);
+          getUsersByOperation(modelName, operations, notInLIst);
       for (Entry<String, List<URI>> entry : forbiddenUsersByOperation.entrySet()) {
         List<URI> positiveList = result.get(entry.getKey());
         positiveList.removeAll(entry.getValue());
@@ -161,7 +165,8 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     return result;
   }
 
-  private final Map<String, List<URI>> getUsersByOpartion(String modelName, List<String> operations,
+  private final Map<String, List<URI>> getUsersByOperation(String modelName,
+      List<String> operations,
       List<ACLEntry> inList) {
     Map<String, List<URI>> result;
     result = operations.stream()
@@ -175,27 +180,37 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
   @Override
-  public final Map<String, List<Subject>> getSubjectsByOperations(String modelName,
-      List<String> operations,
+  public final Map<String, List<ACLSubject>> getSubjectsByOperations(List<String> operations,
       ACL acl) {
     if (acl == null || acl.getRootEntry() == null) {
       return Collections.emptyMap();
     }
-    return acl.getRootEntry().getEntries().stream()
-        .flatMap(
-            e -> e.getOperations().stream().map(o -> new OperationSubjectTuple(o, e.getSubject())))
-        .collect(groupingBy(os -> os.operation, mapping(os -> os.subject, toList())));
+    return acl.getRootEntry().getEntries().stream().flatMap(
+        e -> e.getOperations().stream()
+            .map(
+                op -> {
+                  if (operations.contains(op)) {
+                    // Try to find the relevant ACLOperation or create a new one if it is not
+                    // exists.
+                    Optional<ACLOperation> firstMatchinOp = e.getOperationObjects().stream()
+                        .filter(aclOp -> op.equals(aclOp.getName())).findFirst();
+                    return new ACLSubject()
+                        .operation(firstMatchinOp.orElseGet(() -> new ACLOperation().name(op)));
+                  }
+                  return null;
+                })
+            .filter(Objects::nonNull))
+        .collect(groupingBy(aclSubject -> aclSubject.getOperation().getName()));
   }
 
-  private static class OperationSubjectTuple {
-    String operation;
-    Subject subject;
-
-    public OperationSubjectTuple(String operation, Subject subject) {
-      super();
-      this.operation = operation;
-      this.subject = subject;
+  private final List<ACLEntry> getEntriesByOperation(String operation,
+      ACL acl) {
+    if (acl == null || acl.getRootEntry() == null) {
+      return Collections.emptyList();
     }
+    return acl.getRootEntry().getEntries().stream().filter(
+        e -> e.getOperations().contains(operation))
+        .collect(toList());
   }
 
   @Override
@@ -204,6 +219,59 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     // getUsersByOperation(modelName, acl, forbiddenOperations)
     // if(acl == null || acl.getRootEntry() == null || )
     return true;
+  }
+
+  @Override
+  public List<ACLSubject> getSubjects(ACL acl, String operation) {
+    Map<String, List<ACLSubject>> subjectsByOperations =
+        getSubjectsByOperations(Arrays.asList(operation), acl);
+    return subjectsByOperations.getOrDefault(operation, new ArrayList<>());
+  }
+
+  @Override
+  public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation) {
+    // Find all the entries currently attached to the operation in the ACL.
+    Map<String, ACLEntry> currentEntries = getEntriesByOperation(operation, acl).stream()
+        .collect(toMap(e -> subjectManagementApi.toString(e.getSubject()), e -> e));
+    List<ACLSubject> toAdd = new ArrayList<>();
+    for (ACLSubject aclSubject : subjects) {
+      ACLEntry currentEntry =
+          currentEntries.remove(subjectManagementApi.toString(aclSubject.getSubject()));
+      if (currentEntry == null) {
+        toAdd.add(aclSubject);
+      } else {
+        if (!currentEntry.getOperations().contains(operation)) {
+          currentEntry.addOperationsItem(operation);
+        }
+        currentEntry.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
+        currentEntry.addOperationObjectsItem(aclSubject.getOperation());
+      }
+    }
+    // Add the necessary entries and set
+    for (ACLSubject aclSubject : toAdd) {
+      acl.getRootEntry().addEntriesItem(new ACLEntry().addOperationsItem(operation)
+          .addOperationObjectsItem(aclSubject.getOperation()));
+    }
+
+    Set<String> toDelete = new HashSet<>();
+    currentEntries.values().stream().forEach(e -> {
+      // We have to remove the given operation from the entry. If it was the last operation then
+      // remove the whole entry with the subject. There is no more relevant operation for the given
+      // subject.
+      e.getOperations().remove(operation);
+      e.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
+      if (e.getOperations().isEmpty() && e.getOperationObjects().isEmpty()) {
+        toDelete.add(subjectManagementApi.toString(e.getSubject()));
+      }
+    });
+
+    // At last we remove the unnecessary entries.
+    if (!toDelete.isEmpty()) {
+      acl.getRootEntry().getEntries()
+          .removeIf(e -> toDelete.contains(subjectManagementApi.toString(e.getSubject())));
+    }
+
+    return acl;
   }
 
 }
