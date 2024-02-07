@@ -127,6 +127,9 @@ components:
           $ref: '#/components/schemas/SmartWidgetHint'
         widgetDescription:
           type: string
+        maxLength:
+          type: integer
+          format: int64
     SmartWidgetHint:
       type: object
       properties:

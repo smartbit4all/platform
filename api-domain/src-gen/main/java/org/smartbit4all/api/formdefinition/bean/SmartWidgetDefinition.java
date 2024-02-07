@@ -61,7 +61,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.DIRECTION,
   SmartWidgetDefinition.MATRIX,
   SmartWidgetDefinition.HINT,
-  SmartWidgetDefinition.WIDGET_DESCRIPTION
+  SmartWidgetDefinition.WIDGET_DESCRIPTION,
+  SmartWidgetDefinition.MAX_LENGTH
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -128,6 +129,9 @@ public class SmartWidgetDefinition {
 
   public static final String WIDGET_DESCRIPTION = "widgetDescription";
   private String widgetDescription;
+
+  public static final String MAX_LENGTH = "maxLength";
+  private Long maxLength;
 
   public SmartWidgetDefinition() { 
   }
@@ -726,6 +730,33 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition maxLength(Long maxLength) {
+    
+    this.maxLength = maxLength;
+    return this;
+  }
+
+   /**
+   * Get maxLength
+   * @return maxLength
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MAX_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getMaxLength() {
+    return maxLength;
+  }
+
+
+  @JsonProperty(MAX_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMaxLength(Long maxLength) {
+    this.maxLength = maxLength;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -755,12 +786,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.direction, smartWidgetDefinition.direction) &&
         Objects.equals(this.matrix, smartWidgetDefinition.matrix) &&
         Objects.equals(this.hint, smartWidgetDefinition.hint) &&
-        Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription);
+        Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription) &&
+        Objects.equals(this.maxLength, smartWidgetDefinition.maxLength);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength);
   }
 
   @Override
@@ -788,6 +820,7 @@ public class SmartWidgetDefinition {
     sb.append("    matrix: ").append(toIndentedString(matrix)).append("\n");
     sb.append("    hint: ").append(toIndentedString(hint)).append("\n");
     sb.append("    widgetDescription: ").append(toIndentedString(widgetDescription)).append("\n");
+    sb.append("    maxLength: ").append(toIndentedString(maxLength)).append("\n");
     sb.append("}");
     return sb.toString();
   }
