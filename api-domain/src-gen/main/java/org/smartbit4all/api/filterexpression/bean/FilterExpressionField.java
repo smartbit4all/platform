@@ -44,6 +44,9 @@ import javax.validation.Valid;
   FilterExpressionField.LABEL1,
   FilterExpressionField.LABEL2,
   FilterExpressionField.LABEL3,
+  FilterExpressionField.PLACEHOLDER1,
+  FilterExpressionField.PLACEHOLDER2,
+  FilterExpressionField.PLACEHOLDER3,
   FilterExpressionField.ICON,
   FilterExpressionField.EXPRESSION_DATA,
   FilterExpressionField.POSSIBLE_OPERATIONS,
@@ -69,6 +72,15 @@ public class FilterExpressionField {
 
   public static final String LABEL3 = "label3";
   private String label3;
+
+  public static final String PLACEHOLDER1 = "placeholder1";
+  private String placeholder1;
+
+  public static final String PLACEHOLDER2 = "placeholder2";
+  private String placeholder2;
+
+  public static final String PLACEHOLDER3 = "placeholder3";
+  private String placeholder3;
 
   public static final String ICON = "icon";
   private String icon;
@@ -227,6 +239,87 @@ public class FilterExpressionField {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLabel3(String label3) {
     this.label3 = label3;
+  }
+
+
+  public FilterExpressionField placeholder1(String placeholder1) {
+    
+    this.placeholder1 = placeholder1;
+    return this;
+  }
+
+   /**
+   * Get placeholder1
+   * @return placeholder1
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PLACEHOLDER1)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPlaceholder1() {
+    return placeholder1;
+  }
+
+
+  @JsonProperty(PLACEHOLDER1)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlaceholder1(String placeholder1) {
+    this.placeholder1 = placeholder1;
+  }
+
+
+  public FilterExpressionField placeholder2(String placeholder2) {
+    
+    this.placeholder2 = placeholder2;
+    return this;
+  }
+
+   /**
+   * Get placeholder2
+   * @return placeholder2
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PLACEHOLDER2)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPlaceholder2() {
+    return placeholder2;
+  }
+
+
+  @JsonProperty(PLACEHOLDER2)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlaceholder2(String placeholder2) {
+    this.placeholder2 = placeholder2;
+  }
+
+
+  public FilterExpressionField placeholder3(String placeholder3) {
+    
+    this.placeholder3 = placeholder3;
+    return this;
+  }
+
+   /**
+   * Get placeholder3
+   * @return placeholder3
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PLACEHOLDER3)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPlaceholder3() {
+    return placeholder3;
+  }
+
+
+  @JsonProperty(PLACEHOLDER3)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlaceholder3(String placeholder3) {
+    this.placeholder3 = placeholder3;
   }
 
 
@@ -453,6 +546,9 @@ public class FilterExpressionField {
         Objects.equals(this.label1, filterExpressionField.label1) &&
         Objects.equals(this.label2, filterExpressionField.label2) &&
         Objects.equals(this.label3, filterExpressionField.label3) &&
+        Objects.equals(this.placeholder1, filterExpressionField.placeholder1) &&
+        Objects.equals(this.placeholder2, filterExpressionField.placeholder2) &&
+        Objects.equals(this.placeholder3, filterExpressionField.placeholder3) &&
         Objects.equals(this.icon, filterExpressionField.icon) &&
         Objects.equals(this.expressionData, filterExpressionField.expressionData) &&
         Objects.equals(this.possibleOperations, filterExpressionField.possibleOperations) &&
@@ -464,7 +560,7 @@ public class FilterExpressionField {
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, id, label1, label2, label3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, widgetType, subFieldList);
+    return Objects.hash(label, id, label1, label2, label3, placeholder1, placeholder2, placeholder3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, widgetType, subFieldList);
   }
 
   @Override
@@ -476,6 +572,9 @@ public class FilterExpressionField {
     sb.append("    label1: ").append(toIndentedString(label1)).append("\n");
     sb.append("    label2: ").append(toIndentedString(label2)).append("\n");
     sb.append("    label3: ").append(toIndentedString(label3)).append("\n");
+    sb.append("    placeholder1: ").append(toIndentedString(placeholder1)).append("\n");
+    sb.append("    placeholder2: ").append(toIndentedString(placeholder2)).append("\n");
+    sb.append("    placeholder3: ").append(toIndentedString(placeholder3)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    expressionData: ").append(toIndentedString(expressionData)).append("\n");
     sb.append("    possibleOperations: ").append(toIndentedString(possibleOperations)).append("\n");

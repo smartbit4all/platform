@@ -157,6 +157,12 @@ components:
           type: string
         label3:
           type: string
+        placeholder1:
+          type: string
+        placeholder2:
+          type: string
+        placeholder3:
+          type: string
         icon:
           type: string
         expressionData:
