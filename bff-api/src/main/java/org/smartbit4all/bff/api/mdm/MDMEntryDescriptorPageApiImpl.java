@@ -2,7 +2,6 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,7 +169,7 @@ public class MDMEntryDescriptorPageApiImpl
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
       MDMEntryDescriptor descriptor =
           option.addDefaultDescriptor(GenericValue.class, code).name(code)
-              .tableColumns(List.of(new MDMTableColumnDescriptor().name("Code")
+              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name("Code")
                   .addPathItem(GenericValue.CODE),
                   new MDMTableColumnDescriptor().name("Name")
                       .addPathItem(GenericValue.NAME),
@@ -181,7 +180,7 @@ public class MDMEntryDescriptorPageApiImpl
               .listPageGridViews(Collections.emptyList())
               .isValueSet(Boolean.TRUE)
               .vectorCollection(vectorCollectionDescriptor)
-              .uniquePropertyPaths(List.of(List.of(GenericValue.CODE)));
+              .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
       MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       masterDataManagementApi.addNewEntries(option);
     } else {
