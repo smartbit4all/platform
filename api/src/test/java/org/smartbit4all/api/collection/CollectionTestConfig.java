@@ -9,6 +9,7 @@ import java.util.Map;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -20,6 +21,7 @@ import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionClause;
@@ -55,6 +57,8 @@ public class CollectionTestConfig {
             .map(TestFilter.URI, URI.class, 500, SampleDataSheet.URI)
             .mapProcessed(TestFilter.ISODD, Boolean.class, 1, n -> Boolean.valueOf("odd".equals(n)),
                 SampleDataSheet.NAME)
+            .mapProcessed(TestFilter.PROCESSED, String.class, 1, n -> "",
+                SampleDataSheet.NAME)
             .mapComplex(TestFilter.CAPTION, String.class, 300,
                 on -> {
                   return on.getValueAsString(SampleDataSheet.NAME)
@@ -75,7 +79,29 @@ public class CollectionTestConfig {
                         .like("%" + captionParts[0] + "%"));
                   }
                   return exp;
-                });
+                })
+            .postProcess((tableData, searchIndex) -> {
+
+              Property processed = searchIndex.getDefinition().getDefinition()
+                  .getProperty(TestFilter.PROCESSED);
+              Property name = searchIndex.getDefinition().getDefinition()
+                  .getProperty(TestFilter.NAME);
+              for (DataRow row : tableData.rows()) {
+                Object n = row.get(name);
+                row.set(processed, n + "-" + n);
+              }
+              return tableData;
+            })
+            .preProcessFilters((filters, searchIndex) -> {
+              for (FilterExpressionData expression : filters.getExpressions()) {
+                if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
+                    && "process".equals(expression.getOperand2().getValueAsString())) {
+                  expression.getOperand2().setValueAsString("odd");
+                }
+              }
+
+              return filters;
+            });
   }
 
   @Bean

@@ -29,6 +29,9 @@ public class TestFilter {
   public static final String CAPTION = "caption";
   private String caption;
 
+  public static final String PROCESSED = "processed";
+  private String processed;
+
   public TestFilter() {}
 
   public TestFilter uri(URI uri) {
@@ -90,6 +93,14 @@ public class TestFilter {
     this.isOdd = isOdd;
   }
 
+
+  public String getProcessed() {
+    return processed;
+  }
+
+  public void setProcessed(String processed) {
+    this.processed = processed;
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -41,6 +41,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.domain.data.DataColumn;
+import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
@@ -505,6 +506,8 @@ public class CollectionApiTest {
     @SuppressWarnings("unchecked")
     Property<String> propertyName =
         (Property<String>) searchIndex.getDefinition().definition.getProperty(TestFilter.NAME);
+    Property<String> propertyProcessed =
+        (Property<String>) searchIndex.getDefinition().definition.getProperty(TestFilter.PROCESSED);
 
     long start = System.currentTimeMillis();
 
@@ -521,6 +524,11 @@ public class CollectionApiTest {
     System.out.println("Search time: " + (end - start));
 
     Assertions.assertEquals(count / 2, tableData.size());
+
+    DataRow firstRow = tableData.rows().get(0);
+
+    assertEquals("odd-odd",
+        firstRow.get(propertyProcessed));
 
     TableData<?> tableDataByFilterExpression =
         searchIndex.executeSearch(new FilterExpressionList().addExpressionsItem(
@@ -546,6 +554,20 @@ public class CollectionApiTest {
     System.out.println(allFilterFields);
 
     assertTrue(tableDataByDerivedNoResult.rows().isEmpty());
+
+
+    TableData<?> processedTableDataByFilterExpression =
+        searchIndex.executeSearch(new FilterExpressionList().addExpressionsItem(
+            new FilterExpressionData().currentOperation(FilterExpressionOperation.EQUAL)
+                .operand1(new FilterExpressionOperandData().isDataName(true)
+                    .valueAsString(TestFilter.NAME))
+                .operand2(
+                    new FilterExpressionOperandData().isDataName(false).valueAsString("process"))));
+
+    firstRow = processedTableDataByFilterExpression.rows().get(0);
+
+    assertEquals("odd-odd",
+        firstRow.get(propertyProcessed));
 
   }
 

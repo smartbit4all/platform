@@ -62,6 +62,13 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
    */
   protected Map<String, CustomExpressionMapping> expressionByPropertyName = new LinkedHashMap<>();
 
+  // Pre and Post processors
+  List<BiFunction<FilterExpressionList, SearchIndex<?>, FilterExpressionList>> filterExpressionListPreProcessors =
+      new ArrayList<>();
+  List<BiFunction<QueryInput, SearchIndex<?>, QueryInput>> queryInputPreProcessors =
+      new ArrayList<>();
+  List<BiFunction<TableData<?>, SearchIndex<?>, TableData<?>>> postProcessor = new ArrayList<>();;
+
   protected Map<String, Comparator<Object>> comparatorsByClass;
 
   protected String indexedObjectSchema;
@@ -174,6 +181,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
+
+    queryInput = process(queryInput, queryInputPreProcessors);
     if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
         && !useDatabase)
         || readFromStorage) {
@@ -183,6 +192,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
           tableDataApi.sort(result, queryInput.orderBys());
         }
+        result = process(result, postProcessor);
         return result;
       }
       setupExists(queryInput, allObjects, Collections.emptyList());
@@ -191,7 +201,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
     }
-    return crudApi.executeQuery(queryInput).getTableData();
+    TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+    result = process(result, postProcessor);
+
+    return result;
   }
 
   private void setupExists(QueryInput queryInput, SearchEntityTableDataResult objectResult,
@@ -479,6 +492,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   private TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
+
+    filterExpressions = process(filterExpressions, filterExpressionListPreProcessors);
+
     Expression queryExpression =
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
@@ -495,6 +511,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     }
     return executeSearch(read.getQuery(), readFromStorage, objectUris, objectNodes);
   }
+
+  private <T, O> T process(T data, List<BiFunction<T, SearchIndex<?>, T>> processors) {
+
+    T result = data;
+
+    for (BiFunction<T, SearchIndex<?>, T> processor : processors) {
+      result = processor.apply(result, this);
+    }
+
+    return result;
+  }
+
 
   @Override
   public TableData<?> createEmptyTableData() {
@@ -517,6 +545,27 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     Objects.requireNonNull(detailExpressionProcessor);
     expressionByPropertyName.put(propertyName,
         new CustomExpressionMapping(null, null, detailExpressionProcessor));
+    return this;
+  }
+
+  public SearchIndexImpl<O> preProcessFilters(
+      BiFunction<FilterExpressionList, SearchIndex<?>, FilterExpressionList> processor) {
+    Objects.requireNonNull(processor);
+    filterExpressionListPreProcessors.add(processor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> preProcessQueryInput(
+      BiFunction<QueryInput, SearchIndex<?>, QueryInput> processor) {
+    Objects.requireNonNull(processor);
+    queryInputPreProcessors.add(processor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> postProcess(
+      BiFunction<TableData<?>, SearchIndex<?>, TableData<?>> processor) {
+    Objects.requireNonNull(processor);
+    postProcessor.add(processor);
     return this;
   }
 
