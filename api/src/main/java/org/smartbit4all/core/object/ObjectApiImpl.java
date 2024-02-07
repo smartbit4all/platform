@@ -1,10 +1,6 @@
 package org.smartbit4all.core.object;
 
 import static java.util.stream.Collectors.toList;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -39,6 +35,10 @@ import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -331,6 +331,9 @@ public class ObjectApiImpl implements ObjectApi {
         throw new IllegalArgumentException(
             "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
       }
+    }
+    if (clazz.equals(String.class)) {
+      return (T) String.valueOf(value);
     }
     throw new IllegalArgumentException(
         "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
