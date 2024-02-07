@@ -182,6 +182,10 @@ components:
                 filterModelAdmin:
                     description: "if null, but filterModel is present, filterModel is applied."
                     type: FilterExpressionBuilderModel
+                importable:
+                  description: Tells if the records in the entry are importable from a file or not.
+                  type: boolean
+                  default: false
         MDMTableColumnDescriptor:
             type: object
             description: |

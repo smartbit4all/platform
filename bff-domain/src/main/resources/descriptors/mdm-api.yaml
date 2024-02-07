@@ -23,6 +23,9 @@ components:
         vectorCollection:
           type: VectorCollectionDescriptor
           description: The descriptor of the VectorCollection bound to this entry.
+        importable:
+          type: boolean
+          default: false
     MDMEntryChangesPageModel:
       type: object
       properties:

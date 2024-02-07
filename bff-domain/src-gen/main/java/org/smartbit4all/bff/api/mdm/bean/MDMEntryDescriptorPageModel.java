@@ -34,7 +34,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMEntryDescriptorPageModel.CODE,
   MDMEntryDescriptorPageModel.NAME,
-  MDMEntryDescriptorPageModel.VECTOR_COLLECTION
+  MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+  MDMEntryDescriptorPageModel.IMPORTABLE
 })
 @JsonTypeName("MDMEntryDescriptorPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +48,9 @@ public class MDMEntryDescriptorPageModel {
 
   public static final String VECTOR_COLLECTION = "vectorCollection";
   private VectorCollectionDescriptor vectorCollection = null;
+
+  public static final String IMPORTABLE = "importable";
+  private Boolean importable = false;
 
   public MDMEntryDescriptorPageModel() { 
   }
@@ -133,6 +137,33 @@ public class MDMEntryDescriptorPageModel {
   }
 
 
+  public MDMEntryDescriptorPageModel importable(Boolean importable) {
+    
+    this.importable = importable;
+    return this;
+  }
+
+   /**
+   * Get importable
+   * @return importable
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(IMPORTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getImportable() {
+    return importable;
+  }
+
+
+  @JsonProperty(IMPORTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setImportable(Boolean importable) {
+    this.importable = importable;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -144,12 +175,13 @@ public class MDMEntryDescriptorPageModel {
     MDMEntryDescriptorPageModel mdMEntryDescriptorPageModel = (MDMEntryDescriptorPageModel) o;
     return Objects.equals(this.code, mdMEntryDescriptorPageModel.code) &&
         Objects.equals(this.name, mdMEntryDescriptorPageModel.name) &&
-        Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection);
+        Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection) &&
+        Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, vectorCollection);
+    return Objects.hash(code, name, vectorCollection, importable);
   }
 
   @Override
@@ -159,6 +191,7 @@ public class MDMEntryDescriptorPageModel {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
+    sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -397,6 +397,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean currentEntryListNotEmpty = !ctx.entryApi.getList().uris().isEmpty();
     boolean isValueApiPresent = !ObjectUtils.isEmpty(vectorDBApi.getContributionApis());
 
+    boolean isImportable = Boolean.TRUE.equals(ctx.entryDescriptor.getImportable());
+
 
     // if API present, approving enabled
     if (approvingEnabled) {
@@ -447,7 +449,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
-        isAdmin);
+        isAdmin, isImportable);
 
     uiActions
         .addIf(
@@ -720,7 +722,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     viewApi.showView(
         new View().viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR).type(ViewType.DIALOG)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_ENTRY_DESCRIPTOR,
-                entryDescriptor.getName())
+                entryDescriptor)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_DEFINITION,
                 mdmDefinition.getName())
             .putCallbacksItem(MDMEntryDescriptorPageApi.CALLBACK_REFRESH_ACTIONS, refreshCallBack));

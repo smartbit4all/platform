@@ -34,7 +34,6 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
-import com.google.common.base.Strings;
 
 public class MDMEntryDescriptorPageApiImpl
     extends PageApiImpl<MDMEntryDescriptorPageModel>
@@ -70,11 +69,16 @@ public class MDMEntryDescriptorPageApiImpl
     PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
       String definitionName = parameters.get(PARAM_MDM_DEFINITION, String.class);
-      String entryDescriptorName = parameters.get(PARAM_MDM_ENTRY_DESCRIPTOR, String.class);
+      entryDescriptor =
+          parameters.get(PARAM_MDM_ENTRY_DESCRIPTOR, MDMEntryDescriptor.class);
+      if (entryDescriptor != null) {
+        isNewEntry = false;
+      } else {
+        entryDescriptor =
+            new MDMEntryDescriptor().vectorCollection(new VectorCollectionDescriptor());
+        isNewEntry = true;
+      }
       definition = masterDataManagementApi.getDefinition(definitionName);
-      entryDescriptor = Strings.isNullOrEmpty(entryDescriptorName) ? new MDMEntryDescriptor()
-          : masterDataManagementApi.getEntryDescriptor(definitionName, entryDescriptorName);
-      isNewEntry = Strings.isNullOrEmpty(entryDescriptorName);
       refreashActionsCallback = objectApi.asType(InvocationRequest.class,
           view.getCallbacks().get(CALLBACK_REFRESH_ACTIONS));
       return this;
@@ -100,11 +104,11 @@ public class MDMEntryDescriptorPageApiImpl
     view.putLayoutsItem(LAYOUT, getLayout());
     view.constraint(getViewConstraint(view.getUuid()));
 
-    VectorCollectionDescriptor vectorCollectionDescriptor =
-        Boolean.TRUE.equals(ctx.isNewEntry) || ctx.entryDescriptor.getVectorCollection() == null
-            ? new VectorCollectionDescriptor()
-            : ctx.entryDescriptor.getVectorCollection();
-    return new MDMEntryDescriptorPageModel().vectorCollection(vectorCollectionDescriptor);
+    return new MDMEntryDescriptorPageModel()
+        .name(Boolean.TRUE.equals(ctx.isNewEntry) ? StringConstant.EMPTY
+            : ctx.entryDescriptor.getDisplayNameForm().getDefaultValue())
+        .vectorCollection(ctx.entryDescriptor.getVectorCollection())
+        .importable(Boolean.TRUE.equals(ctx.entryDescriptor.getImportable()));
   }
 
   private SmartLayoutDefinition getLayout() {
@@ -134,7 +138,10 @@ public class MDMEntryDescriptorPageApiImpl
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION))
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION))
-            .type(SmartFormWidgetType.TEXT_FIELD)));
+            .type(SmartFormWidgetType.TEXT_FIELD),
+        ObjectLayoutBuilder.toggle(MDMEntryDescriptorPageModel.IMPORTABLE, LAYOUT)
+            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                MDMEntryDescriptorPageModel.IMPORTABLE))));
   }
 
   private ViewConstraint getViewConstraint(UUID viewUuid) {
@@ -180,6 +187,7 @@ public class MDMEntryDescriptorPageApiImpl
               .listPageGridViews(Collections.emptyList())
               .isValueSet(Boolean.TRUE)
               .vectorCollection(vectorCollectionDescriptor)
+              .importable(Boolean.TRUE.equals(clientModel.getImportable()))
               .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
       MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       masterDataManagementApi.addNewEntries(option);
@@ -188,7 +196,8 @@ public class MDMEntryDescriptorPageApiImpl
           ctx.entryDescriptor
               .displayNameForm(new LangString().defaultValue(name))
               .displayNameList(new LangString().defaultValue(name))
-              .vectorCollection(vectorCollectionDescriptor);
+              .vectorCollection(vectorCollectionDescriptor)
+              .importable(Boolean.TRUE.equals(clientModel.getImportable()));
       masterDataManagementApi.modifyEntry(ctx.definition.getName(), entryDescriptorToEdit);
     }
     if (ctx.refreashActionsCallback != null) {

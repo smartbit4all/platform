@@ -67,7 +67,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.VECTOR_COLLECTION,
   MDMEntryDescriptor.PROPERTY_MAPPINGS,
   MDMEntryDescriptor.FILTER_MODEL,
-  MDMEntryDescriptor.FILTER_MODEL_ADMIN
+  MDMEntryDescriptor.FILTER_MODEL_ADMIN,
+  MDMEntryDescriptor.IMPORTABLE
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -143,6 +144,9 @@ public class MDMEntryDescriptor {
 
   public static final String FILTER_MODEL_ADMIN = "filterModelAdmin";
   private FilterExpressionBuilderModel filterModelAdmin = null;
+
+  public static final String IMPORTABLE = "importable";
+  private Boolean importable = false;
 
   public MDMEntryDescriptor() { 
   }
@@ -853,6 +857,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor importable(Boolean importable) {
+    
+    this.importable = importable;
+    return this;
+  }
+
+   /**
+   * Tells if the records in the entry are importable from a file or not.
+   * @return importable
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Tells if the records in the entry are importable from a file or not.")
+  @JsonProperty(IMPORTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getImportable() {
+    return importable;
+  }
+
+
+  @JsonProperty(IMPORTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setImportable(Boolean importable) {
+    this.importable = importable;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -885,12 +916,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.vectorCollection, mdMEntryDescriptor.vectorCollection) &&
         Objects.equals(this.propertyMappings, mdMEntryDescriptor.propertyMappings) &&
         Objects.equals(this.filterModel, mdMEntryDescriptor.filterModel) &&
-        Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin);
+        Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin) &&
+        Objects.equals(this.importable, mdMEntryDescriptor.importable);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable);
   }
 
   @Override
@@ -921,6 +953,7 @@ public class MDMEntryDescriptor {
     sb.append("    propertyMappings: ").append(toIndentedString(propertyMappings)).append("\n");
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    filterModelAdmin: ").append(toIndentedString(filterModelAdmin)).append("\n");
+    sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
     sb.append("}");
     return sb.toString();
   }
