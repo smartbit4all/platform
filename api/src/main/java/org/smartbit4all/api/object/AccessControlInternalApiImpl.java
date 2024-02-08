@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Lazy;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
- * 
+ *
  * @author Peter Boros
  */
 public final class AccessControlInternalApiImpl implements AccessControlInternalApi {
@@ -250,7 +250,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     }
     // Add the necessary entries and set
     for (ACLSubject aclSubject : toAdd) {
-      acl.getRootEntry().addEntriesItem(new ACLEntry().addOperationsItem(operation)
+      acl.getRootEntry().addEntriesItem(new ACLEntry()
+          .subject(aclSubject.getSubject())
+          .addOperationsItem(operation)
           .addOperationObjectsItem(aclSubject.getOperation()));
     }
 
