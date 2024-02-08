@@ -4,6 +4,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
 import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
@@ -29,6 +31,9 @@ public class VectorCollectionImpl implements VectorCollection {
 
   private ObjectApi objectApi;
 
+  private static final Logger log =
+      LoggerFactory.getLogger(VectorCollectionImpl.class);
+
   public VectorCollectionImpl(ObjectApi objectApi, VectorDBApi vectorDBApi,
       ServiceConnection vectorDBService,
       EmbeddingApi embeddingApi, ServiceConnection embeddingService, String collectionName) {
@@ -50,7 +55,12 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @Override
   public void addObject(List<String> idPath, Object obj) {
-    vectorDBApi.addPoint(vectorDBService, collectionName, embed(obj).idPath(idPath));
+    VectorValue vectorValue = embed(obj);
+    if (vectorValue == null) {
+      log.error("The embedding failed on object: {}", obj);
+      return;
+    }
+    vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue.idPath(idPath));
   }
 
   @Override
