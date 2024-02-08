@@ -394,7 +394,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean isEntryEditable =
         Boolean.TRUE.equals(ctx.getEntryDescriptor(ctx.view).getIsValueSet());
 
-    boolean currentEntryListNotEmpty = !ctx.entryApi.getList().uris().isEmpty();
     boolean isValueApiPresent = !ObjectUtils.isEmpty(vectorDBApi.getContributionApis());
 
     boolean isImportable = Boolean.TRUE.equals(ctx.entryDescriptor.getImportable());
@@ -429,7 +428,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isValueApiPresent, currentEntryListNotEmpty, isEntryEditable);
+              isValueApiPresent, isEntryEditable);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
@@ -445,7 +444,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isValueApiPresent, currentEntryListNotEmpty, isEntryEditable);
+              isValueApiPresent, isEntryEditable);
     }
 
     uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
