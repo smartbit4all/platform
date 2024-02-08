@@ -11,6 +11,8 @@ import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
+import org.smartbit4all.bff.api.search.GenericSearchPageApi;
+import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApiImpl;
 import org.springframework.context.annotation.Bean;
@@ -66,6 +68,17 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<GenericPageApi> genericPageApiProvider(
       GenericPageApi genericPageApi) {
     return Invocations.asProvider(GenericPageApi.class, genericPageApi);
+  }
+
+  @Bean
+  GenericSearchPageApi genericSearchPageApi() {
+    return new GenericSearchPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<GenericSearchPageApi> genericSearchPageApiProvider(
+      GenericSearchPageApi genericSearchPageApi) {
+    return Invocations.asProvider(GenericSearchPageApi.class, genericSearchPageApi);
   }
 
   @Bean
