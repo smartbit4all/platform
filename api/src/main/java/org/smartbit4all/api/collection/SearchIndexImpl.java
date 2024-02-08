@@ -592,4 +592,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return this;
   }
 
+  @Override
+  public SearchIndexMappingObject getSearchIndexMappingObject() {
+    return objectMapping;
+  }
 }

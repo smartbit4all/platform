@@ -153,4 +153,6 @@ public interface SearchIndex<O> {
 
   void updateIndex(List<URI> changeList);
 
+  SearchIndexMappingObject getSearchIndexMappingObject();
+
 }
