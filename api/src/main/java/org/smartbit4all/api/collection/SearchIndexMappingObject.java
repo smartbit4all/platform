@@ -338,7 +338,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return Objects.equals(primaryKey, propertyName);
   }
 
-  final void readObjects(Stream<ObjectNode> objects,
+  final void readObjects(Stream<SearchIndexObject> objects,
       SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
 
     // Create detail TableDatas
@@ -355,12 +355,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     // Fill the TableDatas
     TableData<?> tableData = result.result;
-    objects.forEach(n -> {
+    objects.forEach(o -> {
+      ObjectNode n = o.getObjectNode();
       DataRow row = tableData.addRow();
       for (DataColumn<?> col : tableData.columns()) {
         Object value = null;
         Object defaultValue = defaultValues.get(col.getProperty().getName());
-        if (defaultValue != null) {
+        Object forcedValue = o.getValues().get(col.getName());
+        if (forcedValue != null) {
+          value = forcedValue;
+        } else if (defaultValue != null) {
           value = defaultValue;
         } else {
           SearchIndexMappingProperty mapping = property(col.getProperty().getName());
@@ -420,7 +424,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             }
           }
         } else {
-          detailObjectMapping.readObjects(n.list(detailObjectMapping.path).nodeStream(),
+          detailObjectMapping.readObjects(
+              n.list(detailObjectMapping.path).nodeStream()
+                  .map(d -> new SearchIndexObject().objectNode(d)),
               detailResult,
               entry.getValue().masterJoin.getReferences().get(0).joins().stream()
                   .collect(toMap(j -> j.getSourceProperty().getName(),

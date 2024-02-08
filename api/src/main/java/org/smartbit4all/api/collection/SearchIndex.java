@@ -153,6 +153,8 @@ public interface SearchIndex<O> {
 
   void updateIndex(List<URI> changeList);
 
+  void updateIndexWithData(List<SearchIndexObject> changeList);
+
   SearchIndexMappingObject getSearchIndexMappingObject();
 
 }

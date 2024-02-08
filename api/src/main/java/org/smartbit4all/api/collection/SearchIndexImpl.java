@@ -240,17 +240,30 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return readAllObjects(constructResult(), objectUris, objectNodes);
   }
 
+
   @Override
-  public void updateIndex(List<URI> changeList) {
+  public void updateIndexWithData(List<SearchIndexObject> changeList) {
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || useDatabase) {
       SearchEntityTableDataResult updateResult = constructResult();
-      objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
+      objectMapping.readObjects(changeList.stream().map(u -> {
+        if (u.getObjectNode() == null) {
+          u.objectNode(objectApi.load(u.getObjectUri()));
+        }
+
+        return u;
+      }), updateResult,
           Collections.emptyMap());
       // Update the entity definitions by the table data in the result.
       objectMapping.merge(updateResult);
 
     }
+  }
+
+  @Override
+  public void updateIndex(List<URI> changeList) {
+    updateIndexWithData(
+        changeList.stream().map(c -> new SearchIndexObject().objectUri(c)).collect(toList()));
   }
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
@@ -260,10 +273,12 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     if (objectNodes == null) {
       List<URI> allObjectUris =
           objectUris == null ? getRelevantObjectUris() : objectUris.collect(toList());
-      objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
+      objectMapping.readObjects(
+          allObjectUris.stream().map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
+          result,
           Collections.emptyMap());
     } else {
-      objectMapping.readObjects(objectNodes, result,
+      objectMapping.readObjects(objectNodes.map(n -> new SearchIndexObject().objectNode(n)), result,
           Collections.emptyMap());
     }
 
@@ -284,7 +299,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public TableData<?> tableDataOfUris(Stream<URI> uris) {
     SearchEntityTableDataResult entityResult = constructResult();
-    objectMapping.readObjects(uris.map(u -> objectApi.load(u)), entityResult,
+    objectMapping.readObjects(uris.map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
+        entityResult,
         Collections.emptyMap());
     return entityResult.result;
   }
@@ -293,8 +309,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   public TableData<?> tableDataOfObjects(Stream<O> objects) {
     SearchEntityTableDataResult entityResult = constructResult();
     objectMapping.readObjects(
-        objects.map(o -> objectApi
-            .create(StringConstant.EMPTY, o)),
+        objects.map(o -> new SearchIndexObject().objectNode(objectApi
+            .create(StringConstant.EMPTY, o))),
         entityResult,
         Collections.emptyMap());
     return entityResult.result;
@@ -596,4 +612,5 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   public SearchIndexMappingObject getSearchIndexMappingObject() {
     return objectMapping;
   }
+
 }
