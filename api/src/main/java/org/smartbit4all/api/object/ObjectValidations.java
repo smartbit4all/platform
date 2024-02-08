@@ -83,6 +83,24 @@ public final class ObjectValidations {
     };
   }
 
+  public static Comparator<ObjectValidationSeverity> bySeverityEnum() {
+    return (a, b) -> {
+      if (a == null && b == null) {
+        return 0;
+      }
+
+      if (a == null) {
+        return 1;
+      }
+
+      if (b == null) {
+        return -1;
+      }
+
+      return b.ordinal() - a.ordinal();
+    };
+  }
+
   /**
    * Extracts the most severe label from a collection of validation items.
    * 
@@ -118,6 +136,11 @@ public final class ObjectValidations {
         .orElse(ObjectValidationSeverity.OK);
   }
 
+  public static final boolean lessThan(ObjectValidationResult result,
+      ObjectValidationSeverity severity) {
+    return bySeverityEnum().compare(result.getSeverity(), severity) < 0;
+  }
+
   public static final ObjectValidationResult of(Collection<ObjectValidationItem> items) {
     return new ObjectValidationResult().items(items.stream().sorted(bySeverity()).collect(toList()))
         .severity(getTopSeverity(items));
@@ -125,6 +148,19 @@ public final class ObjectValidations {
 
   public static final ObjectValidationResult OK() {
     return new ObjectValidationResult().severity(ObjectValidationSeverity.OK);
+  }
+
+  /**
+   * Merge the toMerge into the baseline.
+   * 
+   * @param baseline The baseline that will contain the content of toMerge also after the call.
+   * @param toMerge
+   */
+  public static final void merge(ObjectValidationResult baseline, ObjectValidationResult toMerge) {
+    if (bySeverityEnum().compare(baseline.getSeverity(), toMerge.getSeverity()) < 0) {
+      baseline.severity(toMerge.getSeverity());
+    }
+    baseline.getItems().addAll(toMerge.getItems());
   }
 
 }
