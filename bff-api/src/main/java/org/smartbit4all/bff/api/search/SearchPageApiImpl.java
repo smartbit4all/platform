@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.search;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +32,9 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.bean.ObjectHistoryIteratorData;
 import org.smartbit4all.api.object.bean.ObjectHistoryRangeData;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
@@ -47,6 +48,7 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.collect.Streams;
+import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -138,11 +140,16 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true));
     } else {
       // In history mode we have the history control commands.
+      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_PREV)
+          .descriptor(new UiActionDescriptor().icon("arrow_back").title("Vissza")
+              .iconPosition(IconPosition.PRE)));
+      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_NEXT)
+          .descriptor(new UiActionDescriptor().icon("arrow_forward").title("Előre")
+              .iconPosition(IconPosition.POST)));
     }
 
-    ctx.view.addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false))
+    ctx.view.addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false));
     // .addActionsItem(new UiAction().code(ACTION_CLEAR)
-    ;
 
     GridModel gridModel = gridModelApi.createGridModel(
         ctx.searchIndex.getDefinition().getDefinition(),
