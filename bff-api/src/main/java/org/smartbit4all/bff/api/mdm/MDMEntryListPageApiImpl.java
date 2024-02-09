@@ -767,6 +767,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       mdmImportApi.importData(context.definition, context.entryDescriptor, mdmModRequest,
           Class.forName(context.entryDescriptor.getTypeQualifiedName()));
+      refreshGrid(context);
     } catch (Exception e) {
       viewApi
           .showMessage(new MessageData().viewUuid(viewUuid).header(localeSettingApi.get("error"))
