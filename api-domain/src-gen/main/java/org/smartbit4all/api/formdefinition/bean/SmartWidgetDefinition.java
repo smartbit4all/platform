@@ -29,6 +29,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetHint;
+import org.smartbit4all.api.formdefinition.bean.ValueChangeMode;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.bean.IconPosition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -62,7 +63,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.MATRIX,
   SmartWidgetDefinition.HINT,
   SmartWidgetDefinition.WIDGET_DESCRIPTION,
-  SmartWidgetDefinition.MAX_LENGTH
+  SmartWidgetDefinition.MAX_LENGTH,
+  SmartWidgetDefinition.VALUE_CHANGE_MODE
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -132,6 +134,9 @@ public class SmartWidgetDefinition {
 
   public static final String MAX_LENGTH = "maxLength";
   private Long maxLength;
+
+  public static final String VALUE_CHANGE_MODE = "valueChangeMode";
+  private ValueChangeMode valueChangeMode;
 
   public SmartWidgetDefinition() { 
   }
@@ -757,6 +762,34 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition valueChangeMode(ValueChangeMode valueChangeMode) {
+    
+    this.valueChangeMode = valueChangeMode;
+    return this;
+  }
+
+   /**
+   * Get valueChangeMode
+   * @return valueChangeMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE_CHANGE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ValueChangeMode getValueChangeMode() {
+    return valueChangeMode;
+  }
+
+
+  @JsonProperty(VALUE_CHANGE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+    this.valueChangeMode = valueChangeMode;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -787,12 +820,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.matrix, smartWidgetDefinition.matrix) &&
         Objects.equals(this.hint, smartWidgetDefinition.hint) &&
         Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription) &&
-        Objects.equals(this.maxLength, smartWidgetDefinition.maxLength);
+        Objects.equals(this.maxLength, smartWidgetDefinition.maxLength) &&
+        Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode);
   }
 
   @Override
@@ -821,6 +855,7 @@ public class SmartWidgetDefinition {
     sb.append("    hint: ").append(toIndentedString(hint)).append("\n");
     sb.append("    widgetDescription: ").append(toIndentedString(widgetDescription)).append("\n");
     sb.append("    maxLength: ").append(toIndentedString(maxLength)).append("\n");
+    sb.append("    valueChangeMode: ").append(toIndentedString(valueChangeMode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

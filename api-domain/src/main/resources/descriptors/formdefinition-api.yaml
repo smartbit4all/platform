@@ -130,6 +130,15 @@ components:
         maxLength:
           type: integer
           format: int64
+        valueChangeMode:
+          $ref: '#/components/schemas/ValueChangeMode'
+    ValueChangeMode:
+      description: | 
+        This enum defines the value change handling strategy. Currently only one method is supported,
+        IMMEDIATE_ACTION, which will trigger an executeUiAction when the value is changed. 
+      enum:
+        - NONE
+        - IMMEDIATE_ACTION
     SmartWidgetHint:
       type: object
       properties:
