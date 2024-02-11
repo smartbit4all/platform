@@ -38,6 +38,8 @@ public final class UiActions {
 
   public static final String SEPARATOR = "_actionSeparator_";
 
+  public static final String TOOLBAR_SUFFIX = "_toolbar";
+
   public static class Color {
     private Color() {};
 
