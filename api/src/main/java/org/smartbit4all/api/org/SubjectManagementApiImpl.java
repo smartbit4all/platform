@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The generic implementation of the {@link SubjectManagementApi}.
- * 
+ *
  * @author Peter Boros
  */
 public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContributionApi>
@@ -159,4 +159,14 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
         .map(Subject::getRef).collect(toList());
   }
 
+  @Override
+  public List<String> getDisplayValue(String modelName, List<Subject> subjects) {
+    SubjectModel model = getModel(modelName);
+    return model.getDescriptors().stream()
+        .flatMap(
+            d -> getContributionApi(d.getApiName())
+                .getDisplayValue(getRelatedSubjectUris(d.getName(), subjects)).stream())
+        .distinct()
+        .collect(toList());
+  }
 }

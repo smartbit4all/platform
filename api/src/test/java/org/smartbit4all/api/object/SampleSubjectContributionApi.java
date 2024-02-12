@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SampleSubjectContributionApi extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -58,6 +58,14 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
     return baseList.stream()
         .filter(s -> objectApi.definition(s).instanceOf(SampleCategory.class))
         .map(u -> new Subject().type(SampleCategory.class.getName()).ref(u))
+        .collect(toList());
+  }
+
+  @Override
+  public List<String> getDisplayValue(List<URI> subjects) {
+    return subjects.stream()
+        .map(objectApi::loadLatest)
+        .map(n -> n.getValueAsString(SampleCategory.NAME))
         .collect(toList());
   }
 

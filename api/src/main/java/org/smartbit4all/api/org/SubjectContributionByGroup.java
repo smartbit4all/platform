@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +10,6 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SubjectContributionByGroup extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -63,4 +63,11 @@ public class SubjectContributionByGroup extends ContributionApiImpl
         .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
   }
 
+  @Override
+  public List<String> getDisplayValue(List<URI> subjects) {
+    return subjects.stream()
+        .map(objectApi::loadLatest)
+        .map(n -> n.getValueAsString(Group.NAME))
+        .collect(toList());
+  }
 }

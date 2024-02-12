@@ -11,7 +11,7 @@ import org.smartbit4all.core.utility.StringConstant;
 /**
  * The ACL management api is responsible for integration of the {@link SubjectContributionApi}s and
  * produce a common value set definition for all the subjects.
- * 
+ *
  * @author Peter Boros
  */
 public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi> {
@@ -20,7 +20,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
 
   /**
    * Get the model from the storage by name.
-   * 
+   *
    * @param name The name of the subject model.
    * @return The SubjectModel if it exists else throw IllegalArgumentException.
    */
@@ -29,7 +29,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
   /**
    * The get subjects of user computes the list of subjects the given user belongs to. It uses the
    * contribution api defined in the given {@link SubjectTypeDescriptor}s.
-   * 
+   *
    * @param modelName The name of the subject model.
    * @param userUri The uri of the user.
    * @return The list of subjects the user belongs to.
@@ -39,7 +39,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
   /**
    * The get subjects of current user in the session computes the list of subjects the given user
    * belongs to. It uses the contribution api defined in the given {@link SubjectTypeDescriptor}s.
-   * 
+   *
    * @param modelName The name of the subject model.
    * @return The list of subjects the user belongs to.
    */
@@ -47,7 +47,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
 
   /**
    * Get all the subjects available in the given model.
-   * 
+   *
    * @param modelName The name of the subject model.
    * @return The list of the subjects available.
    */
@@ -56,7 +56,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
   /**
    * Get all the subjects that is implicitly expand the list. For example if we have a security
    * group in the base list then this function return all the embedded groups also.
-   * 
+   *
    * @param modelName The name of the subject model.
    * @param baseList The base list of the subjects.
    * @return The expanded list of the subjects with all the implicitly included subjects.
@@ -65,7 +65,7 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
 
   /**
    * Retrieves the uri list of the users belongs to the given subjects.
-   * 
+   *
    * @param modelName The name of the model.
    * @param subjects The URI list of the subjects. We might not know what kind of subject it is in
    *        the model. All the {@link SubjectContributionApi}s must recognize quickly that an URI is
@@ -73,6 +73,15 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    * @return The distinct list of the user URI belongs to the
    */
   List<URI> getUsersOf(String modelName, List<Subject> subjects);
+
+  /**
+   * Return list of displayable names of subjects.
+   *
+   * @param modelName The name of the model.
+   * @param subjects
+   * @return
+   */
+  List<String> getDisplayValue(String modelName, List<Subject> subjects);
 
   default String toString(Subject subject) {
     if (subject == null) {
