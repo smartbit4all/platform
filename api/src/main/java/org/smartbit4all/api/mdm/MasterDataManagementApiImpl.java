@@ -794,7 +794,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public void sendForApprovalGlobal(String definitionName, URI approver) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      state.getGlobalModification().approver(approver);
+      state.getGlobalModification().approver(approver).updated(sessionApi.createActivityLog());
       return state;
     }, state -> noGlobalBranchValidation(definitionName, state),
         state -> globalBranchUnderApprovalValidation(definitionName, state));
@@ -813,9 +813,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public void approvalRejectedGlobal(String definitionName, String reason) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      state.getGlobalModification().addNotesItem(new MDMModificationNote()
-          .created(sessionApi.createActivityLog())
-          .note(reason));
+      state.getGlobalModification()
+          .updated(sessionApi.createActivityLog())
+          .addNotesItem(new MDMModificationNote()
+              .created(sessionApi.createActivityLog())
+              .note(reason));
       state.getGlobalModification().approver(null);
       return state;
     }, state -> noGlobalBranchValidation(definitionName, state));

@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMModification.BRANCH_URI,
   MDMModification.CREATED,
+  MDMModification.UPDATED,
   MDMModification.APPROVER,
   MDMModification.NOTES
 })
@@ -50,6 +51,9 @@ public class MDMModification {
 
   public static final String CREATED = "created";
   private UserActivityLog created = null;
+
+  public static final String UPDATED = "updated";
+  private UserActivityLog updated = null;
 
   public static final String APPROVER = "approver";
   private URI approver;
@@ -113,6 +117,34 @@ public class MDMModification {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCreated(UserActivityLog created) {
     this.created = created;
+  }
+
+
+  public MDMModification updated(UserActivityLog updated) {
+    
+    this.updated = updated;
+    return this;
+  }
+
+   /**
+   * Get updated
+   * @return updated
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(UPDATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UserActivityLog getUpdated() {
+    return updated;
+  }
+
+
+  @JsonProperty(UPDATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUpdated(UserActivityLog updated) {
+    this.updated = updated;
   }
 
 
@@ -191,13 +223,14 @@ public class MDMModification {
     MDMModification mdMModification = (MDMModification) o;
     return Objects.equals(this.branchUri, mdMModification.branchUri) &&
         Objects.equals(this.created, mdMModification.created) &&
+        Objects.equals(this.updated, mdMModification.updated) &&
         Objects.equals(this.approver, mdMModification.approver) &&
         Objects.equals(this.notes, mdMModification.notes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchUri, created, approver, notes);
+    return Objects.hash(branchUri, created, updated, approver, notes);
   }
 
   @Override
@@ -206,6 +239,7 @@ public class MDMModification {
     sb.append("class MDMModification {\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
+    sb.append("    updated: ").append(toIndentedString(updated)).append("\n");
     sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("}");

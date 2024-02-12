@@ -238,6 +238,8 @@ components:
                     format: uri
                 created:
                     type: UserActivityLog
+                updated:
+                    type: UserActivityLog
                 approver:
                     type: string
                     format: uri
