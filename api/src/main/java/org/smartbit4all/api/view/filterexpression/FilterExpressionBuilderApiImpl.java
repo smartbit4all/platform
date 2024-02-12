@@ -6,15 +6,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldEditor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.view.UiActions;
@@ -37,12 +40,15 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
   @Autowired
   private FilterExpressionFieldUiConverter filterExpressionFieldUiConverter;
 
+  @Autowired
+  private FilterExpressionApi filterExpressionApi;
+
   @Override
   public FilterExpressionBuilderUiModel performWidgetActionRequest(UUID viewUuid,
-      String filterIdentifier,
+      String filterId,
       UiActionRequest request) {
 
-    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterIdentifier);
+    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterId);
 
     switch (request.getCode()) {
       case FilterExpressionBuilderApiActions.OPEN_FILTER_GROUPS:
@@ -52,7 +58,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
         closeFilterGroups(model);
         break;
       case FilterExpressionBuilderApiActions.ADD_BRACKET:
-        addBracket(viewUuid, filterIdentifier, request, model);
+        addBracket(viewUuid, filterId, request, model);
         break;
       case FilterExpressionBuilderApiActions.ADD_FILTER_EXPRESSION:
         addFilterExpression(model, request);
@@ -79,7 +85,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     }
 
     viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid,
-        filterIdentifier,
+        filterId,
         model);
 
     return model;
@@ -95,9 +101,9 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
 
   }
 
-  private FilterExpressionBuilderUiModel getModel(UUID viewUuid, String filterIdentifier) {
+  private FilterExpressionBuilderUiModel getModel(UUID viewUuid, String filterId) {
     return viewApi
-        .getWidgetModelFromView(FilterExpressionBuilderUiModel.class, viewUuid, filterIdentifier);
+        .getWidgetModelFromView(FilterExpressionBuilderUiModel.class, viewUuid, filterId);
   }
 
   @Override
@@ -108,11 +114,20 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionBuilderUiModel uiModel =
         new FilterExpressionBuilderUiModel().model(model);
 
-    if (Objects.nonNull(uiModel.getModel().getWorkplaceList())) {
+    if (uiModel.getModel().getWorkplaceList() != null) {
       setFilterFieldIds(uiModel.getModel().getWorkplaceList().getFilters());
     }
 
-    if (Objects.isNull(config)) {
+    if (config == null) {
+      // default behaviour
+      if (uiModel.getModel().getGroups() != null
+          && !uiModel.getModel().getGroups().isEmpty()) {
+        uiModel.setType(TypeEnum.COMPLEX);
+        uiModel.showGroups(true);
+        uiModel.readOnly(false);
+      } else {
+        uiModel.setType(TypeEnum.SIMPLE);
+      }
       return uiModel;
     }
 
@@ -130,7 +145,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
 
   private void setFilterFieldIds(List<FilterExpressionField> filterFields) {
     filterFields.forEach(field -> {
-      if (Objects.nonNull(field.getSubFieldList())
+      if (field.getSubFieldList() != null
           && !field.getSubFieldList().getFilters().isEmpty()) {
         setFilterFieldIds(field.getSubFieldList().getFilters());
       }
@@ -149,22 +164,42 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
 
   @Override
   public FilterExpressionFieldList getFilterExpressionFieldList(UUID viewUuid,
-      String filterIdentifier) {
-    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterIdentifier);
-    FilterExpressionFieldList workplaceList = model
-        .getModel().getWorkplaceList();
-
-    viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid, filterIdentifier,
-        model);
-
-    return workplaceList;
+      String filterId) {
+    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterId);
+    return model.getModel().getWorkplaceList();
   }
 
+
   @Override
-  public FilterExpressionBuilderUiModel load(UUID viewUuid, String filterIdentifier) {
+  public FilterExpressionList getFilterExpressionList(UUID viewUuid, String filterId) {
+    FilterExpressionBuilderUiModel uiModel = getModel(viewUuid, filterId);
+    if (uiModel == null) {
+      return null;
+    }
+    FilterExpressionBuilderModel model = uiModel.getModel();
+    if (model == null) {
+      return null;
+    }
+    FilterExpressionList filterList =
+        filterExpressionApi.of(model.getWorkplaceList());
+    if (filterList != null) {
+      if (model.getDefaultFilters() != null) {
+        // Append the default filters to the
+        filterList.getExpressions()
+            .addAll(model.getDefaultFilters().getExpressions());
+      }
+    } else {
+      filterList = model.getDefaultFilters();
+    }
+    return filterList;
+  }
+
+
+  @Override
+  public FilterExpressionBuilderUiModel load(UUID viewUuid, String filterId) {
     Objects.requireNonNull(viewUuid, "UUID of the page cannot be null");
-    Objects.requireNonNull(filterIdentifier, "FilterId cannot be null");
-    return getModel(viewUuid, filterIdentifier);
+    Objects.requireNonNull(filterId, "FilterId cannot be null");
+    return getModel(viewUuid, filterId);
   }
 
   private void openFilterGroups(FilterExpressionBuilderUiModel model) {
@@ -180,7 +215,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     ObjectMapHelper params = actionRequestHelper(request);
     FilterExpressionField field = params.get(UiActions.MODEL, FilterExpressionField.class);
 
-    if (Objects.isNull(field.getWidgetType())) {
+    if (field.getWidgetType() == null) {
       model.setSelectedField(null);
       model.setSelectedFieldEditor(null);
     } else {
@@ -199,7 +234,7 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
 
   }
 
-  private void addBracket(UUID viewUuid, String filterIdentifier, UiActionRequest request,
+  private void addBracket(UUID viewUuid, String filterId, UiActionRequest request,
       FilterExpressionBuilderUiModel model) {
     FilterExpressionField bracketExpression = new FilterExpressionField();
     bracketExpression.setSubFieldList(new FilterExpressionFieldList());

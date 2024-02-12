@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.search;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,13 +9,11 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -48,7 +47,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.collect.Streams;
-import static java.util.stream.Collectors.toList;
 
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
@@ -63,9 +61,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   protected GridModelApi gridModelApi;
-
-  @Autowired
-  private FilterExpressionApi filterExpressionApi;
 
   @Autowired
   private InvocationApi invocationApi;
@@ -206,10 +201,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
                       : historyIterator.getLatestVersionNr())));
     }
 
-    if (!Boolean.TRUE.equals(ctx.pageConfig.getSkipInitialQuery())) {
-      refreshGrid(model, ctx);
-    }
-
     FilterExpressionBuilderModel filterModel = ctx.pageConfig.getFilterModel();
     String pageTitle = "";
     FilterExpressionFieldList filters = null;
@@ -217,23 +208,15 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       pageTitle = filterModel.getLabel();
       filterModel.label(null);
       filters = filterModel.getWorkplaceList();
-      // TODO pass FilterExpressionBuilderApiConfig
       FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
           filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
-
-      if (Objects.nonNull(filterExpressionBuilderUiModel.getModel().getGroups())
-          && !filterExpressionBuilderUiModel.getModel().getGroups().isEmpty()) {
-        filterExpressionBuilderUiModel.setType(TypeEnum.COMPLEX);
-        filterExpressionBuilderUiModel.showGroups(true);
-        filterExpressionBuilderUiModel.readOnly(false);
-      } else {
-        filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
-      }
-
       filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
           filterExpressionBuilderUiModel);
     }
 
+    if (!Boolean.TRUE.equals(ctx.pageConfig.getSkipInitialQuery())) {
+      refreshGrid(model, ctx);
+    }
 
     return model
         .pageTitle(pageTitle)
@@ -251,7 +234,8 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected void refreshGrid(SearchPageModel model, PageContext ctx) {
     TableData<?> gridContent = null;
-    FilterExpressionList filters = getFilterExpressionList(ctx);
+    FilterExpressionList filters = filterExpressionBuilderApi
+        .getFilterExpressionList(ctx.viewUUID, FILTER_BUILDER_WIDGET_ID);
 
     Stream<ObjectNode> nodesToQuery = getNodesToQuery();
     if (nodesToQuery != null) {
@@ -289,24 +273,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     if (gridContent != null) {
       gridModelApi.setData(uuid, WIDGET_RESULT_GRID, gridContent);
     }
-  }
-
-  private final FilterExpressionList getFilterExpressionList(PageContext ctx) {
-    if (ctx.pageConfig.getFilterModel() == null) {
-      return null;
-    }
-    FilterExpressionList filterList =
-        filterExpressionApi.of(ctx.pageConfig.getFilterModel().getWorkplaceList());
-    if (filterList != null) {
-      if (ctx.pageConfig.getFilterModel().getDefaultFilters() != null) {
-        // Append the default filters to the
-        filterList.getExpressions()
-            .addAll(ctx.pageConfig.getFilterModel().getDefaultFilters().getExpressions());
-      }
-    } else {
-      filterList = ctx.pageConfig.getFilterModel().getDefaultFilters();
-    }
-    return filterList;
   }
 
   private final List<FilterExpressionOrderBy> getOrderByList(PageContext ctx) {

@@ -28,7 +28,6 @@ import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
@@ -356,20 +355,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     if (filterModel != null) {
       FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
           filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
-      if (Objects.nonNull(filterExpressionBuilderUiModel.getModel().getGroups())
-          && !filterExpressionBuilderUiModel.getModel().getGroups().isEmpty()) {
-        filterExpressionBuilderUiModel.setType(TypeEnum.COMPLEX);
-        filterExpressionBuilderUiModel.showGroups(true);
-        filterExpressionBuilderUiModel.readOnly(false);
-      } else {
-        filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
-      }
-
       filterExpressionBuilderApi.initFilterBuilderInView(ctx.getView().getUuid(),
           SearchPageApi.FILTER_BUILDER_WIDGET_ID,
           filterExpressionBuilderUiModel);
     }
-
   }
 
   private String getPageTitle(PageContext context) {

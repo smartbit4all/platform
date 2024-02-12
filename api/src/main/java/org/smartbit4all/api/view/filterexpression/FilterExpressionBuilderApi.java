@@ -7,12 +7,13 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConf
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 
 /**
  * @author Dániel Papp
- * 
+ *
  *         UiAction codes for FilterExpressionBuilderApi, keep this file synchronized with
  *         filterExpressionBuilderApiActions.ts inside ng-client npm package
  */
@@ -20,16 +21,19 @@ public interface FilterExpressionBuilderApi {
   public static final String SCHEMA = "filterExpressionBuilder";
 
 
-  FilterExpressionFieldList getFilterExpressionFieldList(UUID viewUuid, String gridId);
+  FilterExpressionFieldList getFilterExpressionFieldList(UUID viewUuid, String filterId);
+
+  FilterExpressionList getFilterExpressionList(UUID viewUuid, String filterId);
 
   FilterExpressionBuilderUiModel createFilterBuilder(FilterExpressionBuilderModel model,
       FilterExpressionBuilderApiConfig config);
 
-  void initFilterBuilderInView(UUID viewUuid, String gridId, FilterExpressionBuilderUiModel model);
+  void initFilterBuilderInView(UUID viewUuid, String filterId,
+      FilterExpressionBuilderUiModel model);
 
-  FilterExpressionBuilderUiModel load(UUID viewUuid, String filterIdentifier);
+  FilterExpressionBuilderUiModel load(UUID viewUuid, String filterId);
 
-  FilterExpressionBuilderUiModel performWidgetActionRequest(UUID viewUuid, String filterIdentifier,
+  FilterExpressionBuilderUiModel performWidgetActionRequest(UUID viewUuid, String filterId,
       UiActionRequest request);
 
   public final UiAction OPEN_FILTER_GROUPS_ACTION =
