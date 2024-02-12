@@ -153,7 +153,11 @@ public class MDMEntryDescriptorPageApiImpl
               MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
               .enabled(false).visible(false).mandatory(false));
     }
-    if (!Boolean.TRUE.equals(ctx.isNewEntry)) {
+    if (Boolean.TRUE.equals(ctx.isNewEntry)) {
+      viewConstraint.addComponentConstraintsItem(
+          new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.CODE).enabled(true)
+              .visible(true).mandatory(true));
+    } else {
       viewConstraint.addComponentConstraintsItem(
           new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.CODE).enabled(false)
               .visible(false).mandatory(false));
