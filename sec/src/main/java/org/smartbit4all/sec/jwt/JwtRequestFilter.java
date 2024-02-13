@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -42,28 +43,32 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * call would not be executed.
      */
     String jwt = jwtUtil.getJwtTokenFromRequest(request);
-    String username = jwtUtil.extractSubject(jwt);
-
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      User user = this.orgApi.getUserByUsername(username);
-      if (jwtUtil.validateToken(jwt, user)) {
-        Session session = userSessionApi.getSessionByToken(jwt);
-        if (session != null) {
-          Authentication authentication =
-              (Authentication) session.getParameter(Authentication.class.getName());
-          if (authentication != null) {
-            if (AbstractAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
-              ((AbstractAuthenticationToken) authentication)
-                  .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            } else {
-              log.warn("The given authentication token [{}] is not a subclass of {}, "
-                  + "thus details can not be set",
-                  authentication.getClass().getName(), AbstractAuthenticationToken.class.getName());
+    if (!ObjectUtils.isEmpty(jwt)) {
+      String username = jwtUtil.extractSubject(jwt);
+      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        User user = this.orgApi.getUserByUsername(username);
+        if (jwtUtil.validateToken(jwt, user)) {
+          Session session = userSessionApi.getSessionByToken(jwt);
+          if (session != null) {
+            Authentication authentication =
+                (Authentication) session.getParameter(Authentication.class.getName());
+            if (authentication != null) {
+              if (AbstractAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
+                ((AbstractAuthenticationToken) authentication)
+                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+              } else {
+                log.warn("The given authentication token [{}] is not a subclass of {}, "
+                    + "thus details can not be set",
+                    authentication.getClass().getName(),
+                    AbstractAuthenticationToken.class.getName());
+              }
+              SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            SecurityContextHolder.getContext().setAuthentication(authentication);
           }
         }
       }
+    } else {
+      log.debug("The incoming request does not contain a jwt token!");
     }
     filterChain.doFilter(request, response);
   }
