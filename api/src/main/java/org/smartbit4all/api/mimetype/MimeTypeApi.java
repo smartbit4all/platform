@@ -29,6 +29,8 @@ public class MimeTypeApi implements InitializingBean {
 
   public static final String XLSX_MIMETYPE = MediaType.OOXML_SHEET.toString();
 
+  public static final String AUDIO_ANY = MediaType.ANY_AUDIO_TYPE.toString();
+
   public static final String PDF_EXT = "pdf";
   public static final String DOCX_EXT = "docx";
 
