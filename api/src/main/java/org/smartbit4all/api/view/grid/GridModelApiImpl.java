@@ -149,7 +149,6 @@ public class GridModelApiImpl implements GridModelApi {
     }
     return new GridView()
         .descriptor(new GridViewDescriptor()
-            .kind(KindEnum.TABLE)
             .columns(headers))
         .orderedColumnNames(columns);
   }
@@ -719,7 +718,8 @@ public class GridModelApiImpl implements GridModelApi {
         Map<String, GridRow> rowsById = page.getRows().stream().collect(toMap(row -> {
           String id = getStringFromRow(row, idProperty);
           return id != null ? id : StringConstant.UNKNOWN;
-        }, r -> r));
+        }, r -> r,
+            (f, s) -> s));
         for (GridRow row : page.getRows()) {
           if (row.getParent() == null) {
             String parentId = getStringFromRow(row, parentIdProperty);

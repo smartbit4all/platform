@@ -63,7 +63,7 @@ public class GridViewDescriptor {
   public enum KindEnum {
     TABLE("TABLE"),
     
-    EXPANDABLECARDS1("EXPANDABLECARDS1"),
+    CARDS("CARDS"),
     
     TREE("TREE");
 

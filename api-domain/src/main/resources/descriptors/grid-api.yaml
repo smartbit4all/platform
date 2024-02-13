@@ -272,6 +272,8 @@ components:
           type: array
           items:
             type: string
+        paginator:
+          type: boolean
     GridServerModel:
       type: object
       description: |
@@ -366,7 +368,7 @@ components:
         icon:
           type: string
         kind:
-          enum: [TABLE, EXPANDABLECARDS1, TREE]
+          enum: [TABLE, CARDS, TREE]
         columns:
           description: |
             In the table the columns are the columns of the table. In the tree the columns can be used to append the

@@ -49,7 +49,8 @@ import javax.validation.Valid;
   GridModel.PAGE_INDEX,
   GridModel.PAGE_SIZE,
   GridModel.PAGE_SIZE_OPTIONS,
-  GridModel.DEFAULT_ROW_ACTIONS
+  GridModel.DEFAULT_ROW_ACTIONS,
+  GridModel.PAGINATOR
 })
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -89,6 +90,9 @@ public class GridModel {
 
   public static final String DEFAULT_ROW_ACTIONS = "defaultRowActions";
   private List<String> defaultRowActions = null;
+
+  public static final String PAGINATOR = "paginator";
+  private Boolean paginator;
 
   public GridModel() { 
   }
@@ -447,6 +451,33 @@ public class GridModel {
   }
 
 
+  public GridModel paginator(Boolean paginator) {
+    
+    this.paginator = paginator;
+    return this;
+  }
+
+   /**
+   * Get paginator
+   * @return paginator
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PAGINATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getPaginator() {
+    return paginator;
+  }
+
+
+  @JsonProperty(PAGINATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPaginator(Boolean paginator) {
+    this.paginator = paginator;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -467,12 +498,13 @@ public class GridModel {
         Objects.equals(this.pageIndex, gridModel.pageIndex) &&
         Objects.equals(this.pageSize, gridModel.pageSize) &&
         Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions) &&
-        Objects.equals(this.defaultRowActions, gridModel.defaultRowActions);
+        Objects.equals(this.defaultRowActions, gridModel.defaultRowActions) &&
+        Objects.equals(this.paginator, gridModel.paginator);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions);
+    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions, paginator);
   }
 
   @Override
@@ -491,6 +523,7 @@ public class GridModel {
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    pageSizeOptions: ").append(toIndentedString(pageSizeOptions)).append("\n");
     sb.append("    defaultRowActions: ").append(toIndentedString(defaultRowActions)).append("\n");
+    sb.append("    paginator: ").append(toIndentedString(paginator)).append("\n");
     sb.append("}");
     return sb.toString();
   }
