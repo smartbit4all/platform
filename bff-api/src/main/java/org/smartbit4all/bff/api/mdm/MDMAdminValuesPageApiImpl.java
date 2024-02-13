@@ -1,9 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.Collections.emptyList;
-import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -79,12 +76,6 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   public void refreshUiActions(UUID viewUuid) {
     PageContext refreshedContext = getContextByViewUUID(viewUuid);
     refreshUiActions(refreshedContext);
-  }
-
-
-
-  protected List<GridView> createDefaultListPageGridViews() {
-    return emptyList();
   }
 
 }
