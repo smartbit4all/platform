@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.VectorDBApi;
@@ -153,6 +154,10 @@ public class MDMEntryDescriptorPageApiImpl
               MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
               .enabled(false).visible(false).mandatory(false));
     }
+
+    viewConstraint.addComponentConstraintsItem(
+        new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.NAME).mandatory(true));
+
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       viewConstraint.addComponentConstraintsItem(
           new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.CODE).enabled(true)
@@ -172,6 +177,18 @@ public class MDMEntryDescriptorPageApiImpl
     String code =
         Boolean.TRUE.equals(ctx.isNewEntry) ? clientModel.getCode() : ctx.entryDescriptor.getName();
     String name = clientModel.getName();
+
+    if (Strings.isBlank(name)) {
+      throw new IllegalArgumentException(
+          localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
+              "emptyname"));
+    }
+    if (code.contains(StringConstant.SPACE)) {
+      throw new IllegalArgumentException(
+          localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
+              "spacecharacter"));
+    }
+
     VectorCollectionDescriptor vectorCollectionDescriptor =
         clientModel.getVectorCollection() != null ? clientModel.getVectorCollection()
             : ctx.entryDescriptor.getVectorCollection();
