@@ -312,6 +312,7 @@ components:
         - INSERT
         - UPDATE
         - DELETE
+        - UPDATE_WITH_ID_CHANGE
     UserUpdate:
       type: object
       properties:

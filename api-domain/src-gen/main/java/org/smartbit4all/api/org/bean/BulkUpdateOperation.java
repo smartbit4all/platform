@@ -32,7 +32,9 @@ public enum BulkUpdateOperation {
   
   UPDATE("UPDATE"),
   
-  DELETE("DELETE");
+  DELETE("DELETE"),
+  
+  UPDATE_WITH_ID_CHANGE("UPDATE_WITH_ID_CHANGE");
 
   private String value;
 

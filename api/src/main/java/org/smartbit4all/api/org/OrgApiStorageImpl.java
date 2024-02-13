@@ -1,8 +1,7 @@
 package org.smartbit4all.api.org;
 
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -21,8 +20,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +52,10 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.ObjectUtils;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -967,12 +968,15 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public void updateUsername(User user, String username) {
-    removeFromObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), null);
-    storage.get().update(user.getUri(), User.class, u -> user.username(username));
-    addToObjectMap(USER_OBJECTMAP_REFERENCE, username, user.getUri());
+    Map<String, URI> userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE).getUris();
+    if (checkNewUsername(user.getUsername(), username, userObjectMap)) {
 
-    invalidateCache();
+      removeFromObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), null);
+      storage.get().update(user.getUri(), User.class, u -> user.username(username));
+      addToObjectMap(USER_OBJECTMAP_REFERENCE, username, user.getUri());
 
+      invalidateCache();
+    }
   }
 
   @Override
@@ -983,7 +987,6 @@ public class OrgApiStorageImpl implements OrgApi {
     bulkUpdateUsersOfGroups(update);
 
     invalidateCache();
-
   }
 
   private void bulkUpdateUsersOfGroups(OrgBulkUpdate update) {
@@ -1108,6 +1111,24 @@ public class OrgApiStorageImpl implements OrgApi {
         storage.get().update(user.getUri(), User.class, u -> u.inactive(true));
         deletedUsers.add(user);
         userObjectMap.remove(user.getUsername());
+      } else if (userUpdate.getOperation() == BulkUpdateOperation.UPDATE_WITH_ID_CHANGE) {
+        String newUsername = user.getUsername();
+        String oldUsername = userObjectMap.entrySet().stream()
+            .filter(entry -> entry.getValue().equals(user.getUri()))
+            .map(entry -> entry.getKey())
+            .findFirst().orElse(null);
+        if (checkNewUsername(oldUsername, newUsername, userObjectMap)) {
+          ObjectMapRequest userMap = new ObjectMapRequest().mapName(USER_OBJECTMAP_REFERENCE);
+
+          storage.get().update(user.getUri(), User.class, u -> user);
+
+          userMap.putUrisToAddItem(user.getUsername(), user.getUri());
+          userObjectMap.put(user.getUsername(), user.getUri());
+          userMap.putUrisToRemoveItem(oldUsername, null);
+          userObjectMap.remove(oldUsername);
+          // it can not be done in batch, so update the map inline
+          storage.get().updateAttachedMap(storage.get().settings().getUri(), userMap);
+        }
       }
     }
 
@@ -1146,18 +1167,20 @@ public class OrgApiStorageImpl implements OrgApi {
           usersOfGroupCollection.stream().collect(Collectors.toMap(g -> g.getGroupUri(), g -> g));
 
       for (User user : deletedUsers) {
-        // Inactivate user
-        inactiveUserMap.putUrisToAddItem(user.getUsername(), user.getUri());
+        if (user.getUsername() != null && user.getUri() != null) {
+          // Inactivate user
+          inactiveUserMap.putUrisToAddItem(user.getUsername(), user.getUri());
 
-        GroupsOfUser groupsOfUser = groupsOfUserByUserUri.get(user.getUri());
-        if (groupsOfUser != null) {
-          // remove the group of user from the group of user list
-          groupsOfUserList.remove(groupsOfUser);
-          // remove from all users of group
-          for (URI groupUri : groupsOfUser.getGroups()) {
-            UsersOfGroup usersOfGroup = usersOfGroupByUri.get(groupUri);
-            if (usersOfGroup != null) {
-              usersOfGroup.getUsers().remove(user.getUri());
+          GroupsOfUser groupsOfUser = groupsOfUserByUserUri.get(user.getUri());
+          if (groupsOfUser != null) {
+            // remove the group of user from the group of user list
+            groupsOfUserList.remove(groupsOfUser);
+            // remove from all users of group
+            for (URI groupUri : groupsOfUser.getGroups()) {
+              UsersOfGroup usersOfGroup = usersOfGroupByUri.get(groupUri);
+              if (usersOfGroup != null) {
+                usersOfGroup.getUsers().remove(user.getUri());
+              }
             }
           }
         }
@@ -1167,6 +1190,35 @@ public class OrgApiStorageImpl implements OrgApi {
       storage.get().save(usersOfGroupCollectionReference);
       storage.get().save(groupsOfUserCollectionSO);
     }
+  }
+
+  private boolean checkNewUsername(String oldUsername, String newUsername,
+      Map<String, URI> userObjectMap) {
+    if (oldUsername == null) {
+      log.error(
+          "Trying to update user's username, but the given user is not even stored yet (uri not found). Username: [{}]",
+          newUsername);
+      return false;
+    }
+    if (oldUsername.equals(newUsername)) {
+      log.warn(
+          "Trying to update user's username, but the username has not been changed. Username: [{}]",
+          newUsername);
+      return false;
+    }
+    if (ObjectUtils.isEmpty(newUsername)) {
+      log.error(
+          "Trying to update user's username, but the new username is empty. Old username: [{}]",
+          oldUsername);
+      return false;
+    }
+    if (userObjectMap.containsKey(newUsername)) {
+      log.error(
+          "Trying to update user's username, but the new username is already present. Old username: [{}], new username: [{}]",
+          oldUsername, newUsername);
+      return false;
+    }
+    return true;
   }
 
   private void bulkUpdateGroups(OrgBulkUpdate update) {
