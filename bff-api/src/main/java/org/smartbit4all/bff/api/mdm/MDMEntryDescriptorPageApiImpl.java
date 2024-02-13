@@ -195,22 +195,7 @@ public class MDMEntryDescriptorPageApiImpl
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
-      MDMEntryDescriptor descriptor =
-          option.addDefaultDescriptor(GenericValue.class, code).name(code)
-              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name("Code")
-                  .addPathItem(GenericValue.CODE),
-                  new MDMTableColumnDescriptor().name("Name")
-                      .addPathItem(GenericValue.NAME),
-                  new MDMTableColumnDescriptor().name("Icon")
-                      .addPathItem(GenericValue.ICON)))
-              .displayNameForm(new LangString().defaultValue(name))
-              .displayNameList(new LangString().defaultValue(name))
-              .listPageGridViews(Collections.emptyList())
-              .isValueSet(Boolean.TRUE)
-              .vectorCollection(vectorCollectionDescriptor)
-              .importable(Boolean.TRUE.equals(clientModel.getImportable()))
-              .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
-      MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
+      addNewEntryDescriptor(clientModel, code, name, vectorCollectionDescriptor, option);
       masterDataManagementApi.addNewEntries(option);
     } else {
       MDMEntryDescriptor entryDescriptorToEdit =
@@ -229,5 +214,33 @@ public class MDMEntryDescriptorPageApiImpl
       }
     }
     viewApi.closeView(viewUuid);
+  }
+
+  protected MDMEntryDescriptor addNewEntryDescriptor(MDMEntryDescriptorPageModel clientModel,
+      String code, String name, VectorCollectionDescriptor vectorCollectionDescriptor,
+      MDMDefinitionOption option) {
+    try {
+      MDMEntryDescriptor descriptor =
+          option.addDefaultDescriptor(GenericValue.class, code).name(code)
+              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name("Code")
+                  .addPathItem(GenericValue.CODE),
+                  new MDMTableColumnDescriptor().name("Name")
+                      .addPathItem(GenericValue.NAME),
+                  new MDMTableColumnDescriptor().name("Icon")
+                      .addPathItem(GenericValue.ICON)))
+              .displayNameForm(new LangString().defaultValue(name))
+              .displayNameList(new LangString().defaultValue(name))
+              .listPageGridViews(Collections.emptyList())
+              .isValueSet(Boolean.TRUE)
+              .vectorCollection(vectorCollectionDescriptor)
+              .importable(Boolean.TRUE.equals(clientModel.getImportable()))
+              .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
+      MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
+      return descriptor;
+    } catch (IllegalArgumentException e) {
+      log.debug("Trying to create entry descriptor with invalid code", e);
+      throw new IllegalArgumentException(localeSettingApi
+          .get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error.usedcode"));
+    }
   }
 }
