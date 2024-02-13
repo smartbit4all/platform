@@ -530,4 +530,14 @@ public class SessionManagementApiImpl implements SessionManagementApi {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public void setSessionExpirationTime(int minutes) {
+    timeoutMins = minutes;
+  }
+
+  @Override
+  public void setRefreshTokenExpirationTime(int minutes) {
+    refreshTimeoutMins = minutes;
+  }
+
 }

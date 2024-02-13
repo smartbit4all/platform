@@ -73,4 +73,19 @@ public interface SessionManagementApi {
 
   List<Session> getActiveSessionsOfUser(URI orgUserUri);
 
+  /**
+   * Sets the duration of the session token.
+   * 
+   * @param minutes {@code int} token lifetime in minutes
+   */
+  void setSessionExpirationTime(final int minutes);
+
+  /**
+   * Sets the duration of the session refresh token.
+   * 
+   * @param minutes {@code int} token lifetime in minutes, negative values mean the session is
+   *        always refreshable
+   */
+  void setRefreshTokenExpirationTime(final int minutes);
+
 }
