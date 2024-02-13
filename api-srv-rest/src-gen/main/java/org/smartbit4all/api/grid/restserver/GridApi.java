@@ -6,6 +6,7 @@
 package org.smartbit4all.api.grid.restserver;
 
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridSelectionChange;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ViewContextChange;
@@ -155,6 +156,39 @@ public interface GridApi {
         @ApiParam(value = "") @RequestHeader(value = "selected", required = false) Boolean selected
     ) throws Exception {
         return getDelegate().selectAll(uuid, gridId, selected);
+    }
+
+
+    /**
+     * POST /grid/{uuid}/{gridId}/selects
+     *
+     * @param uuid  (required)
+     * @param gridId  (required)
+     * @param gridSelectionChange  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "grid" },
+        value = "",
+        nickname = "selectRows",
+        notes = "",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/grid/{uuid}/{gridId}/selects",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> selectRows(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("gridId") String gridId,
+        @ApiParam(value = "", required = true) @Valid @RequestBody GridSelectionChange gridSelectionChange
+    ) throws Exception {
+        return getDelegate().selectRows(uuid, gridId, gridSelectionChange);
     }
 
 

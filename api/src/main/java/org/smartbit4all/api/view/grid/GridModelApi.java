@@ -12,6 +12,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridSelectionChange;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -281,6 +282,8 @@ public interface GridModelApi {
   void addSelectionChangeListener(UUID viewUuid, String gridId, InvocationRequest request);
 
   void selectRow(UUID viewUuid, String gridId, String rowId, boolean selected);
+
+  void selectRows(UUID viewUuid, String gridId, GridSelectionChange selectionChange);
 
   void selectAllRow(UUID viewUuid, String gridId, boolean selected);
 

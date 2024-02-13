@@ -2,6 +2,7 @@ package org.smartbit4all.api.grid.restserver.impl;
 
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridSelectionChange;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.restserver.GridApiDelegate;
 import org.smartbit4all.api.view.ViewContextService;
@@ -61,6 +62,17 @@ public class GridApiDelegateImpl implements GridApiDelegate {
               uuid, gridId, rowId, Boolean.TRUE == selected);
           return null;
         }, "gridSelectRow"));
+  }
+
+  @Override
+  public ResponseEntity<ViewContextChange> selectRows(UUID uuid, String gridId,
+      GridSelectionChange gridSelectionChange) throws Exception {
+    return ResponseEntity.ok(viewContextService.performViewCall(
+        () -> {
+          gridModelApi.selectRows(
+              uuid, gridId, gridSelectionChange);
+          return null;
+        }, "gridSelectRows"));
   }
 
   @Override

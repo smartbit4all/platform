@@ -28,6 +28,7 @@ import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridSelectionChange;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.grid.bean.GridServerModel;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
@@ -878,7 +879,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public Object expand(GridModel grid, String gridId, String rowId) {
-    Objects.nonNull(rowId);
+    Objects.requireNonNull(rowId, "rowId must not be null");
     GridRow row = grid.getPage().getRows().stream()
         .filter(r -> rowId.equals(r.getId()))
         .findFirst()
@@ -965,8 +966,8 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void refreshGrid(UUID viewUuid, String gridId) {
-    Objects.nonNull(viewUuid);
-    Objects.nonNull(gridId);
+    Objects.requireNonNull(viewUuid, "viewUuid must not be null");
+    Objects.requireNonNull(gridId, "gridId must not be null");
     GridModel model = getGridModel(viewUuid, gridId);
     if (model != null && model.getPage() != null) {
       int lowerBound = model.getPage().getLowerBound();
@@ -976,27 +977,49 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public void selectRow(UUID viewUuid, String gridId, String rowId, boolean selected) {
-    Objects.nonNull(viewUuid);
-    Objects.nonNull(gridId);
+  public void selectRows(UUID viewUuid, String gridId, GridSelectionChange selectionChange) {
+    Objects.requireNonNull(viewUuid, "viewUuid must not be null");
+    Objects.requireNonNull(gridId, "gridId must not be null");
+    Objects.requireNonNull(gridId, "selectionChange must not be null");
     GridModel model = getGridModel(viewUuid, gridId);
     GridSelectionMode selectionMode = model.getView().getDescriptor().getSelectionMode();
     if (selectionMode == null || selectionMode == GridSelectionMode.NONE) {
       return;
     }
     GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
-    if (selected) {
-      if (selectionMode == GridSelectionMode.SINGLE) {
-        serverModel.getSelectedRows().clear();
-      }
+    Map<String, GridRow> selection = serverModel.getSelectedRows();
+
+    if (selectionMode == GridSelectionMode.SINGLE
+        && !selectionChange.getSelected().isEmpty()) {
+      selection.clear();
+    }
+
+    // remove unselecteds
+    selectionChange.getUnselected().forEach(rowId -> {
+      selection.remove(rowId);
+    });
+
+    // add selecteds
+    selectionChange.getSelected().forEach(rowId -> {
       GridRow row = GridModels.findGridRowById(model, rowId)
           .orElseThrow(() -> new IllegalArgumentException("row not found"));
       serverModel.putSelectedRowsItem(rowId, row);
-    } else {
-      serverModel.getSelectedRows().remove(rowId);
-    }
+    });
+    model.selectedRowCount(selection.size());
     model.allRowsSelected(Objects.equals(model.getSelectedRowCount(), model.getTotalRowCount()));
     refreshSelectedRows(viewUuid, gridId, model.getPage(), serverModel.getSelectedRows());
+  }
+
+
+  @Override
+  public void selectRow(UUID viewUuid, String gridId, String rowId, boolean selected) {
+    GridSelectionChange selectionChange = new GridSelectionChange();
+    if (selected) {
+      selectionChange.addSelectedItem(rowId);
+    } else {
+      selectionChange.addUnselectedItem(rowId);
+    }
+    selectRows(viewUuid, gridId, selectionChange);
   }
 
   private void refreshSelectedRows(UUID viewUuid, String gridId, GridPage page,
@@ -1012,8 +1035,8 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void selectAllRow(UUID viewUuid, String gridId, boolean selected) {
-    Objects.nonNull(viewUuid);
-    Objects.nonNull(gridId);
+    Objects.requireNonNull(viewUuid);
+    Objects.requireNonNull(gridId);
     GridModel model = getGridModel(viewUuid, gridId);
     GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
     model.allRowsSelected(selected);
@@ -1050,8 +1073,8 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public List<GridRow> getSelectedRows(UUID viewUuid, String gridId) {
-    Objects.nonNull(viewUuid);
-    Objects.nonNull(gridId);
+    Objects.requireNonNull(viewUuid);
+    Objects.requireNonNull(gridId);
     GridServerModel gridModel = getGridServerModel(viewUuid, gridId);
     return gridModel != null
         ? gridModel.getSelectedRows()

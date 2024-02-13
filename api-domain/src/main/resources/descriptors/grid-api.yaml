@@ -171,6 +171,38 @@ paths:
             application/json:
               schema:
                 type: ViewContextChange
+  /grid/{uuid}/{gridId}/selects:
+    post:
+      tags:
+      - grid
+      summary: ''
+      operationId: 'selectRows'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GridSelectionChange'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
   /grid/{uuid}/{gridId}/select:
     post:
       tags:
@@ -417,6 +449,20 @@ components:
           default: false
         contentType:
           $ref: '#/components/schemas/GridColumnContentType'
+    GridSelectionChange:
+      type: object
+      description: |
+        This object contains all information about a grid's selection change.
+      required: [selected,unselected]
+      properties:
+        selected:
+          type: array 
+          items:
+            type: string
+        unselected:
+          type: array 
+          items:
+            type: string
     GridColumnContentType:
       type: string
       enum:
