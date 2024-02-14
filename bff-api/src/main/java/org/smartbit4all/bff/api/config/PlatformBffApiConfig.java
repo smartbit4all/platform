@@ -7,6 +7,8 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.bff.api.acl.SubjectSelectorPageApi;
+import org.smartbit4all.bff.api.acl.SubjectSelectorPageApiImpl;
 import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
@@ -20,8 +22,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PlatformBffApiConfig {
-
-  public static final String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";
 
   @Bean
   public SearchIndex<User> userSearch() {
@@ -79,6 +79,17 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<GenericSearchPageApi> genericSearchPageApiProvider(
       GenericSearchPageApi genericSearchPageApi) {
     return Invocations.asProvider(GenericSearchPageApi.class, genericSearchPageApi);
+  }
+
+  @Bean
+  public SubjectSelectorPageApi subjectSelectorPageApi() {
+    return new SubjectSelectorPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<SubjectSelectorPageApi> subjectSelectorPageApiProvider(
+      SubjectSelectorPageApi api) {
+    return Invocations.asProvider(SubjectSelectorPageApi.class, api);
   }
 
   @Bean

@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.acl;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -28,16 +31,20 @@ import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.value.bean.GenericValue;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
-import org.smartbit4all.bff.api.config.PlatformBffApiConfig;
 import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
@@ -45,6 +52,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageModel>
     implements SubjectSelectorPageApi {
+
+  private static final String SUBJECT_GRID_ID = "SUBJECT_GRID";
+  private static final String SUBJECT_FILTER_ID = "SUBJECT_FILTER";
 
   @Autowired
   private SubjectManagementApi subjectManagementApi;
@@ -57,6 +67,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
   @Autowired
   protected FilterExpressionApi filterExpressionApi;
+
+  @Autowired
+  private FilterExpressionBuilderApi filterExpressionBuilderApi;
 
   @Autowired
   private InvocationApi invocationApi;
@@ -73,7 +86,16 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
     SubjectModel model = getSubjectModel(view);
 
-    initGrid(model.getDescriptors().get(0), view.getUuid());
+    if (model.getDescriptors() == null || model.getDescriptors().isEmpty()) {
+      viewApi.closeView(view.getUuid());
+      throw new IllegalStateException("subjectSelector.missingDescriptors");
+    }
+    if (model.getDescriptors().size() == 1) {
+      view.getConstraint().addComponentConstraintsItem(new ComponentConstraint()
+          .dataName(SubjectSelectorPageModel.SELECTED_DESCRIPTOR)
+          .visible(false));
+    }
+    initGridAndFilter(view.getUuid(), model.getDescriptors().get(0));
 
     view.addActionsItem(new UiAction().code(CANCEL));
     view.addActionsItem(new UiAction().code(SUBMIT_SELECTION)
@@ -82,31 +104,32 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
             .color(UiActions.Color.PRIMARY)
             .type(UiActionButtonType.RAISED)));
 
+    List<Object> descriptors = model.getDescriptors().stream()
+        .map(desc -> new GenericValue()
+            .code(desc.getName())
+            .name(localeSettingApi.get(desc.getTitle())))
+        .collect(toList());
+    view.putValueSetsItem(SubjectSelectorPageModel.SELECTED_DESCRIPTOR,
+        new ValueSet().valueSetData(new ValueSetData()
+            .values(descriptors)
+            .keyProperty(GenericValue.CODE)));
+
     return new SubjectSelectorPageModel()
-        .descriptors(
-            model.getDescriptors())
-        .selectedDescriptor(model.getDescriptors().get(0))
-        .selectedSubjectName(model.getDescriptors().get(0).getName())
-        .sujectModelName(
-            model.getTitle() != null ? localeSettingApi.get(model.getTitle()) : model.getName());
+        .selectedDescriptor(model.getDescriptors().get(0).getName());
   }
 
   @Override
-  public void peformSelectSubject(UUID viewUuid, UiActionRequest request) {
-    ObjectMapHelper params = actionRequestHelper(request);
-    String subjectTypeDescriptorName =
-        params.get(UiActions.MODEL, String.class);
-    SubjectSelectorPageModel pageModel = this.getModel(viewUuid);
+  public void performSelectedDescriptor(UUID viewUuid, UiActionRequest request) {
+    SubjectSelectorPageModel clientModel = extractClientModel(request);
 
-    Optional<SubjectTypeDescriptor> subjectTypeDescriptor = pageModel.getDescriptors().stream()
-        .filter(d -> d.getName().equals(subjectTypeDescriptorName)).findFirst();
+    Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
+        getSubjectModel(viewApi.getView(viewUuid))
+            .getDescriptors().stream()
+            .filter(d -> d.getName().equals(clientModel.getSelectedDescriptor())).findFirst();
 
     if (subjectTypeDescriptor.isPresent()) {
-      pageModel.setSelectedDescriptor(subjectTypeDescriptor.get());
-      pageModel.setSelectedSubjectName(subjectTypeDescriptorName);
-      setModel(viewUuid, pageModel);
-
-      initGrid(subjectTypeDescriptor.get(), viewUuid);
+      setModel(viewUuid, clientModel);
+      initGridAndFilter(viewUuid, subjectTypeDescriptor.get());
     }
   }
 
@@ -120,7 +143,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, SUBJECT_GRID_ID);
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper params = parameters(view);
-    InvocationRequest invocationRequest = params.get(INVOCATION, InvocationRequest.class);
+    InvocationRequest invocationRequest = params.get(SELECTION_CALLBACK, InvocationRequest.class);
 
     List<URI> subjectUriList = selectedRows.stream()
         .map(row -> extractUriFromGridRow(row)).collect(Collectors.toList());
@@ -151,7 +174,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     return uri;
   }
 
-  protected void initGrid(SubjectTypeDescriptor subjectTypeDescriptor, UUID viewUuid) {
+  protected void initGridAndFilter(UUID viewUuid, SubjectTypeDescriptor subjectTypeDescriptor) {
     SearchPageConfig selectionConfig = subjectTypeDescriptor.getSelectionConfig();
 
     SearchIndex<?> searchIndex =
@@ -176,6 +199,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
         .selectionMode(selectionMode)
         .selectionType(GridSelectionType.CHECKBOX)
         .kind(isTree ? KindEnum.TREE : KindEnum.TABLE);
+    gridModel.paginator(!isTree);
     if (isTree) {
       GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentPropertyName());
       GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentIdentifierPropertyName());
@@ -187,9 +211,49 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
           subjectTypeDescriptor.getParentIdentifierPropertyName(),
           subjectTypeDescriptor.getParentPropertyName());
     }
+    FilterExpressionBuilderModel filterModel = selectionConfig.getFilterModel();
+    View view = viewApi.getView(viewUuid);
+    if (filterModel != null) {
+      FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+          filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
+      filterExpressionBuilderApi.initFilterBuilderInView(viewUuid, SUBJECT_FILTER_ID,
+          filterExpressionBuilderUiModel);
+      UiActions.add(view,
+          new UiAction()
+              .code(SEARCH)
+              .toolbar("search")
+              .descriptor(new UiActionDescriptor()
+                  .title(localeSettingApi.get(SEARCH))
+                  .color(UiActions.Color.PRIMARY)
+                  .type(UiActionButtonType.RAISED)
+                  .icon("search")));
+    } else {
+      viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, viewUuid,
+          SUBJECT_FILTER_ID, null);
+      UiActions.remove(view, SEARCH);
+    }
 
-    TableData<?> tableData =
-        getTableData(selectionConfig, filterExpressionApi.of(searchIndex.allFilterFields()));
+    refreshGrid(viewUuid, selectionConfig);
+  }
+
+  protected void refreshGrid(UUID viewUuid) {
+    String selectedDescriptor = getModel(viewUuid).getSelectedDescriptor();
+
+    Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
+        getSubjectModel(viewApi.getView(viewUuid))
+            .getDescriptors().stream()
+            .filter(d -> d.getName().equals(selectedDescriptor)).findFirst();
+
+    if (subjectTypeDescriptor.isPresent()) {
+      refreshGrid(viewUuid, subjectTypeDescriptor.get().getSelectionConfig());
+    }
+
+  }
+
+  private void refreshGrid(UUID viewUuid, SearchPageConfig searchPageConfig) {
+    TableData<?> tableData = getTableData(
+        searchPageConfig,
+        filterExpressionBuilderApi.getFilterExpressionList(viewUuid, SUBJECT_FILTER_ID));
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
   }
 
@@ -215,15 +279,26 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   }
 
   private SubjectModel getSubjectModel(View view) {
-    Object modelName = view.getParameters().get(PlatformBffApiConfig.SUBJECT_MODEL_NAME);
-    String subjectModelName;
-    if (modelName == null) {
+    ObjectMapHelper params = parameters(view);
+    String subjectModelName = params.get(SUBJECT_MODEL_NAME, String.class);
+    if (subjectModelName == null) {
       // By default we use the ACL subject model.
       subjectModelName = PlatformApiConfig.SUBJECT_ACL;
-    } else {
-      subjectModelName = modelName.toString();
     }
-    return subjectManagementApi.getModel(subjectModelName);
-
+    SubjectModel model = subjectManagementApi.getModel(subjectModelName);
+    List<String> types = params.getAsList(SUBJECT_TYPES, String.class);
+    if (types != null && !types.isEmpty()) {
+      List<SubjectTypeDescriptor> filteredTypes = model.getDescriptors().stream()
+          .filter(type -> types.contains(type.getName()))
+          .collect(toList());
+      model.descriptors(filteredTypes);
+    }
+    return model;
   }
+
+  @Override
+  public void search(UUID viewUuid, UiActionRequest request) {
+    refreshGrid(viewUuid);
+  }
+
 }

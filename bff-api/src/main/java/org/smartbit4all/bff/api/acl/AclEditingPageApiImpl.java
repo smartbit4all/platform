@@ -11,6 +11,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
 import org.smartbit4all.api.org.bean.ACL;
@@ -40,7 +41,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   protected LocaleSettingApi localeSettingApi;
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
-  protected static final String ACL = "ACL";
+  protected static final String ACL = AccessControlInternalApi.ACL_DEFAULT;
   public static final String OPERATIONS = "OPERATIONS";
 
   public AclEditingPageApiImpl() {

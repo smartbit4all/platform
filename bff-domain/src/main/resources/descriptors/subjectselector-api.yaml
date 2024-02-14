@@ -14,16 +14,5 @@ components:
     SubjectSelectorPageModel:
       type: object
       properties:
-        sujectModelName:
-          type: string
-        selectedSubjectName:
-          type: string
         selectedDescriptor:
-          type: SubjectTypeDescriptor
-        descriptors:
-          description: The subject descriptors identified by their unique name.
-          type: array
-          items:
-            $ref: '#/components/schemas/SubjectTypeDescriptor'
-                 
-         
+          type: string

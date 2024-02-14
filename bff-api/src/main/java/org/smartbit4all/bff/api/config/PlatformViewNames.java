@@ -7,5 +7,6 @@ public class PlatformViewNames {
   public static final String GENERIC_PAGE = "generic-page";
   public static final String GENERIC_SEARCH_PAGE = "generic-search-page";
   public static final String VALIDATION_RESULT_PAGE = "validation-result-page";
+  public static final String SUBJECT_SELECTOR_PAGE = "subject-selector-page";
 
 }

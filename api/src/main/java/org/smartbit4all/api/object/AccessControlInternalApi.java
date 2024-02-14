@@ -7,6 +7,7 @@ import java.util.Set;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
+import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectNode;
@@ -26,11 +27,16 @@ public interface AccessControlInternalApi {
   static final String ACL_ASPECT = "ACL";
 
   /**
+   * The default key in {@link ACLObject#MAP} map.
+   */
+  static final String ACL_DEFAULT = "ACL";
+
+  /**
    * Extract the ACL object of the given {@link ObjectNode} from the {@link ObjectNode#aspects()}.
    * If it exists then evaluates if the user has the rights to the operations to check. To identify
    * the operations available it uses the {@link SubjectManagementApi} to identify the subjects the
    * user belongs to.
-   * 
+   *
    * @param userUri The user uri (latest one is assumed).
    * @param objectNode The object node to evaluate.
    * @param operationsToCheck The operations we are interested in.
@@ -46,7 +52,7 @@ public interface AccessControlInternalApi {
    * If it exists then evaluates if the user has the rights to the operations to check. To identify
    * the operations available it uses the {@link SubjectManagementApi} to identify the subjects the
    * current user belongs to.
-   * 
+   *
    * @param objectNode
    * @param operationsToCheck The operations we are interested in.
    * @param subjectModel The name of the subject model the subject definitions are coming from.

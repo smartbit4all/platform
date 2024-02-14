@@ -22,9 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
-import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,84 +31,18 @@ import javax.validation.Valid;
  * SubjectSelectorPageModel
  */
 @JsonPropertyOrder({
-  SubjectSelectorPageModel.SUJECT_MODEL_NAME,
-  SubjectSelectorPageModel.SELECTED_SUBJECT_NAME,
-  SubjectSelectorPageModel.SELECTED_DESCRIPTOR,
-  SubjectSelectorPageModel.DESCRIPTORS
+  SubjectSelectorPageModel.SELECTED_DESCRIPTOR
 })
 @JsonTypeName("SubjectSelectorPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class SubjectSelectorPageModel {
-  public static final String SUJECT_MODEL_NAME = "sujectModelName";
-  private String sujectModelName;
-
-  public static final String SELECTED_SUBJECT_NAME = "selectedSubjectName";
-  private String selectedSubjectName;
-
   public static final String SELECTED_DESCRIPTOR = "selectedDescriptor";
-  private SubjectTypeDescriptor selectedDescriptor = null;
-
-  public static final String DESCRIPTORS = "descriptors";
-  private List<SubjectTypeDescriptor> descriptors = null;
+  private String selectedDescriptor;
 
   public SubjectSelectorPageModel() { 
   }
 
-  public SubjectSelectorPageModel sujectModelName(String sujectModelName) {
-    
-    this.sujectModelName = sujectModelName;
-    return this;
-  }
-
-   /**
-   * Get sujectModelName
-   * @return sujectModelName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(SUJECT_MODEL_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getSujectModelName() {
-    return sujectModelName;
-  }
-
-
-  @JsonProperty(SUJECT_MODEL_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSujectModelName(String sujectModelName) {
-    this.sujectModelName = sujectModelName;
-  }
-
-
-  public SubjectSelectorPageModel selectedSubjectName(String selectedSubjectName) {
-    
-    this.selectedSubjectName = selectedSubjectName;
-    return this;
-  }
-
-   /**
-   * Get selectedSubjectName
-   * @return selectedSubjectName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(SELECTED_SUBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getSelectedSubjectName() {
-    return selectedSubjectName;
-  }
-
-
-  @JsonProperty(SELECTED_SUBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedSubjectName(String selectedSubjectName) {
-    this.selectedSubjectName = selectedSubjectName;
-  }
-
-
-  public SubjectSelectorPageModel selectedDescriptor(SubjectTypeDescriptor selectedDescriptor) {
+  public SubjectSelectorPageModel selectedDescriptor(String selectedDescriptor) {
     
     this.selectedDescriptor = selectedDescriptor;
     return this;
@@ -122,56 +53,19 @@ public class SubjectSelectorPageModel {
    * @return selectedDescriptor
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(SELECTED_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public SubjectTypeDescriptor getSelectedDescriptor() {
+  public String getSelectedDescriptor() {
     return selectedDescriptor;
   }
 
 
   @JsonProperty(SELECTED_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedDescriptor(SubjectTypeDescriptor selectedDescriptor) {
+  public void setSelectedDescriptor(String selectedDescriptor) {
     this.selectedDescriptor = selectedDescriptor;
-  }
-
-
-  public SubjectSelectorPageModel descriptors(List<SubjectTypeDescriptor> descriptors) {
-    
-    this.descriptors = descriptors;
-    return this;
-  }
-
-  public SubjectSelectorPageModel addDescriptorsItem(SubjectTypeDescriptor descriptorsItem) {
-    if (this.descriptors == null) {
-      this.descriptors = new ArrayList<>();
-    }
-    this.descriptors.add(descriptorsItem);
-    return this;
-  }
-
-   /**
-   * The subject descriptors identified by their unique name.
-   * @return descriptors
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The subject descriptors identified by their unique name.")
-  @JsonProperty(DESCRIPTORS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<SubjectTypeDescriptor> getDescriptors() {
-    return descriptors;
-  }
-
-
-  @JsonProperty(DESCRIPTORS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDescriptors(List<SubjectTypeDescriptor> descriptors) {
-    this.descriptors = descriptors;
   }
 
 
@@ -184,25 +78,19 @@ public class SubjectSelectorPageModel {
       return false;
     }
     SubjectSelectorPageModel subjectSelectorPageModel = (SubjectSelectorPageModel) o;
-    return Objects.equals(this.sujectModelName, subjectSelectorPageModel.sujectModelName) &&
-        Objects.equals(this.selectedSubjectName, subjectSelectorPageModel.selectedSubjectName) &&
-        Objects.equals(this.selectedDescriptor, subjectSelectorPageModel.selectedDescriptor) &&
-        Objects.equals(this.descriptors, subjectSelectorPageModel.descriptors);
+    return Objects.equals(this.selectedDescriptor, subjectSelectorPageModel.selectedDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sujectModelName, selectedSubjectName, selectedDescriptor, descriptors);
+    return Objects.hash(selectedDescriptor);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class SubjectSelectorPageModel {\n");
-    sb.append("    sujectModelName: ").append(toIndentedString(sujectModelName)).append("\n");
-    sb.append("    selectedSubjectName: ").append(toIndentedString(selectedSubjectName)).append("\n");
     sb.append("    selectedDescriptor: ").append(toIndentedString(selectedDescriptor)).append("\n");
-    sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
     return sb.toString();
   }
