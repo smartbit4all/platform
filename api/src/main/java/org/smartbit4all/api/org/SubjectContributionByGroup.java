@@ -10,6 +10,7 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class SubjectContributionByGroup extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -67,7 +68,13 @@ public class SubjectContributionByGroup extends ContributionApiImpl
   public List<String> getDisplayValue(List<URI> subjects) {
     return subjects.stream()
         .map(objectApi::loadLatest)
-        .map(n -> n.getValueAsString(Group.NAME))
+        .map(n -> {
+          String displayvalue = n.getValueAsString(Group.TITLE);
+          if (Strings.isNullOrEmpty(displayvalue)) {
+            displayvalue = n.getValueAsString(Group.NAME);
+          }
+          return displayvalue;
+        })
         .collect(toList());
   }
 }

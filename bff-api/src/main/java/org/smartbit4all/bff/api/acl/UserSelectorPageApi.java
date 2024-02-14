@@ -6,12 +6,11 @@ import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.config.PlatformViewNames;
-import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
+import org.smartbit4all.bff.api.subjectselector.bean.UserSelectorPageModel;
 
-@ViewApi(PlatformViewNames.SUBJECT_SELECTOR_PAGE)
-public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel> {
-  String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";
-  String SUBJECT_TYPES = "SUBJECT_TYPES";
+@ViewApi(PlatformViewNames.USER_SELECTOR_PAGE)
+public interface UserSelectorPageApi extends PageApi<UserSelectorPageModel> {
+  String SUBJECT_VALUES = "SUBJECT_VALUES";
   String SELECTION_CALLBACK = "SELECTION_CALLBACK";
   String SELECTION_MODE = "SELECTION_MODE";
 
@@ -25,7 +24,7 @@ public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel
   @ActionHandler(CANCEL)
   void performCancel(UUID viewUuid, UiActionRequest request);
 
-  @ActionHandler(SubjectSelectorPageModel.SELECTION)
+  @ActionHandler(UserSelectorPageModel.SELECTION)
   void performChangeSelection(UUID viewUuid, UiActionRequest request);
 
   String SUBMIT_SELECTION = "SUBMIT_SELECTION";

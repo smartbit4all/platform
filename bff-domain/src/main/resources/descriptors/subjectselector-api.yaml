@@ -14,7 +14,12 @@ components:
     SubjectSelectorPageModel:
       type: object
       properties:
-        selectedDescriptor:
+        selection:
+          type: string
+    UserSelectorPageModel:
+      type: object
+      properties:
+        selection:
           type: string
     AclPageConfig:
       type: object

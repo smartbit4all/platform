@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.object.bean.SnapshotData;
@@ -397,6 +398,22 @@ public class ObjectNode {
           String.join(".", paths));
     }
     setModified();
+    return this;
+  }
+
+  /**
+   * If we have a mapping for copying values from one {@link ObjectNode} to another then this
+   * operation will execute this. This is not saving! It operates only on the {@link ObjectNode}s.
+   * 
+   * @param node The node the values coming from.
+   * @param mappings The mapping between the vales.
+   * @return This node returnd since it acts like a builder method.
+   */
+  public ObjectNode setValues(ObjectNode node, List<ObjectPropertyMapping> mappings) {
+    for (ObjectPropertyMapping mapping : mappings) {
+      setValue(node.getValue(mapping.getFromPath().toArray(StringConstant.EMPTY_ARRAY)),
+          mapping.getToPath().toArray(StringConstant.EMPTY_ARRAY));
+    }
     return this;
   }
 

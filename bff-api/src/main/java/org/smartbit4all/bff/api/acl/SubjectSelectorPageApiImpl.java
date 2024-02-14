@@ -92,7 +92,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     }
     if (model.getDescriptors().size() == 1) {
       view.getConstraint().addComponentConstraintsItem(new ComponentConstraint()
-          .dataName(SubjectSelectorPageModel.SELECTED_DESCRIPTOR)
+          .dataName(SubjectSelectorPageModel.SELECTION)
           .visible(false));
     }
     initGridAndFilter(view.getUuid(), model.getDescriptors().get(0));
@@ -109,23 +109,23 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
             .code(desc.getName())
             .name(localeSettingApi.get(desc.getTitle())))
         .collect(toList());
-    view.putValueSetsItem(SubjectSelectorPageModel.SELECTED_DESCRIPTOR,
+    view.putValueSetsItem(SubjectSelectorPageModel.SELECTION,
         new ValueSet().valueSetData(new ValueSetData()
             .values(descriptors)
             .keyProperty(GenericValue.CODE)));
 
     return new SubjectSelectorPageModel()
-        .selectedDescriptor(model.getDescriptors().get(0).getName());
+        .selection(model.getDescriptors().get(0).getName());
   }
 
   @Override
-  public void performSelectedDescriptor(UUID viewUuid, UiActionRequest request) {
+  public void performChangeSelection(UUID viewUuid, UiActionRequest request) {
     SubjectSelectorPageModel clientModel = extractClientModel(request);
 
     Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
         getSubjectModel(viewApi.getView(viewUuid))
             .getDescriptors().stream()
-            .filter(d -> d.getName().equals(clientModel.getSelectedDescriptor())).findFirst();
+            .filter(d -> d.getName().equals(clientModel.getSelection())).findFirst();
 
     if (subjectTypeDescriptor.isPresent()) {
       setModel(viewUuid, clientModel);
@@ -237,7 +237,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   }
 
   protected void refreshGrid(UUID viewUuid) {
-    String selectedDescriptor = getModel(viewUuid).getSelectedDescriptor();
+    String selectedDescriptor = getModel(viewUuid).getSelection();
 
     Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
         getSubjectModel(viewApi.getView(viewUuid))
