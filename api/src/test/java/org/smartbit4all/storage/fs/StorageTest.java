@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,6 +26,7 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
@@ -43,7 +45,6 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Disabled
@@ -628,7 +629,7 @@ class StorageTest {
 
     ObjectDefinition<SampleInlineObject> sampleTypeDefinition =
         objectApi.definition(SampleInlineObject.class);
-    storageObject.getOrCreateAspects().put("ACL",
+    storageObject.getOrCreateAspects().put(AccessControlInternalApi.ACL_ASPECT,
         new ObjectAspect().typeQualifiedName(SampleInlineObject.class.getName())
             .objectAsMap(sampleTypeDefinition
                 .toMap(new SampleInlineObject().name("apple"))));
@@ -640,7 +641,7 @@ class StorageTest {
     assertEquals(1, storageObject.getAspects().size());
 
     org.assertj.core.api.Assertions.assertThat(storageObject.getAspects()).isNotNull()
-        .containsKey("ACL");
+        .containsKey(AccessControlInternalApi.ACL_ASPECT);
 
     org.assertj.core.api.Assertions
         .assertThat(storageObject.getAspects().values().stream()

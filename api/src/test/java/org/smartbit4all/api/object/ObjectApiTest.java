@@ -1,5 +1,8 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -47,9 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -312,7 +312,7 @@ class ObjectApiTest {
     {
       ObjectNode rootNode = objectApi.load(rootUri);
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNull();
-      rootNode.aspects().modify("ACL", ACL.class,
+      rootNode.aspects().modify(AccessControlInternalApi.ACL_ASPECT, ACL.class,
           acl -> new ACL().rootEntry(
               new ACLEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(everybodyUri))
                   .addOperationsItem("read").addOperationsItem("write"))));
@@ -322,7 +322,7 @@ class ObjectApiTest {
       // Now read the ACL again.
       ObjectNode rootNode = objectApi.loadLatest(rootUri);
       org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNotNull();
-      ACL acl = rootNode.aspects().get("ACL", ACL.class);
+      ACL acl = rootNode.aspects().get(AccessControlInternalApi.ACL_ASPECT, ACL.class);
       org.assertj.core.api.Assertions
           .assertThat(acl.getRootEntry().getEntries().stream().map(e -> e.getSubject().getRef()))
           .contains(everybodyUri);

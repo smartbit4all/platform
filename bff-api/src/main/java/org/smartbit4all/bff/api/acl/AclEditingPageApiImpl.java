@@ -144,7 +144,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   }
 
   protected void updateAclInRootNode(ObjectNode rootNode, ACL updatedAcl) {
-    rootNode.aspects().modify("ACL", ACL.class,
+    rootNode.aspects().modify(AccessControlInternalApi.ACL_ASPECT, ACL.class,
         acl -> updatedAcl);
   }
 
