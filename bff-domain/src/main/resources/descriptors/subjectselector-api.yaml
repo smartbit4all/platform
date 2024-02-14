@@ -16,3 +16,44 @@ components:
       properties:
         selectedDescriptor:
           type: string
+    AclPageConfig:
+      type: object
+      required: [gridConfigs]
+      properties:
+        subjectModel:
+          type: string
+        selectorViewName:
+          type: string
+        selectionCallback:
+          type: InvocationRequest
+        gridConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AclGridConfig'
+    AclGridConfig:
+      type: object
+      required: [subjectTypes]
+      properties:
+        aclModel:
+          type: string
+        aclName:
+          type: string
+        operation:
+          type: string
+        selectionMode:
+          type: GridSelectionMode
+        mandatory:
+          type: boolean
+        subjectTypes:
+          type: array
+          items:
+            type: string
+    AclGridItem:
+      type: object
+      properties:
+        subject:
+          type: Subject
+        name:
+          type: string
+        comment:
+          type: string
