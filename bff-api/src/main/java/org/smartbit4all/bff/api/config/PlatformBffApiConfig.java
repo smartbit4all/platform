@@ -9,6 +9,8 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApi;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApiImpl;
+import org.smartbit4all.bff.api.acl.UserSelectorPageApi;
+import org.smartbit4all.bff.api.acl.UserSelectorPageApiImpl;
 import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
@@ -90,6 +92,17 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<SubjectSelectorPageApi> subjectSelectorPageApiProvider(
       SubjectSelectorPageApi api) {
     return Invocations.asProvider(SubjectSelectorPageApi.class, api);
+  }
+
+  @Bean
+  public UserSelectorPageApi userSelectorPageApi() {
+    return new UserSelectorPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<UserSelectorPageApi> userSelectorPageApiProvider(
+      UserSelectorPageApi api) {
+    return Invocations.asProvider(UserSelectorPageApi.class, api);
   }
 
   @Bean

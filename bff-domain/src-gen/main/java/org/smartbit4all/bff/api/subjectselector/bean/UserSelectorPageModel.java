@@ -28,21 +28,21 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * SubjectSelectorPageModel
+ * UserSelectorPageModel
  */
 @JsonPropertyOrder({
-  SubjectSelectorPageModel.SELECTION
+  UserSelectorPageModel.SELECTION
 })
-@JsonTypeName("SubjectSelectorPageModel")
+@JsonTypeName("UserSelectorPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SubjectSelectorPageModel {
+public class UserSelectorPageModel {
   public static final String SELECTION = "selection";
   private String selection;
 
-  public SubjectSelectorPageModel() { 
+  public UserSelectorPageModel() { 
   }
 
-  public SubjectSelectorPageModel selection(String selection) {
+  public UserSelectorPageModel selection(String selection) {
     
     this.selection = selection;
     return this;
@@ -77,8 +77,8 @@ public class SubjectSelectorPageModel {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SubjectSelectorPageModel subjectSelectorPageModel = (SubjectSelectorPageModel) o;
-    return Objects.equals(this.selection, subjectSelectorPageModel.selection);
+    UserSelectorPageModel userSelectorPageModel = (UserSelectorPageModel) o;
+    return Objects.equals(this.selection, userSelectorPageModel.selection);
   }
 
   @Override
@@ -89,7 +89,7 @@ public class SubjectSelectorPageModel {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SubjectSelectorPageModel {\n");
+    sb.append("class UserSelectorPageModel {\n");
     sb.append("    selection: ").append(toIndentedString(selection)).append("\n");
     sb.append("}");
     return sb.toString();
