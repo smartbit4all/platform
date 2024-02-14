@@ -368,11 +368,6 @@ components:
         uri: 
           type: string
           format: uri
-        acl:
-          description: |
-            For historical reason the acl property is named in the definition but there is no difference between this ACL and all other.
-            The application can decide how to use this ACL.
-          $ref: '#/components/schemas/ACL'
         map:
           description: |
             The named acls.

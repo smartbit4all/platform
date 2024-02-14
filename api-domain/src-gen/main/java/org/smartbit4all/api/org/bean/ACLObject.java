@@ -38,7 +38,6 @@ import javax.validation.Valid;
 @ApiModel(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the ")
 @JsonPropertyOrder({
   ACLObject.URI,
-  ACLObject.ACL,
   ACLObject.MAP
 })
 @JsonTypeName("ACLObject")
@@ -46,9 +45,6 @@ import javax.validation.Valid;
 public class ACLObject {
   public static final String URI = "uri";
   private URI uri;
-
-  public static final String ACL = "acl";
-  private ACL acl;
 
   public static final String MAP = "map";
   private Map<String, ACL> map = new HashMap<>();
@@ -81,34 +77,6 @@ public class ACLObject {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(URI uri) {
     this.uri = uri;
-  }
-
-
-  public ACLObject acl(ACL acl) {
-    
-    this.acl = acl;
-    return this;
-  }
-
-   /**
-   * Get acl
-   * @return acl
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(ACL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public ACL getAcl() {
-    return acl;
-  }
-
-
-  @JsonProperty(ACL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAcl(ACL acl) {
-    this.acl = acl;
   }
 
 
@@ -156,13 +124,12 @@ public class ACLObject {
     }
     ACLObject acLObject = (ACLObject) o;
     return Objects.equals(this.uri, acLObject.uri) &&
-        Objects.equals(this.acl, acLObject.acl) &&
         Objects.equals(this.map, acLObject.map);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, acl, map);
+    return Objects.hash(uri, map);
   }
 
   @Override
@@ -170,7 +137,6 @@ public class ACLObject {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLObject {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    acl: ").append(toIndentedString(acl)).append("\n");
     sb.append("    map: ").append(toIndentedString(map)).append("\n");
     sb.append("}");
     return sb.toString();
