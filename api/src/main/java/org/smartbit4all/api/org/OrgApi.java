@@ -191,6 +191,15 @@ public interface OrgApi {
    */
   default OrgState getOrgState() {
     return new OrgState();
-  };
+  }
+
+  /*
+   * Retrieve primary user if it exists
+   * 
+   * @param userUri
+   * 
+   * @return URI
+   */
+  URI getPrimaryAccount(URI userUri);
 
 }

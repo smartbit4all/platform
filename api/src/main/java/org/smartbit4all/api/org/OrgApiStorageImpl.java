@@ -1339,4 +1339,10 @@ public class OrgApiStorageImpl implements OrgApi {
         .usersOfGroup(usersOfGroup)
         .groupsOfGroup(groupsOfGroup);
   }
+
+  @Override
+  public URI getPrimaryAccount(URI userUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

@@ -18,6 +18,8 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -52,6 +54,9 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   public OrgApiImpl(Environment env) {
 
@@ -317,6 +322,25 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   public List<User> getAllUsers() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public URI getPrimaryAccount(URI userUri) {
+    if (userUri == null) {
+      throw new IllegalArgumentException("Parameter userUri can't be null.");
+    }
+
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    if (userNode != null) {
+      URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
+      if (primaryAccountUri != null) {
+        return primaryAccountUri;
+      } else {
+        return userUri;
+      }
+    } else {
+      throw new IllegalArgumentException("User object is not exists!");
+    }
   }
 
 }
