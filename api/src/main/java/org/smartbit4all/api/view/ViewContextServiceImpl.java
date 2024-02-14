@@ -879,14 +879,16 @@ public class ViewContextServiceImpl implements ViewContextService {
     return result;
   }
 
-  private Map<String, Object> findDifferences(String path, Map<String, ?> before,
-      Map<String, ?> after) {
+  private Map<String, Object> findDifferences(String path, Map<String, Object> before,
+      Map<String, Object> after) {
     // add deleted entries to after
     before.entrySet().stream()
         .filter(e -> !after.containsKey(e.getKey()))
         .forEach(e -> after.put(e.getKey(), null));
     // compare existing entries
     String pathPrefix = Strings.isNullOrEmpty(path) ? "" : path + StringConstant.DOT;
+    before.replaceAll((k, v) -> v == null ? new HashMap<String, Object>() : v);
+    after.replaceAll((k, v) -> v == null ? new HashMap<String, Object>() : v);
     return after.entrySet().stream()
         .filter(e -> !Objects.equals(e.getValue(), before.get(e.getKey())))
         .collect(toMap(
