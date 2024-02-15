@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.acl;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
@@ -43,9 +45,11 @@ import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
+import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.subjectselector.bean.UserSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
@@ -78,6 +82,9 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
 
   @Autowired
   protected SearchIndex<User> userSearch;
+
+  @Autowired(required = false)
+  protected SearchPageConfig userSelectorSearchPageConfig;
 
   public UserSelectorPageApiImpl() {
     super(UserSelectorPageModel.class);
@@ -183,11 +190,18 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
   }
 
   protected void initFilter(View view) {
-    FilterExpressionFieldList filterFields = userSearch.allFilterFields();
-    if (!ObjectUtils.isEmpty(filterFields)) {
-      // init filter from searchIndex
-      FilterExpressionBuilderModel filterModel = new FilterExpressionBuilderModel()
-          .workplaceList(filterFields);
+    FilterExpressionBuilderModel filterModel = null;
+    if (userSelectorSearchPageConfig != null) {
+      filterModel = userSelectorSearchPageConfig.getFilterModel();
+    } else {
+      FilterExpressionFieldList filterFields = userSearch.allFilterFields();
+      if (!ObjectUtils.isEmpty(filterFields)) {
+        // init filter from searchIndex
+        filterModel = new FilterExpressionBuilderModel()
+            .workplaceList(filterFields);
+      }
+    }
+    if (filterModel != null) {
       FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
           filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
       filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), SUBJECT_FILTER_ID,
@@ -201,19 +215,39 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
                   .color(UiActions.Color.PRIMARY)
                   .type(UiActionButtonType.RAISED)
                   .icon("search")));
+    } else {
+      viewApi.setWidgetModelInView(FilterExpressionBuilderUiModel.class, view.getUuid(),
+          SUBJECT_FILTER_ID, null);
+      UiActions.remove(view, SEARCH);
     }
-
   }
 
   protected void initGrid(UUID viewUuid, Subject subject) {
 
-    List<String> columns = userSearch.getDefinition().getDefinition().allProperties().stream()
-        .map(prop -> prop.getName())
-        .collect(toList());
+    List<String> columns;
+    EntityDefinition entityDefinition;
+    if (userSelectorSearchPageConfig != null) {
+      columns = new ArrayList<>(
+          userSelectorSearchPageConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+      entityDefinition = collectionApi
+          .searchIndex(
+              userSelectorSearchPageConfig.getSearchIndexSchema(),
+              userSelectorSearchPageConfig.getSearchIndexName())
+          .getDefinition().getDefinition();
+    } else {
+      columns = userSearch.getDefinition().getDefinition().allProperties().stream()
+          .map(prop -> prop.getName())
+          .collect(toList());
+      entityDefinition = userSearch.getDefinition().getDefinition();
+    }
+    if (!columns.contains(User.URI)) {
+      columns.add(User.URI);
+    }
 
-    GridModel gridModel =
-        gridModelApi.createGridModel(userSearch.getDefinition().getDefinition(),
-            columns, User.class.getSimpleName());
+    GridModel gridModel = gridModelApi
+        .createGridModel(entityDefinition, columns, User.class.getSimpleName());
+    GridModels.hideColumns(gridModel, User.URI);
+
     GridSelectionMode selectionMode =
         Optional.ofNullable(parameters(viewUuid).get(SELECTION_MODE, GridSelectionMode.class))
             .orElse(GridSelectionMode.MULTIPLE);
@@ -251,8 +285,15 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     List<URI> users = subjectManagementApi.getUsersOf(
         PlatformApiConfig.SUBJECT_ACL,
         Arrays.asList(subject));
+    SearchIndex<?> searchIndex;
+    if (userSelectorSearchPageConfig != null) {
+      searchIndex = collectionApi.searchIndex(userSelectorSearchPageConfig.getSearchIndexSchema(),
+          userSelectorSearchPageConfig.getSearchIndexName());
+    } else {
+      searchIndex = userSearch;
+    }
 
-    return userSearch.executeSearchOn(users.stream(), expressionList);
+    return searchIndex.executeSearchOn(users.stream(), expressionList);
   }
 
   @Override
