@@ -112,7 +112,7 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     if (subjects.size() == 1) {
       view.getConstraint().addComponentConstraintsItem(new ComponentConstraint()
           .dataName(UserSelectorPageModel.SELECTION)
-          .visible(false));
+          .enabled(false));
     }
     initFilter(view);
     initGrid(view.getUuid(), subjects.get(0));

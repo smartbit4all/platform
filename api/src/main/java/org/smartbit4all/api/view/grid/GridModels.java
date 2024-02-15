@@ -30,9 +30,10 @@ public class GridModels {
   }
 
   @SuppressWarnings("unchecked")
-  public static Object getValueFromGridRow(GridModel categoryGridModel, String rowId,
+  public static Object getValueFromGridRow(GridModel gridModel, String rowId,
       String property) {
-    GridRow row = GridModels.findGridRowById(categoryGridModel, rowId)
+    GridRow row = GridModels
+        .findGridRowById(gridModel, rowId)
         .orElseThrow(() -> new IllegalArgumentException(
             "Unable to find the " + rowId + " row."));
 
