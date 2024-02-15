@@ -10,10 +10,10 @@ import org.smartbit4all.bff.api.subjectselector.bean.SubjectSelectorPageModel;
 
 @ViewApi(PlatformViewNames.SUBJECT_SELECTOR_PAGE)
 public interface SubjectSelectorPageApi extends PageApi<SubjectSelectorPageModel> {
-  String SUBJECT_MODEL_NAME = "SUBJECT_MODEL_NAME";
-  String SUBJECT_TYPES = "SUBJECT_TYPES";
-  String SELECTION_CALLBACK = "SELECTION_CALLBACK";
-  String SELECTION_MODE = "SELECTION_MODE";
+  String PARAM_SUBJECT_MODEL_NAME = "PARAM_SUBJECT_MODEL_NAME";
+  String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
+  String PARAM_SELECTION_CALLBACK = "PARAM_SELECTION_CALLBACK";
+  String PARAM_SELECTION_MODE = "SELECTION_MODE";
 
   String CANCEL = "CANCEL";
 

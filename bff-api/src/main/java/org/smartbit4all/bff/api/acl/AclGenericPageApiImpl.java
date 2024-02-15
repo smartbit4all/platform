@@ -239,13 +239,13 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
     viewApi.showView(new View()
         .viewName(ctx.getSelectorViewName())
-        .putParametersItem(SubjectSelectorPageApi.SUBJECT_MODEL_NAME,
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_MODEL_NAME,
             gridConfig.getAclModel())
-        .putParametersItem(SubjectSelectorPageApi.SUBJECT_TYPES,
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_TYPES,
             gridConfig.getSubjectTypes())
-        .putParametersItem(SubjectSelectorPageApi.SELECTION_MODE,
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_MODE,
             gridConfig.getSelectionMode())
-        .putParametersItem(SubjectSelectorPageApi.SELECTION_CALLBACK,
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_CALLBACK,
             ctx.getSelectionCallback(gridId))
         .type(ViewType.DIALOG));
 

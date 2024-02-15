@@ -130,7 +130,7 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
 
   private List<Subject> getSubjects(View view) {
     ObjectMapHelper params = parameters(view);
-    List<Subject> subjects = params.getAsList(SUBJECT_VALUES, Subject.class);
+    List<Subject> subjects = params.getAsList(PARAM_SUBJECT_VALUES, Subject.class);
     return subjects;
   }
 
@@ -158,7 +158,8 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, SUBJECT_GRID_ID);
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper params = parameters(view);
-    InvocationRequest invocationRequest = params.get(SELECTION_CALLBACK, InvocationRequest.class);
+    InvocationRequest invocationRequest =
+        params.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
 
     List<URI> subjectUriList = selectedRows.stream()
         .map(row -> extractUriFromGridRow(row)).collect(Collectors.toList());
@@ -191,8 +192,9 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
 
   protected void initFilter(View view) {
     FilterExpressionBuilderModel filterModel = null;
-    if (userSelectorSearchPageConfig != null) {
-      filterModel = userSelectorSearchPageConfig.getFilterModel();
+    SearchPageConfig config = getSearchPageConfig(view.getUuid());
+    if (config != null) {
+      filterModel = config.getFilterModel();
     } else {
       FilterExpressionFieldList filterFields = userSearch.allFilterFields();
       if (!ObjectUtils.isEmpty(filterFields)) {
@@ -226,13 +228,14 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
 
     List<String> columns;
     EntityDefinition entityDefinition;
-    if (userSelectorSearchPageConfig != null) {
+    SearchPageConfig config = getSearchPageConfig(viewUuid);
+    if (config != null) {
       columns = new ArrayList<>(
-          userSelectorSearchPageConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+          config.getGridViewOptions().get(0).getOrderedColumnNames());
       entityDefinition = collectionApi
           .searchIndex(
-              userSelectorSearchPageConfig.getSearchIndexSchema(),
-              userSelectorSearchPageConfig.getSearchIndexName())
+              config.getSearchIndexSchema(),
+              config.getSearchIndexName())
           .getDefinition().getDefinition();
     } else {
       columns = userSearch.getDefinition().getDefinition().allProperties().stream()
@@ -249,7 +252,7 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     GridModels.hideColumns(gridModel, User.URI);
 
     GridSelectionMode selectionMode =
-        Optional.ofNullable(parameters(viewUuid).get(SELECTION_MODE, GridSelectionMode.class))
+        Optional.ofNullable(parameters(viewUuid).get(PARAM_SELECTION_MODE, GridSelectionMode.class))
             .orElse(GridSelectionMode.MULTIPLE);
     gridModel.getView().getDescriptor()
         .selectionMode(selectionMode)
@@ -276,19 +279,22 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
 
   private void refreshGrid(UUID viewUuid, Subject subject) {
     TableData<?> tableData = getTableData(
+        viewUuid,
         subject,
         filterExpressionBuilderApi.getFilterExpressionList(viewUuid, SUBJECT_FILTER_ID));
     gridModelApi.setData(viewUuid, SUBJECT_GRID_ID, tableData);
   }
 
-  protected TableData<?> getTableData(Subject subject, FilterExpressionList expressionList) {
+  protected TableData<?> getTableData(UUID viewUuid, Subject subject,
+      FilterExpressionList expressionList) {
     List<URI> users = subjectManagementApi.getUsersOf(
         PlatformApiConfig.SUBJECT_ACL,
         Arrays.asList(subject));
     SearchIndex<?> searchIndex;
-    if (userSelectorSearchPageConfig != null) {
-      searchIndex = collectionApi.searchIndex(userSelectorSearchPageConfig.getSearchIndexSchema(),
-          userSelectorSearchPageConfig.getSearchIndexName());
+    SearchPageConfig config = getSearchPageConfig(viewUuid);
+    if (config != null) {
+      searchIndex = collectionApi.searchIndex(config.getSearchIndexSchema(),
+          config.getSearchIndexName());
     } else {
       searchIndex = userSearch;
     }
@@ -301,4 +307,12 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     refreshGrid(viewUuid);
   }
 
+  private SearchPageConfig getSearchPageConfig(UUID viewUuid) {
+    SearchPageConfig config =
+        parameters(viewUuid).get(PARAM_SEARCH_PAGE_CONFIG, SearchPageConfig.class);
+    if (config != null) {
+      return config;
+    }
+    return userSelectorSearchPageConfig;
+  }
 }
