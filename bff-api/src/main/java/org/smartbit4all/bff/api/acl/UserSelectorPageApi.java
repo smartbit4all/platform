@@ -11,6 +11,7 @@ import org.smartbit4all.bff.api.subjectselector.bean.UserSelectorPageModel;
 @ViewApi(PlatformViewNames.USER_SELECTOR_PAGE)
 public interface UserSelectorPageApi extends PageApi<UserSelectorPageModel> {
   String PARAM_SUBJECT_VALUES = "PARAM_SUBJECT_VALUES";
+  String PARAM_EXCLUDED_USERS = "PARAM_EXCLUDED_USERS";
   String PARAM_SEARCH_PAGE_CONFIG = "PARAM_SEARCH_PAGE_CONFIG";
   String PARAM_SELECTION_CALLBACK = "PARAM_SELECTION_CALLBACK";
   String PARAM_SELECTION_MODE = "PARAM_SELECTION_MODE";

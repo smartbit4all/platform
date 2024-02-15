@@ -298,7 +298,10 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     } else {
       searchIndex = userSearch;
     }
-
+    List<URI> excludedUsers = getExcludedUser(viewUuid);
+    if (!ObjectUtils.isEmpty(subject)) {
+      users.removeAll(excludedUsers);
+    }
     return searchIndex.executeSearchOn(users.stream(), expressionList);
   }
 
@@ -315,4 +318,9 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     }
     return userSelectorSearchPageConfig;
   }
+
+  private List<URI> getExcludedUser(UUID viewUuid) {
+    return parameters(viewUuid).getAsList(PARAM_EXCLUDED_USERS, URI.class);
+  }
+
 }
