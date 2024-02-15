@@ -26,7 +26,7 @@ import com.google.common.cache.CacheBuilder;
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
  * one but later on these collections can be contributed with many underlying implementation.
- * 
+ *
  * @author Peter Boros
  */
 public class CollectionApiStorageImpl implements CollectionApi, InitializingBean {
@@ -139,7 +139,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredReferenceStorageImpl<>(schema,
         refUri,
-        null, null, objectApi.definition(clazz), objectApi, branchApi);
+        clazz.getName(), null, objectApi.definition(clazz), objectApi, branchApi);
   }
 
   @Override
@@ -180,7 +180,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   /**
    * This function produce the given logical schema. This schema is currently non versioned by
    * default.
-   * 
+   *
    * @param logicalSchema
    * @return
    */
