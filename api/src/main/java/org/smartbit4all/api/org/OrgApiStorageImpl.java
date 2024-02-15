@@ -43,6 +43,8 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -75,6 +77,9 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Autowired
   private StorageApi storageApi;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   private Supplier<Storage> storage = new Supplier<Storage>() {
 
@@ -1342,7 +1347,20 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public URI getPrimaryAccount(URI userUri) {
-    // TODO Auto-generated method stub
-    return null;
+    if (userUri == null) {
+      throw new IllegalArgumentException("Parameter userUri can't be null.");
+    }
+
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    if (userNode != null) {
+      URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
+      if (primaryAccountUri != null) {
+        return primaryAccountUri;
+      } else {
+        return userUri;
+      }
+    } else {
+      throw new IllegalArgumentException("User object is not exists!");
+    }
   }
 }
