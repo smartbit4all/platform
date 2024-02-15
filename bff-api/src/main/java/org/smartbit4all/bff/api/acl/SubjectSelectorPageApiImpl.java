@@ -143,7 +143,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, SUBJECT_GRID_ID);
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper params = parameters(view);
-    InvocationRequest invocationRequest = params.get(SELECTION_CALLBACK, InvocationRequest.class);
+    InvocationRequest invocationRequest = params.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
 
     List<URI> subjectUriList = selectedRows.stream()
         .map(row -> extractUriFromGridRow(row)).collect(Collectors.toList());
@@ -193,7 +193,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
         gridModelApi.createGridModel(searchIndex.getDefinition().getDefinition(),
             columns, "");
     GridSelectionMode selectionMode =
-        Optional.ofNullable(parameters(viewUuid).get(SELECTION_MODE, GridSelectionMode.class))
+        Optional.ofNullable(parameters(viewUuid).get(PARAM_SELECTION_MODE, GridSelectionMode.class))
             .orElse(GridSelectionMode.MULTIPLE);
     gridModel.getView().getDescriptor()
         .selectionMode(selectionMode)
@@ -280,13 +280,13 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
 
   private SubjectModel getSubjectModel(View view) {
     ObjectMapHelper params = parameters(view);
-    String subjectModelName = params.get(SUBJECT_MODEL_NAME, String.class);
+    String subjectModelName = params.get(PARAM_SUBJECT_MODEL_NAME, String.class);
     if (subjectModelName == null) {
       // By default we use the ACL subject model.
       subjectModelName = PlatformApiConfig.SUBJECT_ACL;
     }
     SubjectModel model = subjectManagementApi.getModel(subjectModelName);
-    List<String> types = params.getAsList(SUBJECT_TYPES, String.class);
+    List<String> types = params.getAsList(PARAM_SUBJECT_TYPES, String.class);
     if (types != null && !types.isEmpty()) {
       List<SubjectTypeDescriptor> filteredTypes = model.getDescriptors().stream()
           .filter(type -> types.contains(type.getName()))
