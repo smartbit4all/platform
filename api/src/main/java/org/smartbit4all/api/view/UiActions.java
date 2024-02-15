@@ -28,6 +28,8 @@ public final class UiActions {
 
   public static final String MODEL = "model";
 
+  public static final String CLIENT_PAGE_MODEL = "clientPageModel";
+
   public static final String ITEM = "item";
 
   public static final String URI = "uri";

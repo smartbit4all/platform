@@ -7,6 +7,8 @@ import org.smartbit4all.api.filterexpression.restserver.impl.FilterApiDelegateIm
 import org.smartbit4all.api.grid.restserver.GridApiController;
 import org.smartbit4all.api.grid.restserver.GridApiDelegate;
 import org.smartbit4all.api.grid.restserver.impl.GridApiDelegateImpl;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
 import org.smartbit4all.api.uitree.restserver.TreeApiController;
 import org.smartbit4all.api.uitree.restserver.TreeApiDelegate;
@@ -47,6 +49,13 @@ public class ViewSrvRestConfig {
   @ConditionalOnMissingBean
   public ViewContextService viewContextService() {
     return new ViewContextServiceImpl();
+  }
+
+  @Bean
+  ProviderApiInvocationHandler<ViewContextService> viewContextServiceApiProvider(
+      ViewContextService viewContextService) {
+    // this can be not conditional, if this config is included, ViewContextService is present
+    return Invocations.asProvider(ViewContextService.class, viewContextService);
   }
 
   @Bean

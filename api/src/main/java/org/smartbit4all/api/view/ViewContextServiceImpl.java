@@ -51,6 +51,7 @@ import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
+import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -647,10 +648,32 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
+    if (request.getParams().containsKey(UiActions.CLIENT_PAGE_MODEL)) {
+      eventDescriptor.getBeforeEvents().add(
+          new ViewEventHandler()
+              .viewEventType(ViewEventTypeEnum.BEFORE)
+              .addPathItem(ViewEventApi.WIDGET)
+              .addPathItem(request.getCode())
+              .invocationRequest(invocationApi.builder(ViewContextService.class)
+                  .build(service -> service.setClientPageModelFromRequest(
+                      viewUuid, nodeId, widgetId, request))));
+    }
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
     return createViewContextChange(comparisons, null); // WidgetActionHandler is void
+  }
+
+  @Override
+  public void setClientPageModelFromRequest(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    if (request.getParams().containsKey(UiActions.CLIENT_PAGE_MODEL)) {
+      Object modelObject = request.getParams().get(UiActions.CLIENT_PAGE_MODEL);
+      if (modelObject instanceof Map<?, ?>) {
+        Object data = ((Map) modelObject).get(ComponentModel.DATA);
+        getViewFromCurrentViewContext(viewUuid).setModel(data);
+      }
+    }
   }
 
   /**

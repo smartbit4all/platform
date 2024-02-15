@@ -168,4 +168,7 @@ public interface ViewContextService {
    */
   List<UUID> getChildrenOfView(UUID viewUuid);
 
+  void setClientPageModelFromRequest(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request);
+
 }
