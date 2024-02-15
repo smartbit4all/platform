@@ -183,16 +183,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
       // save new unique property values to StoredMaps
       if (uniqueMapsByConstraints != null) {
-        uniqueMapsByConstraints.entrySet().forEach(e -> {
-          String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
-          Map<String, URI> updateUniqueMap =
-              objectNodes.stream().filter(n -> n.getValue(pathArr) != null)
-                  .collect(
-                      toMap(n -> n.getValue(pathArr).toString(), ObjectNode::getResultUri));
-
-          StoredMap uniqueMap = uniqueMapsByConstraints.get(e.getKey());
-          uniqueMap.putAll(updateUniqueMap);
-        });
+        maintainUniqueMapsOnSave(objectNodes, uniqueMapsByConstraints);
       }
 
       Map<URI, URI> savedUrisByLatest =
@@ -224,6 +215,30 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       return merged;
     });
     return results;
+  }
+
+  protected void maintainUniqueMapsOnSave(List<ObjectNode> objectNodes,
+      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+    uniqueMapsByConstraints.entrySet().forEach(e -> {
+      String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
+      List<ObjectNode> objectNodesWithUniqueValue =
+          objectNodes.stream().filter(n -> n.getValue(pathArr) != null).collect(toList());
+      Map<String, URI> updateUniqueMap = objectNodesWithUniqueValue.stream()
+          .collect(toMap(n -> n.getValue(pathArr).toString(), ObjectNode::getResultUri));
+
+      StoredMap uniqueMap = e.getValue();
+      List<URI> uniqueValueUri = objectNodesWithUniqueValue.stream()
+          .map(ObjectNode::getObjectUri).collect(toList());
+
+      // remove the unused values from unique map
+      List<String> keysToRemove = uniqueMap.uris().entrySet().stream()
+          .filter(es -> uniqueValueUri.contains(es.getValue()))
+          .map(Entry::getKey).collect(toList());
+      uniqueMap.remove(keysToRemove);
+
+      // add the new values to the unique map
+      uniqueMap.putAll(updateUniqueMap);
+    });
   }
 
   private void updatePropertyWithUserActiviyLog(ObjectNode objectNode, String property) {
