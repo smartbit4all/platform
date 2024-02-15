@@ -151,7 +151,7 @@ public class GridModelApiImpl implements GridModelApi {
     return new GridView()
         .descriptor(new GridViewDescriptor()
             .columns(headers))
-        .orderedColumnNames(columns);
+        .orderedColumnNames(new ArrayList<>(columns));
   }
 
   @Override
