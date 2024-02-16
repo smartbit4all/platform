@@ -62,6 +62,7 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectValidationOperation;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.SecurityOption;
 import org.smartbit4all.api.org.SubjectContributionApi;
@@ -131,6 +132,8 @@ public class PlatformApiConfig {
   public static final String EMBEDDING_CONNECTIONS = "embeddingConnections";
 
   public static final String VECTOR_DB_CONNECTIONS = "vectorDbConnections";
+
+  public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
 
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
@@ -352,6 +355,38 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("Authentication token")
                   .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(OBJECT_VALIDATION_OPERATIONS)
+          .name(OBJECT_VALIDATION_OPERATIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ObjectValidationOperation.CODE))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Object Validation Operations")
+              .putValueByLocaleItem("hu", "Objektumvalidációs műveletek")
+              .putValueByLocaleItem("en", "Object Validation Operations"))
+          .displayNameForm(new LangString().defaultValue("Object Validation Operation")
+              .putValueByLocaleItem("hu", "Objektumvalidációs művelet")
+              .putValueByLocaleItem("en", "Object Validation Operation"))
+          .order(200L)
+          .typeQualifiedName(ObjectValidationOperation.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Code")
+                  .addPathItem(ObjectValidationOperation.CODE))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ObjectValidationOperation.NAME)
+                  .addPathItem(LangString.DEFAULT_VALUE))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Target Type")
+                  .addPathItem(ObjectValidationOperation.TARGET));
       result.addDescriptor(entry);
     }
     return result;
