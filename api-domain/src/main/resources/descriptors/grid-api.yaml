@@ -271,6 +271,10 @@ components:
         viewUuid:
           type: string
           format: uuid
+        identifier:
+          type: string
+        qualifier:
+          type: string
         availableViews:
           type: array
           items:

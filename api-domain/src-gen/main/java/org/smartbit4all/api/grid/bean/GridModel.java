@@ -39,6 +39,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object represents the client model of a grid component. ")
 @JsonPropertyOrder({
   GridModel.VIEW_UUID,
+  GridModel.IDENTIFIER,
+  GridModel.QUALIFIER,
   GridModel.AVAILABLE_VIEWS,
   GridModel.VIEW,
   GridModel.ACCESS_CONFIG,
@@ -57,6 +59,12 @@ import javax.validation.Valid;
 public class GridModel {
   public static final String VIEW_UUID = "viewUuid";
   private UUID viewUuid;
+
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
+
+  public static final String QUALIFIER = "qualifier";
+  private String qualifier;
 
   public static final String AVAILABLE_VIEWS = "availableViews";
   private List<GridView> availableViews = null;
@@ -122,6 +130,60 @@ public class GridModel {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setViewUuid(UUID viewUuid) {
     this.viewUuid = viewUuid;
+  }
+
+
+  public GridModel identifier(String identifier) {
+    
+    this.identifier = identifier;
+    return this;
+  }
+
+   /**
+   * Get identifier
+   * @return identifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+
+  public GridModel qualifier(String qualifier) {
+    
+    this.qualifier = qualifier;
+    return this;
+  }
+
+   /**
+   * Get qualifier
+   * @return qualifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(QUALIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getQualifier() {
+    return qualifier;
+  }
+
+
+  @JsonProperty(QUALIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setQualifier(String qualifier) {
+    this.qualifier = qualifier;
   }
 
 
@@ -488,6 +550,8 @@ public class GridModel {
     }
     GridModel gridModel = (GridModel) o;
     return Objects.equals(this.viewUuid, gridModel.viewUuid) &&
+        Objects.equals(this.identifier, gridModel.identifier) &&
+        Objects.equals(this.qualifier, gridModel.qualifier) &&
         Objects.equals(this.availableViews, gridModel.availableViews) &&
         Objects.equals(this.view, gridModel.view) &&
         Objects.equals(this.accessConfig, gridModel.accessConfig) &&
@@ -504,7 +568,7 @@ public class GridModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions, paginator);
+    return Objects.hash(viewUuid, identifier, qualifier, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions, paginator);
   }
 
   @Override
@@ -512,6 +576,8 @@ public class GridModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridModel {\n");
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    qualifier: ").append(toIndentedString(qualifier)).append("\n");
     sb.append("    availableViews: ").append(toIndentedString(availableViews)).append("\n");
     sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    accessConfig: ").append(toIndentedString(accessConfig)).append("\n");
