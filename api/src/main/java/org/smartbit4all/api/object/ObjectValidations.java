@@ -1,12 +1,12 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
 import org.smartbit4all.api.object.bean.ObjectValidationResult;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
-import static java.util.stream.Collectors.toList;
 
 public final class ObjectValidations {
 
@@ -161,6 +161,32 @@ public final class ObjectValidations {
       baseline.severity(toMerge.getSeverity());
     }
     baseline.getItems().addAll(toMerge.getItems());
+  }
+
+  /**
+   * Unchecked exception to be thrown when an object validation fails in the domain layer.
+   * 
+   * <p>
+   * Applications should be able to deploy a {@code ControllerAdvice} which handles thrown instances
+   * of this class and shows the appropriate error display.
+   * 
+   * @author Szabolcs Bazil Papp
+   *
+   */
+  public static final class ObjectValidationException extends RuntimeException {
+
+    private static final long serialVersionUID = 1_348_995_121_533_113_055L;
+
+    private final transient ObjectValidationResult objectValidationResult;
+
+    public ObjectValidationException(final ObjectValidationResult objectValidationResult) {
+      this.objectValidationResult = objectValidationResult;
+    }
+
+    public ObjectValidationResult getValidationResult() {
+      return objectValidationResult;
+    }
+
   }
 
 }
