@@ -45,8 +45,8 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
   }
 
   @Override
-  public URI convert(BinaryContentData binaryContentData, String toMimeType,
-      ServiceConnection serviceConnection, String logicalSchema) {
+  public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema,
+      ServiceConnection serviceConnection) {
     Optional<ContentConversionContributionApi> apiOptional = getContributionApis().values().stream()
         .filter(api -> Objects.equals(binaryContentData.getMimeType(), api.getFromMimeType())
             && Objects.equals(toMimeType, api.getToMimeType()))
@@ -54,7 +54,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
     if (apiOptional.isEmpty()) {
       return null;
     }
-    return apiOptional.get().convert(binaryContentData, serviceConnection, logicalSchema);
+    return apiOptional.get().convert(binaryContentData, logicalSchema, serviceConnection);
   }
 
 

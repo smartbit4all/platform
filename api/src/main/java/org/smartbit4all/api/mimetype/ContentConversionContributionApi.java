@@ -20,7 +20,7 @@ public interface ContentConversionContributionApi extends ContributionApi {
 
   public URI convert(BinaryContentData content, String logicalSchema);
 
-  public URI convert(BinaryContentData content, ServiceConnection serviceConnection,
-      String logicalSchema);
+  public URI convert(BinaryContentData content,
+      String logicalSchema, ServiceConnection serviceConnection);
 
 }

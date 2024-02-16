@@ -14,7 +14,7 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
 
   URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema);
 
-  URI convert(BinaryContentData binaryContentData, String toMimeType,
-      ServiceConnection serviceConnection, String logicalSchema);
+  URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema,
+      ServiceConnection serviceConnection);
 
 }

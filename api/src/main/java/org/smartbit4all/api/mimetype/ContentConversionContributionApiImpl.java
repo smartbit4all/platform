@@ -30,7 +30,8 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
   /**
    * Handles the conversion with a remote API via the connection defined in the serviceConnection.
    */
-  protected abstract BinaryData convertInternal(BinaryData content, ServiceConnection serviceConnection);
+  protected abstract BinaryData convertInternal(BinaryData content,
+      ServiceConnection serviceConnection);
 
   @Override
   public URI convert(BinaryContentData content, String logicalSchema) {
@@ -41,8 +42,8 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
   }
 
   @Override
-  public URI convert(BinaryContentData content,
-      ServiceConnection serviceConnection, String logicalSchema) {
+  public URI convert(BinaryContentData content, String logicalSchema,
+      ServiceConnection serviceConnection) {
     BinaryDataObject binaryDataObject =
         objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class);
     BinaryData convertedData = convertInternal(binaryDataObject.getBinaryData(), serviceConnection);
