@@ -236,7 +236,7 @@ components:
           $ref: '#/components/schemas/ObjectHistoryIteratorData'
         upperBound:
           description: The iterator of the upper bound.
-          $ref: '#/components/schemas/ObjectHistoryIteratorData'          
+          $ref: '#/components/schemas/ObjectHistoryIteratorData'
     ObjectHistoryIteratorData:
       description: |
         This object represents an object version from the object history. The history can be a huge list where the uris of the history items
@@ -256,7 +256,7 @@ components:
         created:
           description: The version creation information.
           type: UserActivityLog
-         
+
     RetrievalMode:
       type: string
       default: NORMAL
@@ -750,7 +750,7 @@ components:
         This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat
         but later on it can use different formatters if it is necessary.
       type: object
-      required: [parameters,requiredProperties]
+      required: [parameters, requiredProperties]
       properties:
         formatString:
           description: |
@@ -815,6 +815,38 @@ components:
           $ref: '#/components/schemas/LangString'
     ObjectValidationSeverity:
       enum: [BLOCKER, ERROR, WARNING, INFO, OK]
+    ObjectValidationOperation:
+      type: object
+      description: |
+        A named validation operation.
+
+        Instances of this type are managed by the system MD management. They bear a unique name and
+        define a target type (on which the actual validation request definition shall be executed).
+
+        The embedded InvocationRequestDefinition may be invoked with an object of the target type
+        as its first argument and an arbitrary number of additional arguments (specific to the 
+        validation operation itself).
+
+        All embedded invocation request definitions are required to return with an 
+        ObjectValidationResult.
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: Unique persistence identifier.
+        code:
+          type: string
+          description: Unique identifier in masterdata management.
+        name:
+          $ref: '#/components/schemas/LangString'
+        target:
+          type: string
+          description: |
+            Fully qualified name of the target type (the InvocationRequestDefinition's first
+            argument). An extended type is acceptable.
+        validationRequest:
+          type: InvocationRequestDefinition
+
     VersionStrategy:
       enum: [LATEST, EXACT, BYDEFINITION]
 
