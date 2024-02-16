@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.grid;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.DOT;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,6 +199,7 @@ public class GridModelApiImpl implements GridModelApi {
       gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
     }
     gridModel.setViewUuid(viewUuid);
+    gridModel.setIdentifier(gridId);
     loadGridDataForUser(viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
     viewApi.setWidgetServerModelInView(GridServerModel.class, viewUuid, gridId,
@@ -565,7 +567,7 @@ public class GridModelApiImpl implements GridModelApi {
   public GridModel updateGrid(UUID viewUuid, String gridId, GridUpdateData update) {
     return executeGridCall(viewUuid, gridId, model -> {
       updateGridInternal(viewUuid, gridId, model, update);
-      saveGridDataToUser(viewUuid, gridId, update);
+      saveGridDataToUser(viewUuid, gridId, model, update);
       return model;
     });
   }
@@ -621,10 +623,11 @@ public class GridModelApiImpl implements GridModelApi {
     return updateModified;
   }
 
-  private void saveGridDataToUser(UUID viewUuid, String gridId, GridUpdateData update) {
+  private void saveGridDataToUser(UUID viewUuid, String gridId, GridModel gridModel,
+      GridUpdateData update) {
     try {
       if (isSaveGridEnabled()) {
-        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId);
+        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId, gridModel);
         if (ref != null) {
           ref.set(update);
         }
@@ -637,7 +640,7 @@ public class GridModelApiImpl implements GridModelApi {
   private void loadGridDataForUser(UUID viewUuid, String gridId, GridModel gridModel) {
     try {
       if (isSaveGridEnabled()) {
-        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId);
+        StoredReference<GridUpdateData> ref = getSavedGridDataRef(viewUuid, gridId, gridModel);
         if (ref != null && ref.exists()) {
           GridUpdateData update = ref.get();
           if (update != null) {
@@ -657,15 +660,23 @@ public class GridModelApiImpl implements GridModelApi {
     return "true".equals(saveGridColumns);
   }
 
-  private StoredReference<GridUpdateData> getSavedGridDataRef(UUID viewUuid, String gridId) {
+  private StoredReference<GridUpdateData> getSavedGridDataRef(UUID viewUuid, String gridId,
+      GridModel gridModel) {
     StoredReference<GridUpdateData> ref = null;
     URI userUri = sessionApi == null ? null : sessionApi.getUserUri();
     if (userUri != null) {
       String viewName = viewApi.getView(viewUuid).getViewName();
+      StringBuilder name = new StringBuilder()
+          .append(viewName)
+          .append(DOT)
+          .append(gridId);
+      if (!Strings.isNullOrEmpty(gridModel.getQualifier())) {
+        name.append(DOT).append(gridModel.getQualifier());
+      }
       ref = collectionApi.reference(
           userUri,
           ViewContextService.SCHEMA,
-          viewName + "." + gridId, GridUpdateData.class);
+          name.toString(), GridUpdateData.class);
     }
     return ref;
   }
@@ -855,6 +866,7 @@ public class GridModelApiImpl implements GridModelApi {
     }
     if (gridModel != null) {
       gridModel.setViewUuid(viewUuid);
+      gridModel.setIdentifier(gridId);
       T result = gridCall.apply(gridModel);
       viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
       return result;
@@ -878,21 +890,23 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public Object expand(GridModel grid, String gridId, String rowId) {
-    Objects.requireNonNull(rowId, "rowId must not be null");
-    GridRow row = grid.getPage().getRows().stream()
-        .filter(r -> rowId.equals(r.getId()))
-        .findFirst()
-        .orElse(null);
-    if (row == null) {
-      log.error("Row not found by id: {}, {}", gridId, rowId);
-      return null;
-    }
-    InvocationRequest request = getCallback(grid.getViewUuid(), gridId, EXPAND_POSTFIX);
-    if (request == null) {
-      log.warn("Expand handler not found for grid {}", gridId);
-    }
-    return executeObjectCallback(request, row);
+  public Object expand(UUID viewUuid, String gridId, String rowId) {
+    return executeGridCall(viewUuid, gridId, grid -> {
+      Objects.requireNonNull(rowId, "rowId must not be null");
+      GridRow row = grid.getPage().getRows().stream()
+          .filter(r -> rowId.equals(r.getId()))
+          .findFirst()
+          .orElse(null);
+      if (row == null) {
+        log.error("Row not found by id: {}, {}", gridId, rowId);
+        return null;
+      }
+      InvocationRequest request = getCallback(grid.getViewUuid(), gridId, EXPAND_POSTFIX);
+      if (request == null) {
+        log.warn("Expand handler not found for grid {}", gridId);
+      }
+      return executeObjectCallback(request, row);
+    });
   }
 
   private void setCallback(UUID viewUuid, String gridId, InvocationRequest request,

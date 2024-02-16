@@ -209,7 +209,7 @@ public interface GridModelApi {
 
   <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall);
 
-  Object expand(GridModel grid, String gridId, String rowId);
+  Object expand(UUID viewUuid, String gridId, String rowId);
 
   /**
    * Sets the expand callback for a grid in a given View. 'request' will be called when grid on

@@ -47,9 +47,7 @@ public class GridApiDelegateImpl implements GridApiDelegate {
 
   @Override
   public ResponseEntity<Object> expand(UUID uuid, String gridId, String rowId) throws Exception {
-    return ResponseEntity.ok(
-        gridModelApi.executeGridCall(uuid, gridId,
-            grid -> gridModelApi.expand(grid, gridId, rowId)));
+    return ResponseEntity.ok(gridModelApi.expand(uuid, gridId, rowId));
   }
 
   @Override
