@@ -125,4 +125,13 @@ public interface MasterDataManagementApi {
 
   void modifyEntry(String definitionName, MDMEntryDescriptor entry);
 
+  /**
+   * 
+   * Updates the definition with the InvocationRequest stored inside of it.
+   * 
+   * @param definitionName The name of the definition.
+   *
+   */
+  void executeMdmDefinitionUpdate(String definitionName);
+
 }

@@ -21,7 +21,9 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -857,6 +859,21 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         return def;
       });
       objectApi.save(definitionNode);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  @Override
+  public void executeMdmDefinitionUpdate(String definitionName) {
+    MDMDefinition definition = getDefinition(definitionName);
+    Lock lock = objectApi.getLock(definition.getUri());
+    lock.lock();
+    InvocationRequest updateRequest = definition.getUpdateRequest();
+    try {
+      invocationApi.invoke(updateRequest);
+    } catch (ApiNotFoundException e) {
+      log.error(e.getMessage(), e);
     } finally {
       lock.unlock();
     }

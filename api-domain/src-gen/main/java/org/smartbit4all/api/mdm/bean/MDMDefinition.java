@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,7 +45,8 @@ import javax.validation.Valid;
   MDMDefinition.ADMIN_APPROVER_GROUP_NAME,
   MDMDefinition.STATE,
   MDMDefinition.BRANCHING_STRATEGY,
-  MDMDefinition.DESCRIPTORS
+  MDMDefinition.DESCRIPTORS,
+  MDMDefinition.UPDATE_REQUEST
 })
 @JsonTypeName("MDMDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -69,6 +71,9 @@ public class MDMDefinition {
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
+
+  public static final String UPDATE_REQUEST = "updateRequest";
+  private InvocationRequest updateRequest = null;
 
   public MDMDefinition() { 
   }
@@ -273,6 +278,34 @@ public class MDMDefinition {
   }
 
 
+  public MDMDefinition updateRequest(InvocationRequest updateRequest) {
+    
+    this.updateRequest = updateRequest;
+    return this;
+  }
+
+   /**
+   * Used for updating the master data inside the MDMDefinition. 
+   * @return updateRequest
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Used for updating the master data inside the MDMDefinition. ")
+  @JsonProperty(UPDATE_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRequest getUpdateRequest() {
+    return updateRequest;
+  }
+
+
+  @JsonProperty(UPDATE_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUpdateRequest(InvocationRequest updateRequest) {
+    this.updateRequest = updateRequest;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -288,12 +321,13 @@ public class MDMDefinition {
         Objects.equals(this.adminApproverGroupName, mdMDefinition.adminApproverGroupName) &&
         Objects.equals(this.state, mdMDefinition.state) &&
         Objects.equals(this.branchingStrategy, mdMDefinition.branchingStrategy) &&
-        Objects.equals(this.descriptors, mdMDefinition.descriptors);
+        Objects.equals(this.descriptors, mdMDefinition.descriptors) &&
+        Objects.equals(this.updateRequest, mdMDefinition.updateRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, adminGroupName, adminApproverGroupName, state, branchingStrategy, descriptors);
+    return Objects.hash(uri, name, adminGroupName, adminApproverGroupName, state, branchingStrategy, descriptors, updateRequest);
   }
 
   @Override
@@ -307,6 +341,7 @@ public class MDMDefinition {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
+    sb.append("    updateRequest: ").append(toIndentedString(updateRequest)).append("\n");
     sb.append("}");
     return sb.toString();
   }

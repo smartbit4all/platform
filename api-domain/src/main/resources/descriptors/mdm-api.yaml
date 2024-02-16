@@ -50,6 +50,10 @@ components:
                     type: object
                     additionalProperties:
                         $ref: "#/components/schemas/MDMEntryDescriptor"
+                updateRequest:
+                  description: |
+                    Used for updating the master data inside the MDMDefinition.
+                  type: InvocationRequest
         MDMBranchingStrategy:
             type: string
             enum:
