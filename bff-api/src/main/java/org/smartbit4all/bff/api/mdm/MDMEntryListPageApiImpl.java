@@ -338,6 +338,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
     }
 
+    entryGridModel.qualifier(context.entryDescriptor.getName());
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
     gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
