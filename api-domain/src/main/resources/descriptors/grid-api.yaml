@@ -320,6 +320,8 @@ components:
           type: string
           additionalProperties:
             $ref: '#/components/schemas/GridRow'
+        defaultGridData:
+          $ref: '#/components/schemas/GridUpdateData'
     GridPage:
       type: object
       description: |

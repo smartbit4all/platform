@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridUpdateData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -36,13 +37,17 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object represents the server model of a grid component. ")
 @JsonPropertyOrder({
-  GridServerModel.SELECTED_ROWS
+  GridServerModel.SELECTED_ROWS,
+  GridServerModel.DEFAULT_GRID_DATA
 })
 @JsonTypeName("GridServerModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GridServerModel {
   public static final String SELECTED_ROWS = "selectedRows";
   private Map<String, GridRow> selectedRows = new HashMap<>();
+
+  public static final String DEFAULT_GRID_DATA = "defaultGridData";
+  private GridUpdateData defaultGridData;
 
   public GridServerModel() { 
   }
@@ -81,6 +86,34 @@ public class GridServerModel {
   }
 
 
+  public GridServerModel defaultGridData(GridUpdateData defaultGridData) {
+    
+    this.defaultGridData = defaultGridData;
+    return this;
+  }
+
+   /**
+   * Get defaultGridData
+   * @return defaultGridData
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEFAULT_GRID_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GridUpdateData getDefaultGridData() {
+    return defaultGridData;
+  }
+
+
+  @JsonProperty(DEFAULT_GRID_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultGridData(GridUpdateData defaultGridData) {
+    this.defaultGridData = defaultGridData;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -90,12 +123,13 @@ public class GridServerModel {
       return false;
     }
     GridServerModel gridServerModel = (GridServerModel) o;
-    return Objects.equals(this.selectedRows, gridServerModel.selectedRows);
+    return Objects.equals(this.selectedRows, gridServerModel.selectedRows) &&
+        Objects.equals(this.defaultGridData, gridServerModel.defaultGridData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectedRows);
+    return Objects.hash(selectedRows, defaultGridData);
   }
 
   @Override
@@ -103,6 +137,7 @@ public class GridServerModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridServerModel {\n");
     sb.append("    selectedRows: ").append(toIndentedString(selectedRows)).append("\n");
+    sb.append("    defaultGridData: ").append(toIndentedString(defaultGridData)).append("\n");
     sb.append("}");
     return sb.toString();
   }

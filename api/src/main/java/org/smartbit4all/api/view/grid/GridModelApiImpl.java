@@ -200,10 +200,14 @@ public class GridModelApiImpl implements GridModelApi {
     }
     gridModel.setViewUuid(viewUuid);
     gridModel.setIdentifier(gridId);
+    GridUpdateData defaultGridData = new GridUpdateData()
+        .pageSize(gridModel.getPageSize())
+        .orderByList(new ArrayList<>(gridModel.getView().getOrderByList()))
+        .orderedColumnNames(new ArrayList<>(gridModel.getView().getOrderedColumnNames()));
     loadGridDataForUser(viewUuid, gridId, gridModel);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
     viewApi.setWidgetServerModelInView(GridServerModel.class, viewUuid, gridId,
-        new GridServerModel());
+        new GridServerModel().defaultGridData(defaultGridData));
   }
 
   private Integer getDefaultPageSize() {
