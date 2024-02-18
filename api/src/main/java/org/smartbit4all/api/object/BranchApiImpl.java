@@ -1,8 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +34,9 @@ import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -101,6 +101,32 @@ public class BranchApiImpl implements BranchApi {
     objectApi.save(objectNode);
     return result;
 
+  }
+
+  @Override
+  public void addSnapshotBranch(URI branchUri, Collection<ObjectNode> nodes) {
+    Objects.requireNonNull(branchUri, "The branch uri is required.");
+    if (nodes == null) {
+      return;
+    }
+    Lock lock = objectApi.getLock(branchUri);
+    lock.lock();
+    try {
+      ObjectNode branchNode = objectApi.loadLatest(branchUri);
+      List<ObjectNode> allLoadedNode = nodes.stream().flatMap(node -> node.allLoaded())
+          .collect(toList());
+      branchNode.modify(BranchEntry.class, entry -> {
+        for (ObjectNode node : allLoadedNode) {
+          entry.putBranchedObjectsItem(node.getObjectUri().toString(),
+              new BranchedObject().sourceObjectLatestUri(node.getObjectUri())
+                  .branchedObjectLatestUri(node.getObjectUri()));
+        }
+        return entry;
+      });
+      objectApi.save(branchNode);
+    } finally {
+      lock.unlock();
+    }
   }
 
   public void addToBranchedObjects(ObjectNode branchEntryNode, URI sourceUri, URI targetUri) {

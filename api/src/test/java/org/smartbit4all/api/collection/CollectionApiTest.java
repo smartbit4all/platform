@@ -1,8 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +25,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
@@ -49,6 +47,9 @@ import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -366,6 +367,31 @@ public class CollectionApiTest {
             "datasheet - newly created - 8",
             "datasheet - newly created - 9");
 
+  }
+
+  @Test
+  void testBranchSnapshot() {
+    BranchEntry branchEntry = branchApi.makeBranch("My snapshot");
+    ObjectNode rootNode = objectApi.create(SCHEMA, new SampleCategory().name("Root category"));
+    for (int i = 0; i < 10; i++) {
+      ObjectNode subNode = objectApi.create(SCHEMA, new SampleCategory().name("Sub category " + i));
+      rootNode.list(SampleCategory.SUB_CATEGORIES)
+          .add(subNode);
+      for (int j = 0; j < 10; j++) {
+        ObjectNode subSubNode =
+            objectApi.create(SCHEMA, new SampleCategory().name("Sub sub category " + j));
+        subNode.list(SampleCategory.SUB_CATEGORIES)
+            .add(subSubNode);
+      }
+    }
+    URI rootUri = objectApi.save(rootNode);
+    RetrievalRequest request = objectApi.request(SampleCategory.class)
+        .addRecursiveLabel(SampleCategory.SUB_CATEGORIES)
+        .addContinueAt(SampleCategory.SUB_CATEGORIES, SampleCategory.SUB_CATEGORIES);
+    ObjectNode loaded = objectApi.load(request, rootUri);
+    List<ObjectNode> nodes = new ArrayList<>();
+    nodes.add(loaded);
+    branchApi.addSnapshotBranch(branchEntry.getUri(), nodes);
   }
 
   @Test

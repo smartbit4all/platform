@@ -25,6 +25,7 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
+import com.google.common.collect.Streams;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -742,6 +743,21 @@ public class ObjectNode {
    */
   public SnapshotData snapshot() {
     return snapshotNode(this, true);
+  }
+
+  /**
+   * @return All the loaded object available from the current {@link ObjectNode} including the
+   *         current one. It won't load any more object.
+   */
+  public Stream<ObjectNode> allLoaded() {
+    return Streams.concat(Stream.of(this), references.values().stream()
+        .filter(ref -> ref.isLoaded()).flatMap(ref -> ref.get().allLoaded()),
+        referenceLists.values().stream()
+            .flatMap(list -> list.stream().filter(ref -> ref.isLoaded())
+                .flatMap(ref -> ref.get().allLoaded())),
+        referenceMaps.values().stream()
+            .flatMap(map -> map.values().stream().filter(ref -> ref.isLoaded())
+                .flatMap(ref -> ref.get().allLoaded())));
   }
 
   /**

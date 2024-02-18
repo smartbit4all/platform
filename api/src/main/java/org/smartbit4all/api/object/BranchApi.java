@@ -72,6 +72,16 @@ public interface BranchApi {
   Map<URI, BranchOperation> initBranchedObjects(URI branchUri,
       Map<URI, Supplier<URI>> brachedObjects);
 
+  /**
+   * The snapshot branch is a branch that is already contains the branched objects even if they have
+   * not been modified yet. This is used to save a state of an object graph. Later on we can use
+   * this branch to compare with a new version.
+   * 
+   * @param branchUri The branch to add the loaded reference of the nodes.
+   * @param nodes The nodes to add.
+   */
+  void addSnapshotBranch(URI branchUri, Collection<ObjectNode> nodes);
+
   void registerCollection(URI branchUri, URI storedListUri, URI storedListBranchedUri,
       StoredCollectionDescriptor descriptor);
 
