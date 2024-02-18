@@ -222,11 +222,13 @@ public class MDMEntryDescriptorPageApiImpl
     try {
       MDMEntryDescriptor descriptor =
           option.addDefaultDescriptor(GenericValue.class, code).name(code)
-              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name("Code")
+              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name(GenericValue.CODE)
                   .addPathItem(GenericValue.CODE),
-                  new MDMTableColumnDescriptor().name("Name")
+                  new MDMTableColumnDescriptor().name(GenericValue.NAME)
                       .addPathItem(GenericValue.NAME),
-                  new MDMTableColumnDescriptor().name("Icon")
+                  new MDMTableColumnDescriptor().name(GenericValue.DESCRIPTION)
+                      .addPathItem(GenericValue.DESCRIPTION),
+                  new MDMTableColumnDescriptor().name(GenericValue.ICON)
                       .addPathItem(GenericValue.ICON)))
               .displayNameForm(new LangString().defaultValue(name))
               .displayNameList(new LangString().defaultValue(name))

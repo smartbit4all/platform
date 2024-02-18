@@ -35,6 +35,7 @@ import javax.validation.Valid;
   GenericValue.URI,
   GenericValue.CODE,
   GenericValue.NAME,
+  GenericValue.DESCRIPTION,
   GenericValue.ICON,
   GenericValue.INACTIVE
 })
@@ -49,6 +50,9 @@ public class GenericValue {
 
   public static final String NAME = "name";
   private String name;
+
+  public static final String DESCRIPTION = "description";
+  private String description;
 
   public static final String ICON = "icon";
   private String icon;
@@ -141,6 +145,33 @@ public class GenericValue {
   }
 
 
+  public GenericValue description(String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * The description of the value if any. It is optional but can be usefull to have some idea about the given value. 
+   * @return description
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The description of the value if any. It is optional but can be usefull to have some idea about the given value. ")
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+
   public GenericValue icon(String icon) {
     
     this.icon = icon;
@@ -207,13 +238,14 @@ public class GenericValue {
     return Objects.equals(this.uri, genericValue.uri) &&
         Objects.equals(this.code, genericValue.code) &&
         Objects.equals(this.name, genericValue.name) &&
+        Objects.equals(this.description, genericValue.description) &&
         Objects.equals(this.icon, genericValue.icon) &&
         Objects.equals(this.inactive, genericValue.inactive);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, name, icon, inactive);
+    return Objects.hash(uri, code, name, description, icon, inactive);
   }
 
   @Override
@@ -223,6 +255,7 @@ public class GenericValue {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    inactive: ").append(toIndentedString(inactive)).append("\n");
     sb.append("}");

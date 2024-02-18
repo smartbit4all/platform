@@ -189,6 +189,11 @@ components:
         name:
           type: string
           description: The value as it is.
+        description:
+          type: string
+          description: |
+            The description of the value if any. It is optional but can be usefull to have some
+            idea about the given value.
         icon:
           type: string
           description: The code of icon that can be associatied with this value. It may be a uri.
