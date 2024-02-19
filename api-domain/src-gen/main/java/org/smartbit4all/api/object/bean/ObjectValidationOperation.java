@@ -38,7 +38,6 @@ import javax.validation.Valid;
   ObjectValidationOperation.URI,
   ObjectValidationOperation.CODE,
   ObjectValidationOperation.NAME,
-  ObjectValidationOperation.TARGET,
   ObjectValidationOperation.VALIDATION_REQUEST
 })
 @JsonTypeName("ObjectValidationOperation")
@@ -52,9 +51,6 @@ public class ObjectValidationOperation {
 
   public static final String NAME = "name";
   private LangString name;
-
-  public static final String TARGET = "target";
-  private String target;
 
   public static final String VALIDATION_REQUEST = "validationRequest";
   private InvocationRequestDefinition validationRequest = null;
@@ -145,33 +141,6 @@ public class ObjectValidationOperation {
   }
 
 
-  public ObjectValidationOperation target(String target) {
-    
-    this.target = target;
-    return this;
-  }
-
-   /**
-   * Fully qualified name of the target type (the InvocationRequestDefinition&#39;s first argument). An extended type is acceptable. 
-   * @return target
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Fully qualified name of the target type (the InvocationRequestDefinition's first argument). An extended type is acceptable. ")
-  @JsonProperty(TARGET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getTarget() {
-    return target;
-  }
-
-
-  @JsonProperty(TARGET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
-
   public ObjectValidationOperation validationRequest(InvocationRequestDefinition validationRequest) {
     
     this.validationRequest = validationRequest;
@@ -212,13 +181,12 @@ public class ObjectValidationOperation {
     return Objects.equals(this.uri, objectValidationOperation.uri) &&
         Objects.equals(this.code, objectValidationOperation.code) &&
         Objects.equals(this.name, objectValidationOperation.name) &&
-        Objects.equals(this.target, objectValidationOperation.target) &&
         Objects.equals(this.validationRequest, objectValidationOperation.validationRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, name, target, validationRequest);
+    return Objects.hash(uri, code, name, validationRequest);
   }
 
   @Override
@@ -228,7 +196,6 @@ public class ObjectValidationOperation {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    target: ").append(toIndentedString(target)).append("\n");
     sb.append("    validationRequest: ").append(toIndentedString(validationRequest)).append("\n");
     sb.append("}");
     return sb.toString();

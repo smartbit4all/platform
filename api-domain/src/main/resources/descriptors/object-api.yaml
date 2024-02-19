@@ -839,13 +839,22 @@ components:
           description: Unique identifier in masterdata management.
         name:
           $ref: '#/components/schemas/LangString'
+        validationRequest:
+          type: InvocationRequestDefinition
+    ObjectValidationOperationDescriptor:
+      type: object
+      properties:
         target:
           type: string
           description: |
-            Fully qualified name of the target type (the InvocationRequestDefinition's first
-            argument). An extended type is acceptable.
-        validationRequest:
-          type: InvocationRequestDefinition
+            The name of the ObjectValidationOperation's context, to be interpreted by the specific
+            runtime. Describes on what object and when to perform the referenced validation
+            operation.
+        operationCode:
+          type: string
+          description: |
+            The unique code of the ObjectValidationOperation to be performed (this is managed by
+            the system integration MDM of the current runtime).
 
     VersionStrategy:
       enum: [LATEST, EXACT, BYDEFINITION]
