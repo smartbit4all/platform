@@ -11,6 +11,11 @@ import org.smartbit4all.api.contribution.PrimaryApi;
  */
 public interface ApplicationSetupManagementApi extends PrimaryApi<ApplicationSetupApi> {
 
-  void scheduleSetupFunctions();
+  /**
+   * The map of the already executed setups.
+   */
+  static String SETUP_MAP = "applicationSetupMap";
+
+  void scheduleSetup();
 
 }

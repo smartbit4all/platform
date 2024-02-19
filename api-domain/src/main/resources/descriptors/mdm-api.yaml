@@ -335,3 +335,34 @@ components:
                     type: array
                     items:
                         type: string
+        ApplicationSetupKind:
+          enum: [API, INVOCATION]
+        ApplicationSetup:
+          type: object
+          required: [kind, path]
+          properties:
+            uri:
+              type: string
+              format: uri
+            data:
+              description: |
+                The data of the application setup.
+              $ref: "#/components/schemas/ApplicationSetupData"
+        ApplicationSetupData:
+          type: object
+          required: [kind, name]
+          properties:
+            kind:
+              $ref: "#/components/schemas/ApplicationSetupKind"
+              default: 'API'
+            name:
+              description: |
+                The unique name of the application setup.
+              type: string
+            preRequisites:
+              description: |
+                The names of the setups that are pre requisites of the current one. The setups should be ordered
+                based on this dependencies.
+              type: array
+              items:
+                type: string
