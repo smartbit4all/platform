@@ -3,7 +3,6 @@ package org.smartbit4all.api.mimetype;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
@@ -34,27 +33,23 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
 
   @Override
   public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema) {
-    Optional<ContentConversionContributionApi> apiOptional = getContributionApis().values().stream()
+    return getContributionApis().values().stream()
         .filter(api -> Objects.equals(binaryContentData.getMimeType(), api.getFromMimeType())
             && Objects.equals(toMimeType, api.getToMimeType()))
-        .findFirst();
-    if (apiOptional.isEmpty()) {
-      return null;
-    }
-    return apiOptional.get().convert(binaryContentData, logicalSchema);
+        .findFirst()
+        .map(api -> api.convert(binaryContentData, logicalSchema))
+        .orElse(null);
   }
 
   @Override
   public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema,
       ServiceConnection serviceConnection) {
-    Optional<ContentConversionContributionApi> apiOptional = getContributionApis().values().stream()
+    return getContributionApis().values().stream()
         .filter(api -> Objects.equals(binaryContentData.getMimeType(), api.getFromMimeType())
             && Objects.equals(toMimeType, api.getToMimeType()))
-        .findFirst();
-    if (apiOptional.isEmpty()) {
-      return null;
-    }
-    return apiOptional.get().convert(binaryContentData, logicalSchema, serviceConnection);
+        .findFirst()
+        .map(api -> api.convert(binaryContentData, logicalSchema, serviceConnection))
+        .orElse(null);
   }
 
 

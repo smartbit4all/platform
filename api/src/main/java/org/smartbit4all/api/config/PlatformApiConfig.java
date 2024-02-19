@@ -382,11 +382,7 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("Name")
                   .addPathItem(ObjectValidationOperation.NAME)
-                  .addPathItem(LangString.DEFAULT_VALUE))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Target Type")
-                  .addPathItem(ObjectValidationOperation.TARGET));
+                  .addPathItem(LangString.DEFAULT_VALUE));
       result.addDescriptor(entry);
     }
     return result;
