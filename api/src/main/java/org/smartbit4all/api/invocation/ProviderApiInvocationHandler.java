@@ -1,13 +1,16 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.smartbit4all.api.invocation.bean.AnnotationData;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import org.smartbit4all.api.invocation.bean.MethodData;
 import org.smartbit4all.api.invocation.bean.ParameterData;
@@ -119,11 +122,24 @@ public class ProviderApiInvocationHandler<T> {
         }
         sbParams.append(p.getType().getName());
       }
+      List<Annotation> annotations = ReflectionUtility.getAnnotations(m).stream()
+          .sorted(
+              (a1, a2) -> a1.annotationType().getName().compareTo(a2.annotationType().getName()))
+          .collect(toList());
       return new MethodData().name(m.getName())
           .id(m.getName() + StringConstant.LEFT_PARENTHESIS + sbParams.toString()
               + StringConstant.RIGHT_PARENTHESIS)
           .returnType(m.getReturnType().getName())
-          .parameters(parameters);
+          .parameters(parameters)
+          .annotations(annotations.stream()
+              .map(a -> new AnnotationData().qualifiedName(a.annotationType().getName())
+                  .parameters(ReflectionUtility.getAnnotationAttributes(a).entrySet().stream()
+                      .map(e -> new InvocationParameter().name(e.getKey())
+                          .typeClass(e.getValue() != null ? e.getValue().getClass().getName()
+                              : StringConstant.EMPTY)
+                          .value(e.getValue()))
+                      .collect(toList())))
+              .collect(toList()));
     }).collect(toList());
     List<PublishedEventData> publishers = allMethods.stream().map(m -> {
       PublishedEvent p =

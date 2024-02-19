@@ -481,6 +481,11 @@ components:
           description: The parameters of the given method.
           items:
             $ref: '#/components/schemas/ParameterData'
+        annotations:
+          type: array
+          description: The annotations of the given method.
+          items:
+            $ref: '#/components/schemas/AnnotationData'
     ParameterData:
       type: object
       required: [name,typeName]
@@ -497,6 +502,19 @@ components:
           description: The type of the invocation parameter.
           $ref: '#/components/schemas/InvocationParameterKind'
           default: BYVALUE
+    AnnotationData:
+      type: object
+      required: [name, parameters]
+      description: |
+        Tha annotation denotes the given item like method, parameter or api itself.
+      properties:
+        qualifiedName:
+          description: The qualified name of the given annotation.
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationParameter'
     InvocationParameterKind:
       type: string
       enum: [

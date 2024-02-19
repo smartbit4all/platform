@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.invocation.bean.AnnotationData;
 import org.smartbit4all.api.invocation.bean.ParameterData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,7 +39,8 @@ import javax.validation.Valid;
   MethodData.ID,
   MethodData.NAME,
   MethodData.RETURN_TYPE,
-  MethodData.PARAMETERS
+  MethodData.PARAMETERS,
+  MethodData.ANNOTATIONS
 })
 @JsonTypeName("MethodData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -54,6 +56,9 @@ public class MethodData {
 
   public static final String PARAMETERS = "parameters";
   private List<ParameterData> parameters = new ArrayList<>();
+
+  public static final String ANNOTATIONS = "annotations";
+  private List<AnnotationData> annotations = null;
 
   public MethodData() { 
   }
@@ -174,6 +179,42 @@ public class MethodData {
   }
 
 
+  public MethodData annotations(List<AnnotationData> annotations) {
+    
+    this.annotations = annotations;
+    return this;
+  }
+
+  public MethodData addAnnotationsItem(AnnotationData annotationsItem) {
+    if (this.annotations == null) {
+      this.annotations = new ArrayList<>();
+    }
+    this.annotations.add(annotationsItem);
+    return this;
+  }
+
+   /**
+   * The annotations of the given method.
+   * @return annotations
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The annotations of the given method.")
+  @JsonProperty(ANNOTATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<AnnotationData> getAnnotations() {
+    return annotations;
+  }
+
+
+  @JsonProperty(ANNOTATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAnnotations(List<AnnotationData> annotations) {
+    this.annotations = annotations;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -186,12 +227,13 @@ public class MethodData {
     return Objects.equals(this.id, methodData.id) &&
         Objects.equals(this.name, methodData.name) &&
         Objects.equals(this.returnType, methodData.returnType) &&
-        Objects.equals(this.parameters, methodData.parameters);
+        Objects.equals(this.parameters, methodData.parameters) &&
+        Objects.equals(this.annotations, methodData.annotations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, returnType, parameters);
+    return Objects.hash(id, name, returnType, parameters, annotations);
   }
 
   @Override
@@ -202,6 +244,7 @@ public class MethodData {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    returnType: ").append(toIndentedString(returnType)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    annotations: ").append(toIndentedString(annotations)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -18,7 +18,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.springframework.aop.TargetSource;
@@ -260,4 +262,30 @@ public class ReflectionUtility {
         .map(MergedAnnotation::withNonMergedAttributes)
         .collect(MergedAnnotationCollectors.toAnnotationSet());
   }
+
+  public static Set<Annotation> getAnnotations(
+      AnnotatedElement annotatedElement) {
+    return MergedAnnotations.from(annotatedElement, SearchStrategy.TYPE_HIERARCHY)
+        .stream()
+        .filter(MergedAnnotationPredicates.firstRunOf(MergedAnnotation::getAggregateIndex))
+        .map(MergedAnnotation::withNonMergedAttributes)
+        .collect(MergedAnnotationCollectors.toAnnotationSet());
+  }
+
+  public static Map<String, Object> getAnnotationAttributes(final Annotation annotation) {
+    final Map<String, Object> attrs = new HashMap<>();
+    final Method[] methods = annotation.annotationType().getDeclaredMethods();
+    for (int j = 0; j < methods.length; j++) {
+      final Method method = methods[j];
+      if (method.getParameterTypes().length == 0 && method.getReturnType() != void.class) {
+        try {
+          attrs.put(method.getName(), method.invoke(annotation));
+        } catch (final Exception ex) {
+          throw new IllegalStateException("Could not obtain annotation attribute values", ex);
+        }
+      }
+    }
+    return attrs;
+  }
+
 }
