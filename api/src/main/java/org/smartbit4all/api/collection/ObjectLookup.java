@@ -1,5 +1,7 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.joining;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,6 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.joining;
 
 /**
  * The {@link ObjectLookup} is a generic abstract class for lookup a collection by the values of an
@@ -59,17 +60,20 @@ public abstract class ObjectLookup {
    * @param mapping The mapping parameters for copying the result back to the original object.
    */
   @SuppressWarnings("unchecked")
-  public final void fillObjects(List<Object> objects,
+  public final List<Object> fillObjects(List<Object> objects,
       ObjectLookupParameter parameter, ObjectMappingDefinition mapping) {
     Objects.requireNonNull(objects);
     Objects.requireNonNull(parameter);
     Objects.requireNonNull(mapping);
+    //TODO finish this method: filter out the incorrect data
+    List<Object> resultList = new ArrayList<>();
     ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
     for (Object object : objects) {
       ObjectLookupResult lookupResult = lookup(object, parameter);
       if (!lookupResult.getItems().isEmpty()) {
         // Now we set the most relevant result item without any further examination.
         ObjectLookupResultItem lookupResultItem = lookupResult.getItems().get(0);
+
         Map<String, Object> toMap;
         if (object instanceof ObjectNode) {
           toMap = ((ObjectNode) object).getObjectAsMap();
@@ -77,8 +81,10 @@ public abstract class ObjectLookup {
           toMap = (Map<String, Object>) object;
         }
         mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
+        resultList.add(object);
       }
     }
+    return resultList;
   }
 
   public Map<String, Object> findByUnique(ObjectPropertyValue value) {
