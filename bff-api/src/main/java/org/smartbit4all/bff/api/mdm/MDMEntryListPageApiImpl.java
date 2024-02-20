@@ -438,7 +438,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
-        isAdmin, isImportable);
+        isAdmin, isImportable, entryEditingEnabled);
 
     uiActions
         .addIf(
@@ -750,6 +750,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         }
         items.add(item);
         line = bufferedReader.readLine();
+        ++index;
       }
       MDMModificationRequest mdmModRequest =
           new MDMModificationRequest()
@@ -759,6 +760,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           Class.forName(context.entryDescriptor.getTypeQualifiedName()));
       refreshGrid(context);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       viewApi
           .showMessage(new MessageData().viewUuid(viewUuid).header(localeSettingApi.get("error"))
               .text(MessageFormat.format(localeSettingApi.get("importEntriesError"), index)));

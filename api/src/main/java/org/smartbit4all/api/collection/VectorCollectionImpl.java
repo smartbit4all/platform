@@ -16,6 +16,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.StringConstant;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -65,12 +66,13 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @Override
   public boolean deleteObject(String id) {
-    // TODO implement remove on Vector DB api!!!
-    return false;
+    String response = vectorDBApi.deletePoint(vectorDBService, collectionName, id);
+    return !Objects.equals(response, StringConstant.EMPTY);
   }
 
   @Override
   public void clear() {
+    vectorDBApi.deleteCollection(vectorDBService, collectionName);
     vectorDBApi.createCollection(vectorDBService, collectionName);
   }
 
