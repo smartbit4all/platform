@@ -299,7 +299,7 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
       searchIndex = userSearch;
     }
     List<URI> excludedUsers = getExcludedUser(viewUuid);
-    if (!ObjectUtils.isEmpty(subject)) {
+    if (!ObjectUtils.isEmpty(excludedUsers)) {
       users.removeAll(excludedUsers);
     }
     return searchIndex.executeSearchOn(users.stream(), expressionList);
