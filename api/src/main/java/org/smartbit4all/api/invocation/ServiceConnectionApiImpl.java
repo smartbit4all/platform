@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,6 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 public class ServiceConnectionApiImpl implements ServiceConnectionApi, InitializingBean {
 
@@ -63,7 +63,9 @@ public class ServiceConnectionApiImpl implements ServiceConnectionApi, Initializ
       MDMEntryApi entryApi = mdmApi
           .getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION, SERVICE_CONNECTIONS);
       ServiceConnection serviceConnection = entryApi.lookup().findByUnique(
-          new ObjectPropertyValue().addPathItem(ServiceConnection.NAME), ServiceConnection.class);
+          new ObjectPropertyValue().addPathItem(ServiceConnection.NAME)
+              .value(connectionRecord.api.getClass().getName()),
+          ServiceConnection.class);
       if (serviceConnection != null) {
         connectionRecord.connection = serviceConnection;
         connectionRecord.api.connection(serviceConnection);

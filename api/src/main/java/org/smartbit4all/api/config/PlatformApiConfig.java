@@ -21,6 +21,8 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
+import org.smartbit4all.api.invocation.ServiceConnectionApi;
+import org.smartbit4all.api.invocation.ServiceConnectionApiImpl;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -385,6 +387,45 @@ public class PlatformApiConfig {
                   .addPathItem(LangString.DEFAULT_VALUE));
       result.addDescriptor(entry);
     }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(ServiceConnectionApi.SERVICE_CONNECTIONS)
+          .name(ServiceConnectionApi.SERVICE_CONNECTIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ServiceConnection.NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Service Connections")
+              .putValueByLocaleItem("hu", "Kiszolgáló kapcsolatok")
+              .putValueByLocaleItem("en", "Service Connections"))
+          .displayNameForm(new LangString().defaultValue("Service Connection")
+              .putValueByLocaleItem("hu", "Kiszolgáló kapcsolat")
+              .putValueByLocaleItem("en", "Service Connection"))
+          .order(200L)
+          .typeQualifiedName(ServiceConnection.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API name")
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Endpoint")
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API version")
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Authentication token")
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
     return result;
   }
 
@@ -631,6 +672,11 @@ public class PlatformApiConfig {
   @Bean
   public SecurityOption platformSecurityOption() {
     return new PlatformSecurityOption();
+  }
+
+  @Bean
+  ServiceConnectionApi serviceConnectionApi() {
+    return new ServiceConnectionApiImpl();
   }
 
 }

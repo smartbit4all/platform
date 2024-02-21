@@ -11,6 +11,9 @@ public interface ServiceConnectionApi {
 
   static final String SERVICE_CONNECTIONS = "service_connections";
 
+  static final String APPLICATION_JSON = "application/json; charset=utf-8";
+  static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
   <T extends ServiceIntegrationApi> T get(Class<T> clazz);
 
 }

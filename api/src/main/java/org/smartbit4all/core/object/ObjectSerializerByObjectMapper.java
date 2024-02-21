@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.smartbit4all.core.object.serialize.UriDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -33,12 +35,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  */
 public class ObjectSerializerByObjectMapper implements ObjectSerializer {
 
+  public static final TypeReference<Map<String, Object>> MAP_OF_STRING_OBJECT_TYPE_REFERENCE =
+      new TypeReference<Map<String, Object>>() {};
+
+  public static final TypeReference<List<Float>> LIST_OF_FLOAT_TYPE_REFERENCE =
+      new TypeReference<List<Float>>() {};
+
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
   /**
    * 8Kb should be enough forever... :)
    */
-  private static int MEMORYLIMIT = 0x2000;
+  private static final int MEMORYLIMIT = 0x2000;
 
   /**
    * The {@link ObjectMapper} instance that contains the default configuration. The
@@ -71,7 +79,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     return objectMapper;
   }
 
-  public ObjectMapper getObjectMapper() {
+  public static final ObjectMapper getObjectMapper() {
     return setupObjectMapper();
   }
 
