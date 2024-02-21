@@ -167,7 +167,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       createGridModel(viewUuid, gridId);
       view.addActionsItem(new UiAction()
           .code(ADD_SUBJECT)
-          .toolbar(gridId + "_toolbar")
+          .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
           .identifier(config.getAclName())
           .descriptor(new UiActionDescriptor()
               .icon("Plus")
