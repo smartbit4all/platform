@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -58,6 +56,8 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -133,6 +133,21 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         invocationApi, branchApi,
         valueSetApi, localeSettingApi, sessionApi);
 
+  }
+
+  @Override
+  public MDMEntryApi getApiSafe(String definition, String name) {
+    MDMDefinition mdmDefinition = getDefinition(definition);
+    if (mdmDefinition == null) {
+      return null;
+    }
+    MDMEntryDescriptor descriptor = mdmDefinition.getDescriptors().get(name);
+    if (descriptor == null) {
+      return null;
+    }
+    return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
+        invocationApi, branchApi,
+        valueSetApi, localeSettingApi, sessionApi);
   }
 
   @Override

@@ -55,8 +55,20 @@ public interface MasterDataManagementApi {
    * @param definition The definition name.
    * @param name The name of the descriptor
    * @return The prepared api.
+   * @exception IllegalArgumentException It throws exception if the given definition or entry is not
+   *            found.
    */
   MDMEntryApi getApi(String definition, String name);
+
+  /**
+   * Return the api responsible for the management if the given {@link MDMEntryDescriptor}.
+   *
+   * @param definition The definition name.
+   * @param name The name of the descriptor
+   * @return The prepared api or null if the definition or the entry is not found. Doesn't throw
+   *         exception on missing entry.
+   */
+  MDMEntryApi getApiSafe(String definition, String name);
 
   /**
    * Retrieve the MDM definition.
