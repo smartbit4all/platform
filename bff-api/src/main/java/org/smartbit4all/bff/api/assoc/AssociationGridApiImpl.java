@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.assoc;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,15 +31,12 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.bff.api.search.SearchPageApi;
-import org.smartbit4all.bff.api.search.SearchPageApiImpl;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class AssociationGridApiImpl implements AssociationGridApi, InitializingBean {
 
@@ -182,7 +181,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     viewApi.showView(new View()
         .viewName(config.getNewAssocDialogName())
         .type(ViewType.DIALOG)
-        .putVariablesItem(SearchPageApiImpl.VAR_SEARCHPAGECONFIG, new SearchPageConfig()
+        .putParametersItem(SearchPageApi.PARAM_SEARCHPAGECONFIG, new SearchPageConfig()
             .searchIndexSchema(config.mdmDefinition())
             .searchIndexName(mdmEntryDescriptor.getName()))
         .putParametersItem(SearchPageApi.PARAM_SELECTION_CALLBACK, invocationApi

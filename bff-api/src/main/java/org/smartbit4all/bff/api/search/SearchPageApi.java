@@ -83,6 +83,12 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
   static final String ACTION_RETURN_SELECTED_ROWS = "RETURN_SELECTED_ROWS";
 
   /**
+   * SearchPageConfig parameter which will be used by this page.
+   *
+   */
+  static final String PARAM_SEARCHPAGECONFIG = "PARAM_SEARCHPAGECONFIG";
+
+  /**
    * We can pass this parameter to this view and in this case the
    * {@link #ACTION_RETURN_SELECTED_ROWS} action will be enabled. If the action performed then the
    * callback view will be called with the selected rows.

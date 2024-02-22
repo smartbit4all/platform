@@ -51,11 +51,6 @@ import com.google.common.collect.Streams;
 public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
 
-  /**
-   * SearchPageConfig variable which is used by this page.
-   */
-  public static final String VAR_SEARCHPAGECONFIG = "VAR_SEARCHPAGECONFIG";
-
   @Autowired
   private CollectionApi collectionApi;
 
@@ -77,13 +72,13 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       super();
       this.viewUUID = viewUUID;
       view = viewApi.getView(viewUUID);
-      ObjectMapHelper variables = variables(view);
-      pageConfig = variables.get(VAR_SEARCHPAGECONFIG, SearchPageConfig.class);
+      ObjectMapHelper params = parameters(view);
+      pageConfig = params.get(PARAM_SEARCHPAGECONFIG, SearchPageConfig.class);
       if (pageConfig == null) {
         pageConfig = objectApi
             .loadLatest(view.getObjectUri())
             .getObject(SearchPageConfig.class);
-        variables.getMap().put(VAR_SEARCHPAGECONFIG, pageConfig);
+        params.getMap().put(PARAM_SEARCHPAGECONFIG, pageConfig);
       }
       ObjectMapHelper parameters = parameters(view);
       searchIndex = collectionApi.searchIndex(
