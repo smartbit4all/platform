@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -134,11 +136,14 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
-  public void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt) {
+  public URI invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt) {
 
-    invocationRegisterApi.saveAndScheduleAsyncInvocationRequest(request, channel,
-        Objects.requireNonNull(executeAt,
-            "The execution time must be specified to schedule an invocation."));
+    AsyncInvocationRequest asyncInvocationRequest =
+        invocationRegisterApi.saveAndScheduleAsyncInvocationRequest(request, channel,
+            Objects.requireNonNull(executeAt,
+                "The execution time must be specified to schedule an invocation."));
+
+    return asyncInvocationRequest.getUri();
   }
 
   @Override

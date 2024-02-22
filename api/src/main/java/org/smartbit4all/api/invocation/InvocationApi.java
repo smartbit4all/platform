@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import javax.script.ScriptException;
@@ -130,7 +131,7 @@ public interface InvocationApi {
    *        then it will be created with default parameters.
    * @param executeAt The exact time when the invocation should be executed at.
    */
-  void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt);
+  URI invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt);
 
   /**
    * Constructs an event publisher that is responsible for recording an {@link InvocationRequest} by
