@@ -55,9 +55,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public static final String VALUE_COLUMN = "valueColumn";
 
-  String logicalSchema;
+  private String logicalSchema;
 
-  String name;
+  private String name;
 
   /**
    * The name of the primary key property that must be unique in the search index. Not necessarily
@@ -238,8 +238,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             masterReferenceQualified,
             uniqueIdName);
     detail.init(ctx, entityManager, objectApi, extensionStrategy, comparatorsByClass);
-    detail.logicalSchema = logicalSchema;
-    detail.name = name + StringConstant.UNDERLINE + propertyName;
+    detail.setLogicalSchema(logicalSchema);
+    detail.setName(getName() + StringConstant.UNDERLINE + propertyName);
     mappingsByPropertyName.put(propertyName,
         detail);
     return detail;
@@ -271,9 +271,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   SearchEntityDefinition constructDefinition(ApplicationContext ctx,
       EntityDefinitionBuilder masterBuilder) {
     EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
-        .name(name)
-        .tableName(name)
-        .domain(logicalSchema);
+        .name(getName())
+        .tableName(getName())
+        .domain(getLogicalSchema());
 
     if (entityDefinition != null) {
       return entityDefinition;
@@ -513,8 +513,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           }
           mergeDetails(updateResult);
         } catch (Exception e) {
-          log.error("Unable to check the existing record for the " + logicalSchema
-              + StringConstant.DOT + name + " search index", e);
+          log.error("Unable to check the existing record for the " + getLogicalSchema()
+              + StringConstant.DOT + getName() + " search index", e);
         }
       } else {
         insertAll(updateResult);
@@ -561,8 +561,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         Crud.create(tdInsert);
       }
     } catch (Exception e) {
-      log.error("Unable to check the existing record for the " + logicalSchema
-          + StringConstant.DOT + name + " search index", e);
+      log.error("Unable to check the existing record for the " + getLogicalSchema()
+          + StringConstant.DOT + getName() + " search index", e);
     }
   }
 
@@ -587,7 +587,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           if (e.getValue() instanceof SearchIndexMappingProperty) {
             SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
             FilterExpressionField field =
-                new FilterExpressionField().label2(localeSettingApi.get(name, e.getKey()));
+                new FilterExpressionField().label2(localeSettingApi.get(getName(), e.getKey()));
             field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
@@ -688,5 +688,31 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
     return getDefinition().definition.getPropertyObject(orderBy.getPropertyName());
+  }
+
+  public String getLogicalSchema() {
+    return logicalSchema;
+  }
+
+  /**
+   * Use with caution, only when creating a SearchIndex based on another!
+   *
+   * @param logicalSchema
+   */
+  public void setLogicalSchema(String logicalSchema) {
+    this.logicalSchema = logicalSchema;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Use with caution, only when creating a SearchIndex based on another!
+   *
+   * @param name
+   */
+  public void setName(String name) {
+    this.name = name;
   }
 }

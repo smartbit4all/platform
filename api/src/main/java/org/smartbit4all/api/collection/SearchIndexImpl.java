@@ -75,7 +75,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   protected ObjectDefinition<O> indexedObjectDefinition;
 
-  protected boolean useDatabase;
+  private boolean useDatabase;
 
   protected SearchIndexMappingExtensionStrategy extensionStrategy;
 
@@ -127,7 +127,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   /**
    * Set SearchIndex level comparators for properties by classes. This SearchIndex will not get
    * implicit comparators after this is used.
-   * 
+   *
    * @param comparators The map to use when comparing values of properties. Comparators by classes.
    */
   public void setComparators(Map<String, Comparator<Object>> comparators) {
@@ -138,7 +138,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   /**
    * Set SearchIndex level comparators for properties by classes. This SearchIndex will not get
    * implicit comparators after this is used.
-   * 
+   *
    * @param comparators The map to use when comparing values of properties. Comparators by classes.
    */
   public SearchIndexImpl<O> comparators(Map<String, Comparator<Object>> comparators) {
@@ -150,7 +150,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   /**
    * Put SearchIndex level comparator for properties by class. This SearchIndex will still get
    * implicit comparators after this is used.
-   * 
+   *
    * @param clazz The class that will use the comparator.
    * @param comparator The comparator to be used.
    */
@@ -184,7 +184,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
     queryInput = process(queryInput, queryInputPreProcessors);
     if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
-        && !useDatabase)
+        && !isUseDatabase())
         || readFromStorage) {
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes);
       if (queryInput.where() == null) {
@@ -224,7 +224,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     try {
       return executeSearch(queryInput).asList(indexedObjectDefinitionClass);
     } catch (Exception e) {
-      log.error("Error while searching on index " + objectMapping.name, e);
+      log.error("Error while searching on index " + objectMapping.getName(), e);
       return Collections.emptyList();
     }
   }
@@ -244,7 +244,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public void updateIndexWithData(List<SearchIndexObject> changeList) {
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
-        || useDatabase) {
+        || isUseDatabase()) {
       SearchEntityTableDataResult updateResult = constructResult();
       objectMapping.readObjects(changeList.stream().map(u -> {
         if (u.getObjectNode() == null) {
@@ -357,22 +357,22 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass, boolean useDatabase) {
     super();
-    this.objectMapping.name = name;
-    this.objectMapping.logicalSchema = logicalSchema;
+    this.objectMapping.setName(name);
+    this.objectMapping.setLogicalSchema(logicalSchema);
     this.objectMapping.filterClass(indexedObjectDefinitionClass);
     this.indexedObjectSchema = indexedObjectSchema;
     this.indexedObjectDefinitionClass = indexedObjectDefinitionClass;
-    this.useDatabase = useDatabase;
+    this.setUseDatabase(useDatabase);
   }
 
   @Override
   public String logicalSchema() {
-    return objectMapping.logicalSchema;
+    return objectMapping.getLogicalSchema();
   }
 
   @Override
   public String name() {
-    return objectMapping.name;
+    return objectMapping.getName();
   }
 
   public SearchIndexMappingObject detail(String propertyName, String masterUniqueId,
@@ -611,6 +611,20 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public SearchIndexMappingObject getSearchIndexMappingObject() {
     return objectMapping;
+  }
+
+
+  public boolean isUseDatabase() {
+    return useDatabase;
+  }
+
+  /**
+   * Use with caution, only when creating a SearchIndex based on another!
+   *
+   * @param useDatabase
+   */
+  public void setUseDatabase(boolean useDatabase) {
+    this.useDatabase = useDatabase;
   }
 
 }
