@@ -64,7 +64,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.HINT,
   SmartWidgetDefinition.WIDGET_DESCRIPTION,
   SmartWidgetDefinition.MAX_LENGTH,
-  SmartWidgetDefinition.VALUE_CHANGE_MODE
+  SmartWidgetDefinition.VALUE_CHANGE_MODE,
+  SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -137,6 +138,9 @@ public class SmartWidgetDefinition {
 
   public static final String VALUE_CHANGE_MODE = "valueChangeMode";
   private ValueChangeMode valueChangeMode;
+
+  public static final String SHOW_CHARACTER_LIMIT_SUFFIX = "showCharacterLimitSuffix";
+  private Boolean showCharacterLimitSuffix = false;
 
   public SmartWidgetDefinition() { 
   }
@@ -790,6 +794,33 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition showCharacterLimitSuffix(Boolean showCharacterLimitSuffix) {
+    
+    this.showCharacterLimitSuffix = showCharacterLimitSuffix;
+    return this;
+  }
+
+   /**
+   * Get showCharacterLimitSuffix
+   * @return showCharacterLimitSuffix
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SHOW_CHARACTER_LIMIT_SUFFIX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getShowCharacterLimitSuffix() {
+    return showCharacterLimitSuffix;
+  }
+
+
+  @JsonProperty(SHOW_CHARACTER_LIMIT_SUFFIX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setShowCharacterLimitSuffix(Boolean showCharacterLimitSuffix) {
+    this.showCharacterLimitSuffix = showCharacterLimitSuffix;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -821,12 +852,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.hint, smartWidgetDefinition.hint) &&
         Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription) &&
         Objects.equals(this.maxLength, smartWidgetDefinition.maxLength) &&
-        Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode);
+        Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode) &&
+        Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix);
   }
 
   @Override
@@ -856,6 +888,7 @@ public class SmartWidgetDefinition {
     sb.append("    widgetDescription: ").append(toIndentedString(widgetDescription)).append("\n");
     sb.append("    maxLength: ").append(toIndentedString(maxLength)).append("\n");
     sb.append("    valueChangeMode: ").append(toIndentedString(valueChangeMode)).append("\n");
+    sb.append("    showCharacterLimitSuffix: ").append(toIndentedString(showCharacterLimitSuffix)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -132,6 +132,9 @@ components:
           format: int64
         valueChangeMode:
           $ref: '#/components/schemas/ValueChangeMode'
+        showCharacterLimitSuffix:
+          type: boolean
+          default: false
     ValueChangeMode:
       description: | 
         This enum defines the value change handling strategy. Currently only one method is supported,
