@@ -588,13 +588,14 @@ class ObjectApiTest {
   }
 
   @Test
-  void testSaveWithId() {
+  void testSaveWithId() throws IOException {
 
     List<Tuple> ids = new ArrayList<>();
     int size = 10;
     String[] idStrings = new String[size];
     for (int i = 0; i < size; i++) {
       String id = UUID.randomUUID().toString().replace(StringConstant.HYPHEN, StringConstant.EMPTY);
+
       idStrings[i] = Integer.toString(i);
       ObjectNode node = objectApi.create(SCHEMA_ASPECTS,
           new SamplePropertyContainerWithId().id(id)
@@ -605,16 +606,18 @@ class ObjectApiTest {
 
     Storage storage = storageApi.get(SCHEMA_ASPECTS);
 
+    ObjectDefinition<SamplePropertyContainerWithId> definition =
+        objectDefinitionApi.definition(SamplePropertyContainerWithId.class);
+
     org.assertj.core.api.Assertions.assertThat(ids)
         .allMatch(t -> (storage
-            .constructUriForId(objectDefinitionApi.definition(SamplePropertyContainerWithId.class),
+            .constructUriForId(definition,
                 (String) t.toArray()[0])
             + ".v0")
                 .equals(t.toArray()[1].toString()));
 
-    List<ObjectNode> results = ids.stream().map(t -> objectApi.loadLatest(storage
-        .constructUriForId(objectDefinitionApi.definition(SamplePropertyContainerWithId.class),
-            (String) t.toArray()[0])))
+    List<ObjectNode> results = ids.stream()
+        .map(t -> objectApi.loadLatest(SCHEMA_ASPECTS, definition, t.toArray()[0].toString()))
         .collect(toList());
 
     org.assertj.core.api.Assertions

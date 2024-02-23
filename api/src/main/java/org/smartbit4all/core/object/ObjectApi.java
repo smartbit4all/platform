@@ -146,6 +146,18 @@ public interface ObjectApi {
     return load(objectUri, null);
   }
 
+  ObjectNode loadLatest(String schema, ObjectDefinition<?> definition, String id, URI branchUri);
+
+  default ObjectNode loadLatest(String schema, ObjectDefinition<?> definition, String id) {
+    return loadLatest(schema, definition, id, null);
+  }
+
+  ObjectNode load(String schema, ObjectDefinition<?> definition, String id, URI branchUri);
+
+  default ObjectNode load(String schema, ObjectDefinition<?> definition, String id) {
+    return load(schema, definition, id, null);
+  }
+
   /**
    * Loads ObjectNode with structure specified in request, starting from objectUri. This method uses
    * {@link RetrievalApi} for retrieving {@link ObjectNodeData} structure, and then converts them to

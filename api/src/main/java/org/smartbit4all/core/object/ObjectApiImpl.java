@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -34,11 +33,14 @@ import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -55,6 +57,9 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Autowired
   private ApplyChangeApi applyChangeApi;
+
+  @Autowired
+  private StorageApi storageApi;
 
   /**
    * The already initialized {@link ObjectCacheEntry}s in the application.
@@ -85,12 +90,27 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode loadLatest(URI objectUri, URI branchUri) {
-    return loadInternal(this, objectUri, branchUri, RetrievalMode.NORMAL, true);
+    return loadInternal(self, objectUri, branchUri, RetrievalMode.NORMAL, true);
   }
 
   @Override
   public ObjectNode load(URI objectUri, URI branchUri) {
-    return loadInternal(this, objectUri, branchUri, RetrievalMode.NORMAL, false);
+    return loadInternal(self, objectUri, branchUri, RetrievalMode.NORMAL, false);
+  }
+
+  @Override
+  public ObjectNode loadLatest(String schema, ObjectDefinition<?> definition, String id,
+      URI branchUri) {
+    Storage storage = storageApi.get(schema);
+    URI uri = storage.constructUriForId(definition, id);
+    return loadInternal(self, uri, branchUri, RetrievalMode.NORMAL, true);
+  }
+
+  @Override
+  public ObjectNode load(String schema, ObjectDefinition<?> definition, String id, URI branchUri) {
+    Storage storage = storageApi.get(schema);
+    URI uri = storage.constructUriForId(definition, id);
+    return loadInternal(self, uri, branchUri, RetrievalMode.NORMAL, false);
   }
 
   static ObjectNode loadInternal(ObjectApi objectApi, URI objectUri, URI branchUri,
