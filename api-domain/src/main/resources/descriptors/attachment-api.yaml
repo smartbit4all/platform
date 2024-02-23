@@ -46,3 +46,25 @@ components:
         folderUri:
           type: string
           format: uri
+    PhysicalObjectId:
+      type: object
+      description: |
+        The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the
+        items by tha values 
+      required: [type, value]
+      example:
+        type: barcode
+        value: "123456789012"    
+      properties:
+        type:
+          type: string
+          description: The type of identifier (e.g., barcode, QR code, NFC).
+          enum: [barcode, qrCode, nfc]
+        subType:
+          type: string
+          description: |
+            The sub type of identifier like code128 in case of the barcode. It can be
+            used to visalize the identifier and generate it.
+        value:
+          type: string
+          description: The stringified value of the identifier.
