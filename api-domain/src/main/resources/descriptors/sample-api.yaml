@@ -238,3 +238,16 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    SamplePropertyContainerWithId:
+      description: |
+        An example object containing and id and an inline SampleProperties object with some named inline fields and an inline string-string map.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        props:
+          $ref: '#/components/schemas/SampleProperties'

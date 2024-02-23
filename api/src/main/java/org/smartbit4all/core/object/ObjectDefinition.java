@@ -91,6 +91,14 @@ public final class ObjectDefinition<T> {
   private boolean explicitUri = false;
 
   /**
+   * The id path is the path of the string identifier the uri generation is based on. If it is null
+   * then the normal URI is generated during the save. If it is set then the value is extracted from
+   * the object and the URI will be generated like this: schema:/alias/12/34/45 where the 1,2,3,4...
+   * stands for the characters of the identifier string.
+   */
+  private String[] idPath = null;
+
+  /**
    * The outgoing references of the given object mapped by the name of the referrer property.
    */
   private final Map<String, ReferenceDefinition> outgoingReferences = new HashMap<>();
@@ -484,6 +492,18 @@ public final class ObjectDefinition<T> {
   @Override
   public String toString() {
     return "ObjectDefinition: " + qualifiedName;
+  }
+
+  public final String[] getIdPath() {
+    return idPath;
+  }
+
+  public final ObjectDefinition<T> idPath(String... idPathes) {
+    if (idPathes != null) {
+      explicitUri = true;
+    }
+    this.idPath = idPathes;
+    return this;
   }
 
 }

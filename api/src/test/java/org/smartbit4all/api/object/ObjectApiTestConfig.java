@@ -22,6 +22,7 @@ import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
+import org.smartbit4all.api.sample.bean.SamplePropertyContainerWithId;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -62,6 +63,12 @@ public class ObjectApiTestConfig {
   @Bean
   SampleSubjectContributionApi sampleSubjectContributionApi() {
     return new SampleSubjectContributionApi();
+  }
+
+  @Bean
+  public ObjectDefinition<SamplePropertyContainerWithId> samplePropertyContainerWithIdDef() {
+    return ObjectDefinitionApiImpl.constructDefinitionBase(SamplePropertyContainerWithId.class)
+        .idPath(SamplePropertyContainerWithId.ID);
   }
 
   @Bean

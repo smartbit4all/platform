@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
@@ -24,6 +25,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -648,6 +650,21 @@ public final class Storage {
   public final URI constructUriForSet(URI uri, String setName) {
     return UriUtils.createUri(uri.getScheme(), null, StringConstant.SLASH + setName + uri.getPath(),
         null);
+  }
+
+  public final URI constructUriForId(ObjectDefinition<?> objectDefinition, String id) {
+    Objects.requireNonNull(objectDefinition);
+    Objects.requireNonNull(id);
+    List<String> fragments = new ArrayList<>();
+    int fragmentSize = 2;
+    for (int i = 0; i < id.length(); i += fragmentSize) {
+      fragments.add(id.substring(i, Math.min(id.length(), i + fragmentSize)));
+    }
+    return URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
+        + objectDefinition.getAlias() + StringConstant.SLASH
+        + fragments.stream().collect(joining(StringConstant.SLASH))
+        + (versionPolicy == VersionPolicy.SINGLEVERSION ? SINGLE_VERSION_URI_POSTFIX
+            : StringConstant.EMPTY));
   }
 
   private final URI removeSetNameFromUri(URI uri, String setName) {

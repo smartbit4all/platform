@@ -24,6 +24,13 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
       ObjectNode objectNode) {
     Storage storage = storageApi.get(storageScheme);
     StorageObject<?> storageObject = storage.fromDefinition(objectDefinition);
+    // If we have an explicit uri and the id path is set then we construct th uri for the storage.
+    if (objectDefinition.getIdPath() != null) {
+      // Read the string value from the map
+      String idValue = objectNode.getValueAsString(objectDefinition.getIdPath());
+      objectNode.setValue(storage.constructUriForId(objectDefinition, idValue),
+          ObjectDefinition.URI_PROPERTY);
+    }
     storageObject.asMap().setObjectAsMap(objectNode.getObjectAsMap());
     storageObject.setAspects(objectNode.aspects().get());
     storage.save(storageObject);

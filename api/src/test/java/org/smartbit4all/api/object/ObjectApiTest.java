@@ -1,8 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toMap;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
@@ -37,6 +36,8 @@ import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
+import org.smartbit4all.api.sample.bean.SampleProperties;
+import org.smartbit4all.api.sample.bean.SamplePropertyContainerWithId;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -46,10 +47,16 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -81,6 +88,9 @@ class ObjectApiTest {
 
   @Autowired
   private AccessControlInternalApi accessControlInternalApi;
+
+  @Autowired
+  private StorageApi storageApi;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -577,6 +587,43 @@ class ObjectApiTest {
 
   }
 
+  @Test
+  void testSaveWithId() {
+
+    List<Tuple> ids = new ArrayList<>();
+    int size = 10;
+    String[] idStrings = new String[size];
+    for (int i = 0; i < size; i++) {
+      String id = UUID.randomUUID().toString().replace(StringConstant.HYPHEN, StringConstant.EMPTY);
+      idStrings[i] = Integer.toString(i);
+      ObjectNode node = objectApi.create(SCHEMA_ASPECTS,
+          new SamplePropertyContainerWithId().id(id)
+              .props(new SampleProperties().primary(idStrings[i])));
+      URI uri = objectApi.save(node);
+      ids.add(Tuple.tuple(id, uri));
+    }
+
+    Storage storage = storageApi.get(SCHEMA_ASPECTS);
+
+    org.assertj.core.api.Assertions.assertThat(ids)
+        .allMatch(t -> (storage
+            .constructUriForId(objectDefinitionApi.definition(SamplePropertyContainerWithId.class),
+                (String) t.toArray()[0])
+            + ".v0")
+                .equals(t.toArray()[1].toString()));
+
+    List<ObjectNode> results = ids.stream().map(t -> objectApi.loadLatest(storage
+        .constructUriForId(objectDefinitionApi.definition(SamplePropertyContainerWithId.class),
+            (String) t.toArray()[0])))
+        .collect(toList());
+
+    org.assertj.core.api.Assertions
+        .assertThat(results.stream()
+            .map(node -> node.getValueAsString(SamplePropertyContainerWithId.PROPS,
+                SampleProperties.PRIMARY)))
+        .containsExactly(idStrings);
+
+  }
 
   private final Subject getSubject(List<Subject> subjects, URI uri) {
     return subjects.stream().filter(s -> objectApi.getLatestUri(uri).equals(s.getRef())).findFirst()
