@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.sample.bean.SamplePropertyContainer;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,6 +36,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SampleStandaloneObject.URI,
   SampleStandaloneObject.FAVOURITE_NUMBER,
+  SampleStandaloneObject.ATTACHMENT,
   SampleStandaloneObject.PROPERTY_CONTAINER
 })
 @JsonTypeName("SampleStandaloneObject")
@@ -45,6 +47,9 @@ public class SampleStandaloneObject {
 
   public static final String FAVOURITE_NUMBER = "favouriteNumber";
   private Long favouriteNumber;
+
+  public static final String ATTACHMENT = "attachment";
+  private BinaryContentData attachment = null;
 
   public static final String PROPERTY_CONTAINER = "propertyContainer";
   private SamplePropertyContainer propertyContainer;
@@ -107,6 +112,34 @@ public class SampleStandaloneObject {
   }
 
 
+  public SampleStandaloneObject attachment(BinaryContentData attachment) {
+    
+    this.attachment = attachment;
+    return this;
+  }
+
+   /**
+   * Get attachment
+   * @return attachment
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ATTACHMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public BinaryContentData getAttachment() {
+    return attachment;
+  }
+
+
+  @JsonProperty(ATTACHMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAttachment(BinaryContentData attachment) {
+    this.attachment = attachment;
+  }
+
+
   public SampleStandaloneObject propertyContainer(SamplePropertyContainer propertyContainer) {
     
     this.propertyContainer = propertyContainer;
@@ -146,12 +179,13 @@ public class SampleStandaloneObject {
     SampleStandaloneObject sampleStandaloneObject = (SampleStandaloneObject) o;
     return Objects.equals(this.uri, sampleStandaloneObject.uri) &&
         Objects.equals(this.favouriteNumber, sampleStandaloneObject.favouriteNumber) &&
+        Objects.equals(this.attachment, sampleStandaloneObject.attachment) &&
         Objects.equals(this.propertyContainer, sampleStandaloneObject.propertyContainer);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, favouriteNumber, propertyContainer);
+    return Objects.hash(uri, favouriteNumber, attachment, propertyContainer);
   }
 
   @Override
@@ -160,6 +194,7 @@ public class SampleStandaloneObject {
     sb.append("class SampleStandaloneObject {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    favouriteNumber: ").append(toIndentedString(favouriteNumber)).append("\n");
+    sb.append("    attachment: ").append(toIndentedString(attachment)).append("\n");
     sb.append("    propertyContainer: ").append(toIndentedString(propertyContainer)).append("\n");
     sb.append("}");
     return sb.toString();

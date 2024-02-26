@@ -214,6 +214,8 @@ components:
         favouriteNumber:
           type: integer
           format: int64
+        attachment:
+          type: BinaryContentData
         propertyContainer:
           $ref: '#/components/schemas/SamplePropertyContainer'
 
