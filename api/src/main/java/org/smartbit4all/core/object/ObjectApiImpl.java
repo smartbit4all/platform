@@ -566,4 +566,11 @@ public class ObjectApiImpl implements ObjectApi {
     return retrievalApi.exists(uri, getBranchEntry(branchUri));
   }
 
+  @Override
+  public boolean exists(String schema, ObjectDefinition<?> definition, String id, URI branchUri) {
+    Storage storage = storageApi.get(schema);
+    URI uri = storage.constructUriForId(definition, id);
+    return exists(uri, branchUri);
+  }
+
 }

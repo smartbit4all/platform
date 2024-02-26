@@ -690,7 +690,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     } catch (InterruptedException e) {
       log.error("Wait for maintain interrupted.", e);
     }
-    return runtimesByApis.get(apiDataUri);
+    return runtimesByApis.getOrDefault(apiDataUri, Collections.emptyList());
   }
 
   @Override

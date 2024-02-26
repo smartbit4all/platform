@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -199,5 +201,16 @@ public interface InvocationApi {
    */
   Object executeScript(String scriptEngine, String script, Map<String, ObjectNode> contextObjects,
       Map<String, Object> inputParams) throws ScriptException;
+
+  /**
+   * Checks whether or not the given api is a callable.
+   * 
+   * @param api The api object.
+   * @return If it is not a proxy then the result is true. If the api is null then the result is
+   *         false. If the api is remote (it is a {@link Proxy} object with the
+   *         {@link ApiInvocationHandler} as {@link InvocationHandler}) then we check if the given
+   *         application runtime exists and up.
+   */
+  boolean checkCallable(Object api);
 
 }

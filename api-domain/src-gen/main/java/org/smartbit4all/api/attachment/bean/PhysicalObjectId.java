@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.attachment.bean.PhysicalObjectIdType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,53 +35,24 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   PhysicalObjectId.TYPE,
   PhysicalObjectId.SUB_TYPE,
+  PhysicalObjectId.SEQUENCE_NR,
+  PhysicalObjectId.UNIQUE_PART,
   PhysicalObjectId.VALUE
 })
 @JsonTypeName("PhysicalObjectId")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class PhysicalObjectId {
-  /**
-   * The type of identifier (e.g., barcode, QR code, NFC).
-   */
-  public enum TypeEnum {
-    BARCODE("barcode"),
-    
-    QRCODE("qrCode"),
-    
-    NFC("nfc");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
   public static final String TYPE = "type";
-  private TypeEnum type;
+  private PhysicalObjectIdType type;
 
   public static final String SUB_TYPE = "subType";
   private String subType;
+
+  public static final String SEQUENCE_NR = "sequenceNr";
+  private Long sequenceNr;
+
+  public static final String UNIQUE_PART = "uniquePart";
+  private String uniquePart;
 
   public static final String VALUE = "value";
   private String value;
@@ -88,30 +60,31 @@ public class PhysicalObjectId {
   public PhysicalObjectId() { 
   }
 
-  public PhysicalObjectId type(TypeEnum type) {
+  public PhysicalObjectId type(PhysicalObjectIdType type) {
     
     this.type = type;
     return this;
   }
 
    /**
-   * The type of identifier (e.g., barcode, QR code, NFC).
+   * Get type
    * @return type
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The type of identifier (e.g., barcode, QR code, NFC).")
+  @Valid
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public TypeEnum getType() {
+  public PhysicalObjectIdType getType() {
     return type;
   }
 
 
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(PhysicalObjectIdType type) {
     this.type = type;
   }
 
@@ -140,6 +113,60 @@ public class PhysicalObjectId {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubType(String subType) {
     this.subType = subType;
+  }
+
+
+  public PhysicalObjectId sequenceNr(Long sequenceNr) {
+    
+    this.sequenceNr = sequenceNr;
+    return this;
+  }
+
+   /**
+   * The serial number the object id is based on.
+   * @return sequenceNr
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The serial number the object id is based on.")
+  @JsonProperty(SEQUENCE_NR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getSequenceNr() {
+    return sequenceNr;
+  }
+
+
+  @JsonProperty(SEQUENCE_NR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSequenceNr(Long sequenceNr) {
+    this.sequenceNr = sequenceNr;
+  }
+
+
+  public PhysicalObjectId uniquePart(String uniquePart) {
+    
+    this.uniquePart = uniquePart;
+    return this;
+  }
+
+   /**
+   * The unique part of the identifier that can be used to save the given object.
+   * @return uniquePart
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The unique part of the identifier that can be used to save the given object.")
+  @JsonProperty(UNIQUE_PART)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUniquePart() {
+    return uniquePart;
+  }
+
+
+  @JsonProperty(UNIQUE_PART)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUniquePart(String uniquePart) {
+    this.uniquePart = uniquePart;
   }
 
 
@@ -182,12 +209,14 @@ public class PhysicalObjectId {
     PhysicalObjectId physicalObjectId = (PhysicalObjectId) o;
     return Objects.equals(this.type, physicalObjectId.type) &&
         Objects.equals(this.subType, physicalObjectId.subType) &&
+        Objects.equals(this.sequenceNr, physicalObjectId.sequenceNr) &&
+        Objects.equals(this.uniquePart, physicalObjectId.uniquePart) &&
         Objects.equals(this.value, physicalObjectId.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, subType, value);
+    return Objects.hash(type, subType, sequenceNr, uniquePart, value);
   }
 
   @Override
@@ -196,6 +225,8 @@ public class PhysicalObjectId {
     sb.append("class PhysicalObjectId {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    subType: ").append(toIndentedString(subType)).append("\n");
+    sb.append("    sequenceNr: ").append(toIndentedString(sequenceNr)).append("\n");
+    sb.append("    uniquePart: ").append(toIndentedString(uniquePart)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();

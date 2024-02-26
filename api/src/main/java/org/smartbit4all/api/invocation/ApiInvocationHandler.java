@@ -50,4 +50,8 @@ public class ApiInvocationHandler<A> implements InvocationHandler {
     return result != null ? result.getValue() : null;
   }
 
+  public final Class<? extends A> getApiClass() {
+    return apiClass;
+  }
+
 }

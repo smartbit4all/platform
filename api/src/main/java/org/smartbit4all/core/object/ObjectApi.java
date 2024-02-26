@@ -397,6 +397,31 @@ public interface ObjectApi {
   boolean exists(URI uri, URI branchUri);
 
   /**
+   * Perform a quick check for existence of a given object identified by the id on the given branch.
+   * 
+   * @param schema The object schema.
+   * @param definition The object definition.
+   * @param id The string identifier of the object. Used to construct the identifier.
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  default boolean exists(String schema, ObjectDefinition<?> definition, String id) {
+    return exists(schema, definition, id, null);
+  }
+
+  /**
+   * Perform a quick check for existence of a given object identified by the id on the given branch.
+   * 
+   * @param schema The object schema.
+   * @param definition The object definition.
+   * @param id The string identifier of the object. Used to construct the identifier.
+   * @param branchUri The branch uri
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(String schema, ObjectDefinition<?> definition, String id, URI branchUri);
+
+  /**
    * Can be used to serialize any Java object as a String.
    * 
    * @param o The object to serialize

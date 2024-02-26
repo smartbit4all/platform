@@ -276,6 +276,22 @@ public class Invocations {
     return ProviderApiInvocationHandler.providerOf(interfaceClass, apiInstance);
   }
 
+
+  /**
+   * Constructs an {@link ApiInvocationHandler} implemeneted {@link Proxy} for the given interface.
+   * Can be used to provide the same interface with remote implementation. The remote means that it
+   * is remote in the same cluster by default.
+   * 
+   * @param <T>
+   * @param interfaceClass
+   * @param invocationApi
+   * @return
+   */
+  public static <T> T asProxy(Class<T> interfaceClass, InvocationApi invocationApi) {
+    return ApiInvocationHandler.createProxy(interfaceClass, interfaceClass.getName(),
+        invocationApi);
+  }
+
   public static InvocationRequest invoke(Class<?> class1) {
     return new InvocationRequest().interfaceClass(class1.getName());
   }

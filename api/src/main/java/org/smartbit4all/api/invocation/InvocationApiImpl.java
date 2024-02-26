@@ -1,6 +1,8 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -31,7 +33,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 /**
  * The implementation of the {@link InvocationApi}. It collects all the
@@ -93,7 +94,7 @@ public final class InvocationApiImpl implements InvocationApi {
     ApiData apiData = apiDescriptor.getApiData();
     List<UUID> runtimes = invocationRegisterApi.getRuntimesForApi(apiData.getUri());
 
-    if (CollectionUtils.isEmpty(runtimes)) {
+    if (runtimes.isEmpty()) {
       throw new ApiNotFoundException(apiData);
     }
 
@@ -278,6 +279,31 @@ public final class InvocationApiImpl implements InvocationApi {
 
     ScriptEngine engine = scriptEngineManager.getEngineByName(scriptEngine);
     return engine.eval(script);
+  }
+
+  @Override
+  public boolean checkCallable(Object api) {
+    if (api == null) {
+      return false;
+    }
+    if (Proxy.isProxyClass(api.getClass())) {
+      InvocationHandler invocationHandler = Proxy.getInvocationHandler(api);
+      if (invocationHandler instanceof ApiInvocationHandler) {
+        @SuppressWarnings("rawtypes")
+        ApiInvocationHandler apiInvocationHandler = (ApiInvocationHandler) invocationHandler;
+        ApiDescriptor apiDescriptor =
+            invocationRegisterApi.getApi(apiInvocationHandler.getApiClass().getName(), null);
+        if (apiDescriptor == null) {
+          return false;
+        }
+        List<UUID> runtimesForApi =
+            invocationRegisterApi.getRuntimesForApi(apiDescriptor.getApiData().getUri());
+        if (runtimesForApi.isEmpty()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

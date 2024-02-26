@@ -57,14 +57,25 @@ components:
         value: "123456789012"    
       properties:
         type:
-          type: string
           description: The type of identifier (e.g., barcode, QR code, NFC).
-          enum: [barcode, qrCode, nfc]
+          $ref: '#/components/schemas/PhysicalObjectIdType'
         subType:
           type: string
           description: |
             The sub type of identifier like code128 in case of the barcode. It can be
             used to visalize the identifier and generate it.
+        sequenceNr:
+          type: integer
+          format: int64
+          description: The serial number the object id is based on.
+        uniquePart:
+          type: string
+          description: The unique part of the identifier that can be used to save the given object.
         value:
           type: string
           description: The stringified value of the identifier.
+    PhysicalObjectIdType:
+      enum: [barcode, qrCode, nfc]
+      description: |
+        The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the
+        items by tha values 
