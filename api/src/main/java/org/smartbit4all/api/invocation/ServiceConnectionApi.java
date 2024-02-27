@@ -16,4 +16,6 @@ public interface ServiceConnectionApi {
 
   <T extends ServiceIntegrationApi> T get(Class<T> clazz);
 
+  <T extends ServiceIntegrationApi> boolean isAvailable(Class<T> clazz);
+
 }

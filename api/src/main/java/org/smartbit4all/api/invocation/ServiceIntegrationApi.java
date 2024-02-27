@@ -6,4 +6,6 @@ public interface ServiceIntegrationApi {
 
   ServiceIntegrationApi connection(ServiceConnection connection);
 
+  void setDefaultConnection();
+
 }

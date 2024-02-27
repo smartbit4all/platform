@@ -74,4 +74,9 @@ public class ServiceConnectionApiImpl implements ServiceConnectionApi, Initializ
     return connectionRecord.connection != null ? (T) connectionRecord.api : null;
   }
 
+  @Override
+  public <T extends ServiceIntegrationApi> boolean isAvailable(Class<T> clazz) {
+    return get(clazz) != null;
+  }
+
 }
