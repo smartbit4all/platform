@@ -55,8 +55,7 @@ public class ServiceConnectionApiImpl implements ServiceConnectionApi, Initializ
     ServiceConnectionRecord connectionRecord = connections.get(clazz.getName());
     if (connectionRecord == null) {
       // The given integration is not registered it is missing from the application context.
-      throw new IllegalStateException(
-          "The " + clazz + " integration api is not registered into the application config.");
+      return null;
     }
     // Try to get the proper ServiceConnection from tha api.
     if (connectionRecord.connection == null) {
@@ -76,11 +75,7 @@ public class ServiceConnectionApiImpl implements ServiceConnectionApi, Initializ
 
   @Override
   public <T extends ServiceIntegrationApi> boolean isAvailable(Class<T> clazz) {
-    try {
-      return get(clazz) != null;
-    } catch (IllegalStateException e) {
-      return false;
-    }
+    return get(clazz) != null;
   }
 
 }
