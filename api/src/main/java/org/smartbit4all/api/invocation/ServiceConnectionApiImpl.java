@@ -76,7 +76,11 @@ public class ServiceConnectionApiImpl implements ServiceConnectionApi, Initializ
 
   @Override
   public <T extends ServiceIntegrationApi> boolean isAvailable(Class<T> clazz) {
-    return get(clazz) != null;
+    try {
+      return get(clazz) != null;
+    } catch (IllegalStateException e) {
+      return false;
+    }
   }
 
 }
