@@ -210,11 +210,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         if (m == null) {
           m = new HashMap<>();
         }
-        Map<String, URI> currentMap = m;
         // TODO merge instead of synchronization...
-        m.putAll(options.stream().collect(toMap(o -> o.getDefinition().getName(), o -> {
-          return constructNewEntries(currentMap, o);
-        })));
+        for (MDMDefinitionOption o : options) {
+          m.put(o.getDefinition().getName(), constructNewEntries(m, o));
+        }
         return m;
       });
       synchronizeObjectDefinitions();
