@@ -741,7 +741,9 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public void setBranchedEntriesMerged(UserActivityLog merged) {
-    getBranchingList().stream().filter(e -> e.getBranchingState() != BranchingStateEnum.NOP)
+    getBranchingList().stream()
+        .filter(e -> e.getBranchingState() != BranchingStateEnum.NOP
+            && e.getBranchingState() != BranchingStateEnum.DELETED)
         .forEach(branchedEntry -> {
           ObjectNode branchedNode = objectApi.loadLatest(branchedEntry.getBranchUri());
           branchedNode.setValue(merged, Props.MERGED);
