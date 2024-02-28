@@ -28,41 +28,49 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
   }
 
   @Override
-  public List<Subject> getUserSubjects(URI userUri) {
+  public List<Subject> getUserSubjects(String modelName, URI userUri) {
     StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
     List<Subject> result = new ArrayList<>();
-    result.add(new Subject().ref(map.uris().get(objectApi.getLatestUri(userUri).toString()))
-        .type(getApiName()));
+    result.add(new Subject()
+        .model(modelName)
+        .type(getApiName())
+        .ref(map.uris().get(objectApi.getLatestUri(userUri).toString())));
     return result;
   }
 
   @Override
-  public List<Subject> getAllSubjects() {
+  public List<Subject> getAllSubjects(String modelName) {
     StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
     return map.uris().values().stream()
-        .map(u -> new Subject().ref(objectApi.getLatestUri(u)).type(getApiName()))
+        .map(u -> new Subject()
+            .model(modelName)
+            .type(getApiName())
+            .ref(objectApi.getLatestUri(u)))
         .collect(toList());
   }
 
   @Override
-  public List<URI> getUsersOf(List<URI> subjects) {
+  public List<URI> getUsersOf(String modelName, List<URI> subjects) {
     // TODO implement later on.
     return Collections.emptyList();
   }
 
   @Override
-  public List<Subject> getAllSubjects(List<URI> baseList) {
+  public List<Subject> getAllSubjects(String modelName, List<URI> baseList) {
     if (baseList == null || objectApi == null) {
       return Collections.emptyList();
     }
     return baseList.stream()
         .filter(s -> objectApi.definition(s).instanceOf(SampleCategory.class))
-        .map(u -> new Subject().type(SampleCategory.class.getName()).ref(u))
+        .map(u -> new Subject()
+            .model(modelName)
+            .type(SampleCategory.class.getName())
+            .ref(u))
         .collect(toList());
   }
 
   @Override
-  public List<String> getDisplayValue(List<URI> subjects) {
+  public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
         .map(objectApi::loadLatest)
         .map(n -> n.getValueAsString(SampleCategory.NAME))

@@ -484,12 +484,16 @@ components:
         inline object, part of the object that describes the given situation.
       required: [type, ref, cond]
       properties:
+        model:
+          type: string
+          description: |
+            The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is
+            saved here it is managed by the code that uses this Subject.
         type:
           type: string
           description: |
-            The unique identifier of the type in the SubjectModel. The helps to evaluate if a given user is part of this subject. The subject model is
-            saved here it is managed by the code that uses this Subject. Like the ACL knows that the ACLSubjectModel is used to assign the access control
-            list for the given objects.
+            The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is
+            saved here it is managed by the code that uses this Subject.
         ref:
           type: string
           format: uri

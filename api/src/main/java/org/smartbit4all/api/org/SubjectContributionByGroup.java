@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
@@ -26,46 +27,61 @@ public class SubjectContributionByGroup extends ContributionApiImpl
   private ObjectApi objectApi;
 
   @Override
-  public List<Subject> getUserSubjects(URI userUri) {
+  public List<Subject> getUserSubjects(String modelName, URI userUri) {
     if (orgApi == null) {
       return Collections.emptyList();
     }
     return orgApi.getGroupsOfUser(userUri).stream()
-        .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
-  }
-
-  @Override
-  public List<Subject> getAllSubjects() {
-    if (orgApi == null) {
-      return Collections.emptyList();
-    }
-    return orgApi.getAllGroups().stream()
-        .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
-  }
-
-  @Override
-  public List<URI> getUsersOf(List<URI> subjects) {
-    if (subjects == null || objectApi == null || orgApi == null) {
-      return Collections.emptyList();
-    }
-    return subjects.stream().filter(u -> objectApi.definition(u).instanceOf(Group.class))
-        .flatMap(u -> orgApi.getUsersOfGroup(u).stream().map(user -> user.getUri()))
+        .map(g -> new Subject()
+            .model(modelName)
+            .type(Group.class.getName())
+            .ref(g.getUri()))
         .collect(toList());
   }
 
   @Override
-  public List<Subject> getAllSubjects(List<URI> baseList) {
-    if (baseList == null || objectApi == null || orgApi == null) {
+  public List<Subject> getAllSubjects(String modelName) {
+    if (orgApi == null) {
       return Collections.emptyList();
     }
-    return baseList.stream().filter(s -> objectApi.definition(s).instanceOf(Group.class))
-        .flatMap(s -> Stream.concat(Stream.of(orgApi.getGroup(s)),
-            orgApi.getSubGroups(s).stream()))
-        .map(g -> new Subject().ref(g.getUri()).type(Group.class.getName())).collect(toList());
+    return orgApi.getAllGroups().stream()
+        .map(g -> new Subject()
+            .model(modelName)
+            .type(Group.class.getName())
+            .ref(g.getUri()))
+        .collect(toList());
   }
 
   @Override
-  public List<String> getDisplayValue(List<URI> subjects) {
+  public List<URI> getUsersOf(String modelName, List<URI> subjects) {
+    if (subjects == null || objectApi == null || orgApi == null) {
+      return Collections.emptyList();
+    }
+    return subjects.stream()
+        .filter(u -> objectApi.definition(u).instanceOf(Group.class))
+        .flatMap(u -> orgApi.getUsersOfGroup(u).stream().map(User::getUri))
+        .collect(toList());
+  }
+
+  @Override
+  public List<Subject> getAllSubjects(String modelName, List<URI> baseList) {
+    if (baseList == null || objectApi == null || orgApi == null) {
+      return Collections.emptyList();
+    }
+    return baseList.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(Group.class))
+        .flatMap(s -> Stream.concat(
+            Stream.of(orgApi.getGroup(s)),
+            orgApi.getSubGroups(s).stream()))
+        .map(g -> new Subject()
+            .model(modelName)
+            .type(Group.class.getName())
+            .ref(g.getUri()))
+        .collect(toList());
+  }
+
+  @Override
+  public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
         .map(objectApi::loadLatest)
         .map(n -> {

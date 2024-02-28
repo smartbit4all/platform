@@ -98,7 +98,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     SubjectModel model = getModel(modelName);
     return model.getDescriptors().stream()
         .flatMap(
-            d -> getContributionApi(d.getApiName()).getUserSubjects(userUri).stream())
+            d -> getContributionApi(d.getApiName()).getUserSubjects(modelName, userUri).stream())
         .collect(toList());
   }
 
@@ -127,7 +127,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     SubjectModel model = getModel(modelName);
     return model.getDescriptors().stream()
         .flatMap(
-            d -> getContributionApi(d.getApiName()).getAllSubjects().stream())
+            d -> getContributionApi(d.getApiName()).getAllSubjects(modelName).stream())
         .collect(toList());
   }
 
@@ -137,7 +137,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     return model.getDescriptors().stream()
         .flatMap(
             d -> getContributionApi(d.getApiName())
-                .getAllSubjects(getRelatedSubjectUris(d.getName(), baseList))
+                .getAllSubjects(modelName, getRelatedSubjectUris(d.getName(), baseList))
                 .stream())
         .collect(toList());
   }
@@ -148,7 +148,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     return model.getDescriptors().stream()
         .flatMap(
             d -> getContributionApi(d.getApiName())
-                .getUsersOf(getRelatedSubjectUris(d.getName(), subjects)).stream())
+                .getUsersOf(modelName, getRelatedSubjectUris(d.getName(), subjects)).stream())
         .distinct()
         .collect(toList());
   }
@@ -165,7 +165,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     return model.getDescriptors().stream()
         .flatMap(
             d -> getContributionApi(d.getApiName())
-                .getDisplayValue(getRelatedSubjectUris(d.getName(), subjects)).stream())
+                .getDisplayValue(modelName, getRelatedSubjectUris(d.getName(), subjects)).stream())
         .distinct()
         .collect(toList());
   }

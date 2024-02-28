@@ -33,12 +33,16 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. ")
 @JsonPropertyOrder({
+  Subject.MODEL,
   Subject.TYPE,
   Subject.REF
 })
 @JsonTypeName("Subject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class Subject {
+  public static final String MODEL = "model";
+  private String model;
+
   public static final String TYPE = "type";
   private String type;
 
@@ -48,6 +52,33 @@ public class Subject {
   public Subject() { 
   }
 
+  public Subject model(String model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. 
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. ")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(String model) {
+    this.model = model;
+  }
+
+
   public Subject type(String type) {
     
     this.type = type;
@@ -55,12 +86,12 @@ public class Subject {
   }
 
    /**
-   * The unique identifier of the type in the SubjectModel. The helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. Like the ACL knows that the ACLSubjectModel is used to assign the access control list for the given objects. 
+   * The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is saved here it is managed by the code that uses this Subject. 
    * @return type
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique identifier of the type in the SubjectModel. The helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. Like the ACL knows that the ACLSubjectModel is used to assign the access control list for the given objects. ")
+  @ApiModelProperty(required = true, value = "The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is saved here it is managed by the code that uses this Subject. ")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,19 +145,21 @@ public class Subject {
       return false;
     }
     Subject subject = (Subject) o;
-    return Objects.equals(this.type, subject.type) &&
+    return Objects.equals(this.model, subject.model) &&
+        Objects.equals(this.type, subject.type) &&
         Objects.equals(this.ref, subject.ref);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, ref);
+    return Objects.hash(model, type, ref);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Subject {\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    ref: ").append(toIndentedString(ref)).append("\n");
     sb.append("}");

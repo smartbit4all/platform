@@ -16,38 +16,43 @@ public interface SubjectContributionApi extends ContributionApi {
   /**
    * Retrieves the list of subjects the user belongs to.
    *
+   * @param modelName The name of the subject model.
    * @param userUri The user URI.
    * @return The list of subjects.
    */
-  List<Subject> getUserSubjects(URI userUri);
+  List<Subject> getUserSubjects(String modelName, URI userUri);
 
   /**
+   *
+   * @param modelName The name of the subject model.
    * @return All the subjects available in the given contribution. Like all the organization units
    *         or so.
    */
-  List<Subject> getAllSubjects();
+  List<Subject> getAllSubjects(String modelName);
 
   /**
    * The users belongs to the given subjects.
    *
+   * @param modelName The name of the subject model.
    * @param subjects The URI list of the subjects. Not necessarily managed by this contribution, so
    *        the implementation must tolerate the foreign URI.
    * @return The
    */
-  List<URI> getUsersOf(List<URI> subjects);
+  List<URI> getUsersOf(String modelName, List<URI> subjects);
 
   /**
    * @param baseList The base list of the subjects.
    * @return The expanded list of the subjects with all the implicitly included subjects.
    */
-  List<Subject> getAllSubjects(List<URI> baseList);
+  List<Subject> getAllSubjects(String modelName, List<URI> baseList);
 
   /**
    * Return list of displayable names of subjects.
    *
+   * @param modelName The name of the subject model.
    * @param subjects
    * @return
    */
-  List<String> getDisplayValue(List<URI> subjects);
+  List<String> getDisplayValue(String modelName, List<URI> subjects);
 
 }

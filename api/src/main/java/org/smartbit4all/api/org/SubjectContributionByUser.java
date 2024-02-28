@@ -25,26 +25,33 @@ public class SubjectContributionByUser extends ContributionApiImpl
   }
 
   @Override
-  public List<Subject> getUserSubjects(URI userUri) {
+  public List<Subject> getUserSubjects(String modelName, URI userUri) {
     List<Subject> result = new ArrayList<>();
-    result.add(new Subject().ref(userUri).type(User.class.getName()));
+    result.add(new Subject()
+        .model(modelName)
+        .type(User.class.getName())
+        .ref(userUri));
     return result;
   }
 
   @Override
-  public List<Subject> getAllSubjects() {
+  public List<Subject> getAllSubjects(String modelName) {
     if (orgApi == null) {
       return Collections.emptyList();
     }
     return orgApi.getAllUsers().stream()
-        .map(u -> new Subject().ref(u.getUri()).type(User.class.getName())).collect(toList());
+        .map(u -> new Subject()
+            .model(modelName)
+            .type(User.class.getName())
+            .ref(u.getUri()))
+        .collect(toList());
   }
 
   /**
    * Return the URI if it is a user because the result is itself in this case.
    */
   @Override
-  public List<URI> getUsersOf(List<URI> subjects) {
+  public List<URI> getUsersOf(String modelName, List<URI> subjects) {
     if (subjects == null || objectApi == null) {
       return Collections.emptyList();
     }
@@ -54,17 +61,20 @@ public class SubjectContributionByUser extends ContributionApiImpl
   }
 
   @Override
-  public List<Subject> getAllSubjects(List<URI> baseList) {
+  public List<Subject> getAllSubjects(String modelName, List<URI> baseList) {
     if (baseList == null || objectApi == null || orgApi == null) {
       return Collections.emptyList();
     }
     return baseList.stream().filter(s -> objectApi.definition(s).instanceOf(User.class))
-        .map(u -> new Subject().type(User.class.getName()).ref(u))
+        .map(u -> new Subject()
+            .model(modelName)
+            .type(User.class.getName())
+            .ref(u))
         .collect(toList());
   }
 
   @Override
-  public List<String> getDisplayValue(List<URI> subjects) {
+  public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
         .map(objectApi::loadLatest)
         .map(n -> n.getValueAsString(User.NAME))
