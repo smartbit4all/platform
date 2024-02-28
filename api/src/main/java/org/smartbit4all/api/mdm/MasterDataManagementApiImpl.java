@@ -730,7 +730,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   protected MDMDefitionStateWrapper mergeGlobalInner(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      // TODO update merged MDMEntryDescriptors MDMEntryApi.Props.MERGED property
       if (sessionApi != null) {
         UserActivityLog merged = sessionApi.createActivityLog();
         getDefinition(definitionName).getDescriptors().keySet().stream()
