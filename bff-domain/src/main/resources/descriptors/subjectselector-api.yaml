@@ -53,6 +53,8 @@ components:
           type: array
           items:
             type: string
+        searchPageConfig:
+          type: SearchPageConfig
     AclGridItem:
       type: object
       properties:

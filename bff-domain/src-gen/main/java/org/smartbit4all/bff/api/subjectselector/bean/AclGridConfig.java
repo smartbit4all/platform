@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -39,7 +40,8 @@ import javax.validation.Valid;
   AclGridConfig.OPERATION,
   AclGridConfig.SELECTION_MODE,
   AclGridConfig.MANDATORY,
-  AclGridConfig.SUBJECT_TYPES
+  AclGridConfig.SUBJECT_TYPES,
+  AclGridConfig.SEARCH_PAGE_CONFIG
 })
 @JsonTypeName("AclGridConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -61,6 +63,9 @@ public class AclGridConfig {
 
   public static final String SUBJECT_TYPES = "subjectTypes";
   private List<String> subjectTypes = new ArrayList<>();
+
+  public static final String SEARCH_PAGE_CONFIG = "searchPageConfig";
+  private SearchPageConfig searchPageConfig = null;
 
   public AclGridConfig() { 
   }
@@ -234,6 +239,34 @@ public class AclGridConfig {
   }
 
 
+  public AclGridConfig searchPageConfig(SearchPageConfig searchPageConfig) {
+    
+    this.searchPageConfig = searchPageConfig;
+    return this;
+  }
+
+   /**
+   * Get searchPageConfig
+   * @return searchPageConfig
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SEARCH_PAGE_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SearchPageConfig getSearchPageConfig() {
+    return searchPageConfig;
+  }
+
+
+  @JsonProperty(SEARCH_PAGE_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSearchPageConfig(SearchPageConfig searchPageConfig) {
+    this.searchPageConfig = searchPageConfig;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -248,12 +281,13 @@ public class AclGridConfig {
         Objects.equals(this.operation, aclGridConfig.operation) &&
         Objects.equals(this.selectionMode, aclGridConfig.selectionMode) &&
         Objects.equals(this.mandatory, aclGridConfig.mandatory) &&
-        Objects.equals(this.subjectTypes, aclGridConfig.subjectTypes);
+        Objects.equals(this.subjectTypes, aclGridConfig.subjectTypes) &&
+        Objects.equals(this.searchPageConfig, aclGridConfig.searchPageConfig);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes);
+    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig);
   }
 
   @Override
@@ -266,6 +300,7 @@ public class AclGridConfig {
     sb.append("    selectionMode: ").append(toIndentedString(selectionMode)).append("\n");
     sb.append("    mandatory: ").append(toIndentedString(mandatory)).append("\n");
     sb.append("    subjectTypes: ").append(toIndentedString(subjectTypes)).append("\n");
+    sb.append("    searchPageConfig: ").append(toIndentedString(searchPageConfig)).append("\n");
     sb.append("}");
     return sb.toString();
   }

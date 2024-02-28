@@ -6,6 +6,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -28,6 +32,7 @@ import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -46,6 +51,8 @@ import org.smartbit4all.bff.api.subjectselector.bean.AclGridConfig;
 import org.smartbit4all.bff.api.subjectselector.bean.AclGridItem;
 import org.smartbit4all.bff.api.subjectselector.bean.AclPageConfig;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGenericPageApi {
@@ -60,6 +67,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   @Autowired
   protected GridModelApi gridModelApi;
+
+  @Autowired
+  protected CollectionApi collectionApi;
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
@@ -120,94 +130,81 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   @Override
   public Object initModel(View view) {
-    PageContext ctx = context(view);
-    ACLObject aclObject = ctx.aclObjectNode.getObject(ACLObject.class);
-
-    SmartComponentLayoutDefinition layout = container(LayoutDirection.VERTICAL);
-
-    int counter = 0;
-    // SmartComponentLayoutDefinition row = addRow(layout);
-    for (AclGridConfig config : ctx.config.getGridConfigs()) {
-      String name = config.getAclName();
-      ACL acl = getAclFromObject(aclObject, name);
-      SmartComponentLayoutDefinition gridContainer = addGrid(view, layout, acl, config);
-
-      layout.addComponentsItem(gridContainer);
-      // row.addComponentsItem(gridContainer);
-      // counter++;
-      // if (counter >= 0) {
-      // row = addRow(layout);
-      // }
-    }
-
+    SmartComponentLayoutDefinition layout = createLayout();
     view.putComponentLayoutsItem("default", layout);
+    addGridsToLayout(view, layout);
+
     return new HashMap<String, Object>();
   }
 
-  private SmartComponentLayoutDefinition addRow(SmartComponentLayoutDefinition layout) {
-    SmartComponentLayoutDefinition row = container(LayoutDirection.HORIZONTAL);
-    layout.addComponentsItem(row);
-    return row;
+  protected SmartComponentLayoutDefinition createLayout() {
+    return container(LayoutDirection.VERTICAL);
   }
 
-  private ACL getAclFromObject(ACLObject aclObject, String name) {
+  protected void addGridsToLayout(View view, SmartComponentLayoutDefinition layout) {
+    PageContext ctx = context(view);
+    ACLObject aclObject = ctx.aclObjectNode.getObject(ACLObject.class);
+
+    UUID viewUuid = view.getUuid();
+    for (AclGridConfig config : ctx.config.getGridConfigs()) {
+      String name = config.getAclName();
+      ACL acl = getAclFromObject(aclObject, name);
+      String gridId = config.getAclName();
+      initGridInView(view, viewUuid, config);
+      refreshGrid(viewUuid, acl, config);
+      layout.addComponentsItem(createGridLayout(gridId));
+    }
+  }
+
+  protected ACL getAclFromObject(ACLObject aclObject, String name) {
     return aclObject.getMap().computeIfAbsent(
         name,
         (s) -> new ACL().rootEntry(new ACLEntry().entryKind(EntryKindEnum.SET)));
   }
 
-  protected SmartComponentLayoutDefinition addGrid(View view, SmartComponentLayoutDefinition layout,
-      ACL acl,
-      AclGridConfig config) {
-
-    UUID viewUuid = view.getUuid();
+  protected void initGridInView(View view, UUID viewUuid, AclGridConfig config) {
     String gridId = config.getAclName();
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
-      createGridModel(viewUuid, gridId);
+      createGridModel(viewUuid, gridId, config.getSearchPageConfig());
       view.addActionsItem(new UiAction()
           .code(ADD_SUBJECT)
           .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
-          .identifier(config.getAclName())
+          .identifier(gridId)
           .descriptor(new UiActionDescriptor()
               .icon("Plus")
               .title(" ")
               .type(UiActionButtonType.ICON)
               .color(UiActions.Color.ACCENT)));
     }
-
-    refreshGrid(viewUuid, gridId, acl, config);
-    SmartComponentLayoutDefinition gridContainer = container(LayoutDirection.VERTICAL);
-    return gridContainer
-        .addComponentsItem(
-            form(LayoutDirection.VERTICAL,
-                label(null, localeSettingApi.get(PREFIX, gridId))))
-        .addComponentsItem(grid(gridId));
   }
 
-  private void refreshGrid(UUID viewUuid, String gridId, ACL acl, AclGridConfig config) {
-    List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, config.getOperation());
-    List<AclGridItem> items = subjects.stream()
-        .map(s -> {
-          Subject subject = s.getSubject();
-          List<String> names = subjectManagementApi.getDisplayValue(config.getAclModel(),
-              Arrays.asList(subject));
-          String name = names.size() == 1 ? names.get(0) : "N/A";
-          return new AclGridItem()
-              .name(name)
-              .subject(subject)
-              .comment(s.getOperation() == null ? "" : s.getOperation().getComment());
-        })
-        .collect(toList());
-    gridModelApi.setData(viewUuid, gridId, AclGridItem.class, items);
-  }
+  protected GridModel createGridModel(UUID viewUuid, String gridId,
+      SearchPageConfig searchPageConfig) {
 
-  protected GridModel createGridModel(UUID viewUuid, String gridId) {
-
-    GridModel gridModel = gridModelApi.createGridModel(
-        AclGridItem.class,
-        Arrays.asList(AclGridItem.NAME, AclGridItem.COMMENT, AclGridItem.SUBJECT));
+    List<String> columns;
+    GridModel gridModel;
+    if (searchPageConfig != null) {
+      columns = new ArrayList<>(
+          searchPageConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+      EntityDefinition entityDefinition = collectionApi
+          .searchIndex(
+              searchPageConfig.getSearchIndexSchema(),
+              searchPageConfig.getSearchIndexName())
+          .getDefinition().getDefinition();
+      gridModel = gridModelApi
+          .createGridModel(entityDefinition, columns, User.class.getSimpleName());
+    } else {
+      columns = Arrays.asList(AclGridItem.NAME, AclGridItem.COMMENT, AclGridItem.SUBJECT);
+      gridModel = gridModelApi.createGridModel(
+          AclGridItem.class,
+          columns);
+    }
+    if (!columns.contains(AclGridItem.SUBJECT)) {
+      columns.add(AclGridItem.SUBJECT);
+    }
     GridModels.hideColumns(gridModel, AclGridItem.SUBJECT);
+
     gridModel.getView().getDescriptor().showEditColumns(false);
     gridModel.paginator(true);
     gridModelApi.initGridInView(viewUuid, gridId, gridModel);
@@ -218,6 +215,47 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
             .build(api -> api.addGridActions(null, viewUuid, gridId)));
 
     return gridModel;
+  }
+
+  protected void refreshGrid(UUID viewUuid, ACL acl, AclGridConfig config) {
+    String gridId = config.getAclName();
+    List<ACLSubject> subjects = getSubjects(acl, config);
+    SearchPageConfig searchPageConfig = config.getSearchPageConfig();
+    if (searchPageConfig != null) {
+      Stream<ObjectNode> objects = subjects.stream()
+          .map(subject -> objectApi.create(null, subject));
+      TableData<?> result = collectionApi
+          .searchIndex(
+              searchPageConfig.getSearchIndexSchema(),
+              searchPageConfig.getSearchIndexName())
+          .executeSearchOnNodes(objects, null);
+      gridModelApi.setData(viewUuid, gridId, result);
+    } else {
+      List<AclGridItem> items = subjects.stream()
+          .map(s -> {
+            Subject subject = s.getSubject();
+            List<String> names = subjectManagementApi.getDisplayValue(config.getAclModel(),
+                Arrays.asList(subject));
+            String name = names.size() == 1 ? names.get(0) : "N/A";
+            return new AclGridItem()
+                .name(name)
+                .subject(subject)
+                .comment(s.getOperation() == null ? "" : s.getOperation().getComment());
+          })
+          .collect(toList());
+      gridModelApi.setData(viewUuid, gridId, AclGridItem.class, items);
+    }
+  }
+
+  protected List<ACLSubject> getSubjects(ACL acl, AclGridConfig config) {
+    return accessControlInternalApi.getSubjects(acl, config.getOperation());
+  }
+
+  protected SmartComponentLayoutDefinition createGridLayout(String gridId) {
+    return container(LayoutDirection.VERTICAL)
+        .addComponentsItem(form(LayoutDirection.VERTICAL,
+            label(null, localeSettingApi.get(PREFIX, gridId))))
+        .addComponentsItem(grid(gridId));
   }
 
   @Override
@@ -273,7 +311,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           if (anyChange) {
             accessControlInternalApi.applySubjects(acl, subjects, gridConfig.getOperation());
           }
-          refreshGrid(viewUuid, gridId, acl, gridConfig);
+          refreshGrid(viewUuid, acl, gridConfig);
           return aclObject;
         });
         objectApi.save(ctx.aclObjectNode);
@@ -304,7 +342,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
       accessControlInternalApi.applySubjects(acl, subjects, gridConfig.getOperation());
 
-      refreshGrid(viewUuid, gridId, acl, gridConfig);
+      refreshGrid(viewUuid, acl, gridConfig);
       return aclObject;
     });
 

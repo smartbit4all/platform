@@ -24,7 +24,8 @@ smartbit4all {
      "ObjectHistoryRangeData": "org.smartbit4all.api.object.bean.ObjectHistoryRangeData",
      "Subject": "org.smartbit4all.api.org.bean.Subject",
      "InvocationRequest": "org.smartbit4all.api.invocation.bean.InvocationRequest",
-     "GridSelectionMode": "org.smartbit4all.api.grid.bean.GridSelectionMode"
+     "GridSelectionMode": "org.smartbit4all.api.grid.bean.GridSelectionMode",
+     "SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig"
     ]
   }
 }
