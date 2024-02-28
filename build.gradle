@@ -18,17 +18,16 @@ subprojects {
 	    group "org.smartbit4all.platform"
 	    version "1.0.3-SNAPSHOT"
 	
-	    sourceCompatibility = JavaVersion.VERSION_1_8
-	    targetCompatibility = JavaVersion.VERSION_1_8
-	
 	    dependencies {
 	        api 'com.google.guava:guava:31.0.1-jre'
 	    }
 	
 		java {
 			withSourcesJar()
-		}
-	
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(8))
+            }
+        }	
 		sourcesJar {
 			duplicatesStrategy = 'exclude'
 		}
