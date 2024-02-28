@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -56,8 +58,6 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -731,6 +731,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   protected MDMDefitionStateWrapper mergeGlobalInner(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
       // TODO update merged MDMEntryDescriptors MDMEntryApi.Props.MERGED property
+      if (sessionApi != null) {
+        UserActivityLog merged = sessionApi.createActivityLog();
+        getDefinition(definitionName).getDescriptors().keySet().stream()
+            .map(descriptorName -> getApi(definitionName,
+                descriptorName))
+            .filter(entryApi -> entryApi.getBranchingList().stream()
+                .anyMatch(e -> e.getBranchingState() != BranchingStateEnum.NOP))
+            .forEach(entryApi -> entryApi.setBranchedEntriesMerged(merged));
+      }
+
       branchApi.merge(state.getGlobalModification().getBranchUri());
       return state
           .globalModification(null);

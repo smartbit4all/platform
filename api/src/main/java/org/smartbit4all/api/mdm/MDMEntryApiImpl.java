@@ -48,6 +48,7 @@ import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -738,4 +739,13 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         vectorDBConnection, embeddingConnection);
   }
 
+  @Override
+  public void setBranchedEntriesMerged(UserActivityLog merged) {
+    getBranchingList().stream().filter(e -> e.getBranchingState() != BranchingStateEnum.NOP)
+        .forEach(branchedEntry -> {
+          ObjectNode branchedNode = objectApi.loadLatest(branchedEntry.getBranchUri());
+          branchedNode.setValue(merged, Props.MERGED);
+          objectApi.save(branchedNode);
+        });
+  }
 }

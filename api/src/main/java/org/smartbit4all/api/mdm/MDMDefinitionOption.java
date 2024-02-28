@@ -32,6 +32,11 @@ public class MDMDefinitionOption {
           + UserActivityLog.TIMESTAMP;
   public static final String CREATED_NAME =
       MDMEntryApi.Props.CREATED + StringConstant.UNDERLINE + UserActivityLog.NAME;
+  public static final String MERGED_TIMESTAMP =
+      MDMEntryApi.Props.MERGED + StringConstant.UNDERLINE + UserActivityLog.TIMESTAMP;
+  public static final String MERGED_NAME =
+      MDMEntryApi.Props.MERGED + StringConstant.UNDERLINE
+          + UserActivityLog.NAME;
 
   /**
    * The definition object for the given option. It will be merged with the storage when the given
@@ -102,11 +107,7 @@ public class MDMDefinitionOption {
   }
 
   public static void addCreatedUpdatedExtraProperties(MDMEntryDescriptor descriptor) {
-    List<MDMTableColumnDescriptor> columns = new ArrayList<>();
-    if (descriptor.getTableColumns() != null) {
-      columns.addAll(descriptor.getTableColumns());
-    }
-    columns.addAll(Arrays.asList(
+    addExtraProperties(descriptor, Arrays.asList(
         new MDMTableColumnDescriptor()
             .name(CREATED_NAME)
             .typeClass(String.class.getName())
@@ -123,6 +124,27 @@ public class MDMDefinitionOption {
             .name(UPDATED_TIMESTAMP)
             .typeClass(OffsetDateTime.class.getName())
             .path(Arrays.asList(MDMEntryApi.Props.UPDATED, UserActivityLog.TIMESTAMP))));
+  }
+
+  protected static void addExtraProperties(MDMEntryDescriptor descriptor,
+      List<MDMTableColumnDescriptor> extraProperties) {
+    List<MDMTableColumnDescriptor> columns = new ArrayList<>();
+    if (descriptor.getTableColumns() != null) {
+      columns.addAll(descriptor.getTableColumns());
+    }
+    columns.addAll(extraProperties);
     descriptor.tableColumns(columns);
+  }
+
+  public static void addMergedExtraProperties(MDMEntryDescriptor descriptor) {
+    addExtraProperties(descriptor, Arrays.asList(
+        new MDMTableColumnDescriptor()
+            .name(MERGED_NAME)
+            .typeClass(String.class.getName())
+            .path(Arrays.asList(MDMEntryApi.Props.MERGED, UserActivityLog.NAME)),
+        new MDMTableColumnDescriptor()
+            .name(MERGED_TIMESTAMP)
+            .typeClass(OffsetDateTime.class.getName())
+            .path(Arrays.asList(MDMEntryApi.Props.MERGED, UserActivityLog.TIMESTAMP))));
   }
 }

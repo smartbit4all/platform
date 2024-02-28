@@ -9,6 +9,7 @@ import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -189,5 +190,7 @@ public interface MDMEntryApi {
    * index and even some full text index.
    */
   void updateAllIndices(List<String> idPath);
+
+  void setBranchedEntriesMerged(UserActivityLog merged);
 
 }
