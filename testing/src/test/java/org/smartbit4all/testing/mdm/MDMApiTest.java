@@ -1,5 +1,10 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -80,11 +85,6 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -803,7 +803,8 @@ class MDMApiTest {
       String... keyPropertyPath) {
     return typeApi.getList().nodes()
         .collect(
-            toMap(n -> n.getValue(URI.class, keyPropertyPath).toString(), n -> n.getObject(clazz)));
+            toMap(n -> objectApi.getLatestUri(n.getValue(URI.class, keyPropertyPath)).toString(),
+                n -> n.getObject(clazz)));
   }
 
   @Test
@@ -842,13 +843,13 @@ class MDMApiTest {
             .uri(ObjectDefinition.uriOf(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
             .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
                 publishedProperties
-                    .get(draftString.toString()))
+                    .get(objectApi.getLatestUri(draftString).toString()))
             .addPropertiesItem(
                 publishedProperties
-                    .get(draftLong.toString()))
+                    .get(objectApi.getLatestUri(draftLong).toString()))
             .addPropertiesItem(
                 publishedProperties
-                    .get(draftCategoryUri.toString()))))
+                    .get(objectApi.getLatestUri(draftCategoryUri).toString()))))
         .get(0);
 
 
