@@ -14,6 +14,8 @@ import org.smartbit4all.api.object.bean.ObjectPropertySet;
  */
 public interface VectorCollection {
 
+  static final String VECTOR_AUDIT_LOG = "vector.audit";
+
   void ensureExist();
 
   void addObject(List<String> idPath, Object obj);
