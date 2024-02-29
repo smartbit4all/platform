@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
@@ -35,8 +36,10 @@ public class ImageUtils {
    * @throws IOException
    */
   public static BinaryData resizeImage(BinaryData image, int width, int height) throws IOException {
-    BufferedImage bi = ImageIO.read(image.inputStream());
-    return resizeImageInternal(width, height, bi);
+    try (InputStream is = image.inputStream()) {
+      BufferedImage bi = ImageIO.read(is);
+      return resizeImageInternal(width, height, bi);
+    }
   }
 
   private static BinaryData resizeImageInternal(int width, int height, BufferedImage bi)
@@ -67,12 +70,14 @@ public class ImageUtils {
   }
 
   public static BinaryData shrink(BinaryData image, int width) throws IOException {
-    BufferedImage bi = ImageIO.read(image.inputStream());
-    int originalWidth = bi.getWidth();
-    if (originalWidth > width) {
-      return resizeImageInternal(width, -1, bi);
+    try (InputStream is = image.inputStream()) {
+      BufferedImage bi = ImageIO.read(is);
+      int originalWidth = bi.getWidth();
+      if (originalWidth > width) {
+        return resizeImageInternal(width, -1, bi);
+      }
+      return null;
     }
-    return null;
   }
 
   /**
@@ -85,8 +90,10 @@ public class ImageUtils {
    *         implementations
    */
   public static Dimension getDimension(BinaryData image) throws IOException {
-    BufferedImage bi = ImageIO.read(image.inputStream());
-    return new Dimension(bi.getWidth(), bi.getHeight());
+    try (InputStream is = image.inputStream()) {
+      BufferedImage bi = ImageIO.read(is);
+      return new Dimension(bi.getWidth(), bi.getHeight());
+    }
   }
 
 }
