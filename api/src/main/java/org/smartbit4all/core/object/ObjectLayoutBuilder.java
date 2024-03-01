@@ -195,7 +195,7 @@ public final class ObjectLayoutBuilder {
   public static SmartWidgetDefinition radioButtonGroup(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()
-        .type(SmartFormWidgetType.ITEM_GROUP)
+        .type(SmartFormWidgetType.RADIO_BUTTON)
         .key(key)
         .label(label)
         .selection(selectionDefinition);
