@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -40,7 +41,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -349,14 +349,14 @@ public class ObjectApiImpl implements ObjectApi {
         return getDefaultSerializer().fromString((String) value, clazz);
       } catch (IOException e) {
         throw new IllegalArgumentException(
-            "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
+            "Unable to convert value (" + value.getClass().getName() + ") to " + clazz.getName());
       }
     }
     if (clazz.equals(String.class)) {
       return (T) String.valueOf(value);
     }
     throw new IllegalArgumentException(
-        "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
+        "Unable to convert value (" + value.getClass().getName() + ") to " + clazz.getName());
   }
 
   @Override
