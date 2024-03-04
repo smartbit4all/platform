@@ -150,7 +150,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
         getSelectedSubjectType(viewUuid, selection);
 
-    if (subjectTypeDescriptor.isEmpty()) {
+    if (!subjectTypeDescriptor.isPresent()) {
       throw new IllegalStateException("Illegal selection! " + selection);
     }
     String type = subjectTypeDescriptor.get().getName();
