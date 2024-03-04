@@ -72,6 +72,7 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
   @Override
   public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(SampleCategory.class))
         .map(objectApi::loadLatest)
         .map(n -> n.getValueAsString(SampleCategory.NAME))
         .collect(toList());

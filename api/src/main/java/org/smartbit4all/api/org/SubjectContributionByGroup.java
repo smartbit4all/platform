@@ -83,6 +83,7 @@ public class SubjectContributionByGroup extends ContributionApiImpl
   @Override
   public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(Group.class))
         .map(objectApi::loadLatest)
         .map(n -> {
           String displayvalue = n.getValueAsString(Group.TITLE);

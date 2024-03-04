@@ -37,7 +37,7 @@ components:
             $ref: '#/components/schemas/AclGridConfig'
     AclGridConfig:
       type: object
-      required: [subjectTypes]
+      required: [subjectTypes,subjectValues]
       properties:
         aclModel:
           type: string
@@ -55,6 +55,12 @@ components:
             type: string
         searchPageConfig:
           type: SearchPageConfig
+        selectionType:
+          enum: [SUBJECT,USER]
+        subjectValues:
+          type: array
+          items:
+            type: Subject
     AclGridItem:
       type: object
       properties:

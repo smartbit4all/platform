@@ -26,4 +26,6 @@ public interface AclGenericPageApi extends PageApi<Object> {
 
   void handleSubjectSelected(UUID viewUuid, List<URI> subjectUriList, String gridId);
 
+  void handleUserSelected(UUID viewUuid, List<URI> userUriList, String gridId);
+
 }

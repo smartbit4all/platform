@@ -48,6 +48,7 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.config.PlatformViewNames;
 import org.smartbit4all.bff.api.subjectselector.bean.AclGridConfig;
+import org.smartbit4all.bff.api.subjectselector.bean.AclGridConfig.SelectionTypeEnum;
 import org.smartbit4all.bff.api.subjectselector.bean.AclGridItem;
 import org.smartbit4all.bff.api.subjectselector.bean.AclPageConfig;
 import org.smartbit4all.core.object.ObjectNode;
@@ -104,15 +105,29 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           .orElseThrow(() -> new IllegalArgumentException("Invalid GridConfigName"));
     }
 
-    protected String getSelectorViewName() {
+    protected String getSubjectSelectorViewName() {
       return config.getSelectorViewName() != null ? config.getSelectorViewName()
           : PlatformViewNames.SUBJECT_SELECTOR_PAGE;
     }
 
-    protected InvocationRequest getSelectionCallback(String gridId) {
+    protected String getUserSelectorViewName() {
+      return config.getSelectorViewName() != null ? config.getSelectorViewName()
+          : PlatformViewNames.USER_SELECTOR_PAGE;
+    }
+
+    protected InvocationRequest getSubjectSelectionCallback(String gridId) {
       return config.getSelectionCallback() != null ? config.getSelectionCallback()
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleSubjectSelected(
+                  view.getUuid(),
+                  Invocations.listOf(Collections.emptyList(), URI.class),
+                  gridId));
+    }
+
+    protected InvocationRequest getUserSelectionCallback(String gridId) {
+      return config.getSelectionCallback() != null ? config.getSelectionCallback()
+          : invocationApi.builder(AclGenericPageApi.class)
+              .build(api -> api.handleUserSelected(
                   view.getUuid(),
                   Invocations.listOf(Collections.emptyList(), URI.class),
                   gridId));
@@ -274,18 +289,32 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     String gridId = request.getIdentifier();
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
-
-    viewApi.showView(new View()
-        .viewName(ctx.getSelectorViewName())
-        .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_MODEL_NAME,
-            gridConfig.getAclModel())
-        .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_TYPES,
-            gridConfig.getSubjectTypes())
-        .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_MODE,
-            gridConfig.getSelectionMode())
-        .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_CALLBACK,
-            ctx.getSelectionCallback(gridId))
-        .type(ViewType.DIALOG));
+    SelectionTypeEnum selectionType = gridConfig.getSelectionType();
+    if (selectionType == null || selectionType == SelectionTypeEnum.SUBJECT) {
+      viewApi.showView(new View()
+          .viewName(ctx.getSubjectSelectorViewName())
+          .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_MODEL_NAME,
+              gridConfig.getAclModel())
+          .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_TYPES,
+              gridConfig.getSubjectTypes())
+          .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_MODE,
+              gridConfig.getSelectionMode())
+          .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_CALLBACK,
+              ctx.getSubjectSelectionCallback(gridId))
+          .type(ViewType.DIALOG));
+    } else if (selectionType == SelectionTypeEnum.USER) {
+      viewApi.showView(new View()
+          .viewName(ctx.getUserSelectorViewName())
+          // .putParametersItem(UserSelectorPageApi.PARAM_SUBJECT_MODEL_NAME,
+          // gridConfig.getAclModel())
+          .putParametersItem(UserSelectorPageApi.PARAM_SUBJECT_VALUES,
+              gridConfig.getSubjectValues())
+          .putParametersItem(UserSelectorPageApi.PARAM_SELECTION_MODE,
+              gridConfig.getSelectionMode())
+          .putParametersItem(UserSelectorPageApi.PARAM_SELECTION_CALLBACK,
+              ctx.getUserSelectionCallback(gridId))
+          .type(ViewType.DIALOG));
+    }
 
 
   }
@@ -337,7 +366,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         subjects.add(
             new ACLSubject()
                 .operation(new ACLOperation().name(operation))
-                .subject(new Subject().ref(uri)));
+                .subject(new Subject()
+                    .model(gridConfig.getAclModel())
+                    .ref(uri)));
       }
 
       accessControlInternalApi.applySubjects(acl, subjects, gridConfig.getOperation());
@@ -358,5 +389,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         .contains(subjectUri);
   }
 
-
+  @Override
+  public void handleUserSelected(UUID viewUuid, List<URI> userUriList, String gridId) {
+    // TODO Auto-generated method stub
+    handleSubjectSelected(viewUuid, userUriList, gridId);
+  }
 }

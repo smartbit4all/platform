@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
+import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -41,7 +42,9 @@ import javax.validation.Valid;
   AclGridConfig.SELECTION_MODE,
   AclGridConfig.MANDATORY,
   AclGridConfig.SUBJECT_TYPES,
-  AclGridConfig.SEARCH_PAGE_CONFIG
+  AclGridConfig.SEARCH_PAGE_CONFIG,
+  AclGridConfig.SELECTION_TYPE,
+  AclGridConfig.SUBJECT_VALUES
 })
 @JsonTypeName("AclGridConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -66,6 +69,47 @@ public class AclGridConfig {
 
   public static final String SEARCH_PAGE_CONFIG = "searchPageConfig";
   private SearchPageConfig searchPageConfig = null;
+
+  /**
+   * Gets or Sets selectionType
+   */
+  public enum SelectionTypeEnum {
+    SUBJECT("SUBJECT"),
+    
+    USER("USER");
+
+    private String value;
+
+    SelectionTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SelectionTypeEnum fromValue(String value) {
+      for (SelectionTypeEnum b : SelectionTypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String SELECTION_TYPE = "selectionType";
+  private SelectionTypeEnum selectionType;
+
+  public static final String SUBJECT_VALUES = "subjectValues";
+  private List<Subject> subjectValues = new ArrayList<>();
 
   public AclGridConfig() { 
   }
@@ -267,6 +311,67 @@ public class AclGridConfig {
   }
 
 
+  public AclGridConfig selectionType(SelectionTypeEnum selectionType) {
+    
+    this.selectionType = selectionType;
+    return this;
+  }
+
+   /**
+   * Get selectionType
+   * @return selectionType
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SelectionTypeEnum getSelectionType() {
+    return selectionType;
+  }
+
+
+  @JsonProperty(SELECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectionType(SelectionTypeEnum selectionType) {
+    this.selectionType = selectionType;
+  }
+
+
+  public AclGridConfig subjectValues(List<Subject> subjectValues) {
+    
+    this.subjectValues = subjectValues;
+    return this;
+  }
+
+  public AclGridConfig addSubjectValuesItem(Subject subjectValuesItem) {
+    this.subjectValues.add(subjectValuesItem);
+    return this;
+  }
+
+   /**
+   * Get subjectValues
+   * @return subjectValues
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(SUBJECT_VALUES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<Subject> getSubjectValues() {
+    return subjectValues;
+  }
+
+
+  @JsonProperty(SUBJECT_VALUES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSubjectValues(List<Subject> subjectValues) {
+    this.subjectValues = subjectValues;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -282,12 +387,14 @@ public class AclGridConfig {
         Objects.equals(this.selectionMode, aclGridConfig.selectionMode) &&
         Objects.equals(this.mandatory, aclGridConfig.mandatory) &&
         Objects.equals(this.subjectTypes, aclGridConfig.subjectTypes) &&
-        Objects.equals(this.searchPageConfig, aclGridConfig.searchPageConfig);
+        Objects.equals(this.searchPageConfig, aclGridConfig.searchPageConfig) &&
+        Objects.equals(this.selectionType, aclGridConfig.selectionType) &&
+        Objects.equals(this.subjectValues, aclGridConfig.subjectValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig);
+    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues);
   }
 
   @Override
@@ -301,6 +408,8 @@ public class AclGridConfig {
     sb.append("    mandatory: ").append(toIndentedString(mandatory)).append("\n");
     sb.append("    subjectTypes: ").append(toIndentedString(subjectTypes)).append("\n");
     sb.append("    searchPageConfig: ").append(toIndentedString(searchPageConfig)).append("\n");
+    sb.append("    selectionType: ").append(toIndentedString(selectionType)).append("\n");
+    sb.append("    subjectValues: ").append(toIndentedString(subjectValues)).append("\n");
     sb.append("}");
     return sb.toString();
   }
