@@ -23,7 +23,9 @@ public class ImageUtils {
   }
 
   /**
-   * Resize the image with the specified width and height.
+   * Resize the image with the specified width and height.<br/>
+   * <b>Caution:</b> this method reads the input stream of the given {@code BinaryData} image and
+   * then writes a new BinaryData with a .png formatted image
    * 
    * If either width or height is a negative number then a value is substituted to maintain the
    * aspect ratio of the original image dimensions. If both width and height are negative, then the
@@ -53,6 +55,8 @@ public class ImageUtils {
     g.dispose();
 
     BinaryDataOutputStream bdos = new BinaryDataOutputStream();
+    // hint: bdos.data() can only be called when the stream is closed, thus try-with-resource can
+    // not be used here.
     try {
       ImageIO.write(resizedBufferedImage, "png", bdos);
     } finally {
@@ -61,14 +65,41 @@ public class ImageUtils {
     return bdos.data();
   }
 
+  /**
+   * <b>Caution:</b> this method reads the input stream of the given {@code BinaryData} image and
+   * then writes a new BinaryData with a .png formatted image
+   * 
+   * @param image
+   * @param width
+   * @return
+   * @throws IOException
+   */
   public static BinaryData resizeImageForWidth(BinaryData image, int width) throws IOException {
     return resizeImage(image, width, -1);
   }
 
+  /**
+   * <b>Caution:</b> this method reads the input stream of the given {@code BinaryData} image and
+   * then writes a new BinaryData with a .png formatted image
+   * 
+   * @param image
+   * @param height
+   * @return
+   * @throws IOException
+   */
   public static BinaryData resizeImageForHeight(BinaryData image, int height) throws IOException {
     return resizeImage(image, -1, height);
   }
 
+  /**
+   * <b>Caution:</b> this method reads the input stream of the given {@code BinaryData} image and
+   * then writes a new BinaryData with a .png formatted image
+   * 
+   * @param image
+   * @param width
+   * @return
+   * @throws IOException
+   */
   public static BinaryData shrink(BinaryData image, int width) throws IOException {
     try (InputStream is = image.inputStream()) {
       BufferedImage bi = ImageIO.read(is);
@@ -81,7 +112,8 @@ public class ImageUtils {
   }
 
   /**
-   * Returns the width and height of the specified image.
+   * Returns the width and height of the specified image. <br/>
+   * <b>Caution:</b> this method reads the input stream of the given {@code BinaryData} image
    * 
    * @param image a {@code BinaryData} image to be examined, not null
    * @return a {@link Dimension} containing the width and height of the image
