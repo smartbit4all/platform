@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
@@ -24,7 +25,7 @@ public interface AclGenericPageApi extends PageApi<Object> {
   @WidgetActionHandler(DELETE_SUBJECT)
   void performDeleteSubject(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
 
-  void handleSubjectSelected(UUID viewUuid, List<URI> subjectUriList, String gridId);
+  void handleSubjectSelected(UUID viewUuid, List<Subject> subjects, String gridId);
 
   void handleUserSelected(UUID viewUuid, List<URI> userUriList, String gridId);
 

@@ -28,6 +28,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.org.SubjectManagementApi;
+import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import org.smartbit4all.api.setting.LocaleSettingApi;
@@ -123,9 +124,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     SubjectSelectorPageModel clientModel = extractClientModel(request);
 
     Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
-        getSubjectModel(viewApi.getView(viewUuid))
-            .getDescriptors().stream()
-            .filter(d -> d.getName().equals(clientModel.getSelection())).findFirst();
+        getSelectedSubjectType(viewUuid, clientModel.getSelection());
 
     if (subjectTypeDescriptor.isPresent()) {
       setModel(viewUuid, clientModel);
@@ -143,15 +142,30 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, SUBJECT_GRID_ID);
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper params = parameters(view);
-    InvocationRequest invocationRequest = params.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
+    InvocationRequest invocationRequest =
+        params.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
 
-    List<URI> subjectUriList = selectedRows.stream()
-        .map(row -> extractUriFromGridRow(row)).collect(Collectors.toList());
+    String model = getSubjectModel(view).getName();
+    String selection = getModel(viewUuid).getSelection();
+    Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
+        getSelectedSubjectType(viewUuid, selection);
+
+    if (subjectTypeDescriptor.isEmpty()) {
+      throw new IllegalStateException("Illegal selection! " + selection);
+    }
+    String type = subjectTypeDescriptor.get().getName();
+    List<Subject> subjects = selectedRows.stream()
+        .map(this::extractUriFromGridRow)
+        .map(uri -> new Subject()
+            .model(model)
+            .type(type)
+            .ref(uri))
+        .collect(Collectors.toList());
 
     if (Objects.nonNull(invocationRequest)) {
       try {
         invocationRequest.getParameters().get(1)
-            .setValue(Invocations.listOf(subjectUriList, URI.class));
+            .setValue(Invocations.listOf(subjects, Subject.class));
         invocationApi.invoke(invocationRequest);
         viewApi.closeView(viewUuid);
       } catch (ApiNotFoundException e) {
@@ -237,17 +251,22 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
   }
 
   protected void refreshGrid(UUID viewUuid) {
-    String selectedDescriptor = getModel(viewUuid).getSelection();
+    String selection = getModel(viewUuid).getSelection();
 
     Optional<SubjectTypeDescriptor> subjectTypeDescriptor =
-        getSubjectModel(viewApi.getView(viewUuid))
-            .getDescriptors().stream()
-            .filter(d -> d.getName().equals(selectedDescriptor)).findFirst();
+        getSelectedSubjectType(viewUuid, selection);
 
     if (subjectTypeDescriptor.isPresent()) {
       refreshGrid(viewUuid, subjectTypeDescriptor.get().getSelectionConfig());
     }
 
+  }
+
+  private Optional<SubjectTypeDescriptor> getSelectedSubjectType(UUID viewUuid,
+      String selection) {
+    return getSubjectModel(viewApi.getView(viewUuid))
+        .getDescriptors().stream()
+        .filter(d -> d.getName().equals(selection)).findFirst();
   }
 
   private void refreshGrid(UUID viewUuid, SearchPageConfig searchPageConfig) {

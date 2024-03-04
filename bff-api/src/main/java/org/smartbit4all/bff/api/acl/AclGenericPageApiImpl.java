@@ -120,7 +120,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleSubjectSelected(
                   view.getUuid(),
-                  Invocations.listOf(Collections.emptyList(), URI.class),
+                  Invocations.listOf(Collections.emptyList(), Subject.class),
                   gridId));
     }
 
@@ -349,29 +349,27 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
   }
 
   @Override
-  public void handleSubjectSelected(UUID viewUuid, List<URI> subjectUriList, String gridId) {
+  public void handleSubjectSelected(UUID viewUuid, List<Subject> subjects, String gridId) {
     PageContext ctx = context(viewUuid);
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
     ctx.aclObjectNode.modify(ACLObject.class, aclObject -> {
       ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
       String operation = gridConfig.getOperation();
-      List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
+      List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
 
-      for (URI uri : subjectUriList) {
-        if (checkSubjectIsAlreadyInAcl(acl, uri)) {
+      for (Subject subject : subjects) {
+        if (checkSubjectIsAlreadyInAcl(acl, subject.getRef())) {
           throw new RuntimeException(
-              String.format("Subject reference by %s is already in ACL", uri));
+              String.format("Subject reference by %s is already in ACL", subject));
         }
-        subjects.add(
+        currentSubjects.add(
             new ACLSubject()
                 .operation(new ACLOperation().name(operation))
-                .subject(new Subject()
-                    .model(gridConfig.getAclModel())
-                    .ref(uri)));
+                .subject(subject));
       }
 
-      accessControlInternalApi.applySubjects(acl, subjects, gridConfig.getOperation());
+      accessControlInternalApi.applySubjects(acl, currentSubjects, gridConfig.getOperation());
 
       refreshGrid(viewUuid, acl, gridConfig);
       return aclObject;
@@ -391,7 +389,16 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   @Override
   public void handleUserSelected(UUID viewUuid, List<URI> userUriList, String gridId) {
-    // TODO Auto-generated method stub
-    handleSubjectSelected(viewUuid, userUriList, gridId);
+    PageContext ctx = context(viewUuid);
+    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+
+    List<Subject> subjects = userUriList.stream()
+        .map(uri -> new Subject()
+            .model(gridConfig.getAclModel())
+            .type(User.class.getName())
+            .ref(uri))
+        .collect(toList());
+    handleSubjectSelected(viewUuid, subjects, gridId);
   }
+
 }
