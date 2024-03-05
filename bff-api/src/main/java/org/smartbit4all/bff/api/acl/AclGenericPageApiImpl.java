@@ -202,6 +202,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     if (searchPageConfig != null) {
       columns = new ArrayList<>(
           searchPageConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+      if (!columns.contains(AclGridItem.SUBJECT)) {
+        columns.add(AclGridItem.SUBJECT);
+      }
       EntityDefinition entityDefinition = collectionApi
           .searchIndex(
               searchPageConfig.getSearchIndexSchema(),
@@ -211,12 +214,12 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           .createGridModel(entityDefinition, columns, User.class.getSimpleName());
     } else {
       columns = Arrays.asList(AclGridItem.NAME, AclGridItem.COMMENT, AclGridItem.SUBJECT);
+      if (!columns.contains(AclGridItem.SUBJECT)) {
+        columns.add(AclGridItem.SUBJECT);
+      }
       gridModel = gridModelApi.createGridModel(
           AclGridItem.class,
           columns);
-    }
-    if (!columns.contains(AclGridItem.SUBJECT)) {
-      columns.add(AclGridItem.SUBJECT);
     }
     GridModels.hideColumns(gridModel, AclGridItem.SUBJECT);
 

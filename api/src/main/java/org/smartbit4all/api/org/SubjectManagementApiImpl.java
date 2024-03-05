@@ -88,7 +88,7 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
     StoredMap map = collectionApi.map(SCHEMA, MAP_SUBJECT_MODELS);
     URI modelUri = map.uris().get(name);
     if (modelUri == null) {
-      throw new IllegalArgumentException("Unable to find the " + name + "subject model.");
+      throw new IllegalArgumentException("Unable to find the " + name + " subject model.");
     }
     return objectApi.read(modelUri, SubjectModel.class);
   }
