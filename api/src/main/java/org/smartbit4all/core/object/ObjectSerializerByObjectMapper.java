@@ -41,6 +41,9 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   public static final TypeReference<List<Float>> LIST_OF_FLOAT_TYPE_REFERENCE =
       new TypeReference<List<Float>>() {};
 
+  public static final TypeReference<Map<String, String>> MAP_OF_STRING_STRING_TYPE_REFERENCE =
+      new TypeReference<Map<String, String>>() {};
+
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
   /**
