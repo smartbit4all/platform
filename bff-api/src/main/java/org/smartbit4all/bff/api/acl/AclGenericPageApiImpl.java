@@ -469,13 +469,14 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         form(LayoutDirection.HORIZONTAL,
             textbox(COMMENT_FIELD,
                 localeSettingApi.get(PREFIX, COMMENT_FIELD)));
+    Map<String, String> model = new HashMap<>();
+    model.put(COMMENT_FIELD, currentComment != null ? currentComment : StringConstant.EMPTY);
     viewApi.showView(new View()
         .viewName(PlatformViewNames.GENERIC_PAGE)
         .type(ViewType.DIALOG)
         .style(new Style().putStyleItem("min-width", "40vw"))
         .putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout)
-        .putParametersItem(GenericPageApi.PARAM_MODEL, Map.of(
-            COMMENT_FIELD, currentComment != null ? currentComment : StringConstant.EMPTY))
+        .putParametersItem(GenericPageApi.PARAM_MODEL, model)
         .actions(UiActions.builder()
             .add(new UiAction()
                 .code(SAVE_COMMENT)
