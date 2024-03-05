@@ -471,6 +471,13 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
                 localeSettingApi.get(PREFIX, COMMENT_FIELD)));
     Map<String, String> model = new HashMap<>();
     model.put(COMMENT_FIELD, currentComment != null ? currentComment : StringConstant.EMPTY);
+    List<ViewEventHandler> eventHandlers = new ArrayList<>();
+    eventHandlers.add(
+        new ViewEventHandler()
+            .viewEventType(ViewEventTypeEnum.INSTEAD)
+            .addPathItem(ViewEventApi.ACTION)
+            .addPathItem(SAVE_COMMENT)
+            .invocationRequest(callback));
     viewApi.showView(new View()
         .viewName(PlatformViewNames.GENERIC_PAGE)
         .type(ViewType.DIALOG)
@@ -486,12 +493,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
                     .type(UiActionButtonType.RAISED)
                     .feedbackType(UiActionFeedbackType.NONE)))
             .build())
-        .eventHandlers(List.of(
-            new ViewEventHandler()
-                .viewEventType(ViewEventTypeEnum.INSTEAD)
-                .addPathItem(ViewEventApi.ACTION)
-                .addPathItem(SAVE_COMMENT)
-                .invocationRequest(callback))));
+        .eventHandlers(eventHandlers));
   }
 
   @Override
