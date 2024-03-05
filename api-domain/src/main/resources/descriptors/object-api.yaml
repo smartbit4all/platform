@@ -863,7 +863,7 @@ components:
       description: |
         This is a mapping definition that describes the mapping between two domain object.
       type: object
-      required: [mappings]
+      required: [mappings, listMappings]
       properties:
         fromTypeQualifiedName:
           type: string
@@ -873,6 +873,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ObjectPropertyMapping'
+        listMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectListMapping'
     ObjectPropertyMapping:
       description: |
         This is a mapping definition that denotes the two property.
@@ -887,6 +891,29 @@ components:
           type: array
           items:
             type: string
+    ObjectListMapping:
+      description: |
+        This is a mapping definition that denotes the two property.
+      type: object
+      required: []
+      properties:
+        uniquePropertyMapping:
+          description: The unique property mapping from the input object to the list object.
+          $ref: '#/components/schemas/ObjectPropertyMapping'
+        fromPrimitivePath:
+          description: If it is set then we have to add this property as a primitive value to the list.
+          type: array
+          items:
+            type: string
+        toListPath:
+          type: array
+          items:
+            type: string
+        objectMapping:
+          description: |
+            If it is set then every list item is an object that is created as a Map using this
+            mapping.
+          $ref: '#/components/schemas/ObjectMappingDefinition'
     ObjectPropertySet:
       description: |
         This is a mapping definition that describes the mapping between two domain object.

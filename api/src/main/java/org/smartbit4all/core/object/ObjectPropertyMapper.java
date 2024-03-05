@@ -1,7 +1,11 @@
 package org.smartbit4all.core.object;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.core.utility.StringConstant;
@@ -32,12 +36,46 @@ public final class ObjectPropertyMapper {
   }
 
   public Map<String, Object> copyAllValues(Map<String, Object> from, Map<String, Object> to) {
+    return copyAllValues(mapping, from, to);
+  }
+
+  private final Map<String, Object> copyAllValues(ObjectMappingDefinition mappingDef,
+      Map<String, Object> from, Map<String, Object> to) {
     ObjectApi objectApi = objectApi();
-    for (ObjectPropertyMapping propertyMapping : mapping.getMappings()) {
+    for (ObjectPropertyMapping propertyMapping : mappingDef.getMappings()) {
       Object value = objectApi.getValueFromObjectMap(from,
           StringConstant.toArray(propertyMapping.getFromPath()));
-      objectApi.setValueIntoObjectMap(to, value,
-          StringConstant.toArray(propertyMapping.getToPath()));
+      if (value != null) {
+        objectApi.setValueIntoObjectMap(to, value,
+            StringConstant.toArray(propertyMapping.getToPath()));
+      }
+    }
+    for (ObjectListMapping listMapping : mappingDef.getListMappings()) {
+      String[] toListPath = StringConstant.toArray(listMapping.getToListPath());
+      Object toValueList = objectApi.getValueFromObjectMap(to,
+          toListPath);
+      List<Object> toList;
+      if (!(toValueList instanceof List)) {
+        toList = new ArrayList<>();
+      } else {
+        toList = (List<Object>) toValueList;
+      }
+      if (listMapping.getFromPrimitivePath() != null
+          && !listMapping.getFromPrimitivePath().isEmpty()) {
+        Object value = objectApi.getValueFromObjectMap(from,
+            StringConstant.toArray(listMapping.getFromPrimitivePath()));
+        if (value != null) {
+          toList.add(value);
+        }
+      } else if (listMapping.getObjectMapping() != null) {
+        Map<String, Object> toListItemMap = new HashMap<>();
+        toListItemMap = copyAllValues(listMapping.getObjectMapping(), from, toListItemMap);
+        if (!toListItemMap.isEmpty()) {
+          toList.add(toListItemMap);
+        }
+      }
+      objectApi.setValueIntoObjectMap(to, toList,
+          toListPath);
     }
     return to;
   }

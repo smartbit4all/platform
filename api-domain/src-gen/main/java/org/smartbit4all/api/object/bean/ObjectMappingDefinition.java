@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -37,7 +38,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,
-  ObjectMappingDefinition.MAPPINGS
+  ObjectMappingDefinition.MAPPINGS,
+  ObjectMappingDefinition.LIST_MAPPINGS
 })
 @JsonTypeName("ObjectMappingDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,6 +52,9 @@ public class ObjectMappingDefinition {
 
   public static final String MAPPINGS = "mappings";
   private List<ObjectPropertyMapping> mappings = new ArrayList<>();
+
+  public static final String LIST_MAPPINGS = "listMappings";
+  private List<ObjectListMapping> listMappings = new ArrayList<>();
 
   public ObjectMappingDefinition() { 
   }
@@ -142,6 +147,40 @@ public class ObjectMappingDefinition {
   }
 
 
+  public ObjectMappingDefinition listMappings(List<ObjectListMapping> listMappings) {
+    
+    this.listMappings = listMappings;
+    return this;
+  }
+
+  public ObjectMappingDefinition addListMappingsItem(ObjectListMapping listMappingsItem) {
+    this.listMappings.add(listMappingsItem);
+    return this;
+  }
+
+   /**
+   * Get listMappings
+   * @return listMappings
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(LIST_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<ObjectListMapping> getListMappings() {
+    return listMappings;
+  }
+
+
+  @JsonProperty(LIST_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setListMappings(List<ObjectListMapping> listMappings) {
+    this.listMappings = listMappings;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,12 +192,13 @@ public class ObjectMappingDefinition {
     ObjectMappingDefinition objectMappingDefinition = (ObjectMappingDefinition) o;
     return Objects.equals(this.fromTypeQualifiedName, objectMappingDefinition.fromTypeQualifiedName) &&
         Objects.equals(this.toTypeQualifiedName, objectMappingDefinition.toTypeQualifiedName) &&
-        Objects.equals(this.mappings, objectMappingDefinition.mappings);
+        Objects.equals(this.mappings, objectMappingDefinition.mappings) &&
+        Objects.equals(this.listMappings, objectMappingDefinition.listMappings);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fromTypeQualifiedName, toTypeQualifiedName, mappings);
+    return Objects.hash(fromTypeQualifiedName, toTypeQualifiedName, mappings, listMappings);
   }
 
   @Override
@@ -168,6 +208,7 @@ public class ObjectMappingDefinition {
     sb.append("    fromTypeQualifiedName: ").append(toIndentedString(fromTypeQualifiedName)).append("\n");
     sb.append("    toTypeQualifiedName: ").append(toIndentedString(toTypeQualifiedName)).append("\n");
     sb.append("    mappings: ").append(toIndentedString(mappings)).append("\n");
+    sb.append("    listMappings: ").append(toIndentedString(listMappings)).append("\n");
     sb.append("}");
     return sb.toString();
   }

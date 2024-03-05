@@ -19,6 +19,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
@@ -35,6 +36,7 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.api.sample.bean.SampleProperties;
 import org.smartbit4all.api.sample.bean.SamplePropertyContainerWithId;
@@ -547,6 +549,88 @@ class ObjectApiTest {
     org.assertj.core.api.Assertions.assertThat(result)
         .containsAllEntriesOf(expectedResult);
 
+  }
+
+  @Test
+  void testObjectPropertyMapperWithPrimitiveList() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategoryType().name("from name").description("from description")
+            .code("from code"));
+    URI uriFrom = objectApi.save(fromNode);
+    ObjectNode toNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("category"));
+    URI uriTo = objectApi.save(toNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+    toNode = objectApi.loadLatest(uriTo);
+
+    ObjectPropertyMapper mapper = objectApi.mapper()
+        .mapping(new ObjectMappingDefinition()
+            .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
+            .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategoryType.NAME)
+                .addToPathItem(SampleCategory.NAME))
+            .addListMappingsItem(new ObjectListMapping().addToListPathItem(SampleCategory.KEY_WORDS)
+                .addFromPrimitivePathItem(SampleCategoryType.CODE))
+            .addListMappingsItem(new ObjectListMapping().addToListPathItem(SampleCategory.KEY_WORDS)
+                .addFromPrimitivePathItem(SampleCategoryType.NAME)));
+
+    Map<String, Object> expectedResult = new HashMap<>();
+    expectedResult.put(SampleCategoryType.NAME, "from name");
+
+    Map<String, Object> result =
+        mapper.copyAllValues(fromNode.getObjectAsMap(), toNode.getObjectAsMap());
+
+    org.assertj.core.api.Assertions.assertThat(result)
+        .containsAllEntriesOf(expectedResult);
+
+    org.assertj.core.api.Assertions.assertThat((List) result.get(SampleCategory.KEY_WORDS))
+        .contains("from name", "from code");
+  }
+
+  @Test
+  void testObjectPropertyMapperWithObjectList() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategoryType().name("from name").description("from description")
+            .code("from code"));
+    URI uriFrom = objectApi.save(fromNode);
+    ObjectNode toNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleExtensibleObject().name("..."));
+    URI uriTo = objectApi.save(toNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+    toNode = objectApi.loadLatest(uriTo);
+
+    ObjectPropertyMapper mapper = objectApi.mapper()
+        .mapping(new ObjectMappingDefinition()
+            .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
+            .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategoryType.NAME)
+                .addToPathItem(SampleExtensibleObject.NAME))
+            .addListMappingsItem(new ObjectListMapping()
+                .addToListPathItem(SampleExtensibleObject.LINKS)
+                .objectMapping(new ObjectMappingDefinition().addMappingsItem(
+                    new ObjectPropertyMapping().addFromPathItem(SampleCategoryType.CODE)
+                        .addToPathItem(SampleLinkObject.ITEM))))
+            .addListMappingsItem(new ObjectListMapping()
+                .addToListPathItem(SampleExtensibleObject.LINKS)
+                .objectMapping(new ObjectMappingDefinition().addMappingsItem(
+                    new ObjectPropertyMapping().addFromPathItem(SampleCategoryType.NAME)
+                        .addToPathItem(SampleLinkObject.ITEM)))));
+
+    Map<String, Object> expectedResult = new HashMap<>();
+    expectedResult.put(SampleCategoryType.NAME, "from name");
+
+    Map<String, Object> result =
+        mapper.copyAllValues(fromNode.getObjectAsMap(), toNode.getObjectAsMap());
+
+    org.assertj.core.api.Assertions.assertThat(result)
+        .containsAllEntriesOf(expectedResult);
+
+    org.assertj.core.api.Assertions
+        .assertThat(((List) result.get(SampleExtensibleObject.LINKS)).stream()
+            .map(o -> ((Map) o).get(SampleLinkObject.ITEM)))
+        .contains("from name", "from code");
   }
 
   @Test
