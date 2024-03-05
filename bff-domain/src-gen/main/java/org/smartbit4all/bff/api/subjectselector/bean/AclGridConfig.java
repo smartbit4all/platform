@@ -44,7 +44,10 @@ import javax.validation.Valid;
   AclGridConfig.SUBJECT_TYPES,
   AclGridConfig.SEARCH_PAGE_CONFIG,
   AclGridConfig.SELECTION_TYPE,
-  AclGridConfig.SUBJECT_VALUES
+  AclGridConfig.SUBJECT_VALUES,
+  AclGridConfig.MIN_NO_OF_ROWS,
+  AclGridConfig.MAX_NO_OF_ROWS,
+  AclGridConfig.HAS_COMMENT
 })
 @JsonTypeName("AclGridConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -110,6 +113,15 @@ public class AclGridConfig {
 
   public static final String SUBJECT_VALUES = "subjectValues";
   private List<Subject> subjectValues = new ArrayList<>();
+
+  public static final String MIN_NO_OF_ROWS = "minNoOfRows";
+  private Long minNoOfRows;
+
+  public static final String MAX_NO_OF_ROWS = "maxNoOfRows";
+  private Long maxNoOfRows;
+
+  public static final String HAS_COMMENT = "hasComment";
+  private Boolean hasComment;
 
   public AclGridConfig() { 
   }
@@ -372,6 +384,87 @@ public class AclGridConfig {
   }
 
 
+  public AclGridConfig minNoOfRows(Long minNoOfRows) {
+    
+    this.minNoOfRows = minNoOfRows;
+    return this;
+  }
+
+   /**
+   * Get minNoOfRows
+   * @return minNoOfRows
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MIN_NO_OF_ROWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getMinNoOfRows() {
+    return minNoOfRows;
+  }
+
+
+  @JsonProperty(MIN_NO_OF_ROWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMinNoOfRows(Long minNoOfRows) {
+    this.minNoOfRows = minNoOfRows;
+  }
+
+
+  public AclGridConfig maxNoOfRows(Long maxNoOfRows) {
+    
+    this.maxNoOfRows = maxNoOfRows;
+    return this;
+  }
+
+   /**
+   * Get maxNoOfRows
+   * @return maxNoOfRows
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MAX_NO_OF_ROWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getMaxNoOfRows() {
+    return maxNoOfRows;
+  }
+
+
+  @JsonProperty(MAX_NO_OF_ROWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMaxNoOfRows(Long maxNoOfRows) {
+    this.maxNoOfRows = maxNoOfRows;
+  }
+
+
+  public AclGridConfig hasComment(Boolean hasComment) {
+    
+    this.hasComment = hasComment;
+    return this;
+  }
+
+   /**
+   * Get hasComment
+   * @return hasComment
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HAS_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHasComment() {
+    return hasComment;
+  }
+
+
+  @JsonProperty(HAS_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHasComment(Boolean hasComment) {
+    this.hasComment = hasComment;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -389,12 +482,15 @@ public class AclGridConfig {
         Objects.equals(this.subjectTypes, aclGridConfig.subjectTypes) &&
         Objects.equals(this.searchPageConfig, aclGridConfig.searchPageConfig) &&
         Objects.equals(this.selectionType, aclGridConfig.selectionType) &&
-        Objects.equals(this.subjectValues, aclGridConfig.subjectValues);
+        Objects.equals(this.subjectValues, aclGridConfig.subjectValues) &&
+        Objects.equals(this.minNoOfRows, aclGridConfig.minNoOfRows) &&
+        Objects.equals(this.maxNoOfRows, aclGridConfig.maxNoOfRows) &&
+        Objects.equals(this.hasComment, aclGridConfig.hasComment);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues);
+    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues, minNoOfRows, maxNoOfRows, hasComment);
   }
 
   @Override
@@ -410,6 +506,9 @@ public class AclGridConfig {
     sb.append("    searchPageConfig: ").append(toIndentedString(searchPageConfig)).append("\n");
     sb.append("    selectionType: ").append(toIndentedString(selectionType)).append("\n");
     sb.append("    subjectValues: ").append(toIndentedString(subjectValues)).append("\n");
+    sb.append("    minNoOfRows: ").append(toIndentedString(minNoOfRows)).append("\n");
+    sb.append("    maxNoOfRows: ").append(toIndentedString(maxNoOfRows)).append("\n");
+    sb.append("    hasComment: ").append(toIndentedString(hasComment)).append("\n");
     sb.append("}");
     return sb.toString();
   }

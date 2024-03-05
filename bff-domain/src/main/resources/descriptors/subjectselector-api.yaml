@@ -61,6 +61,14 @@ components:
           type: array
           items:
             type: Subject
+        minNoOfRows:
+          type: integer
+          format: int64
+        maxNoOfRows:
+          type: integer
+          format: int64
+        hasComment:
+          type: boolean
     AclGridItem:
       type: object
       properties:

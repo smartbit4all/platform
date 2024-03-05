@@ -6,6 +6,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -292,6 +293,18 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     String gridId = request.getIdentifier();
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+    Long maxNoOfRows = gridConfig.getMaxNoOfRows();
+    if (maxNoOfRows != null) {
+      GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+      int size = gridModel.getPage().getRows().size();
+      if (size >= maxNoOfRows) {
+        String message = localeSettingApi.get(PREFIX, "TOO_MANY_ROWS");
+        message = MessageFormat.format(
+            message,
+            localeSettingApi.get(PREFIX, gridId), maxNoOfRows);
+        throw new IllegalStateException(message);
+      }
+    }
     SelectionTypeEnum selectionType = gridConfig.getSelectionType();
     if (selectionType == null || selectionType == SelectionTypeEnum.SUBJECT) {
       viewApi.showView(new View()
