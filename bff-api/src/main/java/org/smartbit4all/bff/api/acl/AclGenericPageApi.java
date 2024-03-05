@@ -16,6 +16,8 @@ public interface AclGenericPageApi extends PageApi<Object> {
 
   static final String ADD_SUBJECT = "ADD_SUBJECT";
   static final String DELETE_SUBJECT = "DELETE_SUBJECT";
+  static final String EDIT_COMMENT = "EDIT_COMMENT";
+  static final String SAVE_COMMENT = "SAVE_COMMENT";
 
   GridPage addGridActions(GridPage page, UUID viewUuid, String gridId);
 
@@ -23,10 +25,19 @@ public interface AclGenericPageApi extends PageApi<Object> {
   void performAddSubject(UUID viewUuid, UiActionRequest request);
 
   @WidgetActionHandler(DELETE_SUBJECT)
-  void performDeleteSubject(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
+  void performDeleteSubject(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
+
+  @WidgetActionHandler(EDIT_COMMENT)
+  void performEditComment(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   void handleSubjectSelected(UUID viewUuid, List<Subject> subjects, String gridId);
 
+  void saveSubjectSelectedWithComment(UUID dialogUuid, UiActionRequest request,
+      UUID viewUuid, List<Subject> subjects, String gridId);
+
   void handleUserSelected(UUID viewUuid, List<URI> userUriList, String gridId);
+
+  void saveComment(UUID dialogUuid, UiActionRequest request, UUID viewUuid, String gridId,
+      String rowId);
 
 }
