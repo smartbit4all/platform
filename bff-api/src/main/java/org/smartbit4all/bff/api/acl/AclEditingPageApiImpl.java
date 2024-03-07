@@ -3,17 +3,18 @@ package org.smartbit4all.bff.api.acl;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.AccessControlInternalApi;
-import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
-import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
+import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
@@ -32,13 +33,15 @@ import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
-import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  protected SubjectManagementApi subjectManagementApi;
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
   protected static final String ACL = AccessControlInternalApi.ACL_DEFAULT;
@@ -97,7 +100,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     acl.getRootEntry().getEntries().stream().forEach(aclEntry -> {
       matrix
           .addRowsItem(new Value().code(aclEntry.getSubject().getRef().toString())
-              .displayValue(resolveAclEntryDisplayValue(aclEntry.getSubject().getRef())));
+              .displayValue(resolveAclEntryDisplayValue(aclEntry.getSubject())));
 
       // Put value into the matrix data where the key is the name of the "row"(the Subject)
       // and set the the value with list of filtered operation
@@ -117,12 +120,12 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     return matrix;
   }
 
-  private String resolveAclEntryDisplayValue(URI entryRef) {
-    ObjectPropertyResolver resolver = objectApi.resolver();
-    resolver.addContextObject("object", entryRef);
-    return resolver.resolve(new ObjectPropertyFormatter().formatString("{0}")
-        .addParametersItem(
-            new ObjectPropertyFormatterParameter().propertyUri(URI.create("object:/#name"))));
+  private String resolveAclEntryDisplayValue(Subject subject) {
+    List<String> names = subjectManagementApi.getDisplayValue(
+        subject.getModel() == null ? PlatformApiConfig.SUBJECT_ACL : subject.getModel(),
+        Arrays.asList(subject));
+    return names.size() == 1 ? names.get(0) : "N/A";
+
   }
 
   @Override
