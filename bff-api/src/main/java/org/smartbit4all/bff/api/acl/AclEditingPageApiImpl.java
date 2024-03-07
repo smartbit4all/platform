@@ -4,22 +4,30 @@ import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
 import org.smartbit4all.api.org.bean.ACLEntry.SetOperationEnum;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.value.bean.ValueSetData;
@@ -31,9 +39,12 @@ import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.bff.api.config.PlatformViewNames;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -42,6 +53,9 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   @Autowired
   protected SubjectManagementApi subjectManagementApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
   protected static final String ACL = AccessControlInternalApi.ACL_DEFAULT;
@@ -152,7 +166,19 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   }
 
   @Override
-  public void openSubjectSelector(UUID viewUuid, UiActionRequest request) {}
+  public void openSubjectSelector(UUID viewUuid, UiActionRequest request) {
+    Map<String, Object> params = viewApi.getView(viewUuid).getParameters();
+    Object subjectTypes = params.get(PARAM_SUBJECT_TYPES);
+    if (ObjectUtils.isEmpty(subjectTypes)) {
+      subjectTypes = getDefaultSubjectTypes();
+    }
+    viewApi.showView(new View().viewName(PlatformViewNames.SUBJECT_SELECTOR_PAGE)
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SELECTION_CALLBACK,
+            invocation(api -> api.handleSubjectSelected(viewUuid,
+                Invocations.listOf(Collections.emptyList(), Subject.class))))
+        .putParametersItem(SubjectSelectorPageApi.PARAM_SUBJECT_TYPES, subjectTypes)
+        .type(ViewType.DIALOG));
+  }
 
   @Override
   public void handleSubjectSelected(UUID viewUuid, List<Subject> subjects) {
@@ -218,4 +244,15 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
         .matrix(consturctMatrixModel(acl, ops)));
     return widgets;
   }
+
+  protected InvocationRequest invocation(Consumer<AclEditingPageApi> apiCall) {
+    return invocationApi
+        .builder(AclEditingPageApi.class)
+        .build(apiCall);
+  }
+
+  protected List<String> getDefaultSubjectTypes() {
+    return List.of(Group.class.getName(), User.class.getName());
+  }
+
 }

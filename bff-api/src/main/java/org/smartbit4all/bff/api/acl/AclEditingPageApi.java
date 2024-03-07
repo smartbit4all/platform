@@ -9,6 +9,8 @@ import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 
 public interface AclEditingPageApi extends PageApi<ACL> {
+  String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
+
   String CANCEL = "CANCEL";
 
   @ActionHandler(CANCEL)
