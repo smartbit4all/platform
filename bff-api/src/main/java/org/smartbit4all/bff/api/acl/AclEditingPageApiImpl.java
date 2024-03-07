@@ -252,7 +252,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   }
 
   protected List<String> getDefaultSubjectTypes() {
-    return List.of(Group.class.getName(), User.class.getName());
+    return Arrays.asList(Group.class.getName(), User.class.getName());
   }
 
 }
