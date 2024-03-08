@@ -76,7 +76,8 @@ public final class ViewConstraintConfigurer {
       } else if (instruction.fallbackConfiguration != null) {
 
         final ConstraintConfigurer fallbackConfigurer =
-            new ConstraintConfigurer(componentConstraints.toArray(ComponentConstraint[]::new));
+            new ConstraintConfigurer(componentConstraints.stream()
+                .toArray(ComponentConstraint[]::new));
         final ConstraintMarker fallbackMarker = instruction.fallbackConfiguration
             .apply(fallbackConfigurer).instruction.marker;
         acceptConstraints(constraints, componentConstraints, fallbackMarker);
