@@ -59,7 +59,6 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
   protected static final String ACL = AccessControlInternalApi.ACL_DEFAULT;
-  public static final String OPERATIONS = "OPERATIONS";
 
   public AclEditingPageApiImpl() {
     super(ACL.class);
@@ -72,7 +71,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     ACL acl = getAcl(view);
 
-    List<String> operations = parameters.getAsList(OPERATIONS, String.class);
+    List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
         .addWidgetsItem(
@@ -197,7 +196,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
       acl.getRootEntry().addEntriesItem(new ACLEntry().subject(subject));
     }
 
-    List<String> operations = parameters.getAsList(OPERATIONS, String.class);
+    List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
     view.getLayouts().get(ACL_MATRIX).setWidgets(aclMatrixWidget(acl, operations));
 
@@ -217,7 +216,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     acl.getRootEntry().getEntries()
         .removeIf(entry -> entry.getSubject().getRef().equals(URI.create(entryToRemove.getCode())));
 
-    List<String> operations = parameters.getAsList(OPERATIONS, String.class);
+    List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
         .addWidgetsItem(

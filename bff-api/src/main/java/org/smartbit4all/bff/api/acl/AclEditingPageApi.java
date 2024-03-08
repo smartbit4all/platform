@@ -6,10 +6,14 @@ import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
+import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.bff.api.config.PlatformViewNames;
 
+@ViewApi(PlatformViewNames.SUBJECT_SELECTOR_PAGE)
 public interface AclEditingPageApi extends PageApi<ACL> {
-  String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
+  static final String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
+  static final String PARAM_OPERATIONS = "PARAM_OPERATIONS";
 
   String CANCEL = "CANCEL";
 

@@ -7,6 +7,8 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.bff.api.acl.AclEditingPageApi;
+import org.smartbit4all.bff.api.acl.AclEditingPageApiImpl;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApi;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApiImpl;
 import org.smartbit4all.bff.api.acl.UserSelectorPageApi;
@@ -103,6 +105,17 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<UserSelectorPageApi> userSelectorPageApiProvider(
       UserSelectorPageApi api) {
     return Invocations.asProvider(UserSelectorPageApi.class, api);
+  }
+
+  @Bean
+  public AclEditingPageApi aclEditingPageApi() {
+    return new AclEditingPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<AclEditingPageApi> aclEditingPageApiProvider(
+      AclEditingPageApi api) {
+    return Invocations.asProvider(AclEditingPageApi.class, api);
   }
 
   @Bean
