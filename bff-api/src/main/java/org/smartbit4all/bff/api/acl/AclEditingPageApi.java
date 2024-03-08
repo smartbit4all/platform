@@ -10,7 +10,7 @@ import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.config.PlatformViewNames;
 
-@ViewApi(PlatformViewNames.SUBJECT_SELECTOR_PAGE)
+@ViewApi(PlatformViewNames.ACL_MATRIX_PAGE)
 public interface AclEditingPageApi extends PageApi<ACL> {
   static final String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
   static final String PARAM_OPERATIONS = "PARAM_OPERATIONS";
