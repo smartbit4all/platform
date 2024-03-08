@@ -2,11 +2,9 @@ package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
-import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
 public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionContributionApi>
     implements ContentConversionApi {
@@ -16,42 +14,38 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
   }
 
   @Override
-  public boolean isConversionAvailable(String from, String to) {
+  public boolean isConversionAvailable(String fromMimeType, String toMimeType) {
     return getContributionApis().values().stream()
         .anyMatch(
-            api -> Objects.equals(api.getFromMimeType(), from)
-                && Objects.equals(api.getToMimeType(), to));
+            api -> api.getAcceptedMimeTypes().contains(fromMimeType)
+                && api.getTargetMimeTypes().contains(toMimeType));
   }
 
   @Override
   public List<String> getAvailableConversionTargets(String fromMimeType) {
     return getContributionApis().values().stream()
-        .filter(api -> Objects.equals(api.getFromMimeType(), fromMimeType))
-        .map(api -> api.getToMimeType())
+        .filter(api -> api.getAcceptedMimeTypes().contains(fromMimeType))
+        .flatMap(api -> api.getTargetMimeTypes().stream())
+        .distinct()
         .collect(Collectors.toList());
+  }
+
+  private final ContentConversionContributionApi getConverterApi(String fromMimeType,
+      String toMimeType) {
+    return getContributionApis().values().stream()
+        .filter(api -> api.getAcceptedMimeTypes().contains(fromMimeType)
+            && api.getTargetMimeTypes().contains(toMimeType))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
   public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema) {
-    return getContributionApis().values().stream()
-        .filter(api -> Objects.equals(binaryContentData.getMimeType(), api.getFromMimeType())
-            && Objects.equals(toMimeType, api.getToMimeType()))
-        .findFirst()
-        .map(api -> api.convert(binaryContentData, logicalSchema))
-        .orElse(null);
+    ContentConversionContributionApi api =
+        getConverterApi(binaryContentData.getMimeType(), toMimeType);
+    return api == null ? null
+        : api.convert(binaryContentData,
+            logicalSchema);
   }
-
-  @Override
-  public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema,
-      ServiceConnection serviceConnection) {
-    return getContributionApis().values().stream()
-        .filter(api -> Objects.equals(binaryContentData.getMimeType(), api.getFromMimeType())
-            && Objects.equals(toMimeType, api.getToMimeType()))
-        .findFirst()
-        .map(api -> api.convert(binaryContentData, logicalSchema, serviceConnection))
-        .orElse(null);
-  }
-
-
 
 }
