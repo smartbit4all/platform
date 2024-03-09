@@ -14,6 +14,7 @@ import org.smartbit4all.bff.api.config.PlatformViewNames;
 public interface AclEditingPageApi extends PageApi<ACL> {
   static final String PARAM_SUBJECT_TYPES = "PARAM_SUBJECT_TYPES";
   static final String PARAM_OPERATIONS = "PARAM_OPERATIONS";
+  static final String PARAM_TITLE = "PARAM_TITLE";
 
   String CANCEL = "CANCEL";
 

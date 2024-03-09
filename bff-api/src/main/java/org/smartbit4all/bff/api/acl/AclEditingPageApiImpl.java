@@ -45,6 +45,7 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import com.google.common.base.Strings;
 
 public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditingPageApi {
 
@@ -73,9 +74,15 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
+    String label = parameters.get(PARAM_TITLE, String.class);
+    if (Strings.isNullOrEmpty(label)) {
+      label = localeSettingApi.get(ACL);
+    }
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
         .addWidgetsItem(
-            new SmartWidgetDefinition().label(localeSettingApi.get(ACL)).key(ACL_MATRIX)
+            new SmartWidgetDefinition()
+                .key(ACL_MATRIX)
+                .label(label)
                 .type(SmartFormWidgetType.MATRIX)
                 .matrix(consturctMatrixModel(acl, operations))));
 
