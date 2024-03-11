@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -66,6 +67,7 @@ public class MDMEntryDescriptorPageApiImpl
     MDMDefinition definition;
     Boolean isNewEntry;
     InvocationRequest refreashActionsCallback;
+    URI mdmBranch;
 
     PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
@@ -82,6 +84,7 @@ public class MDMEntryDescriptorPageApiImpl
       definition = masterDataManagementApi.getDefinition(definitionName);
       refreashActionsCallback = objectApi.asType(InvocationRequest.class,
           view.getCallbacks().get(CALLBACK_REFRESH_ACTIONS));
+      mdmBranch = masterDataManagementApi.getGlobalBranch(definitionName);
       return this;
     }
   }
@@ -196,7 +199,8 @@ public class MDMEntryDescriptorPageApiImpl
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
       addNewEntryDescriptor(clientModel, code, name, vectorCollectionDescriptor, option);
-      masterDataManagementApi.addNewEntries(option);
+      // TODO use branch
+      masterDataManagementApi.addNewEntries(option, ctx.mdmBranch);
     } else {
       MDMEntryDescriptor entryDescriptorToEdit =
           ctx.entryDescriptor
@@ -204,7 +208,8 @@ public class MDMEntryDescriptorPageApiImpl
               .displayNameList(new LangString().defaultValue(name))
               .vectorCollection(vectorCollectionDescriptor)
               .importable(Boolean.TRUE.equals(clientModel.getImportable()));
-      masterDataManagementApi.modifyEntry(ctx.definition.getName(), entryDescriptorToEdit);
+      masterDataManagementApi.modifyEntry(ctx.definition.getName(), entryDescriptorToEdit,
+          ctx.mdmBranch);
     }
     if (ctx.refreashActionsCallback != null) {
       try {

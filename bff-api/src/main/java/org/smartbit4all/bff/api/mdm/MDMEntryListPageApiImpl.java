@@ -165,6 +165,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     View view;
     MDMEntryDescriptor entryDescriptor;
     MDMDefinition definition;
+    URI mdmBranch;
     MDMEntryApi entryApi;
     MDMEntryApi vectorEntryApi;
     MDMEntryApi embeddingEntryApi;
@@ -179,14 +180,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(getView());
       definition = getDefinition(getView());
+      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
       entryApi =
-          masterDataManagementApi.getApi(getDefinition().getName(), getEntryDescriptor().getName());
+          masterDataManagementApi.getApi(getDefinition().getName(), getEntryDescriptor().getName(),
+              mdmBranch);
       vectorEntryApi =
           masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-              PlatformApiConfig.VECTOR_DB_CONNECTIONS);
+              PlatformApiConfig.VECTOR_DB_CONNECTIONS, null); // TODO mdmBranch?
       embeddingEntryApi =
           masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-              PlatformApiConfig.EMBEDDING_CONNECTIONS);
+              PlatformApiConfig.EMBEDDING_CONNECTIONS, null); // TODO mdmBranch?
 
       searchIndexAdmin =
           collectionApi.searchIndex(getDefinition().getName(),
@@ -266,6 +269,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     public MDMDefinition getDefinition() {
       return definition;
+    }
+
+    public URI getMdmBranch() {
+      return mdmBranch;
     }
 
     public boolean isUnderApproval() {
@@ -416,9 +423,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               branchActive,
               !ctx.inactives, !globalBranching)
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
-              isEntryEditable)
+              canEdit, branchActive, isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isValueApiPresent, isEntryEditable);
+              isValueApiPresent, canEdit, branchActive, isEntryEditable);
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
@@ -432,9 +439,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               !ctx.inactives,
               !globalBranching)
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
-              isEntryEditable)
+              branchActive, isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
-              isValueApiPresent, isEntryEditable);
+              isValueApiPresent, branchActive, isEntryEditable);
     }
 
     uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
@@ -724,10 +731,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
     MDMDefinition mdmDefinition = context.getDefinition(view);
     MDMEntryApi entryApi =
-        masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName());
+        masterDataManagementApi.getApi(mdmDefinition.getName(), entryDescriptor.getName(),
+            context.mdmBranch);
     entryApi.updateAllIndices(Arrays.asList(GenericValue.CODE));
   }
-
 
   @Override
   public void importEntries(UUID viewUuid, UiActionRequest request) {

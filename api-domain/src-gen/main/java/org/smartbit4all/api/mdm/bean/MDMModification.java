@@ -24,7 +24,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,7 +44,8 @@ import javax.validation.Valid;
   MDMModification.CREATED,
   MDMModification.UPDATED,
   MDMModification.APPROVER,
-  MDMModification.NOTES
+  MDMModification.NOTES,
+  MDMModification.DESCRIPTORS
 })
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -60,6 +64,9 @@ public class MDMModification {
 
   public static final String NOTES = "notes";
   private List<MDMModificationNote> notes = null;
+
+  public static final String DESCRIPTORS = "descriptors";
+  private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
 
   public MDMModification() { 
   }
@@ -212,6 +219,40 @@ public class MDMModification {
   }
 
 
+  public MDMModification descriptors(Map<String, MDMEntryDescriptor> descriptors) {
+    
+    this.descriptors = descriptors;
+    return this;
+  }
+
+  public MDMModification putDescriptorsItem(String key, MDMEntryDescriptor descriptorsItem) {
+    this.descriptors.put(key, descriptorsItem);
+    return this;
+  }
+
+   /**
+   * Get descriptors
+   * @return descriptors
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(DESCRIPTORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, MDMEntryDescriptor> getDescriptors() {
+    return descriptors;
+  }
+
+
+  @JsonProperty(DESCRIPTORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDescriptors(Map<String, MDMEntryDescriptor> descriptors) {
+    this.descriptors = descriptors;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -225,12 +266,13 @@ public class MDMModification {
         Objects.equals(this.created, mdMModification.created) &&
         Objects.equals(this.updated, mdMModification.updated) &&
         Objects.equals(this.approver, mdMModification.approver) &&
-        Objects.equals(this.notes, mdMModification.notes);
+        Objects.equals(this.notes, mdMModification.notes) &&
+        Objects.equals(this.descriptors, mdMModification.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchUri, created, updated, approver, notes);
+    return Objects.hash(branchUri, created, updated, approver, notes, descriptors);
   }
 
   @Override
@@ -242,6 +284,7 @@ public class MDMModification {
     sb.append("    updated: ").append(toIndentedString(updated)).append("\n");
     sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
+    sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
     return sb.toString();
   }

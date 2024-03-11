@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mdm;
 
 import java.net.URI;
+import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -58,7 +59,11 @@ public interface MasterDataManagementApi {
    * @exception IllegalArgumentException It throws exception if the given definition or entry is not
    *            found.
    */
-  MDMEntryApi getApi(String definition, String name);
+  MDMEntryApi getApi(String definition, String name, URI branch);
+
+  default MDMEntryApi getApi(String definition, String name) {
+    return getApi(definition, name, null);
+  }
 
   /**
    * Return the api responsible for the management if the given {@link MDMEntryDescriptor}.
@@ -85,7 +90,11 @@ public interface MasterDataManagementApi {
    * @param entryName The name of the entry.
    * @return The descriptor object. Please do not modify this object.
    */
-  MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName);
+  MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName, URI branch);
+
+  default MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName) {
+    return getEntryDescriptor(definition, entryName, null);
+  }
 
   /**
    * Retrieve the entry descriptor from a MDM definition.
@@ -94,7 +103,20 @@ public interface MasterDataManagementApi {
    * @param entryName The name of the entry.
    * @return The descriptor object. Please do not modify this object.
    */
-  MDMEntryDescriptor getEntryDescriptor(String definitionName, String entryName);
+  MDMEntryDescriptor getEntryDescriptor(String definitionName, String entryName, URI branch);
+
+  default MDMEntryDescriptor getEntryDescriptor(String definitionName, String entryName) {
+    return getEntryDescriptor(definitionName, entryName, null);
+  }
+
+  /**
+   * Retrieve the entry descriptors from a MDM definition on a given branch.
+   *
+   * @param definition The {@link MDMDefinition} itself.
+   * @param branch URI of branch (currently only globalBranch is supported)
+   * @return The map of descriptors. Please do not modify this object.
+   */
+  Map<String, MDMEntryDescriptor> getEntryDescriptors(MDMDefinition definition, URI branch);
 
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
@@ -130,17 +152,17 @@ public interface MasterDataManagementApi {
 
   void approvalRejectedGlobal(String definitionName, String reason);
 
-  URI addNewEntries(MDMDefinitionOption o);
+  URI addNewEntries(MDMDefinitionOption o, URI branch);
 
   void saveVectorCollectionDescriptor(String definitionName, String entryName,
       VectorCollectionDescriptor vectorCollectionDescriptor);
 
-  void modifyEntry(String definitionName, MDMEntryDescriptor entry);
+  void modifyEntry(String definitionName, MDMEntryDescriptor entry, URI branch);
 
   /**
-   * 
+   *
    * Updates the definition with the InvocationRequest stored inside of it.
-   * 
+   *
    * @param definitionName The name of the definition.
    *
    */

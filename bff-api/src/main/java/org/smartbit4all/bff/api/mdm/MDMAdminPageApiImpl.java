@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,11 +52,13 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     View view;
     public MDMDefinition definition;
     public String alreadySelectedActionCode;
+    public URI mdmBranch;
 
     PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
       definition = masterDataManagementApi.getDefinition(getDefinition(parameters));
       alreadySelectedActionCode = getAlreadySelectedActionCode(parameters);
+      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
       return this;
     }
 
@@ -105,28 +108,30 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     return new HashMap<String, Object>();
   }
 
-  protected void refreshUiActions(PageContext context) {
+  protected void refreshUiActions(PageContext ctx) {
     List<UiAction> actions = new ArrayList<>();
-    if ((context.checkAdmin() || context.checkAdminApprover())
-        && context.definition.getBranchingStrategy() != null
-        && context.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
+    if ((ctx.checkAdmin() || ctx.checkAdminApprover())
+        && ctx.definition.getBranchingStrategy() != null
+        && ctx.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
       actions.add(new UiAction()
           .code(ACTION_OPEN_MDM_CHANGES)
           .descriptor(
               getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
     }
 
-    List<UiAction> openListActions = context.definition.getDescriptors().values().stream()
-        .filter(this::filterDescriptor)
-        .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
-        .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
-        .map(e -> new UiAction()
-            .code(OPEN_LIST_PREFIX + e.getName())
-            .descriptor(getUiActionDescriptor(e, e.getName())))
-        .collect(toList());
+    List<UiAction> openListActions =
+        masterDataManagementApi.getEntryDescriptors(ctx.definition, ctx.mdmBranch)
+            .values().stream()
+            .filter(this::filterDescriptor)
+            .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
+            .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
+            .map(e -> new UiAction()
+                .code(OPEN_LIST_PREFIX + e.getName())
+                .descriptor(getUiActionDescriptor(e, e.getName())))
+            .collect(toList());
     actions.addAll(openListActions);
 
-    context.view.actions(actions);
+    ctx.view.actions(actions);
   }
 
   protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e, String title) {
@@ -162,7 +167,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     PageContext ctx = getContextByViewUUID(viewUuid);
     MDMDefinition definition = ctx.definition;
     MDMEntryDescriptor descriptor = masterDataManagementApi
-        .getEntryDescriptor(definition, descriptorName);
+        .getEntryDescriptor(definition, descriptorName, ctx.mdmBranch);
     if (descriptor.getBranchingStrategy() == null) {
       descriptor.setBranchingStrategy(definition.getBranchingStrategy());
     }

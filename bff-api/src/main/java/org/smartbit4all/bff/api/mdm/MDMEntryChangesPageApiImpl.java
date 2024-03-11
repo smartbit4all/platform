@@ -103,6 +103,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     View view;
     MDMDefinition definition;
+    URI mdmBranch;
     List<MDMEntryApi> entryApisWithChanges;
     Map<String, SearchIndex<BranchedObjectEntry>> searchIndexAdminsByDescriptorName;
     List<MDMModificationNote> modificationNotes;
@@ -110,13 +111,15 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     public PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
-      setDefition(parameters);
-      entryApisWithChanges = getDefinition().getDescriptors().keySet().stream()
-          .map(descriptorName -> masterDataManagementApi.getApi(getDefinition().getName(),
-              descriptorName))
-          .filter(entryApi -> entryApi.getBranchingList().stream()
-              .anyMatch(e -> e.getBranchingState() != BranchingStateEnum.NOP))
-          .collect(toList());
+      setDefinition(parameters);
+      entryApisWithChanges =
+          masterDataManagementApi.getEntryDescriptors(definition, mdmBranch)
+              .keySet().stream()
+              .map(descriptorName -> masterDataManagementApi.getApi(getDefinition().getName(),
+                  descriptorName, mdmBranch))
+              .filter(entryApi -> entryApi.getBranchingList().stream()
+                  .anyMatch(e -> e.getBranchingState() != BranchingStateEnum.NOP))
+              .collect(toList());
       searchIndexAdminsByDescriptorName = getEntryApisWithChanges().stream()
           .collect(toMap(MDMEntryApi::getName,
               e -> collectionApi.searchIndex(getDefinition().getName(),
@@ -129,14 +132,15 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
 
     public PageContext loadOnlyDefinitionByView() {
-      setDefition(parameters(view));
+      setDefinition(parameters(view));
       setModificationNotes(getDefinition());
       return this;
     }
 
-    private final void setDefition(ObjectMapHelper parameters) {
+    private final void setDefinition(ObjectMapHelper parameters) {
       definition = masterDataManagementApi
           .getDefinition(parameters.require(PARAM_MDM_DEFINITION, String.class));
+      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
     }
 
     private void setModificationNotes(MDMDefinition definition) {
@@ -183,6 +187,10 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     public MDMDefinition getDefinition() {
       return definition;
+    }
+
+    public URI getMdmBranch() {
+      return mdmBranch;
     }
 
   }

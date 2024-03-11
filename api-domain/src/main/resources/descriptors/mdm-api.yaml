@@ -236,6 +236,7 @@ components:
             description: |
                 This object represents an ongoing modification in an MDMDefinition. It is strored inline in 
                 the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy).
+            required: [descriptors]
             properties:
                 branchUri:
                     type: string
@@ -251,6 +252,10 @@ components:
                     type: list
                     items:
                         $ref: "#/components/schemas/MDMModificationNote"
+                descriptors:
+                    type: object
+                    additionalProperties:
+                        $ref: "#/components/schemas/MDMEntryDescriptor"
         MDMModificationNote:
             type: object
             properties:
