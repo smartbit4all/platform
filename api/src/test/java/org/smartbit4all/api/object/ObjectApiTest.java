@@ -141,7 +141,7 @@ class ObjectApiTest {
         definition.getDefaultSerializer().serialize(myBean, SampleContainerItem.class);
 
     SampleContainerItem reloadedBean = definition.getDefaultSerializer()
-        .deserialize(binaryData, SampleContainerItem.class).orElseThrow();
+        .deserialize(binaryData, SampleContainerItem.class).get();
 
     assertEquals(myBean.getName(), reloadedBean.getName());
     assertEquals(myBean.getCost(), reloadedBean.getCost());
