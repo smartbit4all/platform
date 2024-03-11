@@ -89,6 +89,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.constraint.ViewConstraintManagementApi;
+import org.smartbit4all.api.view.constraint.ViewConstraintManagementApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverter;
@@ -668,6 +670,11 @@ public class PlatformApiConfig {
   @Bean
   public ActionManagementApi documentActionManagementApi() {
     return new ActionManagementApiImpl();
+  }
+
+  @Bean
+  public ViewConstraintManagementApi viewConstraintManagementApi() {
+    return new ViewConstraintManagementApiImpl();
   }
 
   @Bean
