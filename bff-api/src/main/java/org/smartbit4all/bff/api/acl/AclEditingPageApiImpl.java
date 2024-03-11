@@ -2,7 +2,6 @@ package org.smartbit4all.bff.api.acl;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +58,6 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   private InvocationApi invocationApi;
 
   protected static final String ACL_MATRIX = "ACL_MATRIX";
-  protected static final String ACL = AccessControlInternalApi.ACL_DEFAULT;
 
   public AclEditingPageApiImpl() {
     super(ACL.class);
@@ -74,17 +72,8 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
-    String label = parameters.get(PARAM_TITLE, String.class);
-    if (Strings.isNullOrEmpty(label)) {
-      label = localeSettingApi.get(ACL);
-    }
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
-        .addWidgetsItem(
-            new SmartWidgetDefinition()
-                .key(ACL_MATRIX)
-                .label(label)
-                .type(SmartFormWidgetType.MATRIX)
-                .matrix(consturctMatrixModel(acl, operations))));
+        .addWidgetsItem(createAclMatrixWidget(view, acl, operations)));
 
     view.putValueSetsItem("OPERATIONS", new ValueSet().valueSetData(
         new ValueSetData().values(operations.stream().map(Object.class::cast).collect(toList()))));
@@ -104,7 +93,8 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
   }
 
   protected ACL getAcl(View view) {
-    ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects().get(ACL, ACL.class);
+    ACL acl = objectApi.loadLatest(view.getObjectUri()).aspects()
+        .get(AccessControlInternalApi.ACL_DEFAULT, ACL.class);
 
     if (acl == null) {
       acl = new ACL().rootEntry(
@@ -113,7 +103,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     return acl;
   }
 
-  protected SmartMatrixModel consturctMatrixModel(ACL acl, List<String> operations) {
+  protected SmartMatrixModel constructMatrixModel(ACL acl, List<String> operations) {
     SmartMatrixModel matrix = new SmartMatrixModel();
     matrix.data(new HashMap<>());
 
@@ -205,8 +195,9 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
     List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
-    view.getLayouts().get(ACL_MATRIX).setWidgets(aclMatrixWidget(acl, operations));
-
+    List<SmartWidgetDefinition> widgets = view.getLayouts().get(ACL_MATRIX).getWidgets();
+    widgets.clear();
+    widgets.add(createAclMatrixWidget(view, acl, operations));
     setModel(viewUuid, acl);
   }
 
@@ -226,10 +217,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     List<String> operations = parameters.getAsList(PARAM_OPERATIONS, String.class);
 
     view.putLayoutsItem(ACL_MATRIX, new SmartLayoutDefinition()
-        .addWidgetsItem(
-            new SmartWidgetDefinition().label(localeSettingApi.get(ACL)).key(ACL_MATRIX)
-                .type(SmartFormWidgetType.MATRIX)
-                .matrix(consturctMatrixModel(acl, operations))));
+        .addWidgetsItem(createAclMatrixWidget(view, acl, operations)));
 
     setModel(viewUuid, acl);
 
@@ -241,14 +229,17 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
         .contains(subjectUri);
   }
 
-  private List<SmartWidgetDefinition> aclMatrixWidget(ACL acl, List<String> ops) {
-    final List<SmartWidgetDefinition> widgets = new ArrayList<>();
-    widgets.add(new SmartWidgetDefinition()
-        .label(ACL)
+  private SmartWidgetDefinition createAclMatrixWidget(View view, ACL acl, List<String> operations) {
+    ObjectMapHelper parameters = parameters(view);
+    String label = parameters.get(PARAM_TITLE, String.class);
+    if (Strings.isNullOrEmpty(label)) {
+      label = localeSettingApi.get(AccessControlInternalApi.ACL_DEFAULT);
+    }
+    return new SmartWidgetDefinition()
         .key(ACL_MATRIX)
+        .label(label)
         .type(SmartFormWidgetType.MATRIX)
-        .matrix(consturctMatrixModel(acl, ops)));
-    return widgets;
+        .matrix(constructMatrixModel(acl, operations));
   }
 
   protected InvocationRequest invocation(Consumer<AclEditingPageApi> apiCall) {
