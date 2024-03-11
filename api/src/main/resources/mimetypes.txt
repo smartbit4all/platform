@@ -9,3 +9,6 @@ application/pdf pdf
 application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
 
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx
+
+audio/mpeg mpeg mp3
+video/mp4 mp4
