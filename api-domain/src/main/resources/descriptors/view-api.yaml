@@ -1236,3 +1236,40 @@ components:
           type: array
           items:
             type: string
+    ActionRegistryEntry:
+      type: object
+      description: |
+        This is the registry entry of the UiActions in the MDM Entry of the registry.
+      required: [namespace, code]
+      properties:
+        uri:
+          type: string
+          format: uri
+        precedenceOrder:
+          description: |
+            A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence 
+            first and override it with the next one and so on.
+          type: integer
+          format: int32
+        namespace:
+          description: |
+            The namespace of the given action. The action must be unique inside a namespace. It could be important to
+            have the same action in different namespaces.
+          type: string
+        code:
+          description: |
+            The code of the action. We must have a redundant value for this because the action itself is not necessarily exists.
+        action:
+          description: The action itself with the well know parameters. 
+          $ref: '#/components/schemas/UiAction'
+        invocations:
+          description: |
+            Invocations of the invocation chain behind the action. This invocations are executed when the given
+            action is performed.
+          type: array
+          items:
+            type: InvocationRequest
+        descriptor:
+          description: |
+            The UiAction descriptor for the action. If it is set then the it overrides the action.descriptor.
+          $ref: '#/components/schemas/UiActionDescriptor'
