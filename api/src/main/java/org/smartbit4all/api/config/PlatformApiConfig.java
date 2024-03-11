@@ -39,6 +39,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
+import org.smartbit4all.api.mimetype.config.MimeTypeConfig;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
@@ -128,7 +129,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
  * @author Peter Boros
  */
 @Configuration
-@Import({DomainConfig.class, PlatformApiScheduledConfig.class})
+@Import({DomainConfig.class, PlatformApiScheduledConfig.class, MimeTypeConfig.class})
 public class PlatformApiConfig {
 
   public static final String EMBEDDING_CONNECTIONS = "embeddingConnections";

@@ -27,12 +27,22 @@ public class DomainObjectTestBean {
     this.enabled = enabled;
   }
 
+  public DomainObjectTestBean enabled(Boolean enabled) {
+    this.enabled = enabled;
+    return this;
+  }
+
   public boolean isValid() {
     return valid;
   }
 
   public void setValid(boolean valid) {
     this.valid = valid;
+  }
+
+  public DomainObjectTestBean valid(boolean valid) {
+    this.valid = valid;
+    return this;
   }
 
   public String getName() {
@@ -43,17 +53,22 @@ public class DomainObjectTestBean {
     this.name = name;
   }
 
+  public DomainObjectTestBean name(String name) {
+    this.name = name;
+    return this;
+  }
+
   public long getCounter() {
     return counter;
+  }
+
+  public void setCounter(long counter) {
+    this.counter = counter;
   }
 
   public DomainObjectTestBean counter(long counter) {
     this.counter = counter;
     return this;
-  }
-
-  public void setCounter(long counter) {
-    this.counter = counter;
   }
 
   public List<String> getStringList() {

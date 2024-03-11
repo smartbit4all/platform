@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import java.util.UUID;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
@@ -36,6 +36,7 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.api.sample.bean.SampleProperties;
@@ -124,32 +125,26 @@ class ObjectApiTest {
 
   @Test
   void testUndefinedBeanDefinition() throws IOException {
-    ObjectDefinition<BinaryContent> definition = objectApi.definition(BinaryContent.class);
-    assertEquals(BinaryContent.class.getName().replace('.', '_'),
+    ObjectDefinition<SampleContainerItem> definition =
+        objectApi.definition(SampleContainerItem.class);
+    assertEquals(SampleContainerItem.class.getName().replace('.', '_'),
         definition.getAlias());
     assertEquals(ObjectMapper.class.getName(), definition.getDefaultSerializer().getName());
 
-    BinaryContent myBean = new BinaryContent();
-
-    myBean.setExtension("txt");
-    myBean.setFileName("árvíztűrőtükörfúrógép.txt");
-    myBean.setMimeType("application/text");
-    myBean.setSize(Long.valueOf(1024));
+    SampleContainerItem myBean = new SampleContainerItem().name("árvíztűrőtükörfúrógép.txt")
+        .cost(Long.valueOf(1024)).createdAt(OffsetDateTime.now());
 
     URI uri = URI.create("scheme:/path#fragment");
     definition.setUri(myBean, uri);
 
     BinaryData binaryData =
-        definition.getDefaultSerializer().serialize(myBean, BinaryContent.class);
+        definition.getDefaultSerializer().serialize(myBean, SampleContainerItem.class);
 
-    Optional<BinaryContent> deserializeResult =
-        definition.getDefaultSerializer().deserialize(binaryData, BinaryContent.class);
+    SampleContainerItem reloadedBean = definition.getDefaultSerializer()
+        .deserialize(binaryData, SampleContainerItem.class).orElseThrow();
 
-    Assertions.assertTrue(deserializeResult.isPresent());
-
-    BinaryContent reloadedBean = deserializeResult.get();
-
-    assertEquals(myBean.getFileName(), reloadedBean.getFileName());
+    assertEquals(myBean.getName(), reloadedBean.getName());
+    assertEquals(myBean.getCost(), reloadedBean.getCost());
     assertEquals(myBean.getUri(), definition.getUri(reloadedBean));
 
 
@@ -309,6 +304,7 @@ class ObjectApiTest {
     {
       List<SampleCategoryType> require =
           mapHelper.requireNonNullAsList("listWithMap", SampleCategoryType.class);
+      @SuppressWarnings("unchecked")
       List<SampleCategoryType> listFromMap =
           (List<SampleCategoryType>) mapHelper.getMap().get("listWithMap");
       org.assertj.core.api.Assertions.assertThat(require).containsSequence(listFromMap);
@@ -349,16 +345,12 @@ class ObjectApiTest {
     // sub categories and theircontainer object.
     ObjectNode rootNode = objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("Root"));
 
-    List<URI> admins = new ArrayList<>();
-    List<URI> normals = new ArrayList<>();
-
     URI admin = orgApi.saveGroup(new Group().builtIn(true).name("admin"));
     URI normal = orgApi.saveGroup(new Group().builtIn(true).name("normal"));
     URI superGroup = orgApi.saveGroup(new Group().builtIn(true).name("super"));
     orgApi.addChildGroup(orgApi.getGroup(superGroup), orgApi.getGroup(admin));
     orgApi.addChildGroup(orgApi.getGroup(superGroup), orgApi.getGroup(normal));
 
-    URI normalUserUri = createUser("normal user", "Normal Norman", normal);
     URI rootAdmin = createUser("root admin", "root admin", admin);
     URI superUserUri = createUser("super user", "super user", superGroup);
 
@@ -551,6 +543,7 @@ class ObjectApiTest {
 
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   void testObjectPropertyMapperWithPrimitiveList() {
     ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
@@ -584,10 +577,11 @@ class ObjectApiTest {
     org.assertj.core.api.Assertions.assertThat(result)
         .containsAllEntriesOf(expectedResult);
 
-    org.assertj.core.api.Assertions.assertThat((List) result.get(SampleCategory.KEY_WORDS))
+    org.assertj.core.api.Assertions.assertThat((List<String>) result.get(SampleCategory.KEY_WORDS))
         .contains("from name", "from code");
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Test
   void testObjectPropertyMapperWithObjectList() {
     ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,

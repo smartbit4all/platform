@@ -1,6 +1,5 @@
 package org.smartbit4all.api.mimetype;
 
-import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
@@ -19,7 +18,7 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
    * Some contributions are depending on a {@link ServiceConnection} registry entry that defines the
    * API access.
    */
-  static final String MDM_CONVERSION_SERVICES = "ConversionServices";
+  static final String MDM_CONVERSION_SERVICES = "ContentConversionServices";
 
   /**
    * The conversion is based on the mime types. If we need to have special content types then we
@@ -47,8 +46,9 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
    *        mime type to be able to start the proper converter.
    * @param toMimeType The target mime type.
    * @param logicalSchema The logical schema to save the result into.
-   * @return The URI of the saved content.
+   * @return The {@link BinaryContentData} with the local content URI of the saved result.
    */
-  URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema);
+  BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
+      String logicalSchema);
 
 }

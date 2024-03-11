@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.activation.MimetypesFileTypeMap;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.util.MimeTypeUtils;
 import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
@@ -91,7 +93,26 @@ public class MimeTypeApi implements InitializingBean {
   }
 
   public String getExtension(String mimeType) {
-    return extensionsByMimeType.get(mimeType);
+    String extension = extensionsByMimeType.get(mimeType);
+    if (extension == null) {
+      extension = MimeTypeUtils.parseMimeType(mimeType).getSubtype();
+    }
+    return extension;
+  }
+
+  public String ensureFileExtension(String filename, String mimeType) {
+    String extension = getExtension(mimeType);
+    String suffix = StringConstant.DOT + extension;
+    if (filename == null) {
+      return "unnamed" + suffix;
+    }
+    int dotIndex = filename.lastIndexOf(StringConstant.DOT);
+    if (dotIndex < 0) {
+      // The dot was not found.
+      return filename + suffix;
+    } else {
+      return filename.substring(0, dotIndex) + suffix;
+    }
   }
 
   public String ensurePdfFilename(String filename) {

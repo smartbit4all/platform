@@ -2,12 +2,21 @@ package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
+import org.smartbit4all.api.session.SessionApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionContributionApi>
     implements ContentConversionApi {
+
+  @Autowired(required = false)
+  SessionApi sessionApi;
+
+  @Autowired
+  MimeTypeApi mimeTypeApi;
 
   public ContentConversionApiImpl() {
     super(ContentConversionContributionApi.class);
@@ -40,12 +49,28 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
   }
 
   @Override
-  public URI convert(BinaryContentData binaryContentData, String toMimeType, String logicalSchema) {
+  public BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
+      String logicalSchema) {
+    Objects.requireNonNull(binaryContentData);
+    Objects.requireNonNull(toMimeType);
+    Objects.requireNonNull(logicalSchema);
+
+    if (!isConversionAvailable(binaryContentData.getMimeType(), toMimeType)) {
+      throw new IllegalArgumentException(
+          "The conversion of " + binaryContentData + " to " + toMimeType + " is not available.");
+    }
     ContentConversionContributionApi api =
         getConverterApi(binaryContentData.getMimeType(), toMimeType);
-    return api == null ? null
-        : api.convert(binaryContentData,
-            logicalSchema);
+    if (api != null) {
+      URI dataUri = api.convert(binaryContentData,
+          toMimeType, logicalSchema);
+      BinaryContentData result = new BinaryContentData()
+          .created(sessionApi != null ? sessionApi.createActivityLog() : null).dataUri(dataUri)
+          .extension(mimeTypeApi.getExtension(toMimeType))
+          .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType));
+      return result;
+    }
+    return null;
   }
 
 }

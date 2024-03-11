@@ -3,51 +3,71 @@ package org.smartbit4all.api.mimetype;
 import java.net.URI;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ContentConversionContributionApiImpl extends ContributionApiImpl
     implements ContentConversionContributionApi {
 
   @Autowired
-  SessionApi sessionApi;
-  @Autowired
   ObjectApi objectApi;
+
+  @Autowired
+  MasterDataManagementApi mdmApi;
+
+  /**
+   * This option is set for every conversion api. If set true then the
+   * {@link MasterDataManagementApi#MDM_DEFINITION_SYSTEM_INTEGRATION}
+   * {@link ContentConversionApi#MDM_CONVERSION_SERVICES} entry must contains a ServiceConnection
+   * record named bound with the contribution api.
+   */
+  protected boolean needServiceConnection = false;
 
   protected ContentConversionContributionApiImpl(String apiName) {
     super(apiName);
   }
 
+  @Override
+  public boolean isAvailable() {
+    if (needServiceConnection) {
+      ServiceConnection serviceConnection = getServiceConnection();
+      if (serviceConnection == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected final ServiceConnection getServiceConnection() {
+    MDMEntryApi entryApi =
+        mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            ContentConversionApi.MDM_CONVERSION_SERVICES);
+    ServiceConnection serviceConnection = entryApi.lookup().findByUnique(
+        new ObjectPropertyValue().addPathItem(ServiceConnection.NAME).value(getApiName()),
+        ServiceConnection.class);
+    if (serviceConnection == null) {
+      throw new IllegalStateException("Missing " + getApiName() + " ServiceConnection from "
+          + MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION
+          + StringConstant.SPACE_HYPHEN_SPACE + ContentConversionApi.MDM_CONVERSION_SERVICES);
+    }
+    return serviceConnection;
+  }
+
   /**
    * Handles the conversion itself.
    */
-  protected abstract BinaryData convertInternal(BinaryData content);
-
-  /**
-   * Handles the conversion with a remote API via the connection defined in the serviceConnection.
-   */
-  protected abstract BinaryData convertInternal(BinaryData content,
-      ServiceConnection serviceConnection);
+  protected abstract BinaryData convertInternal(BinaryContentData content, String toMimeType);
 
   @Override
-  public URI convert(BinaryContentData content, String logicalSchema) {
-    BinaryDataObject binaryDataObject =
-        objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class);
-    BinaryData convertedData = convertInternal(binaryDataObject.getBinaryData());
-    return objectApi.saveAsNew(logicalSchema, convertedData.asObject());
-  }
-
-  @Override
-  public URI convert(BinaryContentData content, String logicalSchema,
-      ServiceConnection serviceConnection) {
-    BinaryDataObject binaryDataObject =
-        objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class);
-    BinaryData convertedData = convertInternal(binaryDataObject.getBinaryData(), serviceConnection);
-    return objectApi.saveAsNew(logicalSchema, convertedData.asObject());
+  public URI convert(BinaryContentData content, String toMimeType,
+      String logicalSchema) {
+    return objectApi.saveAsNew(logicalSchema, convertInternal(content, toMimeType).asObject());
   }
 
 }

@@ -18,9 +18,23 @@ public interface ContentConversionContributionApi extends ContributionApi {
    */
   public List<String> getTargetMimeTypes();
 
-  public URI convert(BinaryContentData content, String logicalSchema);
+  /**
+   * @return Return true if the given service is available. If a {@link ServiceConnection} is
+   *         required to for the functioality then we need to add the
+   *         {@link ContentConversionApi#MDM_CONVERSION_SERVICES} MDM Entry. The name should be the
+   *         fully qualified name of the contribution api itself.
+   */
+  boolean isAvailable();
 
-  public URI convert(BinaryContentData content,
-      String logicalSchema, ServiceConnection serviceConnection);
+  /**
+   * The implementation of the conversion.
+   * 
+   * @param content The content to convert.
+   * @param toMimeType The target mime type.
+   * @param logicalSchema The logical schema.
+   * @return
+   */
+  public URI convert(BinaryContentData content, String toMimeType,
+      String logicalSchema);
 
 }
