@@ -148,7 +148,7 @@ public class MDMEntryDescriptorPageApiImpl
                 MDMEntryDescriptorPageModel.IMPORTABLE))));
   }
 
-  private ViewConstraint getViewConstraint(UUID viewUuid) {
+  protected ViewConstraint getViewConstraint(UUID viewUuid) {
     ViewConstraint viewConstraint = new ViewConstraint();
     PageContext ctx = getContextByView(viewUuid);
     if (ObjectUtils.isEmpty(vectorDBApi.getContributionApis())) {
