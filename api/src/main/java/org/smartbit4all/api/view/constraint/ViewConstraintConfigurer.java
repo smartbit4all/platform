@@ -3,8 +3,11 @@ package org.smartbit4all.api.view.constraint;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -14,27 +17,41 @@ import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
 import com.google.common.base.Strings;
 
+/**
+ * 
+ * @author Szabolcs Bazil Papp
+ *
+ */
 public final class ViewConstraintConfigurer {
 
   public static ViewConstraintConfigurer newInstance() {
-    return new ViewConstraintConfigurer(null, null, null);
+    return new ViewConstraintConfigurer(null, null, null, null);
   }
 
   public static ViewConstraintConfigurer of(final View view, final ObjectNode domainobject,
-      final URI userUri) {
-    return new ViewConstraintConfigurer(view, domainobject, userUri);
+      final URI userUri, Object viewModel) {
+    return new ViewConstraintConfigurer(view, domainobject, userUri, viewModel);
   }
 
-  private View view;
-  private ObjectNode domainObject;
-  private URI userUri;
-  private final List<ConstraintConfigurationInstruction> instructions;
+  private final View view;
+  private final ObjectNode domainObject;
+  private final URI userUri;
+  private final Object viewModel;
+  private final List<ConstraintConfigurationInstructionBundle> instructionBundles;
+  private final List<ComponentConstraint> results;
 
-  private ViewConstraintConfigurer(View view, ObjectNode domainObject, URI userUri) {
+  private ViewConstraintConfigurer(View view, ObjectNode domainObject, URI userUri,
+      Object viewModel) {
     this.view = view;
     this.domainObject = domainObject;
     this.userUri = userUri;
-    this.instructions = new ArrayList<>();
+    this.viewModel = viewModel;
+    this.instructionBundles = new ArrayList<>();
+    this.results = new ArrayList<>();
+  }
+
+  public ViewConstraintConfigurer withViewModel(final Object newViewModel) {
+    return of(view, domainObject, userUri, newViewModel);
   }
 
   public ConstraintConfigurer set(String key, String... keys) {
@@ -57,52 +74,83 @@ public final class ViewConstraintConfigurer {
   }
 
   public ViewConstraint configure() {
-    final List<ComponentConstraint> constraints = new ArrayList<>();
+    if (!results.isEmpty()) {
+      return new ViewConstraint().componentConstraints(results);
+    }
 
-    for (final ConstraintConfigurationInstruction instruction : instructions) {
+
+    for (final ConstraintConfigurationInstructionBundle bundle : instructionBundles) {
+      processInstructionBundle(bundle);
+    }
+
+    return new ViewConstraint().componentConstraints(results);
+  }
+
+  private boolean processInstructionBundle(final ConstraintConfigurationInstructionBundle bundle) {
+    for (final ConstraintConfigurationInstruction instruction : bundle.instructions) {
 
       final List<ComponentConstraint> componentConstraints = instruction.componentConstraints;
       final ConstraintMarker marker = instruction.marker;
-      final List<Predicate<View>> viewPredicates = instruction.viewPredicates;
-      final List<Predicate<ObjectNode>> domainObjectPredicates = instruction.domainObjectPredicates;
-      final List<Predicate<URI>> userUriPredicates = instruction.userUriPredicates;
-
-      if (matchesPredicateList(viewPredicates, view)
-          && matchesPredicateList(domainObjectPredicates, domainObject)
-          && matchesPredicateList(userUriPredicates, userUri)) {
-
-        acceptConstraints(constraints, componentConstraints, marker);
+      if (conditionMatched(instruction)) {
+        acceptConstraints(componentConstraints, marker);
+        return true;
 
       } else if (instruction.fallbackConfiguration != null) {
-
         final ConstraintConfigurer fallbackConfigurer =
             new ConstraintConfigurer(componentConstraints.stream()
                 .toArray(ComponentConstraint[]::new));
-        final ConstraintMarker fallbackMarker = instruction.fallbackConfiguration
-            .apply(fallbackConfigurer).instruction.marker;
-        acceptConstraints(constraints, componentConstraints, fallbackMarker);
+        final ConditionConfigurer fallbackConditionConfigurer = instruction.fallbackConfiguration
+            .apply(fallbackConfigurer);
+        final boolean fallbackResult =
+            processInstructionBundle(fallbackConditionConfigurer.instructionBundle);
+        if (fallbackResult) {
+          return true;
+        }
 
       }
+
     }
-
-    return new ViewConstraint().componentConstraints(constraints);
+    return false;
   }
 
-  public ViewConstraint configure(final View view, final ObjectNode domainobject,
-      final URI userUri) {
-    this.view = view;
-    this.domainObject = domainobject;
-    this.userUri = userUri;
-    return configure();
-  }
-
-  private void acceptConstraints(final List<ComponentConstraint> resultList,
-      final List<ComponentConstraint> constraintsToAdd, final ConstraintMarker marker) {
-    constraintsToAdd.forEach(c -> resultList.add(marker.apply(c)));
+  private boolean conditionMatched(ConstraintConfigurationInstruction instruction) {
+    return matchesPredicateList(instruction.viewPredicates, view)
+        && matchesPredicateList(instruction.domainObjectPredicates, domainObject)
+        && matchesPredicateList(instruction.userUriPredicates, userUri)
+        && matchesPredicateList(instruction.userDomainObjectBiPredicates, userUri, domainObject)
+        && matchesTypeBasedPredicateLists(instruction.viewModelPredicates, viewModel);
   }
 
   private <T> boolean matchesPredicateList(List<Predicate<T>> predicates, T subject) {
-    return predicates.isEmpty() || predicates.stream().allMatch(p -> p.test(subject));
+    return predicates.isEmpty() // predicate list is empty -> auto match; else subject is not null
+                                // and matches all predicates:
+        || (subject != null && predicates.stream().allMatch(p -> p.test(subject)));
+  }
+
+  private <T, U> boolean matchesPredicateList(List<BiPredicate<T, U>> predicates, T subjectA,
+      U subjectB) {
+    return predicates.isEmpty() // predicate list is empty -> auto match; else subjects are not null
+                                // and matches all predicates:
+        || (subjectA != null && subjectB != null
+            && predicates.stream().allMatch(p -> p.test(subjectA, subjectB)));
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private boolean matchesTypeBasedPredicateLists(Map<Class<?>, List<Predicate<?>>> predicates,
+      Object subject) {
+    return predicates.isEmpty()
+        || (subject != null && predicates.entrySet().stream()
+            .filter(e -> e.getKey().isInstance(subject))
+            .allMatch(e -> {
+              final Class<?> clazz = e.getKey();
+              final List<Predicate<?>> ps = e.getValue();
+              return ps.stream().allMatch(p -> ((Predicate) p).test(clazz.cast(subject)));
+            }));
+  }
+
+  private void acceptConstraints(final List<ComponentConstraint> constraintsToAdd,
+      final ConstraintMarker marker) {
+    constraintsToAdd.forEach(c -> results.add(marker.apply(c)));
   }
 
   public final class ConstraintConfigurer {
@@ -152,46 +200,84 @@ public final class ViewConstraintConfigurer {
   }
 
   public final class ConditionConfigurer {
-    private final ConstraintConfigurationInstruction instruction;
+    private final ConstraintConfigurationInstructionBundle instructionBundle;
+    private ConstraintConfigurationInstruction currentInstruction;
 
     private ConditionConfigurer(List<ComponentConstraint> componentConstraints,
         ConstraintMarker marker) {
-      instruction = new ConstraintConfigurationInstruction(componentConstraints, marker);
+      currentInstruction = new ConstraintConfigurationInstruction(componentConstraints, marker);
+      instructionBundle = new ConstraintConfigurationInstructionBundle();
+      instructionBundle.instructions.add(currentInstruction);
     }
 
-    public ConditionConfigurer when(final Predicate<ObjectNode> domainObjectPredicate) {
-      instruction.domainObjectPredicates.add(Objects.requireNonNull(domainObjectPredicate,
+    public ConditionConfigurer whenDomainNode(final Predicate<ObjectNode> domainObjectPredicate) {
+      currentInstruction.domainObjectPredicates.add(Objects.requireNonNull(domainObjectPredicate,
           "Domain Object Predicate must not be null!"));
       return ConditionConfigurer.this;
     }
 
     public ConditionConfigurer whenUser(final Predicate<URI> userUriPredicate) {
-      instruction.userUriPredicates.add(Objects.requireNonNull(userUriPredicate,
+      currentInstruction.userUriPredicates.add(Objects.requireNonNull(userUriPredicate,
           "User URI Predicate must not be null!"));
       return ConditionConfigurer.this;
     }
 
     public ConditionConfigurer whenView(final Predicate<View> viewPredicate) {
-      instruction.viewPredicates.add(Objects.requireNonNull(viewPredicate,
+      currentInstruction.viewPredicates.add(Objects.requireNonNull(viewPredicate,
           "View Predicate must not be null!"));
       return ConditionConfigurer.this;
     }
 
-    public ViewConstraintConfigurer and() {
-      ViewConstraintConfigurer.this.instructions.add(instruction);
+    public ConditionConfigurer whenUser(
+        final BiPredicate<URI, ObjectNode> userDomainObjectBiPredicate) {
+      currentInstruction.userDomainObjectBiPredicates.add(Objects.requireNonNull(
+          userDomainObjectBiPredicate,
+          "User-DomainObject joint predicate must not be null!"));
+      return ConditionConfigurer.this;
+    }
+
+    public ConditionConfigurer whenViewModel(final Predicate<Object> viewModelPredicate) {
+      currentInstruction.viewModelPredicates
+          .computeIfAbsent(Object.class, k -> new ArrayList<>())
+          .add(Objects.requireNonNull(
+              viewModelPredicate,
+              "ViewModel predicate must not be null!"));
+      return ConditionConfigurer.this;
+    }
+
+    public <M> ConditionConfigurer whenViewModel(final Class<M> viewModelClass,
+        Predicate<M> viewModelPredicate) {
+      Objects.requireNonNull(viewModelClass, "viewModelClass cannot be null!");
+      currentInstruction.viewModelPredicates
+          .computeIfAbsent(viewModelClass, k -> new ArrayList<>())
+          .add(Objects.requireNonNull(
+              viewModelPredicate,
+              "ViewModel predicate must not be null!"));
+      return ConditionConfigurer.this;
+    }
+
+    public ConditionConfigurer or() {
+      currentInstruction = currentInstruction.cleanCopy();
+      instructionBundle.instructions.add(currentInstruction);
+      return ConditionConfigurer.this;
+    }
+
+    public ViewConstraintConfigurer next() {
+      currentInstruction = null;
+      ViewConstraintConfigurer.this.instructionBundles.add(instructionBundle);
       return ViewConstraintConfigurer.this;
     }
 
     public ViewConstraintConfigurer always() {
-      instruction.domainObjectPredicates.clear();
-      instruction.userUriPredicates.clear();
-      return and();
+      currentInstruction.domainObjectPredicates.clear();
+      currentInstruction.userUriPredicates.clear();
+      return next();
     }
 
     public ViewConstraintConfigurer orElse(
         Function<ConstraintConfigurer, ConditionConfigurer> fallbackConfiguration) {
-      instruction.fallbackConfiguration = fallbackConfiguration;
-      return and();
+      currentInstruction.fallbackConfiguration = fallbackConfiguration;
+      return next();
     }
 
   }
@@ -224,6 +310,8 @@ public final class ViewConstraintConfigurer {
     private final List<Predicate<View>> viewPredicates;
     private final List<Predicate<ObjectNode>> domainObjectPredicates;
     private final List<Predicate<URI>> userUriPredicates;
+    private final List<BiPredicate<URI, ObjectNode>> userDomainObjectBiPredicates;
+    private final Map<Class<?>, List<Predicate<?>>> viewModelPredicates;
     private Function<ConstraintConfigurer, ConditionConfigurer> fallbackConfiguration;
 
     private ConstraintConfigurationInstruction(List<ComponentConstraint> componentConstraints,
@@ -233,6 +321,21 @@ public final class ViewConstraintConfigurer {
       this.viewPredicates = new ArrayList<>();
       this.domainObjectPredicates = new ArrayList<>();
       this.userUriPredicates = new ArrayList<>();
+      this.userDomainObjectBiPredicates = new ArrayList<>();
+      this.viewModelPredicates = new HashMap<>();
+    }
+
+    private ConstraintConfigurationInstruction cleanCopy() {
+      return new ConstraintConfigurationInstruction(componentConstraints, marker);
+    }
+
+  }
+
+  private static final class ConstraintConfigurationInstructionBundle {
+    private final List<ConstraintConfigurationInstruction> instructions;
+
+    public ConstraintConfigurationInstructionBundle() {
+      this.instructions = new ArrayList<>();
     }
   }
 

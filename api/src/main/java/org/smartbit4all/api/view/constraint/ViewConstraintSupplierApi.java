@@ -19,8 +19,11 @@ public interface ViewConstraintSupplierApi
         view == null ? null : view.getModel());
   }
 
-  ViewConstraint calculateViewConstraint(final View view, final ObjectNode domainObject,
-      final URI currentUserUri, final Object viewModel);
+  default ViewConstraint calculateViewConstraint(final View view, final ObjectNode domainObject,
+      final URI currentUserUri, final Object viewModel) {
+    return calculateViewConstraint(
+        ViewConstraintConfigurer.of(view, domainObject, currentUserUri, viewModel));
+  }
 
   ViewConstraint calculateViewConstraint(final ViewConstraintConfigurer viewConstraintConfigurer);
 
