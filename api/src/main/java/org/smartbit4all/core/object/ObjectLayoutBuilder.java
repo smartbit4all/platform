@@ -124,6 +124,13 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition textfieldWithAutoComplete(String key, String label,
+      SelectionDefinition selectionDefinition, String filterErrorMsg) {
+    return textfield(key, label)
+        .selection(selectionDefinition)
+        .filterErrorMessage(filterErrorMsg);
+  }
+
   public static SmartWidgetDefinition textfieldNumber(String key, String label) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.TEXT_FIELD_NUMBER)

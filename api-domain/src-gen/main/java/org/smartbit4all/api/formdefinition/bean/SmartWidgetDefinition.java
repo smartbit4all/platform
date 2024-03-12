@@ -65,7 +65,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.WIDGET_DESCRIPTION,
   SmartWidgetDefinition.MAX_LENGTH,
   SmartWidgetDefinition.VALUE_CHANGE_MODE,
-  SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX
+  SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX,
+  SmartWidgetDefinition.FILTER_ERROR_MESSAGE
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -141,6 +142,9 @@ public class SmartWidgetDefinition {
 
   public static final String SHOW_CHARACTER_LIMIT_SUFFIX = "showCharacterLimitSuffix";
   private Boolean showCharacterLimitSuffix = false;
+
+  public static final String FILTER_ERROR_MESSAGE = "filterErrorMessage";
+  private String filterErrorMessage;
 
   public SmartWidgetDefinition() { 
   }
@@ -821,6 +825,33 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition filterErrorMessage(String filterErrorMessage) {
+    
+    this.filterErrorMessage = filterErrorMessage;
+    return this;
+  }
+
+   /**
+   * The default error message to show if the widget features an autocompletion filter operation, which returns no elements. 
+   * @return filterErrorMessage
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The default error message to show if the widget features an autocompletion filter operation, which returns no elements. ")
+  @JsonProperty(FILTER_ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getFilterErrorMessage() {
+    return filterErrorMessage;
+  }
+
+
+  @JsonProperty(FILTER_ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterErrorMessage(String filterErrorMessage) {
+    this.filterErrorMessage = filterErrorMessage;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -853,12 +884,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.widgetDescription, smartWidgetDefinition.widgetDescription) &&
         Objects.equals(this.maxLength, smartWidgetDefinition.maxLength) &&
         Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode) &&
-        Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix);
+        Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix) &&
+        Objects.equals(this.filterErrorMessage, smartWidgetDefinition.filterErrorMessage);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage);
   }
 
   @Override
@@ -889,6 +921,7 @@ public class SmartWidgetDefinition {
     sb.append("    maxLength: ").append(toIndentedString(maxLength)).append("\n");
     sb.append("    valueChangeMode: ").append(toIndentedString(valueChangeMode)).append("\n");
     sb.append("    showCharacterLimitSuffix: ").append(toIndentedString(showCharacterLimitSuffix)).append("\n");
+    sb.append("    filterErrorMessage: ").append(toIndentedString(filterErrorMessage)).append("\n");
     sb.append("}");
     return sb.toString();
   }

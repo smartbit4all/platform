@@ -7,7 +7,7 @@ info:
     email: info@it4all.hu
   version: 1.0.0
 tags:
-- name: FormLayoutDefinition
+  - name: FormLayoutDefinition
 paths:
   /nope:
     post:
@@ -135,10 +135,15 @@ components:
         showCharacterLimitSuffix:
           type: boolean
           default: false
+        filterErrorMessage:
+          description: |
+            The default error message to show if the widget features an autocompletion filter
+            operation, which returns no elements.
+          type: string
     ValueChangeMode:
-      description: | 
+      description: |
         This enum defines the value change handling strategy. Currently only one method is supported,
-        IMMEDIATE_ACTION, which will trigger an executeUiAction when the value is changed. 
+        IMMEDIATE_ACTION, which will trigger an executeUiAction when the value is changed.
       enum:
         - NONE
         - IMMEDIATE_ACTION
@@ -159,7 +164,7 @@ components:
         - ROW
     SelectionDefinition:
       type: object
-      required: [valueSetName,type,mapping]
+      required: [valueSetName, type, mapping]
       description: The definition of an arbitrary selection.
       properties:
         valueSetName:
@@ -172,7 +177,7 @@ components:
             Defines how the selection should work: for properties or the whole selected Object.
         displayProperty:
           type: string
-          description: | 
+          description: |
             Specifies which property from ValueSetData.values as Object should be used in 
             selection widget.
         mapping:
