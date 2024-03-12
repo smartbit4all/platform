@@ -38,42 +38,42 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This is the registry entry of the UiActions in the MDM Entry of the registry. ")
 @JsonPropertyOrder({
-  ActionRegistryEntry.URI,
-  ActionRegistryEntry.PRECEDENCE_ORDER,
-  ActionRegistryEntry.NAMESPACE,
-  ActionRegistryEntry.CODE,
-  ActionRegistryEntry.ACTION,
-  ActionRegistryEntry.INVOCATIONS,
-  ActionRegistryEntry.DESCRIPTOR
+  ActionDefinition.URI,
+  ActionDefinition.PRECEDENCE_ORDER,
+  ActionDefinition.QUALIFIED_NAME,
+  ActionDefinition.ACTION,
+  ActionDefinition.INVOCATIONS,
+  ActionDefinition.DESCRIPTOR,
+  ActionDefinition.CONTEXT_CHECKS
 })
-@JsonTypeName("ActionRegistryEntry")
+@JsonTypeName("ActionDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ActionRegistryEntry {
+public class ActionDefinition {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String PRECEDENCE_ORDER = "precedenceOrder";
   private Integer precedenceOrder;
 
-  public static final String NAMESPACE = "namespace";
-  private String namespace;
-
-  public static final String CODE = "code";
-  private Object code = null;
+  public static final String QUALIFIED_NAME = "qualifiedName";
+  private String qualifiedName;
 
   public static final String ACTION = "action";
   private UiAction action;
 
   public static final String INVOCATIONS = "invocations";
-  private List<InvocationRequest> invocations = null;
+  private List<InvocationRequest> invocations = new ArrayList<>();
 
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor;
 
-  public ActionRegistryEntry() { 
+  public static final String CONTEXT_CHECKS = "contextChecks";
+  private List<InvocationRequest> contextChecks = null;
+
+  public ActionDefinition() { 
   }
 
-  public ActionRegistryEntry uri(URI uri) {
+  public ActionDefinition uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -83,11 +83,12 @@ public class ActionRegistryEntry {
    * Get uri
    * @return uri
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getUri() {
     return uri;
@@ -95,13 +96,13 @@ public class ActionRegistryEntry {
 
 
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
   }
 
 
-  public ActionRegistryEntry precedenceOrder(Integer precedenceOrder) {
+  public ActionDefinition precedenceOrder(Integer precedenceOrder) {
     
     this.precedenceOrder = precedenceOrder;
     return this;
@@ -128,63 +129,35 @@ public class ActionRegistryEntry {
   }
 
 
-  public ActionRegistryEntry namespace(String namespace) {
+  public ActionDefinition qualifiedName(String qualifiedName) {
     
-    this.namespace = namespace;
+    this.qualifiedName = qualifiedName;
     return this;
   }
 
    /**
-   * The namespace of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. 
-   * @return namespace
+   * The namespace and the code of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. The namespace can be the name of an object or even a special page. The last  segment is the code itself. 
+   * @return qualifiedName
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The namespace of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. ")
-  @JsonProperty(NAMESPACE)
+  @ApiModelProperty(required = true, value = "The namespace and the code of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. The namespace can be the name of an object or even a special page. The last  segment is the code itself. ")
+  @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getNamespace() {
-    return namespace;
+  public String getQualifiedName() {
+    return qualifiedName;
   }
 
 
-  @JsonProperty(NAMESPACE)
+  @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setNamespace(String namespace) {
-    this.namespace = namespace;
+  public void setQualifiedName(String qualifiedName) {
+    this.qualifiedName = qualifiedName;
   }
 
 
-  public ActionRegistryEntry code(Object code) {
-    
-    this.code = code;
-    return this;
-  }
-
-   /**
-   * The code of the action. We must have a redundant value for this because the action itself is not necessarily exists. 
-   * @return code
-  **/
-  @javax.annotation.Nullable
-  @NotNull
-  @ApiModelProperty(required = true, value = "The code of the action. We must have a redundant value for this because the action itself is not necessarily exists. ")
-  @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Object getCode() {
-    return code;
-  }
-
-
-  @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(Object code) {
-    this.code = code;
-  }
-
-
-  public ActionRegistryEntry action(UiAction action) {
+  public ActionDefinition action(UiAction action) {
     
     this.action = action;
     return this;
@@ -212,16 +185,13 @@ public class ActionRegistryEntry {
   }
 
 
-  public ActionRegistryEntry invocations(List<InvocationRequest> invocations) {
+  public ActionDefinition invocations(List<InvocationRequest> invocations) {
     
     this.invocations = invocations;
     return this;
   }
 
-  public ActionRegistryEntry addInvocationsItem(InvocationRequest invocationsItem) {
-    if (this.invocations == null) {
-      this.invocations = new ArrayList<>();
-    }
+  public ActionDefinition addInvocationsItem(InvocationRequest invocationsItem) {
     this.invocations.add(invocationsItem);
     return this;
   }
@@ -230,11 +200,12 @@ public class ActionRegistryEntry {
    * Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. 
    * @return invocations
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. ")
+  @ApiModelProperty(required = true, value = "Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. ")
   @JsonProperty(INVOCATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<InvocationRequest> getInvocations() {
     return invocations;
@@ -242,13 +213,13 @@ public class ActionRegistryEntry {
 
 
   @JsonProperty(INVOCATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setInvocations(List<InvocationRequest> invocations) {
     this.invocations = invocations;
   }
 
 
-  public ActionRegistryEntry descriptor(UiActionDescriptor descriptor) {
+  public ActionDefinition descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
@@ -276,6 +247,42 @@ public class ActionRegistryEntry {
   }
 
 
+  public ActionDefinition contextChecks(List<InvocationRequest> contextChecks) {
+    
+    this.contextChecks = contextChecks;
+    return this;
+  }
+
+  public ActionDefinition addContextChecksItem(InvocationRequest contextChecksItem) {
+    if (this.contextChecks == null) {
+      this.contextChecks = new ArrayList<>();
+    }
+    this.contextChecks.add(contextChecksItem);
+    return this;
+  }
+
+   /**
+   * Invocation requests that check the context objects of the action and produce constraints for them if necessary. In this check we can remove the given action or disable. 
+   * @return contextChecks
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Invocation requests that check the context objects of the action and produce constraints for them if necessary. In this check we can remove the given action or disable. ")
+  @JsonProperty(CONTEXT_CHECKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<InvocationRequest> getContextChecks() {
+    return contextChecks;
+  }
+
+
+  @JsonProperty(CONTEXT_CHECKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContextChecks(List<InvocationRequest> contextChecks) {
+    this.contextChecks = contextChecks;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -284,32 +291,32 @@ public class ActionRegistryEntry {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ActionRegistryEntry actionRegistryEntry = (ActionRegistryEntry) o;
-    return Objects.equals(this.uri, actionRegistryEntry.uri) &&
-        Objects.equals(this.precedenceOrder, actionRegistryEntry.precedenceOrder) &&
-        Objects.equals(this.namespace, actionRegistryEntry.namespace) &&
-        Objects.equals(this.code, actionRegistryEntry.code) &&
-        Objects.equals(this.action, actionRegistryEntry.action) &&
-        Objects.equals(this.invocations, actionRegistryEntry.invocations) &&
-        Objects.equals(this.descriptor, actionRegistryEntry.descriptor);
+    ActionDefinition actionDefinition = (ActionDefinition) o;
+    return Objects.equals(this.uri, actionDefinition.uri) &&
+        Objects.equals(this.precedenceOrder, actionDefinition.precedenceOrder) &&
+        Objects.equals(this.qualifiedName, actionDefinition.qualifiedName) &&
+        Objects.equals(this.action, actionDefinition.action) &&
+        Objects.equals(this.invocations, actionDefinition.invocations) &&
+        Objects.equals(this.descriptor, actionDefinition.descriptor) &&
+        Objects.equals(this.contextChecks, actionDefinition.contextChecks);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, precedenceOrder, namespace, code, action, invocations, descriptor);
+    return Objects.hash(uri, precedenceOrder, qualifiedName, action, invocations, descriptor, contextChecks);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ActionRegistryEntry {\n");
+    sb.append("class ActionDefinition {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    precedenceOrder: ").append(toIndentedString(precedenceOrder)).append("\n");
-    sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    action: ").append(toIndentedString(action)).append("\n");
     sb.append("    invocations: ").append(toIndentedString(invocations)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
+    sb.append("    contextChecks: ").append(toIndentedString(contextChecks)).append("\n");
     sb.append("}");
     return sb.toString();
   }
