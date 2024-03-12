@@ -193,4 +193,22 @@ public interface MDMEntryApi {
 
   void setBranchedEntriesMerged(UserActivityLog merged);
 
+  /**
+   * Update the content of the MDM Entry to have exactly the required list of objects. As a result
+   * the previously existing objects will be removed if there was no
+   * 
+   * @param requiredObjects The objects could be Map<String, Object> but also some sort of domain
+   *        object.
+   * @return True if the entry was changed.
+   */
+  boolean update(List<Object> requiredObjects);
+
+  /**
+   * Ensure that the content of the MDM Entry will contain all the objects passed after the call.
+   * 
+   * @param objects
+   * @return The uri list of the changed objects or an empty list if nothing was changed.
+   */
+  List<URI> append(List<Object> objects);
+
 }

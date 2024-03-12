@@ -1,13 +1,12 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -59,6 +58,8 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -70,6 +71,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired(required = false)
   private List<MDMDefinitionOption> options;
+
+  @Autowired(required = false)
+  private List<MDMEntrySetup> setups;
 
   private boolean optionsSaved = false;
 
@@ -250,6 +254,22 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       synchronizeValueSets();
       synchronizeSearchIndices();
       synchronizeSecurityOptions();
+    }
+    if (setups != null) {
+      for (MDMEntrySetup entrySetup : setups) {
+        if (entrySetup.getEntriesToSetup() != null) {
+          Map<String, MDMEntryApi> entryApis = entrySetup.getEntriesToSetup().stream().map(e -> {
+            try {
+              return getApiSafe(entrySetup.getDefinitionToSetup(), e);
+            } catch (Exception ex) {
+              log.info("Unable to setup the " + e + " entry of the "
+                  + entrySetup.getDefinitionToSetup() + " MDM definition.", ex);
+            }
+            return null;
+          }).filter(Objects::nonNull).collect(toMap(a -> a.getName(), a -> a));
+          entrySetup.setupEntries(entryApis);
+        }
+      }
     }
     optionsSaved = true;
   }

@@ -1,8 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +58,9 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -758,4 +758,16 @@ public class MDMEntryApiImpl implements MDMEntryApi {
           objectApi.save(branchedNode);
         });
   }
+
+  @Override
+  public boolean update(List<Object> requiredObjects) {
+    return false;
+  }
+
+  @Override
+  public List<URI> append(List<Object> objects) {
+    // TODO Auto-generated method stub
+    return Collections.emptyList();
+  }
+
 }
