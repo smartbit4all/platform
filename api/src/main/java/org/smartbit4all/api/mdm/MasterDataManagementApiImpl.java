@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -59,8 +61,6 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -850,11 +850,19 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     Map<String, MDMEntryDescriptor> descriptors = state.getGlobalModification().getDescriptors();
     if (!ObjectUtils.isEmpty(descriptors)) {
       MDMDefinitionOption option = new MDMDefinitionOption(getDefinition(definitionName));
-      descriptors.entrySet().forEach(entry -> option.addDescriptor(entry.getValue()));
+      descriptors.entrySet()
+          .forEach(entry -> addDescriptorToDefinition(option.getDefinition(), entry.getValue()));
       addNewEntries(option, null);
     }
 
     return stateWrapper;
+  }
+
+  private void addDescriptorToDefinition(MDMDefinition definition, MDMEntryDescriptor descriptor) {
+    if (descriptor.getBranchingStrategy() == null) {
+      descriptor.setBranchingStrategy(definition.getBranchingStrategy());
+    }
+    definition.putDescriptorsItem(descriptor.getName(), descriptor);
   }
 
   @Override
