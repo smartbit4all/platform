@@ -1,14 +1,32 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
 import org.smartbit4all.api.object.bean.ObjectValidationResult;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
+import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Strings;
 
 public final class ObjectValidations {
+
+  public static final String LOCALE_MANDATORY = "mandatory";
 
   private ObjectValidations() {}
 
@@ -161,6 +179,222 @@ public final class ObjectValidations {
       baseline.severity(toMerge.getSeverity());
     }
     baseline.getItems().addAll(toMerge.getItems());
+  }
+
+  /**
+   * Validates whether every property marked as <i>mandatory</i> by the {@link ViewConstraint} has a
+   * value or not.
+   * 
+   * <p>
+   * Example usage:
+   * 
+   * <pre>
+   * <code>
+   * public void performSave(UUID viewUuid, UiActionRequest request) {
+   *   final View view = viewApi.getView(viewUuid);
+   *   final ViewConstraint viewConstraint = view.getConstraint();
+   *   
+   *   final Model model = actionRequestHelper(view).require(UiActions.MODEL, Model.class);
+   *   final ObjectNode modelNode = objectApi.create(null, model);
+   *   
+   *   final ObjectValidationResult validationResult = ObjectValidations.validateMandatoryFields(
+   *       viewConstraint, 
+   *       model);
+   *   if (ObjectValidationSeverity.OK != validationResult.getSeverity()) {
+   *     viewApi.showView(new View()
+   *        .viewName(PlatformViewNames.VALIDATION_RESULT_PAGE)
+   *        .type(ViewType.DIALOG)
+   *        .putParametersItem(
+   *            ValidationResultPageApi.VALIDATION_RESULT,
+   *            validationResult)
+   *        .putCallbacksItem(
+   *            ValidationResultPageApi.VALIDATION_PAGE_INVOCATION_REQUEST,
+   *            invocationApi
+   *                .builder(MyPageApiInterface.class)
+   *                .build(a -> a.performSaveWithoutValidation(viewUuid, request))));
+   * 
+   *   } else {
+   *     performSaveWithoutValidation(viewUuid, request);
+   *   }
+   * }
+   * 
+   * public void performSaveWithoutValidation(UUID viewUuid, UiActionRequest request) {
+   *   // do actual save logic here...
+   * }
+   * </code>
+   * </pre>
+   * 
+   * <p>
+   * The returned result is only of severity {@link ObjectValidationSeverity#WARNING}, enabling
+   * forceful continuation of the user operation (if any).
+   * 
+   * @param viewConstraint the {@link ViewConstraint} applicable for the current view, nullable; if
+   *        null, {@link #OK()} is returned
+   * @param viewModel the {@link ObjectNode} representation of the view's model, may be a virtual
+   *        node (created with {@code null} schema), or even null; if null every mandatory
+   *        requirement is failed
+   * @return the {@link ObjectValidationResult} containing every unfilled mandatory field with its
+   *         {@link LangString#getDefaultValue()} prefixed with {@link #LOCALE_MANDATORY} (it is the
+   *         client's responsibility to resolve the actual locale-specific strings)
+   */
+  public static ObjectValidationResult validateMandatoryFields(ViewConstraint viewConstraint,
+      ObjectNode viewModel) {
+    return validateMandatoryFields(viewConstraint, viewModel, null);
+  }
+
+  /**
+   * Validates whether every property marked as <i>mandatory</i> by the {@link ViewConstraint} has a
+   * value or not.
+   * 
+   * <p>
+   * Widgets not present in the provided {@link SmartComponentLayoutDefinition} are not considered.
+   * 
+   * <p>
+   * Example usage:
+   * 
+   * <pre>
+   * <code>
+   * public void performSave(UUID viewUuid, UiActionRequest request) {
+   *   final View view = viewApi.getView(viewUuid);
+   *   final ViewConstraint viewConstraint = view.getConstraint();
+   *   
+   *   final SmartComponentLayoutDefinition layout;
+   *   final Map<String, SmartComponentLayoutDefinition> layouts = view.getComponentLayouts();
+   *   if (layouts == null || layouts.isEmpty()) {
+   *     layout = null;
+   *   } else {
+   *     layout = componentLayouts.values().stream().findFirst().orElseThrow();
+   *   }
+   *   
+   *   final Model model = actionRequestHelper(view).require(UiActions.MODEL, Model.class);
+   *   final ObjectNode modelNode = objectApi.create(null, model);
+   *   
+   *   final ObjectValidationResult validationResult = ObjectValidations.validateMandatoryFields(
+   *       viewConstraint, 
+   *       model,
+   *       layout);
+   *   if (ObjectValidationSeverity.OK != validationResult.getSeverity()) {
+   *     viewApi.showView(new View()
+   *        .viewName(PlatformViewNames.VALIDATION_RESULT_PAGE)
+   *        .type(ViewType.DIALOG)
+   *        .putParametersItem(
+   *            ValidationResultPageApi.VALIDATION_RESULT,
+   *            validationResult)
+   *        .putCallbacksItem(
+   *            ValidationResultPageApi.VALIDATION_PAGE_INVOCATION_REQUEST,
+   *            invocationApi
+   *                .builder(MyPageApiInterface.class)
+   *                .build(a -> a.performSaveWithoutValidation(viewUuid, request))));
+   * 
+   *   } else {
+   *     performSaveWithoutValidation(viewUuid, request);
+   *   }
+   * }
+   * 
+   * public void performSaveWithoutValidation(UUID viewUuid, UiActionRequest request) {
+   *   // do actual save logic here...
+   * }
+   * </code>
+   * </pre>
+   * 
+   * <p>
+   * The returned result is only of severity {@link ObjectValidationSeverity#WARNING}, enabling
+   * forceful continuation of the user operation (if any).
+   * 
+   * @param viewConstraint the {@link ViewConstraint} applicable for the current view, nullable; if
+   *        null, {@link #OK()} is returned
+   * @param viewModel the {@link ObjectNode} representation of the view's model, may be a virtual
+   *        node (created with {@code null} schema), or even null; if null every mandatory
+   *        requirement is failed
+   * @param layout the {@link SmartComponentLayoutDefinition} applicable for the current view,
+   *        nullable; if null, every mandatory field of the {@code ViewConstraint} is considered for
+   *        the calculation
+   * @return the {@link ObjectValidationResult} containing every unfilled mandatory field with its
+   *         {@link LangString#getDefaultValue()} prefixed with {@link #LOCALE_MANDATORY} (it is the
+   *         client's responsibility to resolve the actual locale-specific strings)
+   */
+  public static ObjectValidationResult validateMandatoryFields(ViewConstraint viewConstraint,
+      ObjectNode viewModel, SmartComponentLayoutDefinition layout) {
+    if (viewConstraint == null) {
+      return OK();
+    }
+
+    final List<ComponentConstraint> constraints = viewConstraint.getComponentConstraints();
+    if (constraints == null || constraints.isEmpty()) {
+      return OK();
+    }
+
+    final Predicate<String> widgetKeyPredicate;
+    if (layout != null) {
+      widgetKeyPredicate = flattenLayout(layout)
+          .flatMap(it -> formWidgets(it))
+          .map(SmartWidgetDefinition::getKey)
+          .collect(collectingAndThen(toSet(), keys -> keys::contains));
+    } else {
+      widgetKeyPredicate = s -> true;
+    }
+
+    final List<String[]> mandatoryProperties = constraints.stream()
+        .filter(it -> isTrue(it.getVisible())
+            && isTrue(it.getEnabled())
+            && isTrue(it.getMandatory()))
+        .map(ComponentConstraint::getDataName)
+        .filter(widgetKeyPredicate)
+        .map(it -> it.split("\\."))
+        .collect(toList());
+    if (mandatoryProperties.isEmpty()) {
+      return OK();
+    }
+
+    if (viewModel == null) {
+      return mandatoryProperties.stream()
+          .map(ObjectValidations::mandatoryItem)
+          .collect(collectingAndThen(toList(), ObjectValidations::of));
+    }
+
+    return mandatoryProperties.stream()
+        .filter(path -> !hasValue(viewModel, path))
+        .map(ObjectValidations::mandatoryItem)
+        .collect(collectingAndThen(toList(), ObjectValidations::of));
+  }
+
+  private static Stream<SmartComponentLayoutDefinition> flattenLayout(
+      SmartComponentLayoutDefinition layout) {
+    List<SmartComponentLayoutDefinition> components = layout.getComponents();
+    if (components == null || components.isEmpty()) {
+      return Stream.of(layout);
+    }
+
+    return Stream.concat(Stream.of(layout), components.stream().flatMap(it -> flattenLayout(it)));
+  }
+
+  private static ObjectValidationItem mandatoryItem(String[] keys) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.WARNING)
+        .message(new LangString()
+            .defaultValue(LOCALE_MANDATORY + StringConstant.DOT
+                + Arrays.stream(keys).collect(Collectors.joining(StringConstant.DOT))));
+  }
+
+  private static Stream<SmartWidgetDefinition> formWidgets(SmartComponentLayoutDefinition layout) {
+    if (layout == null || ComponentType.FORM != layout.getType() || layout.getForm() == null) {
+      return Stream.empty();
+    }
+
+    return layout.getForm().stream().filter(Objects::nonNull);
+  }
+
+  private static boolean hasValue(ObjectNode node, String... path) {
+    final Object value = node.getValue(path);
+    if (value instanceof String) {
+      return !Strings.isNullOrEmpty((String) value);
+    } else {
+      return value != null;
+    }
+  }
+
+  private static boolean isTrue(final Boolean boxed) {
+    return Boolean.TRUE == boxed;
   }
 
   /**
