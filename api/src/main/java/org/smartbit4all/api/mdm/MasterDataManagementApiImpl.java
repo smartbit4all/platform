@@ -306,6 +306,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     URI uri = currentMap.get(o.getDefinition().getName());
     // Set the name of the searchIndex and inherit security group name
     o.getDefinition().getDescriptors().values().forEach(d -> {
+      if (!StringConstant.isValidCode(d.getName())) {
+        throw new IllegalArgumentException(
+            "MDMDefinition cannot be created with this invalid name: " + d.getName());
+      }
+
       d.setSearchIndexForEntries(
           BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName());
       d.setAdminGroupName(constructEntrySecurityGroupName(o.getDefinition(), d));

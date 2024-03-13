@@ -188,10 +188,11 @@ public class MDMEntryDescriptorPageApiImpl
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
               "emptyname"));
     }
-    if (code.contains(StringConstant.SPACE)) {
+
+    if (!StringConstant.isValidCode(code)) {
       throw new IllegalArgumentException(
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
-              "spacecharacter"));
+              "invalidcharacters"));
     }
 
     VectorCollectionDescriptor vectorCollectionDescriptor =
@@ -202,7 +203,7 @@ public class MDMEntryDescriptorPageApiImpl
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
       MDMEntryDescriptor newDescriptor = addNewEntryDescriptor(clientModel,
           code, name, vectorCollectionDescriptor, option);
-      // clear descriptors to not add already created description again
+      // clear descriptors to not add already created descriptions again
       option.getDefinition().getDescriptors().clear();
       option.addDescriptor(newDescriptor);
       // TODO use branch

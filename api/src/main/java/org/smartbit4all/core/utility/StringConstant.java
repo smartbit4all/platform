@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -164,6 +165,35 @@ public class StringConstant {
       return StringConstant.EMPTY_ARRAY;
     }
     return stringList.toArray(StringConstant.EMPTY_ARRAY);
+  }
+
+  /**
+   * Checks if the given code is valid for creating URI, folder etc.. from it.
+   * <p>
+   * source: https://www.baeldung.com/java-validate-filename
+   * </p>
+   */
+  public static boolean isValidCode(String code) {
+    if (code == null || code.isEmpty() || code.length() > 255) {
+      return false;
+    }
+    return Arrays.stream(getInvalidCharsByOSPlusSpace())
+        .noneMatch(ch -> code.contains(ch.toString()));
+  }
+
+  private static final Character[] INVALID_WINDOWS_SPECIFIC_CHARS_PLUS_SPACE =
+      {'"', '*', '<', '>', '?', '|', ' '};
+  private static final Character[] INVALID_UNIX_SPECIFIC_CHARS_PLUS_SPACE = {'\000', ' '};
+
+  private static Character[] getInvalidCharsByOSPlusSpace() {
+    String os = System.getProperty("os.name").toLowerCase();
+    if (os.contains("win")) {
+      return INVALID_WINDOWS_SPECIFIC_CHARS_PLUS_SPACE;
+    } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+      return INVALID_UNIX_SPECIFIC_CHARS_PLUS_SPACE;
+    } else {
+      return new Character[] {};
+    }
   }
 
 }
