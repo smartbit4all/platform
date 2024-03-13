@@ -3,14 +3,17 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import org.smartbit4all.api.collection.ObjectLookup;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 
 /**
@@ -94,6 +97,23 @@ public interface MDMEntryApi {
    *         hierarchical entry when the {@link MDMEntryDescriptor#SELF_CONTAINED_REF_LIST} is set.
    */
   List<URI> save(List<ObjectNode> objectNode);
+
+  /**
+   * Save new objects from list according to the current state of the branch entry. If a branch is
+   * initiated then the save will appear on the branch.
+   *
+   * @param objectNode The object node to save as draft. We check if this object is a totally new
+   *        one, a an object to modify and now we have to make the branched object also. Or the
+   *        given object is already included in the branch.
+   * @param operation The operation to execute.
+   * @param isEqual The function to decide if two node is the same. The default is that we use the
+   *        {@link CompareApi} to check if there is any difference.
+   *
+   * @return The list of URI for the saved draft / final version. More than one if we have a
+   *         hierarchical entry when the {@link MDMEntryDescriptor#SELF_CONTAINED_REF_LIST} is set.
+   */
+  List<URI> save(List<ObjectNode> objectNode, MDMEntryOperation operation,
+      BiFunction<ObjectNode, ObjectNode, Boolean> isEqual);
 
   /**
    * We try to cancel the editing of the object. If it was a totally new object then we simply
@@ -201,7 +221,7 @@ public interface MDMEntryApi {
    *        object.
    * @return True if the entry was changed.
    */
-  boolean update(List<Object> requiredObjects);
+  boolean setList(List<Object> requiredObjects);
 
   /**
    * Ensure that the content of the MDM Entry will contain all the objects passed after the call.
@@ -209,6 +229,11 @@ public interface MDMEntryApi {
    * @param objects
    * @return The uri list of the changed objects or an empty list if nothing was changed.
    */
-  List<URI> append(List<Object> objects);
+  List<URI> updateList(String schema, List<Object> objects);
+
+  /**
+   * @return The {@link ObjectDefinition} of the entry.
+   */
+  ObjectDefinition<?> getObjectDefinition();
 
 }

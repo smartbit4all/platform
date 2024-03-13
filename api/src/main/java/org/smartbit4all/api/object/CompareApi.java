@@ -15,6 +15,15 @@ public interface CompareApi {
 
   ObjectChangeData changes(ObjectNode node1, ObjectNode node2);
 
+  /**
+   * Compare the two node and return true if only the uri is not the same.
+   * 
+   * @param node1
+   * @param node2
+   * @return
+   */
+  boolean isEqualsLogical(ObjectNode node1, ObjectNode node2);
+
   ObjectChangeData changesOfMap(Map<String, Object> map1, Map<String, Object> map2);
 
   /**

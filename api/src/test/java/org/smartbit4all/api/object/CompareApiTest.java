@@ -60,6 +60,21 @@ class CompareApiTest {
     System.out.println(changes);
   }
 
+  @Test
+  void testIsEqualsLogicalSimple() {
+    URI uri1 =
+        objectApi.saveAsNew(SCHEME, new SampleCategory().name("value1").color(ColorEnum.BLACK));
+    URI uri2 =
+        objectApi.saveAsNew(SCHEME, new SampleCategory().name("value2").cost(Long.valueOf(100)));
+    URI uri1Copy =
+        objectApi.saveAsNew(SCHEME, new SampleCategory().name("value1").color(ColorEnum.BLACK));
+    boolean equal1to2 = compareApi.isEqualsLogical(objectApi.load(uri1), objectApi.load(uri2));
+    boolean equal1toCopy =
+        compareApi.isEqualsLogical(objectApi.load(uri1), objectApi.load(uri1Copy));
+    assertEquals(false, equal1to2);
+    assertEquals(true, equal1toCopy);
+  }
+
   public static final PropertyChangeData getProperty(ObjectChangeData change, String... pathes) {
     if (pathes.length == 1) {
       return change.getProperties().stream().filter(pc -> Objects.equal(pc.getPath(), pathes[0]))

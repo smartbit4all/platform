@@ -30,6 +30,7 @@ import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -128,6 +129,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Autowired(required = false)
   private SessionApi sessionApi;
 
+  @Autowired(required = false)
+  private CompareApi compareApi;
+
   @Override
   public MDMEntryApi getApi(String definition, String name, URI branch) {
 
@@ -136,7 +140,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
     return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
         invocationApi, branchApi,
-        valueSetApi, localeSettingApi, sessionApi);
+        valueSetApi, localeSettingApi, sessionApi, compareApi);
 
   }
 
@@ -152,7 +156,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     return new MDMEntryApiImpl(self, mdmDefinition, descriptor, objectApi, collectionApi,
         invocationApi, branchApi,
-        valueSetApi, localeSettingApi, sessionApi);
+        valueSetApi, localeSettingApi, sessionApi, compareApi);
   }
 
   @Override

@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -85,6 +83,8 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -245,10 +245,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           masterDataManagementApi.constructObjectDefinitionName(getDefinition(),
               getEntryDescriptor());
       return objectApi.definition(constructObjectDefinitionName);
-    }
-
-    ObjectDefinition<?> getObjectDefinition() {
-      return objectApi.definition(getEntryDescriptor().getTypeQualifiedName());
     }
 
     public View getView() {
@@ -629,7 +625,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected void showEditorView(UUID viewUuid, PageContext ctx,
       BranchedObjectEntry branchedObjectEntry, String actionCode) {
-    ObjectDefinition<?> objectDefinition = ctx.getObjectDefinition();
+    ObjectDefinition<?> objectDefinition = ctx.getEntryApi().getObjectDefinition();
 
     boolean isView = ACTION_VIEW_ENTRY.equals(actionCode) ||
         ACTION_VIEW_ORIGINAL_ENTRY.equals(actionCode);
@@ -777,7 +773,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   @Override
   public void saveObject(UUID viewUuid, URI objectUri, Object editingObject) {
     PageContext context = getContextByViewUUID(viewUuid);
-    ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
+    ObjectDefinition<?> objectDefinition = context.getEntryApi().getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
     ObjectNode objectNode;
     if (objectUri == null) {

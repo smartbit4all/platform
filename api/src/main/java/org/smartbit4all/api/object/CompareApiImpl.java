@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.PropertyChangeData;
 import org.smartbit4all.api.object.bean.ReferenceChangeData;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.utility.StringConstant;
@@ -29,6 +32,14 @@ public class CompareApiImpl implements CompareApi {
     Map<String, Object> map2 = node2 == null ? new HashMap<>() : node2.getObjectAsMap();
     checkReferences(map2, node2);
     return changesOfMap(map1, map2);
+  }
+
+  @Override
+  public boolean isEqualsLogical(ObjectNode node1, ObjectNode node2) {
+    Stream<PropertyChangeData> allPropertyChanges = allPropertyChanges(changes(node1, node2));
+    Optional<PropertyChangeData> firstNonUri = allPropertyChanges
+        .filter(ch -> !ObjectDefinition.URI_PROPERTY.equals(ch.getPath())).findFirst();
+    return !firstNonUri.isPresent();
   }
 
   // if the ObjectNode has references then use those instead of the reference URIs
@@ -180,6 +191,14 @@ public class CompareApiImpl implements CompareApi {
     addChanges(objectChange, path, changes,
         (newValues) ? ChangeValueSelector.NEW : ChangeValueSelector.OLD);
     return changes;
+  }
+
+  private Stream<PropertyChangeData> allPropertyChanges(ObjectChangeData objectChange) {
+    if (objectChange == null) {
+      return Stream.empty();
+    }
+    return Stream.concat(objectChange.getProperties().stream(), objectChange.getReferences()
+        .stream().flatMap(rch -> allPropertyChanges(rch.getObjectChange())));
   }
 
   @Override

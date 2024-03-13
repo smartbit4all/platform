@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +40,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -73,7 +75,7 @@ import static java.util.stream.Collectors.toSet;
  * @author Peter Boros
  *
  */
-public class MDMEntryApiImpl implements MDMEntryApi {
+public final class MDMEntryApiImpl implements MDMEntryApi {
 
   /**
    * The postfix of the inactive list.
@@ -104,6 +106,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   private SessionApi sessionApi;
 
+  private CompareApi compareApi;
+
   /**
    * If the given MDM ap is managing a list of published values then this list forms a value set
    * definition by default. If it is true then the next access will try to refresh the value set
@@ -121,7 +125,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       MDMEntryDescriptor descriptor,
       ObjectApi objectApi, CollectionApi collectionApi, InvocationApi invocationApi,
       BranchApi branchApi, ValueSetApi valueSetApi, LocaleSettingApi localeSettingApi,
-      SessionApi sessionApi) {
+      SessionApi sessionApi, CompareApi compareApi) {
     super();
     Objects.requireNonNull(descriptor, "Unable to initiate master data entry without descriptor.");
     this.api = api;
@@ -136,6 +140,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     this.valueSetApi = valueSetApi;
     this.localeSettingApi = localeSettingApi;
     this.sessionApi = sessionApi;
+    this.compareApi = compareApi;
   }
 
   @Override
@@ -145,6 +150,15 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public List<URI> save(List<ObjectNode> objectNodes) {
+    return save(objectNodes, MDMEntryOperation.SAVE, null);
+  }
+
+  @Override
+  public List<URI> save(List<ObjectNode> objectNodes, MDMEntryOperation operation,
+      BiFunction<ObjectNode, ObjectNode, Boolean> isEqual) {
+    if (operation != MDMEntryOperation.SAVE) {
+      Objects.requireNonNull(isEqual);
+    }
     URI branchUri = getBranchUri();
     StoredList list = getList();
     list.branch(branchUri);
@@ -159,7 +173,9 @@ public class MDMEntryApiImpl implements MDMEntryApi {
         checkIfUniquePropertyUsed(objectNodes, uniqueMapsByConstraints);
       }
 
-      for (ObjectNode objectNode : objectNodes) {
+      List<ObjectNode> finalSaveList = mergeNodesToSave(objectNodes, operation, isEqual);
+
+      for (ObjectNode objectNode : finalSaveList) {
         // Save the object node
         if (objectNode.getState() == ObjectNodeState.NEW) {
           objectNode
@@ -186,7 +202,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
 
       // save new unique property values to StoredMaps
       if (uniqueMapsByConstraints != null) {
-        maintainUniqueMapsOnSave(objectNodes, uniqueMapsByConstraints);
+        maintainUniqueMapsOnSave(finalSaveList, uniqueMapsByConstraints);
       }
 
       Map<URI, URI> savedUrisByLatest =
@@ -218,6 +234,36 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       return merged;
     });
     return results;
+  }
+
+  private List<ObjectNode> mergeNodesToSave(List<ObjectNode> objectNodes,
+      MDMEntryOperation operation, BiFunction<ObjectNode, ObjectNode, Boolean> isEqual) {
+    List<ObjectNode> finalSaveList = null;
+
+    if (operation != MDMEntryOperation.SAVE) {
+      // We need the merged list of ObjectNode to save
+      StoredMap uniqueMap = getUniqueMap(getPrimaryId());
+      // TODO Add cache to map!
+      Map<String, ObjectNode> nodesByUniqueValue = uniqueMap.uris().entrySet().stream().collect(
+          toMap(e -> e.getKey(), e -> objectApi.loadLatest(e.getValue(), getBranchUri())));
+      finalSaveList = new ArrayList<>();
+      for (ObjectNode node : objectNodes) {
+        ObjectNode existingNode =
+            nodesByUniqueValue.remove(node.getValueAsString(getPrimaryId()));
+        if (existingNode != null) {
+          if (!isEqual.apply(existingNode, node)) {
+            node.overwriteObject(existingNode.getObjectUri());
+            finalSaveList.add(node);
+          }
+        } else {
+          // We save as new the given node.
+          finalSaveList.add(node);
+        }
+      }
+    } else {
+      finalSaveList = objectNodes;
+    }
+    return finalSaveList;
   }
 
   protected void maintainUniqueMapsOnSave(List<ObjectNode> objectNodes,
@@ -597,27 +643,6 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     return null;
   }
 
-  /**
-   * Updates the denoted {@link VectorCollection} of the given entry if any.
-   *
-   * @param toUpdate The list of object nodes to update in the {@link VectorCollection}.
-   *
-   *
-   *        TODO Later on we need some update result with the success code and the problematic
-   *        records.
-   */
-  private final void updateVectorCollection(List<String> idPath, List<ObjectNode> toUpdate) {
-    VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
-    if (vectorCollectionDescriptor == null) {
-      return;
-    }
-    // Resolve the service connections defined in the MDM_DEFINITION_SYSTEM_INTEGRATION definition.
-    VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
-    for (ObjectNode objectNode : toUpdate) {
-      vectorCollection.addObject(idPath, objectNode);
-    }
-  }
-
   private String[] getPrimaryId() {
     Map<MDMEntryConstraint, StoredMap> uniqueMapsByconstraints = getUniqueMapsByconstraints();
     if (uniqueMapsByconstraints.isEmpty()) {
@@ -760,14 +785,30 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public boolean update(List<Object> requiredObjects) {
+  public boolean setList(List<Object> requiredObjects) {
     return false;
   }
 
   @Override
-  public List<URI> append(List<Object> objects) {
-    // TODO Auto-generated method stub
-    return Collections.emptyList();
+  public List<URI> updateList(String schema, List<Object> objects) {
+    Objects.requireNonNull(objects);
+    ObjectDefinition<?> objectDefinition = getObjectDefinition();
+    List<ObjectNode> nodesToSave = objects.stream().map(o -> {
+      if (o instanceof ObjectNode) {
+        return (ObjectNode) o;
+      } else if (o instanceof Map) {
+        return objectApi.create(schema, objectDefinition, (Map<String, Object>) o);
+      } else if (o != null) {
+        return objectApi.create(schema, o);
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(toList());
+    return save(nodesToSave, MDMEntryOperation.UPDATE, compareApi::isEqualsLogical);
+  }
+
+  @Override
+  public ObjectDefinition<?> getObjectDefinition() {
+    return objectApi.definition(descriptor.getTypeQualifiedName());
   }
 
 }
