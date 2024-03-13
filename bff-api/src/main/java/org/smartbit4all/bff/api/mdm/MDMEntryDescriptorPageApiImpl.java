@@ -178,7 +178,9 @@ public class MDMEntryDescriptorPageApiImpl
     PageContext ctx = getContextByView(viewUuid);
     MDMEntryDescriptorPageModel clientModel = extractClientModel(request);
     String code =
-        Boolean.TRUE.equals(ctx.isNewEntry) ? clientModel.getCode() : ctx.entryDescriptor.getName();
+        Boolean.TRUE.equals(ctx.isNewEntry)
+            ? clientModel.getCode()
+            : ctx.entryDescriptor.getName();
     String name = clientModel.getName();
 
     if (Strings.isBlank(name)) {
@@ -198,7 +200,11 @@ public class MDMEntryDescriptorPageApiImpl
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
-      addNewEntryDescriptor(clientModel, code, name, vectorCollectionDescriptor, option);
+      MDMEntryDescriptor newDescriptor = addNewEntryDescriptor(clientModel,
+          code, name, vectorCollectionDescriptor, option);
+      // clear descriptors to not add already created description again
+      option.getDefinition().getDescriptors().clear();
+      option.addDescriptor(newDescriptor);
       // TODO use branch
       masterDataManagementApi.addNewEntries(option, ctx.mdmBranch);
     } else {
