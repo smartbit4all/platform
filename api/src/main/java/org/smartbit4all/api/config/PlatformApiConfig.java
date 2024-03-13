@@ -39,6 +39,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
+import org.smartbit4all.api.mimetype.ContentConversionApi;
 import org.smartbit4all.api.mimetype.config.MimeTypeConfig;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
@@ -405,6 +406,45 @@ public class PlatformApiConfig {
           .displayNameForm(new LangString().defaultValue("Service Connection")
               .putValueByLocaleItem("hu", "Kiszolgáló kapcsolat")
               .putValueByLocaleItem("en", "Service Connection"))
+          .order(200L)
+          .typeQualifiedName(ServiceConnection.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API name")
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Endpoint")
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API version")
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Authentication token")
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(ContentConversionApi.MDM_CONVERSION_SERVICES)
+          .name(ContentConversionApi.MDM_CONVERSION_SERVICES)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ServiceConnection.NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Conversion Services")
+              .putValueByLocaleItem("hu", "Konverzió kiszolgálók")
+              .putValueByLocaleItem("en", "Conversion Services"))
+          .displayNameForm(new LangString().defaultValue("Service Connection")
+              .putValueByLocaleItem("hu", "Konverzió kiszolgáló")
+              .putValueByLocaleItem("en", "Conversion Service"))
           .order(200L)
           .typeQualifiedName(ServiceConnection.class.getName())
           .addTableColumnsItem(
