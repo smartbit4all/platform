@@ -60,6 +60,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -76,6 +77,12 @@ import static java.util.stream.Collectors.toSet;
  *
  */
 public final class MDMEntryApiImpl implements MDMEntryApi {
+
+  private static final String MERGED = "merged";
+
+  private static final String UPDATED = "updated";
+
+  private static final String CREATED = "created";
 
   /**
    * The postfix of the inactive list.
@@ -169,11 +176,11 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
       Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints = getUniqueMapsByconstraints();
 
-      if (!uniqueMapsByConstraints.isEmpty()) {
-        checkIfUniquePropertyUsed(objectNodes, uniqueMapsByConstraints);
-      }
-
       List<ObjectNode> finalSaveList = mergeNodesToSave(objectNodes, operation, isEqual);
+
+      if (!uniqueMapsByConstraints.isEmpty()) {
+        checkIfUniquePropertyUsed(finalSaveList, uniqueMapsByConstraints);
+      }
 
       for (ObjectNode objectNode : finalSaveList) {
         // Save the object node
@@ -655,7 +662,28 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   private static Set<String> excludedProperties = new HashSet<>(Arrays.asList(GenericValue.ICON,
-      GenericValue.URI, GenericValue.INACTIVE, "created", "updated", "merged"));
+      GenericValue.URI, GenericValue.INACTIVE, CREATED, UPDATED, MERGED));
+
+  private static Set<String> excludedPropertiesFromEqual =
+      new HashSet<>(Arrays.asList(GenericValue.ICON,
+          GenericValue.URI, GenericValue.INACTIVE,
+          createPath(CREATED, UserActivityLog.NAME), createPath(CREATED, UserActivityLog.ROLE),
+          createPath(CREATED, UserActivityLog.TIMESTAMP),
+          createPath(CREATED, UserActivityLog.USER_NAME),
+          createPath(CREATED, UserActivityLog.USER_URI),
+          createPath(UPDATED, UserActivityLog.NAME), createPath(UPDATED, UserActivityLog.ROLE),
+          createPath(UPDATED, UserActivityLog.TIMESTAMP),
+          createPath(UPDATED, UserActivityLog.USER_NAME),
+          createPath(UPDATED, UserActivityLog.USER_URI),
+          MERGED,
+          createPath(MERGED, UserActivityLog.NAME), createPath(MERGED, UserActivityLog.ROLE),
+          createPath(MERGED, UserActivityLog.TIMESTAMP),
+          createPath(MERGED, UserActivityLog.USER_NAME),
+          createPath(MERGED, UserActivityLog.USER_URI)));
+
+  private static final String createPath(String... paths) {
+    return Stream.of(paths).collect(joining(StringConstant.SLASH));
+  }
 
   @Override
   public void updateAllIndices(List<String> idPath) {
@@ -803,7 +831,8 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       }
       return null;
     }).filter(Objects::nonNull).collect(toList());
-    return save(nodesToSave, MDMEntryOperation.UPDATE, compareApi::isEqualsLogical);
+    return save(nodesToSave, MDMEntryOperation.UPDATE,
+        (n1, n2) -> compareApi.isEquals(n1, n2, excludedPropertiesFromEqual));
   }
 
   @Override

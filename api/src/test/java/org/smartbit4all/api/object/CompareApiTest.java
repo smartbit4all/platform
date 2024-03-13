@@ -12,6 +12,7 @@ import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleContainerItem.ItemColorEnum;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
@@ -68,9 +69,11 @@ class CompareApiTest {
         objectApi.saveAsNew(SCHEME, new SampleCategory().name("value2").cost(Long.valueOf(100)));
     URI uri1Copy =
         objectApi.saveAsNew(SCHEME, new SampleCategory().name("value1").color(ColorEnum.BLACK));
-    boolean equal1to2 = compareApi.isEqualsLogical(objectApi.load(uri1), objectApi.load(uri2));
+    boolean equal1to2 = compareApi.isEquals(objectApi.load(uri1), objectApi.load(uri2),
+        Arrays.asList(ObjectDefinition.URI_PROPERTY));
     boolean equal1toCopy =
-        compareApi.isEqualsLogical(objectApi.load(uri1), objectApi.load(uri1Copy));
+        compareApi.isEquals(objectApi.load(uri1), objectApi.load(uri1Copy),
+            Arrays.asList(ObjectDefinition.URI_PROPERTY));
     assertEquals(false, equal1to2);
     assertEquals(true, equal1toCopy);
   }

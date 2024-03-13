@@ -1,10 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -48,6 +43,7 @@ import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SecurityGroup;
@@ -55,6 +51,8 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
+import org.smartbit4all.api.sample.bean.SampleContainerItem;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
@@ -85,6 +83,11 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -981,6 +984,94 @@ class MDMApiTest {
               secondSubCategoryCaption + StringConstant.HYPHEN + caption);
     }
 
+  }
+
+  @Test
+  @Order(7)
+  void testUpdateAndSet() {
+    MDMEntryApi entryApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
+        SampleContainerItem.class.getSimpleName());
+
+    Assertions.assertThat(entryApi.getList().uris()).isEmpty();
+
+    // Update on the main skip create a branch.
+    {
+      List<Object> toSave = new ArrayList<>();
+      toSave.add(new SampleContainerItem().name("Apple").cost(Long.valueOf(0))
+          .inlineObject(new SampleInlineObject().name("Apple inline")));
+      toSave.add(
+          objectApi.create(SCHEMA, new SampleContainerItem().name("Peach").cost(Long.valueOf(1))
+              .inlineObject(new SampleInlineObject().name("Peach inline"))));
+      toSave.add(
+          objectApi.create(SCHEMA, new SampleContainerItem().name("Grape").cost(Long.valueOf(2))
+              .inlineObject(new SampleInlineObject().name("Grape inline"))).getObjectAsMap());
+      entryApi.updateList(SCHEMA, toSave);
+    }
+
+    checkSampleContainerValues(entryApi,
+        Arrays.asList("Apple, Apple inline, 0", "Peach, Peach inline, 1",
+            "Grape, Grape inline, 2"));
+
+    // Update still on the main and still skip branching.
+    {
+      List<Object> toSave = new ArrayList<>();
+      toSave.add(
+          new SampleContainerItem().name("Grape").cost(Long.valueOf(2))
+              .inlineObject(new SampleInlineObject().name("Grape inline modified")));
+      toSave.add(
+          objectApi.create(SCHEMA, new SampleContainerItem().name("Orange").cost(Long.valueOf(3))
+              .inlineObject(new SampleInlineObject().name("Orange inline"))).getObjectAsMap());
+      entryApi.updateList(SCHEMA, toSave);
+    }
+
+    checkSampleContainerValues(entryApi,
+        Arrays.asList("Apple, Apple inline, 0", "Peach, Peach inline, 1",
+            "Grape, Grape inline modified, 2", "Orange, Orange inline, 3"));
+
+    masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing properties");
+
+    // Update still on the main and still skip branching.
+    SampleContainerItem orange = entryApi.lookup().findByUnique(
+        new ObjectPropertyValue().addPathItem(SampleContainerItem.NAME).value("Orange"),
+        SampleContainerItem.class);
+    {
+      List<Object> toSave = new ArrayList<>();
+      toSave.add(
+          new SampleContainerItem().name("Grape").cost(Long.valueOf(2))
+              .inlineObject(new SampleInlineObject().name("Grape inline remodified")));
+      toSave.add(
+          objectApi.create(SCHEMA, new SampleContainerItem().name("Orange").cost(Long.valueOf(3))
+              .inlineObject(new SampleInlineObject().name("Orange inline"))).getObjectAsMap());
+      toSave.add(
+          objectApi.create(SCHEMA, new SampleContainerItem().name("Lemon").cost(Long.valueOf(4))
+              .inlineObject(new SampleInlineObject().name("Lemon inline"))).getObjectAsMap());
+      entryApi.updateList(SCHEMA, toSave);
+    }
+
+    masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
+
+    SampleContainerItem orange2 = entryApi.lookup().findByUnique(
+        new ObjectPropertyValue().addPathItem(SampleContainerItem.NAME).value("Orange"),
+        SampleContainerItem.class);
+
+    Assertions.assertThat(orange.getUri()).isEqualTo(orange2.getUri());
+
+    checkSampleContainerValues(entryApi,
+        Arrays.asList("Apple, Apple inline, 0", "Peach, Peach inline, 1",
+            "Grape, Grape inline remodified, 2", "Orange, Orange inline, 3",
+            "Lemon, Lemon inline, 4"));
+
+  }
+
+  private void checkSampleContainerValues(MDMEntryApi entryApi, List<String> valueList) {
+    List<ObjectNode> list = entryApi.getList().nodesFromCache().collect(toList());
+    Assertions.assertThat(list).hasSize(valueList.size());
+    Assertions
+        .assertThat(list.stream()
+            .map(n -> n.getValueAsString(SampleContainerItem.NAME) + StringConstant.COMMA_SPACE
+                + n.getValueAsString(SampleContainerItem.INLINE_OBJECT, SampleInlineObject.NAME)
+                + StringConstant.COMMA_SPACE + n.getValue(SampleContainerItem.COST).toString()))
+        .containsExactlyInAnyOrder(StringConstant.toArray(valueList));
   }
 
   private URI createUser(String username, String fullname, SecurityGroup... group) {

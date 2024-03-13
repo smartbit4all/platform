@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import java.util.Collection;
 import java.util.Map;
 import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.PropertyChangeData;
@@ -20,9 +21,10 @@ public interface CompareApi {
    * 
    * @param node1
    * @param node2
+   * @param pathsToSkip The paths to skip from the comparison.
    * @return
    */
-  boolean isEqualsLogical(ObjectNode node1, ObjectNode node2);
+  boolean isEquals(ObjectNode node1, ObjectNode node2, Collection<String> pathsToSkip);
 
   ObjectChangeData changesOfMap(Map<String, Object> map1, Map<String, Object> map2);
 

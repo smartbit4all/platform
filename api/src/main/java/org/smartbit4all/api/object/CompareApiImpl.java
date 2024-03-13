@@ -1,19 +1,21 @@
 package org.smartbit4all.api.object;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.PropertyChangeData;
 import org.smartbit4all.api.object.bean.ReferenceChangeData;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.utility.StringConstant;
@@ -35,10 +37,12 @@ public class CompareApiImpl implements CompareApi {
   }
 
   @Override
-  public boolean isEqualsLogical(ObjectNode node1, ObjectNode node2) {
-    Stream<PropertyChangeData> allPropertyChanges = allPropertyChanges(changes(node1, node2));
+  public boolean isEquals(ObjectNode node1, ObjectNode node2, Collection<String> pathsToSkip) {
+    Set<String> toSkip = pathsToSkip == null ? Collections.emptySet() : new HashSet<>(pathsToSkip);
+    Stream<PropertyChangeData> allPropertyChanges =
+        allPropertyChanges(StringConstant.EMPTY, changes(node1, node2));
     Optional<PropertyChangeData> firstNonUri = allPropertyChanges
-        .filter(ch -> !ObjectDefinition.URI_PROPERTY.equals(ch.getPath())).findFirst();
+        .filter(ch -> !toSkip.contains(ch.getPath())).findFirst();
     return !firstNonUri.isPresent();
   }
 
@@ -77,7 +81,10 @@ public class CompareApiImpl implements CompareApi {
       } else if (value1 instanceof List || value2 instanceof List) {
         result.addReferencesItem(listChangeOf(value1, value2, subPath));
       } else {
-        if (!Objects.deepEquals(value1, value2)) {
+        // We always use the string to compare.
+        String sValue1 = objectApi.asString(value1);
+        String sValue2 = objectApi.asString(value2);
+        if (!Objects.equals(sValue1, sValue2)) {
           result.addPropertiesItem(
               new PropertyChangeData().path(subPath).oldValue(value1).newValue(value2));
         }
@@ -193,12 +200,22 @@ public class CompareApiImpl implements CompareApi {
     return changes;
   }
 
-  private Stream<PropertyChangeData> allPropertyChanges(ObjectChangeData objectChange) {
+  private Stream<PropertyChangeData> allPropertyChanges(String prefix,
+      ObjectChangeData objectChange) {
     if (objectChange == null) {
       return Stream.empty();
     }
-    return Stream.concat(objectChange.getProperties().stream(), objectChange.getReferences()
-        .stream().flatMap(rch -> allPropertyChanges(rch.getObjectChange())));
+    String prefixFinal =
+        Strings.isNullOrEmpty(prefix) ? StringConstant.EMPTY : prefix + StringConstant.SLASH;
+    return Stream.concat(
+        objectChange.getProperties().stream()
+            .map(pcd -> Strings.isNullOrEmpty(prefix) ? pcd
+                : new PropertyChangeData().path(prefixFinal + pcd.getPath())
+                    .oldValue(pcd.getOldValue()).newValue(pcd.getNewValue())),
+        objectChange.getReferences()
+            .stream()
+            .flatMap(rch -> allPropertyChanges(prefixFinal + rch.getPath(),
+                rch.getObjectChange())));
   }
 
   @Override

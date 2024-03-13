@@ -71,6 +71,10 @@ public class MDMApiTestConfig extends TestFSCleaner {
         .uniquePropertyPaths(
             Arrays.asList(Arrays.asList(SampleCategory.NAME)))
         .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(SampleContainerItem.class)
+        .uniquePropertyPaths(
+            Arrays.asList(Arrays.asList(SampleContainerItem.NAME)))
+        .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(PropertyDefinitionData.class);
     result.addObjectDefinitionData();
     return result;
