@@ -1,9 +1,9 @@
 package org.smartbit4all.api.view.tree;
 
-import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.object.bean.VersionStrategy;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
@@ -11,6 +11,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public abstract class TreeRelationImpl implements TreeRelation {
 
@@ -23,6 +24,9 @@ public abstract class TreeRelationImpl implements TreeRelation {
 
   @Autowired
   protected TreeSetupApi treeSetupApi;
+
+  @Autowired
+  protected AccessControlInternalApi accessControlInternalApi;
 
   public TreeRelationImpl(String name, String parentNodeType, String childNodeType) {
     this.name = name;
