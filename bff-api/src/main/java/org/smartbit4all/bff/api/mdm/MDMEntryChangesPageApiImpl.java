@@ -298,28 +298,30 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       // if (modificationForm.getForm() != null && !modificationForm.getForm().isEmpty()) {
       // }
       ctx.getEntryApisWithChanges().forEach(entryApi -> {
+        String gridId = entryApi.getName().replace(StringConstant.DOT, StringConstant.UNDERLINE);
         GridModel entryGridModel =
             viewApi.getWidgetModelFromView(GridModel.class, ctx.view.getUuid(),
-                entryApi.getName());
+                gridId);
         if (entryGridModel == null) {
-          createGridModelByEntryApi(ctx, entryApi);
+          createGridModelByEntryApi(ctx, entryApi, gridId);
         }
 
         List<BranchedObjectEntry> list = entryApi.getBranchingList();
-        gridModelApi.setData(ctx.view.getUuid(), entryApi.getName(),
+        gridModelApi.setData(ctx.view.getUuid(), gridId,
             createTableDataForGrid(ctx, entryApi, list));
 
         changesLayout
             .addComponentsItem(
                 form(LayoutDirection.VERTICAL, label(null, entryApi.getDisplayNameList())))
-            .addComponentsItem(grid(entryApi.getName()));
+            .addComponentsItem(grid(gridId));
       });
     }
 
     ctx.view.putComponentLayoutsItem("changesLayout", changesLayout);
   }
 
-  protected GridModel createGridModelByEntryApi(PageContext ctx, MDMEntryApi entryApi) {
+  protected GridModel createGridModelByEntryApi(PageContext ctx, MDMEntryApi entryApi,
+      String gridId) {
     SearchIndex<BranchedObjectEntry> searchIndexAdmin =
         ctx.searchIndexAdminsByDescriptorName.get(entryApi.getName());
     MDMEntryDescriptor descriptor = entryApi.getDescriptor();
@@ -346,7 +348,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     GridModel entryGridModel =
         gridModelApi.createGridModel(searchIndexAdmin.getDefinition().getDefinition(),
-            columns, ctx.getDefinition().getName(), entryApi.getName());
+            columns, ctx.getDefinition().getName(), gridId);
     if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
       List<String> newCols = new ArrayList<>();
       newCols.add(BranchedObjectEntry.BRANCHING_STATE);
@@ -368,8 +370,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
     }
 
-    gridModelApi.initGridInView(ctx.view.getUuid(), entryApi.getName(), entryGridModel);
-    gridModelApi.addGridPageCallback(ctx.view.getUuid(), entryApi.getName(), invocationApi
+    gridModelApi.initGridInView(ctx.view.getUuid(), gridId, entryGridModel);
+    gridModelApi.addGridPageCallback(ctx.view.getUuid(), gridId, invocationApi
         .builder(MDMEntryChangesPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, ctx.view.getUuid())));
 
