@@ -1112,21 +1112,33 @@ class MDMApiTest {
             "Grape, Grape inline, 2"));
 
     // Update still on the main and still skip branching.
-    // {
-    // List<Object> toSave = new ArrayList<>();
-    // toSave.add(
-    // new SampleContainerItem().name("Grape").cost(Long.valueOf(2))
-    // .inlineObject(new SampleInlineObject().name("Grape inline modified")));
-    // toSave.add(
-    // objectApi.create(SCHEMA, new SampleContainerItem().name("Orange").cost(Long.valueOf(3))
-    // .inlineObject(new SampleInlineObject().name("Orange inline"))).getObjectAsMap());
-    // entryApi.updateList(SCHEMA, toSave);
-    // }
-    //
-    // checkSampleContainerValues(entryApi,
-    // Arrays.asList("Apple, Apple inline, 0", "Peach, Peach inline, 1",
-    // "Grape, Grape inline modified, 2", "Orange, Orange inline, 3"));
-    //
+    {
+      List<Map<String, String>> toSave = new ArrayList<>();
+      {
+        Map<String, String> map = new HashMap<>();
+        map.put(GenericValue.CODE, "Grape");
+        map.put(SampleContainerItem.COST, "2");
+        map.put(SampleContainerItem.INLINE_OBJECT + StringConstant.SLASH + SampleInlineObject.NAME,
+            "Grape inline modified");
+        toSave.add(map);
+      }
+      {
+        Map<String, String> map = new HashMap<>();
+        map.put(GenericValue.CODE, "Orange");
+        map.put(SampleContainerItem.COST, "3");
+        map.put(SampleContainerItem.INLINE_OBJECT + StringConstant.SLASH + SampleInlineObject.NAME,
+            "Orange inline");
+        toSave.add(map);
+      }
+      masterDataManagementApi.importData(MDMApiTestConfig.TEST,
+          GenericValue.class.getSimpleName(),
+          new MDMModificationRequest().data(new MDMModificationRequestData().definition(toSave)));
+    }
+
+    checkGeneric(entryApi,
+        Arrays.asList("Apple, Apple inline, 0", "Peach, Peach inline, 1",
+            "Grape, Grape inline modified, 2", "Orange, Orange inline, 3"));
+
     // masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing properties");
     //
     // // Update still on the main and still skip branching.

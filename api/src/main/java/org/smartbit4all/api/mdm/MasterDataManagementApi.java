@@ -10,6 +10,7 @@ import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The global master data management api that is responsible for the master data of the application.
@@ -51,6 +52,8 @@ public interface MasterDataManagementApi {
   static final String MODIFICATION_REJECTED = "modification_rejected";
 
   static final String SCHEMA = "mdm";
+
+  static final String PATH_SEPARATOR = StringConstant.SLASH;
 
   /**
    * Return the api responsible for the management if the given {@link MDMEntryDescriptor}.

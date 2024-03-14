@@ -68,8 +68,6 @@ import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
-  public static final String PATH_SEPARATOR = StringConstant.SLASH;
-
   private static final String LIST = "List";
 
   public static final String MAP_DEFINITIONS = "definitions";
