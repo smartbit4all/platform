@@ -27,7 +27,8 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
     return getContributionApis().values().stream()
         .anyMatch(
             api -> api.getAcceptedMimeTypes().contains(fromMimeType)
-                && api.getTargetMimeTypes().contains(toMimeType));
+                && api.getTargetMimeTypes().contains(toMimeType)
+                && api.isAvailable());
   }
 
   @Override
@@ -64,11 +65,10 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
     if (api != null) {
       URI dataUri = api.convert(binaryContentData,
           toMimeType, logicalSchema);
-      BinaryContentData result = new BinaryContentData()
+      return new BinaryContentData()
           .created(sessionApi != null ? sessionApi.createActivityLog() : null).dataUri(dataUri)
           .extension(mimeTypeApi.getExtension(toMimeType))
           .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType));
-      return result;
     }
     return null;
   }

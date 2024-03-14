@@ -9,7 +9,6 @@ import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ContentConversionContributionApiImpl extends ContributionApiImpl
@@ -48,15 +47,9 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
     MDMEntryApi entryApi =
         mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
             ContentConversionApi.MDM_CONVERSION_SERVICES);
-    ServiceConnection serviceConnection = entryApi.lookup().findByUnique(
+    return entryApi.lookup().findByUnique(
         new ObjectPropertyValue().addPathItem(ServiceConnection.NAME).value(getApiName()),
         ServiceConnection.class);
-    if (serviceConnection == null) {
-      throw new IllegalStateException("Missing " + getApiName() + " ServiceConnection from "
-          + MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION
-          + StringConstant.SPACE_HYPHEN_SPACE + ContentConversionApi.MDM_CONVERSION_SERVICES);
-    }
-    return serviceConnection;
   }
 
   /**

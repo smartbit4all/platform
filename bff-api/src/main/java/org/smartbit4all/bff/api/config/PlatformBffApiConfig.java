@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.config;
 
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.invocation.Invocations;
@@ -7,6 +8,7 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.bff.api.acl.AclEditingPageApi;
 import org.smartbit4all.bff.api.acl.AclEditingPageApiImpl;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApi;
@@ -15,6 +17,7 @@ import org.smartbit4all.bff.api.acl.UserSelectorPageApi;
 import org.smartbit4all.bff.api.acl.UserSelectorPageApiImpl;
 import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
+import org.smartbit4all.bff.api.attachment.AttachmentListPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
@@ -121,5 +124,20 @@ public class PlatformBffApiConfig {
   @Bean
   public ValidationResultPageApi validationResultPageApi() {
     return new ValidationResultPageApiImpl();
+  }
+
+  @Bean
+  public SearchIndex<BinaryContentData> binaryContentDataSearchIndex() {
+    return new SearchIndexImpl<>(AttachmentListPageApi.SCHEMA,
+        BinaryContentData.class.getSimpleName(),
+        AttachmentListPageApi.SCHEMA, BinaryContentData.class)
+            .map(BinaryContentData.DATA_URI, BinaryContentData.DATA_URI)
+            .map(BinaryContentData.FILE_NAME, BinaryContentData.FILE_NAME)
+            .map(BinaryContentData.EXTENSION, BinaryContentData.EXTENSION)
+            .map(BinaryContentData.MIME_TYPE, BinaryContentData.MIME_TYPE)
+            .map(BinaryContentData.CREATED, BinaryContentData.CREATED, UserActivityLog.TIMESTAMP)
+            .map(BinaryContentData.UPDATED, BinaryContentData.UPDATED, UserActivityLog.TIMESTAMP)
+            .map(BinaryContentData.SIZE, BinaryContentData.SIZE)
+            .map(BinaryContentData.CONTENT_HASH, BinaryContentData.CONTENT_HASH);
   }
 }

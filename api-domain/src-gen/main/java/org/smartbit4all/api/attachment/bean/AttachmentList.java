@@ -46,7 +46,7 @@ public class AttachmentList {
   private URI uri;
 
   public static final String CONTENTS = "contents";
-  private List<BinaryContentData> contents = null;
+  private List<BinaryContentData> contents = new ArrayList<>();
 
   public AttachmentList() { 
   }
@@ -87,9 +87,6 @@ public class AttachmentList {
   }
 
   public AttachmentList addContentsItem(BinaryContentData contentsItem) {
-    if (this.contents == null) {
-      this.contents = new ArrayList<>();
-    }
     this.contents.add(contentsItem);
     return this;
   }
@@ -98,11 +95,12 @@ public class AttachmentList {
    * The inline list of the BinaryContentData (it is the the classic attachment).
    * @return contents
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The inline list of the BinaryContentData (it is the the classic attachment).")
+  @ApiModelProperty(required = true, value = "The inline list of the BinaryContentData (it is the the classic attachment).")
   @JsonProperty(CONTENTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<BinaryContentData> getContents() {
     return contents;
@@ -110,7 +108,7 @@ public class AttachmentList {
 
 
   @JsonProperty(CONTENTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setContents(List<BinaryContentData> contents) {
     this.contents = contents;
   }

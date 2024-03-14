@@ -19,7 +19,7 @@ components:
       type: object
       description: |
         A list of attached contents belongs to and an object.
-      required: [uri, fileName]
+      required: [uri, contents]
       properties:
         uri:
           type: string
