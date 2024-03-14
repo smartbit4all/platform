@@ -19,6 +19,7 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
+import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -51,6 +52,7 @@ public class MDMApiTestConfig extends TestFSCleaner {
 
   public static final String TEST = "Test";
   public static final String SAMPLE = "sample";
+  public static final String VALUE_LIST_TO_UPLOAD = "ValueListToUpload";
 
   public static final String MDM_EDITING_PAGE = "MDMEditingPage";
   public static final String MDM_LIST_PAGE = "MDMListPage";
@@ -74,6 +76,10 @@ public class MDMApiTestConfig extends TestFSCleaner {
     result.addDefaultDescriptor(SampleContainerItem.class)
         .uniquePropertyPaths(
             Arrays.asList(Arrays.asList(SampleContainerItem.NAME)))
+        .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(GenericValue.class)
+        .uniquePropertyPaths(
+            Arrays.asList(Arrays.asList(GenericValue.CODE)))
         .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(PropertyDefinitionData.class);
     result.addObjectDefinitionData();

@@ -15,6 +15,20 @@ tags:
 paths: {}
 components:
   schemas:
+    AttachmentList:
+      type: object
+      description: |
+        A list of attached contents belongs to and an object.
+      required: [uri, fileName]
+      properties:
+        uri:
+          type: string
+          format: uri
+        contents:
+          description: The inline list of the BinaryContentData (it is the the classic attachment).
+          type: array
+          items:
+            $ref: '#/components/schemas/BinaryContentData'
     BinaryContentData:
       type: object
       description: |

@@ -821,13 +821,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   public List<URI> updateList(String schema, List<Object> objects) {
     Objects.requireNonNull(objects);
     ObjectDefinition<?> objectDefinition = getObjectDefinition();
+    String finalSchema = schema != null ? schema : descriptor.getSchema();
     List<ObjectNode> nodesToSave = objects.stream().map(o -> {
       if (o instanceof ObjectNode) {
         return (ObjectNode) o;
       } else if (o instanceof Map) {
-        return objectApi.create(schema, objectDefinition, (Map<String, Object>) o);
+        return objectApi.create(finalSchema, objectDefinition, (Map<String, Object>) o);
       } else if (o != null) {
-        return objectApi.create(schema, o);
+        return objectApi.create(finalSchema, o);
       }
       return null;
     }).filter(Objects::nonNull).collect(toList());

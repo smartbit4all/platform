@@ -29,8 +29,6 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
-import org.smartbit4all.api.mdm.MDMImportApi;
-import org.smartbit4all.api.mdm.MDMImportApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -104,7 +102,6 @@ import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
 import org.smartbit4all.api.view.tree.TreeSetupApi;
 import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
@@ -270,12 +267,6 @@ public class PlatformApiConfig {
   @Bean
   public MasterDataManagementApi masterDataManagementApi() {
     return new MasterDataManagementApiImpl();
-  }
-
-  @Bean
-  public MDMImportApi mdmImportApi(MasterDataManagementApi masterDataManagementApi,
-      ObjectApi objectApi) {
-    return new MDMImportApiImpl(masterDataManagementApi, objectApi);
   }
 
   @Bean

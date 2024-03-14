@@ -1,9 +1,8 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,11 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMErrorLog;
+import org.smartbit4all.api.mdm.bean.MDMErrorLogData;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.CompareApi;
@@ -61,8 +63,12 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
+
+  public static final String PATH_SEPARATOR = StringConstant.SLASH;
 
   private static final String LIST = "List";
 
@@ -1042,6 +1048,81 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       java.util.Objects.requireNonNull(currentState);
       this.currentState = currentState;
       this.prevState = prevState;
+    }
+  }
+
+  @Override
+  public MDMErrorLog importData(String definitionName, String entryName,
+      MDMModificationRequest modificationRequest) {
+    MDMErrorLog errorLog = new MDMErrorLog();
+    boolean globalBranchInit = false;
+    try {
+      MDMEntryApi entryApi =
+          getApi(definitionName, entryName);
+
+      URI branchUri = getGlobalBranch(definitionName);
+
+      if (branchUri == null) {
+        initiateGlobalBranch(definitionName, "Import session - " + LocalDateTime.now());
+        globalBranchInit = true;
+      }
+
+      entryApi.updateList(null, modificationRequest.getData().getDefinition().stream()
+          .map(objMap -> constructHierarchicalMap(objMap)).collect(toList()));
+
+      if (globalBranchInit) {
+        if (errorLog.getData().isEmpty()) {
+          mergeGlobal(definitionName);
+        } else {
+          dropGlobal(definitionName);
+        }
+      }
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      errorLog.addDataItem(new MDMErrorLogData().error(e.getMessage()));
+      if (globalBranchInit) {
+        dropGlobal(definitionName);
+      }
+    }
+    return errorLog;
+  }
+
+  /**
+   * This function restructure the map and create sub maps if the key of a value is a path. The path
+   * looks like this innerobject/another/property. In this case we will have an innerobject key in
+   * the root map that is map and a another map again and the property will be placed into this.
+   * 
+   * @param data The original flatten map.
+   * @return The resulting map with the inner structure.
+   */
+  public static final Map<String, Object> constructHierarchicalMap(Map<String, String> data) {
+    Objects.requireNonNull(data);
+    Map<String, Object> result = new HashMap<>();
+    for (Entry<String, String> entry : data.entrySet()) {
+      String path = entry.getKey();
+      String value = entry.getValue();
+      addValue(result, path, path, value);
+    }
+    return result;
+  }
+
+  private static void addValue(Map<String, Object> result, String originalPath, String path,
+      String value) {
+    if (!path.contains(PATH_SEPARATOR)) {
+      result.put(path, value);
+    } else {
+      // split string with PATH_SEPARATOR if it can
+      int firstSepIndex = path.indexOf(PATH_SEPARATOR);
+      String subMapName = path.substring(0, firstSepIndex);
+      Object subMap = result.computeIfAbsent(subMapName, s -> new HashMap<>());
+      if (subMap instanceof Map) {
+        addValue((Map<String, Object>) subMap, originalPath, path.substring(firstSepIndex + 1),
+            value);
+      } else {
+        log.error(
+            "Unable to {} property because the {} is a sub object and a simple property at the same time.",
+            originalPath, subMapName);
+      }
     }
   }
 

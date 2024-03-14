@@ -38,7 +38,6 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMImportApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -143,9 +142,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   protected FilterExpressionBuilderApi filterExpressionBuilderApi;
-
-  @Autowired
-  MDMImportApi mdmImportApi;
 
   @Autowired(required = false)
   private MDMApprovalApi mdmApprovalApi;
@@ -759,8 +755,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           new MDMModificationRequest()
               .data(new MDMModificationRequestData().definition(items));
 
-      mdmImportApi.importData(context.definition, context.entryDescriptor, mdmModRequest,
-          Class.forName(context.entryDescriptor.getTypeQualifiedName()));
+      masterDataManagementApi.importData(context.definition.getName(),
+          context.entryDescriptor.getName(), mdmModRequest);
       refreshGrid(context);
     } catch (Exception e) {
       log.error(e.getMessage(), e);

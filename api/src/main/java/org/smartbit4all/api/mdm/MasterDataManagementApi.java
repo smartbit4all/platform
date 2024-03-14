@@ -5,6 +5,8 @@ import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMErrorLog;
+import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -167,5 +169,8 @@ public interface MasterDataManagementApi {
    *
    */
   void executeMdmDefinitionUpdate(String definitionName);
+
+  MDMErrorLog importData(String definitionName, String entryName,
+      MDMModificationRequest modificationRequest);
 
 }
