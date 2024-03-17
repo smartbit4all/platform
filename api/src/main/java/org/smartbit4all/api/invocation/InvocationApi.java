@@ -60,7 +60,8 @@ public interface InvocationApi {
   AsyncInvocationBuilder asyncBuilder();
 
   /**
-   * The generic api call executed synchronously.
+   * The generic api call executed synchronously. BE CAREFUL! If it is a script then it must be
+   * prepared previously in this case the args won't be applied.
    *
    * @param request
    * @throws ApiNotFoundException

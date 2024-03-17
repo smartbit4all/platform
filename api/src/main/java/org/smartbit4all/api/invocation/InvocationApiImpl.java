@@ -68,11 +68,16 @@ public final class InvocationApiImpl implements InvocationApi {
   private ObjectApi objectApi;
 
   @Autowired
-  private InvocationApi self;;
+  private InvocationApi self;
 
   @Override
   public InvocationParameter invoke(InvocationRequest request, Object... args)
       throws ApiNotFoundException {
+    Objects.requireNonNull(request);
+    if (request.getScriptBody() != null) {
+      return invokeScript(request);
+    }
+
     ApiDescriptor apiDescriptor =
         invocationRegisterApi.getApi(request.getInterfaceClass(), request.getName());
 
@@ -108,6 +113,30 @@ public final class InvocationApiImpl implements InvocationApi {
       UUID runtimeToRun = getRuntimeToRun(runtimes);
 
       return executionApi.invoke(runtimeToRun, request);
+    }
+  }
+
+  private final InvocationParameter invokeScript(InvocationRequest request)
+      throws ApiNotFoundException {
+    final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    // Set all the parameters to the script as global variable.
+    for (InvocationParameter p : request.getParameters()) {
+      // TODO We must ensure that the parameters have the correct types.
+      scriptEngineManager.put(p.getName(), p.getValue());
+    }
+    ScriptEngine engine = scriptEngineManager.getEngineByName(request.getScriptKind());
+    if (engine == null) {
+      throw new ApiNotFoundException(request);
+    }
+    try {
+      Object result = engine.eval(request.getScriptBody());
+      return new InvocationParameter().value(result)
+          .typeClass(result != null ? result.getClass().getName() : null);
+    } catch (ScriptException e) {
+      log.error("Failed to execute the {} script with the {} engine.", request.getScriptBody(),
+          request.getScriptKind(), e);
+      throw new UnsupportedOperationException(
+          "Failed to execute the script with the " + request.getScriptKind() + " engine.", e);
     }
   }
 
@@ -260,7 +289,6 @@ public final class InvocationApiImpl implements InvocationApi {
     }
     return result;
   }
-
 
   @Override
   public Object executeScript(String scriptEngine, String script,
