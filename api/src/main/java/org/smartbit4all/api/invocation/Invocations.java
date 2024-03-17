@@ -13,6 +13,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 /**
  * The developer api for the invocation.
@@ -77,6 +78,20 @@ public class Invocations {
         .name(qualifiedName)
         .methodName(method.getName())
         .parameters(params);
+  }
+
+  /**
+   * Checks whether the given request is a script or not.
+   * 
+   * @param request
+   * @return
+   */
+  public static boolean isScript(InvocationRequest request) {
+    if (request != null && !Strings.isNullOrEmpty(request.getScriptBody())
+        && !Strings.isNullOrEmpty(request.getScriptKind())) {
+      return true;
+    }
+    return false;
   }
 
   // FacekomApi:hu.it4all.kh.FacekomApi.statusUpdate(processId::@@processId@@::java.lang.Long,StatusOk::”false”::java.lang.Boolean,
@@ -178,29 +193,34 @@ public class Invocations {
     }
   }
 
-  @SuppressWarnings({"unchecked"})
-  public static List<Object> getParameterObjects(ObjectApi objectApi, InvocationRequest request,
-      Method method) {
+  public static List<Object> getParameterObjects(ObjectApi objectApi, InvocationRequest request) {
     // Transfer the parameters for the call. Convert the primitives and the objects by the
     List<Object> parameterObjects = new ArrayList<>();
     for (InvocationParameter parameter : request.getParameters()) {
-      Object value = parameter.getValue();
-      if (value != null && !value.getClass().getName().equals(parameter.getTypeClass())) {
-        Class<?> typeClass = getTypeClassByName(request, parameter.getTypeClass());
-        if (List.class.isAssignableFrom(typeClass)) {
-          value = objectApi.asList(getTypeClassByName(request, parameter.getInnerTypeClass()),
-              (List<?>) value);
-        } else if (Map.class.isAssignableFrom(typeClass)) {
-          value = objectApi.asMap(getTypeClassByName(request, parameter.getInnerTypeClass()),
-              (Map<String, ?>) value);
-        } else {
-          value = objectApi.asType(typeClass, value);
-        }
-
-      }
+      Object value = convertParameterValue(objectApi, request, parameter);
       parameterObjects.add(value);
     }
     return parameterObjects;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static Object convertParameterValue(ObjectApi objectApi, InvocationRequest request,
+      InvocationParameter parameter) {
+    Object value = parameter.getValue();
+    if (value != null && !value.getClass().getName().equals(parameter.getTypeClass())) {
+      Class<?> typeClass = getTypeClassByName(request, parameter.getTypeClass());
+      if (List.class.isAssignableFrom(typeClass)) {
+        value = objectApi.asList(getTypeClassByName(request, parameter.getInnerTypeClass()),
+            (List<?>) value);
+      } else if (Map.class.isAssignableFrom(typeClass)) {
+        value = objectApi.asMap(getTypeClassByName(request, parameter.getInnerTypeClass()),
+            (Map<String, ?>) value);
+      } else {
+        value = objectApi.asType(typeClass, value);
+      }
+
+    }
+    return value;
   }
 
   private static final Class<?> getTypeClassByName(InvocationRequest request, String className) {
@@ -223,7 +243,7 @@ public class Invocations {
   public static InvocationParameter invokeMethod(ObjectApi objectApi, InvocationRequest request,
       Object api,
       Method method) {
-    List<Object> parameterObjects = getParameterObjects(objectApi, request, method);
+    List<Object> parameterObjects = getParameterObjects(objectApi, request);
     try {
       Object result = method.invoke(api, parameterObjects.toArray());
       InvocationParameter invocationResult = new InvocationParameter();

@@ -74,7 +74,7 @@ public final class InvocationApiImpl implements InvocationApi {
   public InvocationParameter invoke(InvocationRequest request, Object... args)
       throws ApiNotFoundException {
     Objects.requireNonNull(request);
-    if (request.getScriptBody() != null) {
+    if (Invocations.isScript(request)) {
       return invokeScript(request);
     }
 
@@ -120,9 +120,11 @@ public final class InvocationApiImpl implements InvocationApi {
       throws ApiNotFoundException {
     final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
     // Set all the parameters to the script as global variable.
+    List<Object> parameterObjects = Invocations.getParameterObjects(objectApi, request);
+    int i = 0;
     for (InvocationParameter p : request.getParameters()) {
-      // TODO We must ensure that the parameters have the correct types.
-      scriptEngineManager.put(p.getName(), p.getValue());
+      // We must ensure that the parameters are converted to the referred types.
+      scriptEngineManager.put(p.getName(), parameterObjects.get(i++));
     }
     ScriptEngine engine = scriptEngineManager.getEngineByName(request.getScriptKind());
     if (engine == null) {
