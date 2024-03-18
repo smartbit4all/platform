@@ -433,4 +433,23 @@ public class Invocations {
     request.getParameters().get(idx).setValue(value);
     return request;
   }
+
+  /**
+   * Try to find the first parameter with the type of the value and set it.
+   * 
+   * @param request The request
+   * @param value The value to set. If it is null then there will be no change.
+   * @return The request.
+   */
+  public static final InvocationRequest setParameterFirstWithType(InvocationRequest request,
+      Object value) {
+    if (request != null
+        && value != null) {
+      String typeName = value.getClass().getName();
+      request.getParameters().stream().filter(p -> typeName.equals(p.getTypeClass())).findFirst()
+          .ifPresent(p -> p.setValue(value));
+    }
+    return request;
+  }
+
 }
