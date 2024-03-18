@@ -29,9 +29,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData,   
+ * An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, 
  */
-@ApiModel(description = "An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData,   ")
+@ApiModel(description = "An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, ")
 @JsonPropertyOrder({
   ValueSet.VALUE_SET_NAME,
   ValueSet.VALUE_SET_DATA,

@@ -106,11 +106,11 @@ public class ViewEventHandler {
   }
 
    /**
-   * The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself.  
+   * The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself. 
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself.  ")
+  @ApiModelProperty(value = "The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself. ")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

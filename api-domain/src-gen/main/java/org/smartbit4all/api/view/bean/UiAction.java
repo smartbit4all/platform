@@ -48,7 +48,8 @@ import javax.validation.Valid;
   UiAction.PARAMS,
   UiAction.DESCRIPTOR,
   UiAction.SUB_ACTIONS,
-  UiAction.TOOLBAR
+  UiAction.TOOLBAR,
+  UiAction.DISABLED
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -88,6 +89,9 @@ public class UiAction {
 
   public static final String TOOLBAR = "toolbar";
   private String toolbar;
+
+  public static final String DISABLED = "disabled";
+  private Boolean disabled;
 
   public UiAction() { 
   }
@@ -325,11 +329,11 @@ public class UiAction {
   }
 
    /**
-   * Additional parameters for executing the UI action.  
+   * Additional parameters for executing the UI action. 
    * @return params
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Additional parameters for executing the UI action.  ")
+  @ApiModelProperty(value = "Additional parameters for executing the UI action. ")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -436,6 +440,33 @@ public class UiAction {
   }
 
 
+  public UiAction disabled(Boolean disabled) {
+    
+    this.disabled = disabled;
+    return this;
+  }
+
+   /**
+   * Whether this action should appear disabled or not.
+   * @return disabled
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Whether this action should appear disabled or not.")
+  @JsonProperty(DISABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getDisabled() {
+    return disabled;
+  }
+
+
+  @JsonProperty(DISABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisabled(Boolean disabled) {
+    this.disabled = disabled;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -456,12 +487,13 @@ public class UiAction {
         Objects.equals(this.params, uiAction.params) &&
         Objects.equals(this.descriptor, uiAction.descriptor) &&
         Objects.equals(this.subActions, uiAction.subActions) &&
-        Objects.equals(this.toolbar, uiAction.toolbar);
+        Objects.equals(this.toolbar, uiAction.toolbar) &&
+        Objects.equals(this.disabled, uiAction.disabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions, toolbar);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions, toolbar, disabled);
   }
 
   @Override
@@ -480,6 +512,7 @@ public class UiAction {
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    subActions: ").append(toIndentedString(subActions)).append("\n");
     sb.append("    toolbar: ").append(toIndentedString(toolbar)).append("\n");
+    sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

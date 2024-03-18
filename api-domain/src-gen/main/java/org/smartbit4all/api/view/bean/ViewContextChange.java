@@ -125,11 +125,11 @@ public class ViewContextChange {
   }
 
    /**
-   * If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call.  
+   * If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call. 
    * @return result
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call.  ")
+  @ApiModelProperty(value = "If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call. ")
   @JsonProperty(RESULT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -152,12 +152,12 @@ public class UiActionRequest {
   }
 
    /**
-   * Additional parameters for executing the UI action.  
+   * Additional parameters for executing the UI action. 
    * @return params
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Additional parameters for executing the UI action.  ")
+  @ApiModelProperty(required = true, value = "Additional parameters for executing the UI action. ")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
