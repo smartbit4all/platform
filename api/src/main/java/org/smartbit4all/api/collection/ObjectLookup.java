@@ -1,7 +1,7 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.joining;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,8 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link ObjectLookup} is a generic abstract class for lookup a collection by the values of an
@@ -60,12 +62,12 @@ public abstract class ObjectLookup {
    * @param mapping The mapping parameters for copying the result back to the original object.
    */
   @SuppressWarnings("unchecked")
-  public final List<Object> fillObjects(List<Object> objects,
+  public final List<Object> fillObjects(List<? extends Object> objects,
       ObjectLookupParameter parameter, ObjectMappingDefinition mapping) {
     Objects.requireNonNull(objects);
     Objects.requireNonNull(parameter);
     Objects.requireNonNull(mapping);
-    //TODO finish this method: filter out the incorrect data
+    // TODO finish this method: filter out the incorrect data
     List<Object> resultList = new ArrayList<>();
     ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
     for (Object object : objects) {
@@ -97,6 +99,16 @@ public abstract class ObjectLookup {
     ObjectLookupResult lookupResult = findByUniqueResult(value);
     return lookupResult.getItems().isEmpty() ? null
         : objectApi.asType(clazz, lookupResult.getItems().get(0).getObjectAsMap());
+  }
+
+  public <T> List<T> findByUnique(List<String> propertyPath, List<? extends Object> values,
+      Class<T> clazz) {
+    if (values == null || values.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return values.stream()
+        .map(v -> findByUnique(new ObjectPropertyValue().path(propertyPath).value(v), clazz))
+        .collect(toList());
   }
 
   protected final ObjectLookupResult findByUniqueResult(ObjectPropertyValue value) {
