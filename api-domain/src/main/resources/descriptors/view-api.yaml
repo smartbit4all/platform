@@ -1347,6 +1347,7 @@ components:
             If we set the item producer logic then the items of the toolbar are coming from this invocation. In this case the
             items must be managed in the invocation call not here. It can be a workflow or a specific menu settings that can produce
             menu items dynamically.
+          type: InvocationRequest
     ToolbarItem:
       type: object
       description: |
@@ -1375,6 +1376,11 @@ components:
           description: |
             The qualified name of the action.
           type: string
+        actionDefinitionUri:
+          description: |
+            asd
+          type: string
+          format: uri
         descriptor:
           description: |
             The UiAction descriptor for the action if we would like to override it in the give toolbar.
@@ -1383,3 +1389,14 @@ components:
       enum: [action, inline, submenu]
     ToolbarItemOperation:
       enum: [addBefore, addAfter, addFirst, addLast, remove]
+
+    ViewEvaluationContext:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/View'
+        user: # not needed if clients run in the same security context as the related request
+          type: string
+          format: uri
+        model:
+          type: object # not strictly needed if clients can automatically run after initModel()

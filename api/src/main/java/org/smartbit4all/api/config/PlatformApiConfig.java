@@ -81,6 +81,8 @@ import org.smartbit4all.api.setting.ImageSettingApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
+import org.smartbit4all.api.view.ActionDefinitionApi;
+import org.smartbit4all.api.view.ActionDefinitionApiImpl;
 import org.smartbit4all.api.view.ActionManagementApi;
 import org.smartbit4all.api.view.ActionManagementApiImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
@@ -88,6 +90,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.bean.ActionDefinition;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApi;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
@@ -380,6 +384,34 @@ public class PlatformApiConfig {
                   .name("Name")
                   .addPathItem(ObjectValidationOperation.NAME)
                   .addPathItem(LangString.DEFAULT_VALUE));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(ActionDefinitionApi.MDM_ACTION_DEFINITIONS)
+          .name(ActionDefinitionApi.MDM_ACTION_DEFINITIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ActionDefinition.QUALIFIED_NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Action Definitions")
+              .putValueByLocaleItem("hu", "Műveletleírók")
+              .putValueByLocaleItem("en", "Action Definitions"))
+          .displayNameForm(new LangString().defaultValue("Action Definition")
+              .putValueByLocaleItem("hu", "Műveletleíró")
+              .putValueByLocaleItem("en", "Action Definition"))
+          .order(200L)
+          .typeQualifiedName(ActionDefinition.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Qualified name")
+                  .addPathItem(ActionDefinition.QUALIFIED_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("ActionCode")
+                  .addPathItem(ActionDefinition.ACTION)
+                  .addPathItem(UiAction.CODE));
       result.addDescriptor(entry);
     }
     {
@@ -706,6 +738,11 @@ public class PlatformApiConfig {
   @Bean
   public ViewConstraintManagementApi viewConstraintManagementApi() {
     return new ViewConstraintManagementApiImpl();
+  }
+
+  @Bean
+  public ActionDefinitionApi actionDefinitionApi() {
+    return new ActionDefinitionApiImpl();
   }
 
   @Bean

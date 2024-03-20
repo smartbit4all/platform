@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -63,8 +65,6 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -246,6 +246,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     if (optionsSaved) {
       return;
     }
+    optionsSaved = true;
+
     if (options != null) {
       StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
       map.update(m -> {
@@ -279,7 +281,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         }
       }
     }
-    optionsSaved = true;
   }
 
   @Override
