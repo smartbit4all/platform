@@ -1,6 +1,6 @@
 /*
- * View API
- * View API
+ * Toolbar API
+ * Toolbar API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.view.bean;
+package org.smartbit4all.api.toolbar.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -59,13 +59,13 @@ public class ActionDefinition {
   private String qualifiedName;
 
   public static final String ACTION = "action";
-  private UiAction action;
+  private UiAction action = null;
 
   public static final String INVOCATIONS = "invocations";
   private List<InvocationRequest> invocations = new ArrayList<>();
 
   public static final String DESCRIPTOR = "descriptor";
-  private UiActionDescriptor descriptor;
+  private UiActionDescriptor descriptor = null;
 
   public static final String CONTEXT_CHECKS = "contextChecks";
   private List<InvocationRequest> contextChecks = null;

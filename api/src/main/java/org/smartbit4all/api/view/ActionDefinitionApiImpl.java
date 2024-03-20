@@ -16,8 +16,8 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
-import org.smartbit4all.api.view.bean.ActionDefinition;
-import org.smartbit4all.api.view.bean.ViewEvaluationContext;
+import org.smartbit4all.api.toolbar.bean.ActionDefinition;
+import org.smartbit4all.api.toolbar.bean.ViewEvaluationContext;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 

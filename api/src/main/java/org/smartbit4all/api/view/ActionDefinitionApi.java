@@ -4,10 +4,10 @@ import java.util.List;
 import org.smartbit4all.api.mdm.MDMEntrySetup;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
-import org.smartbit4all.api.view.bean.ActionDefinition;
+import org.smartbit4all.api.toolbar.bean.ActionDefinition;
+import org.smartbit4all.api.toolbar.bean.ViewEvaluationContext;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
-import org.smartbit4all.api.view.bean.ViewEvaluationContext;
 import com.google.common.base.Strings;
 
 /**

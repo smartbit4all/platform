@@ -1,6 +1,6 @@
 /*
- * View API
- * View API
+ * Toolbar API
+ * Toolbar API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.view.bean;
+package org.smartbit4all.api.toolbar.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -25,11 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.smartbit4all.api.view.bean.ToolbarItem;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.toolbar.bean.ToolbarItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -58,7 +55,7 @@ public class ToolbarDefinitionData {
   private List<ToolbarItem> items = new ArrayList<>();
 
   public static final String ITEM_PRODUCER = "itemProducer";
-  private JsonNullable<Object> itemProducer = JsonNullable.<Object>of(null);
+  private InvocationRequest itemProducer = null;
 
   public ToolbarDefinitionData() { 
   }
@@ -154,9 +151,9 @@ public class ToolbarDefinitionData {
   }
 
 
-  public ToolbarDefinitionData itemProducer(Object itemProducer) {
-    this.itemProducer = JsonNullable.<Object>of(itemProducer);
+  public ToolbarDefinitionData itemProducer(InvocationRequest itemProducer) {
     
+    this.itemProducer = itemProducer;
     return this;
   }
 
@@ -165,27 +162,20 @@ public class ToolbarDefinitionData {
    * @return itemProducer
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "If we set the item producer logic then the items of the toolbar are coming from this invocation. In this case the items must be managed in the invocation call not here. It can be a workflow or a specific menu settings that can produce menu items dynamically. ")
-  @JsonIgnore
-
-  public Object getItemProducer() {
-        return itemProducer.orElse(null);
-  }
-
   @JsonProperty(ITEM_PRODUCER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public JsonNullable<Object> getItemProducer_JsonNullable() {
+  public InvocationRequest getItemProducer() {
     return itemProducer;
   }
-  
-  @JsonProperty(ITEM_PRODUCER)
-  public void setItemProducer_JsonNullable(JsonNullable<Object> itemProducer) {
-    this.itemProducer = itemProducer;
-  }
 
-  public void setItemProducer(Object itemProducer) {
-    this.itemProducer = JsonNullable.<Object>of(itemProducer);
+
+  @JsonProperty(ITEM_PRODUCER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemProducer(InvocationRequest itemProducer) {
+    this.itemProducer = itemProducer;
   }
 
 
@@ -201,23 +191,12 @@ public class ToolbarDefinitionData {
     return Objects.equals(this.uri, toolbarDefinitionData.uri) &&
         Objects.equals(this.qualifiedName, toolbarDefinitionData.qualifiedName) &&
         Objects.equals(this.items, toolbarDefinitionData.items) &&
-        equalsNullable(this.itemProducer, toolbarDefinitionData.itemProducer);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        Objects.equals(this.itemProducer, toolbarDefinitionData.itemProducer);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, qualifiedName, items, hashCodeNullable(itemProducer));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+    return Objects.hash(uri, qualifiedName, items, itemProducer);
   }
 
   @Override

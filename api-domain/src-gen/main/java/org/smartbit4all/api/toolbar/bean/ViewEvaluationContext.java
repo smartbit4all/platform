@@ -1,6 +1,6 @@
 /*
- * View API
- * View API
+ * Toolbar API
+ * Toolbar API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.view.bean;
+package org.smartbit4all.api.toolbar.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ViewEvaluationContext {
   public static final String VIEW = "view";
-  private View view;
+  private View view = null;
 
   public static final String USER = "user";
   private URI user;

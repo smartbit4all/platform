@@ -1,6 +1,6 @@
 /*
- * View API
- * View API
+ * Toolbar API
+ * Toolbar API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.view.bean;
+package org.smartbit4all.api.toolbar.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.view.bean.ToolbarDefinitionData;
-import org.smartbit4all.api.view.bean.ToolbarItemKind;
-import org.smartbit4all.api.view.bean.ToolbarItemOperation;
+import org.smartbit4all.api.toolbar.bean.ToolbarDefinitionData;
+import org.smartbit4all.api.toolbar.bean.ToolbarItemKind;
+import org.smartbit4all.api.toolbar.bean.ToolbarItemOperation;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -43,6 +43,7 @@ import javax.validation.Valid;
   ToolbarItem.REFERRED_TOOLBAR,
   ToolbarItem.TOOLBAR,
   ToolbarItem.ACTION,
+  ToolbarItem.ACTION_DEFINITION_URI,
   ToolbarItem.DESCRIPTOR
 })
 @JsonTypeName("ToolbarItem")
@@ -66,8 +67,11 @@ public class ToolbarItem {
   public static final String ACTION = "action";
   private String action;
 
+  public static final String ACTION_DEFINITION_URI = "actionDefinitionUri";
+  private URI actionDefinitionUri;
+
   public static final String DESCRIPTOR = "descriptor";
-  private UiActionDescriptor descriptor;
+  private UiActionDescriptor descriptor = null;
 
   public ToolbarItem() { 
   }
@@ -239,6 +243,34 @@ public class ToolbarItem {
   }
 
 
+  public ToolbarItem actionDefinitionUri(URI actionDefinitionUri) {
+    
+    this.actionDefinitionUri = actionDefinitionUri;
+    return this;
+  }
+
+   /**
+   * asd 
+   * @return actionDefinitionUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "asd ")
+  @JsonProperty(ACTION_DEFINITION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getActionDefinitionUri() {
+    return actionDefinitionUri;
+  }
+
+
+  @JsonProperty(ACTION_DEFINITION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setActionDefinitionUri(URI actionDefinitionUri) {
+    this.actionDefinitionUri = actionDefinitionUri;
+  }
+
+
   public ToolbarItem descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
@@ -282,12 +314,13 @@ public class ToolbarItem {
         Objects.equals(this.referredToolbar, toolbarItem.referredToolbar) &&
         Objects.equals(this.toolbar, toolbarItem.toolbar) &&
         Objects.equals(this.action, toolbarItem.action) &&
+        Objects.equals(this.actionDefinitionUri, toolbarItem.actionDefinitionUri) &&
         Objects.equals(this.descriptor, toolbarItem.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, kind, operation, referredToolbar, toolbar, action, descriptor);
+    return Objects.hash(uri, kind, operation, referredToolbar, toolbar, action, actionDefinitionUri, descriptor);
   }
 
   @Override
@@ -300,6 +333,7 @@ public class ToolbarItem {
     sb.append("    referredToolbar: ").append(toIndentedString(referredToolbar)).append("\n");
     sb.append("    toolbar: ").append(toIndentedString(toolbar)).append("\n");
     sb.append("    action: ").append(toIndentedString(action)).append("\n");
+    sb.append("    actionDefinitionUri: ").append(toIndentedString(actionDefinitionUri)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();

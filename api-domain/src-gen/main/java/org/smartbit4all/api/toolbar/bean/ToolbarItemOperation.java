@@ -1,6 +1,6 @@
 /*
- * View API
- * View API
+ * Toolbar API
+ * Toolbar API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.view.bean;
+package org.smartbit4all.api.toolbar.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -24,19 +24,23 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ToolbarItemKind
+ * Gets or Sets ToolbarItemOperation
  */
-public enum ToolbarItemKind {
+public enum ToolbarItemOperation {
   
-  ACTION("action"),
+  ADDBEFORE("addBefore"),
   
-  INLINE("inline"),
+  ADDAFTER("addAfter"),
   
-  SUBMENU("submenu");
+  ADDFIRST("addFirst"),
+  
+  ADDLAST("addLast"),
+  
+  REMOVE("remove");
 
   private String value;
 
-  ToolbarItemKind(String value) {
+  ToolbarItemOperation(String value) {
     this.value = value;
   }
 
@@ -51,8 +55,8 @@ public enum ToolbarItemKind {
   }
 
   @JsonCreator
-  public static ToolbarItemKind fromValue(String value) {
-    for (ToolbarItemKind b : ToolbarItemKind.values()) {
+  public static ToolbarItemOperation fromValue(String value) {
+    for (ToolbarItemOperation b : ToolbarItemOperation.values()) {
       if (b.value.equals(value)) {
         return b;
       }

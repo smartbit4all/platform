@@ -2,7 +2,7 @@ package org.smartbit4all.api.view;
 
 import java.util.List;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
-import org.smartbit4all.api.view.bean.ActionDefinition;
+import org.smartbit4all.api.toolbar.bean.ActionDefinition;
 import org.smartbit4all.api.view.bean.UiAction;
 
 /**
