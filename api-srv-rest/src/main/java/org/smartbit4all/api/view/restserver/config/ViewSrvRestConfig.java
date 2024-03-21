@@ -13,6 +13,8 @@ import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
 import org.smartbit4all.api.uitree.restserver.TreeApiController;
 import org.smartbit4all.api.uitree.restserver.TreeApiDelegate;
 import org.smartbit4all.api.uitree.restserver.impl.TreeApiDelegateImpl;
+import org.smartbit4all.api.view.ExternalActionService;
+import org.smartbit4all.api.view.ExternalActionServiceImpl;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -43,6 +45,12 @@ public class ViewSrvRestConfig {
   @ConditionalOnMissingBean
   public ViewApi viewApi() {
     return new ViewApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ExternalActionService externalActionService() {
+    return new ExternalActionServiceImpl();
   }
 
   @Bean

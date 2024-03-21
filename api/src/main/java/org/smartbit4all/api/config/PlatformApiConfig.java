@@ -86,8 +86,6 @@ import org.smartbit4all.api.view.ActionDefinitionApi;
 import org.smartbit4all.api.view.ActionDefinitionApiImpl;
 import org.smartbit4all.api.view.ActionManagementApi;
 import org.smartbit4all.api.view.ActionManagementApiImpl;
-import org.smartbit4all.api.view.ExternalActionService;
-import org.smartbit4all.api.view.ExternalActionServiceImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
 import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -745,11 +743,6 @@ public class PlatformApiConfig {
   @Bean
   public ActionDefinitionApi actionDefinitionApi() {
     return new ActionDefinitionApiImpl();
-  }
-
-  @Bean
-  public ExternalActionService externalActionService() {
-    return new ExternalActionServiceImpl();
   }
 
   @Bean
