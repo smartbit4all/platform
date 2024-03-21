@@ -84,7 +84,9 @@ public enum SmartFormWidgetType {
   
   MONTH_PICKER("MONTH_PICKER"),
   
-  YOUTUBE_PLAYER("YOUTUBE_PLAYER");
+  YOUTUBE_PLAYER("YOUTUBE_PLAYER"),
+  
+  SVG("SVG");
 
   private String value;
 

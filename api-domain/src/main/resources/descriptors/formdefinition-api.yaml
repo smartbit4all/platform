@@ -49,6 +49,7 @@ components:
         - MATRIX
         - MONTH_PICKER
         - YOUTUBE_PLAYER
+        - SVG
     SmartLayoutDefinition:
       type: object
       required: [widgets]
