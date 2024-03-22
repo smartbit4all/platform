@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApi;
-import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
 /**
  * Generic primary api for creating vector from the values of an object.
@@ -20,9 +19,9 @@ public interface EmbeddingApi extends PrimaryApi<EmbeddingContributionApi> {
    *        simple <b> prop </b> is working.
    * @return The Vector itself where the conversion algorithm is defined by the service parameter.
    */
-  VectorValue embed(ServiceConnection service, Map<String, Object> object, List<String> pathes);
+  VectorValue embed(String serviceConnectionName, Map<String, Object> object, List<String> pathes);
 
-  VectorValue embed(ServiceConnection service, Map<String, Object> object);
+  VectorValue embed(String serviceConnectionName, Map<String, Object> object);
 
   /**
    * Call this if the whole object is serialized into a String.
@@ -31,6 +30,6 @@ public interface EmbeddingApi extends PrimaryApi<EmbeddingContributionApi> {
    * @param text The textual representation of the object.
    * @return
    */
-  VectorValue embed(ServiceConnection service, String text);
+  VectorValue embed(String serviceConnectionName, String text);
 
 }
