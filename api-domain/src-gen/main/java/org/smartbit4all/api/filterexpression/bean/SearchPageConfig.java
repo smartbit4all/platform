@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
 @JsonPropertyOrder({
   SearchPageConfig.URI,
+  SearchPageConfig.PAGE_TITLE,
   SearchPageConfig.FILTER_MODEL,
   SearchPageConfig.SEARCH_INDEX_SCHEMA,
   SearchPageConfig.SEARCH_INDEX_NAME,
@@ -46,6 +47,7 @@ import javax.validation.Valid;
   SearchPageConfig.HISTORY_OBJECT_URI,
   SearchPageConfig.HISTORY_LOWER_BOUND,
   SearchPageConfig.HISTORY_UPPER_BOUND,
+  SearchPageConfig.HISTORY_LOAD_ALL_LIMIT,
   SearchPageConfig.HISTORY_PAGE_SIZE,
   SearchPageConfig.SKIP_INITIAL_QUERY,
   SearchPageConfig.GRID_VIEW_OPTIONS
@@ -55,6 +57,9 @@ import javax.validation.Valid;
 public class SearchPageConfig {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String PAGE_TITLE = "pageTitle";
+  private String pageTitle;
 
   public static final String FILTER_MODEL = "filterModel";
   private FilterExpressionBuilderModel filterModel;
@@ -76,6 +81,9 @@ public class SearchPageConfig {
 
   public static final String HISTORY_UPPER_BOUND = "historyUpperBound";
   private Long historyUpperBound;
+
+  public static final String HISTORY_LOAD_ALL_LIMIT = "historyLoadAllLimit";
+  private Long historyLoadAllLimit = 1000l;
 
   public static final String HISTORY_PAGE_SIZE = "historyPageSize";
   private Integer historyPageSize;
@@ -114,6 +122,33 @@ public class SearchPageConfig {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public SearchPageConfig pageTitle(String pageTitle) {
+    
+    this.pageTitle = pageTitle;
+    return this;
+  }
+
+   /**
+   * The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel label property will be the page title and we skip set the label of the component itself. So we can skip this value. 
+   * @return pageTitle
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel label property will be the page title and we skip set the label of the component itself. So we can skip this value. ")
+  @JsonProperty(PAGE_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPageTitle() {
+    return pageTitle;
+  }
+
+
+  @JsonProperty(PAGE_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPageTitle(String pageTitle) {
+    this.pageTitle = pageTitle;
   }
 
 
@@ -309,6 +344,33 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig historyLoadAllLimit(Long historyLoadAllLimit) {
+    
+    this.historyLoadAllLimit = historyLoadAllLimit;
+    return this;
+  }
+
+   /**
+   * The nummber is history elements are well-known. The last version number show how many version we have. Under this limit we load all the versions and like a normal list of object. 
+   * @return historyLoadAllLimit
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The nummber is history elements are well-known. The last version number show how many version we have. Under this limit we load all the versions and like a normal list of object. ")
+  @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getHistoryLoadAllLimit() {
+    return historyLoadAllLimit;
+  }
+
+
+  @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHistoryLoadAllLimit(Long historyLoadAllLimit) {
+    this.historyLoadAllLimit = historyLoadAllLimit;
+  }
+
+
   public SearchPageConfig historyPageSize(Integer historyPageSize) {
     
     this.historyPageSize = historyPageSize;
@@ -407,6 +469,7 @@ public class SearchPageConfig {
     }
     SearchPageConfig searchPageConfig = (SearchPageConfig) o;
     return Objects.equals(this.uri, searchPageConfig.uri) &&
+        Objects.equals(this.pageTitle, searchPageConfig.pageTitle) &&
         Objects.equals(this.filterModel, searchPageConfig.filterModel) &&
         Objects.equals(this.searchIndexSchema, searchPageConfig.searchIndexSchema) &&
         Objects.equals(this.searchIndexName, searchPageConfig.searchIndexName) &&
@@ -414,6 +477,7 @@ public class SearchPageConfig {
         Objects.equals(this.historyObjectUri, searchPageConfig.historyObjectUri) &&
         Objects.equals(this.historyLowerBound, searchPageConfig.historyLowerBound) &&
         Objects.equals(this.historyUpperBound, searchPageConfig.historyUpperBound) &&
+        Objects.equals(this.historyLoadAllLimit, searchPageConfig.historyLoadAllLimit) &&
         Objects.equals(this.historyPageSize, searchPageConfig.historyPageSize) &&
         Objects.equals(this.skipInitialQuery, searchPageConfig.skipInitialQuery) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
@@ -421,7 +485,7 @@ public class SearchPageConfig {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyPageSize, skipInitialQuery, gridViewOptions);
+    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, skipInitialQuery, gridViewOptions);
   }
 
   @Override
@@ -429,6 +493,7 @@ public class SearchPageConfig {
     StringBuilder sb = new StringBuilder();
     sb.append("class SearchPageConfig {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    pageTitle: ").append(toIndentedString(pageTitle)).append("\n");
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
     sb.append("    searchIndexName: ").append(toIndentedString(searchIndexName)).append("\n");
@@ -436,6 +501,7 @@ public class SearchPageConfig {
     sb.append("    historyObjectUri: ").append(toIndentedString(historyObjectUri)).append("\n");
     sb.append("    historyLowerBound: ").append(toIndentedString(historyLowerBound)).append("\n");
     sb.append("    historyUpperBound: ").append(toIndentedString(historyUpperBound)).append("\n");
+    sb.append("    historyLoadAllLimit: ").append(toIndentedString(historyLoadAllLimit)).append("\n");
     sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
     sb.append("    skipInitialQuery: ").append(toIndentedString(skipInitialQuery)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");

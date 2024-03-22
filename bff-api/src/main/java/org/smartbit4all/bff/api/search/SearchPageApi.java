@@ -23,6 +23,8 @@ import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
  */
 public interface SearchPageApi extends PageApi<SearchPageModel> {
 
+  static final String OBJECT_HISTOTY = "objectHistory";
+
   /**
    * The generic query action that will run the execute search with the current filter expressions.
    */

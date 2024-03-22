@@ -342,6 +342,12 @@ components:
         uri:
           type: string
           format: uri
+        pageTitle:
+          description: |
+            The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel
+            label property will be the page title and we skip set the label of the component itself. So we can skip this
+            value.
+          type: string
         filterModel:
           description: |
             This object describes the possible filter fields and also the included filters fields. It can be used in the FilterExpressionApi
@@ -368,6 +374,13 @@ components:
           description: If we set this property then the page is loading the given version as the newest one.
           type: integer
           format: int64
+        historyLoadAllLimit:
+          description: |
+            The nummber is history elements are well-known. The last version number show how many version
+            we have. Under this limit we load all the versions and like a normal list of object.
+          type: integer
+          format: int64
+          default: 1000
         historyPageSize:
           description: |
             If we set this property and skip any or all of the lower or upper bound then we load this this
