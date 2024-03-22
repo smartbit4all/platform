@@ -209,7 +209,7 @@ public interface MDMEntryApi {
    * The MDM entry can have several defined index. It can have some vector index, normal SQL based
    * index and even some full text index.
    */
-  void updateAllIndices(List<String> idPath);
+  void updateAllIndices();
 
   void setBranchedEntriesMerged(UserActivityLog merged);
 

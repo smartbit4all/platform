@@ -18,7 +18,7 @@ public interface VectorCollection {
 
   void ensureExist();
 
-  void addObject(List<String> idPath, Object obj);
+  void addObject(Object obj);
 
   boolean deleteObject(String id);
 

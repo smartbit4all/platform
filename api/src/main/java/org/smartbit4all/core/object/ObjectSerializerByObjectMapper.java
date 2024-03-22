@@ -44,6 +44,9 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   public static final TypeReference<Map<String, String>> MAP_OF_STRING_STRING_TYPE_REFERENCE =
       new TypeReference<Map<String, String>>() {};
 
+  public static final TypeReference<List<Map<String, Object>>> LIST_OF_MAP_OF_STRING_OBJECT =
+      new TypeReference<List<Map<String, Object>>>() {};
+
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
   /**

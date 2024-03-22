@@ -1,5 +1,9 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,10 +64,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -686,7 +686,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public void updateAllIndices(List<String> idPath) {
+  public void updateAllIndices() {
     VectorCollectionDescriptor vectorCollectionDescriptor = descriptor.getVectorCollection();
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
@@ -698,7 +698,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       }
       vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
-        vectorCollection.addObject(idPath, n.getObjectAsMap().entrySet().stream()
+        vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
             .filter(e -> !excludedProperties.contains(e.getKey()))
             .filter(e -> e.getValue() != null)
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
