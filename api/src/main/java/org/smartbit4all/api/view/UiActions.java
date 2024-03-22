@@ -324,6 +324,18 @@ public final class UiActions {
   }
 
 
+  public static void remove(View view, Collection<String> codes) {
+    String[] arr = codes.stream().toArray(String[]::new);
+    if (arr.length == 0) {
+      // NO-OP
+    } else if (arr.length == 1) {
+      remove(view, arr[0]);
+    } else {
+      final String[] varargs = new String[arr.length - 1];
+      System.arraycopy(arr, 1, varargs, 0, varargs.length);
+      remove(view, arr[0], varargs);
+    }
+  }
 
   /**
    * Removes the {@code UiAction}(s) denoted by the specified {@link UiAction#CODE}s from a given

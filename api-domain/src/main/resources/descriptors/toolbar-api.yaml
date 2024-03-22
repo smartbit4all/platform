@@ -155,3 +155,9 @@ components:
           format: uri
         model:
           type: object # not strictly needed if clients can automatically run after initModel()
+        refreshWidgetsRequired:
+          type: boolean
+          default: false
+        actionReevaluationRequired:
+          type: boolean
+          default: false

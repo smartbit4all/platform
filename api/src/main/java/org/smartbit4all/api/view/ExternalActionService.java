@@ -6,6 +6,10 @@ import org.smartbit4all.api.view.bean.View;
 
 public interface ExternalActionService {
 
+  enum ActionExecutionResult {
+    OK, UNKNOWN, FAIL, REFRESH_REQUIRED
+  }
+
   /**
    * Injects externally configured actions to a live view.
    * 
@@ -23,6 +27,7 @@ public interface ExternalActionService {
    * @param modelClass the {@link Class} of the {@link View}'s data model, not null
    * @return true if the action was performed, false if it failed
    */
-  <M> boolean performAction(UUID viewUuid, UiActionRequest request, Class<M> modelClass);
+  <M> ActionExecutionResult performAction(UUID viewUuid, UiActionRequest request,
+      Class<M> modelClass);
 
 }

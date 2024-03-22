@@ -35,7 +35,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ViewEvaluationContext.VIEW,
   ViewEvaluationContext.USER,
-  ViewEvaluationContext.MODEL
+  ViewEvaluationContext.MODEL,
+  ViewEvaluationContext.REFRESH_WIDGETS_REQUIRED,
+  ViewEvaluationContext.ACTION_REEVALUATION_REQUIRED
 })
 @JsonTypeName("ViewEvaluationContext")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +50,12 @@ public class ViewEvaluationContext {
 
   public static final String MODEL = "model";
   private Object model;
+
+  public static final String REFRESH_WIDGETS_REQUIRED = "refreshWidgetsRequired";
+  private Boolean refreshWidgetsRequired = false;
+
+  public static final String ACTION_REEVALUATION_REQUIRED = "actionReevaluationRequired";
+  private Boolean actionReevaluationRequired = false;
 
   public ViewEvaluationContext() { 
   }
@@ -135,6 +143,60 @@ public class ViewEvaluationContext {
   }
 
 
+  public ViewEvaluationContext refreshWidgetsRequired(Boolean refreshWidgetsRequired) {
+    
+    this.refreshWidgetsRequired = refreshWidgetsRequired;
+    return this;
+  }
+
+   /**
+   * Get refreshWidgetsRequired
+   * @return refreshWidgetsRequired
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(REFRESH_WIDGETS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getRefreshWidgetsRequired() {
+    return refreshWidgetsRequired;
+  }
+
+
+  @JsonProperty(REFRESH_WIDGETS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRefreshWidgetsRequired(Boolean refreshWidgetsRequired) {
+    this.refreshWidgetsRequired = refreshWidgetsRequired;
+  }
+
+
+  public ViewEvaluationContext actionReevaluationRequired(Boolean actionReevaluationRequired) {
+    
+    this.actionReevaluationRequired = actionReevaluationRequired;
+    return this;
+  }
+
+   /**
+   * Get actionReevaluationRequired
+   * @return actionReevaluationRequired
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ACTION_REEVALUATION_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getActionReevaluationRequired() {
+    return actionReevaluationRequired;
+  }
+
+
+  @JsonProperty(ACTION_REEVALUATION_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setActionReevaluationRequired(Boolean actionReevaluationRequired) {
+    this.actionReevaluationRequired = actionReevaluationRequired;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -146,12 +208,14 @@ public class ViewEvaluationContext {
     ViewEvaluationContext viewEvaluationContext = (ViewEvaluationContext) o;
     return Objects.equals(this.view, viewEvaluationContext.view) &&
         Objects.equals(this.user, viewEvaluationContext.user) &&
-        Objects.equals(this.model, viewEvaluationContext.model);
+        Objects.equals(this.model, viewEvaluationContext.model) &&
+        Objects.equals(this.refreshWidgetsRequired, viewEvaluationContext.refreshWidgetsRequired) &&
+        Objects.equals(this.actionReevaluationRequired, viewEvaluationContext.actionReevaluationRequired);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(view, user, model);
+    return Objects.hash(view, user, model, refreshWidgetsRequired, actionReevaluationRequired);
   }
 
   @Override
@@ -161,6 +225,8 @@ public class ViewEvaluationContext {
     sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    user: ").append(toIndentedString(user)).append("\n");
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
+    sb.append("    refreshWidgetsRequired: ").append(toIndentedString(refreshWidgetsRequired)).append("\n");
+    sb.append("    actionReevaluationRequired: ").append(toIndentedString(actionReevaluationRequired)).append("\n");
     sb.append("}");
     return sb.toString();
   }

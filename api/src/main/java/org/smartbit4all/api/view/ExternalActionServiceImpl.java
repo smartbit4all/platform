@@ -1,10 +1,12 @@
 package org.smartbit4all.api.view;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +64,8 @@ public class ExternalActionServiceImpl implements ExternalActionService {
   }
 
   @Override
-  public <M> boolean performAction(UUID viewUuid, UiActionRequest request, Class<M> modelClass) {
+  public <M> ActionExecutionResult performAction(UUID viewUuid, UiActionRequest request,
+      Class<M> modelClass) {
     final View view = viewApi.getView(viewUuid);
     final ActionDefinition actionDefinition = Optional
         .ofNullable(view.getVariables().get(VAR_ACTION_DEFINITIONS))
@@ -72,16 +75,19 @@ public class ExternalActionServiceImpl implements ExternalActionService {
         .map(objectApi::loadLatest)
         .map(it -> it.getObject(ActionDefinition.class))
         .orElse(null);
-    return (actionDefinition != null)
-        && performActionInternal(viewUuid, request, modelClass, actionDefinition);
+    if (actionDefinition == null) {
+      return ActionExecutionResult.UNKNOWN;
+    }
+
+    return performActionInternal(viewUuid, request, modelClass, actionDefinition);
   }
 
-  private <M> boolean performActionInternal(UUID viewUuid, UiActionRequest request,
+  private <M> ActionExecutionResult performActionInternal(UUID viewUuid, UiActionRequest request,
       Class<M> modelClass,
       ActionDefinition actionDefinition) {
     final List<InvocationRequest> invocations = actionDefinition.getInvocations();
     if (invocations == null || invocations.isEmpty()) {
-      return false;
+      return ActionExecutionResult.OK;
     }
 
     ViewEvaluationContext context = new ViewEvaluationContext()
@@ -95,12 +101,26 @@ public class ExternalActionServiceImpl implements ExternalActionService {
         context = objectApi.asType(ViewEvaluationContext.class, value);
       } catch (ApiNotFoundException e) {
         log.error(e.getMessage(), e);
-        return false;
+        return ActionExecutionResult.FAIL;
       }
     }
 
-    viewApi.getView(viewUuid).setModel(objectApi.asType(modelClass, context.getModel()));
-    return true;
+    final M model = objectApi.asType(modelClass, context.getModel());
+    final View view = viewApi.getView(viewUuid);
+    view.setModel(model);
+    final boolean initActions = Boolean.TRUE.equals(context.getActionReevaluationRequired());
+    if (initActions) {
+      final Set<String> injectedActionCodes = Optional
+          .ofNullable(view.getVariables().get(VAR_ACTION_DEFINITIONS))
+          .map(it -> (Map<String, ?>) it)
+          .map(Map::keySet)
+          .orElseGet(Collections::emptySet);
+      UiActions.remove(view, injectedActionCodes);
+      initActions(view, model);
+    }
+    return Boolean.TRUE.equals(context.getRefreshWidgetsRequired())
+        ? ActionExecutionResult.REFRESH_REQUIRED
+        : ActionExecutionResult.OK;
   }
 
 }
