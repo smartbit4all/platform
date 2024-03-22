@@ -32,6 +32,8 @@ public enum FilterExpressionFieldWidgetType {
   
   TEXT_FIELD_CHIPS("TEXT_FIELD_CHIPS"),
   
+  TEXT_FIELD_NUMBER("TEXT_FIELD_NUMBER"),
+  
   TEXT_BOX("TEXT_BOX"),
   
   SELECT("SELECT"),

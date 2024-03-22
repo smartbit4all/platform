@@ -321,6 +321,7 @@ components:
       enum:
         - TEXT_FIELD
         - TEXT_FIELD_CHIPS
+        - TEXT_FIELD_NUMBER
         - TEXT_BOX
         - SELECT
         - SELECT_MULTIPLE
