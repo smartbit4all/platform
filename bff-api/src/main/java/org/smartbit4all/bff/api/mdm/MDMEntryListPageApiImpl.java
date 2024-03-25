@@ -452,7 +452,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void refreshActions(UUID viewUuid) {
+  public void entryDescriptorPageCallback(UUID viewUuid) {
     PageContext ctx = getContextByViewUUID(viewUuid);
     refreshActions(ctx);
   }
@@ -701,11 +701,11 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void showEntryDescriptorPage(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     View view = viewApi.getView(viewUuid);
-    MDMEntryDescriptor entryDescriptor = context.getEntryDescriptor(view);
+    MDMEntryDescriptor entryDescriptor = context.entryApi.getDescriptor();
     MDMDefinition mdmDefinition = context.getDefinition(view);
     // TODO refresh the actions on the sidebar
     InvocationRequest refreshCallBack = invocationApi.builder(MDMEntryListPageApi.class)
-        .build(api -> api.refreshActions(viewUuid));
+        .build(api -> api.entryDescriptorPageCallback(viewUuid));
     viewApi.showView(
         new View().viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR).type(ViewType.DIALOG)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_ENTRY_DESCRIPTOR,

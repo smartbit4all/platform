@@ -35,7 +35,8 @@ import javax.validation.Valid;
   MDMEntryDescriptorPageModel.CODE,
   MDMEntryDescriptorPageModel.NAME,
   MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-  MDMEntryDescriptorPageModel.IMPORTABLE
+  MDMEntryDescriptorPageModel.IMPORTABLE,
+  MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES
 })
 @JsonTypeName("MDMEntryDescriptorPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -51,6 +52,9 @@ public class MDMEntryDescriptorPageModel {
 
   public static final String IMPORTABLE = "importable";
   private Boolean importable = false;
+
+  public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
+  private String restrictedProperties;
 
   public MDMEntryDescriptorPageModel() { 
   }
@@ -164,6 +168,33 @@ public class MDMEntryDescriptorPageModel {
   }
 
 
+  public MDMEntryDescriptorPageModel restrictedProperties(String restrictedProperties) {
+    
+    this.restrictedProperties = restrictedProperties;
+    return this;
+  }
+
+   /**
+   * Get restrictedProperties
+   * @return restrictedProperties
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getRestrictedProperties() {
+    return restrictedProperties;
+  }
+
+
+  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRestrictedProperties(String restrictedProperties) {
+    this.restrictedProperties = restrictedProperties;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -176,12 +207,13 @@ public class MDMEntryDescriptorPageModel {
     return Objects.equals(this.code, mdMEntryDescriptorPageModel.code) &&
         Objects.equals(this.name, mdMEntryDescriptorPageModel.name) &&
         Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection) &&
-        Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable);
+        Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable) &&
+        Objects.equals(this.restrictedProperties, mdMEntryDescriptorPageModel.restrictedProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, vectorCollection, importable);
+    return Objects.hash(code, name, vectorCollection, importable, restrictedProperties);
   }
 
   @Override
@@ -192,6 +224,7 @@ public class MDMEntryDescriptorPageModel {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
+    sb.append("    restrictedProperties: ").append(toIndentedString(restrictedProperties)).append("\n");
     sb.append("}");
     return sb.toString();
   }

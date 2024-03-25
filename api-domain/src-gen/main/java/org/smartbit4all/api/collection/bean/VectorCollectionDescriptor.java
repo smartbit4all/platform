@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +36,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   VectorCollectionDescriptor.VECTOR_COLLECTION_NAME,
   VectorCollectionDescriptor.VECTOR_D_B_CONNECTION,
-  VectorCollectionDescriptor.EMBEDDING_CONNECTION
+  VectorCollectionDescriptor.EMBEDDING_CONNECTION,
+  VectorCollectionDescriptor.RESTRICTED_PROPERTIES
 })
 @JsonTypeName("VectorCollectionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +50,9 @@ public class VectorCollectionDescriptor {
 
   public static final String EMBEDDING_CONNECTION = "embeddingConnection";
   private String embeddingConnection;
+
+  public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
+  private List<String> restrictedProperties = new ArrayList<>();
 
   public VectorCollectionDescriptor() { 
   }
@@ -132,6 +138,39 @@ public class VectorCollectionDescriptor {
   }
 
 
+  public VectorCollectionDescriptor restrictedProperties(List<String> restrictedProperties) {
+    
+    this.restrictedProperties = restrictedProperties;
+    return this;
+  }
+
+  public VectorCollectionDescriptor addRestrictedPropertiesItem(String restrictedPropertiesItem) {
+    this.restrictedProperties.add(restrictedPropertiesItem);
+    return this;
+  }
+
+   /**
+   * A list of the properties that will be left out during the creaton of vector indexes 
+   * @return restrictedProperties
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "A list of the properties that will be left out during the creaton of vector indexes ")
+  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getRestrictedProperties() {
+    return restrictedProperties;
+  }
+
+
+  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setRestrictedProperties(List<String> restrictedProperties) {
+    this.restrictedProperties = restrictedProperties;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -143,12 +182,13 @@ public class VectorCollectionDescriptor {
     VectorCollectionDescriptor vectorCollectionDescriptor = (VectorCollectionDescriptor) o;
     return Objects.equals(this.vectorCollectionName, vectorCollectionDescriptor.vectorCollectionName) &&
         Objects.equals(this.vectorDBConnection, vectorCollectionDescriptor.vectorDBConnection) &&
-        Objects.equals(this.embeddingConnection, vectorCollectionDescriptor.embeddingConnection);
+        Objects.equals(this.embeddingConnection, vectorCollectionDescriptor.embeddingConnection) &&
+        Objects.equals(this.restrictedProperties, vectorCollectionDescriptor.restrictedProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(vectorCollectionName, vectorDBConnection, embeddingConnection);
+    return Objects.hash(vectorCollectionName, vectorDBConnection, embeddingConnection, restrictedProperties);
   }
 
   @Override
@@ -158,6 +198,7 @@ public class VectorCollectionDescriptor {
     sb.append("    vectorCollectionName: ").append(toIndentedString(vectorCollectionName)).append("\n");
     sb.append("    vectorDBConnection: ").append(toIndentedString(vectorDBConnection)).append("\n");
     sb.append("    embeddingConnection: ").append(toIndentedString(embeddingConnection)).append("\n");
+    sb.append("    restrictedProperties: ").append(toIndentedString(restrictedProperties)).append("\n");
     sb.append("}");
     return sb.toString();
   }

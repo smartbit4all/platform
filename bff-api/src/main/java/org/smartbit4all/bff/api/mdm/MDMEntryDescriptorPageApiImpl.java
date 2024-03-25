@@ -3,7 +3,9 @@ package org.smartbit4all.bff.api.mdm;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,10 +110,18 @@ public class MDMEntryDescriptorPageApiImpl
     view.putLayoutsItem(LAYOUT, getLayout());
     view.constraint(getViewConstraint(view.getUuid()));
 
+    // already existing entry descriptors do not contain the list
+    String restrictedProperties = ctx.entryDescriptor.getVectorCollection() != null
+        && ctx.entryDescriptor.getVectorCollection().getRestrictedProperties() != null
+            ? ctx.entryDescriptor.getVectorCollection().getRestrictedProperties().stream()
+                .collect(Collectors.joining(","))
+            : StringConstant.EMPTY;
+
     return new MDMEntryDescriptorPageModel()
         .name(Boolean.TRUE.equals(ctx.isNewEntry) ? StringConstant.EMPTY
             : ctx.entryDescriptor.getDisplayNameForm().getDefaultValue())
         .vectorCollection(ctx.entryDescriptor.getVectorCollection())
+        .restrictedProperties(restrictedProperties)
         .importable(Boolean.TRUE.equals(ctx.entryDescriptor.getImportable()));
   }
 
@@ -143,6 +153,10 @@ public class MDMEntryDescriptorPageApiImpl
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION))
             .type(SmartFormWidgetType.TEXT_FIELD),
+        ObjectLayoutBuilder.textfield(
+            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES),
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.RESTRICTED_PROPERTIES)),
         ObjectLayoutBuilder.toggle(MDMEntryDescriptorPageModel.IMPORTABLE, LAYOUT)
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 MDMEntryDescriptorPageModel.IMPORTABLE))));
@@ -195,8 +209,13 @@ public class MDMEntryDescriptorPageApiImpl
               "invalidcharacters"));
     }
 
+    List<String> restrictedProperties =
+        Arrays.asList(clientModel.getRestrictedProperties().split(",")).stream()
+            .filter(s -> s != null && !s.trim().isEmpty()).collect(Collectors.toList());
+
     VectorCollectionDescriptor vectorCollectionDescriptor =
-        clientModel.getVectorCollection() != null ? clientModel.getVectorCollection()
+        clientModel.getVectorCollection() != null
+            ? clientModel.getVectorCollection().restrictedProperties(restrictedProperties)
             : ctx.entryDescriptor.getVectorCollection();
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
@@ -206,7 +225,6 @@ public class MDMEntryDescriptorPageApiImpl
       // clear descriptors to not add already created descriptions again
       option.getDefinition().getDescriptors().clear();
       option.addDescriptor(newDescriptor);
-      // TODO use branch
       masterDataManagementApi.addNewEntries(option, ctx.mdmBranch);
     } else {
       MDMEntryDescriptor entryDescriptorToEdit =

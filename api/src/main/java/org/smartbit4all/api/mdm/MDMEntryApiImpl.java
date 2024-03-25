@@ -696,11 +696,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
         throw new IllegalArgumentException(
             "A frissítéshez érvényes vektoradatbázis kapcsolat és érvényes beágyazó kapcsolat szükséges.");
       }
+      Set<String> restrictedProperties =
+          new HashSet<>(vectorCollectionDescriptor.getRestrictedProperties());
       vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
         vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
             .filter(e -> !excludedProperties.contains(e.getKey()))
             .filter(e -> e.getValue() != null)
+            .filter(e -> !restrictedProperties.contains(e.getKey()))
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
       });
     }

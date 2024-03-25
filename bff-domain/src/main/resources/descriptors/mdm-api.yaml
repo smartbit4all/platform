@@ -26,6 +26,8 @@ components:
         importable:
           type: boolean
           default: false
+        restrictedProperties:
+          type: string
     MDMEntryChangesPageModel:
       type: object
       properties:
