@@ -719,9 +719,8 @@ class MDMApiTest {
               .historyObjectUri(historyUri)
               .addGridViewOptionsItem(new GridView()
                   .orderedColumnNames(
-                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR, SampleCategory.URI))
-                  .addOrderByListItem(new FilterExpressionOrderBy()
-                      .propertyName(SampleCategory.NAME).order(OrderEnum.DESC)));
+                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR,
+                          SampleCategory.URI)));
 
       View querySetView = new View().viewName(MDMApiTestConfig.SEARCHINDEX_LIST_PAGE)
           .objectUri(objectApi.getLatestUri(objectApi.saveAsNew(MDMApiTestConfig.TEST, config)));
@@ -765,6 +764,39 @@ class MDMApiTest {
       {
         List<String> requiredNames = new ArrayList<>();
         for (int i = 249; i >= 240; i--) {
+          requiredNames.add("Category " + i);
+        }
+        checkTypeNames(uuid, requiredNames);
+      }
+
+    });
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      SearchPageConfig config =
+          new SearchPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
+              .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
+              .historyLoadAllLimit(1000)
+              .historyObjectUri(historyUri)
+              .addGridViewOptionsItem(new GridView()
+                  .orderedColumnNames(
+                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR,
+                          SampleCategory.URI)));
+
+      View querySetView = new View().viewName(MDMApiTestConfig.SEARCHINDEX_LIST_PAGE)
+          .objectUri(objectApi.getLatestUri(objectApi.saveAsNew(MDMApiTestConfig.TEST, config)));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      View view = viewApi.getView(uuid);
+
+      // The full list is visible at once.
+      {
+        List<String> requiredNames = new ArrayList<>();
+        for (int i = 249; i >= 0; i--) {
           requiredNames.add("Category " + i);
         }
         checkTypeNames(uuid, requiredNames);

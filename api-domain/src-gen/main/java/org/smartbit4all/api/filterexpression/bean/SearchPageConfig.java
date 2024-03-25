@@ -83,7 +83,7 @@ public class SearchPageConfig {
   private Long historyUpperBound;
 
   public static final String HISTORY_LOAD_ALL_LIMIT = "historyLoadAllLimit";
-  private Long historyLoadAllLimit = 1000l;
+  private Integer historyLoadAllLimit;
 
   public static final String HISTORY_PAGE_SIZE = "historyPageSize";
   private Integer historyPageSize;
@@ -344,7 +344,7 @@ public class SearchPageConfig {
   }
 
 
-  public SearchPageConfig historyLoadAllLimit(Long historyLoadAllLimit) {
+  public SearchPageConfig historyLoadAllLimit(Integer historyLoadAllLimit) {
     
     this.historyLoadAllLimit = historyLoadAllLimit;
     return this;
@@ -359,14 +359,14 @@ public class SearchPageConfig {
   @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Long getHistoryLoadAllLimit() {
+  public Integer getHistoryLoadAllLimit() {
     return historyLoadAllLimit;
   }
 
 
   @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setHistoryLoadAllLimit(Long historyLoadAllLimit) {
+  public void setHistoryLoadAllLimit(Integer historyLoadAllLimit) {
     this.historyLoadAllLimit = historyLoadAllLimit;
   }
 

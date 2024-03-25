@@ -379,8 +379,7 @@ components:
             The nummber is history elements are well-known. The last version number show how many version
             we have. Under this limit we load all the versions and like a normal list of object.
           type: integer
-          format: int64
-          default: 1000
+          format: int32
         historyPageSize:
           description: |
             If we set this property and skip any or all of the lower or upper bound then we load this this

@@ -125,22 +125,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   public SearchPageModel initModel(View view) {
     PageContext ctx = new PageContext(view.getUuid());
 
-    // Setup the available actions.
-    if (ctx.pageConfig.getHistoryObjectUri() == null) {
-      ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true));
-    } else {
-      // In history mode we have the history control commands.
-      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_PREV)
-          .descriptor(new UiActionDescriptor().icon("arrow_back").title("Vissza")
-              .iconPosition(IconPosition.PRE)));
-      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_NEXT)
-          .descriptor(new UiActionDescriptor().icon("arrow_forward").title("Előre")
-              .iconPosition(IconPosition.POST)));
-    }
-
-    ctx.view.addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false));
-    // .addActionsItem(new UiAction().code(ACTION_CLEAR)
-
     GridModel gridModel = gridModelApi.createGridModel(
         ctx.searchIndex.getDefinition().getDefinition(),
         ctx.searchIndex.getDefinition().getDefinition().allProperties().stream()
@@ -177,9 +161,14 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     SearchPageModel model = new SearchPageModel();
     if (ctx.pageConfig.getHistoryObjectUri() != null) {
 
-      model.historyPageSize(
+
+      int pageSize =
           ctx.pageConfig.getHistoryPageSize() != null ? ctx.pageConfig.getHistoryPageSize()
-              : defaultHistoryPageSize);
+              : defaultHistoryPageSize;
+      model
+          .historyPageSize(ctx.pageConfig.getHistoryLoadAllLimit() == null
+              ? pageSize
+              : ctx.pageConfig.getHistoryLoadAllLimit());
       ObjectHistoryIterator historyIterator =
           objectApi.objectHistory(ctx.pageConfig.getHistoryObjectUri());
 
@@ -195,6 +184,24 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
                       ? ctx.pageConfig.getHistoryUpperBound()
                       : historyIterator.getLatestVersionNr())));
     }
+
+    // Setup the available actions.
+    if (ctx.pageConfig.getHistoryObjectUri() == null || (model.getHistoryRange() != null
+        && Long.valueOf(0).equals(model.getHistoryRange().getLowerBound().getVersionNr()))) {
+      ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true));
+    } else {
+      // In history mode we have the history control commands.
+      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_PREV)
+          .descriptor(new UiActionDescriptor().icon("arrow_back").title("Vissza")
+              .iconPosition(IconPosition.PRE)));
+      ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_NEXT)
+          .descriptor(new UiActionDescriptor().icon("arrow_forward").title("Előre")
+              .iconPosition(IconPosition.POST)));
+    }
+
+    ctx.view.addActionsItem(new UiAction().code(ACTION_CLOSE).submit(false));
+    // .addActionsItem(new UiAction().code(ACTION_CLEAR)
+
 
     FilterExpressionBuilderModel filterModel = ctx.pageConfig.getFilterModel();
     String pageTitle = ctx.pageConfig.getPageTitle();
