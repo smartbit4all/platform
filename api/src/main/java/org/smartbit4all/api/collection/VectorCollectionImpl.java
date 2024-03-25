@@ -84,13 +84,13 @@ public class VectorCollectionImpl implements VectorCollection {
     Objects.requireNonNull(obj, "Unable to use null in vector db.");
     if (obj instanceof Map) {
       Map<String, Object> map = (Map<String, Object>) obj;
-      return embeddingApi.embed(embeddingService, map);
+      return embeddingApi.embed(embeddingService.getName(), map);
     } else if (obj instanceof String) {
-      return embeddingApi.embed(embeddingService, (String) obj);
+      return embeddingApi.embed(embeddingService.getName(), (String) obj);
     } else {
       // Try to form a Map from the object we have.
       ObjectDefinition objectDefinition = objectApi.definition(obj.getClass());
-      return embeddingApi.embed(embeddingService, objectDefinition.toMap(obj));
+      return embeddingApi.embed(embeddingService.getName(), objectDefinition.toMap(obj));
     }
   }
 

@@ -140,6 +140,8 @@ public class PlatformApiConfig {
 
   public static final String VECTOR_DB_CONNECTIONS = "vectorDbConnections";
 
+  public static final String TICKETING_CONNECTIONS = "ticketingConnections";
+
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
 
   /**
@@ -331,9 +333,48 @@ public class PlatformApiConfig {
           .displayNameList(new LangString().defaultValue("Vector database connections")
               .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolatok")
               .putValueByLocaleItem("en", "Vector database connections"))
-          .displayNameForm(new LangString().defaultValue("Embedding Connection")
+          .displayNameForm(new LangString().defaultValue("Vector database connection")
               .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolat")
               .putValueByLocaleItem("en", "Vector database connection"))
+          .order(200l)
+          .typeQualifiedName(ServiceConnection.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(ServiceConnection.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API name")
+                  .addPathItem(ServiceConnection.API_NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Endpoint")
+                  .addPathItem(ServiceConnection.ENDPOINT))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("API version")
+                  .addPathItem(ServiceConnection.API_VERSION))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Authentication token")
+                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(TICKETING_CONNECTIONS)
+          .name(TICKETING_CONNECTIONS)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(ServiceConnection.NAME))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .displayNameList(new LangString().defaultValue("Ticketing service connections")
+              .putValueByLocaleItem("hu", "Hibajegykezelő alkalmazás kapcsolatok")
+              .putValueByLocaleItem("en", "Ticketing service connections"))
+          .displayNameForm(new LangString().defaultValue("Ticketing service connection")
+              .putValueByLocaleItem("hu", "Hibajegykezelő alkalmazás kapcsolat")
+              .putValueByLocaleItem("en", "Ticketing service connection"))
           .order(200l)
           .typeQualifiedName(ServiceConnection.class.getName())
           .addTableColumnsItem(
