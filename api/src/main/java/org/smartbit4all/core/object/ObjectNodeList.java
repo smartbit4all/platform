@@ -90,7 +90,7 @@ public final class ObjectNodeList {
     return newNode;
   }
 
-  public List<ObjectNode> addAllNewObjects(Collection<Object> objects) {
+  public List<ObjectNode> addAllNewObjects(Collection<? extends Object> objects) {
     if (objects == null) {
       return Collections.emptyList();
     }
