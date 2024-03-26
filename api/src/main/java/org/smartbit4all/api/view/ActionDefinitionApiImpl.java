@@ -70,7 +70,11 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
           List<ActionDefinition> actionDefinitions = providerApi.getActionDefinitions();
           for (ActionDefinition actionDefinition : actionDefinitions) {
             // TODO: Properly examine every incoming action definition!
-            entryApi.updateList(SCHEMA, Arrays.asList(actionDefinition));
+            try {
+              entryApi.updateList(SCHEMA, Arrays.asList(actionDefinition));
+            } catch (Exception e) {
+              log.error("Unable to setup the action definition entries.", e);
+            }
           }
         }
       }
