@@ -36,6 +36,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The server request track is an object encapsulates the UiRequest and other parameters of the perform actions. It stands for normal and widget actions also. ")
 @JsonPropertyOrder({
+  ServerRequestTrack.VIEW_NAME,
   ServerRequestTrack.VIEW_UUID,
   ServerRequestTrack.WIDGET_ID,
   ServerRequestTrack.NODE_ID,
@@ -47,6 +48,9 @@ import javax.validation.Valid;
 @JsonTypeName("ServerRequestTrack")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ServerRequestTrack {
+  public static final String VIEW_NAME = "viewName";
+  private String viewName;
+
   public static final String VIEW_UUID = "viewUuid";
   private UUID viewUuid;
 
@@ -71,6 +75,34 @@ public class ServerRequestTrack {
   public ServerRequestTrack() { 
   }
 
+  public ServerRequestTrack viewName(String viewName) {
+    
+    this.viewName = viewName;
+    return this;
+  }
+
+   /**
+   * The name of the view the request is performed on.
+   * @return viewName
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the view the request is performed on.")
+  @JsonProperty(VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getViewName() {
+    return viewName;
+  }
+
+
+  @JsonProperty(VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setViewName(String viewName) {
+    this.viewName = viewName;
+  }
+
+
   public ServerRequestTrack viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
@@ -81,11 +113,12 @@ public class ServerRequestTrack {
    * The UUID of the view the request is performed on.
    * @return viewUuid
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The UUID of the view the request is performed on.")
+  @ApiModelProperty(required = true, value = "The UUID of the view the request is performed on.")
   @JsonProperty(VIEW_UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UUID getViewUuid() {
     return viewUuid;
@@ -93,7 +126,7 @@ public class ServerRequestTrack {
 
 
   @JsonProperty(VIEW_UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setViewUuid(UUID viewUuid) {
     this.viewUuid = viewUuid;
   }
@@ -163,11 +196,12 @@ public class ServerRequestTrack {
    * The start of the service.
    * @return startTime
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The start of the service.")
+  @ApiModelProperty(required = true, value = "The start of the service.")
   @JsonProperty(START_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public OffsetDateTime getStartTime() {
     return startTime;
@@ -175,7 +209,7 @@ public class ServerRequestTrack {
 
 
   @JsonProperty(START_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStartTime(OffsetDateTime startTime) {
     this.startTime = startTime;
   }
@@ -219,11 +253,12 @@ public class ServerRequestTrack {
    * Get request
    * @return request
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(REQUEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UiActionRequest getRequest() {
     return request;
@@ -231,7 +266,7 @@ public class ServerRequestTrack {
 
 
   @JsonProperty(REQUEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRequest(UiActionRequest request) {
     this.request = request;
   }
@@ -247,11 +282,12 @@ public class ServerRequestTrack {
    * Get type
    * @return type
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public ServerRequestType getType() {
     return type;
@@ -259,7 +295,7 @@ public class ServerRequestTrack {
 
 
   @JsonProperty(TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(ServerRequestType type) {
     this.type = type;
   }
@@ -274,7 +310,8 @@ public class ServerRequestTrack {
       return false;
     }
     ServerRequestTrack serverRequestTrack = (ServerRequestTrack) o;
-    return Objects.equals(this.viewUuid, serverRequestTrack.viewUuid) &&
+    return Objects.equals(this.viewName, serverRequestTrack.viewName) &&
+        Objects.equals(this.viewUuid, serverRequestTrack.viewUuid) &&
         Objects.equals(this.widgetId, serverRequestTrack.widgetId) &&
         Objects.equals(this.nodeId, serverRequestTrack.nodeId) &&
         Objects.equals(this.startTime, serverRequestTrack.startTime) &&
@@ -285,13 +322,14 @@ public class ServerRequestTrack {
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, widgetId, nodeId, startTime, endTime, request, type);
+    return Objects.hash(viewName, viewUuid, widgetId, nodeId, startTime, endTime, request, type);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ServerRequestTrack {\n");
+    sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    widgetId: ").append(toIndentedString(widgetId)).append("\n");
     sb.append("    nodeId: ").append(toIndentedString(nodeId)).append("\n");

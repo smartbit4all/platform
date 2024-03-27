@@ -15,8 +15,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -24,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
@@ -42,6 +43,7 @@ import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.ServerRequestExecutionStat;
 import org.smartbit4all.api.view.bean.ServerRequestTrack;
 import org.smartbit4all.api.view.bean.ServerRequestType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -57,18 +59,17 @@ import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
-import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -127,33 +128,22 @@ public class ViewContextServiceImpl implements ViewContextService {
   private ObjectApi objectApi;
 
   @Autowired
-  private StorageApi storageApi;
-
-  @Autowired
   private SessionApi sessionApi;
 
   @Autowired
   private ApplicationContext ctx;
 
   @Autowired
-  private CompareApi compareApi;
-
-  @Autowired
   private InvocationApi invocationApi;
 
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  public static boolean collectExecution = true;
 
-    private Storage storageInstance;
+  /**
+   * The execution statistic of the running server.
+   */
+  private static final Map<String, ServerRequestExecutionStat> executionStat = new HashMap<>();
 
-    @Override
-    public Storage get() {
-      if (storageInstance == null) {
-        storageInstance = storageApi.get(SCHEMA);
-        storageInstance.setVersionPolicy(VersionPolicy.SINGLEVERSION);
-      }
-      return storageInstance;
-    }
-  };
+  private static ReadWriteLock rwlExecutionStat = new ReentrantReadWriteLock();
 
   private List<String> requestCodesToSkipWithMissingView =
       new ArrayList<>(defaultRequestCodesToSkipWithMissingView);
@@ -524,7 +514,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (viewContextUri == null) {
       throw new ViewContextMissigException();
     }
-    StorageObjectLock lock = storage.get().getLock(viewContextUri);
+    Lock lock = objectApi.getLock(viewContextUri);
     lock.lock();
     try {
       ObjectNode contextNode = objectApi.load(viewContextUri);
@@ -629,9 +619,10 @@ public class ViewContextServiceImpl implements ViewContextService {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
     startServerRequest(new ServerRequestTrack().type(ServerRequestType.ACTION).request(request)
-        .viewUuid(viewUuid));
+        .viewUuid(viewUuid).viewName(view.getViewName()));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, request);
+    finishServerRequest(getServerRequest());
     return createViewContextChange(comparisons, null); // ActionHandler is void
   }
 
@@ -665,10 +656,11 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     startServerRequest(
         new ServerRequestTrack().type(ServerRequestType.WIDGET_ACTION).request(request)
-            .viewUuid(viewUuid).widgetId(widgetId).nodeId(nodeId));
+            .viewUuid(viewUuid).viewName(view.getViewName()).widgetId(widgetId).nodeId(nodeId));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
+    finishServerRequest(getServerRequest());
     return createViewContextChange(comparisons, null); // WidgetActionHandler is void
   }
 
@@ -1082,6 +1074,68 @@ public class ViewContextServiceImpl implements ViewContextService {
   public void startServerRequest(ServerRequestTrack serverRequest) {
     ViewContext viewContext = getCurrentViewContextEntry();
     viewContext.currentRequest(serverRequest.startTime(OffsetDateTime.now()));
+  }
+
+  private final void finishServerRequest(ServerRequestTrack serverRequest) {
+    ViewContext viewContext = getCurrentViewContextEntry();
+    OffsetDateTime now = OffsetDateTime.now();
+    serverRequest.endTime(now);
+    if (!collectExecution) {
+      return;
+    }
+    long executionTime = serverRequest.getEndTime().toInstant().toEpochMilli()
+        - serverRequest.getStartTime().toInstant().toEpochMilli();
+    rwlExecutionStat.writeLock().lock();
+    try {
+      String serverRequestId = getServerRequestId(serverRequest);
+      ServerRequestExecutionStat requestExecutionStat =
+          executionStat.computeIfAbsent(serverRequestId,
+              s -> new ServerRequestExecutionStat().id(s).viewName(serverRequest.getViewName())
+                  .widgetId(serverRequest.getWidgetId())
+                  .actionCode(serverRequest.getRequest().getCode()).counter(0l).avgMs(0l)
+                  .sumExecTime(0l));
+      requestExecutionStat.counter(requestExecutionStat.getCounter() + 1);
+      requestExecutionStat.sumExecTime(requestExecutionStat.getSumExecTime() + executionTime);
+      requestExecutionStat
+          .setAvgMs(requestExecutionStat.getSumExecTime() / requestExecutionStat.getCounter());
+      if (requestExecutionStat.getMinMs() == null
+          || executionTime < requestExecutionStat.getMinMs()) {
+        requestExecutionStat.minMs(executionTime);
+      }
+      if (requestExecutionStat.getMaxMs() == null
+          || executionTime > requestExecutionStat.getMaxMs()) {
+        requestExecutionStat.maxMs(executionTime);
+      }
+    } finally {
+      rwlExecutionStat.writeLock().unlock();
+    }
+  }
+
+  @Override
+  public final String getExecutionStatJSON() {
+    ObjectSerializer serializer =
+        objectApi.definition(ServerRequestExecutionStat.class).getDefaultSerializer();
+    rwlExecutionStat.readLock().lock();
+    try {
+      return StringConstant.LEFT_SQUARE + executionStat.values().stream()
+          .map(s -> {
+            try {
+              return serializer.writeValueAsString(s);
+            } catch (JsonProcessingException e) {
+              return null;
+            }
+          }).filter(Objects::nonNull).collect(joining(StringConstant.COMMA_SPACE))
+          + StringConstant.RIGHT_SQUARE;
+    } finally {
+      rwlExecutionStat.readLock().unlock();
+    }
+  }
+
+  private final String getServerRequestId(ServerRequestTrack serverRequest) {
+    return serverRequest.getViewName()
+        + (Strings.isNullOrEmpty(serverRequest.getWidgetId()) ? StringConstant.EMPTY
+            : StringConstant.SPACE_HYPHEN_SPACE + serverRequest.getWidgetId())
+        + StringConstant.SPACE_HYPHEN_SPACE + serverRequest.getRequest().getCode();
   }
 
   @Override
