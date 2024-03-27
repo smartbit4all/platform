@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.view.bean.ServerRequestType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -40,7 +41,8 @@ import javax.validation.Valid;
   ServerRequestExecutionStat.AVG_MS,
   ServerRequestExecutionStat.MAX_MS,
   ServerRequestExecutionStat.COUNTER,
-  ServerRequestExecutionStat.SUM_EXEC_TIME
+  ServerRequestExecutionStat.SUM_EXEC_TIME,
+  ServerRequestExecutionStat.TYPE
 })
 @JsonTypeName("ServerRequestExecutionStat")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -71,6 +73,9 @@ public class ServerRequestExecutionStat {
 
   public static final String SUM_EXEC_TIME = "sumExecTime";
   private Long sumExecTime;
+
+  public static final String TYPE = "type";
+  private ServerRequestType type;
 
   public ServerRequestExecutionStat() { 
   }
@@ -318,6 +323,34 @@ public class ServerRequestExecutionStat {
   }
 
 
+  public ServerRequestExecutionStat type(ServerRequestType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Get type
+   * @return type
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ServerRequestType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(ServerRequestType type) {
+    this.type = type;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -335,12 +368,13 @@ public class ServerRequestExecutionStat {
         Objects.equals(this.avgMs, serverRequestExecutionStat.avgMs) &&
         Objects.equals(this.maxMs, serverRequestExecutionStat.maxMs) &&
         Objects.equals(this.counter, serverRequestExecutionStat.counter) &&
-        Objects.equals(this.sumExecTime, serverRequestExecutionStat.sumExecTime);
+        Objects.equals(this.sumExecTime, serverRequestExecutionStat.sumExecTime) &&
+        Objects.equals(this.type, serverRequestExecutionStat.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, viewName, widgetId, actionCode, minMs, avgMs, maxMs, counter, sumExecTime);
+    return Objects.hash(id, viewName, widgetId, actionCode, minMs, avgMs, maxMs, counter, sumExecTime, type);
   }
 
   @Override
@@ -356,6 +390,7 @@ public class ServerRequestExecutionStat {
     sb.append("    maxMs: ").append(toIndentedString(maxMs)).append("\n");
     sb.append("    counter: ").append(toIndentedString(counter)).append("\n");
     sb.append("    sumExecTime: ").append(toIndentedString(sumExecTime)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }

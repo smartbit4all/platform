@@ -1093,7 +1093,7 @@ public class ViewContextServiceImpl implements ViewContextService {
               s -> new ServerRequestExecutionStat().id(s).viewName(serverRequest.getViewName())
                   .widgetId(serverRequest.getWidgetId())
                   .actionCode(serverRequest.getRequest().getCode()).counter(0l).avgMs(0l)
-                  .sumExecTime(0l));
+                  .sumExecTime(0l).type(serverRequest.getType()));
       requestExecutionStat.counter(requestExecutionStat.getCounter() + 1);
       requestExecutionStat.sumExecTime(requestExecutionStat.getSumExecTime() + executionTime);
       requestExecutionStat
