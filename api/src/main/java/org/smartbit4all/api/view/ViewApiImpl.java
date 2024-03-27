@@ -1,8 +1,9 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -141,6 +143,9 @@ public class ViewApiImpl implements ViewApi {
                     .collect(toList())));
       }
     } else {
+      if (view.getContainerUuid() == null && context.getCurrentRequest() != null) {
+        view.setContainerUuid(context.getCurrentRequest().getViewUuid());
+      }
       view.setState(ViewState.TO_OPEN);
     }
     return context.addViewsItem(view);
@@ -555,4 +560,34 @@ public class ViewApiImpl implements ViewApi {
     viewContextService.updateCurrentViewContext(
         context -> context.addDownloadsItem(file));
   }
+
+  @Override
+  public Map<String, Object> getAllParameters(UUID viewUuid) {
+    Objects.requireNonNull(viewUuid);
+    List<View> viewHierarchy = new ArrayList<>();
+    View view = viewContextService.getViewFromCurrentViewContext(viewUuid);
+    while (view != null) {
+      viewHierarchy.add(view);
+      // Try to find the parent
+      try {
+        if (view.getContainerUuid() != null) {
+          view = viewContextService.getViewFromCurrentViewContext(view.getContainerUuid());
+        } else {
+          view = null;
+        }
+      } catch (Exception e) {
+        log.error("The parent view was not found. {} -> {}", view.getUuid(),
+            view.getContainerUuid(), e);
+        view = null;
+      }
+    }
+    // Now merge all the parameters into a single map.
+    Collections.reverse(viewHierarchy);
+    Map<String, Object> result = new HashMap<>();
+    for (View actualView : viewHierarchy) {
+      result.putAll(actualView.getParameters());
+    }
+    return result;
+  }
+
 }

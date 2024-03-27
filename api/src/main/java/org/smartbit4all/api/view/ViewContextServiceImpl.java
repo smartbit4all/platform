@@ -1,11 +1,10 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +42,8 @@ import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.ServerRequestTrack;
+import org.smartbit4all.api.view.bean.ServerRequestType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -68,6 +69,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -625,6 +628,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
+    startServerRequest(new ServerRequestTrack().type(ServerRequestType.ACTION).request(request)
+        .viewUuid(viewUuid));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, request);
     return createViewContextChange(comparisons, null); // ActionHandler is void
@@ -658,6 +663,9 @@ public class ViewContextServiceImpl implements ViewContextService {
                   .build(service -> service.setClientPageModelFromRequest(
                       viewUuid, nodeId, widgetId, request))));
     }
+    startServerRequest(
+        new ServerRequestTrack().type(ServerRequestType.WIDGET_ACTION).request(request)
+            .viewUuid(viewUuid).widgetId(widgetId).nodeId(nodeId));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
@@ -1070,6 +1078,16 @@ public class ViewContextServiceImpl implements ViewContextService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public void startServerRequest(ServerRequestTrack serverRequest) {
+    ViewContext viewContext = getCurrentViewContextEntry();
+    viewContext.currentRequest(serverRequest.startTime(OffsetDateTime.now()));
+  }
 
+  @Override
+  public ServerRequestTrack getServerRequest() {
+    ViewContext viewContext = getCurrentViewContextEntry();
+    return viewContext.getCurrentRequest();
+  }
 
 }

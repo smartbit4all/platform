@@ -387,6 +387,11 @@ components:
             It will be the initial size of the pageing while iteration through the history entries.
           type: integer
           format: int32
+        pageSize:
+          description: |
+            If we set this property then the result grid will have this page size.
+          type: integer
+          format: int32
         skipInitialQuery:
           description: Execute query right after the page is opened or not.
           type: boolean

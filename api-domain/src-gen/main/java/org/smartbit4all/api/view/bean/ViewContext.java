@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.ServerRequestTrack;
 import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -45,7 +46,8 @@ import javax.validation.Valid;
   ViewContext.VIEWS,
   ViewContext.LINKS,
   ViewContext.DOWNLOADS,
-  ViewContext.OPEN_PENDING_DATA
+  ViewContext.OPEN_PENDING_DATA,
+  ViewContext.CURRENT_REQUEST
 })
 @JsonTypeName("ViewContext")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -67,6 +69,9 @@ public class ViewContext {
 
   public static final String OPEN_PENDING_DATA = "openPendingData";
   private OpenPendingData openPendingData;
+
+  public static final String CURRENT_REQUEST = "currentRequest";
+  private ServerRequestTrack currentRequest;
 
   public ViewContext() { 
   }
@@ -258,6 +263,34 @@ public class ViewContext {
   }
 
 
+  public ViewContext currentRequest(ServerRequestTrack currentRequest) {
+    
+    this.currentRequest = currentRequest;
+    return this;
+  }
+
+   /**
+   * Get currentRequest
+   * @return currentRequest
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CURRENT_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ServerRequestTrack getCurrentRequest() {
+    return currentRequest;
+  }
+
+
+  @JsonProperty(CURRENT_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCurrentRequest(ServerRequestTrack currentRequest) {
+    this.currentRequest = currentRequest;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -272,12 +305,13 @@ public class ViewContext {
         Objects.equals(this.views, viewContext.views) &&
         Objects.equals(this.links, viewContext.links) &&
         Objects.equals(this.downloads, viewContext.downloads) &&
-        Objects.equals(this.openPendingData, viewContext.openPendingData);
+        Objects.equals(this.openPendingData, viewContext.openPendingData) &&
+        Objects.equals(this.currentRequest, viewContext.currentRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, links, downloads, openPendingData);
+    return Objects.hash(uri, uuid, views, links, downloads, openPendingData, currentRequest);
   }
 
   @Override
@@ -290,6 +324,7 @@ public class ViewContext {
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("    downloads: ").append(toIndentedString(downloads)).append("\n");
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
+    sb.append("    currentRequest: ").append(toIndentedString(currentRequest)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -192,5 +193,13 @@ public interface ViewApi {
   void openLink(Link link);
 
   void downloadFile(DownloadedFile file);
+
+  /**
+   * Retrieve the parameter from the given view merging with the parent parameters.
+   * 
+   * @param viewUuid The uuid of the view.
+   * @return The map with all the parameters available in the precedence order.
+   */
+  Map<String, Object> getAllParameters(UUID viewUuid);
 
 }

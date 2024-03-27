@@ -49,6 +49,7 @@ import javax.validation.Valid;
   SearchPageConfig.HISTORY_UPPER_BOUND,
   SearchPageConfig.HISTORY_LOAD_ALL_LIMIT,
   SearchPageConfig.HISTORY_PAGE_SIZE,
+  SearchPageConfig.PAGE_SIZE,
   SearchPageConfig.SKIP_INITIAL_QUERY,
   SearchPageConfig.GRID_VIEW_OPTIONS
 })
@@ -87,6 +88,9 @@ public class SearchPageConfig {
 
   public static final String HISTORY_PAGE_SIZE = "historyPageSize";
   private Integer historyPageSize;
+
+  public static final String PAGE_SIZE = "pageSize";
+  private Integer pageSize;
 
   public static final String SKIP_INITIAL_QUERY = "skipInitialQuery";
   private Boolean skipInitialQuery;
@@ -398,6 +402,33 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig pageSize(Integer pageSize) {
+    
+    this.pageSize = pageSize;
+    return this;
+  }
+
+   /**
+   * If we set this property then the result grid will have this page size. 
+   * @return pageSize
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If we set this property then the result grid will have this page size. ")
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPageSize() {
+    return pageSize;
+  }
+
+
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
+
+
   public SearchPageConfig skipInitialQuery(Boolean skipInitialQuery) {
     
     this.skipInitialQuery = skipInitialQuery;
@@ -479,13 +510,14 @@ public class SearchPageConfig {
         Objects.equals(this.historyUpperBound, searchPageConfig.historyUpperBound) &&
         Objects.equals(this.historyLoadAllLimit, searchPageConfig.historyLoadAllLimit) &&
         Objects.equals(this.historyPageSize, searchPageConfig.historyPageSize) &&
+        Objects.equals(this.pageSize, searchPageConfig.pageSize) &&
         Objects.equals(this.skipInitialQuery, searchPageConfig.skipInitialQuery) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, skipInitialQuery, gridViewOptions);
+    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, gridViewOptions);
   }
 
   @Override
@@ -503,6 +535,7 @@ public class SearchPageConfig {
     sb.append("    historyUpperBound: ").append(toIndentedString(historyUpperBound)).append("\n");
     sb.append("    historyLoadAllLimit: ").append(toIndentedString(historyLoadAllLimit)).append("\n");
     sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
+    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    skipInitialQuery: ").append(toIndentedString(skipInitialQuery)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("}");

@@ -778,6 +778,7 @@ class MDMApiTest {
               .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
               .historyLoadAllLimit(1000)
               .historyObjectUri(historyUri)
+              .pageSize(300)
               .addGridViewOptionsItem(new GridView()
                   .orderedColumnNames(
                       Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR,

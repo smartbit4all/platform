@@ -10,6 +10,7 @@ import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.DataChange;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.ServerRequestTrack;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -170,5 +171,9 @@ public interface ViewContextService {
 
   void setClientPageModelFromRequest(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);
+
+  void startServerRequest(ServerRequestTrack serverRequest);
+
+  ServerRequestTrack getServerRequest();
 
 }

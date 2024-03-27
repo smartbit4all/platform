@@ -136,6 +136,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       gridModel.setView(gridViewOptions.get(0));
       gridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
+      gridModel.setPageSize(ctx.pageConfig.getPageSize());
     }
 
     if (ctx.selectionCallback != null) {

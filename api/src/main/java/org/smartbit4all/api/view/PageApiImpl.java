@@ -96,7 +96,20 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * @return
    */
   protected ObjectMapHelper parameters(UUID viewUuid) {
-    return parameters(viewApi.getView(viewUuid));
+    return parameters(viewUuid, false);
+  }
+
+  /**
+   * Retrieve an instance of the view parameter helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   *
+   * @param viewUuid The uuid of the view.
+   * @param all Recursively return all the parameters of the parent hierarchy.
+   * @return
+   */
+  protected ObjectMapHelper parameters(UUID viewUuid, boolean all) {
+    return parameters(viewApi.getView(viewUuid), all);
   }
 
   /**
@@ -108,8 +121,23 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * @return
    */
   protected ObjectMapHelper parameters(View view) {
-    return new ObjectMapHelper(view.getParameters(), objectApi, view.getViewName()
-        + StringConstant.SPACE_HYPHEN_SPACE + view.getUuid() + " view parameters");
+    return parameters(view, false);
+  }
+
+  /**
+   * Retrieve an instance of the view parameter helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   *
+   * @param view The view itself.
+   * @param all Recursively return all the parameters of the parent hierarchy.
+   * @return
+   */
+  protected ObjectMapHelper parameters(View view, boolean all) {
+    return new ObjectMapHelper(
+        all ? viewApi.getAllParameters(view.getUuid()) : view.getParameters(), objectApi,
+        view.getViewName()
+            + StringConstant.SPACE_HYPHEN_SPACE + view.getUuid() + " view parameters");
   }
 
   /**
