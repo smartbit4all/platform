@@ -187,10 +187,11 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     // Setup the available actions.
-    if (ctx.pageConfig.getHistoryObjectUri() == null || (model.getHistoryRange() != null
-        && Long.valueOf(0).equals(model.getHistoryRange().getLowerBound().getVersionNr()))) {
+    if (ctx.pageConfig.getHistoryObjectUri() == null) {
       ctx.view.addActionsItem(new UiAction().code(ACTION_QUERY).submit(true));
-    } else {
+    }
+    if (ctx.pageConfig.getHistoryObjectUri() != null && (model.getHistoryRange() != null
+        && !Long.valueOf(0).equals(model.getHistoryRange().getLowerBound().getVersionNr()))) {
       // In history mode we have the history control commands.
       ctx.view.addActionsItem(new UiAction().code(ACTION_HISTORY_PREV)
           .descriptor(new UiActionDescriptor().icon("arrow_back").title("Vissza")
