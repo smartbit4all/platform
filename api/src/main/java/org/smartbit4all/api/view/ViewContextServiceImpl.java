@@ -136,7 +136,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Autowired
   private InvocationApi invocationApi;
 
-  public static boolean collectExecution = true;
+  public static boolean collectExecution = false;
 
   /**
    * The execution statistic of the running server.
