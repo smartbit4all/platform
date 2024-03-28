@@ -23,8 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.view.bean.ServerRequestType;
-import org.smartbit4all.api.view.bean.StatisticExecution;
-import org.smartbit4all.api.view.bean.StatisticOccurance;
+import org.smartbit4all.api.view.bean.StatisticRecord;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -40,8 +39,10 @@ import javax.validation.Valid;
   ServerRequestExecutionStat.WIDGET_ID,
   ServerRequestExecutionStat.ACTION_CODE,
   ServerRequestExecutionStat.FULL_STAT,
-  ServerRequestExecutionStat.WRITE,
-  ServerRequestExecutionStat.READ,
+  ServerRequestExecutionStat.WRITE_COUNT,
+  ServerRequestExecutionStat.WRITE_STAT,
+  ServerRequestExecutionStat.READ_COUNT,
+  ServerRequestExecutionStat.READ_STAT,
   ServerRequestExecutionStat.TYPE
 })
 @JsonTypeName("ServerRequestExecutionStat")
@@ -60,13 +61,19 @@ public class ServerRequestExecutionStat {
   private String actionCode;
 
   public static final String FULL_STAT = "fullStat";
-  private StatisticExecution fullStat;
+  private StatisticRecord fullStat;
 
-  public static final String WRITE = "write";
-  private StatisticOccurance write;
+  public static final String WRITE_COUNT = "writeCount";
+  private StatisticRecord writeCount;
 
-  public static final String READ = "read";
-  private StatisticOccurance read;
+  public static final String WRITE_STAT = "writeStat";
+  private StatisticRecord writeStat;
+
+  public static final String READ_COUNT = "readCount";
+  private StatisticRecord readCount;
+
+  public static final String READ_STAT = "readStat";
+  private StatisticRecord readStat;
 
   public static final String TYPE = "type";
   private ServerRequestType type;
@@ -182,7 +189,7 @@ public class ServerRequestExecutionStat {
   }
 
 
-  public ServerRequestExecutionStat fullStat(StatisticExecution fullStat) {
+  public ServerRequestExecutionStat fullStat(StatisticRecord fullStat) {
     
     this.fullStat = fullStat;
     return this;
@@ -198,71 +205,127 @@ public class ServerRequestExecutionStat {
   @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public StatisticExecution getFullStat() {
+  public StatisticRecord getFullStat() {
     return fullStat;
   }
 
 
   @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFullStat(StatisticExecution fullStat) {
+  public void setFullStat(StatisticRecord fullStat) {
     this.fullStat = fullStat;
   }
 
 
-  public ServerRequestExecutionStat write(StatisticOccurance write) {
+  public ServerRequestExecutionStat writeCount(StatisticRecord writeCount) {
     
-    this.write = write;
+    this.writeCount = writeCount;
     return this;
   }
 
    /**
-   * Get write
-   * @return write
+   * Get writeCount
+   * @return writeCount
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(WRITE)
+  @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public StatisticOccurance getWrite() {
-    return write;
+  public StatisticRecord getWriteCount() {
+    return writeCount;
   }
 
 
-  @JsonProperty(WRITE)
+  @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWrite(StatisticOccurance write) {
-    this.write = write;
+  public void setWriteCount(StatisticRecord writeCount) {
+    this.writeCount = writeCount;
   }
 
 
-  public ServerRequestExecutionStat read(StatisticOccurance read) {
+  public ServerRequestExecutionStat writeStat(StatisticRecord writeStat) {
     
-    this.read = read;
+    this.writeStat = writeStat;
     return this;
   }
 
    /**
-   * Get read
-   * @return read
+   * Get writeStat
+   * @return writeStat
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(READ)
+  @JsonProperty(WRITE_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public StatisticOccurance getRead() {
-    return read;
+  public StatisticRecord getWriteStat() {
+    return writeStat;
   }
 
 
-  @JsonProperty(READ)
+  @JsonProperty(WRITE_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRead(StatisticOccurance read) {
-    this.read = read;
+  public void setWriteStat(StatisticRecord writeStat) {
+    this.writeStat = writeStat;
+  }
+
+
+  public ServerRequestExecutionStat readCount(StatisticRecord readCount) {
+    
+    this.readCount = readCount;
+    return this;
+  }
+
+   /**
+   * Get readCount
+   * @return readCount
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(READ_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StatisticRecord getReadCount() {
+    return readCount;
+  }
+
+
+  @JsonProperty(READ_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReadCount(StatisticRecord readCount) {
+    this.readCount = readCount;
+  }
+
+
+  public ServerRequestExecutionStat readStat(StatisticRecord readStat) {
+    
+    this.readStat = readStat;
+    return this;
+  }
+
+   /**
+   * Get readStat
+   * @return readStat
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(READ_STAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StatisticRecord getReadStat() {
+    return readStat;
+  }
+
+
+  @JsonProperty(READ_STAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReadStat(StatisticRecord readStat) {
+    this.readStat = readStat;
   }
 
 
@@ -308,14 +371,16 @@ public class ServerRequestExecutionStat {
         Objects.equals(this.widgetId, serverRequestExecutionStat.widgetId) &&
         Objects.equals(this.actionCode, serverRequestExecutionStat.actionCode) &&
         Objects.equals(this.fullStat, serverRequestExecutionStat.fullStat) &&
-        Objects.equals(this.write, serverRequestExecutionStat.write) &&
-        Objects.equals(this.read, serverRequestExecutionStat.read) &&
+        Objects.equals(this.writeCount, serverRequestExecutionStat.writeCount) &&
+        Objects.equals(this.writeStat, serverRequestExecutionStat.writeStat) &&
+        Objects.equals(this.readCount, serverRequestExecutionStat.readCount) &&
+        Objects.equals(this.readStat, serverRequestExecutionStat.readStat) &&
         Objects.equals(this.type, serverRequestExecutionStat.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, viewName, widgetId, actionCode, fullStat, write, read, type);
+    return Objects.hash(id, viewName, widgetId, actionCode, fullStat, writeCount, writeStat, readCount, readStat, type);
   }
 
   @Override
@@ -327,8 +392,10 @@ public class ServerRequestExecutionStat {
     sb.append("    widgetId: ").append(toIndentedString(widgetId)).append("\n");
     sb.append("    actionCode: ").append(toIndentedString(actionCode)).append("\n");
     sb.append("    fullStat: ").append(toIndentedString(fullStat)).append("\n");
-    sb.append("    write: ").append(toIndentedString(write)).append("\n");
-    sb.append("    read: ").append(toIndentedString(read)).append("\n");
+    sb.append("    writeCount: ").append(toIndentedString(writeCount)).append("\n");
+    sb.append("    writeStat: ").append(toIndentedString(writeStat)).append("\n");
+    sb.append("    readCount: ").append(toIndentedString(readCount)).append("\n");
+    sb.append("    readStat: ").append(toIndentedString(readStat)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();

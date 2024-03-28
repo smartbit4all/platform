@@ -1038,42 +1038,10 @@ components:
           $ref: '#/components/schemas/ServerRequestType'
     ServerRequestType:
       enum: [ACTION, WIDGET_ACTION]
-    StatisticExecution:
+    StatisticRecord:
       type: object
       description: |
         The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and
-        contains the count, the minimum, average and maximum execution times.
-      required: [code, params]
-      properties:
-        minMs:
-          description: The minimum execution time of the given action in millisec.
-          type: integer
-          format: int64
-          default: 0
-        avgMs:
-          description: The average execution time of the given action in millisec.
-          type: integer
-          format: int64
-          default: 0
-        maxMs:
-          description: The average execution time of the given action in millisec.
-          type: integer
-          format: int64
-          default: 0
-        counter:
-          description: The number of executed requests.
-          type: integer
-          format: int64
-          default: 0
-        sumExecTime:
-          description: The summarized execution time of the request.
-          type: integer
-          format: int64
-          default: 0
-    StatisticOccurance:
-      type: object
-      description: |
-        The generic occurance statistic is an object for the actuator infrastructure. It could be initiated for many purposes and
         contains the count, the minimum, average and maximum execution times.
       required: [code, params]
       properties:
@@ -1089,6 +1057,16 @@ components:
           default: 0
         max:
           description: The average execution time of the given action in millisec.
+          type: integer
+          format: int64
+          default: 0
+        counter:
+          description: The number of executed requests.
+          type: integer
+          format: int64
+          default: 0
+        sum:
+          description: The summarized execution time of the request.
           type: integer
           format: int64
           default: 0
@@ -1113,13 +1091,19 @@ components:
           type: string
         fullStat:
           description: The statistic of the whole execution.
-          $ref: '#/components/schemas/StatisticExecution'
-        write:
+          $ref: '#/components/schemas/StatisticRecord'
+        writeCount:
           description: The statistic of the writes.
-          $ref: '#/components/schemas/StatisticOccurance'
-        read:
+          $ref: '#/components/schemas/StatisticRecord'
+        writeStat:
+          description: The statistic of the writes.
+          $ref: '#/components/schemas/StatisticRecord'
+        readCount:
           description: The statistic of the reads.
-          $ref: '#/components/schemas/StatisticOccurance'
+          $ref: '#/components/schemas/StatisticRecord'
+        readStat:
+          description: The statistic of the reads.
+          $ref: '#/components/schemas/StatisticRecord'
         type:
           description: The request type like a normal action or a widget action.
           $ref: '#/components/schemas/ServerRequestType'

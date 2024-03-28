@@ -28,17 +28,19 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The generic occurance statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. 
+ * The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. 
  */
-@ApiModel(description = "The generic occurance statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. ")
+@ApiModel(description = "The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. ")
 @JsonPropertyOrder({
-  StatisticOccurance.MIN,
-  StatisticOccurance.AVG,
-  StatisticOccurance.MAX
+  StatisticRecord.MIN,
+  StatisticRecord.AVG,
+  StatisticRecord.MAX,
+  StatisticRecord.COUNTER,
+  StatisticRecord.SUM
 })
-@JsonTypeName("StatisticOccurance")
+@JsonTypeName("StatisticRecord")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class StatisticOccurance {
+public class StatisticRecord {
   public static final String MIN = "min";
   private Long min = 0l;
 
@@ -48,10 +50,16 @@ public class StatisticOccurance {
   public static final String MAX = "max";
   private Long max = 0l;
 
-  public StatisticOccurance() { 
+  public static final String COUNTER = "counter";
+  private Long counter = 0l;
+
+  public static final String SUM = "sum";
+  private Long sum = 0l;
+
+  public StatisticRecord() { 
   }
 
-  public StatisticOccurance min(Long min) {
+  public StatisticRecord min(Long min) {
     
     this.min = min;
     return this;
@@ -78,7 +86,7 @@ public class StatisticOccurance {
   }
 
 
-  public StatisticOccurance avg(Long avg) {
+  public StatisticRecord avg(Long avg) {
     
     this.avg = avg;
     return this;
@@ -105,7 +113,7 @@ public class StatisticOccurance {
   }
 
 
-  public StatisticOccurance max(Long max) {
+  public StatisticRecord max(Long max) {
     
     this.max = max;
     return this;
@@ -132,6 +140,60 @@ public class StatisticOccurance {
   }
 
 
+  public StatisticRecord counter(Long counter) {
+    
+    this.counter = counter;
+    return this;
+  }
+
+   /**
+   * The number of executed requests.
+   * @return counter
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The number of executed requests.")
+  @JsonProperty(COUNTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getCounter() {
+    return counter;
+  }
+
+
+  @JsonProperty(COUNTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCounter(Long counter) {
+    this.counter = counter;
+  }
+
+
+  public StatisticRecord sum(Long sum) {
+    
+    this.sum = sum;
+    return this;
+  }
+
+   /**
+   * The summarized execution time of the request.
+   * @return sum
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The summarized execution time of the request.")
+  @JsonProperty(SUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getSum() {
+    return sum;
+  }
+
+
+  @JsonProperty(SUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSum(Long sum) {
+    this.sum = sum;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -140,24 +202,28 @@ public class StatisticOccurance {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StatisticOccurance statisticOccurance = (StatisticOccurance) o;
-    return Objects.equals(this.min, statisticOccurance.min) &&
-        Objects.equals(this.avg, statisticOccurance.avg) &&
-        Objects.equals(this.max, statisticOccurance.max);
+    StatisticRecord statisticRecord = (StatisticRecord) o;
+    return Objects.equals(this.min, statisticRecord.min) &&
+        Objects.equals(this.avg, statisticRecord.avg) &&
+        Objects.equals(this.max, statisticRecord.max) &&
+        Objects.equals(this.counter, statisticRecord.counter) &&
+        Objects.equals(this.sum, statisticRecord.sum);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(min, avg, max);
+    return Objects.hash(min, avg, max, counter, sum);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StatisticOccurance {\n");
+    sb.append("class StatisticRecord {\n");
     sb.append("    min: ").append(toIndentedString(min)).append("\n");
     sb.append("    avg: ").append(toIndentedString(avg)).append("\n");
     sb.append("    max: ").append(toIndentedString(max)).append("\n");
+    sb.append("    counter: ").append(toIndentedString(counter)).append("\n");
+    sb.append("    sum: ").append(toIndentedString(sum)).append("\n");
     sb.append("}");
     return sb.toString();
   }
