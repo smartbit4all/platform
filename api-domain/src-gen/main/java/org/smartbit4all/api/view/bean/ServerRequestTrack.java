@@ -42,6 +42,10 @@ import javax.validation.Valid;
   ServerRequestTrack.NODE_ID,
   ServerRequestTrack.START_TIME,
   ServerRequestTrack.END_TIME,
+  ServerRequestTrack.READ_COUNT,
+  ServerRequestTrack.READ_TIME,
+  ServerRequestTrack.WRITE_COUNT,
+  ServerRequestTrack.WRITE_TIME,
   ServerRequestTrack.REQUEST,
   ServerRequestTrack.TYPE
 })
@@ -65,6 +69,18 @@ public class ServerRequestTrack {
 
   public static final String END_TIME = "endTime";
   private OffsetDateTime endTime;
+
+  public static final String READ_COUNT = "readCount";
+  private Long readCount = 0l;
+
+  public static final String READ_TIME = "readTime";
+  private Long readTime = 0l;
+
+  public static final String WRITE_COUNT = "writeCount";
+  private Long writeCount = 0l;
+
+  public static final String WRITE_TIME = "writeTime";
+  private Long writeTime = 0l;
 
   public static final String REQUEST = "request";
   private UiActionRequest request;
@@ -243,6 +259,114 @@ public class ServerRequestTrack {
   }
 
 
+  public ServerRequestTrack readCount(Long readCount) {
+    
+    this.readCount = readCount;
+    return this;
+  }
+
+   /**
+   * The number of executed reads.
+   * @return readCount
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The number of executed reads.")
+  @JsonProperty(READ_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getReadCount() {
+    return readCount;
+  }
+
+
+  @JsonProperty(READ_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReadCount(Long readCount) {
+    this.readCount = readCount;
+  }
+
+
+  public ServerRequestTrack readTime(Long readTime) {
+    
+    this.readTime = readTime;
+    return this;
+  }
+
+   /**
+   * The summarized execution time of the reads.
+   * @return readTime
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The summarized execution time of the reads.")
+  @JsonProperty(READ_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getReadTime() {
+    return readTime;
+  }
+
+
+  @JsonProperty(READ_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReadTime(Long readTime) {
+    this.readTime = readTime;
+  }
+
+
+  public ServerRequestTrack writeCount(Long writeCount) {
+    
+    this.writeCount = writeCount;
+    return this;
+  }
+
+   /**
+   * The number of executed writes.
+   * @return writeCount
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The number of executed writes.")
+  @JsonProperty(WRITE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getWriteCount() {
+    return writeCount;
+  }
+
+
+  @JsonProperty(WRITE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWriteCount(Long writeCount) {
+    this.writeCount = writeCount;
+  }
+
+
+  public ServerRequestTrack writeTime(Long writeTime) {
+    
+    this.writeTime = writeTime;
+    return this;
+  }
+
+   /**
+   * The summarized execution time of the writes.
+   * @return writeTime
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The summarized execution time of the writes.")
+  @JsonProperty(WRITE_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getWriteTime() {
+    return writeTime;
+  }
+
+
+  @JsonProperty(WRITE_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWriteTime(Long writeTime) {
+    this.writeTime = writeTime;
+  }
+
+
   public ServerRequestTrack request(UiActionRequest request) {
     
     this.request = request;
@@ -316,13 +440,17 @@ public class ServerRequestTrack {
         Objects.equals(this.nodeId, serverRequestTrack.nodeId) &&
         Objects.equals(this.startTime, serverRequestTrack.startTime) &&
         Objects.equals(this.endTime, serverRequestTrack.endTime) &&
+        Objects.equals(this.readCount, serverRequestTrack.readCount) &&
+        Objects.equals(this.readTime, serverRequestTrack.readTime) &&
+        Objects.equals(this.writeCount, serverRequestTrack.writeCount) &&
+        Objects.equals(this.writeTime, serverRequestTrack.writeTime) &&
         Objects.equals(this.request, serverRequestTrack.request) &&
         Objects.equals(this.type, serverRequestTrack.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewName, viewUuid, widgetId, nodeId, startTime, endTime, request, type);
+    return Objects.hash(viewName, viewUuid, widgetId, nodeId, startTime, endTime, readCount, readTime, writeCount, writeTime, request, type);
   }
 
   @Override
@@ -335,6 +463,10 @@ public class ServerRequestTrack {
     sb.append("    nodeId: ").append(toIndentedString(nodeId)).append("\n");
     sb.append("    startTime: ").append(toIndentedString(startTime)).append("\n");
     sb.append("    endTime: ").append(toIndentedString(endTime)).append("\n");
+    sb.append("    readCount: ").append(toIndentedString(readCount)).append("\n");
+    sb.append("    readTime: ").append(toIndentedString(readTime)).append("\n");
+    sb.append("    writeCount: ").append(toIndentedString(writeCount)).append("\n");
+    sb.append("    writeTime: ").append(toIndentedString(writeTime)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");

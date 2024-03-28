@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.view.bean.ServerRequestType;
+import org.smartbit4all.api.view.bean.StatisticExecution;
+import org.smartbit4all.api.view.bean.StatisticOccurance;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,11 +39,9 @@ import javax.validation.Valid;
   ServerRequestExecutionStat.VIEW_NAME,
   ServerRequestExecutionStat.WIDGET_ID,
   ServerRequestExecutionStat.ACTION_CODE,
-  ServerRequestExecutionStat.MIN_MS,
-  ServerRequestExecutionStat.AVG_MS,
-  ServerRequestExecutionStat.MAX_MS,
-  ServerRequestExecutionStat.COUNTER,
-  ServerRequestExecutionStat.SUM_EXEC_TIME,
+  ServerRequestExecutionStat.FULL_STAT,
+  ServerRequestExecutionStat.WRITE,
+  ServerRequestExecutionStat.READ,
   ServerRequestExecutionStat.TYPE
 })
 @JsonTypeName("ServerRequestExecutionStat")
@@ -59,20 +59,14 @@ public class ServerRequestExecutionStat {
   public static final String ACTION_CODE = "actionCode";
   private String actionCode;
 
-  public static final String MIN_MS = "minMs";
-  private Long minMs;
+  public static final String FULL_STAT = "fullStat";
+  private StatisticExecution fullStat;
 
-  public static final String AVG_MS = "avgMs";
-  private Long avgMs;
+  public static final String WRITE = "write";
+  private StatisticOccurance write;
 
-  public static final String MAX_MS = "maxMs";
-  private Long maxMs;
-
-  public static final String COUNTER = "counter";
-  private Long counter;
-
-  public static final String SUM_EXEC_TIME = "sumExecTime";
-  private Long sumExecTime;
+  public static final String READ = "read";
+  private StatisticOccurance read;
 
   public static final String TYPE = "type";
   private ServerRequestType type;
@@ -188,138 +182,87 @@ public class ServerRequestExecutionStat {
   }
 
 
-  public ServerRequestExecutionStat minMs(Long minMs) {
+  public ServerRequestExecutionStat fullStat(StatisticExecution fullStat) {
     
-    this.minMs = minMs;
+    this.fullStat = fullStat;
     return this;
   }
 
    /**
-   * The minimum execution time of the given action in millisec.
-   * @return minMs
+   * Get fullStat
+   * @return fullStat
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The minimum execution time of the given action in millisec.")
-  @JsonProperty(MIN_MS)
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Long getMinMs() {
-    return minMs;
+  public StatisticExecution getFullStat() {
+    return fullStat;
   }
 
 
-  @JsonProperty(MIN_MS)
+  @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMinMs(Long minMs) {
-    this.minMs = minMs;
+  public void setFullStat(StatisticExecution fullStat) {
+    this.fullStat = fullStat;
   }
 
 
-  public ServerRequestExecutionStat avgMs(Long avgMs) {
+  public ServerRequestExecutionStat write(StatisticOccurance write) {
     
-    this.avgMs = avgMs;
+    this.write = write;
     return this;
   }
 
    /**
-   * The average execution time of the given action in millisec.
-   * @return avgMs
+   * Get write
+   * @return write
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The average execution time of the given action in millisec.")
-  @JsonProperty(AVG_MS)
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(WRITE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Long getAvgMs() {
-    return avgMs;
+  public StatisticOccurance getWrite() {
+    return write;
   }
 
 
-  @JsonProperty(AVG_MS)
+  @JsonProperty(WRITE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAvgMs(Long avgMs) {
-    this.avgMs = avgMs;
+  public void setWrite(StatisticOccurance write) {
+    this.write = write;
   }
 
 
-  public ServerRequestExecutionStat maxMs(Long maxMs) {
+  public ServerRequestExecutionStat read(StatisticOccurance read) {
     
-    this.maxMs = maxMs;
+    this.read = read;
     return this;
   }
 
    /**
-   * The average execution time of the given action in millisec.
-   * @return maxMs
+   * Get read
+   * @return read
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The average execution time of the given action in millisec.")
-  @JsonProperty(MAX_MS)
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(READ)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Long getMaxMs() {
-    return maxMs;
+  public StatisticOccurance getRead() {
+    return read;
   }
 
 
-  @JsonProperty(MAX_MS)
+  @JsonProperty(READ)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMaxMs(Long maxMs) {
-    this.maxMs = maxMs;
-  }
-
-
-  public ServerRequestExecutionStat counter(Long counter) {
-    
-    this.counter = counter;
-    return this;
-  }
-
-   /**
-   * The number of executed requests.
-   * @return counter
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The number of executed requests.")
-  @JsonProperty(COUNTER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getCounter() {
-    return counter;
-  }
-
-
-  @JsonProperty(COUNTER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCounter(Long counter) {
-    this.counter = counter;
-  }
-
-
-  public ServerRequestExecutionStat sumExecTime(Long sumExecTime) {
-    
-    this.sumExecTime = sumExecTime;
-    return this;
-  }
-
-   /**
-   * The summarized execution time of the request.
-   * @return sumExecTime
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The summarized execution time of the request.")
-  @JsonProperty(SUM_EXEC_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getSumExecTime() {
-    return sumExecTime;
-  }
-
-
-  @JsonProperty(SUM_EXEC_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSumExecTime(Long sumExecTime) {
-    this.sumExecTime = sumExecTime;
+  public void setRead(StatisticOccurance read) {
+    this.read = read;
   }
 
 
@@ -364,17 +307,15 @@ public class ServerRequestExecutionStat {
         Objects.equals(this.viewName, serverRequestExecutionStat.viewName) &&
         Objects.equals(this.widgetId, serverRequestExecutionStat.widgetId) &&
         Objects.equals(this.actionCode, serverRequestExecutionStat.actionCode) &&
-        Objects.equals(this.minMs, serverRequestExecutionStat.minMs) &&
-        Objects.equals(this.avgMs, serverRequestExecutionStat.avgMs) &&
-        Objects.equals(this.maxMs, serverRequestExecutionStat.maxMs) &&
-        Objects.equals(this.counter, serverRequestExecutionStat.counter) &&
-        Objects.equals(this.sumExecTime, serverRequestExecutionStat.sumExecTime) &&
+        Objects.equals(this.fullStat, serverRequestExecutionStat.fullStat) &&
+        Objects.equals(this.write, serverRequestExecutionStat.write) &&
+        Objects.equals(this.read, serverRequestExecutionStat.read) &&
         Objects.equals(this.type, serverRequestExecutionStat.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, viewName, widgetId, actionCode, minMs, avgMs, maxMs, counter, sumExecTime, type);
+    return Objects.hash(id, viewName, widgetId, actionCode, fullStat, write, read, type);
   }
 
   @Override
@@ -385,11 +326,9 @@ public class ServerRequestExecutionStat {
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
     sb.append("    widgetId: ").append(toIndentedString(widgetId)).append("\n");
     sb.append("    actionCode: ").append(toIndentedString(actionCode)).append("\n");
-    sb.append("    minMs: ").append(toIndentedString(minMs)).append("\n");
-    sb.append("    avgMs: ").append(toIndentedString(avgMs)).append("\n");
-    sb.append("    maxMs: ").append(toIndentedString(maxMs)).append("\n");
-    sb.append("    counter: ").append(toIndentedString(counter)).append("\n");
-    sb.append("    sumExecTime: ").append(toIndentedString(sumExecTime)).append("\n");
+    sb.append("    fullStat: ").append(toIndentedString(fullStat)).append("\n");
+    sb.append("    write: ").append(toIndentedString(write)).append("\n");
+    sb.append("    read: ").append(toIndentedString(read)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();

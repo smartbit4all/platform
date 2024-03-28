@@ -46,6 +46,8 @@ import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.ServerRequestExecutionStat;
 import org.smartbit4all.api.view.bean.ServerRequestTrack;
 import org.smartbit4all.api.view.bean.ServerRequestType;
+import org.smartbit4all.api.view.bean.StatisticExecution;
+import org.smartbit4all.api.view.bean.StatisticOccurance;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -1092,22 +1094,42 @@ public class ViewContextServiceImpl implements ViewContextService {
           executionStat.computeIfAbsent(serverRequestId,
               s -> new ServerRequestExecutionStat().id(s).viewName(serverRequest.getViewName())
                   .widgetId(serverRequest.getWidgetId())
-                  .actionCode(serverRequest.getRequest().getCode()).counter(0l).avgMs(0l)
-                  .sumExecTime(0l).type(serverRequest.getType()));
-      requestExecutionStat.counter(requestExecutionStat.getCounter() + 1);
-      requestExecutionStat.sumExecTime(requestExecutionStat.getSumExecTime() + executionTime);
-      requestExecutionStat
-          .setAvgMs(requestExecutionStat.getSumExecTime() / requestExecutionStat.getCounter());
-      if (requestExecutionStat.getMinMs() == null
-          || executionTime < requestExecutionStat.getMinMs()) {
-        requestExecutionStat.minMs(executionTime);
-      }
-      if (requestExecutionStat.getMaxMs() == null
-          || executionTime > requestExecutionStat.getMaxMs()) {
-        requestExecutionStat.maxMs(executionTime);
-      }
+                  .actionCode(serverRequest.getRequest().getCode())
+                  .fullStat(new StatisticExecution())
+                  .write(new StatisticOccurance()).read(new StatisticOccurance())
+                  .type(serverRequest.getType()));
+      updateStat(executionTime, requestExecutionStat.getFullStat());
     } finally {
       rwlExecutionStat.writeLock().unlock();
+    }
+  }
+
+  private final void updateStat(long executionTime, StatisticExecution stat) {
+    stat
+        .setCounter(stat.getCounter() + 1);
+    stat
+        .sumExecTime(stat.getSumExecTime() + executionTime);
+    stat
+        .setAvgMs(stat.getSumExecTime()
+            / stat.getCounter());
+    if (stat.getMinMs() == null
+        || executionTime < stat.getMinMs()) {
+      stat.minMs(executionTime);
+    }
+    if (stat.getMaxMs() == null
+        || executionTime > stat.getMaxMs()) {
+      stat.maxMs(executionTime);
+    }
+  }
+
+  private final void updateStat(long count, StatisticOccurance stat) {
+    if (stat.getMin() == null
+        || count < stat.getMin()) {
+      stat.min(count);
+    }
+    if (stat.getMax() == null
+        || count < stat.getMax()) {
+      stat.max(count);
     }
   }
 
