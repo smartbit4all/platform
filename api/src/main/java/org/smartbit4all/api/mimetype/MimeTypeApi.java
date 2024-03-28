@@ -33,6 +33,7 @@ public class MimeTypeApi implements InitializingBean {
 
   public static final String PDF_EXT = "pdf";
   public static final String DOCX_EXT = "docx";
+  public static final String DOC_EXT = "doc";
 
   public static final String TXT_EXT = "txt";
   public static final String HTML_EXT = "html";
