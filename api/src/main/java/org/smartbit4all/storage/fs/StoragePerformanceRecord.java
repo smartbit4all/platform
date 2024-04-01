@@ -34,4 +34,36 @@ public class StoragePerformanceRecord {
     return -1;
   }
 
+  public final long getReadTime() {
+    return readTime;
+  }
+
+  public final void setReadTime(long readTime) {
+    this.readTime = readTime;
+  }
+
+  public final long getReadNumber() {
+    return readNumber;
+  }
+
+  public final void setReadNumber(long readNumber) {
+    this.readNumber = readNumber;
+  }
+
+  public final long getWriteTime() {
+    return writeTime;
+  }
+
+  public final void setWriteTime(long writeTime) {
+    this.writeTime = writeTime;
+  }
+
+  public final long getWriteNumber() {
+    return writeNumber;
+  }
+
+  public final void setWriteNumber(long writeNumber) {
+    this.writeNumber = writeNumber;
+  }
+
 }

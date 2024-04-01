@@ -21,6 +21,8 @@ import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageOption;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.ServerRequestTrack;
+import org.smartbit4all.api.view.bean.ServerRequestType;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.View;
@@ -407,7 +409,13 @@ public class ViewApiImpl implements ViewApi {
     if (linkNode == null) {
       return null;
     }
-    return showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
+    viewContextService
+        .startServerRequest(new ServerRequestTrack().type(ServerRequestType.SHOW_SMARTLINK)
+            .viewUuid(linkNode.getValue(UUID.class, SmartLinkData.VIEW, View.UUID))
+            .viewName(linkNode.getValueAsString(SmartLinkData.VIEW, View.VIEW_NAME)));
+    UUID uuid = showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
+    viewContextService.finishServerRequest();
+    return uuid;
   }
 
   @Override
@@ -492,12 +500,18 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public BinaryData downloadItem(UUID uuid, String item) {
     View view = viewContextService.getViewFromCurrentSession(uuid);
-    URI uri = view.getDownloadableItems().get(item);
-    if (uri != null) {
-      BinaryDataObject data = objectApi.read(uri, BinaryDataObject.class);
-      return data.getBinaryData();
+    viewContextService.startServerRequest(new ServerRequestTrack().type(ServerRequestType.DOWNLOAD)
+        .viewUuid(view.getUuid()).viewName(view.getViewName()));
+    try {
+      URI uri = view.getDownloadableItems().get(item);
+      if (uri != null) {
+        BinaryDataObject data = objectApi.read(uri, BinaryDataObject.class);
+        return data.getBinaryData();
+      }
+      return null;
+    } finally {
+      viewContextService.finishServerRequest();
     }
-    return null;
   }
 
   @Override

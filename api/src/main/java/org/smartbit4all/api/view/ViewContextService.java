@@ -176,6 +176,8 @@ public interface ViewContextService {
 
   ServerRequestTrack getServerRequest();
 
+  void finishServerRequest();
+
   String getExecutionStatJSON();
 
 }

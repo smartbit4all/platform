@@ -1037,7 +1037,7 @@ components:
           description: The request type like a normal action or a widget action.
           $ref: '#/components/schemas/ServerRequestType'
     ServerRequestType:
-      enum: [ACTION, WIDGET_ACTION]
+      enum: [ACTION, WIDGET_ACTION, CREATE_VIEW_CONTEXT, UPDATE_VIEW_CONTEXT, GET_VIEW_CONTEXT, HANDLE_MESSAGE_RESULT, SHOW_SMARTLINK, DOWNLOAD, GET_COMPONENT_MODEL]
     StatisticRecord:
       type: object
       description: |

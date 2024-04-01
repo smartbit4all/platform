@@ -159,6 +159,38 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   public static final StoragePerformanceRecord performanceRecord = new StoragePerformanceRecord();
 
   /**
+   * The performance record for the monitoring of the storage. It is related to the actual thread.
+   */
+  private static final ThreadLocal<StoragePerformanceRecord> currentPerformanceRecord =
+      new ThreadLocal<>();
+
+  public static void startRequest() {
+    currentPerformanceRecord.set(new StoragePerformanceRecord());
+  }
+
+  public static StoragePerformanceRecord finishRequest() {
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    currentPerformanceRecord.remove();
+    return record;
+  }
+
+  static void addRead(long time) {
+    performanceRecord.addRead(time);
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    if (record != null) {
+      record.addRead(time);
+    }
+  }
+
+  static void addWrite(long time) {
+    performanceRecord.addWrite(time);
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    if (record != null) {
+      record.addWrite(time);
+    }
+  }
+
+  /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
   public StorageFS(File rootFolder, ObjectDefinitionApi objectDefinitionApi) {
@@ -683,7 +715,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
 
     long endTime = System.currentTimeMillis();
-    performanceRecord.addRead(endTime - startTime);
+    addRead(endTime - startTime);
 
     return storageObject.lastModified(lastModified);
   }

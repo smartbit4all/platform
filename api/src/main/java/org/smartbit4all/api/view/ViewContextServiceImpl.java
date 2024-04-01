@@ -63,6 +63,8 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.storage.fs.StorageFS;
+import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -211,10 +213,12 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public ViewContextData getViewContext(UUID uuid) {
+    startServerRequest(new ServerRequestTrack().type(ServerRequestType.GET_VIEW_CONTEXT));
     UUID currentUuid = getCurrentViewContextUuid();
     if (!Objects.equals(uuid, currentUuid)) {
       throw new IllegalArgumentException("currentViewContext doesn't match paramater");
     }
+    finishServerRequest();
     return getCurrentViewContext();
   }
 
@@ -230,6 +234,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (!Objects.equals(updates.getUuid(), getCurrentViewContextUuid())) {
       throw new IllegalArgumentException("currentViewContext doesn't match paramater");
     }
+    startServerRequest(new ServerRequestTrack().type(ServerRequestType.UPDATE_VIEW_CONTEXT));
     if (!updates.getUpdates().stream().allMatch(
         update -> update.getState() == ViewState.OPENED
             || update.getState() == ViewState.CLOSED)) {
@@ -241,6 +246,7 @@ public class ViewContextServiceImpl implements ViewContextService {
           c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
           return c;
         });
+    finishServerRequest();
   }
 
   @Override
@@ -349,6 +355,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
     Method method = getMethodForCode(messageMethodsByView, view.getViewName(),
         messageResult.getSelectedOption().getCode());
+    startServerRequest(new ServerRequestTrack().type(ServerRequestType.HANDLE_MESSAGE_RESULT)
+        .viewUuid(viewUuid).viewName(view.getViewName()));
+
     if (method != null) {
       try {
         // TODO examine signature, try to support many variations
@@ -366,6 +375,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     updateCurrentViewContext(
         c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
+    finishServerRequest();
     return null;
   }
 
@@ -543,9 +553,13 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public ComponentModel getComponentModel(UUID viewUuid) {
     View view = getViewFromCurrentViewContext(viewUuid);
+    startServerRequest(new ServerRequestTrack().type(ServerRequestType.GET_COMPONENT_MODEL)
+        .viewUuid(viewUuid).viewName(view.getViewName()));
     Objects.requireNonNull(view, "View not found!");
     Object data = getModel(viewUuid, null);
-    return createComponentModel(view, data);
+    ComponentModel componentModel = createComponentModel(view, data);
+    finishServerRequest();
+    return componentModel;
   }
 
   private ComponentModel createComponentModel(View view, Object data) {
@@ -623,7 +637,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .viewUuid(viewUuid).viewName(view.getViewName()));
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, request);
-    finishServerRequest(getServerRequest());
+    finishServerRequest();
     return createViewContextChange(comparisons, null); // ActionHandler is void
   }
 
@@ -661,7 +675,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     List<ViewComparisonResult> comparisons =
         invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
-    finishServerRequest(getServerRequest());
+    finishServerRequest();
     return createViewContextChange(comparisons, null); // WidgetActionHandler is void
   }
 
@@ -1075,10 +1089,15 @@ public class ViewContextServiceImpl implements ViewContextService {
   public void startServerRequest(ServerRequestTrack serverRequest) {
     ViewContext viewContext = getCurrentViewContextEntry();
     viewContext.currentRequest(serverRequest.startTime(OffsetDateTime.now()));
+    StorageFS.startRequest();
   }
 
-  private final void finishServerRequest(ServerRequestTrack serverRequest) {
-    ViewContext viewContext = getCurrentViewContextEntry();
+  @Override
+  public final void finishServerRequest() {
+    ServerRequestTrack serverRequest = getServerRequest();
+    if (serverRequest == null) {
+      return;
+    }
     OffsetDateTime now = OffsetDateTime.now();
     serverRequest.endTime(now);
     if (!collectExecution) {
@@ -1093,12 +1112,21 @@ public class ViewContextServiceImpl implements ViewContextService {
           executionStat.computeIfAbsent(serverRequestId,
               s -> new ServerRequestExecutionStat().id(s).viewName(serverRequest.getViewName())
                   .widgetId(serverRequest.getWidgetId())
-                  .actionCode(serverRequest.getRequest().getCode())
+                  .actionCode(
+                      serverRequest.getRequest() != null ? serverRequest.getRequest().getCode()
+                          : StringConstant.UNKNOWN)
                   .fullStat(new StatisticRecord())
                   .writeCount(new StatisticRecord()).writeStat(new StatisticRecord())
                   .readCount(new StatisticRecord()).readStat(new StatisticRecord())
                   .type(serverRequest.getType()));
       updateStat(executionTime, requestExecutionStat.getFullStat());
+      StoragePerformanceRecord storagePerformanceRecord = StorageFS.finishRequest();
+      updateStat(storagePerformanceRecord.getReadNumber(), requestExecutionStat.getReadCount());
+      updateStat(storagePerformanceRecord.getReadTime(), requestExecutionStat.getReadStat());
+      updateStat(storagePerformanceRecord.getWriteNumber(), requestExecutionStat.getWriteCount());
+      updateStat(storagePerformanceRecord.getWriteTime(), requestExecutionStat.getWriteStat());
+    } catch (Exception e) {
+      log.error("Unable to update execution statistic.", e);
     } finally {
       rwlExecutionStat.writeLock().unlock();
     }
@@ -1143,10 +1171,13 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   private final String getServerRequestId(ServerRequestTrack serverRequest) {
-    return serverRequest.getViewName()
+    return (Strings.isNullOrEmpty(serverRequest.getViewName()) ? "ViewContext"
+        : serverRequest.getViewName())
         + (Strings.isNullOrEmpty(serverRequest.getWidgetId()) ? StringConstant.EMPTY
             : StringConstant.SPACE_HYPHEN_SPACE + serverRequest.getWidgetId())
-        + StringConstant.SPACE_HYPHEN_SPACE + serverRequest.getRequest().getCode();
+        + ((serverRequest.getRequest() == null || serverRequest.getRequest().getCode() == null)
+            ? StringConstant.EMPTY
+            : StringConstant.SPACE_HYPHEN_SPACE + serverRequest.getRequest().getCode());
   }
 
   @Override
