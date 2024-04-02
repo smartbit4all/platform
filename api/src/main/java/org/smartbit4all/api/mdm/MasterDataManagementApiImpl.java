@@ -43,7 +43,6 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
-import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
@@ -263,7 +262,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       synchronizeObjectDefinitions();
       synchronizeValueSets();
       synchronizeSearchIndices();
-      synchronizeSecurityOptions();
     }
     if (setups != null) {
       for (MDMEntrySetup entrySetup : setups) {
@@ -302,7 +300,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     synchronizeObjectDefinitions();
     synchronizeValueSets();
     synchronizeSearchIndices();
-    synchronizeSecurityOptions();
 
     return definitionUri;
   }
@@ -393,71 +390,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   private String constructEntrySecurityGroupName(MDMDefinition definition, MDMEntryDescriptor d) {
     return d.getAdminGroupName() != null ? d.getAdminGroupName() : definition.getAdminGroupName();
-  }
-
-  private void synchronizeSecurityOptions() {
-    if (orgApi == null) {
-      log.error(
-          "Unable to setup the security rights for the master data management. The OrgApi is missing!");
-      return;
-    }
-    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
-    List<MDMDefinition> definitions =
-        map.uris().values().stream()
-            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
-            .collect(toList());
-
-    for (MDMDefinition definition : definitions) {
-      // Check whether the admin group is set for the definition and exists in the org repo.
-      if (definition.getAdminGroupName() != null) {
-        URI definitionGroupUri;
-        definitionGroupUri = getOrCreateDefinitionGroup(definition);
-        getAllEntryDescriptors(definition).values().stream().forEach(descriptor -> {
-          Group descriptionGroup = getOrCreateEntryGroup(definition, descriptor);
-          if (descriptionGroup != null) {
-            orgApi.addChildGroup(orgApi.getGroup(definitionGroupUri), descriptionGroup);
-          }
-        });
-      } else {
-        log.error(
-            "Unable to setup the security rights for the {} definition. The admin group name is not set!",
-            definition.getName());
-      }
-    }
-  }
-
-  private final Group getOrCreateEntryGroup(MDMDefinition definition,
-      MDMEntryDescriptor descriptor) {
-    Group descriptionGroup = null;
-    String entryGroupName = descriptor.getAdminGroupName();
-    // If we set an admin group that is different from definition admin group then we create it.
-    if (entryGroupName != null && !entryGroupName.equals(definition.getAdminGroupName())) {
-      descriptionGroup = orgApi.getGroupByName(entryGroupName);
-      if (descriptionGroup == null) {
-        URI saveGroup = orgApi.saveGroup(new Group().name(entryGroupName)
-            .builtIn(Boolean.TRUE)
-            .title(entryGroupName)
-            .description("The administration group for the "
-                + definition.getName() + StringConstant.DOT + descriptor.getName()
-                + " master data management entry."));
-        descriptionGroup = orgApi.getGroup(saveGroup);
-      }
-    }
-    return descriptionGroup;
-  }
-
-  private final URI getOrCreateDefinitionGroup(MDMDefinition definition) {
-    URI definitionGroupUri;
-    Group definitionGroup = orgApi.getGroupByName(definition.getAdminGroupName());
-    if (definitionGroup == null) {
-      definitionGroupUri = orgApi.saveGroup(new Group().name(definition.getAdminGroupName())
-          .builtIn(Boolean.TRUE)
-          .title(definition.getAdminGroupName()).description("The administration group for the "
-              + definition.getName() + " master data management definition."));
-    } else {
-      definitionGroupUri = definitionGroup.getUri();
-    }
-    return definitionGroupUri;
   }
 
   /**
@@ -1090,7 +1022,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
    * This function restructure the map and create sub maps if the key of a value is a path. The path
    * looks like this innerobject/another/property. In this case we will have an innerobject key in
    * the root map that is map and a another map again and the property will be placed into this.
-   * 
+   *
    * @param data The original flatten map.
    * @return The resulting map with the inner structure.
    */

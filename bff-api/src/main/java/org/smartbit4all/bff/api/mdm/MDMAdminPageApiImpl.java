@@ -123,6 +123,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         masterDataManagementApi.getEntryDescriptors(ctx.definition, ctx.mdmBranch)
             .values().stream()
             .filter(this::filterDescriptor)
+            .filter(this::checkDescriptorSecurity)
             .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
             .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
             .map(e -> new UiAction()
@@ -150,6 +151,13 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected boolean filterDescriptor(MDMEntryDescriptor entryDescriptor) {
     return true;
+  }
+
+  protected boolean checkDescriptorSecurity(MDMEntryDescriptor entryDescriptor) {
+    if (Strings.isNullOrEmpty(entryDescriptor.getAdminGroupName())) {
+      return true;
+    }
+    return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName());
   }
 
   @Override
