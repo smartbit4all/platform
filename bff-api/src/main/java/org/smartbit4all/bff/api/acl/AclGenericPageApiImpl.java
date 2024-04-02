@@ -96,40 +96,40 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
   }
 
   protected class PageContext {
-    View view;
-    AclPageConfig config;
-    ObjectNode aclObjectNode;
+    protected View view;
+    private AclPageConfig config;
+    private ObjectNode aclObjectNode;
 
     protected PageContext load(View view) {
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
-      this.aclObjectNode = objectApi.loadLatest(
-          view.getObjectUri(), view.getBranchUri());
-      Objects.requireNonNull(aclObjectNode, "ACL object not found");
+      this.setAclObjectNode(objectApi.loadLatest(
+          view.getObjectUri(), view.getBranchUri()));
+      Objects.requireNonNull(getAclObjectNode(), "ACL object not found");
       this.view = view;
-      this.config = parameters(view).get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class);
+      this.setConfig(parameters(view).get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class));
       return this;
     }
 
     protected AclGridConfig findGridConfig(String name) {
       Objects.requireNonNull(name, "GridConfig name cannot be null");
-      return config.getGridConfigs().stream()
+      return getConfig().getGridConfigs().stream()
           .filter(c -> name.equals(c.getAclName()))
           .findFirst()
           .orElseThrow(() -> new IllegalArgumentException("Invalid GridConfigName"));
     }
 
     protected String getSubjectSelectorViewName() {
-      return config.getSelectorViewName() != null ? config.getSelectorViewName()
+      return getConfig().getSelectorViewName() != null ? getConfig().getSelectorViewName()
           : PlatformViewNames.SUBJECT_SELECTOR_PAGE;
     }
 
     protected String getUserSelectorViewName() {
-      return config.getSelectorViewName() != null ? config.getSelectorViewName()
+      return getConfig().getSelectorViewName() != null ? getConfig().getSelectorViewName()
           : PlatformViewNames.USER_SELECTOR_PAGE;
     }
 
     protected InvocationRequest getSubjectSelectionCallback(String gridId) {
-      return config.getSelectionCallback() != null ? config.getSelectionCallback()
+      return getConfig().getSelectionCallback() != null ? getConfig().getSelectionCallback()
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleSubjectSelected(
                   view.getUuid(),
@@ -138,12 +138,28 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     }
 
     protected InvocationRequest getUserSelectionCallback(String gridId) {
-      return config.getSelectionCallback() != null ? config.getSelectionCallback()
+      return getConfig().getSelectionCallback() != null ? getConfig().getSelectionCallback()
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleUserSelected(
                   view.getUuid(),
                   Invocations.listOf(Collections.emptyList(), URI.class),
                   gridId));
+    }
+
+    public AclPageConfig getConfig() {
+      return config;
+    }
+
+    public void setConfig(AclPageConfig config) {
+      this.config = config;
+    }
+
+    public ObjectNode getAclObjectNode() {
+      return aclObjectNode;
+    }
+
+    public void setAclObjectNode(ObjectNode aclObjectNode) {
+      this.aclObjectNode = aclObjectNode;
     }
 
   }
@@ -171,10 +187,10 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   protected void addGridsToLayout(View view, SmartComponentLayoutDefinition layout) {
     PageContext ctx = context(view);
-    ACLObject aclObject = ctx.aclObjectNode.getObject(ACLObject.class);
+    ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
 
     UUID viewUuid = view.getUuid();
-    for (AclGridConfig config : ctx.config.getGridConfigs()) {
+    for (AclGridConfig config : ctx.getConfig().getGridConfigs()) {
       String name = config.getAclName();
       ACL acl = getAclFromObject(aclObject, name);
       String gridId = config.getAclName();
@@ -368,7 +384,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       Subject subject = objectApi.asType(Subject.class,
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
-        ctx.aclObjectNode.modify(ACLObject.class, aclObject -> {
+        ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
           ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
           String operation = gridConfig.getOperation();
           List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
@@ -380,7 +396,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           refreshGrid(viewUuid, acl, gridConfig);
           return aclObject;
         });
-        objectApi.save(ctx.aclObjectNode);
+        objectApi.save(ctx.getAclObjectNode());
       }
     }
   }
@@ -399,7 +415,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       Subject subject = objectApi.asType(Subject.class,
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
-        ACLObject aclObject = ctx.aclObjectNode.getObject(ACLObject.class);
+        ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
         ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
         String operation = gridConfig.getOperation();
         List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
@@ -435,7 +451,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       Subject subject = objectApi.asType(Subject.class,
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
-        ctx.aclObjectNode.modify(ACLObject.class, aclObject -> {
+        ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
           ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
           String operation = gridConfig.getOperation();
           List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
@@ -450,7 +466,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           refreshGrid(viewUuid, acl, gridConfig);
           return aclObject;
         });
-        objectApi.save(ctx.aclObjectNode);
+        objectApi.save(ctx.getAclObjectNode());
       }
 
 
@@ -527,7 +543,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
-    ctx.aclObjectNode.modify(ACLObject.class, aclObject -> {
+    ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
       ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
       String operation = gridConfig.getOperation();
       List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
@@ -552,7 +568,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return aclObject;
     });
 
-    objectApi.save(ctx.aclObjectNode);
+    objectApi.save(ctx.getAclObjectNode());
   }
 
   private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {

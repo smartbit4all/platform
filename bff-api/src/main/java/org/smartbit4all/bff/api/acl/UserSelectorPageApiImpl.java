@@ -56,7 +56,7 @@ import org.springframework.util.ObjectUtils;
 public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     implements UserSelectorPageApi {
 
-  private static final String SUBJECT_GRID_ID = "SUBJECT_GRID";
+  protected static final String SUBJECT_GRID_ID = "SUBJECT_GRID";
   private static final String SUBJECT_FILTER_ID = "SUBJECT_FILTER";
 
   @Autowired
