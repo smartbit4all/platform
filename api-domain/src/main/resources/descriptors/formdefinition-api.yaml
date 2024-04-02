@@ -141,6 +141,10 @@ components:
             The default error message to show if the widget features an autocompletion filter
             operation, which returns no elements.
           type: string
+        toolbarId:
+          description: |
+            Identifier of the toolbar associated with this widget.
+          type: string
     ValueChangeMode:
       description: |
         This enum defines the value change handling strategy. Currently only one method is supported,

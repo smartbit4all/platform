@@ -66,7 +66,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.MAX_LENGTH,
   SmartWidgetDefinition.VALUE_CHANGE_MODE,
   SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX,
-  SmartWidgetDefinition.FILTER_ERROR_MESSAGE
+  SmartWidgetDefinition.FILTER_ERROR_MESSAGE,
+  SmartWidgetDefinition.TOOLBAR_ID
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -145,6 +146,9 @@ public class SmartWidgetDefinition {
 
   public static final String FILTER_ERROR_MESSAGE = "filterErrorMessage";
   private String filterErrorMessage;
+
+  public static final String TOOLBAR_ID = "toolbarId";
+  private String toolbarId;
 
   public SmartWidgetDefinition() { 
   }
@@ -852,6 +856,33 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition toolbarId(String toolbarId) {
+    
+    this.toolbarId = toolbarId;
+    return this;
+  }
+
+   /**
+   * Identifier of the toolbar associated with this widget. 
+   * @return toolbarId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Identifier of the toolbar associated with this widget. ")
+  @JsonProperty(TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getToolbarId() {
+    return toolbarId;
+  }
+
+
+  @JsonProperty(TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setToolbarId(String toolbarId) {
+    this.toolbarId = toolbarId;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -885,12 +916,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.maxLength, smartWidgetDefinition.maxLength) &&
         Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode) &&
         Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix) &&
-        Objects.equals(this.filterErrorMessage, smartWidgetDefinition.filterErrorMessage);
+        Objects.equals(this.filterErrorMessage, smartWidgetDefinition.filterErrorMessage) &&
+        Objects.equals(this.toolbarId, smartWidgetDefinition.toolbarId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId);
   }
 
   @Override
@@ -922,6 +954,7 @@ public class SmartWidgetDefinition {
     sb.append("    valueChangeMode: ").append(toIndentedString(valueChangeMode)).append("\n");
     sb.append("    showCharacterLimitSuffix: ").append(toIndentedString(showCharacterLimitSuffix)).append("\n");
     sb.append("    filterErrorMessage: ").append(toIndentedString(filterErrorMessage)).append("\n");
+    sb.append("    toolbarId: ").append(toIndentedString(toolbarId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
