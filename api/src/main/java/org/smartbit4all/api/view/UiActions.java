@@ -5,8 +5,10 @@ import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -572,6 +574,176 @@ public final class UiActions {
         .code(action)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.SUBMENU));
+  }
+
+  public static ActionSorter sorter(final View view) {
+    Objects.requireNonNull(view, "view cannot be null!");
+    final List<UiAction> actions;
+    if (view.getActions() == null) {
+      actions = new ArrayList<>();
+      view.setActions(actions);
+    } else {
+      actions = view.getActions();
+    }
+
+    return new ActionSorter(actions);
+  }
+
+  public static ActionSorter sorter(final List<UiAction> actions) {
+    return new ActionSorter(Objects.requireNonNull(actions, "actions cannot be null!"));
+  }
+
+  public static final class ActionSorter {
+
+    public enum ActionSorterDirection {
+      START_TO_END {
+        @Override
+        int shift(int i) {
+          return i + 1;
+        }
+      },
+      END_TO_START {
+        @Override
+        int shift(int i) {
+          return i - 1;
+        }
+      };
+
+      abstract int shift(int i);
+    }
+
+    private final List<UiAction> actions;
+    private String toolbar;
+    private boolean disregardToolbars = true;
+    private ActionSorterDirection dir = ActionSorterDirection.START_TO_END;
+
+    private ActionSorter(List<UiAction> actions) {
+      this.actions = Objects.requireNonNull(actions, "actions cannot be null!");
+    }
+
+    /**
+     * Instructs the sorter to sort only those actions which are assigned to the specified toolbar.
+     * 
+     * @param toolbar the {@code String} toolbar identifier ({@link UiAction#getToolbar()}) to sort,
+     *        not null
+     * @return this instance
+     */
+    public ActionSorter forToolbar(String toolbar) {
+      this.toolbar = Objects.requireNonNull(toolbar, "toolbar cannot be null!");
+      disregardToolbars = false;
+      return this;
+    }
+
+    /**
+     * Instructs the sorter to sort only the actions without a toolbar assigned.
+     * 
+     * @return this instance
+     */
+    public ActionSorter forActionsWithoutToolbar() {
+      toolbar = null;
+      disregardToolbars = false;
+      return this;
+    }
+
+    /**
+     * Instructs the sorter to sort every action it receives, whether they specify a toolbar or not.
+     * 
+     * <p>
+     * This is the default behaviour of the sorter.
+     * 
+     * @return this instance
+     */
+    public ActionSorter forAnyToolbar() {
+      toolbar = null;
+      disregardToolbars = true;
+      return this;
+    }
+
+    /**
+     * Sets the sorting direction.
+     * 
+     * <ul>
+     * <li>{@link ActionSorterDirection#START_TO_END} will shift the specified actions to the
+     * beginning of the action list. Given an action list {@code [ a, b, c, d, e ]}, sorting for the
+     * following items {@code [ d, c ]} will yield the following list: {@code [ d, c, a, b, e ]}.
+     * This is the default behaviour.
+     * <li>{@link ActionSorterDirection#END_TO_START} will shift the specified actions to the back
+     * of the action list - the reverse of the above. Given an action list
+     * {@code [ a, b, c, d, e ]}, sorting for the following items {@code [ d, c ]} will yield the
+     * following list: {@code [ a, b, e, c, d ]}.
+     * </ul>
+     * 
+     * @param dir the {@link ActionSorterDirection} to employ, not null
+     * @return this instance
+     */
+    public ActionSorter from(ActionSorterDirection dir) {
+      this.dir = Objects.requireNonNull(dir, "sorting direction cannot be null!");
+      return this;
+    }
+
+    /**
+     * Performs the sorting.
+     * 
+     * <p>
+     * This operation mutates the underlying action list.
+     * 
+     * @param codesToSort a {@code List} of {@code String} action codes ({@code UiAction#getCode()})
+     *        to shift positions of.
+     */
+    public void sort(List<String> codesToSort) {
+      final Map<String, Integer> actionPositionByCode = new HashMap<>();
+      for (int i = 0; i < actions.size(); i++) {
+        final UiAction a = actions.get(i);
+        if (disregardToolbars
+            || (toolbar != null && toolbar.equals(a.getToolbar()))
+            || (toolbar == null && a.getToolbar() == null)) {
+          actionPositionByCode.put(a.getCode(), i);
+        }
+      }
+
+      int targetPtr = (dir == ActionSorterDirection.START_TO_END) ? 0 : actions.size() - 1;
+      for (int i = 0; i < codesToSort.size() && i < actions.size(); i++) {
+        final String code = codesToSort.get(i);
+        final int originalPosition = removeValOrMinusOne(actionPositionByCode, code);
+        if (originalPosition < 0) {
+          continue;
+        }
+
+        if (targetPtr != originalPosition) {
+          final UiAction a = actions.remove(originalPosition);
+          actions.add(targetPtr, a);
+        }
+        final IntRange range = IntRange.of(targetPtr, originalPosition);
+        actionPositionByCode.replaceAll((k, v) -> range.contains(v) ? dir.shift(v) : v);
+        targetPtr = dir.shift(targetPtr);
+      }
+    }
+  }
+
+  private static <K> int removeValOrMinusOne(Map<K, Integer> m, K k) {
+    final Integer v = m.remove(k);
+    return (v == null) ? -1 : v;
+  }
+
+  private static final class IntRange {
+
+    static IntRange of(int a, int b) {
+      return (a < b) ? new IntRange(a, b) : new IntRange(b, a);
+    }
+
+    private final int from;
+    private final int to;
+
+    private IntRange(int from, int to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    boolean contains(int i) {
+      return i >= from && i <= to;
+    }
+
+
   }
 
 }

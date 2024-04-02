@@ -2,12 +2,16 @@ package org.smartbit4all.api.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.assertj.core.data.Index;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.view.UiActions.ActionSorter.ActionSorterDirection;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.View;
@@ -110,6 +114,117 @@ class UiActionTest {
         .hasSize(3)
         .allMatch(hasFileInputType);
 
+  }
+
+  @Test
+  @DisplayName("Flipping an action from the back of the list to the front works.")
+  void sortFromLeftToRight() {
+    final View view = initDefaultView();
+
+    // SAVE, BACK, NEXT --> NEXT, SAVE, BACK
+    UiActions.sorter(view)
+        .forActionsWithoutToolbar()
+        .from(ActionSorterDirection.START_TO_END)
+        .sort(Arrays.asList("NEXT", "SAVE"));
+
+    final List<UiAction> actions = view.getActions();
+    assertThat(actions).hasSize(3);
+    assertThat(actions.get(0)).returns("NEXT", UiAction::getCode);
+    assertThat(actions.get(1)).returns("SAVE", UiAction::getCode);
+  }
+
+
+  @Test
+  @DisplayName("Sorting in forward direction succeeds")
+  void sortFromLeftToRight_2() {
+    final List<UiAction> actions = actionListOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+    UiActions.sorter(actions)
+        .forActionsWithoutToolbar()
+        .from(ActionSorterDirection.START_TO_END)
+        .sort(Arrays.asList("f", "j", "b", "a", "i", "d"));
+    assertThat(actionCodes(actions)).containsExactly(
+        "f", "j", "b", "a", "i",
+        "d", "c", "e", "g", "h");
+  }
+
+  @Test
+  @DisplayName("Sorting in backwards direction succeeds.")
+  void sortFromEndToStart() {
+    final List<UiAction> actions = actionListOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+    UiActions.sorter(actions)
+        .forActionsWithoutToolbar()
+        .from(ActionSorterDirection.END_TO_START)
+        .sort(Arrays.asList("f", "j", "b", "a", "i", "d"));
+    assertThat(actionCodes(actions)).containsExactly(
+        "c", "e", "g", "h", "d",
+        "i", "a", "b", "j", "f");
+  }
+
+  @Test
+  @DisplayName("Sorting only a specific toolbar affects only the actions of that toolbar.")
+  void sortOnlyActionsBelongingToASingleToolbar() {
+    final List<UiAction> actions = actionListOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+    UiActions.addOrModify(actions, it -> it.toolbar("foo"), "b", "f", "j");
+
+    UiActions.sorter(actions)
+        .forToolbar("foo")
+        .from(ActionSorterDirection.START_TO_END)
+        .sort(Arrays.asList("f", "j", "b", "a", "i", "d"));
+    assertThat(actionCodes(actions)).containsExactly(
+        "f", "j", "b", "a", "c",
+        "d", "e", "g", "h", "i");
+  }
+
+  @Test
+  @DisplayName("Attempting to assign multiple indices results in only the first index being recognised.")
+  void attemptingToSortActionsMoreThanOnceHasNoDoubleEffect() {
+    final List<UiAction> actions = actionListOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+    UiActions.sorter(actions)
+        .forActionsWithoutToolbar()
+        .from(ActionSorterDirection.START_TO_END)
+        .sort(Arrays.asList("f", "e", "f"));
+    // Erroneous order would be: [ e, f, c, ... ]
+    assertThat(actionCodes(actions)).containsExactly(
+        "f", "e", "a", "b", "c",
+        "d", "g", "h", "i", "j");
+  }
+
+  @Test
+  @DisplayName("ActionSorter throws when a null View is supplied.")
+  void actionsSorterNullViewThrow() {
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> {
+          UiActions.sorter((View) null).sort(Arrays.asList("a", "b"));
+        });
+  }
+
+  @Test
+  @DisplayName("ActionSorter recovers from null action list in a view.")
+  void actionSorterNullListRecovery() {
+    final View view = initDefaultView().actions(null);
+    Assertions.assertDoesNotThrow(() -> UiActions.sorter(view).sort(Arrays.asList("a", "b")));
+  }
+
+  @Test
+  @DisplayName("ActionSorter thorws when a null action list is supplied.")
+  void actionSorterNullListThrow() {
+    final List<UiAction> actions = null;
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> {
+          UiActions.sorter(actions).sort(Arrays.asList("a", "b"));
+        });
+  }
+
+  private static List<UiAction> actionListOf(String... codes) {
+    return Arrays.stream(codes)
+        .map(it -> new UiAction().code(it))
+        .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  private static List<String> actionCodes(List<UiAction> actions) {
+    return actions.stream().map(UiAction::getCode).collect(Collectors.toList());
   }
 
 }
