@@ -447,6 +447,9 @@ components:
           type: string
         typeClass:
           type: string
+        typeFormat:
+          description: The format instruction for the column. This format string must be JavaScript format stringh for Angular.
+          type: string
         alwaysHidden:
           type: boolean
           default: false

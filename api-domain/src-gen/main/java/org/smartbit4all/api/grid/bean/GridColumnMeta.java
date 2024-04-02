@@ -35,6 +35,7 @@ import javax.validation.Valid;
   GridColumnMeta.LABEL,
   GridColumnMeta.PROPERTY_NAME,
   GridColumnMeta.TYPE_CLASS,
+  GridColumnMeta.TYPE_FORMAT,
   GridColumnMeta.ALWAYS_HIDDEN,
   GridColumnMeta.ALWAYS_SHOW,
   GridColumnMeta.CONTENT_TYPE
@@ -50,6 +51,9 @@ public class GridColumnMeta {
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
+
+  public static final String TYPE_FORMAT = "typeFormat";
+  private String typeFormat;
 
   public static final String ALWAYS_HIDDEN = "alwaysHidden";
   private Boolean alwaysHidden = false;
@@ -143,6 +147,33 @@ public class GridColumnMeta {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeClass(String typeClass) {
     this.typeClass = typeClass;
+  }
+
+
+  public GridColumnMeta typeFormat(String typeFormat) {
+    
+    this.typeFormat = typeFormat;
+    return this;
+  }
+
+   /**
+   * The format instruction for the column. This format string must be JavaScript format stringh for Angular.
+   * @return typeFormat
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The format instruction for the column. This format string must be JavaScript format stringh for Angular.")
+  @JsonProperty(TYPE_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTypeFormat() {
+    return typeFormat;
+  }
+
+
+  @JsonProperty(TYPE_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTypeFormat(String typeFormat) {
+    this.typeFormat = typeFormat;
   }
 
 
@@ -240,6 +271,7 @@ public class GridColumnMeta {
     return Objects.equals(this.label, gridColumnMeta.label) &&
         Objects.equals(this.propertyName, gridColumnMeta.propertyName) &&
         Objects.equals(this.typeClass, gridColumnMeta.typeClass) &&
+        Objects.equals(this.typeFormat, gridColumnMeta.typeFormat) &&
         Objects.equals(this.alwaysHidden, gridColumnMeta.alwaysHidden) &&
         Objects.equals(this.alwaysShow, gridColumnMeta.alwaysShow) &&
         Objects.equals(this.contentType, gridColumnMeta.contentType);
@@ -247,7 +279,7 @@ public class GridColumnMeta {
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName, typeClass, alwaysHidden, alwaysShow, contentType);
+    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, contentType);
   }
 
   @Override
@@ -257,6 +289,7 @@ public class GridColumnMeta {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    propertyName: ").append(toIndentedString(propertyName)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
+    sb.append("    typeFormat: ").append(toIndentedString(typeFormat)).append("\n");
     sb.append("    alwaysHidden: ").append(toIndentedString(alwaysHidden)).append("\n");
     sb.append("    alwaysShow: ").append(toIndentedString(alwaysShow)).append("\n");
     sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
