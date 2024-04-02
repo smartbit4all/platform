@@ -5,9 +5,12 @@ import static org.smartbit4all.core.utility.StringConstant.DOT;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.ObjectValidations;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
 import org.smartbit4all.api.object.bean.ObjectValidationResult;
@@ -27,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPageModel>
     implements ValidationResultPageApi {
+
+  private static final Logger log = LoggerFactory.getLogger(ValidationResultPageApiImpl.class);
 
   private static final String LOCALE_PREFIX = "ValidationResultPage";
   private static final String CONTINUE_OK = CONTINUE + DOT + ObjectValidationSeverity.OK;
@@ -54,11 +59,12 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
   }
 
   private ValidationResultPageModel mapObjectValidationResult(ObjectMapHelper parameters) {
-    ObjectValidationResult result =
-        parameters.get(VALIDATION_RESULT, ObjectValidationResult.class);
-    return new ValidationResultPageModel().validationItems(
-        result.getItems().stream().map(item -> new ValidationItem().severity(item.getSeverity())
-            .message(getMessage(item))).collect(toList()));
+    ObjectValidationResult result = parameters.get(VALIDATION_RESULT, ObjectValidationResult.class);
+    return new ValidationResultPageModel().validationItems(result.getItems().stream()
+        .map(item -> new ValidationItem()
+            .severity(item.getSeverity())
+            .message(getMessage(item)))
+        .collect(toList()));
   }
 
   private String getMessage(ObjectValidationItem item) {
@@ -77,7 +83,7 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
       invocationApi.invoke(callback);
       viewApi.closeView(viewUuid);
     } catch (ApiNotFoundException e) {
-      e.printStackTrace();
+      log.error(e.getMessage(), e);
     }
   }
 
@@ -88,27 +94,32 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
 
   protected void addUiActions(View view, ValidationResultPageModel model) {
     List<ValidationItem> items = model.getValidationItems();
-    boolean hasAnyWarning = hasAny(items, ObjectValidationSeverity.WARNING);
-    boolean hasAnyError = hasAny(items, ObjectValidationSeverity.ERROR);
+    final ObjectValidationSeverity highestSeverity = items.stream()
+        .map(ValidationItem::getSeverity)
+        .max(ObjectValidations.bySeverityEnum())
+        .orElse(ObjectValidationSeverity.OK);
+
+    final boolean error = ObjectValidations.atLeast(
+        highestSeverity,
+        ObjectValidationSeverity.ERROR);
+    final boolean warning = ObjectValidations.atLeast(
+        highestSeverity,
+        ObjectValidationSeverity.WARNING);
     view.actions(
         UiActions.builder()
             .addIf(
                 uiAction(OK, OK, UiActions.Color.PRIMARY),
-                hasAnyError)
+                error) // ok does nothing when we have at least an error
             .addIf(
                 uiAction(CONTINUE, CONTINUE_WARNING, UiActions.Color.PRIMARY),
-                !hasAnyError && hasAnyWarning)
+                highestSeverity == ObjectValidationSeverity.WARNING) // only a warning
             .addIf(
                 uiAction(CONTINUE, CONTINUE_OK, UiActions.Color.PRIMARY),
-                !hasAnyError && !hasAnyWarning)
+                !warning) // not even a warning
             .addIf(
                 uiAction(CANCEL, CANCEL, UiActions.Color.ACCENT),
-                !hasAnyError)
+                !error) // only a warning or lesser
             .build());
-  }
-
-  private boolean hasAny(List<ValidationItem> items, ObjectValidationSeverity severity) {
-    return items.stream().anyMatch(item -> item.getSeverity().equals(severity));
   }
 
   private UiAction uiAction(String code, String title, String color) {

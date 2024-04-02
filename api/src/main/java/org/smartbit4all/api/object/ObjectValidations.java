@@ -159,6 +159,11 @@ public final class ObjectValidations {
     return bySeverityEnum().compare(result.getSeverity(), severity) < 0;
   }
 
+  public static boolean atLeast(ObjectValidationSeverity severity,
+      ObjectValidationSeverity sentinel) {
+    return 0 >= bySeverityEnum().compare(severity, sentinel);
+  }
+
   public static final ObjectValidationResult of(Collection<ObjectValidationItem> items) {
     return new ObjectValidationResult().items(items.stream().sorted(bySeverity()).collect(toList()))
         .severity(getTopSeverity(items));
