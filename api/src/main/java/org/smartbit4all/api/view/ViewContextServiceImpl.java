@@ -1121,10 +1121,12 @@ public class ViewContextServiceImpl implements ViewContextService {
                   .type(serverRequest.getType()));
       updateStat(executionTime, requestExecutionStat.getFullStat());
       StoragePerformanceRecord storagePerformanceRecord = StorageFS.finishRequest();
-      updateStat(storagePerformanceRecord.getReadNumber(), requestExecutionStat.getReadCount());
-      updateStat(storagePerformanceRecord.getReadTime(), requestExecutionStat.getReadStat());
-      updateStat(storagePerformanceRecord.getWriteNumber(), requestExecutionStat.getWriteCount());
-      updateStat(storagePerformanceRecord.getWriteTime(), requestExecutionStat.getWriteStat());
+      if (storagePerformanceRecord != null) {
+        updateStat(storagePerformanceRecord.getReadNumber(), requestExecutionStat.getReadCount());
+        updateStat(storagePerformanceRecord.getReadTime(), requestExecutionStat.getReadStat());
+        updateStat(storagePerformanceRecord.getWriteNumber(), requestExecutionStat.getWriteCount());
+        updateStat(storagePerformanceRecord.getWriteTime(), requestExecutionStat.getWriteStat());
+      }
     } catch (Exception e) {
       log.error("Unable to update execution statistic.", e);
     } finally {

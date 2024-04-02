@@ -42,7 +42,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class StatisticRecord {
   public static final String MIN = "min";
-  private Long min = 0l;
+  private Long min;
 
   public static final String AVG = "avg";
   private Long avg = 0l;
