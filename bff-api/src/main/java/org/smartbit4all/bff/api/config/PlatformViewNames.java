@@ -11,5 +11,6 @@ public class PlatformViewNames {
   public static final String USER_SELECTOR_PAGE = "user-selector-page";
   public static final String ACL_GENERIC_PAGE = "acl-generic-page";
   public static final String ACL_MATRIX_PAGE = "acl-matrix-page";
+  public static final String PDF_VIEWER_DIALOG = "PdfViewerDialog";
 
 }

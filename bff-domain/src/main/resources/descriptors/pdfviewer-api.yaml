@@ -1,0 +1,30 @@
+openapi: 3.0.1
+info:
+  title: Pdf Viewer api
+  description: Pdf Viewer ui api.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: SubjectSelector
+paths: {}
+components:
+  schemas:
+    PdfViewerDialogModel:
+      type: object
+      properties:
+        title:
+          type: string
+          description: |
+            The title to be shown by the dialog
+        hideSidebar:
+          type: boolean
+          default: false
+          description: |
+            Hides the sidebar showing a preview of all pages of the document.
+        errorMsg:
+          type: string
+          description: |
+            The error message to be shown if the PDF cannot be loaded.
+      required: [showSidebar]
