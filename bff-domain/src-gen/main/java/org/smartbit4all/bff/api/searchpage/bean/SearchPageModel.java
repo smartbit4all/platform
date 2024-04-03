@@ -36,7 +36,8 @@ import javax.validation.Valid;
   SearchPageModel.PAGE_TITLE,
   SearchPageModel.FILTERS,
   SearchPageModel.HISTORY_RANGE,
-  SearchPageModel.HISTORY_PAGE_SIZE
+  SearchPageModel.HISTORY_PAGE_SIZE,
+  SearchPageModel.NO_RESULT_TEXT
 })
 @JsonTypeName("SearchPageModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -52,6 +53,9 @@ public class SearchPageModel {
 
   public static final String HISTORY_PAGE_SIZE = "historyPageSize";
   private Integer historyPageSize;
+
+  public static final String NO_RESULT_TEXT = "noResultText";
+  private String noResultText;
 
   public SearchPageModel() { 
   }
@@ -166,6 +170,33 @@ public class SearchPageModel {
   }
 
 
+  public SearchPageModel noResultText(String noResultText) {
+    
+    this.noResultText = noResultText;
+    return this;
+  }
+
+   /**
+   * If there is no result for the search, then show this text instead of the empty table.
+   * @return noResultText
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If there is no result for the search, then show this text instead of the empty table.")
+  @JsonProperty(NO_RESULT_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getNoResultText() {
+    return noResultText;
+  }
+
+
+  @JsonProperty(NO_RESULT_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNoResultText(String noResultText) {
+    this.noResultText = noResultText;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -178,12 +209,13 @@ public class SearchPageModel {
     return Objects.equals(this.pageTitle, searchPageModel.pageTitle) &&
         Objects.equals(this.filters, searchPageModel.filters) &&
         Objects.equals(this.historyRange, searchPageModel.historyRange) &&
-        Objects.equals(this.historyPageSize, searchPageModel.historyPageSize);
+        Objects.equals(this.historyPageSize, searchPageModel.historyPageSize) &&
+        Objects.equals(this.noResultText, searchPageModel.noResultText);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pageTitle, filters, historyRange, historyPageSize);
+    return Objects.hash(pageTitle, filters, historyRange, historyPageSize, noResultText);
   }
 
   @Override
@@ -194,6 +226,7 @@ public class SearchPageModel {
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
     sb.append("    historyRange: ").append(toIndentedString(historyRange)).append("\n");
     sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
+    sb.append("    noResultText: ").append(toIndentedString(noResultText)).append("\n");
     sb.append("}");
     return sb.toString();
   }

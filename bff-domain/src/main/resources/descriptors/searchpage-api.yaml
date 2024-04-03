@@ -24,3 +24,6 @@ components:
         historyPageSize:
           type: integer
           format: int32
+        noResultText:
+          description: If there is no result for the search, then show this text instead of the empty table.
+          type: string

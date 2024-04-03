@@ -395,6 +395,9 @@ components:
         skipInitialQuery:
           description: Execute query right after the page is opened or not.
           type: boolean
+        noResultText:
+          description: If there is no result for the search, then show this text instead of the empty table.
+          type: string
         gridViewOptions:
           description: |
             The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear.

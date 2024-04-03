@@ -51,6 +51,7 @@ import javax.validation.Valid;
   SearchPageConfig.HISTORY_PAGE_SIZE,
   SearchPageConfig.PAGE_SIZE,
   SearchPageConfig.SKIP_INITIAL_QUERY,
+  SearchPageConfig.NO_RESULT_TEXT,
   SearchPageConfig.GRID_VIEW_OPTIONS
 })
 @JsonTypeName("SearchPageConfig")
@@ -94,6 +95,9 @@ public class SearchPageConfig {
 
   public static final String SKIP_INITIAL_QUERY = "skipInitialQuery";
   private Boolean skipInitialQuery;
+
+  public static final String NO_RESULT_TEXT = "noResultText";
+  private String noResultText;
 
   public static final String GRID_VIEW_OPTIONS = "gridViewOptions";
   private List<GridView> gridViewOptions = new ArrayList<>();
@@ -456,6 +460,33 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig noResultText(String noResultText) {
+    
+    this.noResultText = noResultText;
+    return this;
+  }
+
+   /**
+   * If there is no result for the search, then show this text instead of the empty table.
+   * @return noResultText
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If there is no result for the search, then show this text instead of the empty table.")
+  @JsonProperty(NO_RESULT_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getNoResultText() {
+    return noResultText;
+  }
+
+
+  @JsonProperty(NO_RESULT_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNoResultText(String noResultText) {
+    this.noResultText = noResultText;
+  }
+
+
   public SearchPageConfig gridViewOptions(List<GridView> gridViewOptions) {
     
     this.gridViewOptions = gridViewOptions;
@@ -512,12 +543,13 @@ public class SearchPageConfig {
         Objects.equals(this.historyPageSize, searchPageConfig.historyPageSize) &&
         Objects.equals(this.pageSize, searchPageConfig.pageSize) &&
         Objects.equals(this.skipInitialQuery, searchPageConfig.skipInitialQuery) &&
+        Objects.equals(this.noResultText, searchPageConfig.noResultText) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, gridViewOptions);
+    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions);
   }
 
   @Override
@@ -537,6 +569,7 @@ public class SearchPageConfig {
     sb.append("    historyPageSize: ").append(toIndentedString(historyPageSize)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    skipInitialQuery: ").append(toIndentedString(skipInitialQuery)).append("\n");
+    sb.append("    noResultText: ").append(toIndentedString(noResultText)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("}");
     return sb.toString();
