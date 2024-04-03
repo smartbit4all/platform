@@ -3,9 +3,14 @@ package org.smartbit4all.core.object;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor;
+import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnum;
+import org.smartbit4all.api.object.bean.PersistableObject;
+import org.smartbit4all.api.object.bean.RefObject;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 
 /**
  * Facilitates dynamic extensions to object definitions and default object layout generation.
@@ -192,5 +197,133 @@ public interface ObjectExtensionApi {
   ObjectNode newInstance(URI objectDescriptorUri, String storageSchema);
 
   ObjectDefinition<?> assemble(String definitionName);
+
+  // -----------------------------------------------------------------------------------------------
+  // Static factory methods for property descriptors:
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing an inline reference list at the provided
+   * property name.
+   * 
+   * <p>
+   * The default element class ({@link PersistableObject}) is used.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor inlineReferenceList(String propertyName) {
+    return inlineReferenceList(propertyName, PersistableObject.class);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing an inline reference list at the provided
+   * property name.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @param elementClass the {@link Class} of the elements, not null; the type needs not possess a
+   *        {@code URI} property
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor inlineReferenceList(String propertyName, Class<?> elementClass) {
+    return new ObjectPropertyDescriptor()
+        .propertyName(propertyName)
+        .propertyKind(PropertyKindEnum.REFERENCE)
+        .propertyQualifiedName(elementClass.getName())
+        .referencedTypeQualifiedName(elementClass.getName())
+        .propertyStructure(ReferencePropertyKind.LIST)
+        .aggregation(AggregationKind.INLINE);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing an inline reference list at the provided
+   * property name, populated by {@link RefObject}s.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor refObjectList(String propertyName) {
+    return inlineReferenceList(propertyName, RefObject.class);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing a simple {@code URI} based reference at
+   * the provided property name.
+   * 
+   * <p>
+   * The default target class ({@link PersistableObject}) is used.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor reference(String propertyName) {
+    return reference(propertyName, PersistableObject.class);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing a simple {@code URI} based reference at
+   * the provided property name.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @param targetClass the {@link Class} of the referenced type, must possess an {@URI} property,
+   *        not null
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor reference(String propertyName, Class<?> targetClass) {
+    return reference(propertyName, targetClass, AggregationKind.NONE);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing a singular {@code URI} based reference
+   * at the provided property name.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @param targetClass the {@link Class} of the referenced type, must possess an {@URI} property
+   *        unless the provided aggregation kind is {@link AggregationKind#INLINE}; not null
+   * @param aggregationKind the {@link AggregationKind} used for navigation through the reference
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor reference(String propertyName, Class<?> targetClass,
+      AggregationKind aggregationKind) {
+    return new ObjectPropertyDescriptor()
+        .propertyName(propertyName)
+        .propertyKind(PropertyKindEnum.REFERENCE)
+        .propertyQualifiedName(URI.class.getName())
+        .referencedTypeQualifiedName(targetClass.getName())
+        .aggregation(aggregationKind)
+        .propertyStructure(ReferencePropertyKind.REFERENCE);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing an {@code URI}-based reference list at
+   * the provided property name.
+   * 
+   * <p>
+   * The default element class ({@link PersistableObject}) is used.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor referenceList(String propertyName) {
+    return reference(propertyName, PersistableObject.class);
+  }
+
+  /**
+   * Creates an {@link ObjectPropertyDescriptor} describing an {@code URI}-based reference list at
+   * the provided property name.
+   * 
+   * @param propertyName the {@code String} name of the desired property, not null
+   * @param elementClass the {@link Class} of the elements, not null; the type <strong>must</strong>
+   *        possess a {@code URI} property
+   * @return the appropriate {@code ObjectPropertyDescriptor}
+   */
+  static ObjectPropertyDescriptor referenceList(String propertyName, Class<?> elementClass) {
+    return new ObjectPropertyDescriptor()
+        .propertyName(propertyName)
+        .propertyKind(PropertyKindEnum.REFERENCE)
+        .propertyQualifiedName(URI.class.getName())
+        .propertyStructure(ReferencePropertyKind.LIST)
+        .referencedTypeQualifiedName(elementClass.getName())
+        .aggregation(AggregationKind.NONE);
+  }
 
 }
