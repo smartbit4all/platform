@@ -1,5 +1,8 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -72,9 +75,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -91,6 +91,9 @@ public class ViewContextServiceImpl implements ViewContextService {
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
   private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
+
+  private static final ThreadLocal<ServerRequestTrack> currentServerRequestTrack =
+      new ThreadLocal<>();
 
   private Map<String, String> parentViewByViewName = new HashMap<>();
 
@@ -1087,8 +1090,13 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public void startServerRequest(ServerRequestTrack serverRequest) {
-    ViewContext viewContext = getCurrentViewContextEntry();
-    viewContext.currentRequest(serverRequest.startTime(OffsetDateTime.now()));
+    serverRequest.startTime(OffsetDateTime.now());
+    ViewContext viewContext = currentViewContext.get();
+    if (viewContext != null) {
+      viewContext.currentRequest(serverRequest);
+    } else {
+      currentServerRequestTrack.set(serverRequest);
+    }
     StorageFS.startRequest();
   }
 
@@ -1100,6 +1108,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     OffsetDateTime now = OffsetDateTime.now();
     serverRequest.endTime(now);
+    currentServerRequestTrack.remove();
     if (!collectExecution) {
       return;
     }
@@ -1184,8 +1193,11 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public ServerRequestTrack getServerRequest() {
-    ViewContext viewContext = getCurrentViewContextEntry();
-    return viewContext.getCurrentRequest();
+    ViewContext viewContext = currentViewContext.get();
+    if (viewContext != null) {
+      return viewContext.getCurrentRequest();
+    }
+    return currentServerRequestTrack.get();
   }
 
 }
