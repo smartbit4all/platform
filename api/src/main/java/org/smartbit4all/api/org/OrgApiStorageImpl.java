@@ -232,7 +232,7 @@ public class OrgApiStorageImpl implements OrgApi {
           .builtIn(securityGroup.isbuiltIn());
       updateGroup(group);
     }
-    return null;
+    return group;
   }
 
   @EventListener(ApplicationStartedEvent.class)
@@ -240,17 +240,37 @@ public class OrgApiStorageImpl implements OrgApi {
     if (securityOptions != null) {
       groupByNameCache.invalidateAll();
       usersOfGroupCache.invalidateAll();
-      Map<SecurityGroup, Group> allNewGroups = new HashMap<>();
+      Map<SecurityGroup, Group> analizedGroups = new HashMap<>();
       for (SecurityOption securityOption : securityOptions) {
-        allNewGroups.putAll(analyzeSecurityOptions(securityOption));
+        analizedGroups.putAll(analyzeSecurityOptions(securityOption));
       }
-      for (Entry<SecurityGroup, Group> entry : allNewGroups.entrySet()) {
-        for (SecurityGroup subGroup : entry.getKey().getSubGroups()) {
-          Group subGroupByName = getGroupByName(subGroup.getName());
-          if (subGroupByName != null) {
-            addChildGroup(entry.getValue(), subGroupByName);
+      updateSubGroupsOfSecurityGroups(analizedGroups);
+    }
+  }
+
+  private void updateSubGroupsOfSecurityGroups(Map<SecurityGroup, Group> analizedGroups) {
+    for (Entry<SecurityGroup, Group> entry : analizedGroups.entrySet()) {
+      Group mainGroup = entry.getValue();
+      List<URI> currentChildUris = new ArrayList<>(mainGroup.getChildren());
+      List<URI> newChildUris = new ArrayList<>();
+      boolean subGroupListHasChanged = false;
+      for (SecurityGroup subSecGroup : entry.getKey().getSubGroups()) {
+        Group subGroup = getGroupByName(subSecGroup.getName());
+        if (subGroup != null) {
+          newChildUris.add(subGroup.getUri());
+          if (!currentChildUris.contains(subGroup.getUri())) {
+            subGroupListHasChanged |= true;
+          } else {
+            currentChildUris.remove(subGroup.getUri());
           }
         }
+      }
+      if (subGroupListHasChanged || !currentChildUris.isEmpty()) {
+        log.debug(
+            "SubGroups of security group [{}] has changed. Group children list is being updated.",
+            entry.getKey().getName());
+        mainGroup.setChildren(newChildUris);
+        updateGroup(mainGroup);
       }
     }
   }
