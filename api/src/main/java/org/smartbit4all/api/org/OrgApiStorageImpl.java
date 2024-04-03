@@ -2,6 +2,9 @@ package org.smartbit4all.api.org;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -55,9 +58,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ObjectUtils;
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -119,6 +119,12 @@ public class OrgApiStorageImpl implements OrgApi {
       CacheBuilder.newBuilder().concurrencyLevel(10).build();
 
   /**
+   * The cache for the direct groups of user.
+   */
+  private Cache<URI, List<Group>> directGroupsOfUserCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
    * The cache for users of the groups and subgroups.
    */
   private Cache<URI, List<User>> usersOfGroupCache =
@@ -145,6 +151,7 @@ public class OrgApiStorageImpl implements OrgApi {
    */
   private final synchronized void invalidateCache() {
     groupsOfUserCache.invalidateAll();
+    directGroupsOfUserCache.invalidateAll();
     usersOfGroupCache.invalidateAll();
     usersOfGroupAndParentGroupsCache.invalidateAll();
     groupByNameCache.invalidateAll();
@@ -392,8 +399,18 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
+    return getGroupsOfUser(userUri, groupsOfUserCache, false);
+  }
+
+  @Override
+  public List<Group> getDirectGroupsOfUser(URI userUri) {
+    return getGroupsOfUser(userUri, directGroupsOfUserCache, true);
+  }
+
+  protected List<Group> getGroupsOfUser(URI userUri, Cache<URI, List<Group>> cache,
+      boolean directGroupsOnly) {
     try {
-      return groupsOfUserCache.get(userUri, new Callable<List<Group>>() {
+      return cache.get(userUri, new Callable<List<Group>>() {
 
         @Override
         public List<Group> call() throws Exception {
@@ -408,7 +425,9 @@ public class OrgApiStorageImpl implements OrgApi {
               List<Group> directGroups = storage.get().read(groupsOfUser.getGroups(), Group.class);
               for (Group group : directGroups) {
                 groups.add(group);
-                groups.addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+                if (!directGroupsOnly) {
+                  groups.addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+                }
               }
             }
 

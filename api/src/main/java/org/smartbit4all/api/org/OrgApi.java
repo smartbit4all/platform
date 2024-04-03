@@ -71,6 +71,11 @@ public interface OrgApi {
   List<Group> getGroupsOfUser(URI userUri);
 
   /**
+   * Return which groups the user is direct member of.
+   */
+  List<Group> getDirectGroupsOfUser(URI userUri);
+
+  /**
    * Get all information of a group.
    */
   Group getGroup(URI groupUri);

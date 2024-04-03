@@ -55,6 +55,11 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
   }
 
   @Override
+  public List<Group> getDirectGroupsOfUser(URI userUri) {
+    return getGroupsOfUser(userUri);
+  }
+
+  @Override
   public Group getGroup(URI groupUri) {
     return secGatewayService.getGroup(groupUri);
   }
