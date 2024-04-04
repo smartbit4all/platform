@@ -108,6 +108,8 @@ import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
 import org.smartbit4all.api.view.tree.TreeSetupApi;
 import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
+import org.smartbit4all.api.wellknown.WellknownApi;
+import org.smartbit4all.api.wellknown.WellknownApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
@@ -802,6 +804,11 @@ public class PlatformApiConfig {
   @Bean
   ServiceConnectionApi serviceConnectionApi() {
     return new ServiceConnectionApiImpl();
+  }
+
+  @Bean
+  WellknownApi wellknownApi() {
+    return new WellknownApiImpl();
   }
 
 }

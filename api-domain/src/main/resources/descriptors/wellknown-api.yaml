@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: Wellknow API
+  description: Wellknow API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+paths:
+  /.well-known/{id}:
+    get:
+      tags:
+      - Wellknown
+      description: Get well known content.
+      operationId: 'getWellknown'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: content id.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Content not found
+components:
+  schemas:
+    WellKnownDefinition:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        data:
+          type: string
+          format: uri
+        contentype:
+          type: string
+        

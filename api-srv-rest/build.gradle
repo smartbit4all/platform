@@ -28,7 +28,8 @@ smartbit4all {
         	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
         	"${rootDir}/api-domain/src/main/resources/descriptors/kerberosauthentication-api.yaml" : "kerberosauthentication",
             "${rootDir}/api-domain/src/main/resources/descriptors/grid-api.yaml" : "grid",
-            "${rootDir}/api-domain/src/main/resources/descriptors/filterexpression-api.yaml" : "filterexpression"
+            "${rootDir}/api-domain/src/main/resources/descriptors/filterexpression-api.yaml" : "filterexpression",
+            "${rootDir}/api-domain/src/main/resources/descriptors/wellknown-api.yaml" : "wellknown"
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"
