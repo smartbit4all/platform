@@ -1,6 +1,9 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -324,6 +327,38 @@ public interface ObjectExtensionApi {
         .propertyStructure(ReferencePropertyKind.LIST)
         .referencedTypeQualifiedName(elementClass.getName())
         .aggregation(AggregationKind.NONE);
+  }
+
+  static ObjectPropertyDescriptor primitive(String propertyName, Class<?> targetClass) {
+    return new ObjectPropertyDescriptor()
+        .propertyName(propertyName)
+        .propertyKind(PropertyKindEnum.INLINE)
+        .propertyQualifiedName(targetClass.getName())
+        .propertyStructure(ReferencePropertyKind.REFERENCE);
+  }
+
+  static ObjectPropertyDescriptor string(String propertyName) {
+    return primitive(propertyName, String.class);
+  }
+
+  static ObjectPropertyDescriptor offsetDateTime(String propertyName) {
+    return primitive(propertyName, OffsetDateTime.class);
+  }
+
+  static ObjectPropertyDescriptor localDateTime(String propertyName) {
+    return primitive(propertyName, LocalDateTime.class);
+  }
+
+  static ObjectPropertyDescriptor localDate(String propertyName) {
+    return primitive(propertyName, LocalDate.class);
+  }
+
+  static ObjectPropertyDescriptor bool(String propertyName) {
+    return primitive(propertyName, Boolean.class);
+  }
+
+  static ObjectPropertyDescriptor integer(String propertyName) {
+    return primitive(propertyName, Integer.class);
   }
 
 }
