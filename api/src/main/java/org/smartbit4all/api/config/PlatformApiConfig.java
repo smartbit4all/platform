@@ -91,6 +91,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.action.ToolbarManagementApi;
+import org.smartbit4all.api.view.action.ToolbarManagementApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApi;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApiImpl;
@@ -785,6 +787,11 @@ public class PlatformApiConfig {
   @Bean
   public ActionDefinitionApi actionDefinitionApi() {
     return new ActionDefinitionApiImpl();
+  }
+
+  @Bean
+  public ToolbarManagementApi toolbarManagementApi() {
+    return new ToolbarManagementApiImpl();
   }
 
   @Bean
