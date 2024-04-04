@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.VersionStrategy;
+import org.smartbit4all.api.toolbar.bean.ToolbarDefinition;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
@@ -21,6 +22,7 @@ import org.smartbit4all.api.uitree.bean.UiTreePath;
 import org.smartbit4all.api.uitree.bean.UiTreePathPart;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.action.ToolbarManagementApi;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
@@ -41,6 +43,9 @@ public class TreeApiImpl implements TreeApi {
 
   @Autowired
   private TreeSetupApi treeSetupApi;
+
+  @Autowired
+  private ToolbarManagementApi toolbarManagementApi;
 
   @Override
   public List<SmartTreeNode> getRootNodes(UiTreeState treeState) {
@@ -259,6 +264,9 @@ public class TreeApiImpl implements TreeApi {
   }
 
   private SmartTreeNode convertUi2SmartTreeNode(UiTreeState treeState, UiTreeNode treeNode) {
+    ToolbarDefinition toolbar = getTreeConfig(treeState).getToolbarForNode(treeState, treeNode);
+    List<UiAction> actions =
+        toolbarManagementApi.getActionsForToolbar(toolbar, treeNode.getActions());
     return new SmartTreeNode()
         .identifier(treeNode.getIdentifier())
         .caption(treeNode.getCaption())
@@ -267,7 +275,7 @@ public class TreeApiImpl implements TreeApi {
         .expanded(treeState.getExpandedNodes().contains(treeNode.getIdentifier()))
         .level(treeNode.getLevel())
         .classes(treeNode.getClasses())
-        .actions(treeNode.getActions())
+        .actions(actions)
         .hasChildren(treeNode.getHasChildren())
         .shortDescription(treeNode.getShortDescription())
         .childrenNodes(treeNode.getChildren().stream()

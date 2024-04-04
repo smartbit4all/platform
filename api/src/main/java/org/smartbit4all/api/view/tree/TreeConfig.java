@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.tree;
 
 import java.util.List;
 import org.smartbit4all.api.object.bean.VersionStrategy;
+import org.smartbit4all.api.toolbar.bean.ToolbarDefinition;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -36,6 +37,8 @@ public interface TreeConfig {
   boolean isActionSupported(UiTreeState treeState, String nodeType, String actionCode);
 
   List<UiAction> getActionsForNode(UiTreeState treeState, String nodeType, ObjectNode object);
+
+  ToolbarDefinition getToolbarForNode(UiTreeState treeState, UiTreeNode treeNode);
 
   void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action);
 

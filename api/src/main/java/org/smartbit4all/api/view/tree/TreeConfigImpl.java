@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.toolbar.bean.ToolbarDefinition;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -106,6 +107,11 @@ public abstract class TreeConfigImpl implements TreeConfig {
         .filter(handler -> handler.isActionSupported(treeState, type, action.getCode()))
         .findAny()
         .ifPresent(handler -> handler.performAction(treeState, node, action));
+  }
+
+  @Override
+  public ToolbarDefinition getToolbarForNode(UiTreeState treeState, UiTreeNode treeNode) {
+    return null;
   }
 
 }
