@@ -83,9 +83,6 @@ components:
         hierarchical menus.
       required: [uri, qualifiedName, items]
       properties:
-        uri:
-          type: string
-          format: uri
         qualifiedName:
           description: |
             The namespace and the name of the toolbar. The code should be the unique name of the toolbar on the page and it is
@@ -109,9 +106,6 @@ components:
         This object is one item on the toolbar. The most tipical that it is an action referring to the action registry.
       required: [uri, qualifier, code, items]
       properties:
-        uri:
-          type: string
-          format: uri
         kind:
           description: |
             The kind of the item that can be an action.

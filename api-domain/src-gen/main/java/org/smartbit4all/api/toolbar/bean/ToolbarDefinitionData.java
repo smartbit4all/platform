@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -37,7 +36,6 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. ")
 @JsonPropertyOrder({
-  ToolbarDefinitionData.URI,
   ToolbarDefinitionData.QUALIFIED_NAME,
   ToolbarDefinitionData.ITEMS,
   ToolbarDefinitionData.ITEM_PRODUCER
@@ -45,9 +43,6 @@ import javax.validation.Valid;
 @JsonTypeName("ToolbarDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ToolbarDefinitionData {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
@@ -59,35 +54,6 @@ public class ToolbarDefinitionData {
 
   public ToolbarDefinitionData() { 
   }
-
-  public ToolbarDefinitionData uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-   /**
-   * Get uri
-   * @return uri
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
-
 
   public ToolbarDefinitionData qualifiedName(String qualifiedName) {
     
@@ -188,22 +154,20 @@ public class ToolbarDefinitionData {
       return false;
     }
     ToolbarDefinitionData toolbarDefinitionData = (ToolbarDefinitionData) o;
-    return Objects.equals(this.uri, toolbarDefinitionData.uri) &&
-        Objects.equals(this.qualifiedName, toolbarDefinitionData.qualifiedName) &&
+    return Objects.equals(this.qualifiedName, toolbarDefinitionData.qualifiedName) &&
         Objects.equals(this.items, toolbarDefinitionData.items) &&
         Objects.equals(this.itemProducer, toolbarDefinitionData.itemProducer);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, qualifiedName, items, itemProducer);
+    return Objects.hash(qualifiedName, items, itemProducer);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ToolbarDefinitionData {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("    itemProducer: ").append(toIndentedString(itemProducer)).append("\n");

@@ -37,7 +37,6 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object is one item on the toolbar. The most tipical that it is an action referring to the action registry. ")
 @JsonPropertyOrder({
-  ToolbarItem.URI,
   ToolbarItem.KIND,
   ToolbarItem.OPERATION,
   ToolbarItem.REFERRED_TOOLBAR,
@@ -49,9 +48,6 @@ import javax.validation.Valid;
 @JsonTypeName("ToolbarItem")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ToolbarItem {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String KIND = "kind";
   private ToolbarItemKind kind;
 
@@ -75,35 +71,6 @@ public class ToolbarItem {
 
   public ToolbarItem() { 
   }
-
-  public ToolbarItem uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-   /**
-   * Get uri
-   * @return uri
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
-
 
   public ToolbarItem kind(ToolbarItemKind kind) {
     
@@ -308,8 +275,7 @@ public class ToolbarItem {
       return false;
     }
     ToolbarItem toolbarItem = (ToolbarItem) o;
-    return Objects.equals(this.uri, toolbarItem.uri) &&
-        Objects.equals(this.kind, toolbarItem.kind) &&
+    return Objects.equals(this.kind, toolbarItem.kind) &&
         Objects.equals(this.operation, toolbarItem.operation) &&
         Objects.equals(this.referredToolbar, toolbarItem.referredToolbar) &&
         Objects.equals(this.toolbar, toolbarItem.toolbar) &&
@@ -320,14 +286,13 @@ public class ToolbarItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, kind, operation, referredToolbar, toolbar, action, actionDefinitionUri, descriptor);
+    return Objects.hash(kind, operation, referredToolbar, toolbar, action, actionDefinitionUri, descriptor);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ToolbarItem {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    referredToolbar: ").append(toIndentedString(referredToolbar)).append("\n");
