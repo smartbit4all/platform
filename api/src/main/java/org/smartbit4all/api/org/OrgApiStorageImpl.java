@@ -357,9 +357,9 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public List<User> getUsersOfGroup(URI groupUri) {
     try {
-      return usersOfGroupCache.get(
+      return new ArrayList<>(usersOfGroupCache.get(
           groupUri,
-          () -> getUsersOfGroups(Arrays.asList(groupUri)));
+          () -> getUsersOfGroups(Arrays.asList(groupUri))));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the users of group.", e);
       return Collections.emptyList();
@@ -369,13 +369,13 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public List<User> getUsersOfGroupAndParentGroups(URI groupUri) {
     try {
-      return usersOfGroupAndParentGroupsCache.get(
+      return new ArrayList<>(usersOfGroupAndParentGroupsCache.get(
           groupUri,
           () -> {
             List<URI> groupUris = getAllParentGroups(groupUri);
             groupUris.add(groupUri);
             return getUsersOfGroups(groupUris);
-          });
+          }));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the users of group.", e);
       return Collections.emptyList();
@@ -410,7 +410,7 @@ public class OrgApiStorageImpl implements OrgApi {
   protected List<Group> getGroupsOfUser(URI userUri, Cache<URI, List<Group>> cache,
       boolean directGroupsOnly) {
     try {
-      return cache.get(userUri, new Callable<List<Group>>() {
+      return new ArrayList<>(cache.get(userUri, new Callable<List<Group>>() {
 
         @Override
         public List<Group> call() throws Exception {
@@ -434,7 +434,7 @@ public class OrgApiStorageImpl implements OrgApi {
           }
           return new ArrayList<>(groups);
         }
-      });
+      }));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the groups of user.", e);
       return Collections.emptyList();
