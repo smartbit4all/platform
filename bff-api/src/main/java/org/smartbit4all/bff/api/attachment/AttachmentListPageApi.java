@@ -16,6 +16,8 @@ public interface AttachmentListPageApi extends PageApi<AttachmentList> {
 
   String GRID_ID = "ATTACHMENT_GRID";
 
+  String CALLBACK = "callback";
+
   String UPLOAD_ATTACHMENTS = "UPLOAD_ATTACHMENTS";
   UiAction UPLOAD_ATTACHMENTS_ACTION =
       new UiAction().code(UPLOAD_ATTACHMENTS).inputType(UiActionInputType.MULTIPLE_FILES);
@@ -26,8 +28,16 @@ public interface AttachmentListPageApi extends PageApi<AttachmentList> {
   String SAVE = "SAVE";
   UiAction SAVE_ACTION = new UiAction().code(SAVE);
 
+  String SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS =
+      "SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS";
+  UiAction SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS_ACTION =
+      new UiAction().code(SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS);
+
   @ActionHandler(SAVE)
   void save(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS)
+  void saveAndPerformActionOnSelected(UUID viewUuid, UiActionRequest request);
 
   @ActionHandler(UPLOAD_ATTACHMENTS)
   void uploadAttachments(UUID viewUuid, UiActionRequest request);
