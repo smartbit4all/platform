@@ -276,25 +276,45 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   protected void maintainUniqueMapsOnSave(List<ObjectNode> objectNodes,
       Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
     uniqueMapsByConstraints.entrySet().forEach(e -> {
+      StoredMap uniqueMap = e.getValue();
+
       String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
       List<ObjectNode> objectNodesWithUniqueValue =
           objectNodes.stream().filter(n -> n.getValue(pathArr) != null).collect(toList());
-      Map<String, URI> updateUniqueMap = objectNodesWithUniqueValue.stream()
-          .collect(toMap(n -> n.getValue(pathArr).toString(), ObjectNode::getResultUri));
-
-      StoredMap uniqueMap = e.getValue();
-      List<URI> uniqueValueUri = objectNodesWithUniqueValue.stream()
-          .map(ObjectNode::getObjectUri).collect(toList());
 
       // remove the unused values from unique map
+      List<URI> uniqueValueUri = objectNodesWithUniqueValue.stream()
+          .map(ObjectNode::getObjectUri).collect(toList());
       List<String> keysToRemove = uniqueMap.uris().entrySet().stream()
           .filter(es -> uniqueValueUri.contains(es.getValue()))
           .map(Entry::getKey).collect(toList());
       uniqueMap.remove(keysToRemove);
 
       // add the new values to the unique map
-      uniqueMap.putAll(updateUniqueMap);
+      addNewValuesToUniqueMap(uniqueMap, pathArr, objectNodesWithUniqueValue);
     });
+  }
+
+  protected void maintainUniqueMapsOnRestore(List<ObjectNode> objectNodes,
+      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+    uniqueMapsByConstraints.entrySet().forEach(e -> {
+      StoredMap uniqueMap = e.getValue();
+
+      String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
+      List<ObjectNode> objectNodesWithUniqueValue =
+          objectNodes.stream().filter(n -> n.getValue(pathArr) != null).collect(toList());
+
+      // add the new values to the unique map
+      addNewValuesToUniqueMap(uniqueMap, pathArr, objectNodesWithUniqueValue);
+    });
+  }
+
+  protected void addNewValuesToUniqueMap(StoredMap uniqueMap, String[] pathArr,
+      List<ObjectNode> objectNodesWithUniqueValue) {
+    Map<String, URI> updateUniqueMap = objectNodesWithUniqueValue.stream()
+        .collect(toMap(n -> n.getValue(pathArr).toString(),
+            n -> n.getResultUri() != null ? n.getResultUri() : n.getObjectUri()));
+    uniqueMap.putAll(updateUniqueMap);
   }
 
   private void updatePropertyWithUserActiviyLog(ObjectNode objectNode, String property) {
@@ -309,6 +329,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void checkIfUniquePropertyUsed(List<ObjectNode> objectNodes,
+      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+    Map<ObjectNode, URI> objectNodeAndUriToCheckPairs = new HashMap<>();
+    objectNodes.forEach(n -> objectNodeAndUriToCheckPairs.put(n, n.getObjectUri()));
+
+    checkIfUniquePropertyUsed(objectNodeAndUriToCheckPairs, uniqueMapsByConstraints);
+  }
+
+  protected void checkIfUniquePropertyUsed(Map<ObjectNode, URI> objectNodeAndUriToCheckPairs,
       Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
 
     uniqueMapsByConstraints.entrySet().forEach(e -> {
@@ -331,9 +359,10 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       // we store the new values to keep uniqueness between the new objects
       List<String> uniqueValues = new ArrayList<>();
 
-      for (ObjectNode nodeToSave : objectNodes) {
+      for (Entry<ObjectNode, URI> objectNodeAndUriToCheck : objectNodeAndUriToCheckPairs
+          .entrySet()) {
         String[] path = constraint.getPath().stream().toArray(String[]::new);
-        Object uniqueValue = nodeToSave.getValue(path);
+        Object uniqueValue = objectNodeAndUriToCheck.getKey().getValue(path);
 
         if (uniqueValue != null) {
           String uniqueValueStr = caseInsensitive
@@ -341,7 +370,9 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
               : uniqueValue.toString();
           URI uriToUniqueValue = uniqueMap.get(uniqueValueStr);
 
-          if ((uriToUniqueValue != null && !uriToUniqueValue.equals(nodeToSave.getObjectUri()))
+          if ((uriToUniqueValue != null
+              && !objectApi.equalsIgnoreVersion(uriToUniqueValue,
+                  objectNodeAndUriToCheck.getValue()))
               || uniqueValues.contains(uniqueValueStr)) {
             throw new IllegalArgumentException(
                 localeSettingApi.get("mdm", descriptor.getName(), "notunique",
@@ -407,20 +438,40 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     URI branchUri = getBranchUri();
     StoredList list = getList();
     list.branch(branchUri);
+    Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
+
     List<URI> result = new ArrayList<>();
     List<BranchedObjectEntry> compareWithBranch = list.compareWithBranch(branchUri);
     Set<URI> urisToCancel = toCancel == null ? null
         : toCancel.stream().flatMap(u -> Stream.of(u, objectApi.getLatestUri(u))).collect(toSet());
+
     compareWithBranch.stream()
         .filter(boe -> urisToCancel == null || urisToCancel.contains(boe.getBranchUri()))
         .forEach(boe -> {
+
           if (boe.getBranchingState() == BranchingStateEnum.NEW) {
             // Simply remove from branch
             list.update(
                 l -> l.stream().filter(u -> !objectApi.equalsIgnoreVersion(u, boe.getBranchUri()))
                     .collect(toList()));
             result.add(boe.getBranchUri());
+
+            if (!uniqueMaps.isEmpty()) {
+              // remove unique values from StoredMaps
+              removeValueFromUniqueMaps(uniqueMaps, objectApi.load(boe.getBranchUri()));
+            }
+
           } else if (boe.getBranchingState() == BranchingStateEnum.MODIFIED) {
+            if (!uniqueMaps.isEmpty()) {
+              ObjectNode originalObjectNode = objectApi.load(boe.getOriginalUri());
+              Map<ObjectNode, URI> objNodeToCheckWithBranchedUri = new HashMap<>();
+              objNodeToCheckWithBranchedUri.put(originalObjectNode, boe.getBranchUri());
+
+              checkIfUniquePropertyUsed(objNodeToCheckWithBranchedUri, uniqueMaps);
+              removeValueFromUniqueMaps(uniqueMaps, objectApi.load(boe.getBranchUri()));
+              maintainUniqueMapsOnRestore(Arrays.asList(originalObjectNode), uniqueMaps);
+            }
+
             // Replace with the original uri
             list.update(l -> l.stream().map(u -> {
               if (objectApi.equalsIgnoreVersion(u, boe.getBranchUri())) {
@@ -431,7 +482,17 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
               }
             }).collect(toList()));
             result.add(boe.getBranchUri());
+
           } else if (boe.getBranchingState() == BranchingStateEnum.DELETED) {
+            if (!uniqueMaps.isEmpty()) {
+              ObjectNode originalObjectNode = objectApi.load(boe.getOriginalUri());
+              Map<ObjectNode, URI> objNodeToCheckWithBranchedUri = new HashMap<>();
+              objNodeToCheckWithBranchedUri.put(originalObjectNode, boe.getBranchUri());
+
+              checkIfUniquePropertyUsed(objNodeToCheckWithBranchedUri, uniqueMaps);
+              maintainUniqueMapsOnRestore(Arrays.asList(originalObjectNode), uniqueMaps);
+            }
+
             // insert the original uri again. (undelete)
             list.add(boe.getOriginalUri());
             result.add(boe.getBranchUri());
@@ -443,6 +504,18 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     }
 
     return !result.isEmpty();
+  }
+
+  protected void removeValueFromUniqueMaps(Map<MDMEntryConstraint, StoredMap> uniqueMaps,
+      ObjectNode objectNode) {
+    uniqueMaps.entrySet().forEach(e -> {
+      Object uniqueValue =
+          objectNode.getValue(e.getKey().getPath().stream().toArray(String[]::new));
+      if (uniqueValue != null) {
+        StoredMap uniqueMap = uniqueMaps.get(e.getKey());
+        uniqueMap.remove(uniqueValue.toString());
+      }
+    });
   }
 
   @Override
@@ -458,14 +531,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       if (!uniqueMaps.isEmpty()) {
         // remove unique values from StoredMaps
         ObjectNode objectNode = objectApi.load(objectUri);
-        uniqueMaps.entrySet().forEach(e -> {
-          Object uniqueValue =
-              objectNode.getValue(e.getKey().getPath().stream().toArray(String[]::new));
-          if (uniqueValue != null) {
-            StoredMap uniqueMap = uniqueMaps.get(e.getKey());
-            uniqueMap.remove(uniqueValue.toString());
-          }
-        });
+        removeValueFromUniqueMaps(uniqueMaps, objectNode);
       }
     }
     BranchedObject removeNewBranchedObjects =
@@ -484,6 +550,17 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public boolean restore(URI objectUri) {
+    Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
+
+    if (!uniqueMaps.isEmpty()) {
+      ObjectNode originalObjectNode = objectApi.load(objectUri);
+      Map<ObjectNode, URI> objNodeToCheckWithBranchedUri = new HashMap<>();
+      objNodeToCheckWithBranchedUri.put(originalObjectNode, objectUri);
+
+      checkIfUniquePropertyUsed(objNodeToCheckWithBranchedUri, uniqueMaps);
+      maintainUniqueMapsOnRestore(Arrays.asList(originalObjectNode), uniqueMaps);
+    }
+
     URI branchUri = getBranchUri();
     StoredList inactiveList = getInactiveList();
     if (inactiveList != null) {
