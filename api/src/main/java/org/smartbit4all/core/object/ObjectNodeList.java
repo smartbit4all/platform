@@ -203,6 +203,28 @@ public final class ObjectNodeList {
   }
 
   /**
+   * Removes the first reference matching the given filter
+   * 
+   * @param filter a predicate which returns {@code true} for the element to be removed
+   * @return {@code true} if any elements were removed
+   */
+  public boolean removeFirst(Predicate<ObjectNodeReference> filter) {
+    int index = -1;
+    for (int i = 0; i < list.size(); i++) {
+      ObjectNodeReference reference = list.get(i);
+      if (filter.test(reference)) {
+        index = i;
+        break;
+      }
+    }
+    if (index != -1) {
+      list.remove(index);
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(Object o) {
