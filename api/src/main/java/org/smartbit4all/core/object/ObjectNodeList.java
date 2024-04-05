@@ -218,7 +218,7 @@ public final class ObjectNodeList {
       }
     }
     if (index != -1) {
-      list.remove(index);
+      list.get(index).clear();
       return true;
     }
     return false;
