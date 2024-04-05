@@ -47,6 +47,13 @@ public class GridModels {
         : null;
   }
 
+  public static final void setValueFromGridRow(GridRow gridRow, String property, Object value) {
+    Objects.requireNonNull(gridRow);
+    if (gridRow.getData() instanceof Map) {
+      ((Map<String, Object>) gridRow.getData()).put(property, value);
+    }
+  }
+
   public static void hideColumns(GridModel grid, String... columns) {
     hideColumns(grid, Arrays.asList(columns));
   }
