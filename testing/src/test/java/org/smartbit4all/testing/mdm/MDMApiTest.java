@@ -1,5 +1,10 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -87,11 +92,6 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -352,6 +352,34 @@ class MDMApiTest {
         tableData.columns().stream().filter(c -> SampleCategoryType.URI.equals(c.getName()))
             .map(c -> tableData.get(c, row)).collect(toList());
 
+    // Test constraint check on cancel and restore.
+    // Initiate a branch for the given entry.
+    masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing session 1");
+    List<BranchedObjectEntry> list = typeApi.getBranchingList();
+    BranchedObjectEntry firstType = list.get(0);
+    String firstTypeName = objectApi.loadLatest(firstType.getOriginalUri())
+        .getValueAsString(SampleCategoryType.CODE);
+    typeApi.remove(firstType.getOriginalUri());
+
+    // Test constraint check on restore.
+    BranchedObjectEntry secondType = list.get(1);
+    ObjectNode secondTypeNode = objectApi.loadLatest(secondType.getOriginalUri());
+    String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
+    secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
+    URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
+    assertThrows(IllegalArgumentException.class, () -> typeApi.restore(firstType.getOriginalUri()),
+        "On restore the constraint check doesn't work properly.");
+
+    // Test constraint check on cancel.
+    BranchedObjectEntry thirdType = list.get(2);
+    ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
+    thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
+    typeApi.save(thridTypeNode);
+    assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
+        "On cancel the constraint check doesn't work properly.");
+
+    // Drop the changes we made because constraint check.
+    masterDataManagementApi.dropGlobal(MDMApiTestConfig.TEST);
   }
 
   @Test

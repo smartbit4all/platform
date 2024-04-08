@@ -9,6 +9,8 @@ import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
+import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -66,20 +68,21 @@ public class MDMApiTestConfig extends TestFSCleaner {
         new MDMDefinitionOption(new MDMDefinition().name(TEST)
             .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin"));
     result.addDefaultDescriptor(SampleCategoryType.class)
-        .uniquePropertyPaths(Arrays.asList(Arrays.asList(SampleCategoryType.CODE)))
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleCategoryType.CODE))))
         .editorViewName(MDM_EDITING_PAGE)
         .setInactiveMgmt(true);
     result.addDefaultDescriptor(SampleCategory.class)
-        .uniquePropertyPaths(
-            Arrays.asList(Arrays.asList(SampleCategory.NAME)))
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleCategory.NAME))))
         .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(SampleContainerItem.class)
-        .uniquePropertyPaths(
-            Arrays.asList(Arrays.asList(SampleContainerItem.NAME)))
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleContainerItem.NAME))))
         .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(GenericValue.class)
-        .uniquePropertyPaths(
-            Arrays.asList(Arrays.asList(GenericValue.CODE)))
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(GenericValue.CODE))))
         .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(PropertyDefinitionData.class);
     result.addObjectDefinitionData();
