@@ -173,4 +173,12 @@ public interface ViewContextService {
 
   String getExecutionStatJSON();
 
+  /**
+   * Returns API object registered for handling views with given viewName.
+   *
+   * @param viewName
+   * @return
+   */
+  Object getApiByViewName(String viewName);
+
 }

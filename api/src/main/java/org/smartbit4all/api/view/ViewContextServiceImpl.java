@@ -1188,4 +1188,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     return currentServerRequestTrack.get();
   }
 
+  @Override
+  public Object getApiByViewName(String viewName) {
+    return apiByViewName.get(viewName);
+  }
+
 }
