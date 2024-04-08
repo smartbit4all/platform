@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
@@ -1075,17 +1074,6 @@ public class ViewContextServiceImpl implements ViewContextService {
   public void addRequestCodeToSkipWithMissingView(String actionCode) {
     Objects.requireNonNull(actionCode, "actionCode can not be null!");
     requestCodesToSkipWithMissingView.add(actionCode);
-  }
-
-  @Override
-  public List<UUID> getChildrenOfView(UUID viewUuid) {
-    ViewContextData viewContext = getCurrentViewContext();
-
-    return viewContext.getViews().stream()
-        .filter(v -> v.getContainerUuid() != null)
-        .filter(v -> v.getContainerUuid().equals(viewUuid))
-        .map(v -> v.getUuid())
-        .collect(Collectors.toList());
   }
 
   @Override

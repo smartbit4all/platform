@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.core.object.ObjectApi;
@@ -35,7 +37,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -224,6 +225,17 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public View getView(UUID viewUuid) {
     return viewContextService.getViewFromCurrentViewContext(viewUuid);
+  }
+
+  @Override
+  public List<UUID> getChildrenOfView(UUID viewUuid) {
+    ViewContextData viewContext = viewContextService.getCurrentViewContext();
+
+    return viewContext.getViews().stream()
+        .filter(v -> v.getContainerUuid() != null)
+        .filter(v -> v.getContainerUuid().equals(viewUuid))
+        .map(v -> v.getUuid())
+        .collect(Collectors.toList());
   }
 
   @Override

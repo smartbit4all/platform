@@ -48,6 +48,11 @@ public interface ViewApi {
   View getView(UUID viewUuid);
 
   /**
+   * Returns the view's child views' UUIDs, regardless of state.
+   */
+  List<UUID> getChildrenOfView(UUID viewUuid);
+
+  /**
    * Return model of the view identified by viewUuid. This object can be used to manipulate the
    * model, it is saved at the end of server call.
    *
@@ -196,7 +201,7 @@ public interface ViewApi {
 
   /**
    * Retrieve the parameter from the given view merging with the parent parameters.
-   * 
+   *
    * @param viewUuid The uuid of the view.
    * @return The map with all the parameters available in the precedence order.
    */

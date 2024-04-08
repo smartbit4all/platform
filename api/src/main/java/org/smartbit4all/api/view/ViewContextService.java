@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
@@ -162,12 +161,6 @@ public interface ViewContextService {
   ViewContextChange performDataChanged(UUID viewUuid, DataChange event);
 
   ViewContextChange performViewCall(ViewCall viewCall, String methodName);
-
-
-  /**
-   * The view returns the uuid of the opened child views
-   */
-  List<UUID> getChildrenOfView(UUID viewUuid);
 
   void setClientPageModelFromRequest(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);
