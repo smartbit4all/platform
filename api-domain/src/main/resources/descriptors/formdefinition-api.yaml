@@ -222,3 +222,6 @@ components:
           type: object
           description: A map for key - values
           additionalProperties: true # To indicate it can have any key-value pairs.
+        multiSelect:
+          type: boolean
+          default: false

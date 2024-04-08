@@ -38,7 +38,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SmartMatrixModel.ROWS,
   SmartMatrixModel.COLUMNS,
-  SmartMatrixModel.DATA
+  SmartMatrixModel.DATA,
+  SmartMatrixModel.MULTI_SELECT
 })
 @JsonTypeName("SmartMatrixModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -51,6 +52,9 @@ public class SmartMatrixModel {
 
   public static final String DATA = "data";
   private Map<String, Object> data = null;
+
+  public static final String MULTI_SELECT = "multiSelect";
+  private Boolean multiSelect = false;
 
   public SmartMatrixModel() { 
   }
@@ -162,6 +166,33 @@ public class SmartMatrixModel {
   }
 
 
+  public SmartMatrixModel multiSelect(Boolean multiSelect) {
+    
+    this.multiSelect = multiSelect;
+    return this;
+  }
+
+   /**
+   * Get multiSelect
+   * @return multiSelect
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MULTI_SELECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getMultiSelect() {
+    return multiSelect;
+  }
+
+
+  @JsonProperty(MULTI_SELECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMultiSelect(Boolean multiSelect) {
+    this.multiSelect = multiSelect;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -173,12 +204,13 @@ public class SmartMatrixModel {
     SmartMatrixModel smartMatrixModel = (SmartMatrixModel) o;
     return Objects.equals(this.rows, smartMatrixModel.rows) &&
         Objects.equals(this.columns, smartMatrixModel.columns) &&
-        Objects.equals(this.data, smartMatrixModel.data);
+        Objects.equals(this.data, smartMatrixModel.data) &&
+        Objects.equals(this.multiSelect, smartMatrixModel.multiSelect);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(rows, columns, data);
+    return Objects.hash(rows, columns, data, multiSelect);
   }
 
   @Override
@@ -188,6 +220,7 @@ public class SmartMatrixModel {
     sb.append("    rows: ").append(toIndentedString(rows)).append("\n");
     sb.append("    columns: ").append(toIndentedString(columns)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    multiSelect: ").append(toIndentedString(multiSelect)).append("\n");
     sb.append("}");
     return sb.toString();
   }
