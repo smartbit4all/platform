@@ -16,12 +16,28 @@ import org.smartbit4all.core.object.ObjectNode;
 public final class Values {
 
   public static final Comparator<Value> ALPHABETIC_ORDER =
-      Comparator.comparing(Value::getDisplayValue);
+      Comparator.comparing(Values::getDisplayValue);
 
   public static final Comparator<Value> CASE_INSENSITIVE_ORDER =
-      (v1, v2) -> String.CASE_INSENSITIVE_ORDER.compare(v1.getDisplayValue(), v2.getDisplayValue());
+      (v1, v2) -> String.CASE_INSENSITIVE_ORDER.compare(getDisplayValue(v1), getDisplayValue(v2));
 
   private Values() {}
+
+  /**
+   * Returns a non-null displayValue from Value (comparator needs a non-null value)
+   *
+   * @param value
+   * @return
+   */
+  private static String getDisplayValue(Value value) {
+    if (value == null) {
+      return "";
+    }
+    if (value.getDisplayValue() == null) {
+      return "";
+    }
+    return value.getDisplayValue();
+  }
 
   /**
    * Collects all element from values stream, using {@link ObjectNode#getObjectUri()} as
