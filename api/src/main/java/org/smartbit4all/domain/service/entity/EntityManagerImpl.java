@@ -16,7 +16,6 @@ package org.smartbit4all.domain.service.entity;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,20 +102,11 @@ public class EntityManagerImpl implements EntityManager {
     checkPropertyName(propertyPath);
     String functionName = EntityUris.getFunctionName(uri);
 
-    Property<?> property = null;
-    if (propertyPath.contains(".")) {
-      String[] path = propertyPath.split("\\.");
-      String propertyName = path[path.length - 1];
-      path = Arrays.copyOfRange(path, 0, path.length - 1);
-      EntityDefinition entityDef = entityDefsByName.get(entityPath);
-      property = entityDef.findOrCreateReferredProperty(path, propertyName);
-    } else {
-      EntityDefinition entityDef = entityDefsByName.get(entityPath);
-      if (entityDef == null) {
-        throw new IllegalStateException("There is no entity registered for name: " + entityPath);
-      }
-      property = entityDef.getProperty(propertyPath);
+    EntityDefinition entityDef = entityDefsByName.get(entityPath);
+    if (entityDef == null) {
+      throw new IllegalStateException("There is no entity registered for name: " + entityPath);
     }
+    Property<?> property = entityDef.getProperty(propertyPath);
     if (functionName != null && !functionName.isEmpty()) {
       // TODO handle property uris with functions that has other parameters
       return property.function(functionName);
