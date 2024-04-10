@@ -355,6 +355,9 @@ public class ObjectApiImpl implements ObjectApi {
     if (clazz.equals(String.class)) {
       return (T) String.valueOf(value);
     }
+    if (clazz == Long.class && value instanceof Integer) {
+      return (T) (Long.valueOf((Integer) value));
+    }
     throw new IllegalArgumentException(
         "Unable to convert value (" + value.getClass().getName() + ") to " + clazz.getName());
   }
