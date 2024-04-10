@@ -317,6 +317,7 @@ public class BinaryContent {
   public BinaryContentData contentData() {
     return new BinaryContentData().dataUri(dataUri).extension(extension).fileName(fileName)
         .mimeType(mimeType).location(LOCATION_STORAGE)
+        .size(getSize())
         .contentHash(data != null ? data.hashIfPresent() : null);
   }
 
