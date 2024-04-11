@@ -328,6 +328,11 @@ public class ObjectApiImpl implements ObjectApi {
       if (StringConstant.EMPTY.equals(value)) {
         return null;
       }
+      final String strValue = (String) value;
+      // instanceof already performed an implicit null-check:
+      if (strValue.length() > 10) { // LocalDate.parse can only handle 10 chars: yyyy-MM-dd
+        return (T) LocalDate.parse(strValue.substring(0, 11));
+      }
       return (T) LocalDate.parse((String) value);
     }
     if (clazz == LocalDateTime.class && value instanceof String) {
