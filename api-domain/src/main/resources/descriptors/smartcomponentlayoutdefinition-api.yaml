@@ -30,9 +30,6 @@ components:
           type: string
         direction:
           $ref: '#/components/schemas/LayoutDirection'
-        parentComponent:
-          type: object
-          description: This is a placeholder for SmartComponentApiClient. You might want to describe this further.
         components:
           type: array
           items:

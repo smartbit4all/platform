@@ -41,7 +41,6 @@ import javax.validation.Valid;
   SmartComponentLayoutDefinition.EXPANDABLE,
   SmartComponentLayoutDefinition.EXPANDABLE_SECTION_LABEL,
   SmartComponentLayoutDefinition.DIRECTION,
-  SmartComponentLayoutDefinition.PARENT_COMPONENT,
   SmartComponentLayoutDefinition.COMPONENTS,
   SmartComponentLayoutDefinition.WIDGET,
   SmartComponentLayoutDefinition.FORM
@@ -60,9 +59,6 @@ public class SmartComponentLayoutDefinition {
 
   public static final String DIRECTION = "direction";
   private LayoutDirection direction;
-
-  public static final String PARENT_COMPONENT = "parentComponent";
-  private Object parentComponent;
 
   public static final String COMPONENTS = "components";
   private List<SmartComponentLayoutDefinition> components = null;
@@ -187,33 +183,6 @@ public class SmartComponentLayoutDefinition {
   }
 
 
-  public SmartComponentLayoutDefinition parentComponent(Object parentComponent) {
-    
-    this.parentComponent = parentComponent;
-    return this;
-  }
-
-   /**
-   * This is a placeholder for SmartComponentApiClient. You might want to describe this further.
-   * @return parentComponent
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "This is a placeholder for SmartComponentApiClient. You might want to describe this further.")
-  @JsonProperty(PARENT_COMPONENT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Object getParentComponent() {
-    return parentComponent;
-  }
-
-
-  @JsonProperty(PARENT_COMPONENT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParentComponent(Object parentComponent) {
-    this.parentComponent = parentComponent;
-  }
-
-
   public SmartComponentLayoutDefinition components(List<SmartComponentLayoutDefinition> components) {
     
     this.components = components;
@@ -327,7 +296,6 @@ public class SmartComponentLayoutDefinition {
         Objects.equals(this.expandable, smartComponentLayoutDefinition.expandable) &&
         Objects.equals(this.expandableSectionLabel, smartComponentLayoutDefinition.expandableSectionLabel) &&
         Objects.equals(this.direction, smartComponentLayoutDefinition.direction) &&
-        Objects.equals(this.parentComponent, smartComponentLayoutDefinition.parentComponent) &&
         Objects.equals(this.components, smartComponentLayoutDefinition.components) &&
         Objects.equals(this.widget, smartComponentLayoutDefinition.widget) &&
         Objects.equals(this.form, smartComponentLayoutDefinition.form);
@@ -335,7 +303,7 @@ public class SmartComponentLayoutDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, expandable, expandableSectionLabel, direction, parentComponent, components, widget, form);
+    return Objects.hash(type, expandable, expandableSectionLabel, direction, components, widget, form);
   }
 
   @Override
@@ -346,7 +314,6 @@ public class SmartComponentLayoutDefinition {
     sb.append("    expandable: ").append(toIndentedString(expandable)).append("\n");
     sb.append("    expandableSectionLabel: ").append(toIndentedString(expandableSectionLabel)).append("\n");
     sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
-    sb.append("    parentComponent: ").append(toIndentedString(parentComponent)).append("\n");
     sb.append("    components: ").append(toIndentedString(components)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
     sb.append("    form: ").append(toIndentedString(form)).append("\n");
