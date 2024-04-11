@@ -403,7 +403,10 @@ public class ViewApiImpl implements ViewApi {
     Objects.requireNonNull(result, "result must be specified");
     viewContextService.updateCurrentViewContext(
         c -> {
-          c.getOpenPendingData().putResultsItem(viewToClose.toString(), result);
+          if (c.getOpenPendingData() != null) {
+            // if the view to open ran into an error, this could happen..
+            c.getOpenPendingData().putResultsItem(viewToClose.toString(), result);
+          }
           return c;
         });
     handleOpenPending();
