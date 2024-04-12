@@ -40,6 +40,8 @@ components:
           type: array
           items:
             type: SmartWidgetDefinition
+        style:
+          type: Style
     SmartComponentWidgetDefinition:
       type: object
       required:

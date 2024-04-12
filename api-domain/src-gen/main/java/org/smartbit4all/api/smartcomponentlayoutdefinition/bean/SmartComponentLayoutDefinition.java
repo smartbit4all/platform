@@ -28,6 +28,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWidgetDefinition;
+import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -43,7 +44,8 @@ import javax.validation.Valid;
   SmartComponentLayoutDefinition.DIRECTION,
   SmartComponentLayoutDefinition.COMPONENTS,
   SmartComponentLayoutDefinition.WIDGET,
-  SmartComponentLayoutDefinition.FORM
+  SmartComponentLayoutDefinition.FORM,
+  SmartComponentLayoutDefinition.STYLE
 })
 @JsonTypeName("SmartComponentLayoutDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -68,6 +70,9 @@ public class SmartComponentLayoutDefinition {
 
   public static final String FORM = "form";
   private List<SmartWidgetDefinition> form = null;
+
+  public static final String STYLE = "style";
+  private Style style = null;
 
   public SmartComponentLayoutDefinition() { 
   }
@@ -283,6 +288,34 @@ public class SmartComponentLayoutDefinition {
   }
 
 
+  public SmartComponentLayoutDefinition style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * Get style
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -298,12 +331,13 @@ public class SmartComponentLayoutDefinition {
         Objects.equals(this.direction, smartComponentLayoutDefinition.direction) &&
         Objects.equals(this.components, smartComponentLayoutDefinition.components) &&
         Objects.equals(this.widget, smartComponentLayoutDefinition.widget) &&
-        Objects.equals(this.form, smartComponentLayoutDefinition.form);
+        Objects.equals(this.form, smartComponentLayoutDefinition.form) &&
+        Objects.equals(this.style, smartComponentLayoutDefinition.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, expandable, expandableSectionLabel, direction, components, widget, form);
+    return Objects.hash(type, expandable, expandableSectionLabel, direction, components, widget, form, style);
   }
 
   @Override
@@ -317,6 +351,7 @@ public class SmartComponentLayoutDefinition {
     sb.append("    components: ").append(toIndentedString(components)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
     sb.append("    form: ").append(toIndentedString(form)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }
