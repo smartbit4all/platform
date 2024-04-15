@@ -463,6 +463,35 @@ components:
           description: |
             The operation object of the given subject.
           $ref: '#/components/schemas/ACLOperation'
+    ACLSubjectOperations:
+      type: object
+      description: |
+        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
+      required: [name, operation]
+      properties:
+        uri:
+          type: string
+          format: uri
+        subjects:
+          description: |
+            The reference to the subjects and their operations.
+          $ref: '#/components/schemas/SubjectOperationList'
+    SubjectOperationList:
+      type: object
+      description: |
+        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
+      required: [name, operation]
+      properties:
+        subject:
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
+        operations:
+          description: |
+            The operation object of the given subject.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLOperation'
     SubjectList:
       type: object
       description: |

@@ -317,23 +317,6 @@ components:
           items:
             type: string
             format: uri
-    ObjectSubscription:
-      type: object
-      description: |
-        This object is created when an object has any subscription to be called when the object is changed and has new version.
-        The subscription is responsible for storing the invocation requests to be called. If the invocation results an Unsubscribe
-        exception then the subscription is going to be removed.
-      properties:
-        uri:
-          type: string
-          format: uri
-        channel:
-          type: string
-          description: |
-            The name of the channel handles the given invocation asynchronously. If it is empty then the subscription
-            execute the invocations synchronously.
-        subscriptions:
-          $ref: '#/components/schemas/InvocationRequest'        
     ApiRegistryData:
       type: object
       required: [uri,apiList]
