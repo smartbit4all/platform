@@ -49,7 +49,8 @@ smartbit4all {
   		"LangString": "org.smartbit4all.api.object.bean.LangString",
   		"VectorCollectionDescriptor": "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
   		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource",
-  		"Style": "org.smartbit4all.api.view.bean.Style"
+  		"Style": "org.smartbit4all.api.view.bean.Style",
+  		"ObjectPropertyResolverContext": "org.smartbit4all.api.object.bean.ObjectPropertyResolverContext"
   	]
   }
 }

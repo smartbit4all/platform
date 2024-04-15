@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.org.bean.ACLOperation;
+import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -36,22 +36,22 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. ")
 @JsonPropertyOrder({
-  SubjectOperationList.SUBJECT,
-  SubjectOperationList.OPERATIONS
+  ACLSubjectOperationReferenceList.SUBJECT,
+  ACLSubjectOperationReferenceList.OPERATIONS
 })
-@JsonTypeName("SubjectOperationList")
+@JsonTypeName("ACLSubjectOperationReferenceList")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SubjectOperationList {
+public class ACLSubjectOperationReferenceList {
   public static final String SUBJECT = "subject";
   private Subject subject;
 
   public static final String OPERATIONS = "operations";
-  private List<ACLOperation> operations = null;
+  private List<ACLOperationReference> operations = null;
 
-  public SubjectOperationList() { 
+  public ACLSubjectOperationReferenceList() { 
   }
 
-  public SubjectOperationList subject(Subject subject) {
+  public ACLSubjectOperationReferenceList subject(Subject subject) {
     
     this.subject = subject;
     return this;
@@ -79,13 +79,13 @@ public class SubjectOperationList {
   }
 
 
-  public SubjectOperationList operations(List<ACLOperation> operations) {
+  public ACLSubjectOperationReferenceList operations(List<ACLOperationReference> operations) {
     
     this.operations = operations;
     return this;
   }
 
-  public SubjectOperationList addOperationsItem(ACLOperation operationsItem) {
+  public ACLSubjectOperationReferenceList addOperationsItem(ACLOperationReference operationsItem) {
     if (this.operations == null) {
       this.operations = new ArrayList<>();
     }
@@ -103,14 +103,14 @@ public class SubjectOperationList {
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ACLOperation> getOperations() {
+  public List<ACLOperationReference> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperations(List<ACLOperation> operations) {
+  public void setOperations(List<ACLOperationReference> operations) {
     this.operations = operations;
   }
 
@@ -123,9 +123,9 @@ public class SubjectOperationList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SubjectOperationList subjectOperationList = (SubjectOperationList) o;
-    return Objects.equals(this.subject, subjectOperationList.subject) &&
-        Objects.equals(this.operations, subjectOperationList.operations);
+    ACLSubjectOperationReferenceList acLSubjectOperationReferenceList = (ACLSubjectOperationReferenceList) o;
+    return Objects.equals(this.subject, acLSubjectOperationReferenceList.subject) &&
+        Objects.equals(this.operations, acLSubjectOperationReferenceList.operations);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class SubjectOperationList {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SubjectOperationList {\n");
+    sb.append("class ACLSubjectOperationReferenceList {\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");

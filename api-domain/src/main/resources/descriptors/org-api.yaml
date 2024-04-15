@@ -448,6 +448,53 @@ components:
             The only property that is named is a comment that can be set to specify the reason of
             having this operation set for the given subject.
           type: string
+    ACLSubjectOperations:
+      type: object
+      description: |
+        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
+      required: [name, operation]
+      properties:
+        uri:
+          type: string
+          format: uri
+        subjects:
+          description: |
+            The reference to the subjects and their operations.
+          $ref: '#/components/schemas/ACLSubjectOperationReferenceList'
+    ACLSubjectOperationReferenceList:
+      type: object
+      description: |
+        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
+      required: [name, operation]
+      properties:
+        subject:
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
+        operations:
+          description: |
+            The operation object of the given subject.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLOperationReference'
+    ACLOperationReference:
+      type: object
+      description: |
+        This object is used as 
+      required: [name]
+      properties:
+        name:
+          description: The name of the operation that is the same as the one stored in the operations list.
+          type: string
+        comment:
+          description: |
+            The only property that is named is a comment that can be set to specify the reason of
+            having this operation set for the given subject.
+          type: string
+        referenceContext:
+          description: |
+            The reference to the context the operation is attached to.
+          type: ObjectPropertyResolverContext
     ACLSubject:
       type: object
       description: |
@@ -463,35 +510,6 @@ components:
           description: |
             The operation object of the given subject.
           $ref: '#/components/schemas/ACLOperation'
-    ACLSubjectOperations:
-      type: object
-      description: |
-        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
-      required: [name, operation]
-      properties:
-        uri:
-          type: string
-          format: uri
-        subjects:
-          description: |
-            The reference to the subjects and their operations.
-          $ref: '#/components/schemas/SubjectOperationList'
-    SubjectOperationList:
-      type: object
-      description: |
-        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
-      required: [name, operation]
-      properties:
-        subject:
-          description: |
-            The reference to the subject defined in the given application.
-          $ref: '#/components/schemas/Subject'
-        operations:
-          description: |
-            The operation object of the given subject.
-          type: array
-          items:
-            $ref: '#/components/schemas/ACLOperation'
     SubjectList:
       type: object
       description: |

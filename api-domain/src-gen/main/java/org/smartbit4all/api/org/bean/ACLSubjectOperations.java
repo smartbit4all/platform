@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.org.bean.SubjectOperationList;
+import org.smartbit4all.api.org.bean.ACLSubjectOperationReferenceList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -44,7 +44,7 @@ public class ACLSubjectOperations {
   private URI uri;
 
   public static final String SUBJECTS = "subjects";
-  private SubjectOperationList subjects;
+  private ACLSubjectOperationReferenceList subjects;
 
   public ACLSubjectOperations() { 
   }
@@ -77,7 +77,7 @@ public class ACLSubjectOperations {
   }
 
 
-  public ACLSubjectOperations subjects(SubjectOperationList subjects) {
+  public ACLSubjectOperations subjects(ACLSubjectOperationReferenceList subjects) {
     
     this.subjects = subjects;
     return this;
@@ -93,14 +93,14 @@ public class ACLSubjectOperations {
   @JsonProperty(SUBJECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public SubjectOperationList getSubjects() {
+  public ACLSubjectOperationReferenceList getSubjects() {
     return subjects;
   }
 
 
   @JsonProperty(SUBJECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubjects(SubjectOperationList subjects) {
+  public void setSubjects(ACLSubjectOperationReferenceList subjects) {
     this.subjects = subjects;
   }
 

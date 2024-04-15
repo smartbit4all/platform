@@ -76,6 +76,29 @@ public interface AccessControlInternalApi {
 
   List<ACLSubject> getSubjects(ACL acl, String operation);
 
+  /**
+   * Modify the ACL object and set the list of subjects for the subjects parameter. In the mean time
+   * if
+   * 
+   * @param acl The ACL object.
+   * @param subjects The subject list to set.
+   * @param operation The operation to use.
+   * @return The modified ACL.
+   */
   ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation);
+
+  /**
+   * Modify the ACL object and set the list of subjects for the subjects parameter. In the mean time
+   * if
+   * 
+   * @param acl The ACL object.
+   * @param subjects The subject list to set.
+   * @param operation The operation to use.
+   * @param saveSubjectReference If true then the function creates or modifies the scoped reference
+   *        of the subjects and update them by the current operations.
+   * @return The modified ACL.
+   */
+  ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
+      boolean saveSubjectReference);
 
 }

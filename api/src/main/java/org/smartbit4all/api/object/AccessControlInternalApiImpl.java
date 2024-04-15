@@ -1,9 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +26,10 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
@@ -231,6 +231,12 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation) {
+    return applySubjects(acl, subjects, operation, false);
+  }
+
+  @Override
+  public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
+      boolean saveSubjectReference) {
     // Find all the entries currently attached to the operation in the ACL.
     Map<String, ACLEntry> currentEntries = getEntriesByOperation(operation, acl).stream()
         .collect(toMap(e -> subjectManagementApi.toString(e.getSubject()), e -> e));
