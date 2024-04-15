@@ -213,15 +213,17 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
       createGridModel(viewUuid, gridId, config.getSearchPageConfig());
-      view.addActionsItem(new UiAction()
-          .code(ADD_SUBJECT)
-          .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
-          .identifier(gridId)
-          .descriptor(new UiActionDescriptor()
-              .icon("Plus")
-              .title(" ")
-              .type(UiActionButtonType.ICON)
-              .color(UiActions.Color.ACCENT)));
+      if (isEnableModify(viewUuid, gridId)) {
+        view.addActionsItem(new UiAction()
+            .code(ADD_SUBJECT)
+            .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
+            .identifier(gridId)
+            .descriptor(new UiActionDescriptor()
+                .icon("Plus")
+                .title(" ")
+                .type(UiActionButtonType.ICON)
+                .color(UiActions.Color.ACCENT)));
+      }
     }
   }
 
@@ -313,18 +315,24 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
     page.getRows().forEach(row -> {
-      if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
+      if (isEnableModify(viewUuid, gridId)) {
+        if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
+          row.addActionsItem(new UiAction()
+              .code(EDIT_COMMENT)
+              .descriptor(new UiActionDescriptor()
+                  .title(localeSettingApi.get(PREFIX, EDIT_COMMENT))));
+        }
         row.addActionsItem(new UiAction()
-            .code(EDIT_COMMENT)
+            .code(DELETE_SUBJECT)
             .descriptor(new UiActionDescriptor()
-                .title(localeSettingApi.get(PREFIX, EDIT_COMMENT))));
+                .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
       }
-      row.addActionsItem(new UiAction()
-          .code(DELETE_SUBJECT)
-          .descriptor(new UiActionDescriptor()
-              .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
     });
     return page;
+  }
+
+  protected boolean isEnableModify(UUID viewUuid, String gridId) {
+    return true;
   }
 
   @Override
