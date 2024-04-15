@@ -220,6 +220,16 @@ public final class ObjectLayoutBuilder {
         .displayProperty(displayProperty);
   }
 
+  public static SmartWidgetDefinition textFieldChips(String key, String label,
+      SelectionDefinition selectionDefinition) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.TEXT_FIELD_CHIPS)
+        .key(key)
+        .label(label)
+        .selection(selectionDefinition);
+  }
+
+
   private final ObjectApi objectApi;
   private final ObjectLayoutApi objectLayoutApi;
   private final ObjectLayoutDescriptor layoutDescriptor;
