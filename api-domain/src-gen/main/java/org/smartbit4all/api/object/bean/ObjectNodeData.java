@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import javax.validation.Valid;
   ObjectNodeData.QUALIFIED_NAME,
   ObjectNodeData.STORAGE_SCHEMA,
   ObjectNodeData.VERSION_NR,
+  ObjectNodeData.CREATED_AT,
   ObjectNodeData.LAST_MODIFIED,
   ObjectNodeData.STATE,
   ObjectNodeData.OBJECT_AS_MAP,
@@ -65,6 +67,9 @@ public class ObjectNodeData {
 
   public static final String VERSION_NR = "versionNr";
   private Long versionNr = 0l;
+
+  public static final String CREATED_AT = "createdAt";
+  private OffsetDateTime createdAt;
 
   public static final String LAST_MODIFIED = "lastModified";
   private Long lastModified = -1l;
@@ -201,6 +206,34 @@ public class ObjectNodeData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setVersionNr(Long versionNr) {
     this.versionNr = versionNr;
+  }
+
+
+  public ObjectNodeData createdAt(OffsetDateTime createdAt) {
+    
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * The offset date time when this node version was created. 
+   * @return createdAt
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The offset date time when this node version was created. ")
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
 
@@ -472,6 +505,7 @@ public class ObjectNodeData {
         Objects.equals(this.qualifiedName, objectNodeData.qualifiedName) &&
         Objects.equals(this.storageSchema, objectNodeData.storageSchema) &&
         Objects.equals(this.versionNr, objectNodeData.versionNr) &&
+        Objects.equals(this.createdAt, objectNodeData.createdAt) &&
         Objects.equals(this.lastModified, objectNodeData.lastModified) &&
         Objects.equals(this.state, objectNodeData.state) &&
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
@@ -484,7 +518,7 @@ public class ObjectNodeData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, lastModified, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, createdAt, lastModified, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -495,6 +529,7 @@ public class ObjectNodeData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    lastModified: ").append(toIndentedString(lastModified)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");

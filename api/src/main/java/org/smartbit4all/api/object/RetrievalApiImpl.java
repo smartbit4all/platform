@@ -231,7 +231,8 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .objectAsMap(storageObject.getObjectAsMap())
         .aspects(storageObject.getAspects())
         .versionNr(version == null ? null : version.getSerialNoData())
-        .lastModified(storageObject.getLastModified());
+        .lastModified(storageObject.getLastModified())
+        .createdAt(version == null ? null : version.getCreatedAt());
     // overwrite references based on branch
     correctReferencesOnBranch(objRequest.getDefinition(), data, branchEntry);
     return data;
