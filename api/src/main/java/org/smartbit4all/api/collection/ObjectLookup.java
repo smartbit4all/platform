@@ -1,5 +1,7 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,8 +17,6 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link ObjectLookup} is a generic abstract class for lookup a collection by the values of an
@@ -80,9 +80,12 @@ public abstract class ObjectLookup {
       }
       if (!lookupResult.getItems().isEmpty()) {
         // Now we set the most relevant result item without any further examination.
-        ObjectLookupResultItem lookupResultItem = lookupResult.getItems().stream()
+        final ObjectLookupResultItem lookupResultItem = lookupResult.getItems().stream()
             .max((a, b) -> Float.compare(a.getScoreInPercent(), b.getScoreInPercent()))
-            .orElseThrow();
+            .orElse(null);
+        if (lookupResultItem == null) {
+          throw new IllegalArgumentException("LookUp resulted in no items!");
+        }
         mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
         if (parameter.getValuesForUpdate() != null) {
           toMap.putAll(parameter.getValuesForUpdate());
