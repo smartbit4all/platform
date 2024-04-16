@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +19,6 @@ import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -64,7 +64,8 @@ public class VectorCollectionImpl implements VectorCollection {
   public void addObject(Object obj, List<String> restictedColumns) {
     Map<String, Object> objAsMap = objectApi.asType(Map.class, obj);
     VectorValue vectorValue = embed(objAsMap.entrySet().stream()
-        .filter(e -> !restictedColumns.contains(e.getKey()))
+        .filter(e -> e.getKey() != null && e.getValue() != null)
+        .filter(e -> restictedColumns == null || !restictedColumns.contains(e.getKey()))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
     if (vectorValue == null) {
       log.error("The embedding failed on object: {}", obj);
