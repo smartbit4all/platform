@@ -1,9 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +27,9 @@ import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
-import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
@@ -64,6 +58,10 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -768,7 +766,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
       // String[] primaryId = getPrimaryId();
-      VectorCollection vectorCollection = getVectorCollection(vectorCollectionDescriptor);
+      VectorCollection vectorCollection = api.getVectorCollection(vectorCollectionDescriptor);
       if (vectorCollection == null) {
         throw new IllegalArgumentException(
             "A frissítéshez érvényes vektoradatbázis kapcsolat és érvényes beágyazó kapcsolat szükséges.");
@@ -854,30 +852,6 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       return node;
     }
 
-  }
-
-  private final VectorCollection getVectorCollection(
-      VectorCollectionDescriptor vectorCollectionDescriptor) {
-    MDMEntryApi vectorDBEntryApi =
-        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-            PlatformApiConfig.VECTOR_DB_CONNECTIONS);
-    ServiceConnection vectorDBConnection =
-        objectApi.asType(ServiceConnection.class,
-            vectorDBEntryApi.lookup().findByUnique(new ObjectPropertyValue()
-                .addPathItem(ServiceConnection.NAME)
-                .value(vectorCollectionDescriptor.getVectorDBConnection())));
-    MDMEntryApi embeddingEntryApi =
-        api.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-            PlatformApiConfig.EMBEDDING_CONNECTIONS);
-    ServiceConnection embeddingConnection = objectApi.asType(ServiceConnection.class,
-        embeddingEntryApi.lookup().findByUnique(new ObjectPropertyValue()
-            .addPathItem(ServiceConnection.NAME)
-            .value(vectorCollectionDescriptor.getEmbeddingConnection())));
-    if (vectorDBConnection == null || embeddingConnection == null) {
-      return null;
-    }
-    return collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
-        vectorDBConnection, embeddingConnection);
   }
 
   @Override

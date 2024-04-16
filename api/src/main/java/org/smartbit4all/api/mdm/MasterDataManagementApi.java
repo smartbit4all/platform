@@ -2,6 +2,7 @@ package org.smartbit4all.api.mdm;
 
 import java.net.URI;
 import java.util.Map;
+import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -175,5 +176,14 @@ public interface MasterDataManagementApi {
 
   MDMErrorLog importData(String definitionName, String entryName,
       MDMModificationRequest modificationRequest);
+
+  /**
+   * Retrieve the {@link VectorCollection} based on the {@link VectorCollectionDescriptor} we have.
+   * 
+   * @param vectorCollectionDescriptor The vector collection descriptor.
+   * @return The {@link VectorCollection} if the parameter assigned to an existing one or null.
+   */
+  VectorCollection getVectorCollection(
+      VectorCollectionDescriptor vectorCollectionDescriptor);
 
 }

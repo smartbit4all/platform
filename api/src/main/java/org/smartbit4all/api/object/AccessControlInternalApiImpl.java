@@ -260,6 +260,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           .subject(aclSubject.getSubject())
           .addOperationsItem(operation)
           .addOperationObjectsItem(aclSubject.getOperation()));
+      if (saveSubjectReference) {
+        // Add the operation reference to the
+      }
     }
 
     Set<String> toDelete = new HashSet<>();

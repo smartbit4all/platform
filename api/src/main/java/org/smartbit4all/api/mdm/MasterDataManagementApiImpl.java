@@ -1,7 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -22,10 +20,13 @@ import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -40,6 +41,7 @@ import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
@@ -64,6 +66,8 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -1055,6 +1059,31 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             originalPath, subMapName);
       }
     }
+  }
+
+  @Override
+  public final VectorCollection getVectorCollection(
+      VectorCollectionDescriptor vectorCollectionDescriptor) {
+    MDMEntryApi vectorDBEntryApi =
+        getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            PlatformApiConfig.VECTOR_DB_CONNECTIONS);
+    ServiceConnection vectorDBConnection =
+        objectApi.asType(ServiceConnection.class,
+            vectorDBEntryApi.lookup().findByUnique(new ObjectPropertyValue()
+                .addPathItem(ServiceConnection.NAME)
+                .value(vectorCollectionDescriptor.getVectorDBConnection())));
+    MDMEntryApi embeddingEntryApi =
+        getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            PlatformApiConfig.EMBEDDING_CONNECTIONS);
+    ServiceConnection embeddingConnection = objectApi.asType(ServiceConnection.class,
+        embeddingEntryApi.lookup().findByUnique(new ObjectPropertyValue()
+            .addPathItem(ServiceConnection.NAME)
+            .value(vectorCollectionDescriptor.getEmbeddingConnection())));
+    if (vectorDBConnection == null || embeddingConnection == null) {
+      return null;
+    }
+    return collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
+        vectorDBConnection, embeddingConnection);
   }
 
 }
