@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +37,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectLookupParameter.LIMIT,
   ObjectLookupParameter.RELEVANCE_LIMIT_PERCENT,
-  ObjectLookupParameter.RELEVANCE_LIMIT_RANGE
+  ObjectLookupParameter.RELEVANCE_LIMIT_RANGE,
+  ObjectLookupParameter.VALUES_FOR_UPDATE,
+  ObjectLookupParameter.VALUES_FOR_CREATION
 })
 @JsonTypeName("ObjectLookupParameter")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +52,12 @@ public class ObjectLookupParameter {
 
   public static final String RELEVANCE_LIMIT_RANGE = "relevanceLimitRange";
   private Float relevanceLimitRange;
+
+  public static final String VALUES_FOR_UPDATE = "valuesForUpdate";
+  private Map<String, Object> valuesForUpdate = null;
+
+  public static final String VALUES_FOR_CREATION = "valuesForCreation";
+  private Map<String, Object> valuesForCreation = null;
 
   public ObjectLookupParameter() { 
   }
@@ -132,6 +143,76 @@ public class ObjectLookupParameter {
   }
 
 
+  public ObjectLookupParameter valuesForUpdate(Map<String, Object> valuesForUpdate) {
+    
+    this.valuesForUpdate = valuesForUpdate;
+    return this;
+  }
+
+  public ObjectLookupParameter putValuesForUpdateItem(String key, Object valuesForUpdateItem) {
+    if (this.valuesForUpdate == null) {
+      this.valuesForUpdate = new HashMap<>();
+    }
+    this.valuesForUpdate.put(key, valuesForUpdateItem);
+    return this;
+  }
+
+   /**
+   * The values to set in an object that was found by the lookup. These values are copied into the given object after the result values from the lookup was copied into. It contains some default values. 
+   * @return valuesForUpdate
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The values to set in an object that was found by the lookup. These values are copied into the given object after the result values from the lookup was copied into. It contains some default values. ")
+  @JsonProperty(VALUES_FOR_UPDATE)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getValuesForUpdate() {
+    return valuesForUpdate;
+  }
+
+
+  @JsonProperty(VALUES_FOR_UPDATE)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValuesForUpdate(Map<String, Object> valuesForUpdate) {
+    this.valuesForUpdate = valuesForUpdate;
+  }
+
+
+  public ObjectLookupParameter valuesForCreation(Map<String, Object> valuesForCreation) {
+    
+    this.valuesForCreation = valuesForCreation;
+    return this;
+  }
+
+  public ObjectLookupParameter putValuesForCreationItem(String key, Object valuesForCreationItem) {
+    if (this.valuesForCreation == null) {
+      this.valuesForCreation = new HashMap<>();
+    }
+    this.valuesForCreation.put(key, valuesForCreationItem);
+    return this;
+  }
+
+   /**
+   * The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied  into the given object after the result values from the lookup was copied into. It contains some default values. 
+   * @return valuesForCreation
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied  into the given object after the result values from the lookup was copied into. It contains some default values. ")
+  @JsonProperty(VALUES_FOR_CREATION)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getValuesForCreation() {
+    return valuesForCreation;
+  }
+
+
+  @JsonProperty(VALUES_FOR_CREATION)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValuesForCreation(Map<String, Object> valuesForCreation) {
+    this.valuesForCreation = valuesForCreation;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -143,12 +224,14 @@ public class ObjectLookupParameter {
     ObjectLookupParameter objectLookupParameter = (ObjectLookupParameter) o;
     return Objects.equals(this.limit, objectLookupParameter.limit) &&
         Objects.equals(this.relevanceLimitPercent, objectLookupParameter.relevanceLimitPercent) &&
-        Objects.equals(this.relevanceLimitRange, objectLookupParameter.relevanceLimitRange);
+        Objects.equals(this.relevanceLimitRange, objectLookupParameter.relevanceLimitRange) &&
+        Objects.equals(this.valuesForUpdate, objectLookupParameter.valuesForUpdate) &&
+        Objects.equals(this.valuesForCreation, objectLookupParameter.valuesForCreation);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(limit, relevanceLimitPercent, relevanceLimitRange);
+    return Objects.hash(limit, relevanceLimitPercent, relevanceLimitRange, valuesForUpdate, valuesForCreation);
   }
 
   @Override
@@ -158,6 +241,8 @@ public class ObjectLookupParameter {
     sb.append("    limit: ").append(toIndentedString(limit)).append("\n");
     sb.append("    relevanceLimitPercent: ").append(toIndentedString(relevanceLimitPercent)).append("\n");
     sb.append("    relevanceLimitRange: ").append(toIndentedString(relevanceLimitRange)).append("\n");
+    sb.append("    valuesForUpdate: ").append(toIndentedString(valuesForUpdate)).append("\n");
+    sb.append("    valuesForCreation: ").append(toIndentedString(valuesForCreation)).append("\n");
     sb.append("}");
     return sb.toString();
   }

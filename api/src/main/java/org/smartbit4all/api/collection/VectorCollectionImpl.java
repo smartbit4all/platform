@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +16,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -124,7 +124,8 @@ public class VectorCollectionImpl implements VectorCollection {
         ObjectLookupParameter parameter) {
       List<VectorSearchResultItem> result = search(values, parameter.getLimit());
       return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
-          .stream().map(si -> new ObjectLookupResultItem()
+          .stream().filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
+          .map(si -> new ObjectLookupResultItem()
               .scoreInPercent(si.getScore()).objectAsMap(si.getValue()))
           .collect(toList()));
     }

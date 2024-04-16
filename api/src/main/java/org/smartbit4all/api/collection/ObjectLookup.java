@@ -72,18 +72,28 @@ public abstract class ObjectLookup {
     ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
     for (Object object : objects) {
       ObjectLookupResult lookupResult = lookup(object, parameter);
+      Map<String, Object> toMap;
+      if (object instanceof ObjectNode) {
+        toMap = ((ObjectNode) object).getObjectAsMap();
+      } else {
+        toMap = (Map<String, Object>) object;
+      }
       if (!lookupResult.getItems().isEmpty()) {
         // Now we set the most relevant result item without any further examination.
-        ObjectLookupResultItem lookupResultItem = lookupResult.getItems().get(0);
-
-        Map<String, Object> toMap;
-        if (object instanceof ObjectNode) {
-          toMap = ((ObjectNode) object).getObjectAsMap();
-        } else {
-          toMap = (Map<String, Object>) object;
-        }
+        ObjectLookupResultItem lookupResultItem = lookupResult.getItems().stream()
+            .max((a, b) -> Float.compare(a.getScoreInPercent(), b.getScoreInPercent()))
+            .orElseThrow();
         mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
+        if (parameter.getValuesForUpdate() != null) {
+          toMap.putAll(parameter.getValuesForUpdate());
+        }
         resultList.add(object);
+      } else {
+        // Set the default creation values.
+        if (parameter.getValuesForCreation() != null) {
+          toMap.putAll(parameter.getValuesForCreation());
+          resultList.add(object);
+        }
       }
     }
     return resultList;

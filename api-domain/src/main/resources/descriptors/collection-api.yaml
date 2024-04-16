@@ -175,6 +175,18 @@ components:
             set this properly then we can see the most relevant as the numberOfRelevant in the result will set to 1.
           type: number
           format: float
+        valuesForUpdate:
+          description: |
+            The values to set in an object that was found by the lookup. These values are copied into the given object after the result
+            values from the lookup was copied into. It contains some default values.
+          type: object
+          additionalProperties: true
+        valuesForCreation:
+          description: |
+            The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied 
+            into the given object after the result values from the lookup was copied into. It contains some default values.
+          type: object
+          additionalProperties: true
     ObjectLookupResult:
       description: |
         The result an Object lookup.
