@@ -18,7 +18,11 @@ public interface VectorCollection {
 
   void ensureExist();
 
-  void addObject(Object obj);
+  default void addObject(Object obj) {
+    addObject(obj, null);
+  }
+
+  void addObject(Object obj, List<String> restictedColumns);
 
   boolean deleteObject(String id);
 

@@ -2,7 +2,9 @@ package org.smartbit4all.api.collection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
@@ -57,13 +59,18 @@ public class VectorCollectionImpl implements VectorCollection {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public void addObject(Object obj) {
-    VectorValue vectorValue = embed(obj);
+  public void addObject(Object obj, List<String> restictedColumns) {
+    Map<String, Object> objAsMap = objectApi.asType(Map.class, obj);
+    VectorValue vectorValue = embed(objAsMap.entrySet().stream()
+        .filter(e -> !restictedColumns.contains(e.getKey()))
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
     if (vectorValue == null) {
       log.error("The embedding failed on object: {}", obj);
       return;
     }
+    vectorValue.setInputObject(objAsMap);
     vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
   }
 
