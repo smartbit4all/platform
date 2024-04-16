@@ -23,6 +23,7 @@ import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -233,8 +234,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     List<String> columns;
     GridModel gridModel;
     if (searchPageConfig != null) {
+      GridView gridView = searchPageConfig.getGridViewOptions().get(0);
       columns = new ArrayList<>(
-          searchPageConfig.getGridViewOptions().get(0).getOrderedColumnNames());
+          gridView.getOrderedColumnNames());
       if (!columns.contains(AclGridItem.SUBJECT)) {
         columns.add(AclGridItem.SUBJECT);
       }
@@ -245,6 +247,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           .getDefinition().getDefinition();
       gridModel = gridModelApi
           .createGridModel(entityDefinition, columns, User.class.getSimpleName());
+      if (gridView.getDescriptor() != null) {
+        gridModel.setView(gridView);
+      }
     } else {
       columns = Arrays.asList(AclGridItem.NAME, AclGridItem.COMMENT, AclGridItem.SUBJECT);
       if (!columns.contains(AclGridItem.SUBJECT)) {
@@ -270,7 +275,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   protected void refreshGrid(UUID viewUuid, ACL acl, AclGridConfig config) {
     String gridId = config.getAclName();
-    List<ACLSubject> subjects = getSubjects(acl, config);
+    List<ACLSubject> subjects = getSubjects(viewUuid, acl, config);
     SearchPageConfig searchPageConfig = config.getSearchPageConfig();
     if (searchPageConfig != null) {
       Stream<ObjectNode> objects = subjects.stream()
@@ -298,7 +303,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     }
   }
 
-  protected List<ACLSubject> getSubjects(ACL acl, AclGridConfig config) {
+  protected List<ACLSubject> getSubjects(UUID viewUuid, ACL acl, AclGridConfig config) {
     return accessControlInternalApi.getSubjects(acl, config.getOperation());
   }
 
