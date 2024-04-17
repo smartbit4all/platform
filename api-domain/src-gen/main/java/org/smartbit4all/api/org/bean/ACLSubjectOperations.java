@@ -23,7 +23,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.org.bean.ACLSubjectOperationReferenceList;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.org.bean.ACLOperationReference;
+import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -35,7 +38,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. ")
 @JsonPropertyOrder({
   ACLSubjectOperations.URI,
-  ACLSubjectOperations.SUBJECTS
+  ACLSubjectOperations.SUBJECT,
+  ACLSubjectOperations.OPERATIONS
 })
 @JsonTypeName("ACLSubjectOperations")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,8 +47,11 @@ public class ACLSubjectOperations {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String SUBJECTS = "subjects";
-  private ACLSubjectOperationReferenceList subjects;
+  public static final String SUBJECT = "subject";
+  private Subject subject;
+
+  public static final String OPERATIONS = "operations";
+  private List<ACLOperationReference> operations = null;
 
   public ACLSubjectOperations() { 
   }
@@ -77,31 +84,67 @@ public class ACLSubjectOperations {
   }
 
 
-  public ACLSubjectOperations subjects(ACLSubjectOperationReferenceList subjects) {
+  public ACLSubjectOperations subject(Subject subject) {
     
-    this.subjects = subjects;
+    this.subject = subject;
     return this;
   }
 
    /**
-   * Get subjects
-   * @return subjects
+   * Get subject
+   * @return subject
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(SUBJECTS)
+  @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ACLSubjectOperationReferenceList getSubjects() {
-    return subjects;
+  public Subject getSubject() {
+    return subject;
   }
 
 
-  @JsonProperty(SUBJECTS)
+  @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubjects(ACLSubjectOperationReferenceList subjects) {
-    this.subjects = subjects;
+  public void setSubject(Subject subject) {
+    this.subject = subject;
+  }
+
+
+  public ACLSubjectOperations operations(List<ACLOperationReference> operations) {
+    
+    this.operations = operations;
+    return this;
+  }
+
+  public ACLSubjectOperations addOperationsItem(ACLOperationReference operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
+    this.operations.add(operationsItem);
+    return this;
+  }
+
+   /**
+   * The operation object of the given subject. 
+   * @return operations
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The operation object of the given subject. ")
+  @JsonProperty(OPERATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ACLOperationReference> getOperations() {
+    return operations;
+  }
+
+
+  @JsonProperty(OPERATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOperations(List<ACLOperationReference> operations) {
+    this.operations = operations;
   }
 
 
@@ -115,12 +158,13 @@ public class ACLSubjectOperations {
     }
     ACLSubjectOperations acLSubjectOperations = (ACLSubjectOperations) o;
     return Objects.equals(this.uri, acLSubjectOperations.uri) &&
-        Objects.equals(this.subjects, acLSubjectOperations.subjects);
+        Objects.equals(this.subject, acLSubjectOperations.subject) &&
+        Objects.equals(this.operations, acLSubjectOperations.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, subjects);
+    return Objects.hash(uri, subject, operations);
   }
 
   @Override
@@ -128,7 +172,8 @@ public class ACLSubjectOperations {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLSubjectOperations {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    subjects: ").append(toIndentedString(subjects)).append("\n");
+    sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
+    sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();
   }

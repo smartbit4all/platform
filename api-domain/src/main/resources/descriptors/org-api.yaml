@@ -457,16 +457,6 @@ components:
         uri:
           type: string
           format: uri
-        subjects:
-          description: |
-            The reference to the subjects and their operations.
-          $ref: '#/components/schemas/ACLSubjectOperationReferenceList'
-    ACLSubjectOperationReferenceList:
-      type: object
-      description: |
-        This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
-      required: [name, operation]
-      properties:
         subject:
           description: |
             The reference to the subject defined in the given application.
@@ -495,6 +485,11 @@ components:
           description: |
             The reference to the context the operation is attached to.
           type: ObjectPropertyResolverContext
+        contextRenderConfig:
+          description: |
+            This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer
+            to MDM or application properties directly.
+          type: string
     ACLSubject:
       type: object
       description: |

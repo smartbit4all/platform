@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,14 @@ import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.SubjectConditionEnum;
 import org.smartbit4all.api.org.bean.ACLOperation;
+import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import static java.util.stream.Collectors.groupingBy;
@@ -234,6 +237,30 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     return applySubjects(acl, subjects, operation, false);
   }
 
+
+  private class ACLSubjectModification {
+
+    Subject subject;
+
+    List<ACLOperationReference> toAdd = new ArrayList<>();
+
+    List<ACLOperationReference> toRemove = new ArrayList<>();
+
+    List<ACLOperationReference> toUpdate = new ArrayList<>();
+
+    public ACLSubjectModification(Subject subject) {
+      super();
+      this.subject = subject;
+    }
+
+
+  }
+
+  private final String constructSubjectId(Subject subject) {
+    return subject.getModel() + StringConstant.HYPHEN + subject.getType() + StringConstant.HYPHEN
+        + objectApi.getLatestUri(subject.getRef());
+  }
+
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
       boolean saveSubjectReference) {
@@ -254,6 +281,8 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         currentEntry.addOperationObjectsItem(aclSubject.getOperation());
       }
     }
+    // Collect all the changes on the subjects.
+    Map<String, ACLSubjectModification> modifications = new HashMap<>();
     // Add the necessary entries and set
     for (ACLSubject aclSubject : toAdd) {
       acl.getRootEntry().addEntriesItem(new ACLEntry()
@@ -261,7 +290,15 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           .addOperationsItem(operation)
           .addOperationObjectsItem(aclSubject.getOperation()));
       if (saveSubjectReference) {
-        // Add the operation reference to the
+        // Add the operation reference to the referenced entries.
+        ACLSubjectModification subjectModification =
+            modifications.computeIfAbsent(constructSubjectId(aclSubject.getSubject()),
+                key -> new ACLSubjectModification(aclSubject.getSubject()));
+        // TODO pass the context as optional parameter like the save subject reference flag itself..
+        subjectModification.toAdd
+            .add(new ACLOperationReference().name(aclSubject.getOperation().getName())
+                .comment(aclSubject.getOperation().getComment()).referenceContext(null)
+                .contextRenderConfig(null));
       }
     }
 

@@ -35,7 +35,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ACLOperationReference.NAME,
   ACLOperationReference.COMMENT,
-  ACLOperationReference.REFERENCE_CONTEXT
+  ACLOperationReference.REFERENCE_CONTEXT,
+  ACLOperationReference.CONTEXT_RENDER_CONFIG
 })
 @JsonTypeName("ACLOperationReference")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +49,9 @@ public class ACLOperationReference {
 
   public static final String REFERENCE_CONTEXT = "referenceContext";
   private ObjectPropertyResolverContext referenceContext = null;
+
+  public static final String CONTEXT_RENDER_CONFIG = "contextRenderConfig";
+  private String contextRenderConfig;
 
   public ACLOperationReference() { 
   }
@@ -135,6 +139,33 @@ public class ACLOperationReference {
   }
 
 
+  public ACLOperationReference contextRenderConfig(String contextRenderConfig) {
+    
+    this.contextRenderConfig = contextRenderConfig;
+    return this;
+  }
+
+   /**
+   * This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. 
+   * @return contextRenderConfig
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. ")
+  @JsonProperty(CONTEXT_RENDER_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getContextRenderConfig() {
+    return contextRenderConfig;
+  }
+
+
+  @JsonProperty(CONTEXT_RENDER_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContextRenderConfig(String contextRenderConfig) {
+    this.contextRenderConfig = contextRenderConfig;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -146,12 +177,13 @@ public class ACLOperationReference {
     ACLOperationReference acLOperationReference = (ACLOperationReference) o;
     return Objects.equals(this.name, acLOperationReference.name) &&
         Objects.equals(this.comment, acLOperationReference.comment) &&
-        Objects.equals(this.referenceContext, acLOperationReference.referenceContext);
+        Objects.equals(this.referenceContext, acLOperationReference.referenceContext) &&
+        Objects.equals(this.contextRenderConfig, acLOperationReference.contextRenderConfig);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, comment, referenceContext);
+    return Objects.hash(name, comment, referenceContext, contextRenderConfig);
   }
 
   @Override
@@ -161,6 +193,7 @@ public class ACLOperationReference {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
     sb.append("    referenceContext: ").append(toIndentedString(referenceContext)).append("\n");
+    sb.append("    contextRenderConfig: ").append(toIndentedString(contextRenderConfig)).append("\n");
     sb.append("}");
     return sb.toString();
   }
