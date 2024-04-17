@@ -286,7 +286,7 @@ public final class ObjectPropertyResolver {
       Object routeTerminal = objectNode.getValue(routeParts);
       if (routeTerminal instanceof ObjectNodeReference) {
         targetNode = ((ObjectNodeReference) routeTerminal).get();
-      } else if (routeTerminal instanceof  ObjectNodeList) {
+      } else if (routeTerminal instanceof ObjectNodeList) {
         return routeTerminal;
       } else {
         targetNode = objectNode.ref(routeParts).get();
@@ -361,7 +361,8 @@ public final class ObjectPropertyResolver {
       return StringConstant.EMPTY;
     }
     List<Object> properties =
-        formatter.getParameters().stream().map(p -> resolve(p.getPropertyUri())).collect(toList());
+        formatter.getParameters().stream().map(p -> resolve(p.getPropertyUri()))
+            .map(v -> v == null ? StringConstant.UNKNOWN : v).collect(toList());
     return MessageFormat.format(formatter.getFormatString(), properties.toArray());
   }
 
