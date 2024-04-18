@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.view.bean.ImageResource;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -45,7 +46,8 @@ import javax.validation.Valid;
   GridRow.SELECTED,
   GridRow.ICONS,
   GridRow.PARENT,
-  GridRow.CHILDREN
+  GridRow.CHILDREN,
+  GridRow.STYLE
 })
 @JsonTypeName("GridRow")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,6 +75,9 @@ public class GridRow {
 
   public static final String CHILDREN = "children";
   private List<String> children = null;
+
+  public static final String STYLE = "style";
+  private Style style = null;
 
   public GridRow() { 
   }
@@ -315,6 +320,34 @@ public class GridRow {
   }
 
 
+  public GridRow style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * If present, this Style will be applied to the row. 
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If present, this Style will be applied to the row. ")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -331,12 +364,13 @@ public class GridRow {
         Objects.equals(this.selected, gridRow.selected) &&
         Objects.equals(this.icons, gridRow.icons) &&
         Objects.equals(this.parent, gridRow.parent) &&
-        Objects.equals(this.children, gridRow.children);
+        Objects.equals(this.children, gridRow.children) &&
+        Objects.equals(this.style, gridRow.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, actions, data, selectable, selected, icons, parent, children);
+    return Objects.hash(id, actions, data, selectable, selected, icons, parent, children, style);
   }
 
   @Override
@@ -351,6 +385,7 @@ public class GridRow {
     sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
     sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }
