@@ -6,6 +6,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -329,11 +330,19 @@ public class ObjectApiImpl implements ObjectApi {
         return null;
       }
       final String strValue = (String) value;
-      // instanceof already performed an implicit null-check:
-      if (strValue.length() > 10) { // LocalDate.parse can only handle 10 chars: yyyy-MM-dd
-        return (T) LocalDate.parse(strValue.substring(0, 10));
+      try {
+        return (T) LocalDate.parse(strValue);
+      } catch (DateTimeParseException e1) {
+        try {
+          return (T) OffsetDateTime.parse(strValue)
+              .atZoneSameInstant(ZoneId.systemDefault())
+              .toLocalDate();
+        } catch (DateTimeParseException e2) {
+          if (strValue.length() > 10) { // LocalDate.parse can only handle 10 chars: yyyy-MM-dd
+            return (T) LocalDate.parse(strValue.substring(0, 10));
+          }
+        }
       }
-      return (T) LocalDate.parse((String) value);
     }
     if (clazz == LocalDateTime.class && value instanceof String) {
       if (StringConstant.EMPTY.equals(value)) {
@@ -342,7 +351,9 @@ public class ObjectApiImpl implements ObjectApi {
       try {
         return (T) LocalDateTime.parse((String) value);
       } catch (DateTimeParseException e) {
-        return (T) OffsetDateTime.parse((String) value).toLocalDateTime();
+        return (T) OffsetDateTime.parse((String) value)
+            .atZoneSameInstant(ZoneId.systemDefault())
+            .toLocalDateTime();
       }
     }
     if (value instanceof Map) {
