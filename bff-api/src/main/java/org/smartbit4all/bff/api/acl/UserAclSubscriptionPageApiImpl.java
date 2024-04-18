@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.acl;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
@@ -31,6 +32,9 @@ public class UserAclSubscriptionPageApiImpl extends PageApiImpl<Object>
 
   @Autowired
   private OrgApi orgApi;
+
+  @Autowired
+  private AccessControlInternalApi accessControlInternalApi;
 
   protected class PageContext {
 
@@ -67,6 +71,7 @@ public class UserAclSubscriptionPageApiImpl extends PageApiImpl<Object>
 
   @Override
   public GridPage addGridActions(GridPage page, UUID viewUuid, String gridId) {
+    // PageContext ctx = new PageContext(viewUuid);
     page.getRows().forEach(row -> {
       row.addActionsItem(new UiAction()
           .code(DELETE_SUBSCRIPTION)
@@ -75,6 +80,13 @@ public class UserAclSubscriptionPageApiImpl extends PageApiImpl<Object>
                   localeSettingApi.get(ACL_PREFIX, DELETE_SUBSCRIPTION))
               .iconPosition(IconPosition.PRE).icon("delete")));
     });
+
+    // List<ACLSubjectOperations> userAllOperations =
+    // accessControlInternalApi.getUserAllOperations(ctx.user.getUri(), ctx.subjectModels);
+    // List<ACLOperationReference> rowsOfTheGrid = userAllOperations.stream().flatMap(so ->
+    // so.getOperations().stream()).collect(toList());
+    // All the rows must be extended with the properties of the subjcet and the formatted summary of
+    // the referenced context.
     return page;
 
   }
