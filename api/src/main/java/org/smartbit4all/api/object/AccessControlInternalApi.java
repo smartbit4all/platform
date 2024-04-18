@@ -1,6 +1,7 @@
 package org.smartbit4all.api.object;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLSubject;
+import org.smartbit4all.api.org.bean.ACLSubjectOperations;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -105,5 +107,13 @@ public interface AccessControlInternalApi {
   ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
       boolean saveSubjectReference, ObjectPropertyResolverContext context,
       String contextConfigCode);
+
+  /**
+   * This operation gather all referred operations for the subjects of the user.
+   * 
+   * @param userUri
+   * @return
+   */
+  List<ACLSubjectOperations> getUserAllOperations(URI userUri, Collection<String> subjectModels);
 
 }

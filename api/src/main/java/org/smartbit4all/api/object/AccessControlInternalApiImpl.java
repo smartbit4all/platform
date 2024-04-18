@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -267,8 +268,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
   private final String constructSubjectId(Subject subject) {
-    return subject.getModel() + StringConstant.HYPHEN + subject.getType() + StringConstant.HYPHEN
-        + objectApi.getLatestUri(subject.getRef());
+    return subject.getModel() + StringConstant.HYPHEN + subject.getType();
   }
 
   @Override
@@ -340,8 +340,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         StoredReference<ACLSubjectOperations> refSubjectOperations =
             collectionApi.reference(subjectModification.subject.getRef(),
                 SubjectManagementApi.SCHEMA,
-                subjectModification.subject.getModel() + StringConstant.UNDERLINE
-                    + subjectModification.subject.getType(),
+                constructSubjectId(subjectModification.subject),
                 ACLSubjectOperations.class);
         refSubjectOperations.update(so -> {
           so.getOperations().removeIf(or -> subjectModification.toRemove.contains(or.getName()));
@@ -352,6 +351,31 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     }
 
     return acl;
+  }
+
+  private final String constructReferenceName(Subject subject) {
+    return subject.getModel() + StringConstant.UNDERLINE
+        + subject.getType();
+  }
+
+  @Override
+  public List<ACLSubjectOperations> getUserAllOperations(URI userUri,
+      Collection<String> subjectModels) {
+    Objects.requireNonNull(subjectModels);
+    return subjectModels.stream()
+        .flatMap(s -> subjectManagementApi.getSubjectsOfUser(s, userUri).stream())
+        .map(
+            s -> {
+              StoredReference<ACLSubjectOperations> ref =
+                  collectionApi.reference(s.getRef(), SubjectManagementApi.SCHEMA,
+                      constructReferenceName(s), ACLSubjectOperations.class);
+              if (ref.exists()) {
+                return ref.get();
+              }
+              return null;
+            })
+        .filter(o -> o != null)
+        .collect(toList());
   }
 
 }
