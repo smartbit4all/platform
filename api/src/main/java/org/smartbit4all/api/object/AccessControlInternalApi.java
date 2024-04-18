@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
@@ -96,9 +97,13 @@ public interface AccessControlInternalApi {
    * @param operation The operation to use.
    * @param saveSubjectReference If true then the function creates or modifies the scoped reference
    *        of the subjects and update them by the current operations.
+   * @param context The context of the operation.
+   * @param contextConfigCode The configuration code. This code identified a configuration that
+   *        provides the rendering and the removal operation.
    * @return The modified ACL.
    */
   ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
-      boolean saveSubjectReference);
+      boolean saveSubjectReference, ObjectPropertyResolverContext context,
+      String contextConfigCode);
 
 }

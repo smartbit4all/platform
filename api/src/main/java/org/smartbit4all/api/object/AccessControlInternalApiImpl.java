@@ -13,6 +13,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.logging.log4j.util.Strings;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredReference;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
@@ -21,6 +24,7 @@ import org.smartbit4all.api.org.bean.ACLEntry.SubjectConditionEnum;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubject;
+import org.smartbit4all.api.org.bean.ACLSubjectOperations;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
@@ -53,6 +57,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   @Override
   public Set<String> getAvailableOperationsOn(URI userUri, ObjectNode objectNode,
@@ -234,17 +241,20 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation) {
-    return applySubjects(acl, subjects, operation, false);
+    return applySubjects(acl, subjects, operation, false, null, null);
   }
 
 
+  /**
+   * A record to summarize the modification about a subject.
+   */
   private class ACLSubjectModification {
 
     Subject subject;
 
     List<ACLOperationReference> toAdd = new ArrayList<>();
 
-    List<ACLOperationReference> toRemove = new ArrayList<>();
+    List<String> toRemove = new ArrayList<>();
 
     List<ACLOperationReference> toUpdate = new ArrayList<>();
 
@@ -263,7 +273,8 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
-      boolean saveSubjectReference) {
+      boolean saveSubjectReference, ObjectPropertyResolverContext context,
+      String contextConfigCode) {
     // Find all the entries currently attached to the operation in the ACL.
     Map<String, ACLEntry> currentEntries = getEntriesByOperation(operation, acl).stream()
         .collect(toMap(e -> subjectManagementApi.toString(e.getSubject()), e -> e));
@@ -294,11 +305,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         ACLSubjectModification subjectModification =
             modifications.computeIfAbsent(constructSubjectId(aclSubject.getSubject()),
                 key -> new ACLSubjectModification(aclSubject.getSubject()));
-        // TODO pass the context as optional parameter like the save subject reference flag itself..
         subjectModification.toAdd
             .add(new ACLOperationReference().name(aclSubject.getOperation().getName())
-                .comment(aclSubject.getOperation().getComment()).referenceContext(null)
-                .contextRenderConfig(null));
+                .comment(aclSubject.getOperation().getComment()).referenceContext(context)
+                .contextRenderConfig(contextConfigCode));
       }
     }
 
@@ -307,6 +317,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       // We have to remove the given operation from the entry. If it was the last operation then
       // remove the whole entry with the subject. There is no more relevant operation for the given
       // subject.
+      ACLSubjectModification subjectModification =
+          modifications.computeIfAbsent(constructSubjectId(e.getSubject()),
+              key -> new ACLSubjectModification(e.getSubject()));
+      subjectModification.toRemove.add(operation);
       e.getOperations().remove(operation);
       e.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
       if (e.getOperations().isEmpty() && e.getOperationObjects().isEmpty()) {
@@ -318,6 +332,23 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     if (!toDelete.isEmpty()) {
       acl.getRootEntry().getEntries()
           .removeIf(e -> toDelete.contains(subjectManagementApi.toString(e.getSubject())));
+    }
+
+    // Now we save here subject by subject the changes.
+    if (saveSubjectReference) {
+      for (ACLSubjectModification subjectModification : modifications.values()) {
+        StoredReference<ACLSubjectOperations> refSubjectOperations =
+            collectionApi.reference(subjectModification.subject.getRef(),
+                SubjectManagementApi.SCHEMA,
+                subjectModification.subject.getModel() + StringConstant.UNDERLINE
+                    + subjectModification.subject.getType(),
+                ACLSubjectOperations.class);
+        refSubjectOperations.update(so -> {
+          so.getOperations().removeIf(or -> subjectModification.toRemove.contains(or.getName()));
+          so.getOperations().addAll(subjectModification.toAdd);
+          return so;
+        });
+      }
     }
 
     return acl;
