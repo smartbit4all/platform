@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
@@ -333,6 +334,8 @@ public final class ObjectValidations {
     if (layout != null) {
       widgetKeyPredicate = flattenLayout(layout)
           .flatMap(it -> formWidgets(it))
+          // we are not checking toggles (no value on toggles means false):
+          .filter(w -> SmartFormWidgetType.TOGGLE != w.getType())
           .map(SmartWidgetDefinition::getKey)
           .collect(collectingAndThen(toSet(), keys -> keys::contains));
     } else {
