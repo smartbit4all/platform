@@ -377,6 +377,10 @@ components:
           type: array
           items:
             type: string
+        style:
+          description: |
+            If present, this Style will be applied to the row.
+          type: Style
     GridView:
       type: object
       description: |
