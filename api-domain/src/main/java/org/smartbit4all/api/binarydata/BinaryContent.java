@@ -297,6 +297,7 @@ public class BinaryContent {
     sb.append("    dataUri: ").append(toIndentedString(dataUri)).append("\n");
     sb.append("    fileName: ").append(toIndentedString(fileName)).append("\n");
     sb.append("    mimeType: ").append(toIndentedString(mimeType)).append("\n");
+    sb.append("    extension: ").append(toIndentedString(extension)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    loaded: ").append(toIndentedString(loaded)).append("\n");
     sb.append("    saveData: ").append(toIndentedString(saveData)).append("\n");
