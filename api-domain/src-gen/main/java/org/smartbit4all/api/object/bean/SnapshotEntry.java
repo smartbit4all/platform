@@ -30,12 +30,13 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData) - it only contains versioned URIs and references.  Since these versions don&#39;t change, a snapshot can always be reloaded exactly as it was before. 
+ * A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or a branch URI. SnapshotData only contains versioned URIs and references, branch is similar, but doesn&#39;t contain tha data. Since these versions don&#39;t change, a snapshot can always be reloaded exactly as it was before. There&#39;s a  
  */
-@ApiModel(description = "A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData) - it only contains versioned URIs and references.  Since these versions don't change, a snapshot can always be reloaded exactly as it was before. ")
+@ApiModel(description = "A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or a branch URI. SnapshotData only contains versioned URIs and references, branch is similar, but doesn't contain tha data. Since these versions don't change, a snapshot can always be reloaded exactly as it was before. There's a  ")
 @JsonPropertyOrder({
   SnapshotEntry.URI,
-  SnapshotEntry.DATA
+  SnapshotEntry.DATA,
+  SnapshotEntry.BRANCH_URI
 })
 @JsonTypeName("SnapshotEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +46,9 @@ public class SnapshotEntry {
 
   public static final String DATA = "data";
   private SnapshotData data;
+
+  public static final String BRANCH_URI = "branchUri";
+  private URI branchUri;
 
   public SnapshotEntry() { 
   }
@@ -105,6 +109,34 @@ public class SnapshotEntry {
   }
 
 
+  public SnapshotEntry branchUri(URI branchUri) {
+    
+    this.branchUri = branchUri;
+    return this;
+  }
+
+   /**
+   * Get branchUri
+   * @return branchUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getBranchUri() {
+    return branchUri;
+  }
+
+
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBranchUri(URI branchUri) {
+    this.branchUri = branchUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -115,12 +147,13 @@ public class SnapshotEntry {
     }
     SnapshotEntry snapshotEntry = (SnapshotEntry) o;
     return Objects.equals(this.uri, snapshotEntry.uri) &&
-        Objects.equals(this.data, snapshotEntry.data);
+        Objects.equals(this.data, snapshotEntry.data) &&
+        Objects.equals(this.branchUri, snapshotEntry.branchUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, data);
+    return Objects.hash(uri, data, branchUri);
   }
 
   @Override
@@ -129,6 +162,7 @@ public class SnapshotEntry {
     sb.append("class SnapshotEntry {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }
