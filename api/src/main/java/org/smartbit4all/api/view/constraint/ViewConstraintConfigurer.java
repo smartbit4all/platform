@@ -269,8 +269,7 @@ public final class ViewConstraintConfigurer {
     }
 
     public ViewConstraintConfigurer always() {
-      currentInstruction.domainObjectPredicates.clear();
-      currentInstruction.userUriPredicates.clear();
+      currentInstruction.clear();
       return next();
     }
 
@@ -327,6 +326,14 @@ public final class ViewConstraintConfigurer {
 
     private ConstraintConfigurationInstruction cleanCopy() {
       return new ConstraintConfigurationInstruction(componentConstraints, marker);
+    }
+
+    private void clear() {
+      viewPredicates.clear();
+      domainObjectPredicates.clear();
+      userUriPredicates.clear();
+      userDomainObjectBiPredicates.clear();
+      viewModelPredicates.clear();
     }
 
   }

@@ -22,6 +22,10 @@ components:
       required:
         - type
       properties:
+        identifier:
+          type: string
+          description: |
+            An optional identifier to find this element in a layout hierarchy.
         type:
           $ref: '#/components/schemas/ComponentType'
         expandable:

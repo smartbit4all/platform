@@ -38,6 +38,7 @@ import javax.validation.Valid;
  * SmartComponentLayoutDefinition
  */
 @JsonPropertyOrder({
+  SmartComponentLayoutDefinition.IDENTIFIER,
   SmartComponentLayoutDefinition.TYPE,
   SmartComponentLayoutDefinition.EXPANDABLE,
   SmartComponentLayoutDefinition.EXPANDABLE_SECTION_LABEL,
@@ -50,6 +51,9 @@ import javax.validation.Valid;
 @JsonTypeName("SmartComponentLayoutDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class SmartComponentLayoutDefinition {
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
+
   public static final String TYPE = "type";
   private ComponentType type;
 
@@ -76,6 +80,33 @@ public class SmartComponentLayoutDefinition {
 
   public SmartComponentLayoutDefinition() { 
   }
+
+  public SmartComponentLayoutDefinition identifier(String identifier) {
+    
+    this.identifier = identifier;
+    return this;
+  }
+
+   /**
+   * An optional identifier to find this element in a layout hierarchy. 
+   * @return identifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "An optional identifier to find this element in a layout hierarchy. ")
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
 
   public SmartComponentLayoutDefinition type(ComponentType type) {
     
@@ -325,7 +356,8 @@ public class SmartComponentLayoutDefinition {
       return false;
     }
     SmartComponentLayoutDefinition smartComponentLayoutDefinition = (SmartComponentLayoutDefinition) o;
-    return Objects.equals(this.type, smartComponentLayoutDefinition.type) &&
+    return Objects.equals(this.identifier, smartComponentLayoutDefinition.identifier) &&
+        Objects.equals(this.type, smartComponentLayoutDefinition.type) &&
         Objects.equals(this.expandable, smartComponentLayoutDefinition.expandable) &&
         Objects.equals(this.expandableSectionLabel, smartComponentLayoutDefinition.expandableSectionLabel) &&
         Objects.equals(this.direction, smartComponentLayoutDefinition.direction) &&
@@ -337,13 +369,14 @@ public class SmartComponentLayoutDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, expandable, expandableSectionLabel, direction, components, widget, form, style);
+    return Objects.hash(identifier, type, expandable, expandableSectionLabel, direction, components, widget, form, style);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class SmartComponentLayoutDefinition {\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    expandable: ").append(toIndentedString(expandable)).append("\n");
     sb.append("    expandableSectionLabel: ").append(toIndentedString(expandableSectionLabel)).append("\n");
