@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
+import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,54 +33,53 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object is used as  ")
 @JsonPropertyOrder({
-  ACLOperationReference.NAME,
+  ACLOperationReference.OPERATION,
   ACLOperationReference.COMMENT,
-  ACLOperationReference.REFERENCE_CONTEXT,
-  ACLOperationReference.CONTEXT_RENDER_CONFIG
+  ACLOperationReference.ENTITY_URI,
+  ACLOperationReference.CONTEXT_CONFIG
 })
 @JsonTypeName("ACLOperationReference")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ACLOperationReference {
-  public static final String NAME = "name";
-  private String name;
+  public static final String OPERATION = "operation";
+  private String operation;
 
   public static final String COMMENT = "comment";
   private String comment;
 
-  public static final String REFERENCE_CONTEXT = "referenceContext";
-  private ObjectPropertyResolverContext referenceContext = null;
+  public static final String ENTITY_URI = "entityUri";
+  private URI entityUri;
 
-  public static final String CONTEXT_RENDER_CONFIG = "contextRenderConfig";
-  private String contextRenderConfig;
+  public static final String CONTEXT_CONFIG = "contextConfig";
+  private String contextConfig;
 
   public ACLOperationReference() { 
   }
 
-  public ACLOperationReference name(String name) {
+  public ACLOperationReference operation(String operation) {
     
-    this.name = name;
+    this.operation = operation;
     return this;
   }
 
    /**
    * The name of the operation that is the same as the one stored in the operations list.
-   * @return name
+   * @return operation
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "The name of the operation that is the same as the one stored in the operations list.")
-  @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the operation that is the same as the one stored in the operations list.")
+  @JsonProperty(OPERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getName() {
-    return name;
+  public String getOperation() {
+    return operation;
   }
 
 
-  @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setName(String name) {
-    this.name = name;
+  @JsonProperty(OPERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOperation(String operation) {
+    this.operation = operation;
   }
 
 
@@ -111,58 +110,58 @@ public class ACLOperationReference {
   }
 
 
-  public ACLOperationReference referenceContext(ObjectPropertyResolverContext referenceContext) {
+  public ACLOperationReference entityUri(URI entityUri) {
     
-    this.referenceContext = referenceContext;
+    this.entityUri = entityUri;
     return this;
   }
 
    /**
-   * The reference to the context the operation is attached to. 
-   * @return referenceContext
+   * The reference to the context entity of the operation is attached to. 
+   * @return entityUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference to the context the operation is attached to. ")
-  @JsonProperty(REFERENCE_CONTEXT)
+  @ApiModelProperty(value = "The reference to the context entity of the operation is attached to. ")
+  @JsonProperty(ENTITY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ObjectPropertyResolverContext getReferenceContext() {
-    return referenceContext;
+  public URI getEntityUri() {
+    return entityUri;
   }
 
 
-  @JsonProperty(REFERENCE_CONTEXT)
+  @JsonProperty(ENTITY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setReferenceContext(ObjectPropertyResolverContext referenceContext) {
-    this.referenceContext = referenceContext;
+  public void setEntityUri(URI entityUri) {
+    this.entityUri = entityUri;
   }
 
 
-  public ACLOperationReference contextRenderConfig(String contextRenderConfig) {
+  public ACLOperationReference contextConfig(String contextConfig) {
     
-    this.contextRenderConfig = contextRenderConfig;
+    this.contextConfig = contextConfig;
     return this;
   }
 
    /**
    * This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. 
-   * @return contextRenderConfig
+   * @return contextConfig
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. ")
-  @JsonProperty(CONTEXT_RENDER_CONFIG)
+  @JsonProperty(CONTEXT_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getContextRenderConfig() {
-    return contextRenderConfig;
+  public String getContextConfig() {
+    return contextConfig;
   }
 
 
-  @JsonProperty(CONTEXT_RENDER_CONFIG)
+  @JsonProperty(CONTEXT_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContextRenderConfig(String contextRenderConfig) {
-    this.contextRenderConfig = contextRenderConfig;
+  public void setContextConfig(String contextConfig) {
+    this.contextConfig = contextConfig;
   }
 
 
@@ -175,25 +174,25 @@ public class ACLOperationReference {
       return false;
     }
     ACLOperationReference acLOperationReference = (ACLOperationReference) o;
-    return Objects.equals(this.name, acLOperationReference.name) &&
+    return Objects.equals(this.operation, acLOperationReference.operation) &&
         Objects.equals(this.comment, acLOperationReference.comment) &&
-        Objects.equals(this.referenceContext, acLOperationReference.referenceContext) &&
-        Objects.equals(this.contextRenderConfig, acLOperationReference.contextRenderConfig);
+        Objects.equals(this.entityUri, acLOperationReference.entityUri) &&
+        Objects.equals(this.contextConfig, acLOperationReference.contextConfig);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, comment, referenceContext, contextRenderConfig);
+    return Objects.hash(operation, comment, entityUri, contextConfig);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACLOperationReference {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
-    sb.append("    referenceContext: ").append(toIndentedString(referenceContext)).append("\n");
-    sb.append("    contextRenderConfig: ").append(toIndentedString(contextRenderConfig)).append("\n");
+    sb.append("    entityUri: ").append(toIndentedString(entityUri)).append("\n");
+    sb.append("    contextConfig: ").append(toIndentedString(contextConfig)).append("\n");
     sb.append("}");
     return sb.toString();
   }

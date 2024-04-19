@@ -16,7 +16,6 @@ import java.util.Set;
 import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
@@ -242,7 +241,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation) {
-    return applySubjects(acl, subjects, operation, false, null, null);
+    return applySubjects(acl, subjects, operation, null, null);
   }
 
 
@@ -255,6 +254,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
     List<ACLOperationReference> toAdd = new ArrayList<>();
 
+    /**
+     * The operation and the entity uri together.
+     */
     List<String> toRemove = new ArrayList<>();
 
     List<ACLOperationReference> toUpdate = new ArrayList<>();
@@ -272,8 +274,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
   @Override
-  public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation,
-      boolean saveSubjectReference, ObjectPropertyResolverContext context,
+  public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation, URI contextEntity,
       String contextConfigCode) {
     // Find all the entries currently attached to the operation in the ACL.
     Map<String, ACLEntry> currentEntries = getEntriesByOperation(operation, acl).stream()
@@ -300,15 +301,15 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           .subject(aclSubject.getSubject())
           .addOperationsItem(operation)
           .addOperationObjectsItem(aclSubject.getOperation()));
-      if (saveSubjectReference) {
+      if (contextEntity != null) {
         // Add the operation reference to the referenced entries.
         ACLSubjectModification subjectModification =
             modifications.computeIfAbsent(constructSubjectId(aclSubject.getSubject()),
                 key -> new ACLSubjectModification(aclSubject.getSubject()));
         subjectModification.toAdd
-            .add(new ACLOperationReference().name(aclSubject.getOperation().getName())
-                .comment(aclSubject.getOperation().getComment()).referenceContext(context)
-                .contextRenderConfig(contextConfigCode));
+            .add(new ACLOperationReference().operation(aclSubject.getOperation().getName())
+                .comment(aclSubject.getOperation().getComment()).entityUri(null)
+                .contextConfig(contextConfigCode));
       }
     }
 
@@ -317,10 +318,12 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       // We have to remove the given operation from the entry. If it was the last operation then
       // remove the whole entry with the subject. There is no more relevant operation for the given
       // subject.
-      ACLSubjectModification subjectModification =
-          modifications.computeIfAbsent(constructSubjectId(e.getSubject()),
-              key -> new ACLSubjectModification(e.getSubject()));
-      subjectModification.toRemove.add(operation);
+      if (contextEntity != null) {
+        ACLSubjectModification subjectModification =
+            modifications.computeIfAbsent(constructSubjectId(e.getSubject()),
+                key -> new ACLSubjectModification(e.getSubject()));
+        subjectModification.toRemove.add(constructOperationReferenceId(operation, contextEntity));
+      }
       e.getOperations().remove(operation);
       e.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
       if (e.getOperations().isEmpty() && e.getOperationObjects().isEmpty()) {
@@ -335,22 +338,25 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     }
 
     // Now we save here subject by subject the changes.
-    if (saveSubjectReference) {
-      for (ACLSubjectModification subjectModification : modifications.values()) {
-        StoredReference<ACLSubjectOperations> refSubjectOperations =
-            collectionApi.reference(subjectModification.subject.getRef(),
-                SubjectManagementApi.SCHEMA,
-                constructSubjectId(subjectModification.subject),
-                ACLSubjectOperations.class);
-        refSubjectOperations.update(so -> {
-          so.getOperations().removeIf(or -> subjectModification.toRemove.contains(or.getName()));
-          so.getOperations().addAll(subjectModification.toAdd);
-          return so;
-        });
-      }
+    for (ACLSubjectModification subjectModification : modifications.values()) {
+      StoredReference<ACLSubjectOperations> refSubjectOperations =
+          collectionApi.reference(subjectModification.subject.getRef(),
+              SubjectManagementApi.SCHEMA,
+              constructSubjectId(subjectModification.subject),
+              ACLSubjectOperations.class);
+      refSubjectOperations.update(so -> {
+        so.getOperations().removeIf(or -> subjectModification.toRemove
+            .contains(constructOperationReferenceId(or.getOperation(), or.getEntityUri())));
+        so.getOperations().addAll(subjectModification.toAdd);
+        return so;
+      });
     }
 
     return acl;
+  }
+
+  private final String constructOperationReferenceId(String operation, URI contextEntity) {
+    return operation + StringConstant.DOT + contextEntity;
   }
 
   private final String constructReferenceName(Subject subject) {

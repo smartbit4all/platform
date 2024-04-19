@@ -473,7 +473,7 @@ components:
         This object is used as 
       required: [name]
       properties:
-        name:
+        operation:
           description: The name of the operation that is the same as the one stored in the operations list.
           type: string
         comment:
@@ -481,11 +481,12 @@ components:
             The only property that is named is a comment that can be set to specify the reason of
             having this operation set for the given subject.
           type: string
-        referenceContext:
+        entityUri:
           description: |
-            The reference to the context the operation is attached to.
-          type: ObjectPropertyResolverContext
-        contextRenderConfig:
+            The reference to the context entity of the operation is attached to.
+          type: string
+          format: uri
+        contextConfig:
           description: |
             This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer
             to MDM or application properties directly.
