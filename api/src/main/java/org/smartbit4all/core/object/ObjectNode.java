@@ -3,6 +3,7 @@ package org.smartbit4all.core.object;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -311,21 +313,34 @@ public class ObjectNode {
         Object object = myValues.remove(listEntry.getKey());
         if (object instanceof List) {
           listEntry.getValue().clear();
-          List list = (List) object;
+          List<?> list = (List<?>) object;
           for (Object listItem : list) {
             if (listItem instanceof URI) {
               listEntry.getValue().add((URI) listItem);
+            } else if (listItem instanceof String) {
+              tryParseUri((String) listItem).ifPresent(uri -> listEntry.getValue().add(uri));
+              // there is no point adding a raw String to a refList otherwise!
             } else {
               listEntry.getValue().addNewObject(listItem);
             }
           }
         }
       }
+
       data.getObjectAsMap().putAll(myValues);
       setModified();
     }
     return this;
   }
+
+  private Optional<URI> tryParseUri(final String s) {
+    try {
+      return Optional.of(new URI(s));
+    } catch (URISyntaxException e) {
+      return Optional.empty();
+    }
+  }
+
   // /**
   // * Set the value directly into the data.
   // *

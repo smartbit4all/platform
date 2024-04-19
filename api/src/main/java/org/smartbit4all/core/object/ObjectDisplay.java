@@ -3,11 +3,13 @@ package org.smartbit4all.core.object;
 import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
@@ -19,6 +21,10 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 
 public final class ObjectDisplay {
+
+  public static final Set<SmartFormWidgetType> WIDGETS_WITH_VALUE_SETS = EnumSet.of(
+      SmartFormWidgetType.SELECT,
+      SmartFormWidgetType.SELECT_MULTIPLE);
 
   private final Map<String, SmartComponentLayoutDefinition> layoutsByName;
   private final List<ComponentConstraint> componentConstraints;
@@ -88,10 +94,7 @@ public final class ObjectDisplay {
     }
 
     return formWidgets(layoutsByName.get(layoutName))
-        .filter(w -> SmartFormWidgetType.SELECT == w.getType())
-        // .filter(w -> componentConstraints.stream()
-        // .noneMatch(c -> Objects.equals(c.getDataName(), w.getKey())
-        // && Boolean.FALSE.equals(c.getVisible())))
+        .filter(w -> WIDGETS_WITH_VALUE_SETS.contains(w.getType()))
         .map(SmartWidgetDefinition::getSelection)
         .filter(Objects::nonNull)
         .map(SelectionDefinition::getValueSetName)
