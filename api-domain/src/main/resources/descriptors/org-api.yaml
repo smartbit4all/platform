@@ -452,7 +452,7 @@ components:
       type: object
       description: |
         This object is saved to the Subjects with scoped URI to show the operations attached to the given subject.
-      required: [name, operation]
+      required: [subject, operations]
       properties:
         uri:
           type: string

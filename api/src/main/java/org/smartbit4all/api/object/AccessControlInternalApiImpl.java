@@ -308,7 +308,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
                 key -> new ACLSubjectModification(aclSubject.getSubject()));
         subjectModification.toAdd
             .add(new ACLOperationReference().operation(aclSubject.getOperation().getName())
-                .comment(aclSubject.getOperation().getComment()).entityUri(null)
+                .comment(aclSubject.getOperation().getComment()).entityUri(contextEntity)
                 .contextConfig(contextConfigCode));
       }
     }
@@ -345,6 +345,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
               constructSubjectId(subjectModification.subject),
               ACLSubjectOperations.class);
       refSubjectOperations.update(so -> {
+        if (so == null) {
+          so = new ACLSubjectOperations();
+          so.subject(subjectModification.subject);
+        }
         so.getOperations().removeIf(or -> subjectModification.toRemove
             .contains(constructOperationReferenceId(or.getOperation(), or.getEntityUri())));
         so.getOperations().addAll(subjectModification.toAdd);

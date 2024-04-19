@@ -51,7 +51,7 @@ public class ACLSubjectOperations {
   private Subject subject;
 
   public static final String OPERATIONS = "operations";
-  private List<ACLOperationReference> operations = null;
+  private List<ACLOperationReference> operations = new ArrayList<>();
 
   public ACLSubjectOperations() { 
   }
@@ -94,11 +94,12 @@ public class ACLSubjectOperations {
    * Get subject
    * @return subject
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SUBJECT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Subject getSubject() {
     return subject;
@@ -106,7 +107,7 @@ public class ACLSubjectOperations {
 
 
   @JsonProperty(SUBJECT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSubject(Subject subject) {
     this.subject = subject;
   }
@@ -119,9 +120,6 @@ public class ACLSubjectOperations {
   }
 
   public ACLSubjectOperations addOperationsItem(ACLOperationReference operationsItem) {
-    if (this.operations == null) {
-      this.operations = new ArrayList<>();
-    }
     this.operations.add(operationsItem);
     return this;
   }
@@ -130,11 +128,12 @@ public class ACLSubjectOperations {
    * The operation object of the given subject. 
    * @return operations
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The operation object of the given subject. ")
+  @ApiModelProperty(required = true, value = "The operation object of the given subject. ")
   @JsonProperty(OPERATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<ACLOperationReference> getOperations() {
     return operations;
@@ -142,7 +141,7 @@ public class ACLSubjectOperations {
 
 
   @JsonProperty(OPERATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperations(List<ACLOperationReference> operations) {
     this.operations = operations;
   }

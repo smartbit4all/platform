@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +12,7 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class SampleSubjectContributionApi extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -30,6 +30,10 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
   @Override
   public List<Subject> getUserSubjects(String modelName, URI userUri) {
     StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
+    URI subjectUri = map.uris().get(objectApi.getLatestUri(userUri).toString());
+    if (subjectUri == null) {
+      return Collections.emptyList();
+    }
     List<Subject> result = new ArrayList<>();
     result.add(new Subject()
         .model(modelName)

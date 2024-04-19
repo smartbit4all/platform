@@ -30,6 +30,9 @@ import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
+import org.smartbit4all.api.org.bean.ACLOperation;
+import org.smartbit4all.api.org.bean.ACLSubject;
+import org.smartbit4all.api.org.bean.ACLSubjectOperations;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
@@ -410,14 +413,43 @@ class ObjectApiTest {
       objectsToEval.add(objectApi.save(categoryNode));
     }
     {
+      Subject superGroupSubject = getSubject(allSubjects, superGroup);
       ObjectNode categoryNode =
           objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 4"));
+      URI uri = objectApi.save(categoryNode);
+      categoryNode = objectApi.loadLatest(uri);
       categoryNode.aspects().modify(
           AccessControlInternalApi.ACL_ASPECT, ACL.class,
-          acl -> new ACL().rootEntry(new ACLEntry().addEntriesItem(
-              new ACLEntry().subject(getSubject(allSubjects, superGroup)).addOperationsItem("read")
-                  .addOperationsItem("write"))));
+          acl -> {
+            acl = new ACL().rootEntry(new ACLEntry());
+            {
+              List<ACLSubject> subjects = new ArrayList<>();
+              subjects.add(new ACLSubject().subject(superGroupSubject)
+                  .operation(new ACLOperation().name("read")));
+              acl = accessControlInternalApi.applySubjects(acl, subjects,
+                  "read", objectApi.getLatestUri(uri), "ReadWriteCategory");
+            }
+            {
+              List<ACLSubject> subjects = new ArrayList<>();
+              subjects.add(new ACLSubject().subject(superGroupSubject)
+                  .operation(new ACLOperation().name("write")));
+              acl = accessControlInternalApi.applySubjects(acl, subjects,
+                  "write", objectApi.getLatestUri(uri), "ReadWriteCategory");
+            }
+            return acl;
+            // new ACL().rootEntry(new ACLEntry().addEntriesItem(
+            // new ACLEntry().subject(getSubject(allSubjects, superGroup))
+            // .addOperationsItem("read")
+            // .addOperationsItem("write")));
+          });
       objectsToEval.add(objectApi.save(categoryNode));
+
+      List<String> models = new ArrayList<>();
+      models.add(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL);
+      List<ACLSubjectOperations> userAllOperations =
+          accessControlInternalApi.getUserAllOperations(superUserUri, models);
+      // org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(1);
+
     }
     List<String> operations = Arrays.asList("read", "write");
     {
