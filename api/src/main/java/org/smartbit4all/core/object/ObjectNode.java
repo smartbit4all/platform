@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +28,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -405,7 +405,7 @@ public class ObjectNode {
   /**
    * If we have a mapping for copying values from one {@link ObjectNode} to another then this
    * operation will execute this. This is not saving! It operates only on the {@link ObjectNode}s.
-   * 
+   *
    * @param node The node the values coming from.
    * @param mappings The mapping between the vales.
    * @return This node returnd since it acts like a builder method.
@@ -751,12 +751,15 @@ public class ObjectNode {
    */
   public Stream<ObjectNode> allLoaded() {
     return Streams.concat(Stream.of(this), references.values().stream()
-        .filter(ref -> ref.isLoaded()).flatMap(ref -> ref.get().allLoaded()),
+        .filter(ref -> ref.isLoaded())
+        .flatMap(ref -> ref.get().allLoaded()),
         referenceLists.values().stream()
-            .flatMap(list -> list.stream().filter(ref -> ref.isLoaded())
+            .flatMap(list -> list.stream()
+                .filter(ref -> ref.isLoaded())
                 .flatMap(ref -> ref.get().allLoaded())),
         referenceMaps.values().stream()
-            .flatMap(map -> map.values().stream().filter(ref -> ref.isLoaded())
+            .flatMap(map -> map.values().stream()
+                .filter(ref -> ref.isLoaded())
                 .flatMap(ref -> ref.get().allLoaded())));
   }
 
