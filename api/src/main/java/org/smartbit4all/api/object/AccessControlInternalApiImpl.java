@@ -363,11 +363,6 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     return operation + StringConstant.DOT + contextEntity;
   }
 
-  private final String constructReferenceName(Subject subject) {
-    return subject.getModel() + StringConstant.UNDERLINE
-        + subject.getType();
-  }
-
   @Override
   public List<ACLSubjectOperations> getUserAllOperations(URI userUri,
       Collection<String> subjectModels) {
@@ -378,7 +373,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
             s -> {
               StoredReference<ACLSubjectOperations> ref =
                   collectionApi.reference(s.getRef(), SubjectManagementApi.SCHEMA,
-                      constructReferenceName(s), ACLSubjectOperations.class);
+                      constructSubjectId(s), ACLSubjectOperations.class);
               if (ref.exists()) {
                 return ref.get();
               }

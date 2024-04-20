@@ -448,7 +448,7 @@ class ObjectApiTest {
       models.add(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL);
       List<ACLSubjectOperations> userAllOperations =
           accessControlInternalApi.getUserAllOperations(superUserUri, models);
-      // org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(1);
+      org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(1);
 
     }
     List<String> operations = Arrays.asList("read", "write");
