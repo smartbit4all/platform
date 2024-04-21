@@ -175,19 +175,43 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   @Override
   public Object initModel(View view) {
-    HashMap<String, Object> model = new HashMap<>();
-    SmartComponentLayoutDefinition layout = createLayout(model);
+    Map<String, Object> model = createModel(view);
+    SmartComponentLayoutDefinition layout = createLayout(view, model);
     view.putComponentLayoutsItem("default", layout);
-    addGridsToLayout(model, view, layout);
+    addGridsToLayout(view, model, layout);
 
     return model;
   }
 
-  protected SmartComponentLayoutDefinition createLayout(HashMap<String, Object> model) {
+  /**
+   * Create the view's initial model.
+   *
+   * @param view View to be opened.
+   * @return
+   */
+  protected Map<String, Object> createModel(View view) {
+    return new HashMap<>();
+  }
+
+  /**
+   * Create initial layout based on the view and model.
+   *
+   * @param view View to be opened.
+   * @param model View's already created model.
+   * @return
+   */
+  protected SmartComponentLayoutDefinition createLayout(View view, Map<String, Object> model) {
     return container(LayoutDirection.VERTICAL);
   }
 
-  protected void addGridsToLayout(HashMap<String, Object> model, View view,
+  /**
+   * Add grids to already created layout based on view and model.
+   *
+   * @param view View to be or already opened.
+   * @param model View's already created model.
+   * @param layout View's already created layout.
+   */
+  protected void addGridsToLayout(View view, Map<String, Object> model,
       SmartComponentLayoutDefinition layout) {
     PageContext ctx = context(view);
     ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
