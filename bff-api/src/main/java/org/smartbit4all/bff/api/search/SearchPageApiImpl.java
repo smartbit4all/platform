@@ -94,8 +94,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       gridPageRenderCallback = parameters.get(
           PARAM_GRID_PAGE_RENDER_CALLBACK,
           InvocationRequest.class);
-      filterExpressionBuilderModel =
-          parameters.get(PARAM_FILTER_MODEL, FilterExpressionBuilderModel.class);
     }
 
     protected UUID viewUUID;
@@ -113,8 +111,6 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     protected InvocationRequest selectionCallback;
 
     protected InvocationRequest gridPageRenderCallback;
-
-    protected FilterExpressionBuilderModel filterExpressionBuilderModel;
   }
 
   public SearchPageApiImpl() {

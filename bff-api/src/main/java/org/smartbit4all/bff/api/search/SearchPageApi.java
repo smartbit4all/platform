@@ -1,7 +1,6 @@
 package org.smartbit4all.bff.api.search;
 
 import java.util.UUID;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -110,15 +109,6 @@ public interface SearchPageApi extends PageApi<SearchPageModel> {
    * each of row of the View's grid.
    */
   static final String PARAM_GRID_PAGE_RENDER_CALLBACK = "GRID_PAGE_RENDER_CALLBACK";
-
-  /**
-   * The FilterBuilderModel rendering callback parameter.
-   *
-   * <p>
-   * An {@link FilterExpressionBuilderModel} is expected to be passed under this parameter key. If
-   * the FilterExpressionBuilderModel is provided the page renders the filter editor widget
-   */
-  static final String PARAM_FILTER_MODEL = "PARAM_FILTER_MODEL";
 
   static final String FILTER_BUILDER_WIDGET_ID = "FILTER_BUILDER_WIDGET";
 
