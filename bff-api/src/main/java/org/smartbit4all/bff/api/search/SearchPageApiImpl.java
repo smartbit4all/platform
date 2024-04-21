@@ -58,7 +58,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   protected GridModelApi gridModelApi;
 
   @Autowired
-  private InvocationApi invocationApi;
+  protected InvocationApi invocationApi;
 
   @Autowired
   protected FilterExpressionBuilderApi filterExpressionBuilderApi;
