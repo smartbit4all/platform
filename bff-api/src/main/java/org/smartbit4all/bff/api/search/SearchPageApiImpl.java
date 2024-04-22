@@ -226,9 +226,11 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   /**
    * Override this to add specific list of object for the search page.
    *
+   * @param ctx PageContext describing current view.
+   * 
    * @return
    */
-  protected Stream<ObjectNode> getNodesToQuery() {
+  protected Stream<ObjectNode> getNodesToQuery(PageContext ctx) {
     return null;
   }
 
@@ -237,7 +239,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     FilterExpressionList filters = filterExpressionBuilderApi
         .getFilterExpressionList(ctx.viewUUID, FILTER_BUILDER_WIDGET_ID);
 
-    Stream<ObjectNode> nodesToQuery = getNodesToQuery();
+    Stream<ObjectNode> nodesToQuery = getNodesToQuery(ctx);
     if (nodesToQuery != null) {
       // We have an injected node stream to use.
       gridContent =
