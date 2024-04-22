@@ -737,8 +737,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             definitionName));
       }
     }, state -> {
-      if (state.getModificationsForEntries() != null
-          && !state.getModificationsForEntries().isEmpty()) {
+      if (state.getActiveModifications() != null
+          && !state.getActiveModifications().isEmpty()) {
         throw new IllegalStateException(MessageFormat.format(
             localeSettingApi.get("mdm.entriesbranch.notempty"),
             definitionName));

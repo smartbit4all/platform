@@ -45,6 +45,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
@@ -404,14 +405,20 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       return null;
     }
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
-    if (mdmDefinitionState != null) {
-      if (branchingStrategy == MDMBranchingStrategy.ENTRY) {
-        MDMModification modification = mdmDefinitionState.getModificationsForEntries()
-            .get(descriptor.getName());
-        return modification == null ? null : modification.getBranchUri();
+    if (mdmDefinitionState != null && sessionApi != null) {
+      User user = sessionApi.getUser();
+      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALEL) {
+        // By default we are looking for the first modification where the current user is editor..
+        Optional<MDMModification> firstModification =
+            mdmDefinitionState.getActiveModifications().stream()
+                .filter(m -> m.getCurrentEditors().contains(objectApi.getLatestUri(user.getUri())))
+                .findFirst();
+        return firstModification.isPresent() ? firstModification.get().getBranchUri() : null;
       }
       if (branchingStrategy == MDMBranchingStrategy.GLOBAL) {
         MDMModification modification = mdmDefinitionState.getGlobalModification();
+        // TODO modify the to get the branch if and only if the current user is editor in the
+        // modification.
         return modification == null ? null : modification.getBranchUri();
       }
       // TODO handle MDMBranchingStrategy.GROUP

@@ -24,19 +24,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets MDMBranchingStrategy
+ * Gets or Sets MDMModificationState
  */
-public enum MDMBranchingStrategy {
+public enum MDMModificationState {
   
-  NONE("none"),
+  ACTIVE("active"),
   
-  GLOBAL("global"),
+  EDITING("editing"),
   
-  STRICT_PARALEL("strict_paralel");
+  DISPOSED("disposed"),
+  
+  APPROVING("approving"),
+  
+  APPROVED("approved"),
+  
+  REJECTED("rejected");
 
   private String value;
 
-  MDMBranchingStrategy(String value) {
+  MDMModificationState(String value) {
     this.value = value;
   }
 
@@ -51,8 +57,8 @@ public enum MDMBranchingStrategy {
   }
 
   @JsonCreator
-  public static MDMBranchingStrategy fromValue(String value) {
-    for (MDMBranchingStrategy b : MDMBranchingStrategy.values()) {
+  public static MDMModificationState fromValue(String value) {
+    for (MDMModificationState b : MDMModificationState.values()) {
       if (b.value.equals(value)) {
         return b;
       }

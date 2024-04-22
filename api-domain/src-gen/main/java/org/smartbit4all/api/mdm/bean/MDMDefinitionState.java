@@ -23,9 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -39,7 +38,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMDefinitionState.URI,
   MDMDefinitionState.GLOBAL_MODIFICATION,
-  MDMDefinitionState.MODIFICATIONS_FOR_ENTRIES
+  MDMDefinitionState.ACTIVE_MODIFICATIONS,
+  MDMDefinitionState.ARCHIVE
 })
 @JsonTypeName("MDMDefinitionState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,8 +50,11 @@ public class MDMDefinitionState {
   public static final String GLOBAL_MODIFICATION = "globalModification";
   private MDMModification globalModification;
 
-  public static final String MODIFICATIONS_FOR_ENTRIES = "modificationsForEntries";
-  private Map<String, MDMModification> modificationsForEntries = null;
+  public static final String ACTIVE_MODIFICATIONS = "activeModifications";
+  private List<MDMModification> activeModifications = new ArrayList<>();
+
+  public static final String ARCHIVE = "archive";
+  private URI archive;
 
   public MDMDefinitionState() { 
   }
@@ -113,39 +116,65 @@ public class MDMDefinitionState {
   }
 
 
-  public MDMDefinitionState modificationsForEntries(Map<String, MDMModification> modificationsForEntries) {
+  public MDMDefinitionState activeModifications(List<MDMModification> activeModifications) {
     
-    this.modificationsForEntries = modificationsForEntries;
+    this.activeModifications = activeModifications;
     return this;
   }
 
-  public MDMDefinitionState putModificationsForEntriesItem(String key, MDMModification modificationsForEntriesItem) {
-    if (this.modificationsForEntries == null) {
-      this.modificationsForEntries = new HashMap<>();
-    }
-    this.modificationsForEntries.put(key, modificationsForEntriesItem);
+  public MDMDefinitionState addActiveModificationsItem(MDMModification activeModificationsItem) {
+    this.activeModifications.add(activeModificationsItem);
     return this;
   }
 
    /**
-   * Get modificationsForEntries
-   * @return modificationsForEntries
+   * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  
+   * @return activeModifications
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(MODIFICATIONS_FOR_ENTRIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @ApiModelProperty(required = true, value = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  ")
+  @JsonProperty(ACTIVE_MODIFICATIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, MDMModification> getModificationsForEntries() {
-    return modificationsForEntries;
+  public List<MDMModification> getActiveModifications() {
+    return activeModifications;
   }
 
 
-  @JsonProperty(MODIFICATIONS_FOR_ENTRIES)
+  @JsonProperty(ACTIVE_MODIFICATIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setActiveModifications(List<MDMModification> activeModifications) {
+    this.activeModifications = activeModifications;
+  }
+
+
+  public MDMDefinitionState archive(URI archive) {
+    
+    this.archive = archive;
+    return this;
+  }
+
+   /**
+   * This is a reference to the archived object. It refers always to the last archived modification and it is set when the a new modification is archived from the active modification list. 
+   * @return archive
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "This is a reference to the archived object. It refers always to the last archived modification and it is set when the a new modification is archived from the active modification list. ")
+  @JsonProperty(ARCHIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setModificationsForEntries(Map<String, MDMModification> modificationsForEntries) {
-    this.modificationsForEntries = modificationsForEntries;
+
+  public URI getArchive() {
+    return archive;
+  }
+
+
+  @JsonProperty(ARCHIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setArchive(URI archive) {
+    this.archive = archive;
   }
 
 
@@ -160,12 +189,13 @@ public class MDMDefinitionState {
     MDMDefinitionState mdMDefinitionState = (MDMDefinitionState) o;
     return Objects.equals(this.uri, mdMDefinitionState.uri) &&
         Objects.equals(this.globalModification, mdMDefinitionState.globalModification) &&
-        Objects.equals(this.modificationsForEntries, mdMDefinitionState.modificationsForEntries);
+        Objects.equals(this.activeModifications, mdMDefinitionState.activeModifications) &&
+        Objects.equals(this.archive, mdMDefinitionState.archive);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, globalModification, modificationsForEntries);
+    return Objects.hash(uri, globalModification, activeModifications, archive);
   }
 
   @Override
@@ -174,7 +204,8 @@ public class MDMDefinitionState {
     sb.append("class MDMDefinitionState {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    globalModification: ").append(toIndentedString(globalModification)).append("\n");
-    sb.append("    modificationsForEntries: ").append(toIndentedString(modificationsForEntries)).append("\n");
+    sb.append("    activeModifications: ").append(toIndentedString(activeModifications)).append("\n");
+    sb.append("    archive: ").append(toIndentedString(archive)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -58,9 +58,8 @@ components:
             type: string
             enum:
                 - none
-                - entry
-                - group
                 - global
+                - strict_paralel
         MDMEntryDescriptor:
             type: object
             description: |
@@ -218,26 +217,51 @@ components:
                 This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
                 application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
                 CollectionApi.reference to be able to identify by name.
-            required: [uri, branchForEntries]
+            required: [uri, activeModifications]
             properties:
                 uri:
                     type: string
                     format: uri
                     description: The uri of the object.
                 globalModification:
-                    description: The global branch modification if any.
+                    description: |
+                        The global branch modification if the branchng startegy is global. If it is active then there shouldn't be any
+                        item in the active modification list. 
                     $ref: "#/components/schemas/MDMModification"
-                modificationsForEntries:
-                    type: string
-                    additionalProperties:
+                activeModifications:
+                    description: |
+                        The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then
+                        the global modification should be empty. 
+                    type: array
+                    items:
                         $ref: "#/components/schemas/MDMModification"
+                archive:
+                    description: |
+                        This is a reference to the archived object. It refers always to the last archived modification and
+                        it is set when the a new modification is archived from the active modification list.
+                    type: string
+                    format: uri
         MDMModification:
             type: object
             description: |
                 This object represents an ongoing modification in an MDMDefinition. It is strored inline in 
                 the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy).
-            required: [descriptors]
+            required: [descriptors, currentEditors]
             properties:
+                uuid:
+                    description: |
+                        A unique identifier generated for the modification when it is created. It is used to identify the
+                        modification package and refer this.
+                    type: string
+                    format: uuid
+                name:
+                    description: |
+                        The human readable nam of the modification. It should be unique among the current active modifications.
+                    type: string
+                description:
+                    description: |
+                        The detailed description of the modification.
+                    type: string
                 branchUri:
                     type: string
                     format: uri
@@ -245,9 +269,35 @@ components:
                     type: UserActivityLog
                 updated:
                     type: UserActivityLog
+                currentEditors:
+                    description: |
+                        The current editors are the users working actively on the modification. For this a user must start the
+                        editing actively on the UI. After this the editing should be finished. If the editing is active then the user
+                        can see the editing state of the given modification. There can be only one modification where the given user is
+                        editor in a moment.
+                    type: array
+                    items:
+                        type: string
+                        format: uri
+                sentToApproval:
+                    description: |
+                        When the modification is sent to approval then this object is set to see who and when has been sent to
+                        approval.
+                    type: UserActivityLog
                 approver:
                     type: string
                     format: uri
+                approvedBy:
+                    description: |
+                        When the modification is approved by the approver and result is set.
+                    type: UserActivityLog
+                state:
+                    description: |
+                        The state of the modification. During the active phase the active, editing, approving, approved, rejected
+                        state is the valid. If we set the disposed then the modification is cancelled, disposed so it will be moved 
+                        into the  archival immediately. If the final state is rejected or approved then the modification canb be moved 
+                        into the archival also to see the proper final state.
+                    $ref: "#/components/schemas/MDMModificationState"
                 notes:
                     type: list
                     items:
@@ -263,7 +313,26 @@ components:
                     type: UserActivityLog
                 note:
                     type: string
-
+        MDMModificationState:
+            enum: [active, editing, disposed, approving, approved, rejected]
+        MDMModificationArchive:
+            type: object
+            description: |
+                This object is a history object that is saved when a modification is archived from the active modification list.
+                The archived 
+            required: [descriptors]
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                    description: The uri of the object.
+                modification:
+                    description: |
+                        The modification that was archived from the active modification list. 
+                    $ref: "#/components/schemas/MDMModification"
+                archival:
+                    description: The user and the time of the archival.
+                    type: UserActivityLog
         MDMEntryEditingObject:
             type: object
             description: |

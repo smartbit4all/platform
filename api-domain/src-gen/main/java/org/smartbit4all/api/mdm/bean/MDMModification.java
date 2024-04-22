@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,16 +42,32 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object represents an ongoing modification in an MDMDefinition. It is strored inline in  the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy). ")
 @JsonPropertyOrder({
+  MDMModification.UUID,
+  MDMModification.NAME,
+  MDMModification.DESCRIPTION,
   MDMModification.BRANCH_URI,
   MDMModification.CREATED,
   MDMModification.UPDATED,
+  MDMModification.CURRENT_EDITORS,
+  MDMModification.SENT_TO_APPROVAL,
   MDMModification.APPROVER,
+  MDMModification.APPROVED_BY,
+  MDMModification.STATE,
   MDMModification.NOTES,
   MDMModification.DESCRIPTORS
 })
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MDMModification {
+  public static final String UUID = "uuid";
+  private UUID uuid;
+
+  public static final String NAME = "name";
+  private String name;
+
+  public static final String DESCRIPTION = "description";
+  private String description;
+
   public static final String BRANCH_URI = "branchUri";
   private URI branchUri;
 
@@ -59,8 +77,20 @@ public class MDMModification {
   public static final String UPDATED = "updated";
   private UserActivityLog updated = null;
 
+  public static final String CURRENT_EDITORS = "currentEditors";
+  private List<URI> currentEditors = new ArrayList<>();
+
+  public static final String SENT_TO_APPROVAL = "sentToApproval";
+  private UserActivityLog sentToApproval = null;
+
   public static final String APPROVER = "approver";
   private URI approver;
+
+  public static final String APPROVED_BY = "approvedBy";
+  private UserActivityLog approvedBy = null;
+
+  public static final String STATE = "state";
+  private MDMModificationState state;
 
   public static final String NOTES = "notes";
   private List<MDMModificationNote> notes = null;
@@ -70,6 +100,88 @@ public class MDMModification {
 
   public MDMModification() { 
   }
+
+  public MDMModification uuid(UUID uuid) {
+    
+    this.uuid = uuid;
+    return this;
+  }
+
+   /**
+   * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. 
+   * @return uuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. ")
+  @JsonProperty(UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getUuid() {
+    return uuid;
+  }
+
+
+  @JsonProperty(UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
+  }
+
+
+  public MDMModification name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * The human readable nam of the modification. It should be unique among the current active modifications. 
+   * @return name
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The human readable nam of the modification. It should be unique among the current active modifications. ")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public MDMModification description(String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * The detailed description of the modification. 
+   * @return description
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The detailed description of the modification. ")
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
 
   public MDMModification branchUri(URI branchUri) {
     
@@ -155,6 +267,68 @@ public class MDMModification {
   }
 
 
+  public MDMModification currentEditors(List<URI> currentEditors) {
+    
+    this.currentEditors = currentEditors;
+    return this;
+  }
+
+  public MDMModification addCurrentEditorsItem(URI currentEditorsItem) {
+    this.currentEditors.add(currentEditorsItem);
+    return this;
+  }
+
+   /**
+   * The current editors are the users working actively on the modification. For this a user must start the editing actively on the UI. After this the editing should be finished. If the editing is active then the user can see the editing state of the given modification. There can be only one modification where the given user is editor in a moment. 
+   * @return currentEditors
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The current editors are the users working actively on the modification. For this a user must start the editing actively on the UI. After this the editing should be finished. If the editing is active then the user can see the editing state of the given modification. There can be only one modification where the given user is editor in a moment. ")
+  @JsonProperty(CURRENT_EDITORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<URI> getCurrentEditors() {
+    return currentEditors;
+  }
+
+
+  @JsonProperty(CURRENT_EDITORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setCurrentEditors(List<URI> currentEditors) {
+    this.currentEditors = currentEditors;
+  }
+
+
+  public MDMModification sentToApproval(UserActivityLog sentToApproval) {
+    
+    this.sentToApproval = sentToApproval;
+    return this;
+  }
+
+   /**
+   * When the modification is sent to approval then this object is set to see who and when has been sent to approval. 
+   * @return sentToApproval
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "When the modification is sent to approval then this object is set to see who and when has been sent to approval. ")
+  @JsonProperty(SENT_TO_APPROVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UserActivityLog getSentToApproval() {
+    return sentToApproval;
+  }
+
+
+  @JsonProperty(SENT_TO_APPROVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSentToApproval(UserActivityLog sentToApproval) {
+    this.sentToApproval = sentToApproval;
+  }
+
+
   public MDMModification approver(URI approver) {
     
     this.approver = approver;
@@ -180,6 +354,62 @@ public class MDMModification {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApprover(URI approver) {
     this.approver = approver;
+  }
+
+
+  public MDMModification approvedBy(UserActivityLog approvedBy) {
+    
+    this.approvedBy = approvedBy;
+    return this;
+  }
+
+   /**
+   * When the modification is approved by the approver and result is set. 
+   * @return approvedBy
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "When the modification is approved by the approver and result is set. ")
+  @JsonProperty(APPROVED_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UserActivityLog getApprovedBy() {
+    return approvedBy;
+  }
+
+
+  @JsonProperty(APPROVED_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApprovedBy(UserActivityLog approvedBy) {
+    this.approvedBy = approvedBy;
+  }
+
+
+  public MDMModification state(MDMModificationState state) {
+    
+    this.state = state;
+    return this;
+  }
+
+   /**
+   * Get state
+   * @return state
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MDMModificationState getState() {
+    return state;
+  }
+
+
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setState(MDMModificationState state) {
+    this.state = state;
   }
 
 
@@ -262,27 +492,41 @@ public class MDMModification {
       return false;
     }
     MDMModification mdMModification = (MDMModification) o;
-    return Objects.equals(this.branchUri, mdMModification.branchUri) &&
+    return Objects.equals(this.uuid, mdMModification.uuid) &&
+        Objects.equals(this.name, mdMModification.name) &&
+        Objects.equals(this.description, mdMModification.description) &&
+        Objects.equals(this.branchUri, mdMModification.branchUri) &&
         Objects.equals(this.created, mdMModification.created) &&
         Objects.equals(this.updated, mdMModification.updated) &&
+        Objects.equals(this.currentEditors, mdMModification.currentEditors) &&
+        Objects.equals(this.sentToApproval, mdMModification.sentToApproval) &&
         Objects.equals(this.approver, mdMModification.approver) &&
+        Objects.equals(this.approvedBy, mdMModification.approvedBy) &&
+        Objects.equals(this.state, mdMModification.state) &&
         Objects.equals(this.notes, mdMModification.notes) &&
         Objects.equals(this.descriptors, mdMModification.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchUri, created, updated, approver, notes, descriptors);
+    return Objects.hash(uuid, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approvedBy, state, notes, descriptors);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMModification {\n");
+    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    updated: ").append(toIndentedString(updated)).append("\n");
+    sb.append("    currentEditors: ").append(toIndentedString(currentEditors)).append("\n");
+    sb.append("    sentToApproval: ").append(toIndentedString(sentToApproval)).append("\n");
     sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
+    sb.append("    approvedBy: ").append(toIndentedString(approvedBy)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");
