@@ -541,10 +541,19 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         .putParametersItem(GenericPageApi.PARAM_MODEL, model)
         .actions(UiActions.builder()
             .add(new UiAction()
+                .code(GenericPageApi.ACTION_CLOSE_VIEW)
+                .submit(false)
+                .descriptor(new UiActionDescriptor()
+                    .title("Mégsem")
+                    .color(UiActions.Color.ACCENT)
+                    .type(UiActionButtonType.NORMAL)
+                    .feedbackType(UiActionFeedbackType.NONE)))
+            .add(new UiAction()
                 .code(SAVE_COMMENT)
                 .submit(true)
                 .descriptor(new UiActionDescriptor()
                     .title("Rendben")
+                    .color(UiActions.Color.PRIMARY)
                     .type(UiActionButtonType.RAISED)
                     .feedbackType(UiActionFeedbackType.NONE)))
             .build())
@@ -556,6 +565,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
+    ACL acl = getAclFromObject(ctx.getAclObjectNode().getObject(ACLObject.class),
+        gridConfig.getAclName());
+    checkForExistingSubjects(acl, subjects, gridConfig);
     if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
       showEditComment("", invocationApi.builder(AclGenericPageApi.class)
           .build(api -> api.saveSubjectSelectedWithComment(
@@ -566,6 +578,21 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
               gridId)));
     } else {
       saveSubjectSelectedInternal(viewUuid, subjects, gridId, null);
+    }
+  }
+
+  private void checkForExistingSubjects(ACL acl, List<Subject> subjects, AclGridConfig gridConfig) {
+    for (Subject subject : subjects) {
+      if (checkSubjectIsAlreadyInAcl(acl, subject.getRef())) {
+        String message = localeSettingApi.get(PREFIX, "ALREADY_SELECTED");
+        List<String> names = subjectManagementApi.getDisplayValue(gridConfig.getAclModel(),
+            Arrays.asList(subject));
+        String name = names.size() == 1 ? names.get(0) : "N/A";
+        message = MessageFormat.format(
+            message,
+            name, localeSettingApi.get(PREFIX, gridConfig.getAclName()));
+        throw new IllegalStateException(message);
+      }
     }
   }
 
@@ -586,12 +613,8 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
       String operation = gridConfig.getOperation();
       List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
-
+      checkForExistingSubjects(acl, subjects, gridConfig);
       for (Subject subject : subjects) {
-        if (checkSubjectIsAlreadyInAcl(acl, subject.getRef())) {
-          throw new RuntimeException(
-              String.format("Subject reference by %s is already in ACL", subject));
-        }
         currentSubjects.add(
             new ACLSubject()
                 .operation(
