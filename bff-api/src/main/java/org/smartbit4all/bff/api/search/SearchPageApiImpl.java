@@ -96,9 +96,9 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
           InvocationRequest.class);
     }
 
-    protected UUID viewUUID;
+    public UUID viewUUID;
 
-    protected View view;
+    public View view;
 
     protected SearchIndex<?> searchIndex;
 
@@ -227,7 +227,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
    * Override this to add specific list of object for the search page.
    *
    * @param ctx PageContext describing current view.
-   * 
+   *
    * @return
    */
   protected Stream<ObjectNode> getNodesToQuery(PageContext ctx) {
