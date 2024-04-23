@@ -219,14 +219,15 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       String name = config.getAclName();
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, name);
       String gridId = config.getAclName();
-      initGridInView(view, viewUuid, config);
+      initGridInView(view, config);
       refreshGrid(viewUuid, acl, config);
       layout.addComponentsItem(createGridLayout(gridId));
     }
   }
 
-  protected void initGridInView(View view, UUID viewUuid, AclGridConfig config) {
+  protected void initGridInView(View view, AclGridConfig config) {
     String gridId = config.getAclName();
+    UUID viewUuid = view.getUuid();
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
       createGridModel(viewUuid, gridId, config.getSearchPageConfig());
@@ -577,7 +578,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   private void checkForExistingSubjects(ACL acl, List<Subject> subjects, AclGridConfig gridConfig) {
     for (Subject subject : subjects) {
-      if (checkSubjectIsAlreadyInAcl(acl, subject.getRef())) {
+      if (checkSubjectIsAlreadyInAcl(acl, subject.getRef(), gridConfig.getOperation())) {
         String message = localeSettingApi.get(PREFIX, "ALREADY_SELECTED");
         List<String> names = subjectManagementApi.getDisplayValue(gridConfig.getAclModel(),
             Arrays.asList(subject));
@@ -627,13 +628,10 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     objectApi.save(ctx.getAclObjectNode());
   }
 
-  private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
-    if (acl == null || acl.getRootEntry() == null || acl.getRootEntry().getEntries() == null) {
-      return false;
-    }
-    return acl.getRootEntry().getEntries().stream().map(entry -> entry.getSubject().getRef())
-        .collect(toList())
-        .contains(subjectUri);
+  private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri, String operation) {
+    return accessControlInternalApi.getSubjects(acl, operation).stream()
+        .map(aclSubject -> aclSubject.getSubject().getRef())
+        .anyMatch(uri -> objectApi.equalsIgnoreVersion(uri, subjectUri));
   }
 
   @Override
