@@ -1,13 +1,18 @@
 package org.smartbit4all.api.object;
 
 import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,7 +28,6 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import com.google.common.base.Strings;
 
 public final class ObjectValidations {
 
@@ -364,6 +368,42 @@ public final class ObjectValidations {
         .filter(path -> !hasValue(viewModel, path))
         .map(ObjectValidations::mandatoryItem)
         .collect(collectingAndThen(toList(), ObjectValidations::of));
+  }
+
+  public static boolean hasEnabledField(ViewConstraint viewConstraint,
+      SmartComponentLayoutDefinition layout) {
+    if (viewConstraint == null) {
+      return true;
+    }
+
+    final List<ComponentConstraint> constraints = viewConstraint.getComponentConstraints();
+    if (constraints == null || constraints.isEmpty()) {
+      return true;
+    }
+
+    final List<String> widgets;
+    if (layout != null) {
+      widgets = flattenLayout(layout)
+          .flatMap(it -> formWidgets(it))
+          .map(SmartWidgetDefinition::getKey)
+          .collect(toList());
+    } else {
+      widgets = Collections.emptyList();
+    }
+
+    // get the last constraint for each field
+    Map<String, Boolean> fieldsEnabled = constraints.stream()
+        .collect(groupingBy(it -> it.getDataName()))
+        .values().stream()
+        .flatMap(v -> v.stream()
+            .reduce((first, secodm) -> secodm).stream())
+        .collect(Collectors.toMap(ComponentConstraint::getDataName, c -> isTrue(c.getEnabled())));
+
+    Optional<String> enabledFields = widgets.stream()
+        .filter(it -> !fieldsEnabled.containsKey(it) || fieldsEnabled.get(it))
+        .findFirst();
+
+    return enabledFields.isPresent();
   }
 
   private static Stream<SmartComponentLayoutDefinition> flattenLayout(
