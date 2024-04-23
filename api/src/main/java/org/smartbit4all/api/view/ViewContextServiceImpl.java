@@ -581,7 +581,8 @@ public class ViewContextServiceImpl implements ViewContextService {
         .layouts(view.getLayouts())
         .componentLayouts(view.getComponentLayouts())
         .widgets(new ArrayList<>(view.getWidgetModels().keySet()))
-        .style(view.getStyle());
+        .style(view.getStyle())
+        .parentStyle(view.getParentStyle());
   }
 
   @Override

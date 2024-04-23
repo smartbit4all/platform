@@ -68,7 +68,8 @@ import javax.validation.Valid;
   View.CALLBACKS,
   View.LAYOUTS,
   View.COMPONENT_LAYOUTS,
-  View.STYLE
+  View.STYLE,
+  View.PARENT_STYLE
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -141,6 +142,9 @@ public class View {
 
   public static final String STYLE = "style";
   private Style style;
+
+  public static final String PARENT_STYLE = "parentStyle";
+  private Style parentStyle;
 
   public View() { 
   }
@@ -857,6 +861,34 @@ public class View {
   }
 
 
+  public View parentStyle(Style parentStyle) {
+    
+    this.parentStyle = parentStyle;
+    return this;
+  }
+
+   /**
+   * Get parentStyle
+   * @return parentStyle
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(PARENT_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getParentStyle() {
+    return parentStyle;
+  }
+
+
+  @JsonProperty(PARENT_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentStyle(Style parentStyle) {
+    this.parentStyle = parentStyle;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -888,12 +920,13 @@ public class View {
         Objects.equals(this.callbacks, view.callbacks) &&
         Objects.equals(this.layouts, view.layouts) &&
         Objects.equals(this.componentLayouts, view.componentLayouts) &&
-        Objects.equals(this.style, view.style);
+        Objects.equals(this.style, view.style) &&
+        Objects.equals(this.parentStyle, view.parentStyle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style, parentStyle);
   }
 
   @Override
@@ -923,6 +956,7 @@ public class View {
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
+    sb.append("    parentStyle: ").append(toIndentedString(parentStyle)).append("\n");
     sb.append("}");
     return sb.toString();
   }

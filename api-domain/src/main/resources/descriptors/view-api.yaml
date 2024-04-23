@@ -621,6 +621,8 @@ components:
             type: SmartComponentLayoutDefinition
         style:
           $ref: '#/components/schemas/Style'
+        parentStyle:
+          $ref: '#/components/schemas/Style'
     ViewEventHandler:
       type: object
       description: |
@@ -711,6 +713,8 @@ components:
           items:
             type: string
         style:
+          $ref: '#/components/schemas/Style'
+        parentStyle:
           $ref: '#/components/schemas/Style'
     ComponentModelChange:
       type: object

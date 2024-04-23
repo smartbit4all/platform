@@ -52,7 +52,8 @@ import javax.validation.Valid;
   ComponentModel.ACTIONS,
   ComponentModel.VALUE_SETS,
   ComponentModel.WIDGETS,
-  ComponentModel.STYLE
+  ComponentModel.STYLE,
+  ComponentModel.PARENT_STYLE
 })
 @JsonTypeName("ComponentModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -86,6 +87,9 @@ public class ComponentModel {
 
   public static final String STYLE = "style";
   private Style style;
+
+  public static final String PARENT_STYLE = "parentStyle";
+  private Style parentStyle;
 
   public ComponentModel() { 
   }
@@ -411,6 +415,34 @@ public class ComponentModel {
   }
 
 
+  public ComponentModel parentStyle(Style parentStyle) {
+    
+    this.parentStyle = parentStyle;
+    return this;
+  }
+
+   /**
+   * Get parentStyle
+   * @return parentStyle
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(PARENT_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getParentStyle() {
+    return parentStyle;
+  }
+
+
+  @JsonProperty(PARENT_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentStyle(Style parentStyle) {
+    this.parentStyle = parentStyle;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -429,12 +461,13 @@ public class ComponentModel {
         Objects.equals(this.actions, componentModel.actions) &&
         Objects.equals(this.valueSets, componentModel.valueSets) &&
         Objects.equals(this.widgets, componentModel.widgets) &&
-        Objects.equals(this.style, componentModel.style);
+        Objects.equals(this.style, componentModel.style) &&
+        Objects.equals(this.parentStyle, componentModel.parentStyle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets, style);
+    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets, style, parentStyle);
   }
 
   @Override
@@ -451,6 +484,7 @@ public class ComponentModel {
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
+    sb.append("    parentStyle: ").append(toIndentedString(parentStyle)).append("\n");
     sb.append("}");
     return sb.toString();
   }
