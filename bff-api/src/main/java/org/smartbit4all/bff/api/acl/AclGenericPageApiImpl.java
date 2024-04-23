@@ -30,8 +30,6 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
-import org.smartbit4all.api.org.bean.ACLEntry;
-import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
 import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLSubject;
@@ -219,18 +217,12 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     UUID viewUuid = view.getUuid();
     for (AclGridConfig config : ctx.getConfig().getGridConfigs()) {
       String name = config.getAclName();
-      ACL acl = getAclFromObject(aclObject, name);
+      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, name);
       String gridId = config.getAclName();
       initGridInView(view, viewUuid, config);
       refreshGrid(viewUuid, acl, config);
       layout.addComponentsItem(createGridLayout(gridId));
     }
-  }
-
-  protected ACL getAclFromObject(ACLObject aclObject, String name) {
-    return aclObject.getMap().computeIfAbsent(
-        name,
-        (s) -> new ACL().rootEntry(new ACLEntry().entryKind(EntryKindEnum.SET)));
   }
 
   protected void initGridInView(View view, UUID viewUuid, AclGridConfig config) {
@@ -424,7 +416,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
         ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
-          ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
+          ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
           String operation = gridConfig.getOperation();
           List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
           boolean anyChange = subjects.removeIf(
@@ -455,7 +447,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
         ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
-        ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
+        ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
         String operation = gridConfig.getOperation();
         List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
         Optional<ACLSubject> toUpdate = subjects.stream()
@@ -491,7 +483,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
       if (subject != null && subject.getRef() != null) {
         ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
-          ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
+          ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
           String operation = gridConfig.getOperation();
           List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
           Optional<ACLSubject> toUpdate = subjects.stream()
@@ -566,7 +558,8 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
-    ACL acl = getAclFromObject(ctx.getAclObjectNode().getObject(ACLObject.class),
+    ACL acl = accessControlInternalApi.getAclFromObject(
+        ctx.getAclObjectNode().getObject(ACLObject.class),
         gridConfig.getAclName());
     checkForExistingSubjects(acl, subjects, gridConfig);
     if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
@@ -611,7 +604,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
     ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
-      ACL acl = getAclFromObject(aclObject, gridConfig.getAclName());
+      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
       String operation = gridConfig.getOperation();
       List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
       checkForExistingSubjects(acl, subjects, gridConfig);

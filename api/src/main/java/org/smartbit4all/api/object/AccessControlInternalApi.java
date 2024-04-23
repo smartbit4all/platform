@@ -81,7 +81,7 @@ public interface AccessControlInternalApi {
   /**
    * Modify the ACL object and set the list of subjects for the subjects parameter. In the mean time
    * if
-   * 
+   *
    * @param acl The ACL object.
    * @param subjects The subject list to set.
    * @param operation The operation to use.
@@ -92,7 +92,7 @@ public interface AccessControlInternalApi {
   /**
    * Modify the ACL object and set the list of subjects for the subjects parameter. In the mean time
    * if
-   * 
+   *
    * @param acl The ACL object.
    * @param subjects The subject list to set.
    * @param operation The operation to use.
@@ -107,10 +107,12 @@ public interface AccessControlInternalApi {
 
   /**
    * This operation gather all referred operations for the subjects of the user.
-   * 
+   *
    * @param userUri
    * @return
    */
   List<ACLSubjectOperations> getUserAllOperations(URI userUri, Collection<String> subjectModels);
+
+  ACL getAclFromObject(ACLObject aclObject, String name);
 
 }

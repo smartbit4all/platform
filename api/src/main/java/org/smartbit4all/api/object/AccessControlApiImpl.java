@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACL;
-import org.smartbit4all.api.org.bean.ACLEntry;
-import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
 import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLSubject;
@@ -26,7 +24,7 @@ public class AccessControlApiImpl implements AccessControlApi {
       List<ACLOperation> operations) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     aclObjectNode.modify(ACLObject.class, aclObject -> {
-      ACL acl = getAclFromObject(aclObject, aclName);
+      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
       for (ACLOperation operation : operations) {
         List<ACLSubject> currentSubjects =
             accessControlInternalApi.getSubjects(acl, operation.getName());
@@ -51,7 +49,7 @@ public class AccessControlApiImpl implements AccessControlApi {
 
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     aclObjectNode.modify(ACLObject.class, aclObject -> {
-      ACL acl = getAclFromObject(aclObject, aclName);
+      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
       for (String operation : operations) {
         List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
 
@@ -74,7 +72,7 @@ public class AccessControlApiImpl implements AccessControlApi {
   public boolean isSubjectOfAcl(URI aclObjectUri, URI subject, String aclName, String operations) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     ACLObject aclObject = aclObjectNode.getObject(ACLObject.class);
-    ACL acl = getAclFromObject(aclObject, aclName);
+    ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
     return checkSubjectIsAlreadyInAcl(acl, subject);
   }
 
@@ -85,12 +83,6 @@ public class AccessControlApiImpl implements AccessControlApi {
     return acl.getRootEntry().getEntries().stream().map(entry -> entry.getSubject().getRef())
         .collect(toList())
         .contains(subjectUri);
-  }
-
-  protected ACL getAclFromObject(ACLObject aclObject, String name) {
-    return aclObject.getMap().computeIfAbsent(
-        name,
-        (s) -> new ACL().rootEntry(new ACLEntry().entryKind(EntryKindEnum.SET)));
   }
 
 }
