@@ -102,6 +102,10 @@ components:
         cssLabelClass:
           type: string
           description: Optional css class of the label of the widget
+        style:
+          type: Style
+        labelStyle:
+          type: Style
         isPassword:
           type: boolean
           description: Defines if the widget is a password input

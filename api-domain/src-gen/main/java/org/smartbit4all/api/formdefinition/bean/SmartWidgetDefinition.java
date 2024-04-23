@@ -32,6 +32,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetHint;
 import org.smartbit4all.api.formdefinition.bean.ValueChangeMode;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.bean.IconPosition;
+import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -55,6 +56,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.SHOW_LABEL,
   SmartWidgetDefinition.CSS_CLASS,
   SmartWidgetDefinition.CSS_LABEL_CLASS,
+  SmartWidgetDefinition.STYLE,
+  SmartWidgetDefinition.LABEL_STYLE,
   SmartWidgetDefinition.IS_PASSWORD,
   SmartWidgetDefinition.VALUES,
   SmartWidgetDefinition.CHILDREN_COMPONENTS,
@@ -110,6 +113,12 @@ public class SmartWidgetDefinition {
 
   public static final String CSS_LABEL_CLASS = "cssLabelClass";
   private String cssLabelClass;
+
+  public static final String STYLE = "style";
+  private Style style = null;
+
+  public static final String LABEL_STYLE = "labelStyle";
+  private Style labelStyle = null;
 
   public static final String IS_PASSWORD = "isPassword";
   private Boolean isPassword = false;
@@ -509,6 +518,62 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * Get style
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
+  public SmartWidgetDefinition labelStyle(Style labelStyle) {
+    
+    this.labelStyle = labelStyle;
+    return this;
+  }
+
+   /**
+   * Get labelStyle
+   * @return labelStyle
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(LABEL_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getLabelStyle() {
+    return labelStyle;
+  }
+
+
+  @JsonProperty(LABEL_STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLabelStyle(Style labelStyle) {
+    this.labelStyle = labelStyle;
+  }
+
+
   public SmartWidgetDefinition isPassword(Boolean isPassword) {
     
     this.isPassword = isPassword;
@@ -905,6 +970,8 @@ public class SmartWidgetDefinition {
         Objects.equals(this.showLabel, smartWidgetDefinition.showLabel) &&
         Objects.equals(this.cssClass, smartWidgetDefinition.cssClass) &&
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
+        Objects.equals(this.style, smartWidgetDefinition.style) &&
+        Objects.equals(this.labelStyle, smartWidgetDefinition.labelStyle) &&
         Objects.equals(this.isPassword, smartWidgetDefinition.isPassword) &&
         Objects.equals(this.values, smartWidgetDefinition.values) &&
         Objects.equals(this.childrenComponents, smartWidgetDefinition.childrenComponents) &&
@@ -922,7 +989,7 @@ public class SmartWidgetDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId);
   }
 
   @Override
@@ -942,6 +1009,8 @@ public class SmartWidgetDefinition {
     sb.append("    showLabel: ").append(toIndentedString(showLabel)).append("\n");
     sb.append("    cssClass: ").append(toIndentedString(cssClass)).append("\n");
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
+    sb.append("    labelStyle: ").append(toIndentedString(labelStyle)).append("\n");
     sb.append("    isPassword: ").append(toIndentedString(isPassword)).append("\n");
     sb.append("    values: ").append(toIndentedString(values)).append("\n");
     sb.append("    childrenComponents: ").append(toIndentedString(childrenComponents)).append("\n");
