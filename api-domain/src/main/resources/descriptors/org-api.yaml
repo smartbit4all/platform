@@ -445,8 +445,12 @@ components:
           type: string
         comment:
           description: |
-            The only property that is named is a comment that can be set to specify the reason of
-            having this operation set for the given subject.
+            This is a comment that can be set to specify the reason of having this operation set for 
+            the given subject.
+          type: string
+        type:
+          description: |
+            If needed, a type can specified for this ALCSubject's operation.
           type: string
     ACLSubjectOperations:
       type: object

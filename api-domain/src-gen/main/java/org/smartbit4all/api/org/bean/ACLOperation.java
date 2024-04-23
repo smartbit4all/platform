@@ -33,7 +33,8 @@ import javax.validation.Valid;
 @ApiModel(description = "If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
 @JsonPropertyOrder({
   ACLOperation.NAME,
-  ACLOperation.COMMENT
+  ACLOperation.COMMENT,
+  ACLOperation.TYPE
 })
 @JsonTypeName("ACLOperation")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,6 +44,9 @@ public class ACLOperation {
 
   public static final String COMMENT = "comment";
   private String comment;
+
+  public static final String TYPE = "type";
+  private String type;
 
   public ACLOperation() { 
   }
@@ -82,11 +86,11 @@ public class ACLOperation {
   }
 
    /**
-   * The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. 
+   * This is a comment that can be set to specify the reason of having this operation set for  the given subject. 
    * @return comment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
+  @ApiModelProperty(value = "This is a comment that can be set to specify the reason of having this operation set for  the given subject. ")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,6 +106,33 @@ public class ACLOperation {
   }
 
 
+  public ACLOperation type(String type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * If needed, a type can specified for this ALCSubject&#39;s operation. 
+   * @return type
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If needed, a type can specified for this ALCSubject's operation. ")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(String type) {
+    this.type = type;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,12 +143,13 @@ public class ACLOperation {
     }
     ACLOperation acLOperation = (ACLOperation) o;
     return Objects.equals(this.name, acLOperation.name) &&
-        Objects.equals(this.comment, acLOperation.comment);
+        Objects.equals(this.comment, acLOperation.comment) &&
+        Objects.equals(this.type, acLOperation.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, comment);
+    return Objects.hash(name, comment, type);
   }
 
   @Override
@@ -126,6 +158,7 @@ public class ACLOperation {
     sb.append("class ACLOperation {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }
