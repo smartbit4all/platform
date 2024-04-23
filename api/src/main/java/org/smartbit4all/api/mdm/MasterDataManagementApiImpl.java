@@ -761,12 +761,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
-  public URI initiateBranchForEntry(String definition, String title, String entryName) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public URI mergeGlobal(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = mergeGlobalInner(definitionName);
     return stateWrapper.getCurrentStateUri();

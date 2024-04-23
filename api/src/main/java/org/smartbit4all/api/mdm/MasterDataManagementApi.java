@@ -126,11 +126,22 @@ public interface MasterDataManagementApi {
 
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
+  /**
+   * Initiate the global branch for the definition.
+   * 
+   * @param definition The name of the definition.
+   * @param title The title of the editing.
+   * @return The newly created or the exiting branch uri.
+   */
   URI initiateGlobalBranch(String definition, String title);
 
+  /**
+   * Return the global branch if any.
+   * 
+   * @param definition
+   * @return
+   */
   URI getGlobalBranch(String definition);
-
-  URI initiateBranchForEntry(String definition, String title, String entryName);
 
   /**
    * The current editing branch will be merged into be main branch. From that moment the
