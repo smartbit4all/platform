@@ -337,7 +337,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     // At last we remove the unnecessary entries.
     if (!toDelete.isEmpty()) {
       acl.getRootEntry().getEntries()
-          .removeIf(e -> toDelete.contains(subjectManagementApi.toString(e.getSubject())));
+
+          .removeIf(e -> e.getOperations().isEmpty() && e.getOperationObjects().isEmpty()
+              && toDelete.contains(subjectManagementApi.toString(e.getSubject())));
     }
 
     // Now we save here subject by subject the changes.
