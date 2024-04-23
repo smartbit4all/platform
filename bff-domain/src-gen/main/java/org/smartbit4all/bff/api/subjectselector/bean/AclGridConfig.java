@@ -36,6 +36,7 @@ import javax.validation.Valid;
  * AclGridConfig
  */
 @JsonPropertyOrder({
+  AclGridConfig.GRID_ID,
   AclGridConfig.ACL_MODEL,
   AclGridConfig.ACL_NAME,
   AclGridConfig.OPERATION,
@@ -54,6 +55,9 @@ import javax.validation.Valid;
 @JsonTypeName("AclGridConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class AclGridConfig {
+  public static final String GRID_ID = "gridId";
+  private String gridId;
+
   public static final String ACL_MODEL = "aclModel";
   private String aclModel;
 
@@ -133,6 +137,33 @@ public class AclGridConfig {
 
   public AclGridConfig() { 
   }
+
+  public AclGridConfig gridId(String gridId) {
+    
+    this.gridId = gridId;
+    return this;
+  }
+
+   /**
+   * If necessary, we can specify explicit gridId, otherwise aclName will be used.
+   * @return gridId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If necessary, we can specify explicit gridId, otherwise aclName will be used.")
+  @JsonProperty(GRID_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getGridId() {
+    return gridId;
+  }
+
+
+  @JsonProperty(GRID_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGridId(String gridId) {
+    this.gridId = gridId;
+  }
+
 
   public AclGridConfig aclModel(String aclModel) {
     
@@ -536,7 +567,8 @@ public class AclGridConfig {
       return false;
     }
     AclGridConfig aclGridConfig = (AclGridConfig) o;
-    return Objects.equals(this.aclModel, aclGridConfig.aclModel) &&
+    return Objects.equals(this.gridId, aclGridConfig.gridId) &&
+        Objects.equals(this.aclModel, aclGridConfig.aclModel) &&
         Objects.equals(this.aclName, aclGridConfig.aclName) &&
         Objects.equals(this.operation, aclGridConfig.operation) &&
         Objects.equals(this.selectionMode, aclGridConfig.selectionMode) &&
@@ -554,13 +586,14 @@ public class AclGridConfig {
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues, minNoOfRows, maxNoOfRows, hasComment, addEnabled, deleteEnabled);
+    return Objects.hash(gridId, aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues, minNoOfRows, maxNoOfRows, hasComment, addEnabled, deleteEnabled);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AclGridConfig {\n");
+    sb.append("    gridId: ").append(toIndentedString(gridId)).append("\n");
     sb.append("    aclModel: ").append(toIndentedString(aclModel)).append("\n");
     sb.append("    aclName: ").append(toIndentedString(aclName)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");

@@ -43,6 +43,9 @@ components:
       type: object
       required: [subjectTypes,subjectValues]
       properties:
+        gridId:
+          description: If necessary, we can specify explicit gridId, otherwise aclName will be used.
+          type: string
         aclModel:
           type: string
         aclName:

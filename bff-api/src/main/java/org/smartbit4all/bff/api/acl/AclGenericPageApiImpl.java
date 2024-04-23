@@ -121,7 +121,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     protected AclGridConfig findGridConfig(String name) {
       Objects.requireNonNull(name, "GridConfig name cannot be null");
       return getConfig().getGridConfigs().stream()
-          .filter(c -> name.equals(c.getAclName()))
+          .filter(c -> name.equals(getGridId(c)))
           .findFirst()
           .orElseThrow(() -> new IllegalArgumentException("Invalid GridConfigName"));
     }
@@ -218,17 +218,15 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
     UUID viewUuid = view.getUuid();
     for (AclGridConfig config : ctx.getConfig().getGridConfigs()) {
-      String name = config.getAclName();
-      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, name);
-      String gridId = config.getAclName();
+      ACL acl = accessControlInternalApi.getAclFromObject(aclObject, config.getAclName());
       initGridInView(view, config);
       refreshGrid(viewUuid, acl, config);
-      layout.addComponentsItem(createGridLayout(gridId));
+      layout.addComponentsItem(createGridLayout(getGridId(config)));
     }
   }
 
   protected void initGridInView(View view, AclGridConfig config) {
-    String gridId = config.getAclName();
+    String gridId = getGridId(config);
     UUID viewUuid = view.getUuid();
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
@@ -293,7 +291,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
   }
 
   protected void refreshGrid(UUID viewUuid, ACL acl, AclGridConfig config) {
-    String gridId = config.getAclName();
+    String gridId = getGridId(config);
     List<ACLSubject> subjects = getSubjects(viewUuid, acl, config);
     SearchPageConfig searchPageConfig = config.getSearchPageConfig();
     if (searchPageConfig != null) {
@@ -441,7 +439,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           boolean anyChange = subjects.removeIf(
               sub -> objectApi.equalsIgnoreVersion(sub.getSubject().getRef(), subject.getRef()));
           if (anyChange) {
-            accessControlInternalApi.applySubjects(acl, subjects, gridConfig.getOperation());
+            accessControlInternalApi.applySubjects(acl, subjects, operation);
           }
           refreshGrid(viewUuid, acl, gridConfig);
           return aclObject;
@@ -603,7 +601,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         String name = names.size() == 1 ? names.get(0) : "N/A";
         message = MessageFormat.format(
             message,
-            name, localeSettingApi.get(PREFIX, gridConfig.getAclName()));
+            name, localeSettingApi.get(PREFIX, getGridId(gridConfig)));
         throw new IllegalStateException(message);
       }
     }
@@ -667,4 +665,11 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     handleSubjectSelected(viewUuid, subjects, gridId);
   }
 
+  protected String getGridId(AclGridConfig config) {
+    String gridId = config.getGridId();
+    if (!Strings.isNullOrEmpty(gridId)) {
+      return gridId;
+    }
+    return config.getAclName();
+  }
 }
