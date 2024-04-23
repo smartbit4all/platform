@@ -25,9 +25,13 @@ components:
       type: object
       required: [gridConfigs]
       properties:
+        aclObjectUriParam:
+          type: string
         subjectModel:
           type: string
-        selectorViewName:
+        subjectSelectorViewName:
+          type: string
+        userSelectorViewName:
           type: string
         selectionCallback:
           type: InvocationRequest
@@ -69,6 +73,12 @@ components:
           format: int64
         hasComment:
           type: boolean
+        addEnabled:
+          type: boolean
+          default: true
+        deleteEnabled:
+          type: boolean
+          default: true
     AclGridItem:
       type: object
       properties:

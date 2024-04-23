@@ -35,19 +35,27 @@ import javax.validation.Valid;
  * AclPageConfig
  */
 @JsonPropertyOrder({
+  AclPageConfig.ACL_OBJECT_URI_PARAM,
   AclPageConfig.SUBJECT_MODEL,
-  AclPageConfig.SELECTOR_VIEW_NAME,
+  AclPageConfig.SUBJECT_SELECTOR_VIEW_NAME,
+  AclPageConfig.USER_SELECTOR_VIEW_NAME,
   AclPageConfig.SELECTION_CALLBACK,
   AclPageConfig.GRID_CONFIGS
 })
 @JsonTypeName("AclPageConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class AclPageConfig {
+  public static final String ACL_OBJECT_URI_PARAM = "aclObjectUriParam";
+  private String aclObjectUriParam;
+
   public static final String SUBJECT_MODEL = "subjectModel";
   private String subjectModel;
 
-  public static final String SELECTOR_VIEW_NAME = "selectorViewName";
-  private String selectorViewName;
+  public static final String SUBJECT_SELECTOR_VIEW_NAME = "subjectSelectorViewName";
+  private String subjectSelectorViewName;
+
+  public static final String USER_SELECTOR_VIEW_NAME = "userSelectorViewName";
+  private String userSelectorViewName;
 
   public static final String SELECTION_CALLBACK = "selectionCallback";
   private InvocationRequest selectionCallback = null;
@@ -57,6 +65,33 @@ public class AclPageConfig {
 
   public AclPageConfig() { 
   }
+
+  public AclPageConfig aclObjectUriParam(String aclObjectUriParam) {
+    
+    this.aclObjectUriParam = aclObjectUriParam;
+    return this;
+  }
+
+   /**
+   * Get aclObjectUriParam
+   * @return aclObjectUriParam
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ACL_OBJECT_URI_PARAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAclObjectUriParam() {
+    return aclObjectUriParam;
+  }
+
+
+  @JsonProperty(ACL_OBJECT_URI_PARAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAclObjectUriParam(String aclObjectUriParam) {
+    this.aclObjectUriParam = aclObjectUriParam;
+  }
+
 
   public AclPageConfig subjectModel(String subjectModel) {
     
@@ -85,30 +120,57 @@ public class AclPageConfig {
   }
 
 
-  public AclPageConfig selectorViewName(String selectorViewName) {
+  public AclPageConfig subjectSelectorViewName(String subjectSelectorViewName) {
     
-    this.selectorViewName = selectorViewName;
+    this.subjectSelectorViewName = subjectSelectorViewName;
     return this;
   }
 
    /**
-   * Get selectorViewName
-   * @return selectorViewName
+   * Get subjectSelectorViewName
+   * @return subjectSelectorViewName
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(SELECTOR_VIEW_NAME)
+  @JsonProperty(SUBJECT_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getSelectorViewName() {
-    return selectorViewName;
+  public String getSubjectSelectorViewName() {
+    return subjectSelectorViewName;
   }
 
 
-  @JsonProperty(SELECTOR_VIEW_NAME)
+  @JsonProperty(SUBJECT_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectorViewName(String selectorViewName) {
-    this.selectorViewName = selectorViewName;
+  public void setSubjectSelectorViewName(String subjectSelectorViewName) {
+    this.subjectSelectorViewName = subjectSelectorViewName;
+  }
+
+
+  public AclPageConfig userSelectorViewName(String userSelectorViewName) {
+    
+    this.userSelectorViewName = userSelectorViewName;
+    return this;
+  }
+
+   /**
+   * Get userSelectorViewName
+   * @return userSelectorViewName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(USER_SELECTOR_VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUserSelectorViewName() {
+    return userSelectorViewName;
+  }
+
+
+  @JsonProperty(USER_SELECTOR_VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserSelectorViewName(String userSelectorViewName) {
+    this.userSelectorViewName = userSelectorViewName;
   }
 
 
@@ -183,23 +245,27 @@ public class AclPageConfig {
       return false;
     }
     AclPageConfig aclPageConfig = (AclPageConfig) o;
-    return Objects.equals(this.subjectModel, aclPageConfig.subjectModel) &&
-        Objects.equals(this.selectorViewName, aclPageConfig.selectorViewName) &&
+    return Objects.equals(this.aclObjectUriParam, aclPageConfig.aclObjectUriParam) &&
+        Objects.equals(this.subjectModel, aclPageConfig.subjectModel) &&
+        Objects.equals(this.subjectSelectorViewName, aclPageConfig.subjectSelectorViewName) &&
+        Objects.equals(this.userSelectorViewName, aclPageConfig.userSelectorViewName) &&
         Objects.equals(this.selectionCallback, aclPageConfig.selectionCallback) &&
         Objects.equals(this.gridConfigs, aclPageConfig.gridConfigs);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subjectModel, selectorViewName, selectionCallback, gridConfigs);
+    return Objects.hash(aclObjectUriParam, subjectModel, subjectSelectorViewName, userSelectorViewName, selectionCallback, gridConfigs);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AclPageConfig {\n");
+    sb.append("    aclObjectUriParam: ").append(toIndentedString(aclObjectUriParam)).append("\n");
     sb.append("    subjectModel: ").append(toIndentedString(subjectModel)).append("\n");
-    sb.append("    selectorViewName: ").append(toIndentedString(selectorViewName)).append("\n");
+    sb.append("    subjectSelectorViewName: ").append(toIndentedString(subjectSelectorViewName)).append("\n");
+    sb.append("    userSelectorViewName: ").append(toIndentedString(userSelectorViewName)).append("\n");
     sb.append("    selectionCallback: ").append(toIndentedString(selectionCallback)).append("\n");
     sb.append("    gridConfigs: ").append(toIndentedString(gridConfigs)).append("\n");
     sb.append("}");

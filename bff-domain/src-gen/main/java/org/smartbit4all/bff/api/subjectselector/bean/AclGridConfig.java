@@ -47,7 +47,9 @@ import javax.validation.Valid;
   AclGridConfig.SUBJECT_VALUES,
   AclGridConfig.MIN_NO_OF_ROWS,
   AclGridConfig.MAX_NO_OF_ROWS,
-  AclGridConfig.HAS_COMMENT
+  AclGridConfig.HAS_COMMENT,
+  AclGridConfig.ADD_ENABLED,
+  AclGridConfig.DELETE_ENABLED
 })
 @JsonTypeName("AclGridConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -122,6 +124,12 @@ public class AclGridConfig {
 
   public static final String HAS_COMMENT = "hasComment";
   private Boolean hasComment;
+
+  public static final String ADD_ENABLED = "addEnabled";
+  private Boolean addEnabled = true;
+
+  public static final String DELETE_ENABLED = "deleteEnabled";
+  private Boolean deleteEnabled = true;
 
   public AclGridConfig() { 
   }
@@ -465,6 +473,60 @@ public class AclGridConfig {
   }
 
 
+  public AclGridConfig addEnabled(Boolean addEnabled) {
+    
+    this.addEnabled = addEnabled;
+    return this;
+  }
+
+   /**
+   * Get addEnabled
+   * @return addEnabled
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ADD_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAddEnabled() {
+    return addEnabled;
+  }
+
+
+  @JsonProperty(ADD_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAddEnabled(Boolean addEnabled) {
+    this.addEnabled = addEnabled;
+  }
+
+
+  public AclGridConfig deleteEnabled(Boolean deleteEnabled) {
+    
+    this.deleteEnabled = deleteEnabled;
+    return this;
+  }
+
+   /**
+   * Get deleteEnabled
+   * @return deleteEnabled
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(DELETE_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getDeleteEnabled() {
+    return deleteEnabled;
+  }
+
+
+  @JsonProperty(DELETE_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeleteEnabled(Boolean deleteEnabled) {
+    this.deleteEnabled = deleteEnabled;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -485,12 +547,14 @@ public class AclGridConfig {
         Objects.equals(this.subjectValues, aclGridConfig.subjectValues) &&
         Objects.equals(this.minNoOfRows, aclGridConfig.minNoOfRows) &&
         Objects.equals(this.maxNoOfRows, aclGridConfig.maxNoOfRows) &&
-        Objects.equals(this.hasComment, aclGridConfig.hasComment);
+        Objects.equals(this.hasComment, aclGridConfig.hasComment) &&
+        Objects.equals(this.addEnabled, aclGridConfig.addEnabled) &&
+        Objects.equals(this.deleteEnabled, aclGridConfig.deleteEnabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues, minNoOfRows, maxNoOfRows, hasComment);
+    return Objects.hash(aclModel, aclName, operation, selectionMode, mandatory, subjectTypes, searchPageConfig, selectionType, subjectValues, minNoOfRows, maxNoOfRows, hasComment, addEnabled, deleteEnabled);
   }
 
   @Override
@@ -509,6 +573,8 @@ public class AclGridConfig {
     sb.append("    minNoOfRows: ").append(toIndentedString(minNoOfRows)).append("\n");
     sb.append("    maxNoOfRows: ").append(toIndentedString(maxNoOfRows)).append("\n");
     sb.append("    hasComment: ").append(toIndentedString(hasComment)).append("\n");
+    sb.append("    addEnabled: ").append(toIndentedString(addEnabled)).append("\n");
+    sb.append("    deleteEnabled: ").append(toIndentedString(deleteEnabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

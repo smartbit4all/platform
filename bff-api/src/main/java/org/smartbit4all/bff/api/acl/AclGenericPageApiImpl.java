@@ -60,11 +60,13 @@ import org.smartbit4all.bff.api.subjectselector.bean.AclGridConfig.SelectionType
 import org.smartbit4all.bff.api.subjectselector.bean.AclGridItem;
 import org.smartbit4all.bff.api.subjectselector.bean.AclPageConfig;
 import org.smartbit4all.core.object.ObjectLayoutApi;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGenericPageApi {
 
@@ -101,11 +103,18 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
     protected PageContext load(View view) {
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
-      this.setAclObjectNode(objectApi.loadLatest(
-          view.getObjectUri(), view.getBranchUri()));
-      Objects.requireNonNull(getAclObjectNode(), "ACL object not found");
       this.view = view;
-      this.setConfig(parameters(view).get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class));
+      ObjectMapHelper params = parameters(view);
+      this.config = params.get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class);
+      URI aclObjectUri = null;
+      if (!Strings.isNullOrEmpty(this.config.getAclObjectUriParam())) {
+        aclObjectUri = params.get(this.config.getAclObjectUriParam(), URI.class);
+        Objects.requireNonNull(aclObjectUri, "aclObjectUri parameter specified but not present");
+      } else {
+        aclObjectUri = view.getObjectUri();
+      }
+      this.aclObjectNode = objectApi.loadLatest(aclObjectUri, view.getObjectUri());
+      Objects.requireNonNull(getAclObjectNode(), "ACL object not found");
       return this;
     }
 
@@ -118,12 +127,13 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     }
 
     protected String getSubjectSelectorViewName() {
-      return getConfig().getSelectorViewName() != null ? getConfig().getSelectorViewName()
+      return getConfig().getSubjectSelectorViewName() != null
+          ? getConfig().getSubjectSelectorViewName()
           : PlatformViewNames.SUBJECT_SELECTOR_PAGE;
     }
 
     protected String getUserSelectorViewName() {
-      return getConfig().getSelectorViewName() != null ? getConfig().getSelectorViewName()
+      return getConfig().getUserSelectorViewName() != null ? getConfig().getUserSelectorViewName()
           : PlatformViewNames.USER_SELECTOR_PAGE;
     }
 
@@ -149,16 +159,8 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return config;
     }
 
-    public void setConfig(AclPageConfig config) {
-      this.config = config;
-    }
-
     public ObjectNode getAclObjectNode() {
       return aclObjectNode;
-    }
-
-    public void setAclObjectNode(ObjectNode aclObjectNode) {
-      this.aclObjectNode = aclObjectNode;
     }
 
   }
@@ -231,7 +233,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
       createGridModel(viewUuid, gridId, config.getSearchPageConfig());
-      if (isEnableModify(viewUuid, gridId)) {
+      if (isEnableModify(viewUuid, gridId) && isEnableAdd(viewUuid, gridId)) {
         view.addActionsItem(new UiAction()
             .code(ADD_SUBJECT)
             .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
@@ -344,13 +346,29 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
               .descriptor(new UiActionDescriptor()
                   .title(localeSettingApi.get(PREFIX, EDIT_COMMENT))));
         }
-        row.addActionsItem(new UiAction()
-            .code(DELETE_SUBJECT)
-            .descriptor(new UiActionDescriptor()
-                .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
+        if (isEnableDelete(viewUuid, gridId)) {
+          row.addActionsItem(new UiAction()
+              .code(DELETE_SUBJECT)
+              .descriptor(new UiActionDescriptor()
+                  .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
+        }
       }
     });
     return page;
+  }
+
+  protected boolean isEnableAdd(UUID viewUuid, String gridId) {
+    PageContext ctx = context(viewUuid);
+    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+    // default enabled, need explicit false to disable ADD operation
+    return !Boolean.FALSE.equals(gridConfig.getAddEnabled());
+  }
+
+  protected boolean isEnableDelete(UUID viewUuid, String gridId) {
+    PageContext ctx = context(viewUuid);
+    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+    // default enabled, need explicit false to disable DELETE operation
+    return !Boolean.FALSE.equals(gridConfig.getDeleteEnabled());
   }
 
   protected boolean isEnableModify(UUID viewUuid, String gridId) {
