@@ -16,6 +16,9 @@ package org.smartbit4all.core.utility;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+import com.google.common.base.Strings;
+import static java.util.stream.Collectors.joining;
 
 /**
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
@@ -194,6 +197,58 @@ public class StringConstant {
     } else {
       return new Character[] {};
     }
+  }
+
+  /**
+   * Construct a String from the strings joining them with dot.
+   * 
+   * @param strings
+   * @return Empty if the strings is empty or doesn't contain any non empty element
+   */
+  public static final String joinDot(String... strings) {
+    if (strings == null || strings.length == 0) {
+      return EMPTY;
+    }
+    return Stream.of(strings).filter(s -> !Strings.isNullOrEmpty(s)).collect(joining(DOT));
+  }
+
+  /**
+   * Construct a String from the strings joining them with underline.
+   * 
+   * @param strings
+   * @return Empty if the strings is empty or doesn't contain any non empty element
+   */
+  public static final String joinUnder(String... strings) {
+    if (strings == null || strings.length == 0) {
+      return EMPTY;
+    }
+    return Stream.of(strings).filter(s -> !Strings.isNullOrEmpty(s)).collect(joining(UNDERLINE));
+  }
+
+  /**
+   * Construct a String from the strings joining them in camel case style where the first string
+   * first character remains untouched.
+   * 
+   * @param strings
+   * @return Empty if the strings is empty or doesn't contain any non empty element
+   */
+  public static final String joinCamel(String... strings) {
+    if (strings == null || strings.length == 0) {
+      return EMPTY;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < strings.length; i++) {
+      String s = strings[i];
+      if (!Strings.isNullOrEmpty(s)) {
+        if (sb.length() > 0) {
+          sb.append(s.substring(0, 1).toUpperCase());
+          sb.append(s.substring(1, s.length()));
+        } else {
+          sb.append(s);
+        }
+      }
+    }
+    return sb.toString();
   }
 
 }

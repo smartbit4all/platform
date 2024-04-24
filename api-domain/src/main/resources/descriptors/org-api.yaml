@@ -471,6 +471,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ACLOperationReference'
+    ACLSubjectOperationModification:
+      type: object
+      description: |
+        This object is a modification object to add, remove or modify the operations of the ACLSubjectOperations.
+      required: [subject, toAdd, toUpdate, toRemove]
+      properties:
+        subject:
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
+        toAdd:
+          description: |
+            The operations to add.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLOperationReference'
+        toUpdate:
+          description: |
+            The operations to update.
+          type: array
+          items:
+            $ref: '#/components/schemas/ACLOperationReference'
+        toRemove:
+          description: |
+            The operations to remove from the subject. This is the unique identifier of the given operation.
+          type: array
+          items:
+            type: string
     ACLOperationReference:
       type: object
       description: |
@@ -510,6 +538,21 @@ components:
           description: |
             The operation object of the given subject.
           $ref: '#/components/schemas/ACLOperation'
+    ACLSubjectSubscription:
+      type: object
+      description: |
+        This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself
+        and the ACLObjectReference belongs to each other.
+      required: [subject, toAdd, toUpdate, toRemove]
+      properties:
+        subject:
+          description: |
+            The reference to the subject defined in the given application.
+          $ref: '#/components/schemas/Subject'
+        operationReference:
+          description: |
+            The operation reference.
+          $ref: '#/components/schemas/ACLOperationReference'
     SubjectList:
       type: object
       description: |

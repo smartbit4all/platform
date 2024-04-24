@@ -1,9 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +27,7 @@ import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubject;
+import org.smartbit4all.api.org.bean.ACLSubjectOperationModification;
 import org.smartbit4all.api.org.bean.ACLSubjectOperations;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
@@ -38,8 +35,13 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
@@ -248,30 +250,6 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
 
-  /**
-   * A record to summarize the modification about a subject.
-   */
-  private class ACLSubjectModification {
-
-    Subject subject;
-
-    List<ACLOperationReference> toAdd = new ArrayList<>();
-
-    /**
-     * The operation and the entity uri together.
-     */
-    List<String> toRemove = new ArrayList<>();
-
-    List<ACLOperationReference> toUpdate = new ArrayList<>();
-
-    public ACLSubjectModification(Subject subject) {
-      super();
-      this.subject = subject;
-    }
-
-
-  }
-
   private final String constructSubjectId(Subject subject) {
     return subject.getModel() + StringConstant.HYPHEN + subject.getType();
   }
@@ -297,7 +275,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       }
     }
     // Collect all the changes on the subjects.
-    Map<String, ACLSubjectModification> modifications = new HashMap<>();
+    Map<String, ACLSubjectOperationModification> modifications = new HashMap<>();
     // Add the necessary entries and set
     for (ACLSubject aclSubject : toAdd) {
       acl.getRootEntry().addEntriesItem(new ACLEntry()
@@ -306,11 +284,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           .addOperationObjectsItem(aclSubject.getOperation()));
       if (contextEntity != null) {
         // Add the operation reference to the referenced entries.
-        ACLSubjectModification subjectModification =
+        ACLSubjectOperationModification subjectModification =
             modifications.computeIfAbsent(constructSubjectId(aclSubject.getSubject()),
-                key -> new ACLSubjectModification(aclSubject.getSubject()));
-        subjectModification.toAdd
-            .add(new ACLOperationReference().operation(aclSubject.getOperation().getName())
+                key -> new ACLSubjectOperationModification().subject(aclSubject.getSubject()));
+        subjectModification
+            .addToAddItem(new ACLOperationReference().operation(aclSubject.getOperation().getName())
                 .comment(aclSubject.getOperation().getComment()).entityUri(contextEntity)
                 .contextConfig(contextConfigCode));
       }
@@ -322,10 +300,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       // remove the whole entry with the subject. There is no more relevant operation for the given
       // subject.
       if (contextEntity != null) {
-        ACLSubjectModification subjectModification =
+        ACLSubjectOperationModification subjectModification =
             modifications.computeIfAbsent(constructSubjectId(e.getSubject()),
-                key -> new ACLSubjectModification(e.getSubject()));
-        subjectModification.toRemove.add(constructOperationReferenceId(operation, contextEntity));
+                key -> new ACLSubjectOperationModification().subject(e.getSubject()));
+        subjectModification
+            .addToRemoveItem(constructOperationReferenceId(operation, contextEntity));
       }
       e.getOperations().remove(operation);
       e.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
@@ -342,26 +321,32 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
               && toDelete.contains(subjectManagementApi.toString(e.getSubject())));
     }
 
+    executeSubjectModifications(modifications.values());
+
+    return acl;
+  }
+
+  @Override
+  public void executeSubjectModifications(
+      Collection<ACLSubjectOperationModification> modifications) {
     // Now we save here subject by subject the changes.
-    for (ACLSubjectModification subjectModification : modifications.values()) {
+    for (ACLSubjectOperationModification subjectModification : modifications) {
       StoredReference<ACLSubjectOperations> refSubjectOperations =
-          collectionApi.reference(subjectModification.subject.getRef(),
+          collectionApi.reference(subjectModification.getSubject().getRef(),
               SubjectManagementApi.SCHEMA,
-              constructSubjectId(subjectModification.subject),
+              constructSubjectId(subjectModification.getSubject()),
               ACLSubjectOperations.class);
       refSubjectOperations.update(so -> {
         if (so == null) {
           so = new ACLSubjectOperations();
-          so.subject(subjectModification.subject);
+          so.subject(subjectModification.getSubject());
         }
-        so.getOperations().removeIf(or -> subjectModification.toRemove
+        so.getOperations().removeIf(or -> subjectModification.getToRemove()
             .contains(constructOperationReferenceId(or.getOperation(), or.getEntityUri())));
-        so.getOperations().addAll(subjectModification.toAdd);
+        so.getOperations().addAll(subjectModification.getToAdd());
         return so;
       });
     }
-
-    return acl;
   }
 
   private final String constructOperationReferenceId(String operation, URI contextEntity) {
@@ -396,6 +381,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
             .rootEntry(new ACLEntry()
                 .entryKind(EntryKindEnum.SET)
                 .setOperation(SetOperationEnum.UNION)));
+  }
+
+  @Override
+  public TableData<?> postProcess(TableData<?> td) {
+    return td;
   }
 
 }
