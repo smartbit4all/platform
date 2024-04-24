@@ -375,6 +375,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
   @Override
   public void performAddSubject(UUID viewUuid, UiActionRequest request) {
+    setModel(viewUuid, extractClientModel(request));
     PageContext ctx = context(viewUuid);
     String gridId = request.getIdentifier();
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
