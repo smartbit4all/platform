@@ -234,6 +234,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       if (isEnableModify(viewUuid, gridId) && isEnableAdd(viewUuid, gridId)) {
         view.addActionsItem(new UiAction()
             .code(ADD_SUBJECT)
+            .model(true)
             .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
             .identifier(gridId)
             .descriptor(new UiActionDescriptor()
