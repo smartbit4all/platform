@@ -204,6 +204,12 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
       }
     }
     if (filterModel != null) {
+      FilterExpressionList defaultFilter =
+          parameters(view).get(PARAM_DEFAULT_FILTER, FilterExpressionList.class);
+      if (defaultFilter != null) {
+        filterModel.defaultFilters(defaultFilter);
+      }
+
       FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
           filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
       filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), SUBJECT_FILTER_ID,
