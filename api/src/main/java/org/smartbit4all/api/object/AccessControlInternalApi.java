@@ -116,7 +116,7 @@ public interface AccessControlInternalApi {
   List<ACLSubjectOperations> getUserAllOperations(URI userUri, Collection<String> subjectModels);
 
   /**
-   * This operation gather all referred operations for the subjects of the user.
+   * This operation gather all the subscriptions coming from the subjects of the given user.
    *
    * @param userUri
    * @return

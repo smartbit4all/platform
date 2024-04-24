@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.domain.data.TableData;
 
 /**
@@ -8,7 +9,7 @@ import org.smartbit4all.domain.data.TableData;
  * 
  * @author Peter Boros
  */
-public interface SubscriptionConfigApi {
+public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigContributionApi> {
 
   TableData<?> postProcess(TableData<?> td);
 
