@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.config.PlatformSearchIndexConfig;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -36,7 +37,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 @Configuration
-@Import({PlatformApiConfig.class, TestFSConfig.class})
+@Import({PlatformApiConfig.class, TestFSConfig.class, PlatformSearchIndexConfig.class})
 public class ObjectApiTestConfig {
 
   public static final String SAMPLE_SUBJECT_MODEL = "Sample";

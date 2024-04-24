@@ -3,12 +3,13 @@ package org.smartbit4all.api.config;
 import java.util.Arrays;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
-import org.smartbit4all.api.object.AccessControlInternalApi;
+import org.smartbit4all.api.object.SubscriptionConfigApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import static org.smartbit4all.core.utility.StringConstant.joinDot;
@@ -38,7 +39,8 @@ public class PlatformSearchIndexConfig {
 
   @Bean
   public SearchIndex<ACLSubjectSubscription> searchACLSubjectSubscription(
-      SubjectManagementApi subjectManagementApi, AccessControlInternalApi aclInternalApi) {
+      SubjectManagementApi subjectManagementApi,
+      @Autowired(required = false) SubscriptionConfigApi configApi) {
     return new SearchIndexImpl<>(OrgApiStorageImpl.ORG_SCHEME,
         ACLSubjectSubscription.class.getSimpleName(),
         OrgApiStorageImpl.ORG_SCHEME, ACLSubjectSubscription.class)
@@ -58,11 +60,11 @@ public class PlatformSearchIndexConfig {
             .map(SUBSCRIPTION_OPERATION_ENTITYURI, ACLSubjectSubscription.OPERATION_REFERENCE,
                 ACLOperationReference.ENTITY_URI)
             .map(SUBSCRIPTION_OPERATION_ENTITYSUMMARY, ACLSubjectSubscription.OPERATION_REFERENCE,
-                ACLOperationReference.OPERATION)
+                ACLOperationReference.ENTITY_URI)
             .map(SUBSCRIPTION_OPERATION_CONTEXTCONFIG, ACLSubjectSubscription.OPERATION_REFERENCE,
                 ACLOperationReference.CONTEXT_CONFIG)
             .postProcess((td, si) -> {
-              return aclInternalApi.postProcess(td);
+              return configApi == null ? td : configApi.postProcess(td);
             });
   }
 

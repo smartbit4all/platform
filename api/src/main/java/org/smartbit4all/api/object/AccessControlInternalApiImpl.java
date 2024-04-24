@@ -29,13 +29,13 @@ import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.ACLSubjectOperationModification;
 import org.smartbit4all.api.org.bean.ACLSubjectOperations;
+import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import static java.util.stream.Collectors.groupingBy;
@@ -374,6 +374,16 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
   @Override
+  public List<ACLSubjectSubscription> getUserAllSubscriptions(URI userUri,
+      Collection<String> subjectModels) {
+    return getUserAllOperations(userUri, subjectModels).stream()
+        .flatMap(
+            o -> o.getOperations().stream().map(
+                or -> new ACLSubjectSubscription().subject(o.getSubject()).operationReference(or)))
+        .collect(toList());
+  }
+
+  @Override
   public ACL getAclFromObject(ACLObject aclObject, String name) {
     return aclObject.getMap().computeIfAbsent(
         name,
@@ -381,11 +391,6 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
             .rootEntry(new ACLEntry()
                 .entryKind(EntryKindEnum.SET)
                 .setOperation(SetOperationEnum.UNION)));
-  }
-
-  @Override
-  public TableData<?> postProcess(TableData<?> td) {
-    return td;
   }
 
 }

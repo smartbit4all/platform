@@ -33,6 +33,7 @@ import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.ACLSubjectOperations;
+import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
@@ -53,6 +54,8 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -449,6 +452,16 @@ class ObjectApiTest {
       List<ACLSubjectOperations> userAllOperations =
           accessControlInternalApi.getUserAllOperations(superUserUri, models);
       org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(1);
+
+      List<ACLSubjectSubscription> userAllSubscriptions =
+          accessControlInternalApi.getUserAllSubscriptions(superUserUri, models);
+      org.assertj.core.api.Assertions.assertThat(userAllSubscriptions).hasSize(2);
+
+      TableData<?> tableData = collectionApi.searchIndex(OrgApiStorageImpl.ORG_SCHEME,
+          ACLSubjectSubscription.class.getSimpleName(), ACLSubjectSubscription.class)
+          .tableDataOfObjects(userAllSubscriptions.stream());
+
+      System.out.println(TableDatas.toStringAdv(tableData));
 
     }
     List<String> operations = Arrays.asList("read", "write");

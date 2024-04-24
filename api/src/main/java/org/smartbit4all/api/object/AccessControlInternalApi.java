@@ -12,9 +12,9 @@ import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.ACLSubjectOperationModification;
 import org.smartbit4all.api.org.bean.ACLSubjectOperations;
+import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.core.object.ObjectNode;
-import org.smartbit4all.domain.data.TableData;
 
 /**
  * The API is responsible for the evaluation of the access control lists. The {@link ACL} object
@@ -115,6 +115,15 @@ public interface AccessControlInternalApi {
    */
   List<ACLSubjectOperations> getUserAllOperations(URI userUri, Collection<String> subjectModels);
 
+  /**
+   * This operation gather all referred operations for the subjects of the user.
+   *
+   * @param userUri
+   * @return
+   */
+  List<ACLSubjectSubscription> getUserAllSubscriptions(URI userUri,
+      Collection<String> subjectModels);
+
   ACL getAclFromObject(ACLObject aclObject, String name);
 
   /**
@@ -124,7 +133,5 @@ public interface AccessControlInternalApi {
    * @param modifications The modification requests.
    */
   void executeSubjectModifications(Collection<ACLSubjectOperationModification> modifications);
-
-  TableData<?> postProcess(TableData<?> td);
 
 }
