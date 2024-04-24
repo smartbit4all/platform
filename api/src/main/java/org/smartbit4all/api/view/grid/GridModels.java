@@ -74,4 +74,26 @@ public class GridModels {
         .filter(col -> columns.contains(col.getPropertyName()))
         .forEach(col -> col.setAlwaysHidden(true));
   }
+
+  public static void setColumnType(GridModel grid, String column, Class<?> typeClass) {
+    setColumnType(grid, column, typeClass.getName());
+  }
+
+  public static void setColumnType(GridModel grid, String column, String typeClass) {
+    setColumnType(grid, column, typeClass, null);
+  }
+
+  public static void setColumnType(GridModel grid, String column, Class<?> typeClass,
+      String typeFormat) {
+    setColumnType(grid, column, typeClass.getName(), typeFormat);
+  }
+
+  public static void setColumnType(GridModel grid, String column, String typeClass,
+      String typeFormat) {
+    grid.getView().getDescriptor().getColumns().stream()
+        .filter(col -> column.equals(col.getPropertyName()))
+        .forEach(col -> col
+            .typeClass(typeClass)
+            .typeFormat(typeFormat));
+  }
 }
