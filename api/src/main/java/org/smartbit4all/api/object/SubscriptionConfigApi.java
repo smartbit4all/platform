@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import java.util.List;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.domain.data.TableData;
 
@@ -12,5 +13,7 @@ import org.smartbit4all.domain.data.TableData;
 public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigContributionApi> {
 
   TableData<?> postProcess(TableData<?> td);
+
+  List<String> revokableConfigs();
 
 }

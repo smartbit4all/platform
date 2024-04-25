@@ -290,7 +290,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         subjectModification
             .addToAddItem(new ACLOperationReference().operation(aclSubject.getOperation().getName())
                 .comment(aclSubject.getOperation().getComment()).entityUri(contextEntity)
-                .contextConfig(contextConfigCode));
+                .config(contextConfigCode));
       }
     }
 

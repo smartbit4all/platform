@@ -36,7 +36,7 @@ import javax.validation.Valid;
   ACLOperationReference.OPERATION,
   ACLOperationReference.COMMENT,
   ACLOperationReference.ENTITY_URI,
-  ACLOperationReference.CONTEXT_CONFIG
+  ACLOperationReference.CONFIG
 })
 @JsonTypeName("ACLOperationReference")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,8 +50,8 @@ public class ACLOperationReference {
   public static final String ENTITY_URI = "entityUri";
   private URI entityUri;
 
-  public static final String CONTEXT_CONFIG = "contextConfig";
-  private String contextConfig;
+  public static final String CONFIG = "config";
+  private String config;
 
   public ACLOperationReference() { 
   }
@@ -138,30 +138,30 @@ public class ACLOperationReference {
   }
 
 
-  public ACLOperationReference contextConfig(String contextConfig) {
+  public ACLOperationReference config(String config) {
     
-    this.contextConfig = contextConfig;
+    this.config = config;
     return this;
   }
 
    /**
    * This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. 
-   * @return contextConfig
+   * @return config
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. ")
-  @JsonProperty(CONTEXT_CONFIG)
+  @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getContextConfig() {
-    return contextConfig;
+  public String getConfig() {
+    return config;
   }
 
 
-  @JsonProperty(CONTEXT_CONFIG)
+  @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContextConfig(String contextConfig) {
-    this.contextConfig = contextConfig;
+  public void setConfig(String config) {
+    this.config = config;
   }
 
 
@@ -177,12 +177,12 @@ public class ACLOperationReference {
     return Objects.equals(this.operation, acLOperationReference.operation) &&
         Objects.equals(this.comment, acLOperationReference.comment) &&
         Objects.equals(this.entityUri, acLOperationReference.entityUri) &&
-        Objects.equals(this.contextConfig, acLOperationReference.contextConfig);
+        Objects.equals(this.config, acLOperationReference.config);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operation, comment, entityUri, contextConfig);
+    return Objects.hash(operation, comment, entityUri, config);
   }
 
   @Override
@@ -192,7 +192,7 @@ public class ACLOperationReference {
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
     sb.append("    entityUri: ").append(toIndentedString(entityUri)).append("\n");
-    sb.append("    contextConfig: ").append(toIndentedString(contextConfig)).append("\n");
+    sb.append("    config: ").append(toIndentedString(config)).append("\n");
     sb.append("}");
     return sb.toString();
   }

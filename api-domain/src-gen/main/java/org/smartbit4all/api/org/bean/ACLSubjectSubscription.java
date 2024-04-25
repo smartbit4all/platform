@@ -30,9 +30,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself amd the ACLObjectReference belongs to each other. 
+ * This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. 
  */
-@ApiModel(description = "This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself amd the ACLObjectReference belongs to each other. ")
+@ApiModel(description = "This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. ")
 @JsonPropertyOrder({
   ACLSubjectSubscription.SUBJECT,
   ACLSubjectSubscription.OPERATION_REFERENCE

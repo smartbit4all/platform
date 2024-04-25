@@ -35,7 +35,7 @@ public class PlatformSearchIndexConfig {
   public static final String SUBSCRIPTION_OPERATION_ENTITYSUMMARY =
       joinDot(ACLSubjectSubscription.OPERATION_REFERENCE, "ENTITYSUMMARY");
   public static final String SUBSCRIPTION_OPERATION_CONTEXTCONFIG =
-      joinDot(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.CONTEXT_CONFIG);
+      joinDot(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.CONFIG);
 
   @Bean
   public SearchIndex<ACLSubjectSubscription> searchACLSubjectSubscription(
@@ -62,7 +62,7 @@ public class PlatformSearchIndexConfig {
             .map(SUBSCRIPTION_OPERATION_ENTITYSUMMARY, ACLSubjectSubscription.OPERATION_REFERENCE,
                 ACLOperationReference.ENTITY_URI)
             .map(SUBSCRIPTION_OPERATION_CONTEXTCONFIG, ACLSubjectSubscription.OPERATION_REFERENCE,
-                ACLOperationReference.CONTEXT_CONFIG)
+                ACLOperationReference.CONFIG)
             .postProcess((td, si) -> {
               return configApi == null ? td : configApi.postProcess(td);
             });

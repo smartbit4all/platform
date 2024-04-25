@@ -518,7 +518,7 @@ components:
             The reference to the context entity of the operation is attached to.
           type: string
           format: uri
-        contextConfig:
+        config:
           description: |
             This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer
             to MDM or application properties directly.
