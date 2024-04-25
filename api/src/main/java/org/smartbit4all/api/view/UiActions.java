@@ -235,6 +235,10 @@ public final class UiActions {
     addActionsInternal(view.getActions(), actions);
   }
 
+  public static void add(Collection<UiAction> actions, Collection<UiAction> actionsToAdd) {
+    addActionsInternal(actions, actionsToAdd);
+  }
+
   private static void addActionsInternal(Collection<UiAction> present, Collection<UiAction> toAdd) {
     Objects.requireNonNull(present, "actions present cannot be null!");
     Objects.requireNonNull(toAdd, "actions toAdd cannot be null!");
