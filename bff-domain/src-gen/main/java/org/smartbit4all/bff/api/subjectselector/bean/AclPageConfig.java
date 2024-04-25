@@ -40,7 +40,8 @@ import javax.validation.Valid;
   AclPageConfig.SUBJECT_SELECTOR_VIEW_NAME,
   AclPageConfig.USER_SELECTOR_VIEW_NAME,
   AclPageConfig.SELECTION_CALLBACK,
-  AclPageConfig.GRID_CONFIGS
+  AclPageConfig.GRID_CONFIGS,
+  AclPageConfig.SAVE_DIRECTLY
 })
 @JsonTypeName("AclPageConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -62,6 +63,9 @@ public class AclPageConfig {
 
   public static final String GRID_CONFIGS = "gridConfigs";
   private List<AclGridConfig> gridConfigs = new ArrayList<>();
+
+  public static final String SAVE_DIRECTLY = "saveDirectly";
+  private Boolean saveDirectly = true;
 
   public AclPageConfig() { 
   }
@@ -236,6 +240,33 @@ public class AclPageConfig {
   }
 
 
+  public AclPageConfig saveDirectly(Boolean saveDirectly) {
+    
+    this.saveDirectly = saveDirectly;
+    return this;
+  }
+
+   /**
+   * If true then changes to ACLObject will be saved on user action, implicitly. If false,  original ACLObject is handled in a view variable and can be saved explicitly. 
+   * @return saveDirectly
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If true then changes to ACLObject will be saved on user action, implicitly. If false,  original ACLObject is handled in a view variable and can be saved explicitly. ")
+  @JsonProperty(SAVE_DIRECTLY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSaveDirectly() {
+    return saveDirectly;
+  }
+
+
+  @JsonProperty(SAVE_DIRECTLY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSaveDirectly(Boolean saveDirectly) {
+    this.saveDirectly = saveDirectly;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -250,12 +281,13 @@ public class AclPageConfig {
         Objects.equals(this.subjectSelectorViewName, aclPageConfig.subjectSelectorViewName) &&
         Objects.equals(this.userSelectorViewName, aclPageConfig.userSelectorViewName) &&
         Objects.equals(this.selectionCallback, aclPageConfig.selectionCallback) &&
-        Objects.equals(this.gridConfigs, aclPageConfig.gridConfigs);
+        Objects.equals(this.gridConfigs, aclPageConfig.gridConfigs) &&
+        Objects.equals(this.saveDirectly, aclPageConfig.saveDirectly);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclObjectUriParam, subjectModel, subjectSelectorViewName, userSelectorViewName, selectionCallback, gridConfigs);
+    return Objects.hash(aclObjectUriParam, subjectModel, subjectSelectorViewName, userSelectorViewName, selectionCallback, gridConfigs, saveDirectly);
   }
 
   @Override
@@ -268,6 +300,7 @@ public class AclPageConfig {
     sb.append("    userSelectorViewName: ").append(toIndentedString(userSelectorViewName)).append("\n");
     sb.append("    selectionCallback: ").append(toIndentedString(selectionCallback)).append("\n");
     sb.append("    gridConfigs: ").append(toIndentedString(gridConfigs)).append("\n");
+    sb.append("    saveDirectly: ").append(toIndentedString(saveDirectly)).append("\n");
     sb.append("}");
     return sb.toString();
   }

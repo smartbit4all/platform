@@ -39,6 +39,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AclGridConfig'
+        saveDirectly:
+          description: |
+            If true then changes to ACLObject will be saved on user action, implicitly. If false, 
+            original ACLObject is handled in a view variable and can be saved explicitly.
+          type: boolean
+          default: true
     AclGridConfig:
       type: object
       required: [subjectTypes,subjectValues]

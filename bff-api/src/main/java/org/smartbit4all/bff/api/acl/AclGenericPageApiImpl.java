@@ -100,12 +100,36 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     protected View view;
     private AclPageConfig config;
     private ObjectNode aclObjectNode;
+    private ObjectNode originalAclObjectNode;
+
+    // uri of modifiable ACLObjectNode
+    private static final String VAR_ACLOBJECTNODE_URI = "VAR_ACLOBJECTNODE_URI";
 
     protected PageContext load(View view) {
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
       this.view = view;
       ObjectMapHelper params = parameters(view);
       this.config = params.get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class);
+      this.originalAclObjectNode = loadAclObjectNode(params);
+      if (Boolean.TRUE.equals(config.getSaveDirectly())) {
+        // both nodes are the same
+        this.aclObjectNode = this.originalAclObjectNode;
+      } else {
+        ObjectMapHelper vars = variables(view);
+        URI aclObjectUri = vars.get(VAR_ACLOBJECTNODE_URI, URI.class);
+        if (aclObjectUri == null) {
+          // first load, should save original as new
+          aclObjectUri = objectApi.saveAsNew(
+              "tmp",
+              originalAclObjectNode.getObject(ACLObject.class));
+          vars.put(VAR_ACLOBJECTNODE_URI, aclObjectUri);
+        }
+        this.aclObjectNode = objectApi.loadLatest(aclObjectUri);
+      }
+      return this;
+    }
+
+    private ObjectNode loadAclObjectNode(ObjectMapHelper params) {
       URI aclObjectUri = null;
       if (!Strings.isNullOrEmpty(this.config.getAclObjectUriParam())) {
         aclObjectUri = params.get(this.config.getAclObjectUriParam(), URI.class);
@@ -113,9 +137,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       } else {
         aclObjectUri = view.getObjectUri();
       }
-      this.aclObjectNode = objectApi.loadLatest(aclObjectUri, view.getObjectUri());
-      Objects.requireNonNull(getAclObjectNode(), "ACL object not found");
-      return this;
+      ObjectNode result = objectApi.loadLatest(aclObjectUri, view.getObjectUri());
+      Objects.requireNonNull(result, "ACL object not found");
+      return result;
     }
 
     protected AclGridConfig findGridConfig(String name) {
@@ -161,6 +185,10 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
 
     public ObjectNode getAclObjectNode() {
       return aclObjectNode;
+    }
+
+    public ObjectNode getOriginalAclObjectNode() {
+      return originalAclObjectNode;
     }
 
   }
