@@ -2,6 +2,7 @@ package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
@@ -51,7 +52,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
 
   @Override
   public BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
-      String logicalSchema) {
+      String logicalSchema, Map<String, Object> parameters) {
     Objects.requireNonNull(binaryContentData);
     Objects.requireNonNull(toMimeType);
     Objects.requireNonNull(logicalSchema);
@@ -64,7 +65,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
         getConverterApi(binaryContentData.getMimeType(), toMimeType);
     if (api != null) {
       URI dataUri = api.convert(binaryContentData,
-          toMimeType, logicalSchema);
+          toMimeType, logicalSchema, parameters);
       return new BinaryContentData()
           .created(sessionApi != null ? sessionApi.createActivityLog() : null).dataUri(dataUri)
           .extension(mimeTypeApi.getExtension(toMimeType))

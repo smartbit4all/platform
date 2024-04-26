@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
+import java.util.Map;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
@@ -55,12 +56,14 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
   /**
    * Handles the conversion itself.
    */
-  protected abstract BinaryData convertInternal(BinaryContentData content, String toMimeType);
+  protected abstract BinaryData convertInternal(BinaryContentData content, String toMimeType,
+      Map<String, Object> parameters);
 
   @Override
   public URI convert(BinaryContentData content, String toMimeType,
-      String logicalSchema) {
-    return objectApi.saveAsNew(logicalSchema, convertInternal(content, toMimeType).asObject());
+      String logicalSchema, Map<String, Object> parameters) {
+    return objectApi.saveAsNew(logicalSchema,
+        convertInternal(content, toMimeType, parameters).asObject());
   }
 
 }

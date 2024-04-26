@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mimetype;
 
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contribution.PrimaryApi;
@@ -49,6 +50,6 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
    * @return The {@link BinaryContentData} with the local content URI of the saved result.
    */
   BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
-      String logicalSchema);
+      String logicalSchema, Map<String, Object> parameters);
 
 }

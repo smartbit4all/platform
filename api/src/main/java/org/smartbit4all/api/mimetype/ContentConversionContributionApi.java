@@ -2,6 +2,7 @@ package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
@@ -35,6 +36,6 @@ public interface ContentConversionContributionApi extends ContributionApi {
    * @return
    */
   public URI convert(BinaryContentData content, String toMimeType,
-      String logicalSchema);
+      String logicalSchema, Map<String, Object> parameters);
 
 }
