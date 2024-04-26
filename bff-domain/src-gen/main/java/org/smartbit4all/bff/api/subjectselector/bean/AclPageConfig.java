@@ -41,7 +41,8 @@ import javax.validation.Valid;
   AclPageConfig.USER_SELECTOR_VIEW_NAME,
   AclPageConfig.SELECTION_CALLBACK,
   AclPageConfig.GRID_CONFIGS,
-  AclPageConfig.SAVE_DIRECTLY
+  AclPageConfig.SAVE_DIRECTLY,
+  AclPageConfig.LOAD_EXACT_VERSION
 })
 @JsonTypeName("AclPageConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -66,6 +67,9 @@ public class AclPageConfig {
 
   public static final String SAVE_DIRECTLY = "saveDirectly";
   private Boolean saveDirectly = true;
+
+  public static final String LOAD_EXACT_VERSION = "loadExactVersion";
+  private Boolean loadExactVersion = false;
 
   public AclPageConfig() { 
   }
@@ -267,6 +271,33 @@ public class AclPageConfig {
   }
 
 
+  public AclPageConfig loadExactVersion(Boolean loadExactVersion) {
+    
+    this.loadExactVersion = loadExactVersion;
+    return this;
+  }
+
+   /**
+   * Specifies if the ACLObject should be loaded by exact version (true) or latest (false). Note that true should be used with read only pages! 
+   * @return loadExactVersion
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Specifies if the ACLObject should be loaded by exact version (true) or latest (false). Note that true should be used with read only pages! ")
+  @JsonProperty(LOAD_EXACT_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getLoadExactVersion() {
+    return loadExactVersion;
+  }
+
+
+  @JsonProperty(LOAD_EXACT_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLoadExactVersion(Boolean loadExactVersion) {
+    this.loadExactVersion = loadExactVersion;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -282,12 +313,13 @@ public class AclPageConfig {
         Objects.equals(this.userSelectorViewName, aclPageConfig.userSelectorViewName) &&
         Objects.equals(this.selectionCallback, aclPageConfig.selectionCallback) &&
         Objects.equals(this.gridConfigs, aclPageConfig.gridConfigs) &&
-        Objects.equals(this.saveDirectly, aclPageConfig.saveDirectly);
+        Objects.equals(this.saveDirectly, aclPageConfig.saveDirectly) &&
+        Objects.equals(this.loadExactVersion, aclPageConfig.loadExactVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(aclObjectUriParam, subjectModel, subjectSelectorViewName, userSelectorViewName, selectionCallback, gridConfigs, saveDirectly);
+    return Objects.hash(aclObjectUriParam, subjectModel, subjectSelectorViewName, userSelectorViewName, selectionCallback, gridConfigs, saveDirectly, loadExactVersion);
   }
 
   @Override
@@ -301,6 +333,7 @@ public class AclPageConfig {
     sb.append("    selectionCallback: ").append(toIndentedString(selectionCallback)).append("\n");
     sb.append("    gridConfigs: ").append(toIndentedString(gridConfigs)).append("\n");
     sb.append("    saveDirectly: ").append(toIndentedString(saveDirectly)).append("\n");
+    sb.append("    loadExactVersion: ").append(toIndentedString(loadExactVersion)).append("\n");
     sb.append("}");
     return sb.toString();
   }

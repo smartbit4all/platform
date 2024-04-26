@@ -110,7 +110,8 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       this.view = view;
       ObjectMapHelper params = parameters(view);
       this.config = params.get(PARAM_ACL_PAGE_CONFIG, AclPageConfig.class);
-      this.originalAclObjectNode = loadAclObjectNode(params);
+      this.originalAclObjectNode = loadOriginalAclObjectNode(params,
+          Boolean.TRUE.equals(config.getLoadExactVersion()));
       if (Boolean.TRUE.equals(config.getSaveDirectly())) {
         // both nodes are the same
         this.aclObjectNode = this.originalAclObjectNode;
@@ -129,7 +130,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return this;
     }
 
-    private ObjectNode loadAclObjectNode(ObjectMapHelper params) {
+    private ObjectNode loadOriginalAclObjectNode(ObjectMapHelper params, boolean loadExactVersion) {
       URI aclObjectUri = null;
       if (!Strings.isNullOrEmpty(this.config.getAclObjectUriParam())) {
         aclObjectUri = params.get(this.config.getAclObjectUriParam(), URI.class);
@@ -137,7 +138,12 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       } else {
         aclObjectUri = view.getObjectUri();
       }
-      ObjectNode result = objectApi.loadLatest(aclObjectUri, view.getObjectUri());
+      ObjectNode result;
+      if (loadExactVersion) {
+        result = objectApi.load(aclObjectUri, view.getBranchUri());
+      } else {
+        result = objectApi.loadLatest(aclObjectUri, view.getBranchUri());
+      }
       Objects.requireNonNull(result, "ACL object not found");
       return result;
     }

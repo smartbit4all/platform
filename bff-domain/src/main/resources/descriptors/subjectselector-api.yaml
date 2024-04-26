@@ -45,6 +45,12 @@ components:
             original ACLObject is handled in a view variable and can be saved explicitly.
           type: boolean
           default: true
+        loadExactVersion:
+          description: |
+            Specifies if the ACLObject should be loaded by exact version (true) or latest (false).
+            Note that true should be used with read only pages!
+          type: boolean
+          default: false
     AclGridConfig:
       type: object
       required: [subjectTypes,subjectValues]
