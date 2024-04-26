@@ -4,15 +4,16 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,6 +29,7 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Strings;
 
 public final class ObjectValidations {
 
@@ -447,6 +449,52 @@ public final class ObjectValidations {
   private static boolean isTrue(final Boolean boxed) {
     return Boolean.TRUE == boxed;
   }
+
+  private static final Set<ObjectValidationSeverity> OK_SEVERITIES = EnumSet.of(
+      ObjectValidationSeverity.OK,
+      ObjectValidationSeverity.INFO);
+
+  /**
+   * Raises the overall severity of a validation result, if applicable.
+   * 
+   * <p>
+   * If the provided {@link ObjectValidationResult} contains at least one item with severity greater
+   * than {@link ObjectValidationSeverity#INFO}, raises the overall severity of the validation
+   * result to the provided value. The severity of every item with (with greater value than INFO} is
+   * also raised to the supplied level.
+   * 
+   * <p>
+   * The provided {@link ObjectValidationResult} argument is directly mutated. If any of the
+   * parameters are null, no operation is performed.
+   *
+   * @param validation the {@link ObjectValidationResult} to examine and modify, nullable
+   * @param severity the target {@link ObjectValidationSeverity}, nullable
+   */
+  public static void raiseSeverity(ObjectValidationResult validation,
+      ObjectValidationSeverity severity) {
+    if (validation == null || severity == null) {
+      return;
+    }
+
+    final List<ObjectValidationItem> items = validation.getItems();
+    if (items == null || items.isEmpty()) {
+      return;
+    }
+
+    boolean changed = false;
+    for (ObjectValidationItem item : items) {
+      final ObjectValidationSeverity s = item.getSeverity();
+      if (s == null || !OK_SEVERITIES.contains(s)) {
+        item.setSeverity(severity);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      validation.setSeverity(severity);
+    }
+  }
+
 
   /**
    * Unchecked exception to be thrown when an object validation fails in the domain layer.
