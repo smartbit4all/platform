@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMModificationState;
@@ -42,7 +41,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object represents an ongoing modification in an MDMDefinition. It is strored inline in  the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy). ")
 @JsonPropertyOrder({
-  MDMModification.UUID,
+  MDMModification.ID,
   MDMModification.NAME,
   MDMModification.DESCRIPTION,
   MDMModification.BRANCH_URI,
@@ -59,8 +58,8 @@ import javax.validation.Valid;
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MDMModification {
-  public static final String UUID = "uuid";
-  private UUID uuid;
+  public static final String ID = "id";
+  private String id;
 
   public static final String NAME = "name";
   private String name;
@@ -101,31 +100,30 @@ public class MDMModification {
   public MDMModification() { 
   }
 
-  public MDMModification uuid(UUID uuid) {
+  public MDMModification id(String id) {
     
-    this.uuid = uuid;
+    this.id = id;
     return this;
   }
 
    /**
-   * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. 
-   * @return uuid
+   * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  
+   * @return id
   **/
   @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. ")
-  @JsonProperty(UUID)
+  @ApiModelProperty(value = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  ")
+  @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UUID getUuid() {
-    return uuid;
+  public String getId() {
+    return id;
   }
 
 
-  @JsonProperty(UUID)
+  @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUuid(UUID uuid) {
-    this.uuid = uuid;
+  public void setId(String id) {
+    this.id = id;
   }
 
 
@@ -492,7 +490,7 @@ public class MDMModification {
       return false;
     }
     MDMModification mdMModification = (MDMModification) o;
-    return Objects.equals(this.uuid, mdMModification.uuid) &&
+    return Objects.equals(this.id, mdMModification.id) &&
         Objects.equals(this.name, mdMModification.name) &&
         Objects.equals(this.description, mdMModification.description) &&
         Objects.equals(this.branchUri, mdMModification.branchUri) &&
@@ -509,14 +507,14 @@ public class MDMModification {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approvedBy, state, notes, descriptors);
+    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approvedBy, state, notes, descriptors);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMModification {\n");
-    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");

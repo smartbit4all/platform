@@ -4,9 +4,11 @@ import java.net.URI;
 import java.util.Map;
 import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMErrorLog;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -124,14 +126,49 @@ public interface MasterDataManagementApi {
    */
   Map<String, MDMEntryDescriptor> getEntryDescriptors(MDMDefinition definition, URI branch);
 
+  /**
+   * Add a new descriptor to the definition
+   * 
+   * @param definition The {@link MDMDefinition}.
+   * @param descriptor The {@link MDMEntryDescriptor} to add to the definition.
+   */
+  void addDescriptorToDefinition(MDMDefinition definition, MDMEntryDescriptor descriptor);
+
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
   /**
-   * Initiate the global branch for the definition.
+   * Initiate a new editing branch for the definition. We must have a strategy with
+   * {@link MDMBranchingStrategy#STRICT_PARALEL} where we can initite as many as necessary.
+   * 
+   * @param definitionName The name of the definition.
+   * @param branchCaption The title of the editing branch.
+   * @return The uri of the state.
+   */
+  URI initiateModificationBranch(String definitionName, String branchCaption);
+
+  /**
+   * Return the modification api.
+   * 
+   * @param definitionName The definition.
+   * @param id The id if the modification.
+   * @return The modification api to manage the {@link MDMModification} identified by the id.
+   */
+  MDMModificationApi getModificationApi(String definitionName, String id);
+
+  /**
+   * Return the modification api.
+   * 
+   * @param definitionName The definition.
+   * @return The modification api to manage the {@link MDMModification} identified by the id.
+   */
+  MDMModificationApi getGlobalModificationApi(String definitionName);
+
+  /**
+   * /** Initiate the global branch for the definition.
    * 
    * @param definition The name of the definition.
    * @param title The title of the editing.
-   * @return The newly created or the exiting branch uri.
+   * @return The uri of the state.
    */
   URI initiateGlobalBranch(String definition, String title);
 

@@ -22,18 +22,25 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.smartbit4all.api.session.bean.UserActivityLog;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * MDMModificationNote
+ * This inline object is the comment on the MDM modification. It can be global for the whole notification and can refer tor an entry or even an object in an entry. The objet is a bit tricky because we can refer the object by the branched and the original uri also. 
  */
+@ApiModel(description = "This inline object is the comment on the MDM modification. It can be global for the whole notification and can refer tor an entry or even an object in an entry. The objet is a bit tricky because we can refer the object by the branched and the original uri also. ")
 @JsonPropertyOrder({
   MDMModificationNote.CREATED,
-  MDMModificationNote.NOTE
+  MDMModificationNote.NOTE,
+  MDMModificationNote.ENTRY,
+  MDMModificationNote.OBJECT_URI
 })
 @JsonTypeName("MDMModificationNote")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,6 +50,12 @@ public class MDMModificationNote {
 
   public static final String NOTE = "note";
   private String note;
+
+  public static final String ENTRY = "entry";
+  private String entry;
+
+  public static final String OBJECT_URI = "objectUri";
+  private JsonNullable<Object> objectUri = JsonNullable.<Object>of(null);
 
   public MDMModificationNote() { 
   }
@@ -102,6 +115,68 @@ public class MDMModificationNote {
   }
 
 
+  public MDMModificationNote entry(String entry) {
+    
+    this.entry = entry;
+    return this;
+  }
+
+   /**
+   * The name of the entry the note is refering to. 
+   * @return entry
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the entry the note is refering to. ")
+  @JsonProperty(ENTRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getEntry() {
+    return entry;
+  }
+
+
+  @JsonProperty(ENTRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEntry(String entry) {
+    this.entry = entry;
+  }
+
+
+  public MDMModificationNote objectUri(Object objectUri) {
+    this.objectUri = JsonNullable.<Object>of(objectUri);
+    
+    return this;
+  }
+
+   /**
+   * The object URI the note is refering to. 
+   * @return objectUri
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The object URI the note is refering to. ")
+  @JsonIgnore
+
+  public Object getObjectUri() {
+        return objectUri.orElse(null);
+  }
+
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Object> getObjectUri_JsonNullable() {
+    return objectUri;
+  }
+  
+  @JsonProperty(OBJECT_URI)
+  public void setObjectUri_JsonNullable(JsonNullable<Object> objectUri) {
+    this.objectUri = objectUri;
+  }
+
+  public void setObjectUri(Object objectUri) {
+    this.objectUri = JsonNullable.<Object>of(objectUri);
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,12 +187,25 @@ public class MDMModificationNote {
     }
     MDMModificationNote mdMModificationNote = (MDMModificationNote) o;
     return Objects.equals(this.created, mdMModificationNote.created) &&
-        Objects.equals(this.note, mdMModificationNote.note);
+        Objects.equals(this.note, mdMModificationNote.note) &&
+        Objects.equals(this.entry, mdMModificationNote.entry) &&
+        equalsNullable(this.objectUri, mdMModificationNote.objectUri);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(created, note);
+    return Objects.hash(created, note, entry, hashCodeNullable(objectUri));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
   }
 
   @Override
@@ -126,6 +214,8 @@ public class MDMModificationNote {
     sb.append("class MDMModificationNote {\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    note: ").append(toIndentedString(note)).append("\n");
+    sb.append("    entry: ").append(toIndentedString(entry)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

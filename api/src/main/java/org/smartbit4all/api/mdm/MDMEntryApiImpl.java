@@ -421,7 +421,6 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
         // modification.
         return modification == null ? null : modification.getBranchUri();
       }
-      // TODO handle MDMBranchingStrategy.GROUP
     }
     return null;
   }
