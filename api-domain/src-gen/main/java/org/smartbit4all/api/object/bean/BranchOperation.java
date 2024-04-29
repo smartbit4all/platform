@@ -57,7 +57,9 @@ public class BranchOperation {
     
     REBASE("rebase"),
     
-    MERGE("merge");
+    MERGE("merge"),
+    
+    TAG("tag");
 
     private String value;
 

@@ -519,7 +519,7 @@ components:
           format: uri
         operationType:
           type: string
-          enum: [init, rebase, merge]
+          enum: [init, rebase, merge, tag]
         executedAt:
           type: UserActivityLog
         operation:
