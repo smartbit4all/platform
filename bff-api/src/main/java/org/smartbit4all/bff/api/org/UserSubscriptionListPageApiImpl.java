@@ -1,6 +1,8 @@
 package org.smartbit4all.bff.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import org.smartbit4all.api.config.PlatformApiConfig;
@@ -23,7 +25,6 @@ import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
     implements UserSubscriptionListPageApi {
@@ -44,7 +45,7 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
   @Override
   public SearchPageModel initModel(View view) {
     subjectModels.add(PlatformApiConfig.SUBJECT_ACL);
-    List<String> orderedColumns = List.of(
+    List<String> orderedColumns = Arrays.asList(
         SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_NAME,
         SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE_NAME,
         SubscriptionConfigApi.SUBSCRIPTION_OPERATION_ENTITYSUMMARY,
@@ -60,7 +61,7 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
         .searchIndexSchema(OrgApiStorageImpl.ORG_SCHEME)
         .searchIndexName(SubscriptionConfigApi.SEARCH_USER_SUBSCRIPTION)
         .filterModel(null)
-        .gridViewOptions(List.of(new GridView()
+        .gridViewOptions(Arrays.asList(new GridView()
             .orderedColumnNames(orderedColumns)
             .addOrderByListItem(new FilterExpressionOrderBy()
                 .propertyName(SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE)
