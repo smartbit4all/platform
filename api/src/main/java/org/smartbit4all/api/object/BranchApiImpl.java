@@ -10,11 +10,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
@@ -70,40 +68,6 @@ public class BranchApiImpl implements BranchApi {
   }
 
   @Override
-  public Map<URI, BranchOperation> initBranchedObjects(URI branchUri,
-      Map<URI, Supplier<URI>> brachedObjects) {
-    if (brachedObjects == null || branchUri == null) {
-      return Collections.emptyMap();
-    }
-    Map<URI, BranchOperation> result = new HashMap<>();
-    ObjectNode objectNode = objectApi.loadLatest(branchUri).modify(BranchEntry.class, b -> {
-      Map<URI, BranchOperation> map =
-          brachedObjects.entrySet().stream().collect(toMap(Entry::getKey, e -> {
-            URI sourceUri = e.getKey();
-            URI latestSourceUri = objectApi.getLatestUri(sourceUri);
-            String latestSourceUriString = latestSourceUri.toString();
-            return b.getBranchedObjects().computeIfAbsent(latestSourceUriString,
-                u -> {
-                  URI targetUri = e.getValue().get();
-                  return new BranchedObject()
-                      .sourceObjectLatestUri(latestSourceUri)
-                      .branchedObjectLatestUri(objectApi.getLatestUri(targetUri))
-                      .addOperationsItem(
-                          new BranchOperation()
-                              .sourceUri(sourceUri).targetUri(targetUri)
-                              .operationType(OperationTypeEnum.INIT));
-                })
-                .getOperations().get(0);
-          }));
-      result.putAll(map);
-      return b;
-    });
-    objectApi.save(objectNode);
-    return result;
-
-  }
-
-  @Override
   public void addSnapshotBranch(URI branchUri, Collection<ObjectNode> nodes) {
     Objects.requireNonNull(branchUri, "The branch uri is required.");
     if (nodes == null) {
@@ -118,9 +82,16 @@ public class BranchApiImpl implements BranchApi {
       branchNode.modify(BranchEntry.class, entry -> {
         for (ObjectNode node : allLoadedNode) {
           if (node.getObjectUri() != null) {
-            entry.putBranchedObjectsItem(node.getObjectUri().toString(),
-                new BranchedObject().sourceObjectLatestUri(node.getObjectUri())
-                    .branchedObjectLatestUri(node.getObjectUri()));
+            URI latestUri = objectApi.getLatestUri(node.getObjectUri());
+            entry.putBranchedObjectsItem(latestUri.toString(),
+                new BranchedObject()
+                    .sourceObjectLatestUri(latestUri)
+                    .branchedObjectLatestUri(latestUri) // TODO this should be null!
+                    .addOperationsItem(
+                        new BranchOperation()
+                            .operationType(OperationTypeEnum.TAG)
+                            .sourceUri(node.getObjectUri())
+                            .targetUri(null))); // target is not set in snapshot
           }
         }
         return entry;

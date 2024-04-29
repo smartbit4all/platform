@@ -250,7 +250,15 @@ public final class RetrievalApiImpl implements RetrievalApi {
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
-          readUri = branchedObject.getBranchedObjectLatestUri();
+          if (Objects.equals(
+              branchedObject.getSourceObjectLatestUri(),
+              branchedObject.getBranchedObjectLatestUri())) {
+            // this condition indicates its a tagged / snapshotted branchEntry, treat with care..
+            // TODO change it so getBranchedObjectLatestUri will be null and handle accordingly
+            readUri = getLastRebase(branchedObject).getSourceUri();
+          } else {
+            readUri = branchedObject.getBranchedObjectLatestUri();
+          }
         }
       } else {
         // In this case we must check the version also.
@@ -259,32 +267,24 @@ public final class RetrievalApiImpl implements RetrievalApi {
         // We have a branched object for the given object on the branch so we use that instead of
         // the main.
         if (branchedObject != null) {
-          BranchOperation lastRebase = null;
-          for (int i = branchedObject.getOperations().size() - 1; i >= 0; i--) {
-            BranchOperation bo = branchedObject.getOperations().get(i);
-            if (OperationTypeEnum.INIT.equals(bo.getOperationType())
-                || OperationTypeEnum.REBASE.equals(bo.getOperationType())) {
-              lastRebase = bo;
-              break;
-            }
-          }
-          if (lastRebase != null
-              && ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri()) != null) {
-            Long lastRebaseSourceVersion =
-                ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri());
-            if (uriVersion < lastRebaseSourceVersion) {
-              // We ask for an earlier version from the source. We can read it and return.
-              readUri = uri;
-            } else if (uriVersion.equals(lastRebaseSourceVersion)) {
-              // We exactly ask for the rebased version. On this branch we pass the first version
-              // from the branch
-              readUri = lastRebase.getTargetUri();
+          BranchOperation lastRebase = getLastRebase(branchedObject);
+          Long lastRebaseSourceVersion =
+              ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri());
+          if (uriVersion < lastRebaseSourceVersion) {
+            // We ask for an earlier version from the source. We can read it and return.
+            readUri = uri;
+          } else if (uriVersion.equals(lastRebaseSourceVersion)) {
+            // We exactly ask for the rebased version. On this branch we pass the first version
+            // from the branch
+            if (lastRebase.getOperationType() == OperationTypeEnum.TAG) {
+              // TAG means we only have sourceUri
+              readUri = lastRebase.getSourceUri();
             } else {
-              throw new IllegalStateException("Unabe to retrieve a version from the source " + uri
-                  + " that is later then the last branching " + lastRebaseSourceVersion);
+              readUri = lastRebase.getTargetUri();
             }
           } else {
-            throw new IllegalStateException("Missing rebase operation for " + branchedObject);
+            throw new IllegalStateException("Unabe to retrieve a version from the source " + uri
+                + " that is later then the last branching " + lastRebaseSourceVersion);
           }
         } else {
           readUri = uri;
@@ -294,6 +294,25 @@ public final class RetrievalApiImpl implements RetrievalApi {
       readUri = loadLatest ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     }
     return readUri;
+  }
+
+  private BranchOperation getLastRebase(BranchedObject branchedObject) {
+    BranchOperation lastRebase = null;
+    for (int i = branchedObject.getOperations().size() - 1; i >= 0; i--) {
+      BranchOperation bo = branchedObject.getOperations().get(i);
+      if (OperationTypeEnum.INIT.equals(bo.getOperationType())
+          || OperationTypeEnum.REBASE.equals(bo.getOperationType())
+          || OperationTypeEnum.TAG.equals(bo.getOperationType())) {
+        lastRebase = bo;
+        break;
+      }
+    }
+    if (lastRebase == null
+        || ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri()) == null) {
+      throw new IllegalStateException("Missing rebase operation for " + branchedObject);
+    }
+
+    return lastRebase;
   }
 
   private final BranchedObject getBranchedObject(BranchEntry branchEntry, URI readUri) {

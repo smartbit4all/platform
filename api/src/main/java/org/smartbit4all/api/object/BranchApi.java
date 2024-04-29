@@ -3,8 +3,6 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
@@ -35,7 +33,7 @@ import org.smartbit4all.core.object.ObjectNode;
  * refers to the branch version as {@link ObjectVersion#mergedWithUri(URI)} and the last known
  * rebase version from the source object as {@link ObjectVersion#commonAncestorUri(URI)}</li>
  * </ul>
- * 
+ *
  * @author Peter Boros
  */
 public interface BranchApi {
@@ -43,7 +41,7 @@ public interface BranchApi {
   /**
    * This operation constructs a new branch. The result can be used for branching to collect all the
    * operations made.
-   * 
+   *
    * @param caption The caption of the branch that could be useful to identify
    * @return The branch entry with the saved URI.
    */
@@ -52,31 +50,17 @@ public interface BranchApi {
   /**
    * This operation constructs a new branch. The result can be used for branching to collect all the
    * operations made.
-   * 
+   *
    * @param caption The caption of the branch that could be useful to identify
    * @return The branch entry that is not saved.
    */
   BranchEntry constructBranch(String caption);
 
   /**
-   * Initiate a version from the URI. The operation checks if we already have a branch from the
-   * given object. Until the duration of the check it locks the branch to avoid parallel operations.
-   * If the branch already exists then we get back the first version of this.
-   * 
-   * @param branchUri The URI of the branch to be used as branch for the operation.
-   * @param brachedObjects The version URI map of the branched objects mapped by the source version
-   *        URIs.
-   * @return The constructed or already existing branched object init {@link BranchOperation} mapped
-   *         by the original version uri.
-   */
-  Map<URI, BranchOperation> initBranchedObjects(URI branchUri,
-      Map<URI, Supplier<URI>> brachedObjects);
-
-  /**
    * The snapshot branch is a branch that is already contains the branched objects even if they have
    * not been modified yet. This is used to save a state of an object graph. Later on we can use
    * this branch to compare with a new version.
-   * 
+   *
    * @param branchUri The branch to add the loaded reference of the nodes.
    * @param nodes The nodes to add.
    */
@@ -91,7 +75,7 @@ public interface BranchApi {
   /**
    * Remove the branched object from the branch. It won't modify anything if the given object is
    * deleted!
-   * 
+   *
    * @param branchUri The branch uri.
    * @param branchedUri The uri of the branched object.
    * @return If it is not found then we get back null. If it was found as new or modified then we
@@ -102,14 +86,14 @@ public interface BranchApi {
 
   /**
    * The merge constructs the object nodes for the objects of the branch necessary to update.
-   * 
+   *
    * We have to process all the branched objects let it be explicitly or implicitly branched.
    * Starting from one branched object we traverse all the accessible branched objects via the
    * references, lists and maps of the actual object. We construct the ObjectNode with the proper
    * ObjectReference list, map and so on. If we have an object with a list of uri to process (a
    * detail list) then all the objects in the list will be examined if it is branched or not. If
    * branched (modified / new / deleted) then we make the modification on the list in a proper way.
-   * 
+   *
    * @param branchUri The uri of the branch.
    * @return The modified {@link ObjectNode} list that can be saved in this order to apply the merge
    *         into the storage.
@@ -122,7 +106,7 @@ public interface BranchApi {
    * object by the uri of the {@link BranchedObject#getSourceObjectLatestUri()} and we compare the
    * content of the two list. In every other case we assume that all the list items are unmodified.
    * If the given object is brand new then the state of all the list items are new.
-   * 
+   *
    * @param branchUri The uri of the branch
    * @param objectUri The uri of the object.
    * @param path The path of the list in the given object.
@@ -134,7 +118,7 @@ public interface BranchApi {
 
   /**
    * Try to remove the new object from the branch.
-   * 
+   *
    * @param branchUri
    * @param objectUri
    * @return
