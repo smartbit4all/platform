@@ -166,10 +166,14 @@ public class MDMEntryDescriptorPageApiImpl
     ViewConstraint viewConstraint = new ViewConstraint();
     PageContext ctx = getContextByView(viewUuid);
     if (ObjectUtils.isEmpty(vectorDBApi.getContributionApis())) {
-      viewConstraint.addComponentConstraintsItem(
-          new ComponentConstraint().dataName(ObjectLayoutBuilder.widgetKey(
-              MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
-              .enabled(false).visible(false).mandatory(false));
+      viewConstraint
+          .addComponentConstraintsItem(
+              new ComponentConstraint().dataName(ObjectLayoutBuilder.widgetKey(
+                  MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
+                  .enabled(false).visible(false).mandatory(false))
+          .addComponentConstraintsItem(
+              new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES)
+                  .enabled(false).visible(false).mandatory(false));
     }
 
     viewConstraint.addComponentConstraintsItem(
