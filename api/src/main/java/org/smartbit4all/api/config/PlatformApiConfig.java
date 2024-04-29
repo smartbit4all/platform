@@ -63,6 +63,8 @@ import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
+import org.smartbit4all.api.object.SubscriptionConfigApi;
+import org.smartbit4all.api.object.SubscriptionConfigApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
@@ -816,6 +818,11 @@ public class PlatformApiConfig {
   @Bean
   WellknownApi wellknownApi() {
     return new WellknownApiImpl();
+  }
+
+  @Bean
+  SubscriptionConfigApi subscriptionConfigApi() {
+    return new SubscriptionConfigApiImpl();
   }
 
 }

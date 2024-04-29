@@ -67,6 +67,11 @@ public class ObjectApiTestConfig {
   }
 
   @Bean
+  SubscriptionConfigContributionTestApi subscriptionConfigContributionTestApi() {
+    return new SubscriptionConfigContributionTestApi();
+  }
+
+  @Bean
   public ObjectDefinition<SamplePropertyContainerWithId> samplePropertyContainerWithIdDef() {
     return ObjectDefinitionApiImpl.constructDefinitionBase(SamplePropertyContainerWithId.class)
         .idPath(SamplePropertyContainerWithId.ID);

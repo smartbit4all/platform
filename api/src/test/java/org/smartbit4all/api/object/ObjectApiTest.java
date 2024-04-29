@@ -417,6 +417,8 @@ class ObjectApiTest {
     }
     {
       Subject superGroupSubject = getSubject(allSubjects, superGroup);
+      Subject superUserSubject = getSubject(allSubjects, superUserUri);
+
       ObjectNode categoryNode =
           objectApi.create(SCHEMA_ASPECTS, new SampleCategory().name("My Category 4"));
       URI uri = objectApi.save(categoryNode);
@@ -430,14 +432,18 @@ class ObjectApiTest {
               subjects.add(new ACLSubject().subject(superGroupSubject)
                   .operation(new ACLOperation().name("read")));
               acl = accessControlInternalApi.applySubjects(acl, subjects,
-                  "read", objectApi.getLatestUri(uri), "ReadWriteCategory");
+                  "read", objectApi.getLatestUri(uri),
+                  SubscriptionConfigContributionTestApi.READ_WRITE_CATEGORY);
             }
             {
               List<ACLSubject> subjects = new ArrayList<>();
               subjects.add(new ACLSubject().subject(superGroupSubject)
                   .operation(new ACLOperation().name("write")));
+              subjects.add(new ACLSubject().subject(superUserSubject)
+                  .operation(new ACLOperation().name("read-write")));
               acl = accessControlInternalApi.applySubjects(acl, subjects,
-                  "write", objectApi.getLatestUri(uri), "ReadWriteCategory");
+                  "write", objectApi.getLatestUri(uri),
+                  SubscriptionConfigContributionTestApi.READ_WRITE_CATEGORY);
             }
             return acl;
             // new ACL().rootEntry(new ACLEntry().addEntriesItem(
@@ -451,15 +457,16 @@ class ObjectApiTest {
       models.add(ObjectApiTestConfig.SAMPLE_SUBJECT_MODEL);
       List<ACLSubjectOperations> userAllOperations =
           accessControlInternalApi.getUserAllOperations(superUserUri, models);
-      org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(1);
+      org.assertj.core.api.Assertions.assertThat(userAllOperations).hasSize(2);
 
       List<ACLSubjectSubscription> userAllSubscriptions =
           accessControlInternalApi.getUserAllSubscriptions(superUserUri, models);
-      org.assertj.core.api.Assertions.assertThat(userAllSubscriptions).hasSize(2);
+      org.assertj.core.api.Assertions.assertThat(userAllSubscriptions).hasSize(3);
 
       TableData<?> tableData = collectionApi.searchIndex(OrgApiStorageImpl.ORG_SCHEME,
-          ACLSubjectSubscription.class.getSimpleName(), ACLSubjectSubscription.class)
-          .tableDataOfObjects(userAllSubscriptions.stream());
+          SubscriptionConfigApi.SEARCH_USER_SUBSCRIPTION, ACLSubjectSubscription.class)
+          .executeSearchOnNodes(
+              userAllSubscriptions.stream().map(o -> objectApi.create(null, o)), null);
 
       System.out.println(TableDatas.toStringAdv(tableData));
 
