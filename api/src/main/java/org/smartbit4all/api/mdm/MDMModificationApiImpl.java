@@ -3,6 +3,7 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -24,9 +25,9 @@ public class MDMModificationApiImpl implements MDMModificationApi {
 
   private final MDMDefinition definition;
 
-  private final MDMDefinitionState state;
+  private MDMDefinitionState state;
 
-  private final MDMModification modification;
+  private MDMModification modification;
 
   private boolean global = false;
 
@@ -86,13 +87,45 @@ public class MDMModificationApiImpl implements MDMModificationApi {
 
   @Override
   public URI cancel() {
-    return null;
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
+      if (global) {
+        return state
+            .globalModification(null);
+      } else {
+        state.getActiveModifications()
+            .removeIf(m -> Objects.equals(modification.getId(), m.getId()));
+        return state;
+      }
+    }, state -> noBranchValidation(state));
+    fireModificationEvent(mdmApi.MODIFICATION_CANCELLED, null,
+        definition.getUri(),
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+    return stateWrapper.getCurrentStateUri();
   }
 
   @Override
   public void sendForApproval(URI approver) {
-    // TODO Auto-generated method stub
-
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
+      MDMModification m;
+      if (global) {
+        m = state.getGlobalModification();
+      } else {
+        m =
+            state.getActiveModifications().stream()
+                .filter(mod -> Objects.equals(modification.getId(), mod.getId()))
+                .findFirst().orElse(null);
+      }
+      if (m != null) {
+        m.approver(approver).updated(sessionApi.createActivityLog());
+        this.modification = m;
+      }
+      this.state = state;
+      return state;
+    }, state -> noBranchValidation(state),
+        state -> branchUnderApprovalValidation(state));
+    fireModificationEvent(MasterDataManagementApi.MODIFICATION_SENT_FOR_APPROVAL, null,
+        definition.getUri(),
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
   @Override
@@ -184,5 +217,15 @@ public class MDMModificationApiImpl implements MDMModificationApi {
           definition.getName()));
     }
   }
+
+  private void branchUnderApprovalValidation(MDMDefinitionState state) {
+    if (state.getGlobalModification() != null
+        && state.getGlobalModification().getApprover() != null) {
+      throw new IllegalStateException(MessageFormat.format(
+          localeSettingApi.get("mdm.globalbranch.underapproval"),
+          definition.getName()));
+    }
+  }
+
 
 }
