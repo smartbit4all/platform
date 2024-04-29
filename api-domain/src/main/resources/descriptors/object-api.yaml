@@ -270,16 +270,18 @@ components:
       type: object
       description: |
         A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline 
-        object (SnapshotData), or a branch URI. SnapshotData only contains versioned URIs and references,
-        branch is similar, but doesn't contain tha data.
+        object (SnapshotData), or an objectUri/branchUri pair. SnapshotData only contains versioned URIs 
+        and references (also contains objectUri). ObjectUri/branchUri is similar, but doesn't contain tha data.
         Since these versions don't change, a snapshot can always be reloaded exactly as it was before.
-        There's a 
       properties:
         uri:
           type: string
           format: uri
         data:
           $ref: '#/components/schemas/SnapshotData'
+        objectUri:
+          type: string
+          format: uri
         branchUri:
           type: string
           format: uri
