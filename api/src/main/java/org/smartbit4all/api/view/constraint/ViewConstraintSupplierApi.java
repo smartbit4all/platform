@@ -11,6 +11,10 @@ public interface ViewConstraintSupplierApi
 
   boolean supports(final View view);
 
+  default boolean hasViewName(final View view, final String viewName) {
+    return view != null && viewName != null && viewName.equals(view.getViewName());
+  }
+
   int precedence();
 
   default ViewConstraint calculateViewConstraint(final View view, final ObjectNode domainObject,
