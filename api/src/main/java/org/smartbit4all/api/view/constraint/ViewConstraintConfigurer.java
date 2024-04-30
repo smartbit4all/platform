@@ -3,6 +3,7 @@ package org.smartbit4all.api.view.constraint;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
+import org.springframework.lang.Nullable;
 import com.google.common.base.Strings;
 
 /**
@@ -73,14 +75,29 @@ public final class ViewConstraintConfigurer {
     return set("**");
   }
 
+  public EnforcementConfigurer enforce() {
+    return new EnforcementConfigurer();
+  }
+
   public ViewConstraint configure() {
     if (!results.isEmpty()) {
       return new ViewConstraint().componentConstraints(results);
     }
 
 
+    EnforcementInstruction enforcementInstruction = null;
     for (final ConstraintConfigurationInstructionBundle bundle : instructionBundles) {
-      processInstructionBundle(bundle);
+      if (enforcementInstruction == null && bundle.enforcementBundle) {
+        enforcementInstruction = processEnforcementBundle(bundle);
+      } else if (!bundle.enforcementBundle) {
+        processInstructionBundle(bundle);
+      }
+    }
+
+    if (enforcementInstruction != null) {
+      results.stream()
+          .filter(enforcementInstruction.target::test)
+          .forEach(enforcementInstruction.marker::modify);
     }
 
     return new ViewConstraint().componentConstraints(results);
@@ -111,6 +128,31 @@ public final class ViewConstraintConfigurer {
 
     }
     return false;
+  }
+
+  private @Nullable EnforcementInstruction processEnforcementBundle(
+      final ConstraintConfigurationInstructionBundle bundle) {
+    for (final ConstraintConfigurationInstruction i : bundle.instructions) {
+
+      final EnforcementInstruction instruction = (EnforcementInstruction) i;
+      if (conditionMatched(instruction)) {
+        return instruction;
+
+      } else if (instruction.fallbackConfiguration != null) {
+        final ConstraintConfigurer fallbackConfigurer =
+            new ConstraintConfigurer(instruction.target);
+        final ConditionConfigurer fallbackConditionConfigurer = instruction.fallbackConfiguration
+            .apply(fallbackConfigurer);
+        final EnforcementInstruction fallbackResult =
+            processEnforcementBundle(fallbackConditionConfigurer.instructionBundle);
+        if (fallbackResult != null) {
+          return fallbackResult;
+        }
+
+      }
+
+    }
+    return null;
   }
 
   private boolean conditionMatched(ConstraintConfigurationInstruction instruction) {
@@ -153,24 +195,69 @@ public final class ViewConstraintConfigurer {
     constraintsToAdd.forEach(c -> results.add(marker.apply(c)));
   }
 
+  public final class EnforcementConfigurer {
+
+    private EnforcementConfigurer() {}
+
+
+    private ConstraintConfigurer setTarget(final ConstraintTarget target) {
+      return new ConstraintConfigurer(target);
+    }
+
+    public ConstraintConfigurer setEverything() {
+      return setTarget(ConstraintTarget.ANY);
+    }
+
+    public ConstraintConfigurer setAnythingHidden() {
+      return setTarget(ConstraintTarget.HIDDEN);
+    }
+
+    public ConstraintConfigurer setAnythingVisible() {
+      return setTarget(ConstraintTarget.VISIBLE);
+    }
+
+    public ConstraintConfigurer setAnythingEnabled() {
+      return setTarget(ConstraintTarget.ENABLED);
+    }
+
+    public ConstraintConfigurer setAnythingMandatory() {
+      return setTarget(ConstraintTarget.MANDATORY);
+    }
+
+  }
+
   public final class ConstraintConfigurer {
 
     private final List<ComponentConstraint> componentConstraints;
+    private final ConstraintTarget constraintTarget;
 
     private ConstraintConfigurer(final List<String> keys) {
       componentConstraints = keys.stream()
           .map(it -> new ComponentConstraint().dataName(it))
           .collect(Collectors.toList());
+      constraintTarget = null;
     }
 
     private ConstraintConfigurer(final ComponentConstraint... componentConstraints) {
       this.componentConstraints = Arrays.asList(componentConstraints);
+      constraintTarget = null;
+    }
+
+    private ConstraintConfigurer(final ConstraintTarget constraintTarget) {
+      this.constraintTarget = Objects.requireNonNull(
+          constraintTarget,
+          "constraintTarget cannot be null!");
+      this.componentConstraints = Collections.emptyList();
     }
 
     public ConditionConfigurer as(final boolean visible, final boolean enabled,
         final boolean mandatory) {
       final ConstraintMarker marker = new ConstraintMarker(visible, enabled, mandatory);
-      return new ConditionConfigurer(componentConstraints, marker);
+      if (constraintTarget == null) {
+        return new ConditionConfigurer(componentConstraints, marker);
+      } else {
+        return new ConditionConfigurer(constraintTarget, marker);
+      }
     }
 
     public ConditionConfigurer visible() {
@@ -207,6 +294,12 @@ public final class ViewConstraintConfigurer {
         ConstraintMarker marker) {
       currentInstruction = new ConstraintConfigurationInstruction(componentConstraints, marker);
       instructionBundle = new ConstraintConfigurationInstructionBundle();
+      instructionBundle.instructions.add(currentInstruction);
+    }
+
+    private ConditionConfigurer(ConstraintTarget constraintTarget, ConstraintMarker marker) {
+      currentInstruction = new EnforcementInstruction(constraintTarget, marker);
+      instructionBundle = new ConstraintConfigurationInstructionBundle(true);
       instructionBundle.instructions.add(currentInstruction);
     }
 
@@ -281,6 +374,28 @@ public final class ViewConstraintConfigurer {
 
   }
 
+
+  private enum ConstraintTarget {
+    // @formatter:off
+    ANY(it -> true),
+    HIDDEN(it -> !it.getVisible()), 
+    VISIBLE(ComponentConstraint::getVisible), 
+    ENABLED(ComponentConstraint::getEnabled), 
+    MANDATORY(ComponentConstraint::getMandatory);
+    // @formatter:on
+
+    private final Predicate<ComponentConstraint> p;
+
+    private ConstraintTarget(final Predicate<ComponentConstraint> p) {
+      this.p = Objects.requireNonNull(p, "p cannot be null!");
+    }
+
+    public boolean test(final ComponentConstraint constraint) {
+      return p.test(constraint);
+    }
+  }
+
+
   private static final class ConstraintMarker {
     private final boolean visible;
     private final boolean enabled;
@@ -301,17 +416,21 @@ public final class ViewConstraintConfigurer {
           .mandatory(mandatory);
     }
 
+    private void modify(final ComponentConstraint componentConstraint) {
+      componentConstraint.visible(visible).enabled(enabled).mandatory(mandatory);
+    }
+
   }
 
-  private static final class ConstraintConfigurationInstruction {
-    private final List<ComponentConstraint> componentConstraints;
-    private final ConstraintMarker marker;
-    private final List<Predicate<View>> viewPredicates;
-    private final List<Predicate<ObjectNode>> domainObjectPredicates;
-    private final List<Predicate<URI>> userUriPredicates;
-    private final List<BiPredicate<URI, ObjectNode>> userDomainObjectBiPredicates;
-    private final Map<Class<?>, List<Predicate<?>>> viewModelPredicates;
-    private Function<ConstraintConfigurer, ConditionConfigurer> fallbackConfiguration;
+  private static class ConstraintConfigurationInstruction {
+    protected final List<ComponentConstraint> componentConstraints;
+    protected final ConstraintMarker marker;
+    protected final List<Predicate<View>> viewPredicates;
+    protected final List<Predicate<ObjectNode>> domainObjectPredicates;
+    protected final List<Predicate<URI>> userUriPredicates;
+    protected final List<BiPredicate<URI, ObjectNode>> userDomainObjectBiPredicates;
+    protected final Map<Class<?>, List<Predicate<?>>> viewModelPredicates;
+    protected Function<ConstraintConfigurer, ConditionConfigurer> fallbackConfiguration;
 
     private ConstraintConfigurationInstruction(List<ComponentConstraint> componentConstraints,
         ConstraintMarker marker) {
@@ -324,7 +443,7 @@ public final class ViewConstraintConfigurer {
       this.viewModelPredicates = new HashMap<>();
     }
 
-    private ConstraintConfigurationInstruction cleanCopy() {
+    protected ConstraintConfigurationInstruction cleanCopy() {
       return new ConstraintConfigurationInstruction(componentConstraints, marker);
     }
 
@@ -338,11 +457,32 @@ public final class ViewConstraintConfigurer {
 
   }
 
+  private static final class EnforcementInstruction extends ConstraintConfigurationInstruction {
+    private final ConstraintTarget target;
+
+    private EnforcementInstruction(final ConstraintTarget target, ConstraintMarker marker) {
+      super(Collections.emptyList(), marker);
+      this.target = target;
+    }
+
+    @Override
+    protected ConstraintConfigurationInstruction cleanCopy() {
+      return new EnforcementInstruction(target, marker);
+    }
+
+  }
+
   private static final class ConstraintConfigurationInstructionBundle {
+    private final boolean enforcementBundle;
     private final List<ConstraintConfigurationInstruction> instructions;
 
-    public ConstraintConfigurationInstructionBundle() {
+    private ConstraintConfigurationInstructionBundle() {
+      this(false);
+    }
+
+    private ConstraintConfigurationInstructionBundle(boolean enforcementBundle) {
       this.instructions = new ArrayList<>();
+      this.enforcementBundle = enforcementBundle;
     }
   }
 
