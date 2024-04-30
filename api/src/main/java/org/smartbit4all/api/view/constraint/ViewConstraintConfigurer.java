@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -40,7 +42,8 @@ public final class ViewConstraintConfigurer {
   private final URI userUri;
   private final Object viewModel;
   private final List<ConstraintConfigurationInstructionBundle> instructionBundles;
-  private final List<ComponentConstraint> results;
+
+  private boolean squash = false;
 
   private ViewConstraintConfigurer(View view, ObjectNode domainObject, URI userUri,
       Object viewModel) {
@@ -49,7 +52,6 @@ public final class ViewConstraintConfigurer {
     this.userUri = userUri;
     this.viewModel = viewModel;
     this.instructionBundles = new ArrayList<>();
-    this.results = new ArrayList<>();
   }
 
   public ViewConstraintConfigurer withViewModel(final Object newViewModel) {
@@ -79,37 +81,64 @@ public final class ViewConstraintConfigurer {
     return new EnforcementConfigurer();
   }
 
-  public ViewConstraint configure() {
-    if (!results.isEmpty()) {
-      return new ViewConstraint().componentConstraints(results);
+  /**
+   *
+   * @return this instance
+   */
+  public ViewConstraintConfigurer squash() {
+    this.squash = true;
+    return this;
+  }
+
+  private List<ComponentConstraint> doSquash(List<ComponentConstraint> constraints) {
+    final List<ComponentConstraint> ret = new ArrayList<>(constraints.size());
+    final Set<String> dataNames = new HashSet<>();
+    for (int i = constraints.size() - 1; i >= 0; i--) {
+      final ComponentConstraint constraint = constraints.get(i);
+      final String dataName = constraint.getDataName();
+      if (dataNames.contains(dataName)) {
+        continue;
+      }
+
+      dataNames.add(dataName);
+      ret.add(0, constraint);
     }
+    return ret;
+  }
 
-
+  public ViewConstraint configure() {
+    List<ComponentConstraint> constraints = new ArrayList<>();
     EnforcementInstruction enforcementInstruction = null;
     for (final ConstraintConfigurationInstructionBundle bundle : instructionBundles) {
       if (enforcementInstruction == null && bundle.enforcementBundle) {
         enforcementInstruction = processEnforcementBundle(bundle);
       } else if (!bundle.enforcementBundle) {
-        processInstructionBundle(bundle);
+        processInstructionBundle(bundle, constraints);
       }
     }
 
     if (enforcementInstruction != null) {
-      results.stream()
+      constraints.stream()
           .filter(enforcementInstruction.target::test)
           .forEach(enforcementInstruction.marker::modify);
     }
 
-    return new ViewConstraint().componentConstraints(results);
+    if (squash) {
+      constraints = doSquash(constraints);
+    }
+    instructionBundles.clear();
+
+    return new ViewConstraint().componentConstraints(constraints);
   }
 
-  private boolean processInstructionBundle(final ConstraintConfigurationInstructionBundle bundle) {
+  private boolean processInstructionBundle(final ConstraintConfigurationInstructionBundle bundle,
+      final List<ComponentConstraint> constraints) {
     for (final ConstraintConfigurationInstruction instruction : bundle.instructions) {
 
       final List<ComponentConstraint> componentConstraints = instruction.componentConstraints;
       final ConstraintMarker marker = instruction.marker;
       if (conditionMatched(instruction)) {
-        acceptConstraints(componentConstraints, marker);
+        acceptConstraints(componentConstraints, marker, constraints);
         return true;
 
       } else if (instruction.fallbackConfiguration != null) {
@@ -119,7 +148,7 @@ public final class ViewConstraintConfigurer {
         final ConditionConfigurer fallbackConditionConfigurer = instruction.fallbackConfiguration
             .apply(fallbackConfigurer);
         final boolean fallbackResult =
-            processInstructionBundle(fallbackConditionConfigurer.instructionBundle);
+            processInstructionBundle(fallbackConditionConfigurer.instructionBundle, constraints);
         if (fallbackResult) {
           return true;
         }
@@ -191,8 +220,8 @@ public final class ViewConstraintConfigurer {
   }
 
   private void acceptConstraints(final List<ComponentConstraint> constraintsToAdd,
-      final ConstraintMarker marker) {
-    constraintsToAdd.forEach(c -> results.add(marker.apply(c)));
+      final ConstraintMarker marker, final List<ComponentConstraint> constraints) {
+    constraintsToAdd.forEach(c -> constraints.add(marker.apply(c)));
   }
 
   public final class EnforcementConfigurer {
