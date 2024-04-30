@@ -38,6 +38,7 @@ import javax.validation.Valid;
   GridColumnMeta.TYPE_FORMAT,
   GridColumnMeta.ALWAYS_HIDDEN,
   GridColumnMeta.ALWAYS_SHOW,
+  GridColumnMeta.HIDE_LABEL,
   GridColumnMeta.CONTENT_TYPE
 })
 @JsonTypeName("GridColumnMeta")
@@ -60,6 +61,9 @@ public class GridColumnMeta {
 
   public static final String ALWAYS_SHOW = "alwaysShow";
   private Boolean alwaysShow = false;
+
+  public static final String HIDE_LABEL = "hideLabel";
+  private Boolean hideLabel = false;
 
   public static final String CONTENT_TYPE = "contentType";
   private GridColumnContentType contentType;
@@ -231,6 +235,33 @@ public class GridColumnMeta {
   }
 
 
+  public GridColumnMeta hideLabel(Boolean hideLabel) {
+    
+    this.hideLabel = hideLabel;
+    return this;
+  }
+
+   /**
+   * Hide column header label.
+   * @return hideLabel
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Hide column header label.")
+  @JsonProperty(HIDE_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHideLabel() {
+    return hideLabel;
+  }
+
+
+  @JsonProperty(HIDE_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHideLabel(Boolean hideLabel) {
+    this.hideLabel = hideLabel;
+  }
+
+
   public GridColumnMeta contentType(GridColumnContentType contentType) {
     
     this.contentType = contentType;
@@ -274,12 +305,13 @@ public class GridColumnMeta {
         Objects.equals(this.typeFormat, gridColumnMeta.typeFormat) &&
         Objects.equals(this.alwaysHidden, gridColumnMeta.alwaysHidden) &&
         Objects.equals(this.alwaysShow, gridColumnMeta.alwaysShow) &&
+        Objects.equals(this.hideLabel, gridColumnMeta.hideLabel) &&
         Objects.equals(this.contentType, gridColumnMeta.contentType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, contentType);
+    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, hideLabel, contentType);
   }
 
   @Override
@@ -292,6 +324,7 @@ public class GridColumnMeta {
     sb.append("    typeFormat: ").append(toIndentedString(typeFormat)).append("\n");
     sb.append("    alwaysHidden: ").append(toIndentedString(alwaysHidden)).append("\n");
     sb.append("    alwaysShow: ").append(toIndentedString(alwaysShow)).append("\n");
+    sb.append("    hideLabel: ").append(toIndentedString(hideLabel)).append("\n");
     sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
     sb.append("}");
     return sb.toString();

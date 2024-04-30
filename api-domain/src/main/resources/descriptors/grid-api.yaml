@@ -460,6 +460,10 @@ components:
         alwaysShow:
           type: boolean
           default: false
+        hideLabel:
+          description: Hide column header label. 
+          type: boolean
+          default: false
         contentType:
           $ref: '#/components/schemas/GridColumnContentType'
     GridSelectionChange:
