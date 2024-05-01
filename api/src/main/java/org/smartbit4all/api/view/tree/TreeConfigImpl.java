@@ -56,6 +56,7 @@ public abstract class TreeConfigImpl implements TreeConfig {
         .level(-1)
         .hasChildren(true)
         .objectUri(null)
+        .branchUri(null)
         .nodeType(TreeRelation.CONFIG_NODE_TYPE)
         .actions(actions);
     TreeNodeRenderer renderer = treeSetupApi.getTreeNodeRenderer(configName);

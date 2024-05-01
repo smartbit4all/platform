@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.tree;
 
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -11,7 +12,6 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public abstract class TreeRelationImpl implements TreeRelation {
 
@@ -55,7 +55,7 @@ public abstract class TreeRelationImpl implements TreeRelation {
   }
 
   protected ObjectNode readParentObjectNode(UiTreeState treeState, UiTreeNode parentTreeNode) {
-    return objectApi.load(parentTreeNode.getObjectUri());
+    return objectApi.load(parentTreeNode.getObjectUri(), parentTreeNode.getBranchUri());
   }
 
   // for ex. return parent.list(objectRelation).nodeStream();
@@ -80,6 +80,7 @@ public abstract class TreeRelationImpl implements TreeRelation {
         .objectUri(VersionStrategy.EXACT.equals(treeConfig.versionStrategy(treeState))
             ? object.getObjectUri()
             : objectApi.getLatestUri(object.getObjectUri()))
+        .branchUri(object.getBranchUri())
         .nodeType(nodeType)
         .actions(actions);
     return renderer.renderNode(treeState, nodeType, object, template);
