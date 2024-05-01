@@ -44,6 +44,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.JoinPath;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -472,15 +473,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * exist or not.
    *
    * @param updateResult
+   * @param masterRefValues
    */
-  void merge(SearchEntityTableDataResult updateResult) {
+  void merge(SearchEntityTableDataResult updateResult, List<Object> masterRefValues) {
     PropertyObject masterReferenceProperty = null;
     if (masterReferenceName != null) {
       masterReferenceProperty =
           updateResult.searchEntityDefinition.definition.getPropertyObject(masterReferenceName);
     }
     if (masterReferenceProperty != null) {
-      detailMerge(updateResult, masterReferenceProperty);
+      detailMerge(updateResult, masterReferenceProperty, masterRefValues);
     } else {
       PropertyObject primaryKeyProperty = null;
       if (primaryKey != null) {
@@ -523,14 +525,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   private void detailMerge(SearchEntityTableDataResult updateResult,
-      PropertyObject masterReferenceProperty) {
+      PropertyObject masterReferenceProperty, List<Object> masterRefValues) {
     PropertyObject valueProperty =
         updateResult.searchEntityDefinition.definition.getPropertyObject(VALUE_COLUMN);
     try {
       TableData<?> oldDetailRecords =
           Crud.read(updateResult.searchEntityDefinition.definition).selectAllProperties()
               .where(
-                  masterReferenceProperty.in(updateResult.result.values(masterReferenceProperty)))
+                  masterReferenceProperty.in(masterRefValues))
               .listData();
 
       List<DataRow> existingRows = new ArrayList<>();
@@ -576,7 +578,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       if (detailMapping.getValue() instanceof SearchIndexMappingObject) {
         SearchIndexMappingObject mappingObject =
             (SearchIndexMappingObject) detailMapping.getValue();
-        mappingObject.merge(updateResult.detailResults.get(detailMapping.getKey()));
+        Property<?> masterRefTargetProperty =
+            mappingObject.entityDefinition.masterRef.joins().get(0).getTargetProperty();
+        DataColumn<?> masterRefTargetColumn =
+            updateResult.result.getColumn(masterRefTargetProperty);
+        List<Object> masterRefValues =
+            updateResult.result.values(masterRefTargetColumn).stream()
+                .distinct()
+                .collect(toList());
+        mappingObject.merge(updateResult.detailResults.get(detailMapping.getKey()),
+            masterRefValues);
       }
     }
   }

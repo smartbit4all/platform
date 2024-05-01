@@ -255,7 +255,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
       }), updateResult,
           Collections.emptyMap());
       // Update the entity definitions by the table data in the result.
-      objectMapping.merge(updateResult);
+      objectMapping.merge(updateResult, Collections.emptyList());
 
     }
   }
