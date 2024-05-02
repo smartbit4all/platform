@@ -22,6 +22,13 @@ public class AccessControlApiImpl implements AccessControlApi {
   @Override
   public URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations) {
+
+    return addSubjects(aclObjectUri, subjects, aclName, operations, null, null);
+  }
+
+  @Override
+  public URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+      List<ACLOperation> operations, URI contextEntity, String contextConfigCode) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     aclObjectNode.modify(ACLObject.class, aclObject -> {
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
@@ -34,7 +41,8 @@ public class AccessControlApiImpl implements AccessControlApi {
             currentSubjects.add(new ACLSubject().subject(subject).operation(operation));
           }
         }
-        accessControlInternalApi.applySubjects(acl, currentSubjects, operation.getName());
+        accessControlInternalApi.applySubjects(acl, currentSubjects, operation.getName(),
+            contextEntity, contextConfigCode);
       }
       return aclObject;
     });
@@ -46,7 +54,12 @@ public class AccessControlApiImpl implements AccessControlApi {
   @Override
   public URI deleteSubjects(URI aclObjectUri, List<URI> subjects, String aclName,
       List<String> operations) {
+    return deleteSubjects(aclObjectUri, subjects, aclName, operations, null, null);
+  }
 
+  @Override
+  public URI deleteSubjects(URI aclObjectUri, List<URI> subjects, String aclName,
+      List<String> operations, URI contextEntity, String contextConfigCode) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     aclObjectNode.modify(ACLObject.class, aclObject -> {
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
@@ -60,7 +73,8 @@ public class AccessControlApiImpl implements AccessControlApi {
                   subject));
         }
         if (anyChange) {
-          accessControlInternalApi.applySubjects(acl, currentSubjects, operation);
+          accessControlInternalApi.applySubjects(acl, currentSubjects, operation, contextEntity,
+              contextConfigCode);
         }
       }
       return aclObject;

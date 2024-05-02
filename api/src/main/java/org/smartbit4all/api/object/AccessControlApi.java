@@ -10,8 +10,14 @@ public interface AccessControlApi {
   URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations);
 
+  URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+      List<ACLOperation> operations, URI contextEntity, String contextConfigCode);
+
   URI deleteSubjects(URI aclObjectUri, List<URI> subjects, String aclName,
       List<String> operations);
+
+  URI deleteSubjects(URI aclObjectUri, List<URI> subjects, String aclName,
+      List<String> operations, URI contextEntity, String contextConfigCode);
 
   boolean isSubjectOfAcl(URI aclObjectUri, URI subject, String aclName,
       String operation);

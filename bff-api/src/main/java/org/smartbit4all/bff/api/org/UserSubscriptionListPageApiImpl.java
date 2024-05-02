@@ -1,13 +1,11 @@
 package org.smartbit4all.bff.api.org;
 
 import static java.util.stream.Collectors.toList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -40,11 +38,8 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
   @Autowired
   protected AccessControlInternalApi aclInternalApi;
 
-  protected List<String> subjectModels = new ArrayList<>();
-
   @Override
   public SearchPageModel initModel(View view) {
-    subjectModels.add(PlatformApiConfig.SUBJECT_ACL);
     List<String> orderedColumns = Arrays.asList(
         SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_NAME,
         SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE_NAME,
@@ -60,12 +55,9 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
     SearchPageConfig searchPageConfig = new SearchPageConfig()
         .searchIndexSchema(OrgApiStorageImpl.ORG_SCHEME)
         .searchIndexName(SubscriptionConfigApi.SEARCH_USER_SUBSCRIPTION)
-        .filterModel(null)
+        .filterModel(new FilterExpressionBuilderModel())
         .gridViewOptions(Arrays.asList(new GridView()
             .orderedColumnNames(orderedColumns)
-            .addOrderByListItem(new FilterExpressionOrderBy()
-                .propertyName(SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE)
-                .order(OrderEnum.ASC))
             .descriptor(new GridViewDescriptor()
                 .columns(columns))));
     ObjectMapHelper params = parameters(view);
@@ -74,7 +66,7 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
         invocationApi.builder(UserSubscriptionListPageApi.class)
             .build(api -> api.onPageRender(null)));
     SearchPageModel model = super.initModel(view);
-    model.setPageTitle(null);
+    model.setPageTitle(localeSettingApi.get("subject.subscription.title"));
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(), WIDGET_RESULT_GRID);
     gridModel.setPaginator(true);
@@ -84,14 +76,18 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
 
   @Override
   protected Stream<ObjectNode> getNodesToQuery(PageContext ctx) {
-    return aclInternalApi.getUserAllSubscriptions(sessionApi.getUser().getUri(), subjectModels)
+    return aclInternalApi.getUserAllSubscriptions(sessionApi.getUser().getUri(), getSubjectModels())
         .stream().map(s -> objectApi.create(null, s));
+  }
+
+  protected List<String> getSubjectModels() {
+    return List.of(PlatformApiConfig.SUBJECT_ACL);
   }
 
   @Override
   public GridPage onPageRender(GridPage page) {
     // TODO Auto-generated method stub
-    return null;
+    return page;
   }
 
 }
