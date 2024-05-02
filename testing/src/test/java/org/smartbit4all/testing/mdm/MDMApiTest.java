@@ -1,10 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -41,6 +36,7 @@ import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -92,6 +88,11 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -1263,6 +1264,224 @@ class MDMApiTest {
         .forEach(g -> orgApi.addUserToGroup(uri, orgApi.getGroupByName(g.getName()).getUri()));
 
     return uri;
+  }
+
+  @Test
+  @Order(100)
+  void testPublishingAndEditingAsDraft_paralel() throws Exception {
+
+    authService.login(admin, "asd");
+
+    List<AccountInfo> authentications = sessionApi.getAuthentications();
+
+    MDMEntryApi typeApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST_PARALEL,
+        SampleCategoryType.class.getSimpleName());
+
+    MDMDefinition mdmDefinition =
+        masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST_PARALEL);
+
+    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE1").name("Type one")
+        .description("This is the first category type.")));
+    SampleCategoryType second = new SampleCategoryType().code("TYPE2").name("Type two")
+        .description("This is the second category type.");
+    URI publishedSecond = typeApi.save(objectApi.create(SCHEMA, second)).get(0);
+    typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type three")
+        .description("This is the third category type.")));
+
+    ObjectNode sameNameCategoryNode =
+        objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type four")
+            .description("This is the four category type with the same code with type 3."));
+    assertThrows(IllegalArgumentException.class, () -> typeApi.save(sameNameCategoryNode),
+        "MDMEntryApi don't check unique properties properly");
+
+
+    URI publishedToDelete = typeApi
+        .save(objectApi.create(SCHEMA,
+            new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
+                .description("This is the category type to delete.")))
+        .get(0);
+
+
+    Assertions
+        .assertThat(typeApi.getList().nodes().map(n -> n.getValueAsString(SampleCategoryType.NAME)))
+        .containsExactlyInAnyOrder("Type one", "Type two", "Type three", "Type to delete");
+
+    // Initiate a branch for the given entry.
+    String modificationId1 =
+        masterDataManagementApi.initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL,
+            "Editing session 1");
+    MDMModificationApi modificationApi1 =
+        masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL, modificationId1);
+    modificationApi1.startEditing();
+
+    URI draft =
+        typeApi.save(objectApi.loadLatest(publishedSecond).modify(SampleCategoryType.class,
+            t -> t.name("Type two v1"))).get(0);
+
+    URI draftNew = typeApi
+        .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four 4")
+            .description("This is the fourth category type.")))
+        .get(0);
+
+    URI draftNewToDelete =
+        typeApi
+            .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE5").name("Type five")
+                .description("This is the fifth category type.")))
+            .get(0);
+
+    ObjectNode objectNode = objectApi.load(draft).setValue("This is the second category type v2.",
+        SampleCategoryType.DESCRIPTION);
+
+    typeApi.remove(draftNewToDelete);
+    typeApi.remove(publishedToDelete);
+
+    typeApi.restore(draftNewToDelete);
+    typeApi.remove(draftNewToDelete);
+
+    objectApi.save(objectNode);
+
+    typeApi.remove(draftNew);
+
+    Assertions
+        .assertThat(
+            typeApi.getList().nodes().filter(n -> draftNew.equals(n.getObjectUri())).findFirst())
+        .isNotPresent();
+
+    try {
+      typeApi.save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE4").name("Type four")
+          .description("This is the fourth category type.")));
+    } catch (IllegalArgumentException e) {
+      fail("The unique property map doesn't remove the used unique values on remove entry.", e);
+    }
+
+    List<BranchedObjectEntry> publishedAndDraftObjects =
+        typeApi.getBranchingList();
+
+    Assertions
+        .assertThat(publishedAndDraftObjects.stream()
+            .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+        .containsExactlyInAnyOrder("NOP: Type one",
+            "MODIFIED: Type two -> Type two v1",
+            "NOP: Type three",
+            "NEW: Type four",
+            "DELETED: Type to delete");
+
+    MDMEntryDescriptor descriptor = typeApi.getDescriptor();
+
+    SearchIndex<SampleCategoryType> searchIndexEntries =
+        collectionApi.searchIndex(MDMApiTestConfig.TEST,
+            typeApi.getDescriptor().getSearchIndexForEntries(),
+            SampleCategoryType.class);
+
+    TableData<?> tdAllEntries =
+        searchIndexEntries.executeSearchOnNodes(typeApi.getBranchingList().stream()
+            .map(i -> {
+              ObjectDefinition<?> definition =
+                  objectApi.definition(
+                      masterDataManagementApi.constructObjectDefinitionName(mdmDefinition,
+                          descriptor));
+              return objectApi.create(SCHEMA, definition, definition.toMap(i));
+            }), null);
+
+    List<Property<?>> properties = tdAllEntries.properties();
+
+    Property<String> propertyName = (Property<String>) properties.stream()
+        .filter(p -> SampleCategoryType.NAME.equals(p.getName())).findFirst().get();
+    Property<BranchingStateEnum> propertyState = (Property<BranchingStateEnum>) properties.stream()
+        .filter(p -> BranchedObjectEntry.BRANCHING_STATE.equals(p.getName())).findFirst().get();
+
+    Assertions.assertThat(tdAllEntries.values(propertyName)).containsExactlyInAnyOrder(
+        "Type one", "Type two v1", "Type three",
+        "Type four", "Type to delete");
+    Assertions.assertThat(tdAllEntries.values(propertyState)).containsExactlyInAnyOrder(
+        BranchingStateEnum.MODIFIED, BranchingStateEnum.NEW, BranchingStateEnum.DELETED,
+        BranchingStateEnum.NOP, BranchingStateEnum.NOP);
+
+    // Now we can see the modifications as published
+    modificationApi1.merge();
+
+    List<String> listOfDescription = collectionApi.list(MDMApiTestConfig.TEST_PARALEL,
+        SampleCategoryType.class.getSimpleName() + "List").uris().stream()
+        .map(u -> objectApi.read(u, SampleCategoryType.class).getDescription()).collect(toList());
+    Assertions.assertThat(listOfDescription)
+        .containsExactlyInAnyOrder("This is the first category type.",
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
+
+    ValueSetDefinitionData definitionData =
+        valueSetApi.getDefinitionData(MDMApiTestConfig.TEST_PARALEL,
+            SampleCategoryType.class.getSimpleName());
+    ValueSetData valueSetData = valueSetApi.valuesOf(definitionData);
+
+    List<String> listOfDescriptionFromValueSet =
+        valueSetData.getValues().stream().map(o -> objectApi.asType(SampleCategoryType.class, o))
+            .map(ct -> ct.getDescription()).collect(toList());
+    Assertions.assertThat(listOfDescriptionFromValueSet)
+        .containsExactlyInAnyOrder("This is the first category type.",
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
+
+    Assertions
+        .assertThat(
+            typeApi.getList().nodes().map(n -> n.getValueAsString(SampleCategoryType.DESCRIPTION)))
+        .containsExactlyInAnyOrder("This is the first category type.",
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
+
+    SearchIndex<SampleCategoryType> searchIndex =
+        collectionApi.searchIndex(MDMApiTestConfig.TEST_PARALEL,
+            SampleCategoryType.class.getSimpleName(),
+            SampleCategoryType.class);
+
+    FilterExpressionList filters = new FilterExpressionList().addExpressionsItem(
+        new FilterExpressionData().currentOperation(FilterExpressionOperation.EQUAL)
+            .operand1(new FilterExpressionOperandData().isDataName(true)
+                .valueAsString(SampleCategoryType.NAME))
+            .operand2(new FilterExpressionOperandData().isDataName(false)
+                .type(FilterExpressionDataType.STRING).valueAsString("Type two v1")));
+
+    TableData<?> tableData =
+        searchIndex.executeSearchOn(typeApi.getList().uris().stream(), filters);
+
+    DataRow row = tableData.rows().get(0);
+
+    List<Object> rowValues =
+        tableData.columns().stream().filter(c -> SampleCategoryType.URI.equals(c.getName()))
+            .map(c -> tableData.get(c, row)).collect(toList());
+
+    // Test constraint check on cancel and restore.
+    // Initiate a branch for the given entry.
+    String modificationId2 = masterDataManagementApi
+        .initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL, "Editing session 2");
+    MDMModificationApi modificationApi2 =
+        masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL, modificationId2);
+    modificationApi2.startEditing();
+
+    List<BranchedObjectEntry> list = typeApi.getBranchingList();
+    BranchedObjectEntry firstType = list.get(0);
+    String firstTypeName = objectApi.loadLatest(firstType.getOriginalUri())
+        .getValueAsString(SampleCategoryType.CODE);
+    typeApi.remove(firstType.getOriginalUri());
+
+    // Test constraint check on restore.
+    BranchedObjectEntry secondType = list.get(1);
+    ObjectNode secondTypeNode = objectApi.loadLatest(secondType.getOriginalUri());
+    String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
+    secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
+    URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
+    assertThrows(IllegalArgumentException.class, () -> typeApi.restore(firstType.getOriginalUri()),
+        "On restore the constraint check doesn't work properly.");
+
+    // Test constraint check on cancel.
+    BranchedObjectEntry thirdType = list.get(2);
+    ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
+    thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
+    typeApi.save(thridTypeNode);
+    assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
+        "On cancel the constraint check doesn't work properly.");
+
+    // Drop the changes we made because constraint check.
+    modificationApi2.cancel();
   }
 
 }

@@ -8,6 +8,7 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
@@ -53,6 +54,7 @@ public class MDMApiTestConfig extends TestFSCleaner {
 
 
   public static final String TEST = "Test";
+  public static final String TEST_PARALEL = "TestParalel";
   public static final String SAMPLE = "sample";
   public static final String VALUE_LIST_TO_UPLOAD = "ValueListToUpload";
 
@@ -67,6 +69,34 @@ public class MDMApiTestConfig extends TestFSCleaner {
     MDMDefinitionOption result =
         new MDMDefinitionOption(new MDMDefinition().name(TEST)
             .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin"));
+    result.addDefaultDescriptor(SampleCategoryType.class)
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleCategoryType.CODE))))
+        .editorViewName(MDM_EDITING_PAGE)
+        .setInactiveMgmt(true);
+    result.addDefaultDescriptor(SampleCategory.class)
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleCategory.NAME))))
+        .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(SampleContainerItem.class)
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(SampleContainerItem.NAME))))
+        .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(GenericValue.class)
+        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
+            .path(Arrays.asList(GenericValue.CODE))))
+        .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(PropertyDefinitionData.class);
+    result.addObjectDefinitionData();
+    return result;
+  }
+
+  @Bean
+  MDMDefinitionOption testMDMOptionParalelEditing() {
+    MDMDefinitionOption result =
+        new MDMDefinitionOption(new MDMDefinition().name(TEST_PARALEL)
+            .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin")
+            .branchingStrategy(MDMBranchingStrategy.STRICT_PARALEL));
     result.addDefaultDescriptor(SampleCategoryType.class)
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
             .path(Arrays.asList(SampleCategoryType.CODE))))

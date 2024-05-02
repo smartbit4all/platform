@@ -12,6 +12,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.session.SessionApi;
@@ -25,7 +26,7 @@ public class MDMModificationApiImpl implements MDMModificationApi {
 
   private final MDMDefinition definition;
 
-  private MDMDefinitionState state;
+  private MDMDefinitionState definitionState;
 
   private MDMModification modification;
 
@@ -64,7 +65,7 @@ public class MDMModificationApiImpl implements MDMModificationApi {
       BranchApi branchApi, InvocationApi invocationApi, LocaleSettingApi localeSettingApi) {
     super();
     this.definition = definition;
-    this.state = state;
+    this.definitionState = state;
     this.modification = modification;
     this.global = global;
     this.mdmApi = mdmApi;
@@ -88,16 +89,11 @@ public class MDMModificationApiImpl implements MDMModificationApi {
   @Override
   public URI cancel() {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
-      if (global) {
-        return state
-            .globalModification(null);
-      } else {
-        state.getActiveModifications()
-            .removeIf(m -> Objects.equals(modification.getId(), m.getId()));
-        return state;
-      }
-    }, state -> noBranchValidation(state));
-    fireModificationEvent(mdmApi.MODIFICATION_CANCELLED, null,
+      removeModification(state);
+      this.definitionState = state;
+      return state;
+    }, this::noBranchValidation);
+    fireModificationEvent(MasterDataManagementApi.MODIFICATION_CANCELLED, null,
         definition.getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
     return stateWrapper.getCurrentStateUri();
@@ -106,23 +102,15 @@ public class MDMModificationApiImpl implements MDMModificationApi {
   @Override
   public void sendForApproval(URI approver) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
-      MDMModification m;
-      if (global) {
-        m = state.getGlobalModification();
-      } else {
-        m =
-            state.getActiveModifications().stream()
-                .filter(mod -> Objects.equals(modification.getId(), mod.getId()))
-                .findFirst().orElse(null);
-      }
+      MDMModification m = getModification(state);
       if (m != null) {
         m.approver(approver).updated(sessionApi.createActivityLog());
         this.modification = m;
       }
-      this.state = state;
+      this.definitionState = state;
       return state;
-    }, state -> noBranchValidation(state),
-        state -> branchUnderApprovalValidation(state));
+    }, this::noBranchValidation,
+        this::branchUnderApprovalValidation);
     fireModificationEvent(MasterDataManagementApi.MODIFICATION_SENT_FOR_APPROVAL, null,
         definition.getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
@@ -130,17 +118,86 @@ public class MDMModificationApiImpl implements MDMModificationApi {
 
   @Override
   public void approvalAccepted() {
-    // TODO Auto-generated method stub
-
+    MDMDefitionStateWrapper stateWrapper = mergeInner();
+    fireModificationEvent(MasterDataManagementApi.MODIFICATION_APPROVED, null,
+        definition.getUri(),
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
   @Override
   public void approvalRejected(String reason) {
-    // TODO Auto-generated method stub
-
+    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
+      MDMModification m = getModification(state);
+      UserActivityLog activityLog = sessionApi.createActivityLog();
+      m.updated(activityLog)
+          .addNotesItem(new MDMModificationNote()
+              .created(activityLog)
+              .note(reason));
+      m.approver(null);
+      this.definitionState = state;
+      return state;
+    }, this::noBranchValidation);
+    fireModificationEvent(MasterDataManagementApi.MODIFICATION_REJECTED, null, definition.getUri(),
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
   }
 
-  protected MDMDefitionStateWrapper mergeInner() {
+  @Override
+  public void addComment(String comment) {
+    modifyDefinitionState(definition.getName(), state -> {
+      MDMModification m = getModification(state);
+      UserActivityLog activityLog = sessionApi.createActivityLog();
+      m.addNotesItem(new MDMModificationNote()
+          .created(activityLog)
+          .note(comment));
+      this.definitionState = state;
+      return state;
+    });
+  }
+
+  @Override
+  public void startEditing() {
+    modifyDefinitionState(definition.getName(), state -> {
+      MDMModification m = getModification(state);
+      m.addCurrentEditorsItem(sessionApi.getUserUri());
+      this.definitionState = state;
+      return state;
+    });
+  }
+
+  @Override
+  public void stopEditing() {
+    modifyDefinitionState(definition.getName(), state -> {
+      MDMModification m = getModification(state);
+      URI userUri = objectApi.getLatestUri(sessionApi.getUserUri());
+      m.getCurrentEditors().removeIf(u -> objectApi.equalsIgnoreVersion(u, userUri));
+      this.definitionState = state;
+      return state;
+    });
+  }
+
+  private final MDMModification getModification(MDMDefinitionState s) {
+    MDMModification m;
+    if (global) {
+      m = s.getGlobalModification();
+    } else {
+      m =
+          s.getActiveModifications().stream()
+              .filter(mod -> Objects.equals(modification.getId(), mod.getId()))
+              .findFirst().orElse(null);
+    }
+    return m;
+  }
+
+  private final void removeModification(MDMDefinitionState state) {
+    if (global) {
+      state.globalModification(null);
+    } else {
+      state.getActiveModifications()
+          .removeIf(m -> Objects.equals(modification.getId(), m.getId()));
+    }
+  }
+
+  private final MDMDefitionStateWrapper mergeInner() {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(), state -> {
       URI branch = getBranch();
       if (sessionApi != null) {
@@ -151,17 +208,18 @@ public class MDMModificationApiImpl implements MDMModificationApi {
                 .anyMatch(e -> e.getBranchingState() != BranchingStateEnum.NOP))
             .forEach(entryApi -> entryApi.setBranchedEntriesMerged(merged));
       }
-
       branchApi.merge(branch);
-      return state
-          .globalModification(null);
-    }, state -> noBranchValidation(state));
+      removeModification(state);
+      this.definitionState = state;
+      return state;
+    }, this::noBranchValidation);
     fireModificationEvent(MasterDataManagementApi.MODIFICATION_FINALIZED, null,
         mdmApi.getDefinition(definition.getName()).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
     MDMDefinitionState state =
         objectApi.load(stateWrapper.prevState).getObject(MDMDefinitionState.class);
-    Map<String, MDMEntryDescriptor> descriptors = state.getGlobalModification().getDescriptors();
+    MDMModification m = getModification(state);
+    Map<String, MDMEntryDescriptor> descriptors = m.getDescriptors();
     if (!ObjectUtils.isEmpty(descriptors)) {
       MDMDefinitionOption option =
           new MDMDefinitionOption(mdmApi.getDefinition(definition.getName()));

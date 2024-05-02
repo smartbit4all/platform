@@ -54,6 +54,29 @@ public interface MDMModificationApi {
    */
   void approvalAccepted();
 
+  /**
+   * The approval can be rejected.
+   * 
+   * @param reason At least one comment is necessary to reject the approval.
+   */
   void approvalRejected(String reason);
+
+  /**
+   * A user can append comment to the modification.
+   * 
+   * @param comment The comment itself.
+   */
+  void addComment(String comment);
+
+  /**
+   * The current user is added as editor to the modification. It is added to
+   * {@link MDMModification#CURRENT_EDITORS}.
+   */
+  void startEditing();
+
+  /**
+   * The current user is removed from the {@link MDMModification#CURRENT_EDITORS}.
+   */
+  void stopEditing();
 
 }

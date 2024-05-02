@@ -142,9 +142,9 @@ public interface MasterDataManagementApi {
    * 
    * @param definitionName The name of the definition.
    * @param branchCaption The title of the editing branch.
-   * @return The uri of the state.
+   * @return The identifier of the newly created modification.
    */
-  URI initiateModificationBranch(String definitionName, String branchCaption);
+  String initiateModificationBranch(String definitionName, String branchCaption);
 
   /**
    * Return the modification api.

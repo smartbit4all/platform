@@ -719,8 +719,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
-  public URI initiateModificationBranch(String definitionName,
+  public String initiateModificationBranch(String definitionName,
       String branchCaption) {
+    String id = UUID.randomUUID().toString();
     MDMDefitionStateWrapper resultStateWrapper = modifyDefinitionState(definitionName, state -> {
       UserActivityLog createActivityLog = null;
       if (sessionApi == null) {
@@ -730,7 +731,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
 
       return state.addActiveModificationsItem(new MDMModification()
-          .id(UUID.randomUUID().toString())
+          .id(id)
           .created(createActivityLog)
           .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, state -> {
@@ -742,8 +743,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     });
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
         resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState);
-
-    return resultStateWrapper.getCurrentStateUri();
+    return id;
   }
 
   @Override
