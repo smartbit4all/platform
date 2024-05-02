@@ -63,7 +63,9 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
           ObjectSerializer serializer = objectApi.getDefaultSerializer();
           Map<String, Object> viewAsMap = serializer.toMap(view);
           View view2 = serializer.fromMap(viewAsMap, View.class);
-          api.fireViewOpened(sessionApi.getSessionUri(), view2, objectIdentifier, objectName);
+          api.fireViewOpened(sessionApi.getSessionUri(), sessionApi.getUserUri(),
+              OffsetDateTime.now(),
+              view2, objectIdentifier, objectName);
         });
   }
 

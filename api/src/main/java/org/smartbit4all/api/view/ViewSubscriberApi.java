@@ -12,7 +12,7 @@ public interface ViewSubscriberApi {
       String objectName,
       Session session, OffsetDateTime timestamp, Object previousModel, Object nextModel);
 
-  void fireViewOpened(URI sessionUri, View view, String objectIdentifier,
-      String objectName);
+  void fireViewOpened(URI sessionUri, URI userUri, OffsetDateTime timestamp,
+      View view, String objectIdentifier, String objectName);
 
 }

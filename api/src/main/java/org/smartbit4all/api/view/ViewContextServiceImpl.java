@@ -141,6 +141,9 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Autowired
   private InvocationApi invocationApi;
 
+  @Autowired
+  private ViewPublisherApi publisherApi;
+
   public static boolean collectExecution = false;
 
   /**
@@ -299,6 +302,11 @@ public class ViewContextServiceImpl implements ViewContextService {
       if (!(api instanceof PageApi)) {
         log.warn("View getModel called, but it's api is not PageApi: {} ({})",
             viewName, api.getClass().getName());
+        if (modelWasEmpty) {
+          publisherApi.fireViewOpened(view,
+              view.getObjectUri() != null ? view.getObjectUri().toString() : null,
+              view.getViewName());
+        }
         return null;
       }
       modelObject = ((PageApi<?>) api).initModel(view);
@@ -306,6 +314,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     if (clazz.isInstance(modelObject)) {
       if (modelWasEmpty) {
+        publisherApi.fireViewOpened(view,
+            view.getObjectUri() != null ? view.getObjectUri().toString() : null,
+            view.getViewName());
         view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
       }
       return (M) modelObject;
@@ -314,6 +325,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     // this is to ensure View holds a typed object, not a Map representing the object
     view.setModel(model);
     if (modelWasEmpty) {
+      publisherApi.fireViewOpened(view,
+          view.getObjectUri() != null ? view.getObjectUri().toString() : null, view.getViewName());
       view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
     }
     return model;
