@@ -81,7 +81,7 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
   }
 
   protected List<String> getSubjectModels() {
-    return List.of(PlatformApiConfig.SUBJECT_ACL);
+    return Arrays.asList(PlatformApiConfig.SUBJECT_ACL);
   }
 
   @Override
