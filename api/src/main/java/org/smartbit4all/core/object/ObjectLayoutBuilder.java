@@ -35,7 +35,12 @@ public final class ObjectLayoutBuilder {
    * @return a {@link SmartComponentLayoutDefinition} representing a grid
    */
   public static SmartComponentLayoutDefinition grid(String gridIdentifier) {
-    return widget(ComponentWidgetType.GRID, gridIdentifier);
+    return grid(null, gridIdentifier);
+  }
+
+  public static SmartComponentLayoutDefinition grid(String layoutIdentifier,
+      String gridIdentifier) {
+    return widget(layoutIdentifier, ComponentWidgetType.GRID, gridIdentifier);
   }
 
   /**
@@ -52,7 +57,27 @@ public final class ObjectLayoutBuilder {
    */
   public static SmartComponentLayoutDefinition form(LayoutDirection layoutDirection,
       SmartWidgetDefinition... formWidgetDefs) {
+    return form(null, layoutDirection, formWidgetDefs);
+  }
+
+  /**
+   * Constructs a form layout definition with the provided widget definitions.
+   *
+   * @param layoutDirection the cardinal direction in which form elements are placed after each
+   *        other
+   * @param formWidgetDefs one or more {@link SmartWidgetDefinition} describing a form widget
+   * @param layoutIdentifier layout identifier
+   *
+   * @return a {@link SmartComponentLayoutDefinition} representing a form
+   *
+   * @see #textfield(String, String)
+   * @see #combobox(String, String, SelectionDefinition)
+   */
+  public static SmartComponentLayoutDefinition form(String layoutIdentifier,
+      LayoutDirection layoutDirection,
+      SmartWidgetDefinition... formWidgetDefs) {
     return new SmartComponentLayoutDefinition()
+        .identifier(layoutIdentifier)
         .type(ComponentType.FORM)
         .direction(layoutDirection)
         .form(formWidgetDefs == null || formWidgetDefs.length == 0
@@ -84,7 +109,14 @@ public final class ObjectLayoutBuilder {
 
   private static SmartComponentLayoutDefinition widget(ComponentWidgetType type,
       String toolbarIdentifier) {
+    return widget(null, type, toolbarIdentifier);
+  }
+
+  private static SmartComponentLayoutDefinition widget(String layoutIdentifier,
+      ComponentWidgetType type,
+      String toolbarIdentifier) {
     return new SmartComponentLayoutDefinition()
+        .identifier(layoutIdentifier)
         .type(ComponentType.WIDGET)
         .widget(new SmartComponentWidgetDefinition()
             .type(type)
