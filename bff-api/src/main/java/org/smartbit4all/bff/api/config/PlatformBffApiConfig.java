@@ -20,7 +20,6 @@ import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.attachment.AttachmentListPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
-import org.smartbit4all.bff.api.org.UserSubscriptionListPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
@@ -125,12 +124,6 @@ public class PlatformBffApiConfig {
   @Bean
   public ValidationResultPageApi validationResultPageApi() {
     return new ValidationResultPageApiImpl();
-  }
-
-  @Bean
-  public ProviderApiInvocationHandler<UserSubscriptionListPageApi> userSubscriptionListPageApiProvider(
-      UserSubscriptionListPageApi api) {
-    return Invocations.asProvider(UserSubscriptionListPageApi.class, api);
   }
 
   @Bean
