@@ -23,6 +23,11 @@ public class ObjectMap implements Map<String, Object> {
     this.innerMap = new LinkedHashMap<>();
   }
 
+  public ObjectMap(Map<String, Object> m) {
+    this();
+    putAll(m);
+  }
+
   ObjectMap(ObjectDefinition<?> definition) {
     this();
     definition.getPropertiesByName().keySet().forEach(s -> put(s, null));
