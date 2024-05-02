@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +36,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -52,6 +52,9 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private ViewPublisherApi publisherApi;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -151,6 +154,8 @@ public class ViewApiImpl implements ViewApi {
       }
       view.setState(ViewState.TO_OPEN);
     }
+    publisherApi.fireViewOpened(view,
+        view.getObjectUri() != null ? view.getObjectUri().toString() : null, view.getViewName());
     return context.addViewsItem(view);
   }
 

@@ -50,4 +50,21 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
             session, OffsetDateTime.now(), previousModel, nextModel));
   }
 
+  @Override
+  public void fireViewOpened(View view, String objectIdentifier,
+      String objectName) {
+    if (sessionApi == null || sessionManagementApi == null) {
+      return;
+    }
+    invocationApi
+        .publisher(ViewPublisherApi.class, ViewSubscriberApi.class,
+            ViewPublisherApi.VIEW_OPENED)
+        .publish(api -> {
+          ObjectSerializer serializer = objectApi.getDefaultSerializer();
+          Map<String, Object> viewAsMap = serializer.toMap(view);
+          View view2 = serializer.fromMap(viewAsMap, View.class);
+          api.fireViewOpened(sessionApi.getSessionUri(), view2, objectIdentifier, objectName);
+        });
+  }
+
 }
