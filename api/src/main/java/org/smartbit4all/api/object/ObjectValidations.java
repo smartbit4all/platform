@@ -354,6 +354,7 @@ public final class ObjectValidations {
             && isTrue(it.getMandatory()))
         .map(ComponentConstraint::getDataName)
         .filter(widgetKeyPredicate)
+        .distinct()
         .map(it -> it.split("\\.")).distinct()
         .collect(toList());
     if (mandatoryProperties.isEmpty()) {
