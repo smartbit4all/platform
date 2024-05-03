@@ -325,6 +325,15 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     return gridModel;
   }
 
+  protected void refreshGrid(UUID viewUuid, String gridId) {
+    PageContext ctx = context(viewUuid);
+    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+    ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
+    ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
+
+    refreshGrid(viewUuid, acl, gridConfig);
+  }
+
   protected void refreshGrid(UUID viewUuid, ACL acl, AclGridConfig config) {
     String gridId = getGridId(config);
     List<ACLSubject> subjects = getSubjects(viewUuid, acl, config);
@@ -452,36 +461,38 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
               ctx.getUserSelectionCallback(gridId))
           .type(ViewType.DIALOG));
     }
-
-
   }
 
   @Override
   public void performDeleteSubject(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
-    PageContext ctx = context(viewUuid);
-    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     Optional<GridRow> gridRow = GridModels.findGridRowById(gridModel, rowId);
     if (gridRow.isPresent()) {
       Subject subject = objectApi.asType(Subject.class,
           GridModels.getValueFromGridRow(gridRow.get(), AclGridItem.SUBJECT));
-      if (subject != null && subject.getRef() != null) {
-        ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
-          ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
-          String operation = gridConfig.getOperation();
-          List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
-          boolean anyChange = subjects.removeIf(
-              sub -> objectApi.equalsIgnoreVersion(sub.getSubject().getRef(), subject.getRef()));
-          if (anyChange) {
-            accessControlInternalApi.applySubjects(acl, subjects, operation);
-          }
-          refreshGrid(viewUuid, acl, gridConfig);
-          return aclObject;
-        });
-        objectApi.save(ctx.getAclObjectNode());
-      }
+      handleSubjectDeleted(viewUuid, gridId, subject);
+    }
+  }
+
+  protected void handleSubjectDeleted(UUID viewUuid, String gridId, Subject subject) {
+    PageContext ctx = context(viewUuid);
+    AclGridConfig gridConfig = ctx.findGridConfig(gridId);
+    if (subject != null && subject.getRef() != null) {
+      ctx.getAclObjectNode().modify(ACLObject.class, aclObject -> {
+        ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
+        String operation = gridConfig.getOperation();
+        List<ACLSubject> subjects = accessControlInternalApi.getSubjects(acl, operation);
+        boolean anyChange = subjects.removeIf(
+            sub -> objectApi.equalsIgnoreVersion(sub.getSubject().getRef(), subject.getRef()));
+        if (anyChange) {
+          accessControlInternalApi.applySubjects(acl, subjects, operation);
+        }
+        refreshGrid(viewUuid, acl, gridConfig);
+        return aclObject;
+      });
+      objectApi.save(ctx.getAclObjectNode());
     }
   }
 

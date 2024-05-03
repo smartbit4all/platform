@@ -84,10 +84,21 @@ public class AccessControlApiImpl implements AccessControlApi {
 
   @Override
   public boolean isSubjectOfAcl(URI aclObjectUri, URI subject, String aclName, String operations) {
+    ACL acl = getAclFromObject(aclObjectUri, aclName);
+    return checkSubjectIsAlreadyInAcl(acl, subject);
+  }
+
+  @Override
+  public List<ACLSubject> getSubjects(URI aclObjectUri, String aclName, String operation) {
+    ACL acl = getAclFromObject(aclObjectUri, aclName);
+    return accessControlInternalApi.getSubjects(acl, operation);
+  }
+
+  protected ACL getAclFromObject(URI aclObjectUri, String aclName) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     ACLObject aclObject = aclObjectNode.getObject(ACLObject.class);
     ACL acl = accessControlInternalApi.getAclFromObject(aclObject, aclName);
-    return checkSubjectIsAlreadyInAcl(acl, subject);
+    return acl;
   }
 
   private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
@@ -98,5 +109,6 @@ public class AccessControlApiImpl implements AccessControlApi {
         .collect(toList())
         .contains(subjectUri);
   }
+
 
 }

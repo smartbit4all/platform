@@ -1,5 +1,9 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,10 +42,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The implementation of the {@link AccessControlInternalApi}.
@@ -254,6 +254,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     return subject.getModel() + StringConstant.HYPHEN + subject.getType();
   }
 
+  private final String constructSubjectIdWithRef(Subject subject) {
+    return subject.getModel() + StringConstant.HYPHEN + subject.getType() + StringConstant.HYPHEN
+        + objectApi.getLatestUri(subject.getRef());
+  }
+
   @Override
   public ACL applySubjects(ACL acl, List<ACLSubject> subjects, String operation, URI contextEntity,
       String contextConfigCode) {
@@ -285,7 +290,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       if (contextEntity != null) {
         // Add the operation reference to the referenced entries.
         ACLSubjectOperationModification subjectModification =
-            modifications.computeIfAbsent(constructSubjectId(aclSubject.getSubject()),
+            modifications.computeIfAbsent(constructSubjectIdWithRef(aclSubject.getSubject()),
                 key -> new ACLSubjectOperationModification().subject(aclSubject.getSubject()));
         subjectModification
             .addToAddItem(new ACLOperationReference().operation(aclSubject.getOperation().getName())
@@ -301,7 +306,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       // subject.
       if (contextEntity != null) {
         ACLSubjectOperationModification subjectModification =
-            modifications.computeIfAbsent(constructSubjectId(e.getSubject()),
+            modifications.computeIfAbsent(constructSubjectIdWithRef(e.getSubject()),
                 key -> new ACLSubjectOperationModification().subject(e.getSubject()));
         subjectModification
             .addToRemoveItem(constructOperationReferenceId(operation, contextEntity));

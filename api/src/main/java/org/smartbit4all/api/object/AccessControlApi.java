@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACLOperation;
+import org.smartbit4all.api.org.bean.ACLSubject;
 import org.smartbit4all.api.org.bean.Subject;
 
 public interface AccessControlApi {
@@ -21,5 +22,7 @@ public interface AccessControlApi {
 
   boolean isSubjectOfAcl(URI aclObjectUri, URI subject, String aclName,
       String operation);
+
+  List<ACLSubject> getSubjects(URI aclObjectUri, String aclName, String operation);
 
 }
