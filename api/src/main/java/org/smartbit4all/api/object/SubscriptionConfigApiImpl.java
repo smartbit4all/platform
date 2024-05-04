@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,6 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfigContributionApi>
     implements SubscriptionConfigApi {
@@ -36,7 +36,7 @@ public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfig
 
   private final SubscriptionConfigContributionApi getApi(String config) {
     Optional<SubscriptionConfigContributionApi> foundApi = getContributionApis().values().stream()
-        .filter(a -> a.getManagedConfigs().contains(config)).findFirst();
+        .filter(a -> a.supports(config)).findFirst();
     return foundApi.orElse(null);
   }
 
@@ -48,12 +48,16 @@ public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfig
         contentDef.getProperty(SUBSCRIPTION_OPERATION_ENTITYURI);
     Property<?> configProperty =
         contentDef.getProperty(SUBSCRIPTION_OPERATION_CONTEXTCONFIG);
+    Property<?> configNameProperty =
+        contentDef.getProperty(SUBSCRIPTION_OPERATION_CONTEXTCONFIG_NAME);
     Property<?> entitySummaryProperty =
         contentDef.getProperty(SUBSCRIPTION_OPERATION_ENTITYSUMMARY);
     Property<?> subjectTypeProperty =
         contentDef.getProperty(SUBSCRIPTION_SUBJECT_TYPE);
     Property<?> subjectTypeNameProperty =
         contentDef.getProperty(SUBSCRIPTION_SUBJECT_TYPE_NAME);
+    Property<?> revokeSupportedProperty =
+        contentDef.getProperty(SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED);
 
     DataColumn<?> configCol = td.getColumn(configProperty);
     DataColumn<?> entityUriCol = td.getColumn(entityUriProperty);
@@ -74,10 +78,18 @@ public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfig
         dataRow.setObject(entitySummaryProperty,
             api.constructEntitySummary(config,
                 objectApi.asType(URI.class, dataRow.get(entityUriProperty))));
+
+        dataRow.setObject(revokeSupportedProperty,
+            api.supports(config));
       }
       String subjectType = (String) dataRow.get(subjectTypeProperty);
       dataRow.setObject(subjectTypeNameProperty,
           localeSettingApi.get(ACLSubjectSubscription.SUBJECT, Subject.TYPE, subjectType));
+
+      if (config != null) {
+        dataRow.setObject(configNameProperty,
+            localeSettingApi.get(config));
+      }
     }
     return td;
   }

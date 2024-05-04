@@ -21,6 +21,8 @@ public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigCont
 
   public static final String NAME = "name";
 
+  public static final String REVOKE_SUPPORTED = "revokeSupported";
+
   public static final String SEARCH_USER_SUBSCRIPTION = "UserSubscriptionSearch";
 
   public static final String SUBSCRIPTION_SUBJECT_TYPE =
@@ -33,6 +35,8 @@ public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigCont
       joinUnder(ACLSubjectSubscription.SUBJECT, NAME);
   public static final String SUBSCRIPTION_SUBJECT_URI =
       joinUnder(ACLSubjectSubscription.SUBJECT, Subject.REF);
+  public static final String SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED =
+      joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, REVOKE_SUPPORTED);
   public static final String SUBSCRIPTION_OPERATION =
       joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.OPERATION);
   public static final String SUBSCRIPTION_OPERATION_NAME =
@@ -46,6 +50,8 @@ public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigCont
       joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, ENTITY_SUMMARY);
   public static final String SUBSCRIPTION_OPERATION_CONTEXTCONFIG =
       joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.CONFIG);
+  public static final String SUBSCRIPTION_OPERATION_CONTEXTCONFIG_NAME =
+      joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.CONFIG, NAME);
 
   /**
    * This processing is responsible for the table data of the subscription based on the contribution

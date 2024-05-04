@@ -54,6 +54,12 @@ public class PlatformSearchIndexConfig {
             .map(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_CONTEXTCONFIG,
                 ACLSubjectSubscription.OPERATION_REFERENCE,
                 ACLOperationReference.CONFIG)
+            .map(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_CONTEXTCONFIG_NAME,
+                ACLSubjectSubscription.OPERATION_REFERENCE,
+                ACLOperationReference.CONFIG)
+            .mapComplex(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED,
+                Boolean.class,
+                -1, n -> false)
             .postProcess((td, si) -> {
               return configApi == null ? td : configApi.postProcess(si, td);
             });

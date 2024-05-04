@@ -8,12 +8,20 @@ import org.smartbit4all.api.org.bean.ACLOperationReference;
 public interface SubscriptionConfigContributionApi extends ContributionApi {
 
   /**
-   * A contribution can manage a list of configurations. These configuration are referred by the
-   * {@link ACLOperationReference#CONFIG}.
+   * Returns true if the contribution supports the config.
    * 
-   * @return The list of managed configurations.
+   * @param config
+   * @return
    */
-  List<String> getManagedConfigs();
+  boolean supports(String config);
+
+  /**
+   * Returns true if the contribution supports revoke action for the config.
+   * 
+   * @param config
+   * @return
+   */
+  boolean supportsRevoke(String config);
 
   /**
    * A contribution can manage the revoke of a list of configurations. These configuration are

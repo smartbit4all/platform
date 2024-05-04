@@ -29,8 +29,8 @@ public class SubscriptionConfigContributionTestApi implements SubscriptionConfig
   }
 
   @Override
-  public List<String> getManagedConfigs() {
-    return managedConfigs;
+  public boolean supports(String config) {
+    return managedConfigs.contains(config);
   }
 
   @Override
@@ -42,6 +42,11 @@ public class SubscriptionConfigContributionTestApi implements SubscriptionConfig
   public String constructEntitySummary(String config, URI entityUri) {
     ObjectNode node = objectApi.loadLatest(entityUri);
     return node.getValueAsString(SampleCategory.NAME);
+  }
+
+  @Override
+  public boolean supportsRevoke(String config) {
+    return false;
   }
 
 }
