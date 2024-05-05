@@ -167,6 +167,8 @@ class MDMApiTest {
       "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
   private static final String admin = "user_admin";
 
+  private static final String admin2 = "user_admin2";
+
   private static final String normal_user = "user_normal";
 
   @BeforeAll
@@ -174,6 +176,8 @@ class MDMApiTest {
     sessionManagementApi.startSession();
 
     adminUri = createUser(admin, "Adminisztrátor Aladár", MDMSecurityOptions.admin);
+
+    adminUri = createUser(admin2, "Adminisztrátor Árpád", MDMSecurityOptions.admin);
 
     normalUri = createUser(normal_user, "Publikus József");
 
@@ -1440,48 +1444,134 @@ class MDMApiTest {
             .operand2(new FilterExpressionOperandData().isDataName(false)
                 .type(FilterExpressionDataType.STRING).valueAsString("Type two v1")));
 
-    TableData<?> tableData =
-        searchIndex.executeSearchOn(typeApi.getList().uris().stream(), filters);
+    {
+      // Test constraint check on cancel and restore.
+      // Initiate a branch for the given entry.
+      String modificationId2 = masterDataManagementApi
+          .initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL, "Editing session 2");
+      MDMModificationApi modificationApi2 =
+          masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL,
+              modificationId2);
+      modificationApi2.startEditing();
 
-    DataRow row = tableData.rows().get(0);
+      List<BranchedObjectEntry> list = typeApi.getBranchingList();
+      BranchedObjectEntry firstType = list.get(0);
+      String firstTypeName = objectApi.loadLatest(firstType.getOriginalUri())
+          .getValueAsString(SampleCategoryType.CODE);
+      typeApi.remove(firstType.getOriginalUri());
 
-    List<Object> rowValues =
-        tableData.columns().stream().filter(c -> SampleCategoryType.URI.equals(c.getName()))
-            .map(c -> tableData.get(c, row)).collect(toList());
+      // Test constraint check on restore.
+      BranchedObjectEntry secondType = list.get(1);
+      ObjectNode secondTypeNode = objectApi.loadLatest(secondType.getOriginalUri());
+      String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
+      secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
+      URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
+      assertThrows(IllegalArgumentException.class,
+          () -> typeApi.restore(firstType.getOriginalUri()),
+          "On restore the constraint check doesn't work properly.");
 
-    // Test constraint check on cancel and restore.
-    // Initiate a branch for the given entry.
-    String modificationId2 = masterDataManagementApi
-        .initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL, "Editing session 2");
-    MDMModificationApi modificationApi2 =
-        masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL, modificationId2);
-    modificationApi2.startEditing();
+      // Test constraint check on cancel.
+      BranchedObjectEntry thirdType = list.get(2);
+      ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
+      thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
+      typeApi.save(thridTypeNode);
+      assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
+          "On cancel the constraint check doesn't work properly.");
 
-    List<BranchedObjectEntry> list = typeApi.getBranchingList();
-    BranchedObjectEntry firstType = list.get(0);
-    String firstTypeName = objectApi.loadLatest(firstType.getOriginalUri())
-        .getValueAsString(SampleCategoryType.CODE);
-    typeApi.remove(firstType.getOriginalUri());
+      // Drop the changes we made because constraint check.
+      modificationApi2.cancel();
+    }
 
-    // Test constraint check on restore.
-    BranchedObjectEntry secondType = list.get(1);
-    ObjectNode secondTypeNode = objectApi.loadLatest(secondType.getOriginalUri());
-    String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
-    secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
-    URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
-    assertThrows(IllegalArgumentException.class, () -> typeApi.restore(firstType.getOriginalUri()),
-        "On restore the constraint check doesn't work properly.");
+    {
+      // Test the two paralel editing branch at the same time.
+      String modificationId3 = masterDataManagementApi
+          .initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL, "Editing session 3");
+      MDMModificationApi modificationApi3 =
+          masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL,
+              modificationId3);
+      modificationApi3.startEditing();
 
-    // Test constraint check on cancel.
-    BranchedObjectEntry thirdType = list.get(2);
-    ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
-    thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
-    typeApi.save(thridTypeNode);
-    assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
-        "On cancel the constraint check doesn't work properly.");
+      // Do some modification to see if see the
+      Map<String, ObjectNode> byCode = typeApi.getList().nodes()
+          .collect(toMap(n -> n.getValueAsString(SampleCategoryType.CODE), n -> n));
+      typeApi.remove(byCode.get("TYPE4").getObjectUri());
+      typeApi.save(byCode.get("TYPE3").setValue("Type three v2",
+          SampleCategoryType.NAME));
+      typeApi
+          .save(objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE6").name("Type six")
+              .description("This is the sixth category type.")))
+          .get(0);
 
-    // Drop the changes we made because constraint check.
-    modificationApi2.cancel();
+      Assertions
+          .assertThat(typeApi.getBranchingList().stream()
+              .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+          .containsExactlyInAnyOrder("NOP: Type one",
+              "NOP: Type two v1",
+              "MODIFIED: Type three -> Type three v2",
+              "DELETED: Type four",
+              "NEW: Type six");
+
+      Assertions
+          .assertThat(
+              typeApi.getList().nodes()
+                  .map(n -> n.getValueAsString(SampleCategoryType.DESCRIPTION)))
+          .containsExactlyInAnyOrder("This is the first category type.",
+              "This is the second category type v2.", "This is the third category type.",
+              "This is the fourth category type.");
+
+
+      modificationApi3.stopEditing();
+
+      Assertions
+          .assertThat(
+              typeApi.getList().nodes()
+                  .map(n -> n.getValueAsString(SampleCategoryType.DESCRIPTION)))
+          .containsExactlyInAnyOrder("This is the first category type.",
+              "This is the second category type v2.", "This is the third category type.",
+              "This is the fourth category type.");
+
+      Assertions
+          .assertThat(typeApi.getBranchingList().stream()
+              .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+          .containsExactlyInAnyOrder("NOP: Type one",
+              "NOP: Type two v1",
+              "NOP: Type three",
+              "NOP: Type four");
+
+      authService.logout();
+
+      authService.login(admin2, "asd");
+
+      Assertions
+          .assertThat(typeApi.getBranchingList().stream()
+              .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+          .containsExactlyInAnyOrder("NOP: Type one",
+              "NOP: Type two v1",
+              "NOP: Type three",
+              "NOP: Type four");
+
+      modificationApi3.startEditing();
+
+      Assertions
+          .assertThat(typeApi.getBranchingList().stream()
+              .map(oe -> branchApi.toStringBranchedObjectEntry(oe, SampleCategoryType.NAME)))
+          .containsExactlyInAnyOrder("NOP: Type one",
+              "NOP: Type two v1",
+              "MODIFIED: Type three -> Type three v2",
+              "DELETED: Type four",
+              "NEW: Type six");
+
+      modificationApi3.stopEditing();
+
+      String modificationId4 = masterDataManagementApi
+          .initiateModificationBranch(MDMApiTestConfig.TEST_PARALEL, "Editing session 4");
+      MDMModificationApi modificationApi4 =
+          masterDataManagementApi.getModificationApi(MDMApiTestConfig.TEST_PARALEL,
+              modificationId4);
+      modificationApi4.startEditing();
+
+    }
+
   }
 
 }
