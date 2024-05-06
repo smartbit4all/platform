@@ -24,7 +24,9 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.UploadedFile;
 import org.smartbit4all.api.view.bean.View;
@@ -35,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class AttachmentListPageApiImpl extends PageApiImpl<AttachmentList>
     implements AttachmentListPageApi {
+
+  private static final String DOWNLOADABLE_ITEM_ID = "attachment";
 
   public AttachmentListPageApiImpl() {
     super(AttachmentList.class);
@@ -65,8 +69,9 @@ public class AttachmentListPageApiImpl extends PageApiImpl<AttachmentList>
     initGrid(view.getUuid());
     refreshGrid(view.getUuid(), pageModel);
 
-    UiActions.add(view, SAVE_ACTION, SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS_ACTION,
-        UPLOAD_ATTACHMENTS_ACTION,
+    UiActions.add(view, new UiAction().code(SAVE),
+        new UiAction().code(SAVE_AND_PERFORM_ACTION_ON_SELECTED_ATTACHMENTS),
+        new UiAction().code(UPLOAD_ATTACHMENTS).inputType(UiActionInputType.MULTIPLE_FILES),
         new UiAction().code(DEFAULT_CLOSE));
 
     return pageModel;
@@ -153,9 +158,22 @@ public class AttachmentListPageApiImpl extends PageApiImpl<AttachmentList>
   }
 
   @Override
+  public void downloadAttachment(UUID viewUuid, String gridId, String nodeId,
+      UiActionRequest request) {
+    int id = Integer.parseInt(nodeId);
+    BinaryContentData binaryContentData = getModel(viewUuid).getContents().get(id);
+    viewApi.getView(viewUuid).putDownloadableItemsItem(DOWNLOADABLE_ITEM_ID,
+        binaryContentData.getDataUri());
+    viewApi.downloadFile(new DownloadedFile().uuid(viewUuid).identifier(DOWNLOADABLE_ITEM_ID)
+        .filename(binaryContentData.getFileName()));
+  }
+
+  @Override
   public GridPage onGridPageRender(GridPage gridPage) {
     if (gridPage != null) {
-      gridPage.getRows().forEach(row -> row.addActionsItem(DELETE_ATTACHMENT_ACTION));
+      gridPage.getRows()
+          .forEach(row -> row.actions(List.of(new UiAction().code(DOWNLOAD_ATTACHMENT),
+              new UiAction().code(DELETE_ATTACHMENT))));
     }
     return gridPage;
   }
