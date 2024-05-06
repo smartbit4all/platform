@@ -172,8 +172,11 @@ public class AttachmentListPageApiImpl extends PageApiImpl<AttachmentList>
   public GridPage onGridPageRender(GridPage gridPage) {
     if (gridPage != null) {
       gridPage.getRows()
-          .forEach(row -> row.actions(List.of(new UiAction().code(DOWNLOAD_ATTACHMENT),
-              new UiAction().code(DELETE_ATTACHMENT))));
+          .forEach(row -> {
+            row.addActionsItem(
+                new UiAction().code(DOWNLOAD_ATTACHMENT));
+            row.addActionsItem(new UiAction().code(DELETE_ATTACHMENT));
+          });
     }
     return gridPage;
   }
