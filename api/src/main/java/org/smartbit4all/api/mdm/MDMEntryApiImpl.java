@@ -159,6 +159,20 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     return save(objectNodes, MDMEntryOperation.SAVE, null);
   }
 
+  public static class ConstraintEntry {
+
+    StoredMap currentEditingMap;
+
+    Map<String, URI> uniqueMap;
+
+    public ConstraintEntry(StoredMap currentEditingMap, Map<String, URI> uniqueMap) {
+      super();
+      this.currentEditingMap = currentEditingMap;
+      this.uniqueMap = uniqueMap;
+    }
+
+  }
+
   @Override
   public List<URI> save(List<ObjectNode> objectNodes, MDMEntryOperation operation,
       BiFunction<ObjectNode, ObjectNode, Boolean> isEqual) {
@@ -173,7 +187,8 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     list.update(l -> {
       Map<URI, URI> savedUriByOriginal = new HashMap<>();
 
-      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints = getUniqueMapsByconstraints();
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByConstraints =
+          getUniqueMapsByconstraints();
 
       List<ObjectNode> finalSaveList = mergeNodesToSave(objectNodes, operation, isEqual);
 
@@ -273,9 +288,9 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void maintainUniqueMapsOnSave(List<ObjectNode> objectNodes,
-      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByConstraints) {
     uniqueMapsByConstraints.entrySet().forEach(e -> {
-      StoredMap uniqueMap = e.getValue();
+      StoredMap uniqueMap = e.getValue().currentEditingMap;
 
       String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
       List<ObjectNode> objectNodesWithUniqueValue =
@@ -295,9 +310,9 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void maintainUniqueMapsOnRestore(List<ObjectNode> objectNodes,
-      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByConstraints) {
     uniqueMapsByConstraints.entrySet().forEach(e -> {
-      StoredMap uniqueMap = e.getValue();
+      StoredMap uniqueMap = e.getValue().currentEditingMap;
 
       String[] pathArr = e.getKey().getPath().stream().toArray(String[]::new);
       List<ObjectNode> objectNodesWithUniqueValue =
@@ -328,7 +343,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void checkIfUniquePropertyUsed(List<ObjectNode> objectNodes,
-      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByConstraints) {
     Map<ObjectNode, URI> objectNodeAndUriToCheckPairs = new HashMap<>();
     objectNodes.forEach(n -> objectNodeAndUriToCheckPairs.put(n, n.getObjectUri()));
 
@@ -336,12 +351,12 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   protected void checkIfUniquePropertyUsed(Map<ObjectNode, URI> objectNodeAndUriToCheckPairs,
-      Map<MDMEntryConstraint, StoredMap> uniqueMapsByConstraints) {
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByConstraints) {
 
     uniqueMapsByConstraints.entrySet().forEach(e -> {
       MDMEntryConstraint constraint = e.getKey();
       boolean caseInsensitive = constraint.getKind() == KindEnum.UNIQUECASEINSENSITIVE;
-      Map<String, URI> uniqueMap = e.getValue().uris();
+      Map<String, URI> uniqueMap = e.getValue().uniqueMap;
       if (caseInsensitive) {
         // map the stored map keys (values) case insensitive
         uniqueMap = uniqueMap.entrySet().stream()
@@ -425,6 +440,61 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     return null;
   }
 
+  /**
+   * Constructs a {@link ConstraintEntry} with the currently edited {@link StoredMap} and the map of
+   * all the unique values.
+   * 
+   * @param c The constraint to create the entry for.
+   * @return
+   */
+  private final ConstraintEntry getConstraintEntry(MDMEntryConstraint c) {
+    MDMBranchingStrategy branchingStrategy = descriptor.getBranchingStrategy();
+    if (branchingStrategy == null) {
+      branchingStrategy = definition.getBranchingStrategy();
+    }
+    if (branchingStrategy == MDMBranchingStrategy.NONE) {
+      return null;
+    }
+    MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
+    URI editorBranchUri = null;
+    List<URI> editorBranchUris = new ArrayList<>();
+    if (mdmDefinitionState != null && sessionApi != null) {
+      User user = sessionApi.getUser();
+      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALEL) {
+        // By default we are looking for the first modification where the current user is editor..
+        for (MDMModification m : mdmDefinitionState.getActiveModifications()) {
+          if (editorBranchUri == null
+              && m.getCurrentEditors().contains(objectApi.getLatestUri(user.getUri()))) {
+            editorBranchUri = m.getBranchUri();
+          } else {
+            editorBranchUris.add(m.getBranchUri());
+          }
+        }
+      }
+      if (branchingStrategy == MDMBranchingStrategy.GLOBAL) {
+        MDMModification modification = mdmDefinitionState.getGlobalModification();
+        // TODO modify the to get the branch if and only if the current user is editor in the
+        // modification.
+        editorBranchUri = modification == null ? null : modification.getBranchUri();
+      }
+    }
+    StoredMap currentEditingMap = collectionApi.map(descriptor.getSchema(),
+        getUniqueMapName(c.getPath()));
+    currentEditingMap.branch(editorBranchUri);
+    // Initiate the basic unique map from the current editor and then append all other editor
+    // branches.
+    Map<String, URI> uniqueMap = new HashMap<>(currentEditingMap.uris());
+    for (URI branchUri : editorBranchUris) {
+      StoredMap editorMap = collectionApi.map(descriptor.getSchema(),
+          getUniqueMapName(c.getPath()));
+      editorMap.branch(branchUri);
+      uniqueMap.putAll(editorMap.uris());
+    }
+    // Now append every other editor branches.
+
+    return new ConstraintEntry(currentEditingMap, uniqueMap);
+  }
+
   @Override
   public boolean cancel(URI draftUri) {
     if (draftUri == null) {
@@ -442,7 +512,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     URI branchUri = getBranchUri();
     StoredList list = getList();
     list.branch(branchUri);
-    Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
+    Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
 
     List<URI> result = new ArrayList<>();
     List<BranchedObjectEntry> compareWithBranch = list.compareWithBranch(branchUri);
@@ -510,13 +580,13 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     return !result.isEmpty();
   }
 
-  protected void removeValueFromUniqueMaps(Map<MDMEntryConstraint, StoredMap> uniqueMaps,
+  protected void removeValueFromUniqueMaps(Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps,
       ObjectNode objectNode) {
     uniqueMaps.entrySet().forEach(e -> {
       Object uniqueValue =
           objectNode.getValue(e.getKey().getPath().stream().toArray(String[]::new));
       if (uniqueValue != null) {
-        StoredMap uniqueMap = uniqueMaps.get(e.getKey());
+        StoredMap uniqueMap = e.getValue().currentEditingMap;
         uniqueMap.remove(uniqueValue.toString());
       }
     });
@@ -531,7 +601,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     if (!remove) {
       return false;
     } else {
-      Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
+      Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
       if (!uniqueMaps.isEmpty()) {
         // remove unique values from StoredMaps
         ObjectNode objectNode = objectApi.load(objectUri);
@@ -554,7 +624,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   @Override
   public boolean restore(URI objectUri) {
-    Map<MDMEntryConstraint, StoredMap> uniqueMaps = getUniqueMapsByconstraints();
+    Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
 
     if (!uniqueMaps.isEmpty()) {
       ObjectNode originalObjectNode = objectApi.load(objectUri);
@@ -638,7 +708,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     return collectionApi.map(descriptor.getSchema(), getUniqueMapName(Arrays.asList(path)));
   }
 
-  private Map<MDMEntryConstraint, StoredMap> getUniqueMapsByconstraints() {
+  private Map<MDMEntryConstraint, ConstraintEntry> getUniqueMapsByconstraints() {
     List<MDMEntryConstraint> uniqueConstraints = Collections.emptyList();
 
     if (descriptor.getConstraints() != null) {
@@ -658,12 +728,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
           descriptor.getName());
     }
 
-    return uniqueConstraints.stream().collect(toMap(Function.identity(), c -> {
-      StoredMap uniqueMap = collectionApi.map(descriptor.getSchema(),
-          getUniqueMapName(c.getPath()));
-      uniqueMap.branch(getBranchUri());
-      return uniqueMap;
-    }));
+    return uniqueConstraints.stream().collect(toMap(Function.identity(), this::getConstraintEntry));
   }
 
   private String getUniqueMapName(List<String> path) {
@@ -732,7 +797,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   private String[] getPrimaryId() {
-    Map<MDMEntryConstraint, StoredMap> uniqueMapsByconstraints = getUniqueMapsByconstraints();
+    Map<MDMEntryConstraint, ConstraintEntry> uniqueMapsByconstraints = getUniqueMapsByconstraints();
     if (uniqueMapsByconstraints.isEmpty()) {
       return uriPath;
     }

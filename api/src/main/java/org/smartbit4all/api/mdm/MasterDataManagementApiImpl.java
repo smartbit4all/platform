@@ -752,10 +752,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     Lock lock = objectApi.getLock(definition.getUri());
     lock.lock();
     try {
-      URI stateUri =
-          objectApi.loadLatest(definition.getUri()).ref(MDMDefinition.STATE).getObjectUri();
-      ObjectNode stateNode = objectApi.loadLatest(stateUri);
-      MDMDefinitionState state = stateNode.getObject(MDMDefinitionState.class);
+      MDMDefinitionState state = objectApi.loadLatest(definition.getUri()).ref(MDMDefinition.STATE)
+          .get().getObject(MDMDefinitionState.class);
       Optional<MDMModificationApiImpl> apiOptional =
           state.getActiveModifications().stream().filter(m -> Objects.equals(id, m.getId()))
               .findFirst()
@@ -770,6 +768,19 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     } finally {
       lock.unlock();
     }
+  }
+
+  @Override
+  public MDMModification getModificationEditingByUser(String definitionName, URI userUri) {
+    MDMDefinition definition = getDefinition(definitionName);
+    MDMDefinitionState state = objectApi.loadLatest(definition.getUri()).ref(MDMDefinition.STATE)
+        .get().getObject(MDMDefinitionState.class);
+    Optional<MDMModification> modOptional =
+        state.getActiveModifications().stream()
+            .filter(m -> m.getCurrentEditors().stream()
+                .anyMatch(u -> objectApi.equalsIgnoreVersion(u, userUri)))
+            .findFirst();
+    return modOptional.orElse(null);
   }
 
   @Override

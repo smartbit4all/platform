@@ -156,6 +156,15 @@ public interface MasterDataManagementApi {
   MDMModificationApi getModificationApi(String definitionName, String id);
 
   /**
+   * Retrievs the {@link MDMModification} object the user is editing currently.
+   * 
+   * @param definitionName The MDM definition name.
+   * @param userUri The user
+   * @return The {@link MDMModification} if we found any or null.
+   */
+  MDMModification getModificationEditingByUser(String definitionName, URI userUri);
+
+  /**
    * Return the modification api.
    * 
    * @param definitionName The definition.

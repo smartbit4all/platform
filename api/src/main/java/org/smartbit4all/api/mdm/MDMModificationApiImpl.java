@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
@@ -154,11 +155,21 @@ public class MDMModificationApiImpl implements MDMModificationApi {
     });
   }
 
+  private final Stream<MDMModification> getAllModifications(MDMDefinitionState state) {
+    return Stream
+        .concat(state.getGlobalModification() != null ? Stream.of(state.getGlobalModification())
+            : Stream.empty(), state.getActiveModifications().stream());
+  }
+
   @Override
   public void startEditing() {
+    URI userUri = sessionApi.getUserUri();
     modifyDefinitionState(definition.getName(), state -> {
+      // Remove all other editing entry for the user.
+      getAllModifications(state).forEach(
+          m -> m.getCurrentEditors().removeIf(u -> objectApi.equalsIgnoreVersion(u, userUri)));
       MDMModification m = getModification(state);
-      m.addCurrentEditorsItem(sessionApi.getUserUri());
+      m.addCurrentEditorsItem(userUri);
       this.definitionState = state;
       return state;
     });
