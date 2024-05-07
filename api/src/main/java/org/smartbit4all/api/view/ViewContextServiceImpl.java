@@ -533,15 +533,18 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void execute(UUID uuid, ViewContextCommand command) throws Exception {
+  public void execute(UUID uuid, ViewContextCommand command, boolean readOnly) throws Exception {
     Objects.requireNonNull(uuid, "currentViewContextUuid is not set");
     Objects.requireNonNull(command, "command is not set");
     URI viewContextUri = sessionApi.getViewContexts().get(uuid.toString());
     if (viewContextUri == null) {
       throw new ViewContextMissigException();
     }
-    Lock lock = objectApi.getLock(viewContextUri);
-    lock.lock();
+    Lock lock = null;
+    if (!readOnly) {
+      lock = objectApi.getLock(viewContextUri);
+      lock.lock();
+    }
     try {
       ObjectNode contextNode = objectApi.load(viewContextUri);
       // clear links & downloads on load
@@ -557,10 +560,14 @@ public class ViewContextServiceImpl implements ViewContextService {
           });
       currentViewContext.set(contextNode.getObject(ViewContext.class));
       command.execute();
-      contextNode.modify(ViewContext.class, c -> currentViewContext.get());
-      objectApi.save(contextNode);
+      if (!readOnly) {
+        contextNode.modify(ViewContext.class, c -> currentViewContext.get());
+        objectApi.save(contextNode);
+      }
     } finally {
-      lock.unlock();
+      if (lock != null) {
+        lock.unlock();
+      }
       currentViewContext.remove();
     }
   }

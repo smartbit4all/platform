@@ -151,9 +151,12 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
       final String uuid = request.getHeader("viewContextUuid");
       if (!ObjectUtils.isEmpty(uuid)) {
         try {
+          boolean isGridLoad =
+              HttpMethod.POST.name().equals(request.getMethod())
+                  && request.getRequestURI().matches("/api/grid/[^/]+/[^/]+/load");
           viewContextService.execute(
               UUID.fromString(uuid),
-              () -> filterChain.doFilter(request, response));
+              () -> filterChain.doFilter(request, response), isGridLoad);
         } catch (Exception e) {
           throw new ServletException("Error when executing viewContext process", e);
         }
