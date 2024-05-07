@@ -106,6 +106,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     private static final String VAR_ACLOBJECTNODE_URI = "VAR_ACLOBJECTNODE_URI";
 
     protected PageContext load(View view) {
+      System.out.println("ctx loaded");
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
       this.view = view;
       ObjectMapHelper params = parameters(view);
@@ -136,13 +137,13 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         aclObjectUri = params.get(this.config.getAclObjectUriParam(), URI.class);
         Objects.requireNonNull(aclObjectUri, "aclObjectUri parameter specified but not present");
       } else {
-        aclObjectUri = view.getObjectUri();
+        aclObjectUri = getView().getObjectUri();
       }
       ObjectNode result;
       if (loadExactVersion) {
-        result = objectApi.load(aclObjectUri, view.getBranchUri());
+        result = objectApi.load(aclObjectUri, getView().getBranchUri());
       } else {
-        result = objectApi.loadLatest(aclObjectUri, view.getBranchUri());
+        result = objectApi.loadLatest(aclObjectUri, getView().getBranchUri());
       }
       Objects.requireNonNull(result, "ACL object not found");
       return result;
@@ -171,7 +172,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return getConfig().getSelectionCallback() != null ? getConfig().getSelectionCallback()
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleSubjectSelected(
-                  view.getUuid(),
+                  getView().getUuid(),
                   Invocations.listOf(Collections.emptyList(), Subject.class),
                   gridId));
     }
@@ -180,7 +181,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return getConfig().getSelectionCallback() != null ? getConfig().getSelectionCallback()
           : invocationApi.builder(AclGenericPageApi.class)
               .build(api -> api.handleUserSelected(
-                  view.getUuid(),
+                  getView().getUuid(),
                   Invocations.listOf(Collections.emptyList(), URI.class),
                   gridId));
     }
@@ -197,6 +198,10 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return originalAclObjectNode;
     }
 
+    public View getView() {
+      return view;
+    }
+
   }
 
   protected PageContext context(View view) {
@@ -210,9 +215,10 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
   @Override
   public Object initModel(View view) {
     Map<String, Object> model = createModel(view);
-    SmartComponentLayoutDefinition layout = createLayout(view, model);
+    PageContext ctx = context(view);
+    SmartComponentLayoutDefinition layout = createLayout(ctx, model);
     view.putComponentLayoutsItem("default", layout);
-    addGridsToLayout(view, model, layout);
+    addGridsToLayout(ctx, model, layout);
 
     return model;
   }
@@ -230,42 +236,44 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
   /**
    * Create initial layout based on the view and model.
    *
-   * @param view View to be opened.
+   * @param ctx PageContext of view to be opened.
    * @param model View's already created model.
    * @return
    */
-  protected SmartComponentLayoutDefinition createLayout(View view, Map<String, Object> model) {
+  protected SmartComponentLayoutDefinition createLayout(PageContext ctx,
+      Map<String, Object> model) {
     return container(LayoutDirection.VERTICAL);
   }
 
   /**
    * Add grids to already created layout based on view and model.
    *
-   * @param view View to be or already opened.
+   * @param ctx PageContext of view to be or already opened.
    * @param model View's already created model.
    * @param layout View's already created layout.
    */
-  protected void addGridsToLayout(View view, Map<String, Object> model,
+  protected void addGridsToLayout(PageContext ctx, Map<String, Object> model,
       SmartComponentLayoutDefinition layout) {
-    PageContext ctx = context(view);
+    View view = ctx.getView();
     ACLObject aclObject = ctx.getAclObjectNode().getObject(ACLObject.class);
 
     UUID viewUuid = view.getUuid();
     for (AclGridConfig config : ctx.getConfig().getGridConfigs()) {
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, config.getAclName());
-      initGridInView(view, config);
+      initGridInView(ctx, config);
       refreshGrid(viewUuid, acl, config);
       layout.addComponentsItem(createGridLayout(getGridId(config)));
     }
   }
 
-  protected void initGridInView(View view, AclGridConfig config) {
+  protected void initGridInView(PageContext ctx, AclGridConfig config) {
+    View view = ctx.getView();
     String gridId = getGridId(config);
     UUID viewUuid = view.getUuid();
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
       createGridModel(viewUuid, gridId, config.getSearchPageConfig());
-      if (isEnableModify(viewUuid, gridId) && isEnableAdd(viewUuid, gridId)) {
+      if (isEnableModify(ctx, gridId) && isEnableAdd(ctx, gridId)) {
         view.addActionsItem(new UiAction()
             .code(ADD_SUBJECT)
             .model(true)
@@ -381,14 +389,14 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
     page.getRows().forEach(row -> {
-      if (isEnableModify(viewUuid, gridId)) {
+      if (isEnableModify(ctx, gridId)) {
         if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
           row.addActionsItem(new UiAction()
               .code(EDIT_COMMENT)
               .descriptor(new UiActionDescriptor()
                   .title(localeSettingApi.get(PREFIX, EDIT_COMMENT))));
         }
-        if (isEnableDelete(viewUuid, gridId)) {
+        if (isEnableDelete(ctx, gridId)) {
           row.addActionsItem(new UiAction()
               .code(DELETE_SUBJECT)
               .descriptor(new UiActionDescriptor()
@@ -399,21 +407,19 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     return page;
   }
 
-  protected boolean isEnableAdd(UUID viewUuid, String gridId) {
-    PageContext ctx = context(viewUuid);
+  protected boolean isEnableAdd(PageContext ctx, String gridId) {
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
     // default enabled, need explicit false to disable ADD operation
     return !Boolean.FALSE.equals(gridConfig.getAddEnabled());
   }
 
-  protected boolean isEnableDelete(UUID viewUuid, String gridId) {
-    PageContext ctx = context(viewUuid);
+  protected boolean isEnableDelete(PageContext ctx, String gridId) {
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
     // default enabled, need explicit false to disable DELETE operation
     return !Boolean.FALSE.equals(gridConfig.getDeleteEnabled());
   }
 
-  protected boolean isEnableModify(UUID viewUuid, String gridId) {
+  protected boolean isEnableModify(PageContext ctx, String gridId) {
     return true;
   }
 
