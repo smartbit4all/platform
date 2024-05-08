@@ -208,12 +208,15 @@ public final class UiActions {
   }
 
   private static void addSingle(List<UiAction> actions, Integer idx, String code) {
-    if (!contains(actions, code)) {
-      UiAction uiAction = new UiAction().code(code);
+    addSingle(actions, idx, new UiAction().code(code));
+  }
+
+  private static void addSingle(List<UiAction> actions, Integer idx, UiAction action) {
+    if (!contains(actions, action.getCode())) {
       if (idx == null) {
-        actions.add(uiAction);
+        actions.add(action);
       } else {
-        actions.add(idx, uiAction);
+        actions.add(idx, action);
       }
     }
   }
@@ -233,6 +236,10 @@ public final class UiActions {
 
   public static void add(View view, Collection<UiAction> actions) {
     addActionsInternal(view.getActions(), actions);
+  }
+
+  public static void add(View view, int idx, UiAction action) {
+    addSingle(view.getActions(), idx, action);
   }
 
   public static void add(Collection<UiAction> actions, Collection<UiAction> actionsToAdd) {
