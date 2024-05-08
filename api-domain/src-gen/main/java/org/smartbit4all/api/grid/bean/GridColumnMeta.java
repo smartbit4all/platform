@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.grid.bean.GridColumnContentType;
+import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -39,7 +40,8 @@ import javax.validation.Valid;
   GridColumnMeta.ALWAYS_HIDDEN,
   GridColumnMeta.ALWAYS_SHOW,
   GridColumnMeta.HIDE_LABEL,
-  GridColumnMeta.CONTENT_TYPE
+  GridColumnMeta.CONTENT_TYPE,
+  GridColumnMeta.STYLE
 })
 @JsonTypeName("GridColumnMeta")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -67,6 +69,9 @@ public class GridColumnMeta {
 
   public static final String CONTENT_TYPE = "contentType";
   private GridColumnContentType contentType;
+
+  public static final String STYLE = "style";
+  private Style style = null;
 
   public GridColumnMeta() { 
   }
@@ -290,6 +295,34 @@ public class GridColumnMeta {
   }
 
 
+  public GridColumnMeta style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+   /**
+   * If present, this Style will be applied to the column. 
+   * @return style
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If present, this Style will be applied to the column. ")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -306,12 +339,13 @@ public class GridColumnMeta {
         Objects.equals(this.alwaysHidden, gridColumnMeta.alwaysHidden) &&
         Objects.equals(this.alwaysShow, gridColumnMeta.alwaysShow) &&
         Objects.equals(this.hideLabel, gridColumnMeta.hideLabel) &&
-        Objects.equals(this.contentType, gridColumnMeta.contentType);
+        Objects.equals(this.contentType, gridColumnMeta.contentType) &&
+        Objects.equals(this.style, gridColumnMeta.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, hideLabel, contentType);
+    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, hideLabel, contentType, style);
   }
 
   @Override
@@ -326,6 +360,7 @@ public class GridColumnMeta {
     sb.append("    alwaysShow: ").append(toIndentedString(alwaysShow)).append("\n");
     sb.append("    hideLabel: ").append(toIndentedString(hideLabel)).append("\n");
     sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }

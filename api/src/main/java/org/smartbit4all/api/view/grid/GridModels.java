@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
+import org.smartbit4all.api.view.bean.Style;
 
 /**
  * {@link GridModel} static utility method collection
@@ -102,5 +103,12 @@ public class GridModels {
         .forEach(col -> col
             .typeClass(typeClass)
             .typeFormat(typeFormat));
+  }
+
+  public static void setColumnStyle(GridModel grid, String column, Style style) {
+    grid.getView().getDescriptor().getColumns().stream()
+        .filter(col -> column.equals(col.getPropertyName()))
+        .forEach(col -> col
+            .style(style));
   }
 }

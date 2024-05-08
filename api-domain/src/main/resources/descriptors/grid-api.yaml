@@ -466,6 +466,10 @@ components:
           default: false
         contentType:
           $ref: '#/components/schemas/GridColumnContentType'
+        style:
+          description: |
+            If present, this Style will be applied to the column.
+          type: Style
     GridSelectionChange:
       type: object
       description: |
