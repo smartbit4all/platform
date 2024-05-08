@@ -59,7 +59,7 @@ public class SubjectContributionByGroup extends ContributionApiImpl
     }
     return subjects.stream()
         .filter(u -> objectApi.definition(u).instanceOf(Group.class))
-        .flatMap(u -> orgApi.getUsersOfGroup(u).stream().map(User::getUri))
+        .flatMap(u -> orgApi.getUsersOfGroupAndParentGroups(u).stream().map(User::getUri))
         .collect(toList());
   }
 
