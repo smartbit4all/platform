@@ -944,6 +944,7 @@ public class GridModelApiImpl implements GridModelApi {
     try {
       request.getParameters().get(0).setValue(parameter);
       InvocationParameter result = invocationApi.invoke(request);
+      request.getParameters().get(0).setValue(null);
       if (result == null || result.getValue() == null) {
         throw new IllegalArgumentException("Action returned nothing");
       }
@@ -971,6 +972,11 @@ public class GridModelApiImpl implements GridModelApi {
         }
       }
       invocationApi.invoke(request);
+      if (parameters != null && parameters.length > 0) {
+        for (int i = 0; i < parameters.length; i++) {
+          request.getParameters().get(i).setValue(null);
+        }
+      }
     } catch (Exception e) {
       throw new IllegalArgumentException("Action throw an error", e);
     }
