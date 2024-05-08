@@ -16,10 +16,13 @@ import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
+import org.smartbit4all.api.view.bean.ViewPlaceholder;
 
 public interface ViewContextService {
 
   public static final String SCHEMA = "viewcontext-sv";
+
+  public static final String SCHEMA_PLACEHOLDERS = "viewcontext-ph-sv";
 
   /**
    * Creates a new viewContext and registers it in the Session.
@@ -185,5 +188,13 @@ public interface ViewContextService {
    * @return
    */
   Object getApiByViewName(String viewName);
+
+  ViewPlaceholder createViewPlaceholder(View view);
+
+  View getViewFromPlaceholder(ViewPlaceholder placeholder);
+
+  View getAndClearViewFromPlaceholder(ViewPlaceholder placeholder);
+
+  View getView(ViewContext context, UUID viewUuid);
 
 }

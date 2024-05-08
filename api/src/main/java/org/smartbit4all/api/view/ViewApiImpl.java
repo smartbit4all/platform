@@ -30,6 +30,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextData;
+import org.smartbit4all.api.view.bean.ViewPlaceholder;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.core.object.ObjectApi;
@@ -129,7 +130,7 @@ public class ViewApiImpl implements ViewApi {
         if (context.getOpenPendingData() != null) {
           // current pending will be discarded
           List<View> viewsToOpen = context.getOpenPendingData().getViewsToOpen().stream()
-              .map(v -> ViewContexts.getView(context, v))
+              .map(v -> viewContextService.getView(context, v))
               .collect(toList());
           String message = viewsToOpen.stream()
               .map(v -> v.getViewName() + " - " + v.getUuid())
@@ -190,12 +191,13 @@ public class ViewApiImpl implements ViewApi {
     Objects.requireNonNull(viewUuid, "UUID must be not null");
     viewContextService.updateCurrentViewContext(
         context -> {
-          View viewToClose = ViewContexts.getView(context, viewUuid);
+          View viewToClose = viewContextService.getView(context, viewUuid);
           if (viewToClose != null && viewToClose.getType() == ViewType.NORMAL) {
             ViewContexts.updateViewState(context, viewUuid, ViewState.CLOSE_PENDING);
             View parentView = getParentView(viewToClose);
             while (parentView != null && !parentView.getClosedChildrenViews().isEmpty()) {
-              View viewToShow = parentView.getClosedChildrenViews().remove(0);
+              ViewPlaceholder placeholder = parentView.getClosedChildrenViews().remove(0);
+              View viewToShow = viewContextService.getAndClearViewFromPlaceholder(placeholder);
               if (viewToShow != null) {
                 clearViewIfNecessary(viewToShow);
                 showViewInternal(viewToShow);
@@ -305,13 +307,14 @@ public class ViewApiImpl implements ViewApi {
                 View viewToClose = getView(uuidToClose);
                 if (viewToClose != null) {
                   clearViewIfNecessary(viewToClose);
-                  parentView.getClosedChildrenViews().add(0, viewToClose);
+                  parentView.getClosedChildrenViews().add(0,
+                      viewContextService.createViewPlaceholder(viewToClose));
                 }
               }
               ViewContexts.updateViewState(context, uuidToClose, ViewState.TO_CLOSE);
             });
             data.getViewsToOpen().stream()
-                .map(v -> ViewContexts.getView(context, v))
+                .map(v -> viewContextService.getView(context, v))
                 .forEach(v -> v.setState(ViewState.TO_OPEN));
             context.setOpenPendingData(null);
             return context;
@@ -323,13 +326,14 @@ public class ViewApiImpl implements ViewApi {
             data.getViewsToClose().forEach(
                 v -> ViewContexts.updateViewState(context, v, ViewState.OPENED));
             data.getViewsToOpen().stream()
-                .map(v -> ViewContexts.getView(context, v))
+                .map(v -> viewContextService.getView(context, v))
                 .forEach(v -> v.setState(ViewState.CLOSED));
             data.getClosedChildren().entrySet().forEach(
                 closed -> {
                   try {
-                    ViewContexts.getView(context, UUID.fromString(closed.getKey()))
-                        .getClosedChildrenViews().add(0, closed.getValue());
+                    viewContextService.getView(context, UUID.fromString(closed.getKey()))
+                        .getClosedChildrenViews()
+                        .add(0, viewContextService.createViewPlaceholder(closed.getValue()));
                   } catch (Exception e) {
                     log.warn("ClosedChildren restore failed on view {}", closed.getKey());
                   }

@@ -35,6 +35,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
+import org.smartbit4all.api.view.bean.ViewPlaceholder;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -108,7 +109,7 @@ public class View {
   private ViewConstraint constraint;
 
   public static final String CLOSED_CHILDREN_VIEWS = "closedChildrenViews";
-  private List<View> closedChildrenViews = new ArrayList<>();
+  private List<ViewPlaceholder> closedChildrenViews = new ArrayList<>();
 
   public static final String DOWNLOADABLE_ITEMS = "downloadableItems";
   private Map<String, URI> downloadableItems = new HashMap<>();
@@ -469,13 +470,13 @@ public class View {
   }
 
 
-  public View closedChildrenViews(List<View> closedChildrenViews) {
+  public View closedChildrenViews(List<ViewPlaceholder> closedChildrenViews) {
     
     this.closedChildrenViews = closedChildrenViews;
     return this;
   }
 
-  public View addClosedChildrenViewsItem(View closedChildrenViewsItem) {
+  public View addClosedChildrenViewsItem(ViewPlaceholder closedChildrenViewsItem) {
     this.closedChildrenViews.add(closedChildrenViewsItem);
     return this;
   }
@@ -491,14 +492,14 @@ public class View {
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<View> getClosedChildrenViews() {
+  public List<ViewPlaceholder> getClosedChildrenViews() {
     return closedChildrenViews;
   }
 
 
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setClosedChildrenViews(List<View> closedChildrenViews) {
+  public void setClosedChildrenViews(List<ViewPlaceholder> closedChildrenViews) {
     this.closedChildrenViews = closedChildrenViews;
   }
 

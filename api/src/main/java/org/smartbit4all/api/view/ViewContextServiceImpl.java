@@ -23,8 +23,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -58,6 +61,7 @@ import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
 import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
+import org.smartbit4all.api.view.bean.ViewPlaceholder;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -90,6 +94,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
   private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
+
+  private static final ThreadLocal<Map<UUID, View>> currentLoadedPlaceholders = new ThreadLocal<>();
 
   private static final ThreadLocal<ServerRequestTrack> currentServerRequestTrack =
       new ThreadLocal<>();
@@ -131,6 +137,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   @Autowired
   private SessionApi sessionApi;
@@ -269,7 +278,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public View getViewFromCurrentViewContext(UUID viewUuid) {
     ViewContext viewContext = getCurrentViewContextEntry();
-    return ViewContexts.getView(viewContext, viewUuid);
+    return getView(viewContext, viewUuid);
   }
 
   @Override
@@ -559,16 +568,21 @@ public class ViewContextServiceImpl implements ViewContextService {
             return c;
           });
       currentViewContext.set(contextNode.getObject(ViewContext.class));
+      currentLoadedPlaceholders.set(new HashMap<>());
       command.execute();
       if (!readOnly) {
+        currentLoadedPlaceholders.get().forEach((viewUuid, view) -> {
+          saveView(view);
+        });
         contextNode.modify(ViewContext.class, c -> currentViewContext.get());
         objectApi.save(contextNode);
       }
     } finally {
+      currentLoadedPlaceholders.remove();
+      currentViewContext.remove();
       if (lock != null) {
         lock.unlock();
       }
-      currentViewContext.remove();
     }
   }
 
@@ -1214,5 +1228,76 @@ public class ViewContextServiceImpl implements ViewContextService {
   public Object getApiByViewName(String viewName) {
     return apiByViewName.get(viewName);
   }
+
+  @Override
+  public ViewPlaceholder createViewPlaceholder(View view) {
+    currentLoadedPlaceholders.get().put(view.getUuid(), view);
+    return new ViewPlaceholder()
+        .uuid(view.getUuid())
+        .closedChildrenViews(view.getClosedChildrenViews());
+  }
+
+  @Override
+  public View getViewFromPlaceholder(ViewPlaceholder placeholder) {
+    View view = currentLoadedPlaceholders.get().get(placeholder.getUuid());
+    if (view == null) {
+      view = getPlaceholderReference(placeholder.getUuid()).get();
+      currentLoadedPlaceholders.get().put(placeholder.getUuid(), view);
+    }
+    return view;
+  }
+
+  @Override
+  public View getAndClearViewFromPlaceholder(ViewPlaceholder placeholder) {
+    View view = getViewFromPlaceholder(placeholder);
+    currentLoadedPlaceholders.get().remove(placeholder.getUuid());
+    return view;
+  }
+
+  protected void saveView(View view) {
+    getPlaceholderReference(view.getUuid()).update(v -> view);
+  }
+
+  private StoredReference<View> getPlaceholderReference(UUID viewUuid) {
+    return collectionApi.reference(getCurrentViewContextEntry().getUri(),
+        SCHEMA_PLACEHOLDERS,
+        viewUuid.toString(),
+        View.class);
+  }
+
+  @Override
+  public View getView(ViewContext context, UUID viewUuid) {
+    View view = context.getViews().stream()
+        .filter(v -> viewUuid.equals(v.getUuid()))
+        .findFirst()
+        .orElse(null);
+    if (view == null) {
+      // check closed children views, where model is kept
+      List<ViewPlaceholder> closedViews = context.getViews().stream()
+          .map(View::getClosedChildrenViews)
+          .flatMap(List::stream)
+          .collect(toList());
+      ViewPlaceholder placeholder = getViewsIncludingClosedChildren(closedViews)
+          .filter(v -> viewUuid.equals(v.getUuid()))
+          // .filter(v -> v != null && v.getModel() != null)
+          .findFirst()
+          .orElseThrow(
+              () -> new IllegalArgumentException(ViewContexts.VIEW_NOT_FOUND_BY_UUID + viewUuid));
+      view = getViewFromPlaceholder(placeholder);
+      if (view == null || view.getModel() == null) {
+        new IllegalArgumentException(ViewContexts.VIEW_NOT_FOUND_BY_UUID + viewUuid);
+      }
+    }
+    return view;
+  }
+
+  private static Stream<ViewPlaceholder> getViewsIncludingClosedChildren(
+      List<ViewPlaceholder> views) {
+    return Stream.concat(
+        views.stream(),
+        views.stream()
+            .flatMap(v -> getViewsIncludingClosedChildren(v.getClosedChildrenViews())));
+  }
+
 
 }
