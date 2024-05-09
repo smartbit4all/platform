@@ -325,11 +325,26 @@ public class ValueSetApiImpl implements ValueSetApi {
   @Override
   public ValueSet getValueSetWithValues(String namespace, String name, URI branchUri,
       String... path) {
+    return getValueSetWithValues(namespace, name, Collections.emptyList(), branchUri, path);
+  }
+
+  @Override
+  public ValueSet getValueSetWithValues(String namespace, String name, List<URI> additionalValues,
+      URI branchUri,
+      String... path) {
 
     ValueSetData valueSetData = valuesOf(namespace, name, branchUri, true);
-    Stream<ObjectNode> values = valueSetData.getValues().stream()
-        .map(o -> ((ObjectNode) o));
-    valueSetData.values(Values.valuesStream(values, path)
+    List<URI> valueUris = valueSetData.getValues().stream()
+        .map(o -> ((ObjectNode) o))
+        .map(node -> objectApi.getLatestUri(node.getObjectUri()))
+        .collect(toList());
+
+    valueSetData.values(Values.valuesStream(Stream.concat(
+        valueSetData.getValues().stream()
+            .map(o -> ((ObjectNode) o)),
+        additionalValues.stream()
+            .filter(u -> !valueUris.contains(objectApi.getLatestUri(branchUri)))
+            .map(objectApi::loadLatest)), path)
         // .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
         .sorted(Values.CASE_INSENSITIVE_ORDER)
         .map(o -> ((Object) o))

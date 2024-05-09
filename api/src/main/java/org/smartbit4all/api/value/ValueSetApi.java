@@ -121,4 +121,19 @@ public interface ValueSetApi {
    */
   ValueSet getValueSetWithValues(String namespace, String name, URI branchUri, String... path);
 
+  /**
+   * Creates a ValueSet where values will be List<Value>,
+   * 
+   * @param namespace
+   * @param name
+   * @param additionalValues values that the ValueSet might not contains now, because it became
+   *        inactive
+   * @param branchUri
+   * @param path This path will be used to fill displayValue
+   * @return
+   */
+  ValueSet getValueSetWithValues(String namespace, String name, List<URI> additionalValues,
+      URI branchUri,
+      String... path);
+
 }

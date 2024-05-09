@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,6 +73,10 @@ public final class ObjectDisplay {
     return layout;
   }
 
+  public Stream<SmartWidgetDefinition> defaultLayoutFormWidgets() {
+    return formWidgets(getDefaultLayout());
+  }
+
 
   /**
    * Returns a list of value set names visible on the layout.
@@ -80,6 +85,10 @@ public final class ObjectDisplay {
    */
   public List<String> getDefaultLayoutValueSets() {
     return getLayoutValueSets(ObjectLayoutApi.DEFAULT_LAYOUT);
+  }
+
+  public Map<String, List<SmartWidgetDefinition>> getDefaultLayoutWidgetsByValueSets() {
+    return getLayoutsByValueSets(ObjectLayoutApi.DEFAULT_LAYOUT);
   }
 
   /**
@@ -101,6 +110,19 @@ public final class ObjectDisplay {
         .filter(Objects::nonNull)
         .distinct()
         .collect(toList());
+  }
+
+  public Map<String, List<SmartWidgetDefinition>> getLayoutsByValueSets(String layoutName) {
+    if (!layoutsByName.containsKey(layoutName)) {
+      return Collections.emptyMap();
+    }
+
+    Map<String, List<SmartWidgetDefinition>> collect = formWidgets(layoutsByName.get(layoutName))
+        .filter(w -> WIDGETS_WITH_VALUE_SETS.contains(w.getType()))
+        .filter(Objects::nonNull)
+        .filter(w -> w.getSelection() != null && w.getSelection().getValueSetName() != null)
+        .collect(groupingBy(w -> w.getSelection().getValueSetName()));
+    return collect;
   }
 
   private Stream<SmartWidgetDefinition> formWidgets(SmartComponentLayoutDefinition compLayoutDef) {
