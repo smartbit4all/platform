@@ -38,6 +38,7 @@ import javax.validation.Valid;
   SessionInfoData.SID,
   SessionInfoData.REFRESH_TOKEN,
   SessionInfoData.EXPIRATION,
+  SessionInfoData.DURATION,
   SessionInfoData.LOCALE,
   SessionInfoData.AUTHENTICATIONS
 })
@@ -52,6 +53,9 @@ public class SessionInfoData {
 
   public static final String EXPIRATION = "expiration";
   private OffsetDateTime expiration;
+
+  public static final String DURATION = "duration";
+  private Long duration;
 
   public static final String LOCALE = "locale";
   private String locale;
@@ -145,6 +149,33 @@ public class SessionInfoData {
   }
 
 
+  public SessionInfoData duration(Long duration) {
+    
+    this.duration = duration;
+    return this;
+  }
+
+   /**
+   * The lifetime of the refresh token in seconds. 
+   * @return duration
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The lifetime of the refresh token in seconds. ")
+  @JsonProperty(DURATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getDuration() {
+    return duration;
+  }
+
+
+  @JsonProperty(DURATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDuration(Long duration) {
+    this.duration = duration;
+  }
+
+
   public SessionInfoData locale(String locale) {
     
     this.locale = locale;
@@ -220,13 +251,14 @@ public class SessionInfoData {
     return Objects.equals(this.sid, sessionInfoData.sid) &&
         Objects.equals(this.refreshToken, sessionInfoData.refreshToken) &&
         Objects.equals(this.expiration, sessionInfoData.expiration) &&
+        Objects.equals(this.duration, sessionInfoData.duration) &&
         Objects.equals(this.locale, sessionInfoData.locale) &&
         Objects.equals(this.authentications, sessionInfoData.authentications);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sid, refreshToken, expiration, locale, authentications);
+    return Objects.hash(sid, refreshToken, expiration, duration, locale, authentications);
   }
 
   @Override
@@ -236,6 +268,7 @@ public class SessionInfoData {
     sb.append("    sid: ").append(toIndentedString(sid)).append("\n");
     sb.append("    refreshToken: ").append(toIndentedString(refreshToken)).append("\n");
     sb.append("    expiration: ").append(toIndentedString(expiration)).append("\n");
+    sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");
     sb.append("}");

@@ -3,6 +3,7 @@ package org.smartbit4all.sec.session;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +118,8 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     registerSpringSecAuthToken(sessionUri);
 
-    OffsetDateTime refreshExpiration = getRefreshTokenExpiration();
+    final OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime refreshExpiration = getRefreshTokenExpiration(now);
     String refreshToken = createRefreshToken(sessionUri, refreshExpiration);
     String sid = createSid(sessionUri, session.getExpiration());
     storage.get().update(session.getUri(), Session.class,
@@ -132,6 +134,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     return new SessionInfoData()
         .sid(sid)
         .expiration(refreshExpiration)
+        .duration(getRefreshTokenLifetime(now, refreshExpiration))
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(refreshToken);
@@ -151,8 +154,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       throw new InvalidRefreshTokenException();
     }
 
-    OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
-    OffsetDateTime refreshExpiration = getRefreshTokenExpiration();
+    final OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime expiration = now.plusMinutes(timeoutMins);
+    OffsetDateTime refreshExpiration = getRefreshTokenExpiration(now);
     setSessionExpiration(session.getUri(), expiration, refreshExpiration);
 
     String newSid = createSid(session.getUri(), expiration);
@@ -161,9 +165,22 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     return new SessionInfoData()
         .sid(newSid)
         .expiration(refreshExpiration)
+        .duration(getRefreshTokenLifetime(now, refreshExpiration))
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(newRefreshToken);
+  }
+
+  private long getRefreshTokenLifetime(final OffsetDateTime now,
+      final OffsetDateTime refreshExpiration) {
+    try {
+      return ChronoUnit.SECONDS.between(now, refreshExpiration);
+    } catch (Exception e) {
+      // let's be extra safe ( the above throws if it would cause an overflow -> we can just default
+      // to a very large number ):
+      log.debug(e.getMessage(), e);
+      return Long.MAX_VALUE;
+    }
   }
 
   private String createSid(URI sessionUri, OffsetDateTime expiration) {
@@ -174,10 +191,10 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     return tokenHandler.createToken(REFRESHTOKEN_PREFIX + sessionUri.toString(), refreshExpiration);
   }
 
-  private OffsetDateTime getRefreshTokenExpiration() {
+  private OffsetDateTime getRefreshTokenExpiration(final OffsetDateTime now) {
     OffsetDateTime refreshExpiration = null;
     if (refreshTimeoutMins > 0) {
-      refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+      refreshExpiration = now.plusMinutes(refreshTimeoutMins);
     } else {
       // here we set the expiration to a long distance future time.
       // note that it's not OffsetDateTime.MAX because this date must be parsable on different

@@ -12,7 +12,7 @@ paths:
   /session:
     put:
       tags:
-      - Session
+        - Session
       summary: Creates a new session
       operationId: 'startSession'
       responses:
@@ -26,7 +26,7 @@ paths:
           $ref: '#/components/responses/SessionError'
     get:
       tags:
-      - Session
+        - Session
       summary: Returns the existing session info
       operationId: 'getSession'
       responses:
@@ -45,7 +45,7 @@ paths:
   /authenticationProviders:
     get:
       tags:
-      - Session
+        - Session
       summary: Returns the available authentication providers
       operationId: 'getAuthenticationProviders'
       responses:
@@ -64,15 +64,15 @@ paths:
   /refresh:
     post:
       tags:
-      - Session
+        - Session
       summary: Refreshes the session
       operationId: 'refreshSession'
       requestBody:
         required: true
         content:
           application/json:
-              schema:
-                $ref: '#/components/schemas/RefreshSessionRequest'
+            schema:
+              $ref: '#/components/schemas/RefreshSessionRequest'
       responses:
         '200':
           description: 'Refreshes the expired session with the refresh token'
@@ -87,7 +87,7 @@ paths:
   /locale/{locale}:
     post:
       tags:
-      - Session
+        - Session
       summary: Sets the locale of the session
       operationId: setLocale
       description: Sets the locale of the current session and returns the SessionInfoData
@@ -159,6 +159,11 @@ components:
         expiration:
           type: string
           format: date-time
+        duration:
+          type: integer
+          format: int64
+          description: |
+            The lifetime of the refresh token in seconds.
         locale:
           type: string
         authentications:
