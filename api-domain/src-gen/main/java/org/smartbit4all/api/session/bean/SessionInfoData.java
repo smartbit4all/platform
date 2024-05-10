@@ -40,7 +40,8 @@ import javax.validation.Valid;
   SessionInfoData.EXPIRATION,
   SessionInfoData.DURATION,
   SessionInfoData.LOCALE,
-  SessionInfoData.AUTHENTICATIONS
+  SessionInfoData.AUTHENTICATIONS,
+  SessionInfoData.CREATED_AT
 })
 @JsonTypeName("SessionInfoData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -62,6 +63,9 @@ public class SessionInfoData {
 
   public static final String AUTHENTICATIONS = "authentications";
   private List<AccountInfo> authentications = null;
+
+  public static final String CREATED_AT = "createdAt";
+  private OffsetDateTime createdAt;
 
   public SessionInfoData() { 
   }
@@ -239,6 +243,34 @@ public class SessionInfoData {
   }
 
 
+  public SessionInfoData createdAt(OffsetDateTime createdAt) {
+    
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Get createdAt
+   * @return createdAt
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -253,12 +285,13 @@ public class SessionInfoData {
         Objects.equals(this.expiration, sessionInfoData.expiration) &&
         Objects.equals(this.duration, sessionInfoData.duration) &&
         Objects.equals(this.locale, sessionInfoData.locale) &&
-        Objects.equals(this.authentications, sessionInfoData.authentications);
+        Objects.equals(this.authentications, sessionInfoData.authentications) &&
+        Objects.equals(this.createdAt, sessionInfoData.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sid, refreshToken, expiration, duration, locale, authentications);
+    return Objects.hash(sid, refreshToken, expiration, duration, locale, authentications, createdAt);
   }
 
   @Override
@@ -271,6 +304,7 @@ public class SessionInfoData {
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

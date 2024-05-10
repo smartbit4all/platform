@@ -45,7 +45,8 @@ import javax.validation.Valid;
   Session.AUTHENTICATIONS,
   Session.USER,
   Session.PARAMETERS,
-  Session.VIEW_CONTEXTS
+  Session.VIEW_CONTEXTS,
+  Session.CREATED_AT
 })
 @JsonTypeName("Session")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,6 +74,9 @@ public class Session {
 
   public static final String VIEW_CONTEXTS = "viewContexts";
   private Map<String, URI> viewContexts = new HashMap<>();
+
+  public static final String CREATED_AT = "createdAt";
+  private OffsetDateTime createdAt;
 
   public Session() { 
   }
@@ -317,6 +321,34 @@ public class Session {
   }
 
 
+  public Session createdAt(OffsetDateTime createdAt) {
+    
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Get createdAt
+   * @return createdAt
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -333,12 +365,13 @@ public class Session {
         Objects.equals(this.authentications, session.authentications) &&
         Objects.equals(this.user, session.user) &&
         Objects.equals(this.parameters, session.parameters) &&
-        Objects.equals(this.viewContexts, session.viewContexts);
+        Objects.equals(this.viewContexts, session.viewContexts) &&
+        Objects.equals(this.createdAt, session.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts);
+    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts, createdAt);
   }
 
   @Override
@@ -353,6 +386,7 @@ public class Session {
     sb.append("    user: ").append(toIndentedString(user)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    viewContexts: ").append(toIndentedString(viewContexts)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

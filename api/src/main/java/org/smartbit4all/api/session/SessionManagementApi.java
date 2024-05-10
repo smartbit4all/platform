@@ -2,6 +2,7 @@ package org.smartbit4all.api.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.session.bean.AccountInfo;
@@ -11,6 +12,29 @@ import org.smartbit4all.api.session.bean.SessionInfoData;
 public interface SessionManagementApi {
 
   static final String SCHEMA = "session-sv";
+
+  /**
+   * Calculates the duration between two {@link OffsetDateTime}s in seconds.
+   * 
+   * @param now the start {@link OffsetDateTime} of the period
+   * @param refreshExpiration the end {@link OffsetDateTime} of the period
+   * @return the number of whole seconds between the two moments in time; 0 is returned if any of
+   *         the input parameters are null; {@link Long#MAX_VALUE} is returned if the calculation
+   *         would result in a long overflow
+   */
+  static long getRefreshTokenLifetime(OffsetDateTime now, OffsetDateTime refreshExpiration) {
+    if (now == null || refreshExpiration == null) {
+      return 0L;
+    }
+
+    try {
+      return ChronoUnit.SECONDS.between(now, refreshExpiration);
+    } catch (Exception e) {
+      // let's be extra safe ( the above throws if it would cause an overflow -> we can just default
+      // to a very large number ):
+      return Long.MAX_VALUE;
+    }
+  }
 
   /**
    * Starts a session creating a unique sid.

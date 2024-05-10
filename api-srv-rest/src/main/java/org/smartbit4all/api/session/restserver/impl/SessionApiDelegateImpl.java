@@ -1,6 +1,7 @@
 package org.smartbit4all.api.session.restserver.impl;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -65,9 +66,13 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     String sid = tokenHandler.getTokenFromRequest(request);
 
+    final OffsetDateTime now = OffsetDateTime.now();
+    final OffsetDateTime refreshExpiration = currentSession.getRefreshExpiration();
     return ResponseEntity.ok(new SessionInfoData()
         .sid(sid)
-        .expiration(currentSession.getRefreshExpiration())
+        .createdAt(currentSession.getCreatedAt())
+        .expiration(refreshExpiration)
+        .duration(SessionManagementApi.getRefreshTokenLifetime(now, refreshExpiration))
         .locale(currentSession.getLocale())
         .authentications(currentSession.getAuthentications()));
   }
