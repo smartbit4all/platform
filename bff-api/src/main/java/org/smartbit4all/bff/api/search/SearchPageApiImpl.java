@@ -52,7 +52,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     implements SearchPageApi {
 
   @Autowired
-  private CollectionApi collectionApi;
+  protected CollectionApi collectionApi;
 
   @Autowired
   protected GridModelApi gridModelApi;
@@ -323,6 +323,8 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       invocationApi.invoke(selectionCallback);
     } catch (ApiNotFoundException e) {
       throw new IllegalStateException(e);
+    } finally {
+      invocationParameter.setValue(null);
     }
     performClose(viewUuid, request);
   }
@@ -385,6 +387,31 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   public void refreshGridData(UUID viewUuid) {
     SearchPageModel model = getModel(viewUuid);
     refreshGrid(model, new PageContext(viewUuid));
+  }
+
+  /**
+   * Creates a simple {@link SearchPageConfig} with a single GridVew in gridViewOptions, based on
+   * the entityDef of specified searchIndex and columns.
+   *
+   * @param searchIndexSchema
+   * @param searchIndexName
+   * @param columns
+   * @return
+   */
+  protected SearchPageConfig createSimpleConfig(String searchIndexSchema, String searchIndexName,
+      List<String> columns, String... columnPrefix) {
+    SearchIndex<?> searchIndex = collectionApi.searchIndex(
+        searchIndexSchema,
+        searchIndexName);
+    GridView gridView = gridModelApi.createGridView(
+        searchIndex.getDefinition().getDefinition(),
+        columns,
+        columnPrefix);
+    return new SearchPageConfig()
+        .searchIndexSchema(searchIndexSchema)
+        .searchIndexName(searchIndexName)
+        .filterModel(null)
+        .gridViewOptions(List.of(gridView));
   }
 
 }
