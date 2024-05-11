@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.search;
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -407,11 +408,12 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         searchIndex.getDefinition().getDefinition(),
         columns,
         columnPrefix);
+
     return new SearchPageConfig()
         .searchIndexSchema(searchIndexSchema)
         .searchIndexName(searchIndexName)
         .filterModel(null)
-        .gridViewOptions(List.of(gridView));
+        .gridViewOptions(Arrays.asList(gridView));
   }
 
 }
