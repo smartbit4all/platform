@@ -1,8 +1,11 @@
 package org.smartbit4all.domain.data.storage;
 
+import static java.util.stream.Collectors.joining;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -25,7 +29,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
-import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -89,6 +92,15 @@ public final class Storage {
    * mechanisms.
    */
   public static final String SINGLE_VERSION_URI_POSTFIX = "-s";
+
+  /**
+   * A pattern with the valid characters of an uri. <br/>
+   * It is mandatory to keep only valid characters in the stored object's uri, so the identifier can
+   * be used in the uri format as well as in the file system's folder path. It is important to check
+   * when the identifier is business based and set to the object as uri.
+   */
+  private static final Pattern validUriPattern = Pattern.compile(
+      "[A-Za-z0-9\\-._~!$&'()*+,;=:@ÁáÉéÍíÓóÖöŐőÚúÜüŰűÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜüŸÿÇç]");
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
@@ -655,6 +667,7 @@ public final class Storage {
   public final URI constructUriForId(ObjectDefinition<?> objectDefinition, String id) {
     Objects.requireNonNull(objectDefinition);
     Objects.requireNonNull(id);
+    id = createValidId(id);
     List<String> fragments = new ArrayList<>();
     int fragmentSize = 2;
     for (int i = 0; i < id.length(); i += fragmentSize) {
@@ -665,6 +678,15 @@ public final class Storage {
         + fragments.stream().collect(joining(StringConstant.SLASH))
         + (versionPolicy == VersionPolicy.SINGLEVERSION ? SINGLE_VERSION_URI_POSTFIX
             : StringConstant.EMPTY));
+  }
+
+  private String createValidId(String id) {
+    if (validUriPattern.matcher(id).matches()) {
+      return id;
+    }
+    // use base64 encoded string for non valid ids
+    byte[] bytes = id.getBytes(StandardCharsets.UTF_8);
+    return Base64.getUrlEncoder().encodeToString(bytes);
   }
 
   private final URI removeSetNameFromUri(URI uri, String setName) {
