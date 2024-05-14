@@ -30,7 +30,9 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -83,6 +85,7 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import com.google.common.collect.Lists;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -646,7 +649,26 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     SmartLayoutDefinition layout = display.getDefaultForms().stream()
         .map(SmartLayoutDefinition::getWidgets)
         .flatMap(List::stream)
-        .map(w -> w.label(localeSettingApi.get(w.getLabel())))
+        .map(w -> {
+          if (SmartFormWidgetType.CONTAINER.equals(w.getType())) {
+            List<SmartWidgetDefinition> containersToCheck = Lists.newArrayList(w);
+            while (!containersToCheck.isEmpty()) {
+              List<SmartWidgetDefinition> newContainersToCheck = new ArrayList<>();
+              for (SmartWidgetDefinition container : containersToCheck) {
+                for (SmartWidgetDefinition component : container.getChildrenComponents()) {
+                  if (component.getType() == SmartFormWidgetType.CONTAINER) {
+                    newContainersToCheck.add(component);
+                  }
+                  component.label(localeSettingApi.get(component.getLabel()));
+                }
+              }
+              containersToCheck.clear();
+              containersToCheck.addAll(newContainersToCheck);
+            }
+          }
+
+          return w.label(localeSettingApi.get(w.getLabel()));
+        })
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
     List<UiAction> actions = UiActions.builder()
