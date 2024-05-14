@@ -76,7 +76,7 @@ public class MDMEntryDescriptorPageApiImpl
       String definitionName = parameters.get(PARAM_MDM_DEFINITION, String.class);
       entryDescriptor =
           parameters.get(PARAM_MDM_ENTRY_DESCRIPTOR, MDMEntryDescriptor.class);
-      if (entryDescriptor != null) {
+      if (getEntryDescriptor() != null) {
         isNewEntry = false;
       } else {
         entryDescriptor =
@@ -88,6 +88,22 @@ public class MDMEntryDescriptorPageApiImpl
           view.getCallbacks().get(CALLBACK_REFRESH_ACTIONS));
       mdmBranch = masterDataManagementApi.getGlobalBranch(definitionName);
       return this;
+    }
+
+    public boolean getIsNewEntry() {
+      return Boolean.TRUE.equals(isNewEntry);
+    }
+
+    public MDMEntryDescriptor getEntryDescriptor() {
+      return entryDescriptor;
+    }
+
+    public MDMDefinition getDefinition() {
+      return definition;
+    }
+
+    public URI getMdmBranch() {
+      return mdmBranch;
     }
   }
 
@@ -111,18 +127,18 @@ public class MDMEntryDescriptorPageApiImpl
     view.constraint(getViewConstraint(view.getUuid()));
 
     // already existing entry descriptors do not contain the list
-    String restrictedProperties = ctx.entryDescriptor.getVectorCollection() != null
-        && ctx.entryDescriptor.getVectorCollection().getRestrictedProperties() != null
-            ? ctx.entryDescriptor.getVectorCollection().getRestrictedProperties().stream()
+    String restrictedProperties = ctx.getEntryDescriptor().getVectorCollection() != null
+        && ctx.getEntryDescriptor().getVectorCollection().getRestrictedProperties() != null
+            ? ctx.getEntryDescriptor().getVectorCollection().getRestrictedProperties().stream()
                 .collect(Collectors.joining(","))
             : StringConstant.EMPTY;
 
     return new MDMEntryDescriptorPageModel()
         .name(Boolean.TRUE.equals(ctx.isNewEntry) ? StringConstant.EMPTY
-            : ctx.entryDescriptor.getDisplayNameForm().getDefaultValue())
-        .vectorCollection(ctx.entryDescriptor.getVectorCollection())
+            : ctx.getEntryDescriptor().getDisplayNameForm().getDefaultValue())
+        .vectorCollection(ctx.getEntryDescriptor().getVectorCollection())
         .restrictedProperties(restrictedProperties)
-        .importable(Boolean.TRUE.equals(ctx.entryDescriptor.getImportable()));
+        .importable(Boolean.TRUE.equals(ctx.getEntryDescriptor().getImportable()));
   }
 
   private SmartLayoutDefinition getLayout() {
@@ -198,9 +214,49 @@ public class MDMEntryDescriptorPageApiImpl
     String code =
         Boolean.TRUE.equals(ctx.isNewEntry)
             ? clientModel.getCode()
-            : ctx.entryDescriptor.getName();
+            : ctx.getEntryDescriptor().getName();
     String name = clientModel.getName();
 
+    validateDescriptorProperties(code, name);
+
+    List<String> restrictedProperties =
+        Arrays.asList(clientModel.getRestrictedProperties().split(",")).stream()
+            .filter(s -> s != null && !s.trim().isEmpty()).collect(Collectors.toList());
+
+    VectorCollectionDescriptor vectorCollectionDescriptor =
+        clientModel.getVectorCollection() != null
+            ? clientModel.getVectorCollection().restrictedProperties(restrictedProperties)
+            : ctx.getEntryDescriptor().getVectorCollection();
+
+    if (Boolean.TRUE.equals(ctx.isNewEntry)) {
+      MDMDefinitionOption option = new MDMDefinitionOption(ctx.getDefinition());
+      MDMEntryDescriptor newDescriptor = addNewEntryDescriptor(clientModel,
+          code, name, vectorCollectionDescriptor, option);
+      // clear descriptors to not add already created descriptions again
+      option.getDefinition().getDescriptors().clear();
+      option.addDescriptor(newDescriptor);
+      masterDataManagementApi.addNewEntries(option, ctx.getMdmBranch());
+    } else {
+      MDMEntryDescriptor entryDescriptorToEdit =
+          ctx.getEntryDescriptor()
+              .displayNameForm(new LangString().defaultValue(name))
+              .displayNameList(new LangString().defaultValue(name))
+              .vectorCollection(vectorCollectionDescriptor)
+              .importable(Boolean.TRUE.equals(clientModel.getImportable()));
+      masterDataManagementApi.modifyEntry(ctx.getDefinition().getName(), entryDescriptorToEdit,
+          ctx.getMdmBranch());
+    }
+    if (ctx.refreashActionsCallback != null) {
+      try {
+        invocationApi.invoke(ctx.refreashActionsCallback);
+      } catch (ApiNotFoundException e) {
+        log.error(e.getMessage(), e);
+      }
+    }
+    viewApi.closeView(viewUuid);
+  }
+
+  protected void validateDescriptorProperties(String code, String name) {
     if (Strings.isBlank(name)) {
       throw new IllegalArgumentException(
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
@@ -212,42 +268,6 @@ public class MDMEntryDescriptorPageApiImpl
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
               "invalidcharacters"));
     }
-
-    List<String> restrictedProperties =
-        Arrays.asList(clientModel.getRestrictedProperties().split(",")).stream()
-            .filter(s -> s != null && !s.trim().isEmpty()).collect(Collectors.toList());
-
-    VectorCollectionDescriptor vectorCollectionDescriptor =
-        clientModel.getVectorCollection() != null
-            ? clientModel.getVectorCollection().restrictedProperties(restrictedProperties)
-            : ctx.entryDescriptor.getVectorCollection();
-
-    if (Boolean.TRUE.equals(ctx.isNewEntry)) {
-      MDMDefinitionOption option = new MDMDefinitionOption(ctx.definition);
-      MDMEntryDescriptor newDescriptor = addNewEntryDescriptor(clientModel,
-          code, name, vectorCollectionDescriptor, option);
-      // clear descriptors to not add already created descriptions again
-      option.getDefinition().getDescriptors().clear();
-      option.addDescriptor(newDescriptor);
-      masterDataManagementApi.addNewEntries(option, ctx.mdmBranch);
-    } else {
-      MDMEntryDescriptor entryDescriptorToEdit =
-          ctx.entryDescriptor
-              .displayNameForm(new LangString().defaultValue(name))
-              .displayNameList(new LangString().defaultValue(name))
-              .vectorCollection(vectorCollectionDescriptor)
-              .importable(Boolean.TRUE.equals(clientModel.getImportable()));
-      masterDataManagementApi.modifyEntry(ctx.definition.getName(), entryDescriptorToEdit,
-          ctx.mdmBranch);
-    }
-    if (ctx.refreashActionsCallback != null) {
-      try {
-        invocationApi.invoke(ctx.refreashActionsCallback);
-      } catch (ApiNotFoundException e) {
-        log.error(e.getMessage(), e);
-      }
-    }
-    viewApi.closeView(viewUuid);
   }
 
   protected MDMEntryDescriptor addNewEntryDescriptor(MDMEntryDescriptorPageModel clientModel,
