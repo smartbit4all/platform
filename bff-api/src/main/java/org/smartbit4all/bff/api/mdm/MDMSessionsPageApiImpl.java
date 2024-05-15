@@ -20,8 +20,10 @@ import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModels;
@@ -32,6 +34,7 @@ import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     implements MDMSessionsPageApi {
@@ -127,7 +130,8 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     model.setPageTitle(null);
     view.getActions().removeIf(a -> ACTION_CLOSE.equals(a.getCode()));
     view.getActions().removeIf(a -> ACTION_QUERY.equals(a.getCode()));
-    view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING));
+    view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING)
+        .inputType(UiActionInputType.TEXTFIELD));
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(), WIDGET_RESULT_GRID);
     GridModels.hideColumns(gridModel, MDMModification.ID, MDMModification.BRANCH_URI);
@@ -158,9 +162,13 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
 
   @Override
   public void startEditing(UUID viewUuid, UiActionRequest request) {
+    String name = (String) request.getParams().get(UiActions.INPUT);
+    if (Strings.isNullOrEmpty(name)) {
+      throw new IllegalArgumentException("A név kitöltése kötelező!");
+    }
     SessionsPageContext ctx = getContextByViewUUID(viewUuid);
     masterDataManagementApi.initiateModificationBranch(ctx.definition.getName(),
-        UUID.randomUUID().toString());
+        name);
     refreshGridData(viewUuid);
   }
 
