@@ -149,6 +149,12 @@ components:
           description: |
             Identifier of the toolbar associated with this widget.
           type: string
+        properties:
+          description: |
+            Additional properties the client may use to customise the appearance or behaviour of the
+            widget.
+          additionalProperties:
+            type: object
     ValueChangeMode:
       description: |
         This enum defines the value change handling strategy. Currently only one method is supported,

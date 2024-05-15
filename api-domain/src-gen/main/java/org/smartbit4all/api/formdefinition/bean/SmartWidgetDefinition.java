@@ -23,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
@@ -70,7 +72,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.VALUE_CHANGE_MODE,
   SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX,
   SmartWidgetDefinition.FILTER_ERROR_MESSAGE,
-  SmartWidgetDefinition.TOOLBAR_ID
+  SmartWidgetDefinition.TOOLBAR_ID,
+  SmartWidgetDefinition.PROPERTIES
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -158,6 +161,9 @@ public class SmartWidgetDefinition {
 
   public static final String TOOLBAR_ID = "toolbarId";
   private String toolbarId;
+
+  public static final String PROPERTIES = "properties";
+  private Map<String, Object> properties = null;
 
   public SmartWidgetDefinition() { 
   }
@@ -948,6 +954,41 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition properties(Map<String, Object> properties) {
+    
+    this.properties = properties;
+    return this;
+  }
+
+  public SmartWidgetDefinition putPropertiesItem(String key, Object propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new HashMap<>();
+    }
+    this.properties.put(key, propertiesItem);
+    return this;
+  }
+
+   /**
+   * Additional properties the client may use to customise the appearance or behaviour of the widget. 
+   * @return properties
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Additional properties the client may use to customise the appearance or behaviour of the widget. ")
+  @JsonProperty(PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
+
+
+  @JsonProperty(PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProperties(Map<String, Object> properties) {
+    this.properties = properties;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -984,12 +1025,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.valueChangeMode, smartWidgetDefinition.valueChangeMode) &&
         Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix) &&
         Objects.equals(this.filterErrorMessage, smartWidgetDefinition.filterErrorMessage) &&
-        Objects.equals(this.toolbarId, smartWidgetDefinition.toolbarId);
+        Objects.equals(this.toolbarId, smartWidgetDefinition.toolbarId) &&
+        Objects.equals(this.properties, smartWidgetDefinition.properties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties);
   }
 
   @Override
@@ -1024,6 +1066,7 @@ public class SmartWidgetDefinition {
     sb.append("    showCharacterLimitSuffix: ").append(toIndentedString(showCharacterLimitSuffix)).append("\n");
     sb.append("    filterErrorMessage: ").append(toIndentedString(filterErrorMessage)).append("\n");
     sb.append("    toolbarId: ").append(toIndentedString(toolbarId)).append("\n");
+    sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("}");
     return sb.toString();
   }
