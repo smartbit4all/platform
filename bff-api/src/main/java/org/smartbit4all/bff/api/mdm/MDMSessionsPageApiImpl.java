@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static org.smartbit4all.core.utility.StringConstant.joinDot;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -105,7 +106,7 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     pageContext.view = view;
     pageContext.loadByView();
 
-    List<String> columns = List.of(
+    List<String> columns = Arrays.asList(
         MDMModification.NAME,
         joinDot(MDMModification.CREATED, UserActivityLog.NAME),
         joinDot(MDMModification.CREATED, UserActivityLog.TIMESTAMP),
