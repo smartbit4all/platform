@@ -23,6 +23,7 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLa
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWidgetDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
+import org.smartbit4all.core.utility.RichTextEditorFeatures.Properties;
 import org.smartbit4all.core.utility.StringConstant;
 
 public final class ObjectLayoutBuilder {
@@ -190,6 +191,11 @@ public final class ObjectLayoutBuilder {
         .type(SmartFormWidgetType.RICH_TEXT)
         .key(key)
         .label(label);
+  }
+
+  public static SmartWidgetDefinition richTextEditor(String key, String label,
+      Properties properties) {
+    return richTextEditor(key, label).properties(properties.asMap());
   }
 
   public static SmartWidgetDefinition toggle(String key, String label) {
