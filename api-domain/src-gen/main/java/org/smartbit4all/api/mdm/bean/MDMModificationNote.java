@@ -22,11 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.net.URI;
 import org.smartbit4all.api.session.bean.UserActivityLog;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -55,7 +52,7 @@ public class MDMModificationNote {
   private String entry;
 
   public static final String OBJECT_URI = "objectUri";
-  private JsonNullable<Object> objectUri = JsonNullable.<Object>of(null);
+  private URI objectUri;
 
   public MDMModificationNote() { 
   }
@@ -142,9 +139,9 @@ public class MDMModificationNote {
   }
 
 
-  public MDMModificationNote objectUri(Object objectUri) {
-    this.objectUri = JsonNullable.<Object>of(objectUri);
+  public MDMModificationNote objectUri(URI objectUri) {
     
+    this.objectUri = objectUri;
     return this;
   }
 
@@ -153,27 +150,20 @@ public class MDMModificationNote {
    * @return objectUri
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "The object URI the note is refering to. ")
-  @JsonIgnore
-
-  public Object getObjectUri() {
-        return objectUri.orElse(null);
-  }
-
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public JsonNullable<Object> getObjectUri_JsonNullable() {
+  public URI getObjectUri() {
     return objectUri;
   }
-  
-  @JsonProperty(OBJECT_URI)
-  public void setObjectUri_JsonNullable(JsonNullable<Object> objectUri) {
-    this.objectUri = objectUri;
-  }
 
-  public void setObjectUri(Object objectUri) {
-    this.objectUri = JsonNullable.<Object>of(objectUri);
+
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
   }
 
 
@@ -189,23 +179,12 @@ public class MDMModificationNote {
     return Objects.equals(this.created, mdMModificationNote.created) &&
         Objects.equals(this.note, mdMModificationNote.note) &&
         Objects.equals(this.entry, mdMModificationNote.entry) &&
-        equalsNullable(this.objectUri, mdMModificationNote.objectUri);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        Objects.equals(this.objectUri, mdMModificationNote.objectUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(created, note, entry, hashCodeNullable(objectUri));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+    return Objects.hash(created, note, entry, objectUri);
   }
 
   @Override

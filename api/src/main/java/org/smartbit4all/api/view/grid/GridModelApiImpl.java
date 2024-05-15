@@ -986,7 +986,6 @@ public class GridModelApiImpl implements GridModelApi {
           }
         }
       }
-
     }
   }
 

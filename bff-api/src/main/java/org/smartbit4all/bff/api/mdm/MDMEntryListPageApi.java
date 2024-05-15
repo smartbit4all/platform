@@ -10,7 +10,6 @@ import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -143,26 +142,6 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
-   * action start an editing phase for the entries.
-   *
-   * @param viewUuid The unique identifier of the view in the current context.
-   * @param request The action request that contains every information about the triggering action.
-   */
-  @ActionHandler(MDMActions.ACTION_START_EDITING)
-  void startEditing(UUID viewUuid, UiActionRequest request);
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
-   * action cancels all the draft editing object and we will have the published object list.
-   *
-   * @param viewUuid The unique identifier of the view in the current context.
-   * @param request The action request that contains every information about the triggering action.
-   */
-  @ActionHandler(MDMActions.ACTION_CANCEL_CHANGES)
-  void cancelChanges(UUID viewUuid, UiActionRequest request);
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
    * action construct a new entry. Initiate the currently editing branch if it doesn't exist. The
    * new object is going to be registered into the branch as new object.
    *
@@ -171,25 +150,6 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    */
   @ActionHandler(ACTION_NEW_ENTRY)
   void newEntry(UUID viewUuid, UiActionRequest request);
-
-  /**
-   * If the current user is administrator of the given entry then this action can be performed. The
-   * action publishes all the draft editing object and the changes will be available for every user.
-   *
-   * @param viewUuid The unique identifier of the view in the current context.
-   * @param request The action request that contains every information about the triggering action.
-   */
-  @ActionHandler(MDMActions.ACTION_FINALIZE_CHANGES)
-  void finalizeChanges(UUID viewUuid, UiActionRequest request);
-
-  @ActionHandler(MDMActions.ACTION_SEND_FOR_APPROVAL)
-  void sendForApproval(UUID viewUuid, UiActionRequest request);
-
-  @ActionHandler(MDMActions.ACTION_ADMIN_APPROVE_OK)
-  void adminApproveOk(UUID viewUuid, UiActionRequest request);
-
-  @ActionHandler(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK)
-  void adminApproveNotOk(UUID viewUuid, UiActionRequest request);
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The

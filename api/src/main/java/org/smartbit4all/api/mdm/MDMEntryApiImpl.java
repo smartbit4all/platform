@@ -1,5 +1,9 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,10 +63,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -422,7 +422,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
     if (mdmDefinitionState != null && sessionApi != null) {
       User user = sessionApi.getUser();
-      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALEL) {
+      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALLEL) {
         // By default we are looking for the first modification where the current user is editor..
         Optional<MDMModification> firstModification =
             mdmDefinitionState.getActiveModifications().stream()
@@ -443,7 +443,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   /**
    * Constructs a {@link ConstraintEntry} with the currently edited {@link StoredMap} and the map of
    * all the unique values.
-   * 
+   *
    * @param c The constraint to create the entry for.
    * @return
    */
@@ -460,7 +460,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     List<URI> editorBranchUris = new ArrayList<>();
     if (mdmDefinitionState != null && sessionApi != null) {
       User user = sessionApi.getUser();
-      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALEL) {
+      if (branchingStrategy == MDMBranchingStrategy.STRICT_PARALLEL) {
         // By default we are looking for the first modification where the current user is editor..
         for (MDMModification m : mdmDefinitionState.getActiveModifications()) {
           if (editorBranchUri == null

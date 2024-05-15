@@ -29,12 +29,11 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
-import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -61,7 +60,6 @@ import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectMapHelper;
-import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
@@ -103,15 +101,17 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     View view;
     MDMDefinition definition;
-    URI mdmBranch;
+    // URI mdmBranch;
     List<MDMEntryApi> entryApisWithChanges;
     Map<String, SearchIndex<BranchedObjectEntry>> searchIndexAdminsByDescriptorName;
     List<MDMModificationNote> modificationNotes;
     MDMModificationNote latestModificationNote;
+    MDMModificationApi modificationApi;
 
     public PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
       setDefinition(parameters);
+      URI mdmBranch = getMdmBranch();
       entryApisWithChanges =
           masterDataManagementApi.getEntryDescriptors(definition, mdmBranch)
               .keySet().stream()
@@ -125,7 +125,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
               e -> collectionApi.searchIndex(getDefinition().getName(),
                   e.getDescriptor().getSearchIndexForEntries(),
                   BranchedObjectEntry.class)));
-      setModificationNotes(getDefinition());
 
       return this;
     }
@@ -133,20 +132,19 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     public PageContext loadOnlyDefinitionByView() {
       setDefinition(parameters(view));
-      setModificationNotes(getDefinition());
       return this;
     }
 
     private final void setDefinition(ObjectMapHelper parameters) {
       definition = masterDataManagementApi
           .getDefinition(parameters.require(PARAM_MDM_DEFINITION, String.class));
-      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
-    }
-
-    private void setModificationNotes(MDMDefinition definition) {
-      ObjectNode state = objectApi.loadLatest(definition.getState());
-      modificationNotes = state.getValueAsList(MDMModificationNote.class,
-          MDMDefinitionState.GLOBAL_MODIFICATION, MDMModification.NOTES);
+      modificationApi = masterDataManagementApi
+          .getModificationApiForUser(definition.getName(), sessionApi.getUserUri());
+      modificationNotes = modificationApi == null ? null
+          : modificationApi.getModification().getNotes();
+      if (modificationNotes == null) {
+        modificationNotes = new ArrayList<>();
+      }
       latestModificationNote = !modificationNotes.isEmpty()
           ? modificationNotes.get(modificationNotes.size() - 1)
           : null;
@@ -157,21 +155,26 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     }
 
     public boolean getBranchActive() {
-      ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
-      ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
-      MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
-      return mdmDefinitionState.getGlobalModification() != null;
+      return getMdmBranch() != null;
+      // ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
+      // ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
+      // MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
+      // return mdmDefinitionState.getGlobalModification() != null;
     }
 
     public URI getApprover() {
-      ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
-      ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
-      MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
-      if (mdmDefinitionState.getGlobalModification() != null) {
-        return mdmDefinitionState.getGlobalModification().getApprover();
-      } else {
+      if (modificationApi == null) {
         return null;
       }
+      return modificationApi.getModification().getApprover();
+      // ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
+      // ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
+      // MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
+      // if (mdmDefinitionState.getGlobalModification() != null) {
+      // return mdmDefinitionState.getGlobalModification().getApprover();
+      // } else {
+      // return null;
+      // }
 
     }
 
@@ -189,8 +192,12 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       return definition;
     }
 
+    public MDMModificationApi getModificationApi() {
+      return modificationApi;
+    }
+
     public URI getMdmBranch() {
-      return mdmBranch;
+      return modificationApi == null ? null : modificationApi.getModification().getBranchUri();
     }
 
   }
@@ -234,11 +241,14 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   }
 
   protected void refreshActions(PageContext ctx) {
-    if (ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL) {
+    if (ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL
+        || ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.STRICT_PARALLEL) {
       boolean isAdmin = ctx.checkAdmin();
       boolean branchActive = ctx.getBranchActive();
       // if API present, approving enabled
       boolean approvingEnabled = mdmApprovalApi != null;
+      boolean globalBranching =
+          ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL;
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
         URI approver = ctx.getApprover();
@@ -247,10 +257,15 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
         uiActions
+            // branchingStrategy = STRICT_PARALLEL
+            .addIf(new UiAction().code(MDMActions.ACTION_CLOSE_EDITING),
+                canEdit, !globalBranching, branchActive)
+            // branchingStrategy = GLOBAL
             .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
-                isAdmin, !branchActive)
+                isAdmin, globalBranching, !branchActive)
             .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
                 canEdit, !underApproval, branchActive)
+            // approval handling
             .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
                 isAdmin, !underApproval, branchActive)
             .addIf(new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),
@@ -261,9 +276,16 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
                 isApprover, underApproval, branchActive);
       } else {
         uiActions
-            .addIf(MDMActions.ACTION_START_EDITING, isAdmin, !branchActive)
-            .addIf(MDMActions.ACTION_FINALIZE_CHANGES, isAdmin, branchActive)
-            .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchActive);
+            // branchingStrategy = STRICT_PARALLEL
+            .addIf(new UiAction().code(MDMActions.ACTION_CLOSE_EDITING),
+                isAdmin, !globalBranching, branchActive)
+            // branchingStrategy = GLOBAL
+            .addIf(MDMActions.ACTION_START_EDITING,
+                isAdmin, globalBranching, !branchActive)
+            .addIf(MDMActions.ACTION_FINALIZE_CHANGES,
+                isAdmin, globalBranching, branchActive)
+            .addIf(MDMActions.ACTION_CANCEL_CHANGES,
+                isAdmin, globalBranching, branchActive);
       }
 
       uiActions.add(MDMActions.REFRESH);
@@ -417,6 +439,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     PageContext context = getContextByViewUUID(viewUuid);
     masterDataManagementApi.initiateGlobalBranch(context.getDefinition().getName(),
         String.valueOf(System.currentTimeMillis()));
+    context.loadByView();
     refreshActions(context);
   }
 
@@ -433,10 +456,38 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
   @Override
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.dropGlobal(context.getDefinition().getName());
-    context.loadByView();
-    refreshViewProperties(context);
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.modificationApi == null) {
+      throw new IllegalStateException("Trying to cancel changes without active modification!");
+    }
+    ctx.modificationApi.cancel();
+    closeOrRefreshPage(ctx);
+  }
+
+  @Override
+  public void stopEditing(UUID viewUuid, UiActionRequest request) {
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.STRICT_PARALLEL) {
+      // stopEditing is enabled in this strategy
+      ctx.modificationApi.stopEditing();
+      closeOrRefreshPage(ctx);
+    }
+  }
+
+  protected void closeOrRefreshPage(PageContext ctx) {
+    if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.STRICT_PARALLEL) {
+      showAdminPage(ctx);
+    } else {
+      ctx.loadByView();
+      refreshViewProperties(ctx);
+    }
+  }
+
+  protected void showAdminPage(PageContext ctx) {
+    viewApi.showView(new View()
+        .viewName("Admin")
+        .putParametersItem(MDMAdminPageApi.PARAM_MDM_DEFINITION,
+            ctx.definition.getName()));
   }
 
   protected void refreshViewProperties(PageContext context) {
@@ -448,45 +499,56 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.mergeGlobal(context.getDefinition().getName());
-    context.loadByView();
-    refreshViewProperties(context);
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.getModificationApi() == null) {
+      throw new IllegalStateException("Trying to finalize changes without active modification!");
+    }
+    ctx.modificationApi.merge();
+    closeOrRefreshPage(ctx);
   }
 
   @Override
   public void sendForApproval(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid, false);
+    PageContext ctx = getContextByViewUUID(viewUuid, false);
     if (mdmApprovalApi == null) {
       throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
     }
-    String definition = context.getDefinition().getName();
+    String definition = ctx.getDefinition().getName();
     List<URI> approvers = mdmApprovalApi.getApprovers(definition);
     if (approvers == null || approvers.size() != 1) {
       throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
     }
-    masterDataManagementApi.sendForApprovalGlobal(
-        context.getDefinition().getName(),
-        approvers.get(0));
-    context.loadByView();
-    refreshViewProperties(context);
+    sendForApproval(viewUuid, approvers.get(0));
+  }
+
+  protected void sendForApproval(UUID viewUuid, URI approverUri) {
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.getModificationApi() == null) {
+      throw new IllegalStateException("Trying to cancel changes without active modification!");
+    }
+    ctx.getModificationApi().sendForApproval(approverUri);
+    closeOrRefreshPage(ctx);
   }
 
   @Override
   public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid, true);
-    masterDataManagementApi.approvalAcceptedGlobal(context.getDefinition().getName());
-    context.loadByView();
-    refreshViewProperties(context);
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.getModificationApi() == null) {
+      throw new IllegalStateException("Trying to approve changes without active modification!");
+    }
+    ctx.getModificationApi().approvalAccepted();
+    closeOrRefreshPage(ctx);
   }
 
   @Override
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
+    PageContext ctx = getContextByViewUUID(viewUuid, true);
+    if (ctx.getModificationApi() == null) {
+      throw new IllegalStateException("Trying to reject changes without active modification!");
+    }
     String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
-    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
-    context.loadOnlyDefinitionByView();
-    refreshViewProperties(context);
+    ctx.getModificationApi().approvalRejected(reason);
+    closeOrRefreshPage(ctx);
   }
 
   @Override

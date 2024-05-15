@@ -6,6 +6,7 @@ import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMErrorLog;
 import org.smartbit4all.api.mdm.bean.MDMModification;
@@ -81,7 +82,11 @@ public interface MasterDataManagementApi {
    * @return The prepared api or null if the definition or the entry is not found. Doesn't throw
    *         exception on missing entry.
    */
-  MDMEntryApi getApiSafe(String definition, String name);
+  MDMEntryApi getApiSafe(String definition, String name, URI brancUri);
+
+  default MDMEntryApi getApiSafe(String definition, String name) {
+    return getApiSafe(definition, name, null);
+  };
 
   /**
    * Retrieve the MDM definition.
@@ -128,7 +133,7 @@ public interface MasterDataManagementApi {
 
   /**
    * Add a new descriptor to the definition
-   * 
+   *
    * @param definition The {@link MDMDefinition}.
    * @param descriptor The {@link MDMEntryDescriptor} to add to the definition.
    */
@@ -138,8 +143,8 @@ public interface MasterDataManagementApi {
 
   /**
    * Initiate a new editing branch for the definition. We must have a strategy with
-   * {@link MDMBranchingStrategy#STRICT_PARALEL} where we can initite as many as necessary.
-   * 
+   * {@link MDMBranchingStrategy#STRICT_PARALLEL} where we can initite as many as necessary.
+   *
    * @param definitionName The name of the definition.
    * @param branchCaption The title of the editing branch.
    * @return The identifier of the newly created modification.
@@ -148,7 +153,7 @@ public interface MasterDataManagementApi {
 
   /**
    * Return the modification api.
-   * 
+   *
    * @param definitionName The definition.
    * @param id The id if the modification.
    * @return The modification api to manage the {@link MDMModification} identified by the id.
@@ -156,8 +161,8 @@ public interface MasterDataManagementApi {
   MDMModificationApi getModificationApi(String definitionName, String id);
 
   /**
-   * Retrievs the {@link MDMModification} object the user is editing currently.
-   * 
+   * Retrieves the {@link MDMModification} object the user is editing currently.
+   *
    * @param definitionName The MDM definition name.
    * @param userUri The user
    * @return The {@link MDMModification} if we found any or null.
@@ -166,15 +171,27 @@ public interface MasterDataManagementApi {
 
   /**
    * Return the modification api.
-   * 
+   *
    * @param definitionName The definition.
    * @return The modification api to manage the {@link MDMModification} identified by the id.
    */
   MDMModificationApi getGlobalModificationApi(String definitionName);
 
   /**
+   * Return API for handling modification. If strategy is global, it will we
+   * {@link #getGlobalModificationApi(String)}, otherwise it will try to retrieve current
+   * modification for user and will return {@link #getModificationApi(String, String)} for that, if
+   * exists.
+   *
+   * @param definitionName
+   * @param userUri
+   * @return
+   */
+  MDMModificationApi getModificationApiForUser(String definitionName, URI userUri);
+
+  /**
    * /** Initiate the global branch for the definition.
-   * 
+   *
    * @param definition The name of the definition.
    * @param title The title of the editing.
    * @return The uri of the state.
@@ -183,7 +200,7 @@ public interface MasterDataManagementApi {
 
   /**
    * Return the global branch if any.
-   * 
+   *
    * @param definition
    * @return
    */
@@ -209,12 +226,12 @@ public interface MasterDataManagementApi {
    */
   URI dropGlobal(String definitionName);
 
-  void sendForApprovalGlobal(String definitionName, URI approver);
-
-  void approvalAcceptedGlobal(String definitionName);
-
-  void approvalRejectedGlobal(String definitionName, String reason);
-
+  // void sendForApprovalGlobal(String definitionName, URI approver);
+  //
+  // void approvalAcceptedGlobal(String definitionName);
+  //
+  // void approvalRejectedGlobal(String definitionName, String reason);
+  //
   URI addNewEntries(MDMDefinitionOption o, URI branch);
 
   void saveVectorCollectionDescriptor(String definitionName, String entryName,
@@ -232,15 +249,17 @@ public interface MasterDataManagementApi {
   void executeMdmDefinitionUpdate(String definitionName);
 
   MDMErrorLog importData(String definitionName, String entryName,
-      MDMModificationRequest modificationRequest);
+      MDMModificationRequest modificationRequest, URI branchUri);
 
   /**
    * Retrieve the {@link VectorCollection} based on the {@link VectorCollectionDescriptor} we have.
-   * 
+   *
    * @param vectorCollectionDescriptor The vector collection descriptor.
    * @return The {@link VectorCollection} if the parameter assigned to an existing one or null.
    */
   VectorCollection getVectorCollection(
       VectorCollectionDescriptor vectorCollectionDescriptor);
+
+  MDMModification getModificationFromState(MDMDefinitionState state, URI branch);
 
 }

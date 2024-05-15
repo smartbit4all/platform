@@ -59,7 +59,7 @@ components:
             enum:
                 - none
                 - global
-                - strict_paralel
+                - strict_parallel
         MDMEntryDescriptor:
             type: object
             description: |
@@ -323,6 +323,8 @@ components:
                 objectUri:
                     description: |
                         The object URI the note is refering to.
+                    type: string
+                    format: uri
         MDMModificationState:
             enum: [active, editing, disposed, approving, approved, rejected]
         MDMModificationArchive:

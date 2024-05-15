@@ -144,6 +144,8 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Import({DomainConfig.class, PlatformApiScheduledConfig.class, MimeTypeConfig.class})
 public class PlatformApiConfig {
 
+  public static final String DEFAULT_SCHEME = "platform";
+
   public static final String EMBEDDING_CONNECTIONS = "embeddingConnections";
 
   public static final String VECTOR_DB_CONNECTIONS = "vectorDbConnections";

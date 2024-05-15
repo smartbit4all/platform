@@ -18,11 +18,13 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
+import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.PageApiImpl;
@@ -46,13 +48,15 @@ public class MDMEntryDescriptorPageApiImpl
   private static final String LAYOUT = "layout";
 
   @Autowired
-  MasterDataManagementApi masterDataManagementApi;
+  protected MasterDataManagementApi masterDataManagementApi;
   @Autowired
-  VectorDBApi vectorDBApi;
+  protected VectorDBApi vectorDBApi;
   @Autowired
-  InvocationApi invocationApi;
+  protected InvocationApi invocationApi;
   @Autowired
-  LocaleSettingApi localeSettingApi;
+  protected LocaleSettingApi localeSettingApi;
+  @Autowired
+  protected SessionApi sessionApi;
 
 
   private static final Logger log =
@@ -69,6 +73,7 @@ public class MDMEntryDescriptorPageApiImpl
     MDMDefinition definition;
     Boolean isNewEntry;
     InvocationRequest refreashActionsCallback;
+    MDMModificationApi modificationApi;
     URI mdmBranch;
 
     PageContext loadByView() {
@@ -86,7 +91,9 @@ public class MDMEntryDescriptorPageApiImpl
       definition = masterDataManagementApi.getDefinition(definitionName);
       refreashActionsCallback = objectApi.asType(InvocationRequest.class,
           view.getCallbacks().get(CALLBACK_REFRESH_ACTIONS));
-      mdmBranch = masterDataManagementApi.getGlobalBranch(definitionName);
+      modificationApi = masterDataManagementApi
+          .getModificationApiForUser(definition.getName(), sessionApi.getUserUri());
+      mdmBranch = modificationApi == null ? null : modificationApi.getModification().getBranchUri();
       return this;
     }
 

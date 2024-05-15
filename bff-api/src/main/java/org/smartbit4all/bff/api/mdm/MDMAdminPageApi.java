@@ -61,6 +61,11 @@ public interface MDMAdminPageApi extends PageApi<Object> {
    */
   static final String ACTION_OPEN_MDM_CHANGES = "OPEN_MDM_CHANGES";
 
+  /**
+   * The identifier of the open mdm changes page.
+   */
+  static final String ACTION_OPEN_MDM_SESSIONS = "OPEN_MDM_SESSIONS";
+
   @ActionHandler
   void openList(UUID viewUuid, UiActionRequest request);
 
@@ -69,6 +74,9 @@ public interface MDMAdminPageApi extends PageApi<Object> {
 
   @ActionHandler(ACTION_OPEN_MDM_CHANGES)
   void performOpenChanges(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(ACTION_OPEN_MDM_SESSIONS)
+  void performOpenSessions(UUID viewUuid, UiActionRequest request);
 
   void refreshUiActions(UUID viewUuid);
 

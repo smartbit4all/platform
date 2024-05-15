@@ -12,6 +12,12 @@ public class MDMActions {
   public static final String ACTION_START_EDITING = "START_EDITING";
 
   /**
+   * Opens an already created editing session.
+   */
+  public static final String ACTION_OPEN_EDITING = "OPEN_EDITING";
+  public static final String ACTION_CLOSE_EDITING = "CLOSE_EDITING";
+
+  /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action cancels all the draft editing object and we will have the published object list.
    */

@@ -1,5 +1,7 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -11,9 +13,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -29,13 +31,14 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMErrorLog;
 import org.smartbit4all.api.mdm.bean.MDMErrorLogData;
 import org.smartbit4all.api.mdm.bean.MDMModification;
-import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.BranchApi;
@@ -58,6 +61,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.object.ObjectHistoryIterator;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
@@ -68,8 +72,7 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import com.google.common.base.Strings;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -154,7 +157,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
-  public MDMEntryApi getApiSafe(String definition, String name) {
+  public MDMEntryApi getApiSafe(String definition, String name, URI branchUri) {
     MDMDefinition mdmDefinition = getDefinition(definition);
     if (mdmDefinition == null) {
       return null;
@@ -171,15 +174,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName,
       URI branch) {
-
-    branch = getValidBranch(definition, branch);
-    Map<String, MDMEntryDescriptor> descriptors = definition.getDescriptors();
-    if (branch != null) {
-      descriptors.putAll(getDescriptorsOnGlobalBranch(definition));
-    }
-
+    // branch = getValidBranch(definition, branch);
+    Map<String, MDMEntryDescriptor> descriptors = getEntryDescriptors(definition, branch);
     MDMEntryDescriptor descriptor = descriptors.get(entryName);
-
     if (descriptor == null) {
       throw new IllegalArgumentException(
           MessageFormat.format(
@@ -204,21 +201,14 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public Map<String, MDMEntryDescriptor> getEntryDescriptors(MDMDefinition definition,
       URI branch) {
-    branch = getValidBranch(definition, branch);
-    if (branch == null) {
-      return definition.getDescriptors();
+    // branch = getValidBranch(definition, branch);
+    Map<String, MDMEntryDescriptor> descriptors = definition.getDescriptors();
+    if (branch != null) {
+      ObjectNode stateNode = objectApi.loadLatest(definition.getState());
+      MDMDefinitionState state = stateNode.getObject(MDMDefinitionState.class);
+      descriptors.putAll(getModificationFromStateNotNull(state, branch).getDescriptors());
     }
-    // global branch only
-    return getAllEntryDescriptors(definition);
-  }
-
-  private Map<String, MDMEntryDescriptor> getDescriptorsOnGlobalBranch(MDMDefinition definition) {
-    ObjectNode stateNode = objectApi.loadLatest(definition.getState());
-    // handle global branch now, handle others later
-    Map<String, MDMEntryDescriptor> descriptors = stateNode.getValueAsMap(MDMEntryDescriptor.class,
-        MDMDefinitionState.GLOBAL_MODIFICATION,
-        MDMModification.DESCRIPTORS);
-    return descriptors != null ? descriptors : new HashMap<>();
+    return descriptors;
   }
 
   @Override
@@ -328,28 +318,29 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         throw new IllegalStateException("MDMDefinition cannot be created on branch");
       }
       // We create a new definition and its state and add to the map.
-      o.getDefinition()
-          .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
-              .collect(toMap(Entry::getKey, e -> e.getValue())));
+      // o.getDefinition()
+      // .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
+      // .collect(toMap(Entry::getKey, e -> e.getValue())));
       uri = objectApi.saveAsNew(SCHEMA,
           o.getDefinition().state(objectApi.saveAsNew(SCHEMA, new MDMDefinitionState())));
     } else {
       // We simply update the current entry but reserve the states.
       ObjectNode definitionNode = objectApi.loadLatest(uri);
+      uri = definitionNode.getObjectUri();
 
       // Inherit the admin group if it is not set.
       for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
           .entrySet()) {
-        if (Strings.isEmpty(descEntry.getValue().getAdminGroupName())) {
+        if (Strings.isNullOrEmpty(descEntry.getValue().getAdminGroupName())) {
           descEntry.getValue()
               .setAdminGroupName(definitionNode.getValueAsString(MDMDefinition.ADMIN_GROUP_NAME));
         }
       }
 
       o.getDefinition().uri(uri);
-      final URI finalBranch = getValidBranch(o.getDefinition(), branch);
+      // final URI finalBranch = getValidBranch(o.getDefinition(), branch);
       definitionNode.modify(MDMDefinition.class, def -> {
-        if (finalBranch == null) {
+        if (branch == null) {
           if (def.getDescriptors() == null) {
             def.setDescriptors(new HashMap<>());
           }
@@ -360,30 +351,72 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             .adminGroupName(o.getDefinition().getAdminGroupName())
             .adminApproverGroupName(o.getDefinition().getAdminApproverGroupName());
       });
-      if (finalBranch != null) {
+      if (branch != null) {
         definitionNode.ref(MDMDefinition.STATE).get().modify(
             MDMDefinitionState.class, state -> {
-              if (state.getGlobalModification().getDescriptors() == null) {
-                state.getGlobalModification().setDescriptors(new HashMap<>());
+
+              MDMModification modification = getModificationFromStateNotNull(state, branch);
+              if (modification.getDescriptors() == null) {
+                modification.setDescriptors(new HashMap<>());
               }
-              putEntryDescriptorsInMap(state.getGlobalModification().getDescriptors(), o);
+              putEntryDescriptorsInMap(modification.getDescriptors(), o);
               return state;
             });
       }
-      objectApi.save(definitionNode);
+      uri = objectApi.save(definitionNode);
     }
     return uri;
+
   }
 
-  private URI getValidBranch(MDMDefinition definition, URI branch) {
-    URI globalBranchUri = getGlobalBranch(definition);
-    if (!objectApi.equalsIgnoreVersion(branch, globalBranchUri)) {
-      log.warn("Unknown branchUri, using global (null)! branch {}", branch);
-      return null;
+  @Override
+  public MDMModification getModificationFromState(MDMDefinitionState state, URI branch) {
+    MDMModification modification = state.getGlobalModification();
+    if (modification != null
+        && !objectApi.equalsIgnoreVersion(branch, modification.getBranchUri())) {
+      // not global change
+      modification = null;
     }
-    return branch;
+    if (modification == null) {
+      // no global present or not global is changed
+      modification = state.getActiveModifications().stream()
+          .filter(m -> objectApi.equalsIgnoreVersion(branch, m.getBranchUri()))
+          .findFirst()
+          .orElse(null);
+    }
+    if (modification == null && state.getArchive() != null) {
+      ObjectHistoryIterator iter = objectApi.objectHistory(state.getArchive());
+      iter.reverse(true);
+      while (iter.hasNext()) {
+        ObjectNode archiveNode = iter.next();
+        MDMModificationArchive archive = archiveNode.getObject(MDMModificationArchive.class);
+        if (objectApi.equalsIgnoreVersion(branch, archive.getModification().getBranchUri())) {
+          modification = archive.getModification();
+          break;
+        }
+      }
+    }
+    return modification;
+
   }
 
+  private MDMModification getModificationFromStateNotNull(MDMDefinitionState state, URI branch) {
+    MDMModification modification = getModificationFromState(state, branch);
+    if (modification == null) {
+      throw new IllegalArgumentException("Modification not found by branchUri");
+    }
+    return modification;
+  }
+
+  // private URI getValidBranch(MDMDefinition definition, URI branch) {
+  // URI globalBranchUri = getGlobalBranch(definition);
+  // if (!objectApi.equalsIgnoreVersion(branch, globalBranchUri)) {
+  // log.warn("Unknown branchUri, using global (null)! branch {}", branch);
+  // return null;
+  // }
+  // return branch;
+  // }
+  //
   private void putEntryDescriptorsInMap(Map<String, MDMEntryDescriptor> current,
       MDMDefinitionOption o) {
     for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
@@ -468,8 +501,13 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   private Map<String, MDMEntryDescriptor> getAllEntryDescriptors(MDMDefinition definition) {
+    ObjectNode stateNode = objectApi.loadLatest(definition.getState());
+    MDMDefinitionState state = stateNode.getObject(MDMDefinitionState.class);
     Map<String, MDMEntryDescriptor> descriptors = definition.getDescriptors();
-    descriptors.putAll(getDescriptorsOnGlobalBranch(definition));
+    if (state.getGlobalModification() != null) {
+      descriptors.putAll(state.getGlobalModification().getDescriptors());
+    }
+    state.getActiveModifications().forEach(mod -> descriptors.putAll(mod.getDescriptors()));
     return descriptors;
   }
 
@@ -693,7 +731,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private Class<?> getTypeOfColumn(ObjectDefinition<?> objectDefinition,
       MDMTableColumnDescriptor tcd) {
     Class<?> type = null;
-    if (!Strings.isEmpty(tcd.getTypeClass())) {
+    if (!Strings.isNullOrEmpty(tcd.getTypeClass())) {
       try {
         type = Class.forName(tcd.getTypeClass());
       } catch (ClassNotFoundException e) {
@@ -732,8 +770,15 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
       return state.addActiveModificationsItem(new MDMModification()
           .id(id)
+          .name(branchCaption)
           .created(createActivityLog)
           .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
+    }, (prevState, currState) -> {
+      return currState.getActiveModifications().stream()
+          .filter(mod -> id.equals(mod.getId()))
+          .map(MDMModification::getBranchUri)
+          .findFirst()
+          .orElse(null);
     }, state -> {
       if (state.getGlobalModification() != null) {
         throw new IllegalStateException(MessageFormat.format(
@@ -742,7 +787,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
     });
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
-        resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState);
+        resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState,
+        resultStateWrapper.branchUri);
     return id;
   }
 
@@ -806,6 +852,29 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
+  public MDMModificationApi getModificationApiForUser(String definitionName, URI userUri) {
+    MDMDefinition definition = getDefinition(definitionName);
+    MDMBranchingStrategy strategy = definition.getBranchingStrategy();
+    if (strategy == null || strategy == MDMBranchingStrategy.NONE) {
+      return null;
+    }
+    if (strategy == MDMBranchingStrategy.GLOBAL) {
+      if (getGlobalBranch(definition) == null) {
+        return null;
+      }
+      return getGlobalModificationApi(definitionName);
+    }
+    if (strategy == MDMBranchingStrategy.STRICT_PARALLEL) {
+      MDMModification currentModification = getModificationEditingByUser(definitionName, userUri);
+      if (currentModification == null) {
+        return null;
+      }
+      return getModificationApi(definitionName, currentModification.getId());
+    }
+    throw new IllegalStateException("Unhandled MDMBranchingStrategy " + strategy);
+  }
+
+  @Override
   public URI initiateGlobalBranch(String definitionName, String branchCaption) {
     MDMDefitionStateWrapper resultStateWrapper = modifyDefinitionState(definitionName, state -> {
       UserActivityLog createActivityLog = null;
@@ -818,8 +887,14 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       return state
           .globalModification(new MDMModification()
               .id(UUID.randomUUID().toString())
+              .name(branchCaption)
               .created(createActivityLog)
               .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
+    }, (prevState, currState) -> {
+      if (currState.getGlobalModification() == null) {
+        return null;
+      }
+      return currState.getGlobalModification().getBranchUri();
     }, state -> {
       if (state.getGlobalModification() != null) {
         throw new IllegalStateException(MessageFormat.format(
@@ -835,7 +910,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
     });
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
-        resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState);
+        resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState,
+        resultStateWrapper.branchUri);
     return resultStateWrapper.getCurrentStateUri();
   }
 
@@ -869,12 +945,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
 
       branchApi.merge(branch);
-      return state
-          .globalModification(null);
+      return removeGlobalModification(state);
+    }, (prevState, currState) -> {
+      if (prevState.getGlobalModification() == null) {
+        return null;
+      }
+      return prevState.getGlobalModification().getBranchUri();
     }, state -> noGlobalBranchValidation(definitionName, state));
     fireModificationEvent(MODIFICATION_FINALIZED, null,
         getDefinition(definitionName).getUri(),
-        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState, stateWrapper.branchUri);
     MDMDefinitionState state =
         objectApi.load(stateWrapper.prevState).getObject(MDMDefinitionState.class);
     Map<String, MDMEntryDescriptor> descriptors = state.getGlobalModification().getDescriptors();
@@ -899,13 +979,39 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public URI dropGlobal(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      return state
-          .globalModification(null);
-    }, state -> noGlobalBranchValidation(definitionName, state));
+      return removeGlobalModification(state);
+    }, (prevState, currState) -> {
+      if (prevState.getGlobalModification() == null) {
+        return null;
+      }
+      return prevState.getGlobalModification().getBranchUri();
+    },
+        state -> noGlobalBranchValidation(definitionName, state));
     fireModificationEvent(MODIFICATION_CANCELLED, null,
         getDefinition(definitionName).getUri(),
-        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+        stateWrapper.getCurrentStateUri(), stateWrapper.prevState, stateWrapper.branchUri);
     return stateWrapper.getCurrentStateUri();
+  }
+
+  private MDMDefinitionState removeGlobalModification(MDMDefinitionState state) {
+    archiveModification(state, state.getGlobalModification());
+    return state.globalModification(null);
+  }
+
+  // TODO duplication! MasterDataManagementApiImpl and MDMModificationApiImpl.archiveModification
+  private void archiveModification(MDMDefinitionState state, MDMModification modification) {
+    MDMModificationArchive archiveObject = new MDMModificationArchive()
+        .modification(modification)
+        .archival(sessionApi.createActivityLog());
+    URI archiveUri = state.getArchive();
+    if (archiveUri == null) {
+      archiveUri = objectApi.saveAsNew(MasterDataManagementApi.SCHEMA, archiveObject);
+    } else {
+      ObjectNode archiveNode = objectApi.loadLatest(archiveUri);
+      archiveNode.modify(MDMModificationArchive.class, arch -> archiveObject);
+      archiveUri = objectApi.save(archiveNode);
+    }
+    state.archive(archiveUri);
   }
 
   private void noGlobalBranchValidation(String definitionName, MDMDefinitionState state) {
@@ -928,7 +1034,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @SafeVarargs
   final MDMDefitionStateWrapper modifyDefinitionState(String definitionName,
-      UnaryOperator<MDMDefinitionState> modification, Consumer<MDMDefinitionState>... validations) {
+      UnaryOperator<MDMDefinitionState> modification,
+      BiFunction<MDMDefinitionState, MDMDefinitionState, URI> branchUriProducer,
+      Consumer<MDMDefinitionState>... validations) {
     MDMDefinition definition = getDefinition(definitionName);
     Lock lock = objectApi.getLock(definition.getUri());
     lock.lock();
@@ -936,6 +1044,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       URI stateUri =
           objectApi.loadLatest(definition.getUri()).ref(MDMDefinition.STATE).getObjectUri();
       ObjectNode stateNode = objectApi.loadLatest(stateUri);
+      URI prevStateUri = stateNode.getObjectUri();
+      ObjectNode prevStateNode = objectApi.load(prevStateUri);
       MDMDefinitionState state = stateNode.getObject(MDMDefinitionState.class);
       if (validations != null) {
         for (int i = 0; i < validations.length; i++) {
@@ -945,55 +1055,23 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       stateNode.modify(MDMDefinitionState.class,
           modification);
       objectApi.save(stateNode);
-      return new MDMDefitionStateWrapper(stateNode.getObject(MDMDefinitionState.class),
-          stateNode.getObjectUri());
+      MDMDefinitionState currentState = stateNode.getObject(MDMDefinitionState.class);
+      MDMDefinitionState prevState = prevStateNode.getObject(MDMDefinitionState.class);
+      URI branchUri = branchUriProducer.apply(prevState, currentState);
+      return new MDMDefitionStateWrapper(currentState, prevStateUri, branchUri);
     } finally {
       lock.unlock();
     }
   }
 
   void fireModificationEvent(String event, String scope, URI definition, URI state,
-      URI prevState) {
+      URI prevState, URI branchUri) {
     invocationApi
         .publisher(
             MasterDataManagementApi.class,
             MDMSubscriberApi.class,
             STATE_CHANGED)
-        .publish(api -> api.stateChanged(event, scope, definition, state, prevState));
-  }
-
-  @Override
-  public void sendForApprovalGlobal(String definitionName, URI approver) {
-    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      state.getGlobalModification().approver(approver).updated(sessionApi.createActivityLog());
-      return state;
-    }, state -> noGlobalBranchValidation(definitionName, state),
-        state -> globalBranchUnderApprovalValidation(definitionName, state));
-    fireModificationEvent(MODIFICATION_SENT_FOR_APPROVAL, null,
-        getDefinition(definitionName).getUri(),
-        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
-  }
-
-  @Override
-  public void approvalAcceptedGlobal(String definitionName) {
-    MDMDefitionStateWrapper stateWrapper = mergeGlobalInner(definitionName);
-    fireModificationEvent(MODIFICATION_APPROVED, null, getDefinition(definitionName).getUri(),
-        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
-  }
-
-  @Override
-  public void approvalRejectedGlobal(String definitionName, String reason) {
-    MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
-      state.getGlobalModification()
-          .updated(sessionApi.createActivityLog())
-          .addNotesItem(new MDMModificationNote()
-              .created(sessionApi.createActivityLog())
-              .note(reason));
-      state.getGlobalModification().approver(null);
-      return state;
-    }, state -> noGlobalBranchValidation(definitionName, state));
-    fireModificationEvent(MODIFICATION_REJECTED, null, getDefinition(definitionName).getUri(),
-        stateWrapper.getCurrentStateUri(), stateWrapper.prevState);
+        .publish(api -> api.stateChanged(event, scope, definition, state, prevState, branchUri));
   }
 
   @Override
@@ -1018,7 +1096,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public void modifyEntry(String definitionName, MDMEntryDescriptor entry, URI branch) {
     MDMDefinition definition = getDefinition(definitionName);
-    branch = getValidBranch(definition, branch);
+    // branch = getValidBranch(definition, branch);
     Lock lock = objectApi.getLock(definition.getUri());
     lock.lock();
     try {
@@ -1031,7 +1109,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       } else {
         definitionNode.ref(MDMDefinition.STATE).get().modify(
             MDMDefinitionState.class, state -> {
-              state.getGlobalModification().putDescriptorsItem(entry.getName(), entry);
+              getModificationFromStateNotNull(state, branch)
+                  .putDescriptorsItem(entry.getName(), entry);
               return state;
             });
       }
@@ -1056,36 +1135,36 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
   }
 
-  private static class MDMDefitionStateWrapper {
+  protected static class MDMDefitionStateWrapper {
     MDMDefinitionState currentState;
     URI prevState;
+    URI branchUri;
 
     public URI getCurrentStateUri() {
       return currentState.getUri();
     }
 
-    public MDMDefitionStateWrapper(MDMDefinitionState currentState, URI prevState) {
+    public MDMDefitionStateWrapper(MDMDefinitionState currentState, URI prevState, URI branchUri) {
       java.util.Objects.requireNonNull(currentState);
       this.currentState = currentState;
       this.prevState = prevState;
+      this.branchUri = branchUri;
     }
   }
 
   @Override
   public MDMErrorLog importData(String definitionName, String entryName,
-      MDMModificationRequest modificationRequest) {
+      MDMModificationRequest modificationRequest, URI branchUri) {
     MDMErrorLog errorLog = new MDMErrorLog();
     boolean globalBranchInit = false;
     try {
-      MDMEntryApi entryApi =
-          getApi(definitionName, entryName);
-
-      URI branchUri = getGlobalBranch(definitionName);
-
       if (branchUri == null) {
-        initiateGlobalBranch(definitionName, "Import session - " + LocalDateTime.now());
+        branchUri = initiateGlobalBranch(definitionName, "Import session - " + LocalDateTime.now());
         globalBranchInit = true;
       }
+
+      MDMEntryApi entryApi =
+          getApi(definitionName, entryName, branchUri);
 
       entryApi.updateList(null, modificationRequest.getData().getDefinition().stream()
           .map(objMap -> constructHierarchicalMap(objMap)).collect(toList()));

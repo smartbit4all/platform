@@ -14,10 +14,15 @@ public class MDMAdminPageWithValuesApiImpl extends MDMAdminPageApiImpl
   @Override
   protected void refreshUiActions(PageContext context) {
     super.refreshUiActions(context);
-    int idxToInsert = context.view.getActions().isEmpty()
-        || !UiActions.contains(context.view.getActions(), ACTION_OPEN_MDM_CHANGES)
-            ? 0
-            : 1;
+    boolean hasMdmChanges = UiActions.contains(context.view.getActions(), ACTION_OPEN_MDM_CHANGES);
+    boolean hasMdmSessions =
+        UiActions.contains(context.view.getActions(), ACTION_OPEN_MDM_SESSIONS);
+    int idxToInsert;
+    if (!(hasMdmChanges || hasMdmSessions)) {
+      idxToInsert = 0;
+    } else {
+      idxToInsert = 1;
+    }
 
     context.view.getActions().add(
         idxToInsert,

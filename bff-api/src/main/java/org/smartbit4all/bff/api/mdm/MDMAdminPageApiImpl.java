@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -26,6 +27,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
@@ -33,7 +35,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   @Autowired
   protected MasterDataManagementApi masterDataManagementApi;
   @Autowired
-  private SessionApi sessionApi;
+  protected SessionApi sessionApi;
   @Autowired
   protected LocaleSettingApi localeSettingApi;
   @Autowired
@@ -53,12 +55,15 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     public MDMDefinition definition;
     public String alreadySelectedActionCode;
     public URI mdmBranch;
+    private MDMModificationApi modificationApi;
 
     PageContext loadByView() {
       ObjectMapHelper parameters = parameters(view);
       definition = masterDataManagementApi.getDefinition(getDefinition(parameters));
       alreadySelectedActionCode = getAlreadySelectedActionCode(parameters);
-      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
+      modificationApi = masterDataManagementApi
+          .getModificationApiForUser(definition.getName(), sessionApi.getUserUri());
+      mdmBranch = modificationApi == null ? null : modificationApi.getModification().getBranchUri();
       return this;
     }
 
@@ -80,6 +85,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
     public View getView() {
       return view;
+    }
+
+    public MDMModificationApi getModificationApi() {
+      return modificationApi;
     }
 
   }
@@ -110,13 +119,19 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected void refreshUiActions(PageContext ctx) {
     List<UiAction> actions = new ArrayList<>();
-    if ((ctx.checkAdmin() || ctx.checkAdminApprover())
-        && ctx.definition.getBranchingStrategy() != null
-        && ctx.definition.getBranchingStrategy() != MDMBranchingStrategy.NONE) {
-      actions.add(new UiAction()
-          .code(ACTION_OPEN_MDM_CHANGES)
-          .descriptor(
-              getUiActionDescriptor(null, localeSettingApi.get(ACTION_OPEN_MDM_CHANGES))));
+    if ((ctx.checkAdmin() || ctx.checkAdminApprover())) {
+      MDMBranchingStrategy strategy = ctx.definition.getBranchingStrategy();
+      if (strategy == MDMBranchingStrategy.GLOBAL) {
+        addAction(actions, ACTION_OPEN_MDM_CHANGES);
+      } else if (strategy == MDMBranchingStrategy.STRICT_PARALLEL) {
+        if (ctx.modificationApi == null) {
+          // no modification is active, open sessions
+          addAction(actions, ACTION_OPEN_MDM_SESSIONS);
+        } else {
+          // modification is active, open changes
+          addAction(actions, ACTION_OPEN_MDM_CHANGES);
+        }
+      }
     }
 
     List<UiAction> openListActions =
@@ -133,6 +148,13 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     actions.addAll(openListActions);
 
     ctx.view.actions(actions);
+  }
+
+  private boolean addAction(List<UiAction> actions, String code) {
+    return actions.add(new UiAction()
+        .code(code)
+        .descriptor(
+            getUiActionDescriptor(null, localeSettingApi.get(code))));
   }
 
   protected UiActionDescriptor getUiActionDescriptor(MDMEntryDescriptor e, String title) {
@@ -189,7 +211,9 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   protected void styleViewActions(View view, String currentSelection) {
     view.getActions().stream()
         .filter(action -> action.getDescriptor() != null)
-        .forEach(action -> styleAction(action, currentSelection.equals(action.getCode())));
+        .forEach(action -> styleAction(
+            action,
+            Objects.equal(currentSelection, action.getCode())));
   }
 
   protected void styleAction(UiAction action, boolean isCurrentSelection) {
@@ -219,6 +243,22 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
             context.definition.getName()));
     styleViewActions(view, ACTION_OPEN_MDM_CHANGES);
   }
+
+  @Override
+  public void performOpenSessions(UUID viewUuid, UiActionRequest request) {
+    // TODO may extract method to avoid duplicate of performOpenChanges
+    View view = viewApi.getView(viewUuid);
+    PageContext context = getContextByView(view);
+    if (!(context.checkAdmin() || context.checkAdminApprover())) {
+      throw new IllegalAccessError("Only admins can view MDM sessions!");
+    }
+    viewApi.showView(new View().viewName(MDMConstants.MDM_SESSIONS)
+        .putParametersItem(MDMSessionsPageApi.PARAM_MDM_DEFINITION,
+            context.definition.getName()));
+    styleViewActions(view, ACTION_OPEN_MDM_SESSIONS);
+
+  }
+
 
   @Override
   public void refreshUiActions(UUID viewUuid) {

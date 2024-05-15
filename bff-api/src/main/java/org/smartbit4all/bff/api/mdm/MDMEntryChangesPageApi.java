@@ -10,7 +10,7 @@ import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 
 /**
  * Generic page api to show modifications on MDM entries.
- * 
+ *
  * @author zslipcsei
  *
  */
@@ -31,6 +31,9 @@ public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel
    */
   @ActionHandler(MDMActions.ACTION_START_EDITING)
   void startEditing(UUID viewUuid, UiActionRequest request);
+
+  @ActionHandler(MDMActions.ACTION_CLOSE_EDITING)
+  void stopEditing(UUID viewUuid, UiActionRequest request);
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -62,4 +65,5 @@ public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel
   void adminApproveNotOk(UUID viewUuid, UiActionRequest request);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
+
 }

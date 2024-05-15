@@ -32,7 +32,7 @@ public enum MDMBranchingStrategy {
   
   GLOBAL("global"),
   
-  STRICT_PARALEL("strict_paralel");
+  STRICT_PARALLEL("strict_parallel");
 
   private String value;
 

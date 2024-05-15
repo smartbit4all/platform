@@ -17,9 +17,6 @@ import org.smartbit4all.api.view.bean.ViewType;
 public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
     implements MDMAdminValuesPageApi {
 
-  private static final String VALUE_SET_CODE = "valueSetCode";
-  private static final String VALUE_SET_NAME = "valueSetName";
-
   @Override
   protected boolean filterDescriptor(MDMEntryDescriptor entryDescriptor) {
     return Boolean.TRUE.equals(entryDescriptor.getIsValueSet());
@@ -46,16 +43,18 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   }
 
   @Override
-  protected void refreshUiActions(PageContext context) {
-    super.refreshUiActions(context);
+  protected void refreshUiActions(PageContext ctx) {
+    super.refreshUiActions(ctx);
     // Add a new value action as last.
-    context.view.addActionsItem(new UiAction()
-        .code(ACTION_ADD_NEW_ENTRY)
-        .descriptor(new UiActionDescriptor()
-            .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, ACTION_ADD_NEW_ENTRY))
-            .color(UiActions.Color.ACCENT)
-            .type(UiActionButtonType.RAISED)));
-    UiActions.remove(context.view, ACTION_OPEN_MDM_CHANGES);
+    if (ctx.checkAdmin() && ctx.getModificationApi() != null) {
+      ctx.view.addActionsItem(new UiAction()
+          .code(ACTION_ADD_NEW_ENTRY)
+          .descriptor(new UiActionDescriptor()
+              .title(localeSettingApi.get(MasterDataManagementApi.SCHEMA, ACTION_ADD_NEW_ENTRY))
+              .color(UiActions.Color.ACCENT)
+              .type(UiActionButtonType.RAISED)));
+    }
+    UiActions.remove(ctx.view, ACTION_OPEN_MDM_CHANGES, ACTION_OPEN_MDM_SESSIONS);
   }
 
   @Override

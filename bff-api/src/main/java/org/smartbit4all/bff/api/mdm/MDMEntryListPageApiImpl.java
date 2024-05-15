@@ -42,6 +42,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -72,7 +73,6 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
-import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -164,6 +164,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     MDMEntryDescriptor entryDescriptor;
     MDMDefinition definition;
     URI mdmBranch;
+    MDMModificationApi modificationApi;
     MDMEntryApi entryApi;
     MDMEntryApi vectorEntryApi;
     MDMEntryApi embeddingEntryApi;
@@ -178,7 +179,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(getView());
       definition = getDefinition(getView());
-      mdmBranch = masterDataManagementApi.getGlobalBranch(definition.getName());
+      modificationApi = masterDataManagementApi
+          .getModificationApiForUser(definition.getName(), sessionApi.getUserUri());
+      mdmBranch = modificationApi == null ? null : modificationApi.getModification().getBranchUri();
       entryApi =
           masterDataManagementApi.getApi(getDefinition().getName(), getEntryDescriptor().getName(),
               mdmBranch);
@@ -277,6 +280,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       return isApprover;
     }
 
+    public MDMModificationApi getModificationApi() {
+      return modificationApi;
+    }
   }
 
   protected PageContext getContextByViewUUID(UUID viewUuid) {
@@ -377,7 +383,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.getEntryDescriptor().getInactiveMgmt());
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
-    boolean globalBranching = ctx.branchingStrategy == MDMBranchingStrategy.GLOBAL;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     UiActionBuilder uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY);
@@ -399,23 +404,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       uiActions
           .addIf(ACTION_NEW_ENTRY, canEdit, branchActive, !ctx.inactives)
-          .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
-              isAdmin, branchingEnabled, !branchActive, !ctx.inactives, !globalBranching)
-          .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
-              !underApproval, canEdit, branchingEnabled, branchActive, !ctx.inactives,
-              !globalBranching)
-          .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
-              isAdmin, !underApproval, branchingEnabled, branchActive,
-              !ctx.inactives, !globalBranching)
-          .addIf(new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),
-              isApprover, underApproval, branchingEnabled, branchActive,
-              !ctx.inactives, !globalBranching)
-          .addIf(
-              new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
-                  .input2Type(UiActionInputType.TEXTAREA),
-              isApprover, underApproval, branchingEnabled,
-              branchActive,
-              !ctx.inactives, !globalBranching)
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               canEdit, branchActive, isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
@@ -423,15 +411,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     } else {
       uiActions
           .addIf(ACTION_NEW_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives)
-          .addIf(MDMActions.ACTION_START_EDITING, isAdmin, branchingEnabled, !branchActive,
-              !ctx.inactives,
-              !globalBranching)
-          .addIf(MDMActions.ACTION_FINALIZE_CHANGES, isAdmin, branchingEnabled, branchActive,
-              !ctx.inactives,
-              !globalBranching)
-          .addIf(MDMActions.ACTION_CANCEL_CHANGES, isAdmin, branchingEnabled, branchActive,
-              !ctx.inactives,
-              !globalBranching)
           .addIf(new UiAction().code(ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE),
               branchActive, isEntryEditable)
           .addIf(new UiAction().code(ACTION_RECREATE_INDEX),
@@ -525,23 +504,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void startEditing(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.initiateGlobalBranch(context.getDefinition().getName(),
-        String.valueOf(System.currentTimeMillis()));
-    refreshActions(context);
-    refreshGrid(context);
-  }
-
-  @Override
-  public void cancelChanges(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.dropGlobal(context.getDefinition().getName());
-    refreshActions(context);
-    refreshGrid(context);
-  }
-
-  @Override
   public void newEntry(UUID viewUuid, UiActionRequest request) {
     showEditorView(
         viewUuid,
@@ -556,49 +518,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     // return definition.newInstanceAsMap();
     final String qualifiedName = entryDescriptor.getTypeQualifiedName();
     return objectExtensionApi.newInstance(qualifiedName, "my-schema");
-  }
-
-  @Override
-  public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.mergeGlobal(context.getDefinition().getName());
-    refreshGrid(context);
-    refreshActions(context);
-  }
-
-  @Override
-  public void sendForApproval(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    if (mdmApprovalApi == null) {
-      throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
-    }
-    String definition = context.getDefinition().getName();
-    List<URI> approvers = mdmApprovalApi.getApprovers(definition);
-    if (approvers == null || approvers.size() != 1) {
-      throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
-    }
-    masterDataManagementApi.sendForApprovalGlobal(
-        context.getDefinition().getName(),
-        approvers.get(0));
-    refreshGrid(context);
-    refreshActions(context);
-  }
-
-  @Override
-  public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.approvalAcceptedGlobal(context.getDefinition().getName());
-    refreshGrid(context);
-    refreshActions(context);
-  }
-
-  @Override
-  public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
-    String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
-    masterDataManagementApi.approvalRejectedGlobal(context.getDefinition().getName(), reason);
-    refreshGrid(context);
-    refreshActions(context);
   }
 
   @Override
@@ -777,7 +696,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               .data(new MDMModificationRequestData().definition(items));
 
       masterDataManagementApi.importData(context.definition.getName(),
-          context.entryDescriptor.getName(), mdmModRequest);
+          context.entryDescriptor.getName(), mdmModRequest,
+          context.view.getBranchUri());
       refreshGrid(context);
     } catch (Exception e) {
       log.error(e.getMessage(), e);

@@ -96,7 +96,7 @@ public class MDMApiTestConfig extends TestFSCleaner {
     MDMDefinitionOption result =
         new MDMDefinitionOption(new MDMDefinition().name(TEST_PARALEL)
             .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin")
-            .branchingStrategy(MDMBranchingStrategy.STRICT_PARALEL));
+            .branchingStrategy(MDMBranchingStrategy.STRICT_PARALLEL));
     result.addDefaultDescriptor(SampleCategoryType.class)
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
             .path(Arrays.asList(SampleCategoryType.CODE))))

@@ -1,14 +1,20 @@
 package org.smartbit4all.api.config;
 
+import java.net.URI;
 import java.util.Arrays;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.object.SubscriptionConfigApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,4 +71,31 @@ public class PlatformSearchIndexConfig {
             });
   }
 
+
+  @Bean
+  public SearchIndex<MDMModification> searchMDMModification(
+      MasterDataManagementApi masterDataManagementApi,
+      @Autowired(required = false) SessionApi sessionApi) {
+    return new SearchIndexImpl<>(PlatformApiConfig.DEFAULT_SCHEME,
+        MDMModification.class.getSimpleName(),
+        MasterDataManagementApi.SCHEMA,
+        MDMModification.class)
+            .map(MDMModification.ID, MDMModification.ID)
+            .map(MDMModification.NAME, MDMModification.NAME)
+            .map(MDMModification.DESCRIPTION, MDMModification.DESCRIPTION)
+            .map(MDMModification.CREATED, UserActivityLog.class, MDMModification.CREATED)
+            .map(MDMModification.BRANCH_URI, URI.class, MDMModification.BRANCH_URI)
+    // .mapComplex("isActive", Boolean.class, -1, n -> {
+    // if (sessionApi == null) {
+    // return false;
+    // }
+    // MDMModificationApi modificationApi = masterDataManagementApi.getModificationApi(null,
+    // n.getValueAsString(MDMModification.ID));
+    // // modificationApi.
+    // return true;
+    // })
+
+
+    ;
+  }
 }

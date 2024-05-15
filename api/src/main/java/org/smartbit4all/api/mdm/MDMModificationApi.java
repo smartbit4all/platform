@@ -13,17 +13,17 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
  * manage all the operations available. This api can be initiated and accessed by the
  * {@link MasterDataManagementApi}. We can manage the lifecycle fo the {@link MDMModification} with
  * this.
- * 
+ *
  * @author Peter Boros
  */
 public interface MDMModificationApi {
 
   /**
    * Return the branch uri associated with the {@link MDMModification}.
-   * 
+   *
    * @return The uri of the {@link BranchEntry}.
    */
-  URI getBranch();
+  MDMModification getModification();
 
   /**
    * The editing branch will be merged into be main branch. From that moment the getBranchingList()
@@ -44,7 +44,7 @@ public interface MDMModificationApi {
   /**
    * The approval can be initiated if the {@link MDMDefinition#ADMIN_APPROVER_GROUP_NAME} is set.
    * The state of the modification is set to {@link MDMModificationState#APPROVING}.
-   * 
+   *
    * @param approver
    */
   void sendForApproval(URI approver);
@@ -56,14 +56,14 @@ public interface MDMModificationApi {
 
   /**
    * The approval can be rejected.
-   * 
+   *
    * @param reason At least one comment is necessary to reject the approval.
    */
   void approvalRejected(String reason);
 
   /**
    * A user can append comment to the modification.
-   * 
+   *
    * @param comment The comment itself.
    */
   void addComment(String comment);

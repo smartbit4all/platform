@@ -8,6 +8,7 @@ public abstract class MDMConstants {
   public static final String MDM_LIST_VALUES = MDM_LIST + "Values";
   public static final String MDM_EDIT = "MDMEdit";
   public static final String MDM_CHANGES = "MDMChanges";
+  public static final String MDM_SESSIONS = "MDMSessions";
   public static final String MDM_ENTRY_DESCRIPTOR = "MDMEntryDescriptor";
 
   public static final String PROPERTY_URI = "uri";

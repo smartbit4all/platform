@@ -11,7 +11,10 @@ public interface MDMSubscriberApi {
    * @param scope Scope of change. null for global, entry/group name for entry/group level events.
    * @param state URI of actual state
    * @param prevState URI of the previous state
+   * @param branchUri URI of the branch, where state is changed (identifies MDMModification on
+   *        state)
    */
-  void stateChanged(String event, String scope, URI definition, URI state, URI prevState);
+  void stateChanged(String event, String scope, URI definition, URI state, URI prevState,
+      URI branchUri);
 
 }
