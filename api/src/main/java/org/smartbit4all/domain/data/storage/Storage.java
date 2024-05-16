@@ -100,7 +100,7 @@ public final class Storage {
    * when the identifier is business based and set to the object as uri.
    */
   private static final Pattern validUriPattern = Pattern.compile(
-      "[A-Za-z0-9\\-._~!$&'()*+,;=:@ÁáÉéÍíÓóÖöŐőÚúÜüŰűÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜüŸÿÇç]");
+      "[A-Za-z0-9\\-._~!$&'()*+,;=:@ÁáÉéÍíÓóÖöŐőÚúÜüŰűÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜüŸÿÇç]*");
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
