@@ -700,7 +700,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       masterDataManagementApi.importData(context.definition.getName(),
           context.entryDescriptor.getName(), mdmModRequest,
-          context.view.getBranchUri());
+          context.mdmBranch);
       refreshGrid(context);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
