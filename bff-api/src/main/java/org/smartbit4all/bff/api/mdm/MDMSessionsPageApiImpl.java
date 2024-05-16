@@ -1,12 +1,15 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static org.smartbit4all.core.utility.StringConstant.joinDot;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.config.PlatformSearchIndexConfig;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
@@ -17,6 +20,7 @@ import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -31,6 +35,7 @@ import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApiImpl;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
+import org.smartbit4all.core.object.ObjectHistoryIterator;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
@@ -128,6 +133,8 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
         columns,
         MDMModification.class.getSimpleName());
 
+    searchPageConfig.filterModel(new FilterExpressionBuilderModel());
+
     ObjectMapHelper params = parameters(view);
     params.put(PARAM_SEARCHPAGECONFIG, searchPageConfig);
     params.put(PARAM_GRID_PAGE_RENDER_CALLBACK,
@@ -157,9 +164,20 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
       // possible?
       return Stream.empty();
     }
-    return stateRef.get()
-        .getValueAsList(MDMModification.class, MDMDefinitionState.ACTIVE_MODIFICATIONS)
-        .stream()
+    ObjectNode stateNode = stateRef.get();
+    URI archiveUri = stateNode.getValue(URI.class, MDMDefinitionState.ARCHIVE);
+    List<MDMModification> archives = new ArrayList<>();
+    // TODO check filters if reading archives is really necessary
+    if (archiveUri != null) {
+      ObjectHistoryIterator iter = objectApi.objectHistory(archiveUri);
+      while (iter.hasNext()) {
+        archives.add(iter.next().getObject(MDMModificationArchive.class).getModification());
+      }
+    }
+    return Stream.concat(archives.stream(),
+        stateNode
+            .getValueAsList(MDMModification.class, MDMDefinitionState.ACTIVE_MODIFICATIONS)
+            .stream())
         .map(mod -> objectApi.create(PlatformApiConfig.DEFAULT_SCHEME, mod));
   }
 
