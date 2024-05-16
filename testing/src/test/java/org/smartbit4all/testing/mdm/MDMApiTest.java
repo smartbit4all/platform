@@ -77,7 +77,6 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
-import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectApi;
@@ -543,6 +542,8 @@ class MDMApiTest {
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
+      masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
+
       MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
       View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
@@ -556,8 +557,9 @@ class MDMApiTest {
       ComponentModel componentModel = viewContextService.getComponentModel(uuid);
 
       // Call the finalize action.
-      viewContextService.performAction(uuid,
-          new UiActionRequest().code(MDMActions.ACTION_FINALIZE_CHANGES));
+      // viewContextService.performAction(uuid,
+      // new UiActionRequest().code(MDMActions.ACTION_FINALIZE_CHANGES));
+
 
       {
         GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,

@@ -1159,7 +1159,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     boolean globalBranchInit = false;
     try {
       if (branchUri == null) {
-        branchUri = initiateGlobalBranch(definitionName, "Import session - " + LocalDateTime.now());
+        initiateGlobalBranch(definitionName, "Import session - " + LocalDateTime.now());
+        branchUri = getGlobalBranch(definitionName);
         globalBranchInit = true;
       }
 
