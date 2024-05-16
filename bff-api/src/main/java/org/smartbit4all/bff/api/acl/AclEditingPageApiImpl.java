@@ -208,7 +208,7 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
     View view = viewApi.getView(viewUuid);
     Value entryToRemove = actionRequestHelper(request).get(UiActions.INPUT, Value.class);
 
-    ACL acl = getAcl(view);
+    ACL acl = getModel(viewUuid);
     ObjectMapHelper parameters = parameters(view);
 
     acl.getRootEntry().getEntries()
