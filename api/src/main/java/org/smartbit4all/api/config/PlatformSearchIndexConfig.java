@@ -2,6 +2,7 @@ package org.smartbit4all.api.config;
 
 import static org.smartbit4all.core.utility.StringConstant.joinCamel;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
@@ -29,6 +30,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PlatformSearchIndexConfig {
+
+  public static final String MODIFICATION_SENT_TO_APPROVAL_AT =
+      MDMModification.SENT_TO_APPROVAL + StringConstant.DOT + UserActivityLog.TIMESTAMP;
+  public static final String MODIFICATION_APPROVED_AT =
+      MDMModification.APPROVED + StringConstant.DOT + UserActivityLog.TIMESTAMP;
+  public static final String MODIFICATION_CREATED_AT =
+      MDMModification.CREATED + StringConstant.DOT + UserActivityLog.TIMESTAMP;
 
   @Bean
   public SearchIndex<ACLSubjectSubscription> searchACLSubjectSubscription(
@@ -97,9 +105,15 @@ public class PlatformSearchIndexConfig {
             .map(MDMModification.NAME, MDMModification.NAME)
             .map(MDMModification.DESCRIPTION, MDMModification.DESCRIPTION)
             .map(MDMModification.CREATED, UserActivityLog.class, MDMModification.CREATED)
+            .map(MODIFICATION_CREATED_AT, OffsetDateTime.class, MDMModification.CREATED,
+                UserActivityLog.TIMESTAMP)
             .map(MDMModification.APPROVED, UserActivityLog.class, MDMModification.APPROVED)
+            .map(MODIFICATION_APPROVED_AT, OffsetDateTime.class, MDMModification.APPROVED,
+                UserActivityLog.TIMESTAMP)
             .map(MDMModification.SENT_TO_APPROVAL, UserActivityLog.class,
                 MDMModification.SENT_TO_APPROVAL)
+            .map(MODIFICATION_SENT_TO_APPROVAL_AT, OffsetDateTime.class,
+                MDMModification.SENT_TO_APPROVAL, UserActivityLog.TIMESTAMP)
             .map(MDMModification.BRANCH_URI, URI.class, MDMModification.BRANCH_URI)
             .mapComplex(MDMModification.APPROVER, String.class, 500,
                 modificationNode -> {
