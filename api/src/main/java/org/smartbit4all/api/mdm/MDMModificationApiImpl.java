@@ -17,6 +17,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.session.SessionApi;
@@ -79,6 +80,7 @@ public class MDMModificationApiImpl implements MDMModificationApi {
   public URI cancel() {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definition.getName(),
         state -> {
+          modification.state(MDMModificationState.DISPOSED);
           removeModification(state);
           this.definitionState = state;
           return state;
@@ -97,7 +99,12 @@ public class MDMModificationApiImpl implements MDMModificationApi {
         state -> {
           MDMModification m = getModification(state);
           if (m != null) {
-            m.approver(approver).updated(sessionApi.createActivityLog());
+            UserActivityLog activityLog = sessionApi.createActivityLog();
+            m
+                .approver(approver)
+                .sentToApproval(activityLog)
+                .updated(activityLog);
+            m.state(MDMModificationState.APPROVING);
             this.modification = m;
           }
           this.definitionState = state;
@@ -130,6 +137,7 @@ public class MDMModificationApiImpl implements MDMModificationApi {
                   .created(activityLog)
                   .note(reason));
           m.approver(null);
+          m.state(MDMModificationState.REJECTED);
           this.definitionState = state;
           return state;
         },
@@ -240,6 +248,9 @@ public class MDMModificationApiImpl implements MDMModificationApi {
                 .forEach(entryApi -> entryApi.setBranchedEntriesMerged(merged));
           }
           branchApi.merge(branch);
+          modification
+              .state(MDMModificationState.APPROVED)
+              .approved(sessionApi.createActivityLog());
           removeModification(state);
           this.definitionState = state;
           return state;

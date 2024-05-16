@@ -1,19 +1,28 @@
 package org.smartbit4all.api.config;
 
+import static org.smartbit4all.core.utility.StringConstant.joinCamel;
 import java.net.URI;
 import java.util.Arrays;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.object.SubscriptionConfigApi;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
+import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.value.bean.GenericValue;
+import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,9 +81,13 @@ public class PlatformSearchIndexConfig {
   }
 
 
+  public static final String STATE_NAME = joinCamel(MDMModification.STATE, GenericValue.NAME);
+
   @Bean
   public SearchIndex<MDMModification> searchMDMModification(
+      OrgApi orgApi,
       MasterDataManagementApi masterDataManagementApi,
+      LocaleSettingApi localeSettingApi,
       @Autowired(required = false) SessionApi sessionApi) {
     return new SearchIndexImpl<>(PlatformApiConfig.DEFAULT_SCHEME,
         MDMModification.class.getSimpleName(),
@@ -84,7 +97,36 @@ public class PlatformSearchIndexConfig {
             .map(MDMModification.NAME, MDMModification.NAME)
             .map(MDMModification.DESCRIPTION, MDMModification.DESCRIPTION)
             .map(MDMModification.CREATED, UserActivityLog.class, MDMModification.CREATED)
+            .map(MDMModification.APPROVED, UserActivityLog.class, MDMModification.APPROVED)
+            .map(MDMModification.SENT_TO_APPROVAL, UserActivityLog.class,
+                MDMModification.SENT_TO_APPROVAL)
             .map(MDMModification.BRANCH_URI, URI.class, MDMModification.BRANCH_URI)
+            .mapComplex(MDMModification.APPROVER, String.class, 500,
+                modificationNode -> {
+                  if (modificationNode == null) {
+                    return StringConstant.EMPTY;
+                  }
+                  URI approverUri = modificationNode.getValue(URI.class, MDMModification.APPROVER);
+                  if (approverUri == null) {
+                    return StringConstant.EMPTY;
+                  }
+                  User user = orgApi.getUser(approverUri);
+                  return user == null ? "N/A" : user.getName();
+                })
+            .map(MDMModification.STATE, MDMModificationState.class, MDMModification.STATE)
+            .map(STATE_NAME, String.class, MDMModification.STATE)
+            .postProcess((tableData, searchIndex) -> {
+              EntityDefinition definition = searchIndex.getDefinition().getDefinition();
+              Property<MDMModificationState> stateProp =
+                  (Property<MDMModificationState>) definition.getProperty(MDMModification.STATE);
+              Property<String> stateNameProp =
+                  (Property<String>) definition.getProperty(STATE_NAME);
+              tableData.rows().forEach(row -> {
+                row.setObject(stateNameProp,
+                    localeSettingApi.get(row.get(stateProp)));
+              });
+              return tableData;
+            })
     // .mapComplex("isActive", Boolean.class, -1, n -> {
     // if (sessionApi == null) {
     // return false;

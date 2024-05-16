@@ -30,8 +30,6 @@ public enum MDMModificationState {
   
   ACTIVE("active"),
   
-  EDITING("editing"),
-  
   DISPOSED("disposed"),
   
   APPROVING("approving"),

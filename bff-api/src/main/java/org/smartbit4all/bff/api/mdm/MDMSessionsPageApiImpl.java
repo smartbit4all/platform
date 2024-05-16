@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.config.PlatformSearchIndexConfig;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
@@ -111,15 +112,21 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
 
     List<String> columns = Arrays.asList(
         MDMModification.NAME,
+        PlatformSearchIndexConfig.STATE_NAME,
         joinDot(MDMModification.CREATED, UserActivityLog.NAME),
         joinDot(MDMModification.CREATED, UserActivityLog.TIMESTAMP),
-        // MDMModification.STATE,
+        joinDot(MDMModification.SENT_TO_APPROVAL, UserActivityLog.NAME),
+        joinDot(MDMModification.SENT_TO_APPROVAL, UserActivityLog.TIMESTAMP),
+        MDMModification.APPROVER,
+        joinDot(MDMModification.APPROVED, UserActivityLog.NAME),
+        joinDot(MDMModification.APPROVED, UserActivityLog.TIMESTAMP),
         MDMModification.ID,
         MDMModification.BRANCH_URI);
     SearchPageConfig searchPageConfig = createSimpleConfig(
         PlatformApiConfig.DEFAULT_SCHEME,
         MDMModification.class.getSimpleName(),
-        columns);
+        columns,
+        MDMModification.class.getSimpleName());
 
     ObjectMapHelper params = parameters(view);
     params.put(PARAM_SEARCHPAGECONFIG, searchPageConfig);

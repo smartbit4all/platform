@@ -40,6 +40,7 @@ import org.smartbit4all.api.mdm.bean.MDMErrorLogData;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.CompareApi;
@@ -771,6 +772,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       return state.addActiveModificationsItem(new MDMModification()
           .id(id)
           .name(branchCaption)
+          .state(MDMModificationState.ACTIVE)
           .created(createActivityLog)
           .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, (prevState, currState) -> {
@@ -888,6 +890,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           .globalModification(new MDMModification()
               .id(UUID.randomUUID().toString())
               .name(branchCaption)
+              .state(MDMModificationState.ACTIVE)
               .created(createActivityLog)
               .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
     }, (prevState, currState) -> {
@@ -945,6 +948,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       }
 
       branchApi.merge(branch);
+      state.getGlobalModification().state(MDMModificationState.APPROVED);
       return removeGlobalModification(state);
     }, (prevState, currState) -> {
       if (prevState.getGlobalModification() == null) {
@@ -979,6 +983,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public URI dropGlobal(String definitionName) {
     MDMDefitionStateWrapper stateWrapper = modifyDefinitionState(definitionName, state -> {
+      state.getGlobalModification().state(MDMModificationState.DISPOSED);
       return removeGlobalModification(state);
     }, (prevState, currState) -> {
       if (prevState.getGlobalModification() == null) {

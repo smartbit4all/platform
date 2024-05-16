@@ -259,7 +259,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         uiActions
             // branchingStrategy = STRICT_PARALLEL
             .addIf(new UiAction().code(MDMActions.ACTION_CLOSE_EDITING),
-                canEdit, !globalBranching, branchActive)
+                !globalBranching, branchActive)
             // branchingStrategy = GLOBAL
             .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
                 isAdmin, globalBranching, !branchActive)
@@ -527,6 +527,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       throw new IllegalStateException("Trying to cancel changes without active modification!");
     }
     ctx.getModificationApi().sendForApproval(approverUri);
+    ctx.getModificationApi().stopEditing();
     closeOrRefreshPage(ctx);
   }
 

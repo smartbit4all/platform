@@ -50,7 +50,7 @@ import javax.validation.Valid;
   MDMModification.CURRENT_EDITORS,
   MDMModification.SENT_TO_APPROVAL,
   MDMModification.APPROVER,
-  MDMModification.APPROVED_BY,
+  MDMModification.APPROVED,
   MDMModification.STATE,
   MDMModification.NOTES,
   MDMModification.DESCRIPTORS
@@ -85,8 +85,8 @@ public class MDMModification {
   public static final String APPROVER = "approver";
   private URI approver;
 
-  public static final String APPROVED_BY = "approvedBy";
-  private UserActivityLog approvedBy = null;
+  public static final String APPROVED = "approved";
+  private UserActivityLog approved = null;
 
   public static final String STATE = "state";
   private MDMModificationState state;
@@ -355,31 +355,31 @@ public class MDMModification {
   }
 
 
-  public MDMModification approvedBy(UserActivityLog approvedBy) {
+  public MDMModification approved(UserActivityLog approved) {
     
-    this.approvedBy = approvedBy;
+    this.approved = approved;
     return this;
   }
 
    /**
    * When the modification is approved by the approver and result is set. 
-   * @return approvedBy
+   * @return approved
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "When the modification is approved by the approver and result is set. ")
-  @JsonProperty(APPROVED_BY)
+  @JsonProperty(APPROVED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UserActivityLog getApprovedBy() {
-    return approvedBy;
+  public UserActivityLog getApproved() {
+    return approved;
   }
 
 
-  @JsonProperty(APPROVED_BY)
+  @JsonProperty(APPROVED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApprovedBy(UserActivityLog approvedBy) {
-    this.approvedBy = approvedBy;
+  public void setApproved(UserActivityLog approved) {
+    this.approved = approved;
   }
 
 
@@ -499,7 +499,7 @@ public class MDMModification {
         Objects.equals(this.currentEditors, mdMModification.currentEditors) &&
         Objects.equals(this.sentToApproval, mdMModification.sentToApproval) &&
         Objects.equals(this.approver, mdMModification.approver) &&
-        Objects.equals(this.approvedBy, mdMModification.approvedBy) &&
+        Objects.equals(this.approved, mdMModification.approved) &&
         Objects.equals(this.state, mdMModification.state) &&
         Objects.equals(this.notes, mdMModification.notes) &&
         Objects.equals(this.descriptors, mdMModification.descriptors);
@@ -507,7 +507,7 @@ public class MDMModification {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approvedBy, state, notes, descriptors);
+    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approved, state, notes, descriptors);
   }
 
   @Override
@@ -523,7 +523,7 @@ public class MDMModification {
     sb.append("    currentEditors: ").append(toIndentedString(currentEditors)).append("\n");
     sb.append("    sentToApproval: ").append(toIndentedString(sentToApproval)).append("\n");
     sb.append("    approver: ").append(toIndentedString(approver)).append("\n");
-    sb.append("    approvedBy: ").append(toIndentedString(approvedBy)).append("\n");
+    sb.append("    approved: ").append(toIndentedString(approved)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");

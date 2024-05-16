@@ -286,7 +286,7 @@ components:
                 approver:
                     type: string
                     format: uri
-                approvedBy:
+                approved:
                     description: |
                         When the modification is approved by the approver and result is set.
                     type: UserActivityLog
@@ -326,7 +326,7 @@ components:
                     type: string
                     format: uri
         MDMModificationState:
-            enum: [active, editing, disposed, approving, approved, rejected]
+            enum: [active, disposed, approving, approved, rejected]
         MDMModificationArchive:
             type: object
             description: |
