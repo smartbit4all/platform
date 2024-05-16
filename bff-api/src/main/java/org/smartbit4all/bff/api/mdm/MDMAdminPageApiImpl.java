@@ -108,6 +108,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   @Override
   public Object initModel(View view) {
     PageContext context = getContextByView(view);
+    return initModelInner(view, context);
+  }
+
+  protected Object initModelInner(View view, PageContext context) {
     refreshUiActions(context);
 
     if (!Strings.isNullOrEmpty(context.alreadySelectedActionCode)) {
