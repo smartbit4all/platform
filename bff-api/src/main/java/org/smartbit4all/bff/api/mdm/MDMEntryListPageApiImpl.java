@@ -648,7 +648,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     InvocationRequest refreshCallBack = invocationApi.builder(MDMEntryListPageApi.class)
         .build(api -> api.entryDescriptorPageCallback(viewUuid));
     viewApi.showView(
-        new View().viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR).type(ViewType.DIALOG)
+        new View()
+            .viewName(MDMConstants.MDM_ENTRY_DESCRIPTOR)
+            .branchUri(context.mdmBranch)
+            .type(ViewType.DIALOG)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_ENTRY_DESCRIPTOR,
                 entryDescriptor)
             .putParametersItem(MDMEntryDescriptorPageApi.PARAM_MDM_DEFINITION,
