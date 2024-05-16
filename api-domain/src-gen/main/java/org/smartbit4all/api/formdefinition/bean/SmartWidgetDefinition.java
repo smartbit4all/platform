@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
+import org.smartbit4all.api.formdefinition.bean.SmartFormInputMode;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
@@ -46,6 +47,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The layout definition of the SmartTextField widget.")
 @JsonPropertyOrder({
   SmartWidgetDefinition.TYPE,
+  SmartWidgetDefinition.INPUT_MODE,
   SmartWidgetDefinition.KEY,
   SmartWidgetDefinition.LABEL,
   SmartWidgetDefinition.PLACEHOLDER,
@@ -80,6 +82,9 @@ import javax.validation.Valid;
 public class SmartWidgetDefinition {
   public static final String TYPE = "type";
   private SmartFormWidgetType type;
+
+  public static final String INPUT_MODE = "inputMode";
+  private SmartFormInputMode inputMode;
 
   public static final String KEY = "key";
   private String key;
@@ -194,6 +199,34 @@ public class SmartWidgetDefinition {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(SmartFormWidgetType type) {
     this.type = type;
+  }
+
+
+  public SmartWidgetDefinition inputMode(SmartFormInputMode inputMode) {
+    
+    this.inputMode = inputMode;
+    return this;
+  }
+
+   /**
+   * Get inputMode
+   * @return inputMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(INPUT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SmartFormInputMode getInputMode() {
+    return inputMode;
+  }
+
+
+  @JsonProperty(INPUT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInputMode(SmartFormInputMode inputMode) {
+    this.inputMode = inputMode;
   }
 
 
@@ -999,6 +1032,7 @@ public class SmartWidgetDefinition {
     }
     SmartWidgetDefinition smartWidgetDefinition = (SmartWidgetDefinition) o;
     return Objects.equals(this.type, smartWidgetDefinition.type) &&
+        Objects.equals(this.inputMode, smartWidgetDefinition.inputMode) &&
         Objects.equals(this.key, smartWidgetDefinition.key) &&
         Objects.equals(this.label, smartWidgetDefinition.label) &&
         Objects.equals(this.placeholder, smartWidgetDefinition.placeholder) &&
@@ -1031,7 +1065,7 @@ public class SmartWidgetDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties);
+    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties);
   }
 
   @Override
@@ -1039,6 +1073,7 @@ public class SmartWidgetDefinition {
     StringBuilder sb = new StringBuilder();
     sb.append("class SmartWidgetDefinition {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    inputMode: ").append(toIndentedString(inputMode)).append("\n");
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    placeholder: ").append(toIndentedString(placeholder)).append("\n");

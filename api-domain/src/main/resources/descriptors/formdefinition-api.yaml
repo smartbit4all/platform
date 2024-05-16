@@ -58,6 +58,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SmartWidgetDefinition'
+    SmartFormInputMode:
+      type: string
+      enum:
+        - NONE
+        - URL
+        - SEARCH
+        - NUMERIC
+        - TEL
+        - DECIMAL
+        - EMAIL
     SmartWidgetDefinition:
       type: object
       description: The layout definition of the SmartTextField widget.
@@ -65,6 +75,8 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/SmartFormWidgetType'
+        inputMode:
+          $ref: '#/components/schemas/SmartFormInputMode'
         key:
           type: string
           description: The path of the desired parameter in the object.
