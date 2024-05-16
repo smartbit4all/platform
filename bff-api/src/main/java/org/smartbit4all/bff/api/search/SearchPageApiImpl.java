@@ -103,7 +103,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
     protected SearchIndex<?> searchIndex;
 
-    protected SearchPageConfig pageConfig;
+    public SearchPageConfig pageConfig;
 
     protected List<URI> uris;
 
