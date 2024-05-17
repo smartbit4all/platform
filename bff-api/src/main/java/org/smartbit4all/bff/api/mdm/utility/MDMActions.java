@@ -35,4 +35,7 @@ public class MDMActions {
 
   public static final String ACTION_ADD_COMMENT_TO_ENTRY = "ADD_COMMENT_TO_ENTRY";
   public static final String ACTION_OPEN_COMMENTS_TO_ENTRY = "OPEN_COMMENTS_TO_ENTRY";
+  public static final String ACTION_REJECT_ENTRY = "REJECT_ENTRY";
+  public static final String ACTION_APPROVE_ENTRY = "APPROVE_ENTRY";
+  public static final String ACTION_FIX_ENTRY = "FIX_ENTRY";
 }

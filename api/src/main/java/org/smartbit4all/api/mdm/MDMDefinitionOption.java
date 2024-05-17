@@ -9,6 +9,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -37,6 +38,7 @@ public class MDMDefinitionOption {
   public static final String MERGED_NAME =
       MDMEntryApi.Props.MERGED + StringConstant.UNDERLINE
           + UserActivityLog.NAME;
+  public static final String STATE_NAME = "stateName";
 
   /**
    * The definition object for the given option. It will be merged with the storage when the given
@@ -146,5 +148,17 @@ public class MDMDefinitionOption {
             .name(MERGED_TIMESTAMP)
             .typeClass(OffsetDateTime.class.getName())
             .path(Arrays.asList(MDMEntryApi.Props.MERGED, UserActivityLog.TIMESTAMP))));
+  }
+
+  public static void addStateExtraProperties(MDMEntryDescriptor descriptor) {
+    addExtraProperties(descriptor, Arrays.asList(
+        new MDMTableColumnDescriptor()
+            .name(MDMModificationItem.STATE)
+            .typeClass(String.class.getName())
+            .path(Arrays.asList(MDMModificationItem.STATE)),
+        new MDMTableColumnDescriptor()
+            .name(STATE_NAME)
+            .typeClass(String.class.getName())
+            .path(Arrays.asList(STATE_NAME))));
   }
 }

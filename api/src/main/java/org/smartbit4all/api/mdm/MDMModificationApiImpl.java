@@ -17,6 +17,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
 import org.smartbit4all.api.mdm.bean.MDMModificationItem;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem.StateEnum;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.object.BranchApi;
@@ -188,6 +189,53 @@ public class MDMModificationApiImpl implements MDMModificationApi {
         this::getBranchFromPrevState);
   }
 
+  @Override
+  public void updateItemState(URI objectUri, StateEnum itemState) {
+    modifyDefinitionState(definition.getName(),
+        state -> {
+
+          MDMModification m = getModification(state);
+
+          StateEnum prevState = null;
+          if (m.getModificationItems() != null
+              && m.getModificationItems().containsKey(objectUri.toString())) {
+            prevState = m.getModificationItems().get(objectUri.toString()).getState();
+          }
+          if (itemState == prevState) {
+            throw new IllegalArgumentException(
+                localeSettingApi.get("mdm.modification.update.matchwithprevstate"));
+          }
+          if (MDMModificationState.APPROVING == m.getState()
+              && (itemState != StateEnum.APPROVED && itemState != StateEnum.REJECTED)) {
+            throw new IllegalArgumentException(
+                localeSettingApi.get("mdm.modification.update.approveduringnotapprovingstate"));
+          }
+          if ((MDMModificationState.ACTIVE == m.getState()
+              || MDMModificationState.REJECTED == m.getState()) && (itemState != StateEnum.FIXED)) {
+            throw new IllegalArgumentException(
+                localeSettingApi.get("mdm.modification.update.fixduringnotactivestate"));
+          }
+          if (MDMModificationState.DISPOSED == m.getState()
+              || MDMModificationState.APPROVED == m.getState()) {
+            throw new IllegalArgumentException(
+                localeSettingApi.get("mdm.modification.update.finishedModification"));
+          }
+
+          if (m.getModificationItems() == null
+              || !m.getModificationItems().containsKey(objectUri.toString())) {
+            m.putModificationItemsItem(objectUri.toString(),
+                new MDMModificationItem().state(itemState));
+          } else {
+            m.getModificationItems().compute(objectUri.toString(),
+                (key, v) -> v.state(itemState));
+          }
+
+          this.definitionState = state;
+          return state;
+        },
+        this::getBranchFromPrevState);
+  }
+
   private final Stream<MDMModification> getAllModifications(MDMDefinitionState state) {
     return Stream
         .concat(state.getGlobalModification() != null ? Stream.of(state.getGlobalModification())
@@ -282,7 +330,7 @@ public class MDMModificationApiImpl implements MDMModificationApi {
           return state;
         },
         this::getBranchFromPrevState,
-        this::noBranchValidation);
+        this::noBranchValidation, this::hasRejectedItemValidation);
     fireModificationEvent(MasterDataManagementApi.MODIFICATION_FINALIZED, null,
         mdmApi.getDefinition(definition.getName()).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState, stateWrapper.branchUri);
@@ -349,6 +397,16 @@ public class MDMModificationApiImpl implements MDMModificationApi {
       throw new IllegalStateException(MessageFormat.format(
           localeSettingApi.get("mdm.globalbranch.empty"),
           definition.getName()));
+    }
+  }
+
+  private void hasRejectedItemValidation(MDMDefinitionState pState) {
+    MDMModification m = getModification(pState);
+    if (m != null && m.getModificationItems() != null
+        && m.getModificationItems().entrySet().stream()
+            .anyMatch(e -> e.getValue().getState() == StateEnum.REJECTED)) {
+      throw new IllegalStateException(
+          localeSettingApi.get("mdm.hasRejectedmodificationitem"));
     }
   }
 

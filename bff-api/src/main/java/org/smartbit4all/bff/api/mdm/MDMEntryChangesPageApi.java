@@ -71,6 +71,12 @@ public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel
   @WidgetActionHandler(MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)
   void openCommentsToEntry(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
 
-  GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
+  @WidgetActionHandler({
+      MDMActions.ACTION_APPROVE_ENTRY,
+      MDMActions.ACTION_REJECT_ENTRY,
+      MDMActions.ACTION_FIX_ENTRY})
+  void changeStateToEntry(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
+
+  GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid, Boolean hasStateColumn);
 
 }

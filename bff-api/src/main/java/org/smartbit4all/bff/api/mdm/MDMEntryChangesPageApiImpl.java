@@ -27,18 +27,23 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationItem;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem.StateEnum;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -78,6 +83,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageModel>
     implements MDMEntryChangesPageApi {
@@ -402,6 +408,10 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     if (columns.contains(MDMConstants.PROPERTY_URI)) {
       GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
     }
+    boolean hasStateColumn = columns.contains(MDMModificationItem.STATE);
+    if (hasStateColumn) {
+      GridModels.hideColumns(entryGridModel, MDMModificationItem.STATE);
+    }
 
     final List<GridView> gridViewOptions = entryApi.getDescriptor().getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
@@ -412,7 +422,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     gridModelApi.initGridInView(ctx.view.getUuid(), gridId, entryGridModel);
     gridModelApi.addGridPageCallback(ctx.view.getUuid(), gridId, invocationApi
         .builder(MDMEntryChangesPageApi.class)
-        .build(api -> api.addWidgetEntryGridActions(null, ctx.view.getUuid())));
+        .build(api -> api.addWidgetEntryGridActions(null, ctx.view.getUuid(),
+            Boolean.valueOf(hasStateColumn))));
 
     return entryGridModel;
   }
@@ -428,8 +439,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     return ctx.searchIndexAdminsByDescriptorName.get(entryApi.getName())
         .executeSearchOnNodes(list.stream().map(i -> {
           ObjectDefinition<?> objectDefinition = branchedObjectDefinition;
+          Map<String, Object> objectMap = objectDefinition.toMap(i);
           return objectApi.create(ctx.getDefinition().getName(), objectDefinition,
-              objectDefinition.toMap(i));
+              objectMap);
         }), new FilterExpressionList().addExpressionsItem(
             new FilterExpressionData().currentOperation(FilterExpressionOperation.NOT_EQUAL)
                 .operand1(new FilterExpressionOperandData()
@@ -570,67 +582,141 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   }
 
   @Override
-  public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
+  public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid, Boolean hasStateColumn) {
     PageContext ctx = new PageContext();
     ctx.view = viewApi.getView(viewUuid);
     ctx.loadOnlyDefinitionByView();
     Map<String, MDMModificationItem> modificationItems =
         ctx.getModificationApi().getModification().getModificationItems();
 
+    MDMModificationState modificationState = ctx.getModificationApi().getModification().getState();
+
     page.getRows().forEach(row -> {
-      String icon;
-      Map<String, Object> map = (Map<String, Object>) row.getData();
-      BranchingStateEnum state = (BranchingStateEnum) map.get(BranchedObjectEntry.BRANCHING_STATE);
-      switch (state) {
-        case NEW:
-          icon = "add_circle";
-          break;
-        case MODIFIED:
-          icon = "tag";
-          break;
-        case DELETED:
-          icon = "cancel";
-          break;
-
-        default:
-          icon = "radio_button_unchecked";
-          break;
-      }
-      if (icon != null) {
-        row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
-            Arrays.asList(new ImageResource()
-                .source("smart-icon")
-                .identifier(icon)));
-      }
-
-      UiActions.add(row.getActions(), new UiAction()
-          .code(MDMActions.ACTION_ADD_COMMENT_TO_ENTRY)
-          .inputType(UiActionInputType.TEXTAREA)
-          .descriptor(new UiActionDescriptor()
-              .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                  MDMActions.ACTION_ADD_COMMENT_TO_ENTRY))
-              .inputDialog(new UiActionDialogDescriptor()
-                  .cancelButton(new UiActionButtonDescriptor()
-                      .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "cancel"))
-                      .color("gray"))
-                  .actionButton(new UiActionButtonDescriptor()
-                      .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "action"))
-                      .color("primary"))
-                  .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                      MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "title")))));
-      URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
-      if (modificationItems != null && modificationItems.containsKey(objectUri.toString())) {
-        UiActions.add(row.getActions(), createOpenCommentEntry());
-      }
-
+      updateGridRow(hasStateColumn, modificationItems, modificationState, row);
     });
     return page;
   }
 
-  private UiAction createOpenCommentEntry() {
+  private void updateGridRow(Boolean hasStateColumn,
+      Map<String, MDMModificationItem> modificationItems,
+      MDMModificationState modificationState, GridRow row) {
+    String icon;
+    Map<String, Object> map = (Map<String, Object>) row.getData();
+    BranchingStateEnum brancingState =
+        BranchingStateEnum.valueOf(map.get(BranchedObjectEntry.BRANCHING_STATE).toString());
+    switch (brancingState) {
+      case NEW:
+        icon = "add_circle";
+        break;
+      case MODIFIED:
+        icon = "tag";
+        break;
+      case DELETED:
+        icon = "cancel";
+        break;
+
+      default:
+        icon = "radio_button_unchecked";
+        break;
+    }
+    if (icon != null) {
+      row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
+          Arrays.asList(new ImageResource()
+              .source("smart-icon")
+              .identifier(icon)));
+    }
+
+    UiActionBuilder builder = UiActions.builder();
+
+    URI objectUri = URI
+        .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+    if (Boolean.TRUE.equals(hasStateColumn) && modificationItems != null
+        && modificationItems.containsKey(objectUri.toString())) {
+      StateEnum itemState = modificationItems.get(objectUri.toString()).getState();
+      map.put(MDMModification.STATE, itemState);
+      map.put(MDMDefinitionOption.STATE_NAME, localeSettingApi.get(itemState));
+
+      builder
+          .addIf(createApproveToEntryAction(),
+              modificationState == MDMModificationState.APPROVING
+                  && (itemState == null || itemState == StateEnum.FIXED
+                      || itemState == StateEnum.REJECTED))
+          .addIf(createRejectToEntryAction(),
+              modificationState == MDMModificationState.APPROVING
+                  && (itemState == null || itemState == StateEnum.FIXED
+                      || itemState == StateEnum.APPROVED))
+          .addIf(createFixToEntryAction(),
+              (modificationState == MDMModificationState.ACTIVE
+                  || modificationState == MDMModificationState.REJECTED)
+                  && (itemState == StateEnum.REJECTED));
+    }
+
+
+
+    builder.add(createAddCommentToEntryAction());
+    if (modificationItems != null && modificationItems.containsKey(objectUri.toString())) {
+      builder.add(createOpenCommentsToEntryAction());
+    }
+
+
+    row.getActions().clear();
+    UiActions.add(row.getActions(), builder.build());
+  }
+
+  private UiAction createFixToEntryAction() {
+    return new UiAction().code(MDMActions.ACTION_FIX_ENTRY)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                MDMActions.ACTION_FIX_ENTRY)));
+  }
+
+  private UiAction createRejectToEntryAction() {
+    return new UiAction().code(MDMActions.ACTION_REJECT_ENTRY)
+        .inputType(UiActionInputType.TEXTAREA)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                MDMActions.ACTION_REJECT_ENTRY))
+            .inputDialog(new UiActionDialogDescriptor()
+                .cancelButton(new UiActionButtonDescriptor()
+                    .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                        MDMActions.ACTION_REJECT_ENTRY, "input", "cancel"))
+                    .color("gray"))
+                .actionButton(new UiActionButtonDescriptor()
+                    .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                        MDMActions.ACTION_REJECT_ENTRY, "input", "action"))
+                    .color("primary"))
+                .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                    MDMActions.ACTION_REJECT_ENTRY, "input", "title"))));
+  }
+
+  private UiAction createApproveToEntryAction() {
+    return new UiAction().code(MDMActions.ACTION_APPROVE_ENTRY)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                MDMActions.ACTION_APPROVE_ENTRY)));
+  }
+
+  private UiAction createAddCommentToEntryAction() {
+    return new UiAction()
+        .code(MDMActions.ACTION_ADD_COMMENT_TO_ENTRY)
+        .inputType(UiActionInputType.TEXTAREA)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                MDMActions.ACTION_ADD_COMMENT_TO_ENTRY))
+            .inputDialog(new UiActionDialogDescriptor()
+                .cancelButton(new UiActionButtonDescriptor()
+                    .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                        MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "cancel"))
+                    .color("gray"))
+                .actionButton(new UiActionButtonDescriptor()
+                    .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                        MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "action"))
+                    .color("primary"))
+                .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                    MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "title"))));
+  }
+
+  private UiAction createOpenCommentsToEntryAction() {
     return new UiAction().code(MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)
         .descriptor(new UiActionDescriptor()
             .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
@@ -650,7 +736,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
       ctx.modificationApi.addComment(objectUri, comment);
-      UiActions.add(row.getActions(), createOpenCommentEntry());
+      UiActions.add(row.getActions(), createOpenCommentsToEntryAction());
     });
   }
 
@@ -703,6 +789,43 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
                       .feedbackType(UiActionFeedbackType.NONE)
                       .color("gray")))
               .build()));
+    });
+  }
+
+  @Override
+  public void changeStateToEntry(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    MDMModificationItem.StateEnum state = null;
+    String comment = null;
+    if (MDMActions.ACTION_APPROVE_ENTRY.equals(request.getCode())) {
+      state = StateEnum.APPROVED;
+    } else if (MDMActions.ACTION_REJECT_ENTRY.equals(request.getCode())) {
+      state = StateEnum.REJECTED;
+      comment = actionRequestHelper(request).require(UiActions.INPUT, String.class);
+      if (StringUtils.isBlank(comment)) {
+        throw new IllegalStateException(
+            localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(), "emptyreason"));
+      }
+    } else if (MDMActions.ACTION_FIX_ENTRY.equals(request.getCode())) {
+      state = StateEnum.FIXED;
+    }
+
+    final MDMModificationItem.StateEnum stateConst = state;
+    final String commentConst = comment;
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
+    GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
+      URI objectUri = URI
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+      PageContext ctx = new PageContext();
+      ctx.view = viewApi.getView(viewUuid);
+      ctx.loadOnlyDefinitionByView();
+      ctx.modificationApi.updateItemState(objectUri, stateConst);
+      if (commentConst != null) {
+        ctx.modificationApi.addComment(objectUri, commentConst);
+      }
+      ctx.loadOnlyDefinitionByView();
+      updateGridRow(true, ctx.getModificationApi().getModification().getModificationItems(),
+          ctx.getModificationApi().getModification().getState(), row);
     });
   }
 }

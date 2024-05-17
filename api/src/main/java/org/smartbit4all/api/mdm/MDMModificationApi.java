@@ -3,6 +3,7 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -75,6 +76,14 @@ public interface MDMModificationApi {
    * @param comment The comment itself.
    */
   void addComment(URI objectUri, String comment);
+
+  /**
+   * A user can modify modification item's state.
+   *
+   * @param objectUri The uri of the modified entry.
+   * @param state The new state.
+   */
+  void updateItemState(URI objectUri, MDMModificationItem.StateEnum state);
 
   /**
    * The current user is added as editor to the modification. It is added to
