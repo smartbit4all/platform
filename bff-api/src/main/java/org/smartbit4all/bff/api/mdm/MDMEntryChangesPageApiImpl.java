@@ -8,9 +8,12 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,6 +37,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -49,19 +53,26 @@ import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ImageResource;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonDescriptor;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
+import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.bff.api.config.PlatformViewNames;
+import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
@@ -74,6 +85,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected static final String LATEST_MODIFICATION_NOTE_KEY =
       MDMEntryChangesPageModel.LATEST_MODIFICATION_NOTE + StringConstant.DOT
           + MDMModificationNote.NOTE;
+
+  private static DateTimeFormatter dateTimeformatter =
+      DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
@@ -557,6 +571,12 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
   @Override
   public GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid) {
+    PageContext ctx = new PageContext();
+    ctx.view = viewApi.getView(viewUuid);
+    ctx.loadOnlyDefinitionByView();
+    Map<String, MDMModificationItem> modificationItems =
+        ctx.getModificationApi().getModification().getModificationItems();
+
     page.getRows().forEach(row -> {
       String icon;
       Map<String, Object> map = (Map<String, Object>) row.getData();
@@ -592,13 +612,24 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
               .inputDialog(new UiActionDialogDescriptor()
                   .cancelButton(new UiActionButtonDescriptor()
                       .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "cancel")))
+                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "cancel"))
+                      .color("gray"))
                   .actionButton(new UiActionButtonDescriptor()
                       .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
                           MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "action"))
                       .color("primary"))
                   .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
                       MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "title")))));
+      URI objectUri = URI
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+      if (modificationItems != null && modificationItems.containsKey(objectUri.toString())) {
+        UiActions.add(row.getActions(),
+            new UiAction().code(MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)
+                .descriptor(new UiActionDescriptor()
+                    .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                        MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY))));
+      }
+
     });
     return page;
   }
@@ -612,10 +643,62 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
       URI objectUri = URI
           .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+      PageContext ctx = new PageContext();
+      ctx.view = viewApi.getView(viewUuid);
+      ctx.loadOnlyDefinitionByView();
+      ctx.modificationApi.addComment(objectUri, comment);
+    });
+  }
+
+  @Override
+  public void openCommentsToEntry(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
+    GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
+      URI objectUri = URI
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
       PageContext result = new PageContext();
       result.view = viewApi.getView(viewUuid);
       result.loadOnlyDefinitionByView();
-      result.modificationApi.addComment(objectUri, comment);
+      MDMModificationItem modificationItem =
+          result.modificationApi.getModification().getModificationItems().get(objectUri.toString());
+
+      int idx = 0;
+      Map<Integer, MDMModificationNote> notesModel = new HashMap<>();
+      for (MDMModificationNote note : modificationItem.getNotes()) {
+        notesModel.put(idx++, note);
+      }
+
+      SmartWidgetDefinition[] widgets = notesModel.entrySet().stream().map(
+          e -> textbox(widgetKey(e.getKey().toString(), MDMModificationNote.NOTE),
+              e.getValue().getCreated().getName()
+                  + StringConstant.COMMA_SPACE
+                  + dateTimeformatter.format(e.getValue().getCreated().getTimestamp())))
+          .toArray(SmartWidgetDefinition[]::new);
+
+      ViewConstraint viewConstraint = new ViewConstraint().addComponentConstraintsItem(
+          new ComponentConstraint()
+              .dataName("**")
+              .enabled(false));
+
+      viewApi.showView(new View()
+          .viewName(PlatformViewNames.GENERIC_PAGE)
+          .style(new Style().addClassesToAddItem("mdm-entry-modification-comment-dialog"))
+          .constraint(viewConstraint)
+          .type(ViewType.DIALOG)
+          .putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT,
+              form(LayoutDirection.VERTICAL, widgets)
+                  .style(new Style().addClassesToAddItem("mdm-entry-modification-comment-layout")))
+          .putParametersItem(GenericPageApi.PARAM_MODEL, notesModel)
+          .actions(UiActions.builder()
+              .add(new UiAction()
+                  .code(GenericPageApi.ACTION_CLOSE_VIEW)
+                  .descriptor(new UiActionDescriptor()
+                      .title(localeSettingApi.get("closeview"))
+                      .type(UiActionButtonType.FLAT)
+                      .feedbackType(UiActionFeedbackType.NONE)
+                      .color("gray")))
+              .build()));
     });
   }
 }

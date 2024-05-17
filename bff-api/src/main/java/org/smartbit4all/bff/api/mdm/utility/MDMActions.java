@@ -34,4 +34,5 @@ public class MDMActions {
   public static final String ACTION_ADMIN_APPROVE_NOT_OK = "ADMIN_APPROVE_NOT_OK";
 
   public static final String ACTION_ADD_COMMENT_TO_ENTRY = "ADD_COMMENT_TO_ENTRY";
+  public static final String ACTION_OPEN_COMMENTS_TO_ENTRY = "OPEN_COMMENTS_TO_ENTRY";
 }
