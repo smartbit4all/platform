@@ -623,15 +623,18 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       URI objectUri = URI
           .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
       if (modificationItems != null && modificationItems.containsKey(objectUri.toString())) {
-        UiActions.add(row.getActions(),
-            new UiAction().code(MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)
-                .descriptor(new UiActionDescriptor()
-                    .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                        MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY))));
+        UiActions.add(row.getActions(), createOpenCommentEntry());
       }
 
     });
     return page;
+  }
+
+  private UiAction createOpenCommentEntry() {
+    return new UiAction().code(MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                MDMActions.ACTION_OPEN_COMMENTS_TO_ENTRY)));
   }
 
   @Override
@@ -647,6 +650,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
       ctx.modificationApi.addComment(objectUri, comment);
+      UiActions.add(row.getActions(), createOpenCommentEntry());
     });
   }
 
