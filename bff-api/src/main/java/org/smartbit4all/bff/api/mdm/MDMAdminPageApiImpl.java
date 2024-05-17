@@ -142,7 +142,8 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         masterDataManagementApi.getEntryDescriptors(ctx.definition, ctx.mdmBranch)
             .values().stream()
             .filter(this::filterDescriptor)
-            .filter(this::checkDescriptorSecurity)
+            .filter(entyDesc -> checkDescriptorSecurity(entyDesc,
+                ctx.definition.getAdminApproverGroupName()))
             .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))
             .sorted(Comparator.comparing(MDMEntryDescriptor::getOrder))
             .map(e -> new UiAction()
@@ -179,11 +180,14 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     return true;
   }
 
-  protected boolean checkDescriptorSecurity(MDMEntryDescriptor entryDescriptor) {
+  protected boolean checkDescriptorSecurity(MDMEntryDescriptor entryDescriptor,
+      String adminApproverGroupName) {
     if (Strings.isNullOrEmpty(entryDescriptor.getAdminGroupName())) {
       return true;
+    } else {
+      return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName())
+          || OrgUtils.securityPredicate(sessionApi, adminApproverGroupName);
     }
-    return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName());
   }
 
   @Override
