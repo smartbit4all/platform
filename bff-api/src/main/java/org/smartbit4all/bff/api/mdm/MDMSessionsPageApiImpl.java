@@ -18,6 +18,7 @@ import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -211,7 +212,12 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
   @Override
   public GridPage onGridPageRender(GridPage page, UUID viewUuid) {
     for (GridRow row : page.getRows()) {
-      row.addActionsItem(new UiAction().code(MDMActions.ACTION_OPEN_EDITING));
+      MDMModificationState modificationState = MDMModificationState
+          .fromValue(GridModels.getValueFromGridRow(row, MDMModification.STATE).toString());
+      if (MDMModificationState.APPROVED != modificationState
+          && MDMModificationState.DISPOSED != modificationState) {
+        row.addActionsItem(new UiAction().code(MDMActions.ACTION_OPEN_EDITING));
+      }
     }
     return page;
   }
