@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -53,7 +54,8 @@ import javax.validation.Valid;
   MDMModification.APPROVED,
   MDMModification.STATE,
   MDMModification.NOTES,
-  MDMModification.DESCRIPTORS
+  MDMModification.DESCRIPTORS,
+  MDMModification.MODIFICATION_ITEMS
 })
 @JsonTypeName("MDMModification")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -96,6 +98,9 @@ public class MDMModification {
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
+
+  public static final String MODIFICATION_ITEMS = "modificationItems";
+  private Map<String, MDMModificationItem> modificationItems = null;
 
   public MDMModification() { 
   }
@@ -481,6 +486,42 @@ public class MDMModification {
   }
 
 
+  public MDMModification modificationItems(Map<String, MDMModificationItem> modificationItems) {
+    
+    this.modificationItems = modificationItems;
+    return this;
+  }
+
+  public MDMModification putModificationItemsItem(String key, MDMModificationItem modificationItemsItem) {
+    if (this.modificationItems == null) {
+      this.modificationItems = new HashMap<>();
+    }
+    this.modificationItems.put(key, modificationItemsItem);
+    return this;
+  }
+
+   /**
+   * Get modificationItems
+   * @return modificationItems
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODIFICATION_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, MDMModificationItem> getModificationItems() {
+    return modificationItems;
+  }
+
+
+  @JsonProperty(MODIFICATION_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModificationItems(Map<String, MDMModificationItem> modificationItems) {
+    this.modificationItems = modificationItems;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -502,12 +543,13 @@ public class MDMModification {
         Objects.equals(this.approved, mdMModification.approved) &&
         Objects.equals(this.state, mdMModification.state) &&
         Objects.equals(this.notes, mdMModification.notes) &&
-        Objects.equals(this.descriptors, mdMModification.descriptors);
+        Objects.equals(this.descriptors, mdMModification.descriptors) &&
+        Objects.equals(this.modificationItems, mdMModification.modificationItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approved, state, notes, descriptors);
+    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approved, state, notes, descriptors, modificationItems);
   }
 
   @Override
@@ -527,6 +569,7 @@ public class MDMModification {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
+    sb.append("    modificationItems: ").append(toIndentedString(modificationItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -305,6 +305,25 @@ components:
                     type: object
                     additionalProperties:
                         $ref: "#/components/schemas/MDMEntryDescriptor"
+                modificationItems:
+                    type: object
+                    additionalProperties:
+                        $ref: "#/components/schemas/MDMModificationItem"
+        MDMModificationItem:
+            description: |
+                This inline object is hold information about modification state and notes to one entry.
+            type: object
+            properties:
+                objectUri:
+                    type: string
+                    format: uri
+                state:
+                    type: string
+                    enum: [APPROVED, REJECTED, FIXED]
+                notes:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/MDMModificationNote"     
         MDMModificationNote:
             description: |
                 This inline object is the comment on the MDM modification. It can be global for the whole notification and

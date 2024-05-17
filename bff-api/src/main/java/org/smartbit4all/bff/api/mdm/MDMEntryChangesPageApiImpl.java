@@ -50,6 +50,9 @@ import org.smartbit4all.api.view.UiActions.UiActionBuilder;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonDescriptor;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
+import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -579,7 +582,40 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
                 .source("smart-icon")
                 .identifier(icon)));
       }
+
+      UiActions.add(row.getActions(), new UiAction()
+          .code(MDMActions.ACTION_ADD_COMMENT_TO_ENTRY)
+          .inputType(UiActionInputType.TEXTAREA)
+          .descriptor(new UiActionDescriptor()
+              .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                  MDMActions.ACTION_ADD_COMMENT_TO_ENTRY))
+              .inputDialog(new UiActionDialogDescriptor()
+                  .cancelButton(new UiActionButtonDescriptor()
+                      .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "cancel")))
+                  .actionButton(new UiActionButtonDescriptor()
+                      .caption(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                          MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "action"))
+                      .color("primary"))
+                  .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
+                      MDMActions.ACTION_ADD_COMMENT_TO_ENTRY, "input", "title")))));
     });
     return page;
+  }
+
+  @Override
+  public void addCommentToEntry(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    String comment =
+        actionRequestHelper(request).get(UiActions.INPUT, String.class);
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
+    GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
+      URI objectUri = URI
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+      PageContext result = new PageContext();
+      result.view = viewApi.getView(viewUuid);
+      result.loadOnlyDefinitionByView();
+      result.modificationApi.addComment(objectUri, comment);
+    });
   }
 }

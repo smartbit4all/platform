@@ -4,6 +4,7 @@ import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
+import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.bff.api.mdm.utility.MDMActions;
@@ -63,6 +64,9 @@ public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel
 
   @ActionHandler(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK)
   void adminApproveNotOk(UUID viewUuid, UiActionRequest request);
+
+  @WidgetActionHandler(MDMActions.ACTION_ADD_COMMENT_TO_ENTRY)
+  void addCommentToEntry(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 

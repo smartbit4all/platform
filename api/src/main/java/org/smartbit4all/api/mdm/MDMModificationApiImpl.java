@@ -16,6 +16,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationArchive;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import org.smartbit4all.api.mdm.bean.MDMModificationState;
 import org.smartbit4all.api.object.BranchApi;
@@ -156,6 +157,31 @@ public class MDMModificationApiImpl implements MDMModificationApi {
           m.addNotesItem(new MDMModificationNote()
               .created(activityLog)
               .note(comment));
+          this.definitionState = state;
+          return state;
+        },
+        this::getBranchFromPrevState);
+  }
+
+  @Override
+  public void addComment(URI objectUri, String comment) {
+    modifyDefinitionState(definition.getName(),
+        state -> {
+          MDMModification m = getModification(state);
+          UserActivityLog activityLog = sessionApi.createActivityLog();
+          MDMModificationNote note = new MDMModificationNote()
+              .created(activityLog)
+              .note(comment);
+
+          if (m.getModificationItems() == null
+              || !m.getModificationItems().containsKey(objectUri.toString())) {
+            m.putModificationItemsItem(objectUri.toString(),
+                new MDMModificationItem().objectUri(objectUri).addNotesItem(note));
+          } else {
+            m.getModificationItems().compute(objectUri.toString(),
+                (key, v) -> v.addNotesItem(note));
+          }
+
           this.definitionState = state;
           return state;
         },

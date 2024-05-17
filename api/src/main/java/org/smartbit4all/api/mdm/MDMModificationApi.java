@@ -69,6 +69,14 @@ public interface MDMModificationApi {
   void addComment(String comment);
 
   /**
+   * A user can append comment to the modification item.
+   *
+   * @param objectUri The uri of the modified entry.
+   * @param comment The comment itself.
+   */
+  void addComment(URI objectUri, String comment);
+
+  /**
    * The current user is added as editor to the modification. It is added to
    * {@link MDMModification#CURRENT_EDITORS}.
    */

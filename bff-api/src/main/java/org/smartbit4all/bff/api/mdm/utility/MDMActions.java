@@ -32,4 +32,6 @@ public class MDMActions {
   public static final String ACTION_SEND_FOR_APPROVAL = "SEND_FOR_APPROVAL";
   public static final String ACTION_ADMIN_APPROVE_OK = "ADMIN_APPROVE_OK";
   public static final String ACTION_ADMIN_APPROVE_NOT_OK = "ADMIN_APPROVE_NOT_OK";
+
+  public static final String ACTION_ADD_COMMENT_TO_ENTRY = "ADD_COMMENT_TO_ENTRY";
 }
