@@ -630,9 +630,13 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     URI objectUri = URI
         .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
-    if (Boolean.TRUE.equals(hasStateColumn) && modificationItems != null
-        && modificationItems.containsKey(objectUri.toString())) {
-      StateEnum itemState = modificationItems.get(objectUri.toString()).getState();
+    if (Boolean.TRUE.equals(hasStateColumn)) {
+      MDMModificationItem mdmModificationItem = modificationItems != null
+          ? modificationItems.get(objectUri.toString())
+          : null;
+      StateEnum itemState = mdmModificationItem != null
+          ? mdmModificationItem.getState()
+          : null;
       map.put(MDMModification.STATE, itemState);
       map.put(MDMDefinitionOption.STATE_NAME, localeSettingApi.get(itemState));
 
