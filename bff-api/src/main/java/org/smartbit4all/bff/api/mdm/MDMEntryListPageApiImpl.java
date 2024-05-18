@@ -41,12 +41,16 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMModification;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem;
+import org.smartbit4all.api.mdm.bean.MDMModificationItem.StateEnum;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.mdm.bean.MDMModificationRequestData;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
@@ -338,6 +342,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         BranchedObjectEntry.BRANCH_URI);
     if (columns.contains(MDMConstants.PROPERTY_URI)) {
       GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
+    }
+    if (columns.contains(MDMConstants.PROPERTY_URI)) {
+      GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
+    }
+    if (columns.contains(MDMModificationItem.STATE)) {
+      GridModels.hideColumns(entryGridModel, MDMModificationItem.STATE);
+    }
+    if (context.getModificationApi() == null) {
+      GridModels.hideColumns(entryGridModel, MDMDefinitionOption.STATE_NAME);
     }
     final List<GridView> gridViewOptions = context.getEntryDescriptor().getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
@@ -846,6 +859,25 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             Arrays.asList(new ImageResource()
                 .source("smart-icon")
                 .identifier(icon)));
+      }
+
+      boolean entryDescHasStateColumn = ctx.entryDescriptor.getTableColumns().stream()
+          .anyMatch(desc -> MDMModificationItem.STATE.equals(desc.getName()));
+      if (entryDescHasStateColumn) {
+        Object branchedObjectUriRaw =
+            GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+        URI objectUri = branchedObjectUriRaw != null
+            ? URI.create(branchedObjectUriRaw.toString())
+            : null;
+        Map<String, MDMModificationItem> modificationItems = ctx.getModificationApi() != null
+            ? ctx.getModificationApi().getModification().getModificationItems()
+            : null;
+        if (entryDescHasStateColumn && objectUri != null && modificationItems != null
+            && modificationItems.containsKey(objectUri.toString())) {
+          StateEnum itemState = modificationItems.get(objectUri.toString()).getState();
+          map.put(MDMModification.STATE, itemState);
+          map.put(MDMDefinitionOption.STATE_NAME, localeSettingApi.get(itemState));
+        }
       }
     });
     return page;
