@@ -628,8 +628,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     UiActionBuilder builder = UiActions.builder();
 
-    URI objectUri = URI
-        .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
+    URI objectUri = getObjectUri(row);
     if (Boolean.TRUE.equals(hasStateColumn)) {
       MDMModificationItem mdmModificationItem = modificationItems != null
           ? modificationItems.get(objectUri.toString())
@@ -665,6 +664,14 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     row.getActions().clear();
     UiActions.add(row.getActions(), builder.build());
+  }
+
+  private URI getObjectUri(GridRow row) {
+    Object rawOiriginalUri = GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI);
+    Object rawBranchUri = GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI);
+    return rawOiriginalUri != null
+        ? URI.create(rawOiriginalUri.toString())
+        : URI.create(rawBranchUri.toString());
   }
 
   private UiAction createFixToEntryAction() {
@@ -734,8 +741,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         actionRequestHelper(request).get(UiActions.INPUT, String.class);
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
-      URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
+      URI objectUri = getObjectUri(row);
       PageContext ctx = new PageContext();
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
@@ -749,8 +755,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       UiActionRequest request) {
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
-      URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
+      URI objectUri = getObjectUri(row);
       PageContext result = new PageContext();
       result.view = viewApi.getView(viewUuid);
       result.loadOnlyDefinitionByView();
@@ -818,8 +823,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     final String commentConst = comment;
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
-      URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
+      URI objectUri = getObjectUri(row);
       PageContext ctx = new PageContext();
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
