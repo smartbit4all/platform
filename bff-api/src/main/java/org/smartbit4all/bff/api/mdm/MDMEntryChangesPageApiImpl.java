@@ -629,7 +629,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     UiActionBuilder builder = UiActions.builder();
 
     URI objectUri = URI
-        .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+        .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
     if (Boolean.TRUE.equals(hasStateColumn)) {
       MDMModificationItem mdmModificationItem = modificationItems != null
           ? modificationItems.get(objectUri.toString())
@@ -735,7 +735,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
       URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
       PageContext ctx = new PageContext();
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
@@ -750,7 +750,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
       URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
       PageContext result = new PageContext();
       result.view = viewApi.getView(viewUuid);
       result.loadOnlyDefinitionByView();
@@ -819,7 +819,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     GridModels.findGridRowById(gridModel, nodeId).ifPresent(row -> {
       URI objectUri = URI
-          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCH_URI).toString());
+          .create(GridModels.getValueFromGridRow(row, BranchedObjectEntry.ORIGINAL_URI).toString());
       PageContext ctx = new PageContext();
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
