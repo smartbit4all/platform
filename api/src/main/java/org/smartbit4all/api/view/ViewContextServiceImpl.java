@@ -186,7 +186,8 @@ public class ViewContextServiceImpl implements ViewContextService {
             .map(this::convertViewToUi)
             .collect(toList()))
         .links(context.getLinks())
-        .downloads(context.getDownloads());
+        .downloads(context.getDownloads())
+        .clipboardData(context.getClipboardData());
   }
 
   private ViewData convertViewToUi(View view) {
@@ -564,6 +565,9 @@ public class ViewContextServiceImpl implements ViewContextService {
             }
             if (c.getDownloads() != null) {
               c.getDownloads().clear();
+            }
+            if (c.getClipboardData() != null) {
+              c.getClipboardData().clear();
             }
             return c;
           });

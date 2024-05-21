@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.view.bean.ClipboardData;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
@@ -592,6 +593,13 @@ public class ViewApiImpl implements ViewApi {
   public void downloadFile(DownloadedFile file) {
     viewContextService.updateCurrentViewContext(
         context -> context.addDownloadsItem(file));
+  }
+
+  @Override
+  public void copyToClipboard(ClipboardData clipboardData) {
+    Objects.requireNonNull(clipboardData, "clipboardData cannot be null!");
+    viewContextService.updateCurrentViewContext(
+        context -> context.addClipboardDataItem(clipboardData));
   }
 
   @Override

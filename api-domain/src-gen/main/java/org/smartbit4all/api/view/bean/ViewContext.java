@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ClipboardData;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.OpenPendingData;
@@ -46,6 +47,7 @@ import javax.validation.Valid;
   ViewContext.VIEWS,
   ViewContext.LINKS,
   ViewContext.DOWNLOADS,
+  ViewContext.CLIPBOARD_DATA,
   ViewContext.OPEN_PENDING_DATA,
   ViewContext.CURRENT_REQUEST
 })
@@ -66,6 +68,9 @@ public class ViewContext {
 
   public static final String DOWNLOADS = "downloads";
   private List<DownloadedFile> downloads = new ArrayList<>();
+
+  public static final String CLIPBOARD_DATA = "clipboardData";
+  private List<ClipboardData> clipboardData = null;
 
   public static final String OPEN_PENDING_DATA = "openPendingData";
   private OpenPendingData openPendingData;
@@ -235,6 +240,42 @@ public class ViewContext {
   }
 
 
+  public ViewContext clipboardData(List<ClipboardData> clipboardData) {
+    
+    this.clipboardData = clipboardData;
+    return this;
+  }
+
+  public ViewContext addClipboardDataItem(ClipboardData clipboardDataItem) {
+    if (this.clipboardData == null) {
+      this.clipboardData = new ArrayList<>();
+    }
+    this.clipboardData.add(clipboardDataItem);
+    return this;
+  }
+
+   /**
+   * Get clipboardData
+   * @return clipboardData
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CLIPBOARD_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ClipboardData> getClipboardData() {
+    return clipboardData;
+  }
+
+
+  @JsonProperty(CLIPBOARD_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setClipboardData(List<ClipboardData> clipboardData) {
+    this.clipboardData = clipboardData;
+  }
+
+
   public ViewContext openPendingData(OpenPendingData openPendingData) {
     
     this.openPendingData = openPendingData;
@@ -305,13 +346,14 @@ public class ViewContext {
         Objects.equals(this.views, viewContext.views) &&
         Objects.equals(this.links, viewContext.links) &&
         Objects.equals(this.downloads, viewContext.downloads) &&
+        Objects.equals(this.clipboardData, viewContext.clipboardData) &&
         Objects.equals(this.openPendingData, viewContext.openPendingData) &&
         Objects.equals(this.currentRequest, viewContext.currentRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, links, downloads, openPendingData, currentRequest);
+    return Objects.hash(uri, uuid, views, links, downloads, clipboardData, openPendingData, currentRequest);
   }
 
   @Override
@@ -323,6 +365,7 @@ public class ViewContext {
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("    downloads: ").append(toIndentedString(downloads)).append("\n");
+    sb.append("    clipboardData: ").append(toIndentedString(clipboardData)).append("\n");
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("    currentRequest: ").append(toIndentedString(currentRequest)).append("\n");
     sb.append("}");

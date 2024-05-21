@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.view.bean.ClipboardData;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
@@ -198,6 +199,13 @@ public interface ViewApi {
   void openLink(Link link);
 
   void downloadFile(DownloadedFile file);
+
+  /**
+   * Instructs the client to copy the provided data to the user's clipboard.
+   * 
+   * @param clipboardData the {@link ClipboardData} describing the content to copy, not null
+   */
+  void copyToClipboard(ClipboardData clipboardData);
 
   /**
    * Retrieve the parameter from the given view merging with the parent parameters.

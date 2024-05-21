@@ -483,6 +483,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DownloadedFile'
+        clipboardData:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClipboardData'
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
         currentRequest:
