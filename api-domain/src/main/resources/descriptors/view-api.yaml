@@ -490,7 +490,7 @@ components:
     ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri, views, links, downloads]
+      required: [uri, views, links, downloads, clipboardData]
       properties:
         uuid:
           type: string
@@ -507,6 +507,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DownloadedFile'
+        clipboardData:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClipboardData'
     ViewContextChange:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
@@ -679,9 +683,8 @@ components:
       type: object
       description: |
         This object is a placeholder for the view, typically for closed children views 
-        so these are not saved in ViewContext object, keeping it's size reasonable.   
-      required:
-        [closedChildrenViews]
+        so these are not saved in ViewContext object, keeping it's size reasonable.
+      required: [closedChildrenViews]
       properties:
         uuid:
           type: string
@@ -1057,7 +1060,18 @@ components:
           description: The request type like a normal action or a widget action.
           $ref: '#/components/schemas/ServerRequestType'
     ServerRequestType:
-      enum: [ACTION, WIDGET_ACTION, CREATE_VIEW_CONTEXT, UPDATE_VIEW_CONTEXT, GET_VIEW_CONTEXT, HANDLE_MESSAGE_RESULT, SHOW_SMARTLINK, DOWNLOAD, GET_COMPONENT_MODEL]
+      enum:
+        [
+          ACTION,
+          WIDGET_ACTION,
+          CREATE_VIEW_CONTEXT,
+          UPDATE_VIEW_CONTEXT,
+          GET_VIEW_CONTEXT,
+          HANDLE_MESSAGE_RESULT,
+          SHOW_SMARTLINK,
+          DOWNLOAD,
+          GET_COMPONENT_MODEL,
+        ]
     StatisticRecord:
       type: object
       description: |
@@ -1371,6 +1385,15 @@ components:
             - BLANK
             - PARENT
             - TOP
+    ClipboardData:
+      type: object
+      description: |
+        Text or media content the client should copy to its system's clipboard.
+      properties:
+        text:
+          description: |
+            The raw text to copy to clipboard.
+          type: string
     ImageResource:
       type: object
       properties:

@@ -31,9 +31,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it&#39;s size reasonable.    
+ * This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it&#39;s size reasonable. 
  */
-@ApiModel(description = "This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it's size reasonable.    ")
+@ApiModel(description = "This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it's size reasonable. ")
 @JsonPropertyOrder({
   ViewPlaceholder.UUID,
   ViewPlaceholder.CLOSED_CHILDREN_VIEWS

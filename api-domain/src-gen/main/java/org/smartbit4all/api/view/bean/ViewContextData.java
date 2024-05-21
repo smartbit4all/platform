@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ClipboardData;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.ViewData;
@@ -41,7 +42,8 @@ import javax.validation.Valid;
   ViewContextData.UUID,
   ViewContextData.VIEWS,
   ViewContextData.LINKS,
-  ViewContextData.DOWNLOADS
+  ViewContextData.DOWNLOADS,
+  ViewContextData.CLIPBOARD_DATA
 })
 @JsonTypeName("ViewContextData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -57,6 +59,9 @@ public class ViewContextData {
 
   public static final String DOWNLOADS = "downloads";
   private List<DownloadedFile> downloads = new ArrayList<>();
+
+  public static final String CLIPBOARD_DATA = "clipboardData";
+  private List<ClipboardData> clipboardData = new ArrayList<>();
 
   public ViewContextData() { 
   }
@@ -191,6 +196,40 @@ public class ViewContextData {
   }
 
 
+  public ViewContextData clipboardData(List<ClipboardData> clipboardData) {
+    
+    this.clipboardData = clipboardData;
+    return this;
+  }
+
+  public ViewContextData addClipboardDataItem(ClipboardData clipboardDataItem) {
+    this.clipboardData.add(clipboardDataItem);
+    return this;
+  }
+
+   /**
+   * Get clipboardData
+   * @return clipboardData
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(CLIPBOARD_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<ClipboardData> getClipboardData() {
+    return clipboardData;
+  }
+
+
+  @JsonProperty(CLIPBOARD_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setClipboardData(List<ClipboardData> clipboardData) {
+    this.clipboardData = clipboardData;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -203,12 +242,13 @@ public class ViewContextData {
     return Objects.equals(this.uuid, viewContextData.uuid) &&
         Objects.equals(this.views, viewContextData.views) &&
         Objects.equals(this.links, viewContextData.links) &&
-        Objects.equals(this.downloads, viewContextData.downloads);
+        Objects.equals(this.downloads, viewContextData.downloads) &&
+        Objects.equals(this.clipboardData, viewContextData.clipboardData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, views, links, downloads);
+    return Objects.hash(uuid, views, links, downloads, clipboardData);
   }
 
   @Override
@@ -219,6 +259,7 @@ public class ViewContextData {
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("    downloads: ").append(toIndentedString(downloads)).append("\n");
+    sb.append("    clipboardData: ").append(toIndentedString(clipboardData)).append("\n");
     sb.append("}");
     return sb.toString();
   }
