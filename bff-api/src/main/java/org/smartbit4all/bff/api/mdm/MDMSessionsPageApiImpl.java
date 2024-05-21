@@ -141,8 +141,10 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     model.setPageTitle(null);
     view.getActions().removeIf(a -> ACTION_CLOSE.equals(a.getCode()));
     view.getActions().removeIf(a -> ACTION_QUERY.equals(a.getCode()));
-    view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING)
-        .inputType(UiActionInputType.TEXTFIELD));
+    if (pageContext.checkAdmin()) {
+      view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING)
+          .inputType(UiActionInputType.TEXTFIELD));
+    }
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(), WIDGET_RESULT_GRID);
     GridModels.hideColumns(gridModel, MDMModification.ID, MDMModification.BRANCH_URI);
@@ -176,10 +178,6 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
         .getValueAsList(MDMModification.class, MDMDefinitionState.ACTIVE_MODIFICATIONS)
         .stream()
         .map(mod -> objectApi.create(PlatformApiConfig.DEFAULT_SCHEME, mod));
-  }
-
-  protected boolean canEdit(boolean isAdmin, boolean underApproval, boolean isApprover) {
-    return (isAdmin && !underApproval) || (isApprover && underApproval);
   }
 
   @Override
