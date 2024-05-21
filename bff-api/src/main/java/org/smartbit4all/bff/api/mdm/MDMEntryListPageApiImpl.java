@@ -349,9 +349,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     if (columns.contains(MDMModificationItem.STATE)) {
       GridModels.hideColumns(entryGridModel, MDMModificationItem.STATE);
     }
-    if (context.getModificationApi() == null) {
+    if (columns.contains(MDMDefinitionOption.STATE_NAME)) {
       GridModels.hideColumns(entryGridModel, MDMDefinitionOption.STATE_NAME);
     }
+    // if we want to show it at all, it's value should be there
+    // if (context.getModificationApi() == null) {
+    // GridModels.hideColumns(entryGridModel, MDMDefinitionOption.STATE_NAME);
+    // }
     final List<GridView> gridViewOptions = context.getEntryDescriptor().getListPageGridViews();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       entryGridModel.setView(gridViewOptions.get(0));

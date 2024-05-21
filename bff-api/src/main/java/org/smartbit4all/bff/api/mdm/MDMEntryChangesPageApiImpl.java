@@ -173,8 +173,13 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
           : null;
     }
 
-    public boolean checkAdmin() {
+    public boolean isAdmin() {
       return OrgUtils.securityPredicate(sessionApi, getDefinition().getAdminGroupName());
+    }
+
+    public boolean isApprover() {
+      URI approver = getApprover();
+      return approver != null && approver.equals(sessionApi.getUserUri());
     }
 
     public boolean getBranchActive() {
@@ -266,7 +271,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected void refreshActions(PageContext ctx) {
     if (ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL
         || ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.STRICT_PARALLEL) {
-      boolean isAdmin = ctx.checkAdmin();
+      boolean isAdmin = ctx.isAdmin();
       boolean branchActive = ctx.getBranchActive();
       // if API present, approving enabled
       boolean approvingEnabled = mdmApprovalApi != null;
@@ -274,9 +279,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
           ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL;
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
-        URI approver = ctx.getApprover();
-        boolean underApproval = approver != null;
-        boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
+        boolean underApproval = ctx.getApprover() != null;
+        boolean isApprover = ctx.isApprover();
         boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
         uiActions
@@ -589,17 +593,20 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     Map<String, MDMModificationItem> modificationItems =
         ctx.getModificationApi().getModification().getModificationItems();
 
-    MDMModificationState modificationState = ctx.getModificationApi().getModification().getState();
 
+    MDMModificationState modificationState = ctx.getModificationApi().getModification().getState();
+    boolean isApprover = ctx.isApprover();
+    boolean isAdmin = ctx.isAdmin();
     page.getRows().forEach(row -> {
-      updateGridRow(hasStateColumn, modificationItems, modificationState, row);
+      updateGridRow(hasStateColumn, modificationItems, modificationState, row, isApprover, isAdmin);
     });
     return page;
   }
 
   private void updateGridRow(Boolean hasStateColumn,
       Map<String, MDMModificationItem> modificationItems,
-      MDMModificationState modificationState, GridRow row) {
+      MDMModificationState modificationState, GridRow row,
+      boolean isApprover, boolean isAdmin) {
     String icon;
     Map<String, Object> map = (Map<String, Object>) row.getData();
     BranchingStateEnum brancingState =
@@ -640,15 +647,15 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       map.put(MDMDefinitionOption.STATE_NAME, localeSettingApi.get(itemState));
 
       builder
-          .addIf(createApproveToEntryAction(),
+          .addIf(createApproveToEntryAction(), isApprover,
               modificationState == MDMModificationState.APPROVING
                   && (itemState == null || itemState == StateEnum.FIXED
                       || itemState == StateEnum.REJECTED))
-          .addIf(createRejectToEntryAction(),
+          .addIf(createRejectToEntryAction(), isApprover,
               modificationState == MDMModificationState.APPROVING
                   && (itemState == null || itemState == StateEnum.FIXED
                       || itemState == StateEnum.APPROVED))
-          .addIf(createFixToEntryAction(),
+          .addIf(createFixToEntryAction(), isAdmin,
               (modificationState == MDMModificationState.ACTIVE
                   || modificationState == MDMModificationState.REJECTED)
                   && (itemState == StateEnum.REJECTED));
@@ -833,7 +840,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       }
       ctx.loadOnlyDefinitionByView();
       updateGridRow(true, ctx.getModificationApi().getModification().getModificationItems(),
-          ctx.getModificationApi().getModification().getState(), row);
+          ctx.getModificationApi().getModification().getState(), row,
+          ctx.isApprover(), ctx.isAdmin());
     });
   }
 }
