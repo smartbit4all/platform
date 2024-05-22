@@ -253,7 +253,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
         return u;
       }), updateResult,
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          true);
       // Update the entity definitions by the table data in the result.
       objectMapping.merge(updateResult, Collections.emptyList());
 
@@ -276,10 +277,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
       objectMapping.readObjects(
           allObjectUris.stream().map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
           result,
-          Collections.emptyMap());
+          Collections.emptyMap(), false);
     } else {
       objectMapping.readObjects(objectNodes.map(n -> new SearchIndexObject().objectNode(n)), result,
-          Collections.emptyMap());
+          Collections.emptyMap(), false);
     }
 
     return result;
@@ -301,7 +302,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     SearchEntityTableDataResult entityResult = constructResult();
     objectMapping.readObjects(uris.map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
         entityResult,
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        false);
     return entityResult.result;
   }
 
@@ -312,7 +314,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
         objects.map(o -> new SearchIndexObject().objectNode(objectApi
             .create(StringConstant.EMPTY, o))),
         entityResult,
-        Collections.emptyMap());
+        Collections.emptyMap(), false);
     return entityResult.result;
   }
 

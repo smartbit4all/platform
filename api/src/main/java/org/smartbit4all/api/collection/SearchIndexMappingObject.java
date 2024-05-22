@@ -340,7 +340,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   final void readObjects(Stream<SearchIndexObject> objects,
-      SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
+      SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
 
     // Create detail TableDatas
     for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
@@ -363,12 +363,12 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         Object value = null;
         Object defaultValue = defaultValues.get(col.getProperty().getName());
         Object forcedValue = o.getValues().get(col.getName());
+        SearchIndexMappingProperty mapping = property(col.getProperty().getName());
         if (forcedValue != null) {
           value = forcedValue;
         } else if (defaultValue != null) {
           value = defaultValue;
         } else {
-          SearchIndexMappingProperty mapping = property(col.getProperty().getName());
           if (mapping.path != null && mapping.processor == null
               && mapping.complexProcessor == null) {
             value = n.getValue(mapping.path);
@@ -385,6 +385,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         }
         if (value != null && !col.getProperty().type().isInstance(value)) {
           value = objectApi.asType(col.getProperty().type(), value);
+        }
+        if (useLength && mapping.length > 0 && value instanceof String) {
+          value = truncateString((String) value, mapping.length);
         }
         tableData.setObject(col, row, value);
       }
@@ -431,12 +434,20 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
               detailResult,
               entry.getValue().masterJoin.getReferences().get(0).joins().stream()
                   .collect(toMap(j -> j.getSourceProperty().getName(),
-                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));
+                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
+              useLength);
 
         }
       }
     });
 
+  }
+
+  public final String truncateString(String str, int maxSize) {
+    if (str == null) {
+      return null;
+    }
+    return str.length() > maxSize ? str.substring(0, maxSize) : str;
   }
 
   public final SearchIndexMappingObject filterClass(Class<?> filterClass) {
