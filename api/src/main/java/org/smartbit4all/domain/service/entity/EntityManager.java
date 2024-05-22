@@ -16,6 +16,7 @@ package org.smartbit4all.domain.service.entity;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
@@ -55,5 +56,7 @@ public interface EntityManager {
   void registerEntityDef(EntityDefinition entityDef);
 
   EntityDefinition createEntityDef(Class<?> clazz);
+
+  <T> EntityDefinition createEntityDef(ObjectDefinition<T> objectDefinition);
 
 }

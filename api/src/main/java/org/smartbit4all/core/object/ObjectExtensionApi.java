@@ -14,6 +14,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyDescriptor.PropertyKindEnu
 import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.RefObject;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.domain.meta.EntityDefinition;
 
 /**
  * Facilitates dynamic extensions to object definitions and default object layout generation.
@@ -200,6 +201,8 @@ public interface ObjectExtensionApi {
   ObjectNode newInstance(URI objectDescriptorUri, String storageSchema);
 
   ObjectDefinition<?> assemble(String definitionName);
+
+  EntityDefinition entityDefinition(URI objectDescriptorUri);
 
   // -----------------------------------------------------------------------------------------------
   // Static factory methods for property descriptors:

@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
@@ -77,6 +78,12 @@ public class SourceBasedEntityManager implements EntityManager {
 
   @Override
   public EntityDefinition createEntityDef(Class<?> clazz) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public <T> EntityDefinition createEntityDef(ObjectDefinition<T> objectDefinition) {
     // TODO Auto-generated method stub
     return null;
   }

@@ -43,6 +43,8 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
@@ -94,6 +96,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
   private ObjectDefinitionApi objectDefinitionApi;
   @Autowired
   private ObjectLayoutApi objectLayoutApi;
+  @Autowired
+  private EntityManager entityManager;
 
   @Override
   public URI create(String definitionName, List<ObjectPropertyDescriptor> propertyDescriptors) {
@@ -419,6 +423,19 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     return newInstance(
         objectApi.load(objectDescriptorUri).getValueAsString(ObjectDescriptor.NAME),
         storageSchema);
+  }
+
+  @Override
+  public EntityDefinition entityDefinition(URI objectDescriptorUri) {
+    Objects.requireNonNull(objectDescriptorUri, "objectDescriptorUri cannot be null!");
+
+    final String qualifiedName = objectApi
+        .load(objectDescriptorUri)
+        .getValueAsString(ObjectDescriptor.NAME);
+    final ObjectDefinition<?> definition = objectDefinitionApi.definition(qualifiedName);
+    final EntityDefinition entityDefinition = entityManager.createEntityDef(definition);
+    entityManager.registerEntityDef(entityDefinition);
+    return entityDefinition;
   }
 
   @Override

@@ -2,7 +2,9 @@ package org.smartbit4all.domain.service.dataset;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Stream;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.SortOrderProperty;
@@ -50,6 +52,8 @@ public interface TableDataApi {
 
   <T> TableData<?> tableOf(Class<T> clazz, List<T> objectList, List<String> columns);
 
+  TableData<?> tableOfNodes(EntityDefinition entityDef, Stream<ObjectNode> nodes,
+      List<String> columns);
 
   /**
    * Sorts the rows of the given {@link TableData} by the given {@link SortOrderProperty}-ies.</br>

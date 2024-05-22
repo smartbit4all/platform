@@ -165,7 +165,12 @@ public class EntityManagerImpl implements EntityManager {
   @Override
   public EntityDefinition createEntityDef(Class<?> clazz) {
     ObjectDefinition<?> definition = objectApi.definition(clazz);
-    ObjectDefinitionData definitionData = definition.getDefinitionData();
+    return createEntityDef(definition);
+  }
+
+  @Override
+  public <T> EntityDefinition createEntityDef(ObjectDefinition<T> objectDefinition) {
+    ObjectDefinitionData definitionData = objectDefinition.getDefinitionData();
 
     EntityDefinitionBuilder entityBuilder = EntityDefinitionBuilder.of(ctx);
     String entityName = definitionData.getQualifiedName();
@@ -187,4 +192,5 @@ public class EntityManagerImpl implements EntityManager {
     }
     return entityBuilder.build();
   }
+
 }

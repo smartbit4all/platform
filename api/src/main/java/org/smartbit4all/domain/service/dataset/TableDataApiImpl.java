@@ -21,12 +21,14 @@ import java.util.Objects;
 import java.util.RandomAccess;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
@@ -181,6 +183,15 @@ public class TableDataApiImpl implements TableDataApi {
   @Override
   public <T> TableData<?> tableOf(EntityDefinition entityDef, List<T> objectList,
       List<String> columns) {
+    return tableOfNodes(
+        entityDef,
+        objectList.stream().map(o -> objectApi.create(null, o)),
+        columns);
+  }
+
+  @Override
+  public TableData<?> tableOfNodes(EntityDefinition entityDef, Stream<ObjectNode> nodes,
+      List<String> columns) {
     // in case of embedded column names (which contains a DOT) we only need the main property (first
     // element of property
     // path)
@@ -192,17 +203,13 @@ public class TableDataApiImpl implements TableDataApi {
         .collect(toMap(col -> col, entityDef::getProperty));
     BuilderWithFixProperties<EntityDefinition> table =
         TableDatas.builder(entityDef, properties.values());
-    objectList.stream()
-        .forEachOrdered(object -> {
-          BuilderWithFixProperties<EntityDefinition> row = table.addRow();
-          Map<String, Object> map = objectApi.create(null, object).getObjectAsMap();
-          tableColumns.forEach(
-              col -> row.setObject(properties.get(col), map.get(col)));
-        });
+    nodes.forEachOrdered(node -> {
+      BuilderWithFixProperties<EntityDefinition> row = table.addRow();
+      Map<String, Object> map = node.getObjectAsMap();
+      tableColumns.forEach(col -> row.setObject(properties.get(col), map.get(col)));
+    });
     return table.build(objectApi);
   }
-
-
 
   @Override
   public <E extends EntityDefinition> void sort(TableData<E> tableData,
