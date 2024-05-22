@@ -177,33 +177,20 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       return OrgUtils.securityPredicate(sessionApi, getDefinition().getAdminGroupName());
     }
 
-    public boolean isApprover() {
-      URI approver = getApprover();
+    public boolean isCurrentApprover() {
+      URI approver = getCurrentApprover();
       return approver != null && approver.equals(sessionApi.getUserUri());
     }
 
     public boolean getBranchActive() {
       return getMdmBranch() != null;
-      // ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
-      // ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
-      // MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
-      // return mdmDefinitionState.getGlobalModification() != null;
     }
 
-    public URI getApprover() {
+    public URI getCurrentApprover() {
       if (modificationApi == null) {
         return null;
       }
       return modificationApi.getModification().getApprover();
-      // ObjectNode definitionNode = objectApi.loadLatest(getDefinition().getUri());
-      // ObjectNode defitionState = definitionNode.ref(MDMDefinition.STATE).get();
-      // MDMDefinitionState mdmDefinitionState = defitionState.getObject(MDMDefinitionState.class);
-      // if (mdmDefinitionState.getGlobalModification() != null) {
-      // return mdmDefinitionState.getGlobalModification().getApprover();
-      // } else {
-      // return null;
-      // }
-
     }
 
     public View getView() {
@@ -249,7 +236,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected MDMEntryChangesPageModel createModel(PageContext pageContext) {
     MDMEntryChangesPageModel model = new MDMEntryChangesPageModel();
     model.setLatestModificationNote(pageContext.latestModificationNote);
-    URI approver = pageContext.getApprover();
+    URI approver = pageContext.getCurrentApprover();
     if (approver != null) {
       model.approverName(objectApi.loadLatest(approver).getValueAsString(User.NAME));
     }
@@ -265,7 +252,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         new ComponentConstraint()
             .dataName(MDMEntryChangesPageModel.APPROVER_NAME)
             .enabled(false)
-            .visible(pageContext.getApprover() != null)));
+            .visible(pageContext.getCurrentApprover() != null)));
   }
 
   protected void refreshActions(PageContext ctx) {
@@ -279,8 +266,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
           ctx.getDefinition().getBranchingStrategy() == MDMBranchingStrategy.GLOBAL;
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
-        boolean underApproval = ctx.getApprover() != null;
-        boolean isApprover = ctx.isApprover();
+        boolean underApproval = ctx.getCurrentApprover() != null;
+        boolean isApprover = ctx.isCurrentApprover();
         boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
         uiActions
@@ -595,7 +582,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
 
     MDMModificationState modificationState = ctx.getModificationApi().getModification().getState();
-    boolean isApprover = ctx.isApprover();
+    boolean isApprover = ctx.isCurrentApprover();
     boolean isAdmin = ctx.isAdmin();
     page.getRows().forEach(row -> {
       updateGridRow(hasStateColumn, modificationItems, modificationState, row, isApprover, isAdmin);
@@ -841,7 +828,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ctx.loadOnlyDefinitionByView();
       updateGridRow(true, ctx.getModificationApi().getModification().getModificationItems(),
           ctx.getModificationApi().getModification().getState(), row,
-          ctx.isApprover(), ctx.isAdmin());
+          ctx.isCurrentApprover(), ctx.isAdmin());
     });
   }
 }

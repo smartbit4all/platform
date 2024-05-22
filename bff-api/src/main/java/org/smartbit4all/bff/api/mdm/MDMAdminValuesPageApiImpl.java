@@ -46,7 +46,7 @@ public class MDMAdminValuesPageApiImpl extends MDMAdminPageApiImpl
   protected void refreshUiActions(PageContext ctx) {
     super.refreshUiActions(ctx);
     // Add a new value action as last.
-    if (ctx.checkAdmin() && ctx.getModificationApi() != null) {
+    if (ctx.isAdmin() && ctx.getModificationApi() != null) {
       ctx.view.addActionsItem(new UiAction()
           .code(ACTION_ADD_NEW_ENTRY)
           .descriptor(new UiActionDescriptor()

@@ -75,12 +75,28 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
       return parameters.get(PARAM_ALREADY_SELECTED_ACTION_CODE, String.class);
     }
 
-    public boolean checkAdmin() {
+    public boolean isAdmin() {
       return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
     }
 
-    public boolean checkAdminApprover() {
+    public boolean isAdminApprover() {
       return OrgUtils.securityPredicate(sessionApi, definition.getAdminApproverGroupName());
+    }
+
+    public URI getCurrentApprover() {
+      if (modificationApi == null) {
+        return null;
+      }
+      return modificationApi.getModification().getApprover();
+    }
+
+    public boolean isCurrentApprover() {
+      URI approver = getCurrentApprover();
+      return approver != null && approver.equals(sessionApi.getUserUri());
+    }
+
+    public boolean isUnderApproval() {
+      return getCurrentApprover() != null;
     }
 
     public View getView() {
@@ -123,7 +139,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   protected void refreshUiActions(PageContext ctx) {
     List<UiAction> actions = new ArrayList<>();
-    if ((ctx.checkAdmin() || ctx.checkAdminApprover())) {
+    if ((ctx.isAdmin() || ctx.isAdminApprover())) {
       MDMBranchingStrategy strategy = ctx.definition.getBranchingStrategy();
       if (strategy == MDMBranchingStrategy.GLOBAL) {
         addAction(actions, ACTION_OPEN_MDM_CHANGES);
@@ -243,7 +259,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public void performOpenChanges(UUID viewUuid, UiActionRequest request) {
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
-    if (!(context.checkAdmin() || context.checkAdminApprover())) {
+    if (!(context.isAdmin() || context.isAdminApprover())) {
       throw new IllegalAccessError("Only admins can view MDM changes!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
@@ -257,7 +273,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     // TODO may extract method to avoid duplicate of performOpenChanges
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
-    if (!(context.checkAdmin() || context.checkAdminApprover())) {
+    if (!(context.isAdmin() || context.isAdminApprover())) {
       throw new IllegalAccessError("Only admins can view MDM sessions!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_SESSIONS)

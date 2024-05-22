@@ -176,8 +176,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     SearchIndex<Object> searchIndexPublished;
     boolean inactives = false;
     MDMBranchingStrategy branchingStrategy;
-    boolean underApproval;
-    boolean isApprover;
     FilterExpressionBuilderModel filterModel;
 
     PageContext loadByView() {
@@ -213,17 +211,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
 
       filterModel = entryDescriptor.getFilterModel();
-      if (checkAdmin()) {
+      if (isAdmin()) {
         FilterExpressionBuilderModel filterModelAdmin =
             entryDescriptor.getFilterModelAdmin();
         if (filterModelAdmin != null) {
           filterModel = filterModelAdmin;
         }
       }
-
-      URI approver = getEntryApi().getApprover();
-      underApproval = approver != null;
-      isApprover = approver != null && approver.equals(sessionApi.getUserUri());
 
       return this;
     }
@@ -236,8 +230,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       return extractParam(MDMEntryDescriptor.class, PARAM_ENTRY_DESCRIPTOR, view.getParameters());
     }
 
-    public boolean checkAdmin() {
+    public boolean isAdmin() {
       return OrgUtils.securityPredicate(sessionApi, getEntryDescriptor().getAdminGroupName());
+    }
+
+    public boolean isAdminApprover() {
+      return OrgUtils.securityPredicate(sessionApi, getDefinition().getAdminApproverGroupName());
     }
 
     public void setInactives(boolean inactives) {
@@ -260,6 +258,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       return entryApi;
     }
 
+    public URI getApprover() {
+      if (modificationApi == null) {
+        return null;
+      }
+      return modificationApi.getModification().getApprover();
+    }
+
     public MDMEntryDescriptor getEntryDescriptor() {
       return entryDescriptor;
     }
@@ -277,11 +282,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     }
 
     public boolean isUnderApproval() {
-      return underApproval;
+      return getApprover() != null;
     }
 
-    public boolean isApprover() {
-      return isApprover;
+    public boolean isCurrentApprover() {
+      URI approver = getApprover();
+      return approver != null && approver.equals(sessionApi.getUserUri());
     }
 
     public MDMModificationApi getModificationApi() {
@@ -396,7 +402,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   protected void refreshActions(PageContext ctx) {
-    boolean isAdmin = ctx.checkAdmin();
+    boolean isAdmin = ctx.isAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.getEntryDescriptor().getInactiveMgmt());
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
@@ -414,9 +420,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     // if API present, approving enabled
     if (approvingEnabled) {
-      URI approver = ctx.getEntryApi().getApprover();
-      boolean underApproval = approver != null;
-      boolean isApprover = approver != null && approver.equals(sessionApi.getUserUri());
+      boolean underApproval = ctx.isUnderApproval();
+      boolean isApprover = ctx.isCurrentApprover();
       boolean canEdit = canEdit(isAdmin, underApproval, isApprover);
 
       uiActions
@@ -458,7 +463,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected final void refreshGrid(PageContext ctx) {
     TableData<?> data;
-    if (ctx.checkAdmin() && ctx.getEntryApi().hasBranch()) {
+    if ((ctx.isAdmin() || ctx.isAdminApprover()) && ctx.getEntryApi().hasBranch()) {
       List<BranchedObjectEntry> list;
       if (ctx.inactives) {
         StoredList inactiveList = ctx.getEntryApi().getInactiveList();
@@ -794,7 +799,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   protected GridPage addWidgetEntryGridActionsInner(GridPage page, PageContext ctx) {
-    boolean isAdmin = ctx.checkAdmin();
+    boolean isAdmin = ctx.isAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
@@ -815,18 +820,19 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
-        boolean canEdit = canEdit(isAdmin, ctx.isUnderApproval(), ctx.isApprover());
+        boolean canEdit = canEdit(isAdmin, ctx.isUnderApproval(), ctx.isCurrentApprover());
         uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
             .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
                 !deletedOnBranch)
             .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives, newOnBranch)
             .addIf(ACTION_INACTIVATE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
                 !newOnBranch, !deletedOnBranch)
-            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
-                !ctx.inactives, isOnBranch && isOnOriginal)
             .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch, !isNewEntry)
-            .addIf(ACTION_VIEW_ENTRY, (isAdmin || ctx.isApprover()));
+            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, (isAdmin || ctx.isCurrentApprover()),
+                entryEditingEnabled, branchingEnabled,
+                !ctx.inactives, isOnBranch && isOnOriginal)
+            .addIf(ACTION_VIEW_ENTRY, (isAdmin || ctx.isCurrentApprover()));
       } else {
         uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
             .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
