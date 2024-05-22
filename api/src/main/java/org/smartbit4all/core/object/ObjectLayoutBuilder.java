@@ -3,7 +3,9 @@ package org.smartbit4all.core.object;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
@@ -267,6 +269,72 @@ public final class ObjectLayoutBuilder {
         .selection(selectionDefinition);
   }
 
+
+  private static final String PROP_YT_PLAYER_URL = "link";
+  private static final String PROP_YT_PLAYER_START_SECONDS = "startSeconds";
+  private static final String PROP_YT_PLAYER_END_SECONDS = "endSeconds";
+
+  /**
+   * Creates a YouTube Video Player.
+   * 
+   * <p>
+   * The player shall play the video found at the specified URL from start to finish.
+   * 
+   * @param key optional {@code String} key to programmatically identify this widget in the
+   *        enveloping form, nullable
+   * @param label the {@code String} label over the widget, nullable
+   * @param url the {@code String} YouTube embedded video link the player should play. <strong>Must
+   *        not be null!</strong> Should follow the URL format for embedded YouTube videos, such as
+   *        {@code https://www.youtube.com/embed/<video_id>?<query_params>}
+   * @return the {@link SmartWidgetDefinition} of a YouTube Video Player playing the specified video
+   */
+  public static SmartWidgetDefinition youtubePlayer(String key, String label, String url) {
+    return youtubePlayer(key, label, url, null, null);
+  }
+
+  /**
+   * Creates a YouTube Video Player.
+   * 
+   * <p>
+   * The player shall play the video found at the specified URL from provided initial timestamp
+   * until the concluding timestamp.
+   * 
+   * @param key optional {@code String} key to programmatically identify this widget in the
+   *        enveloping form, nullable
+   * @param label the {@code String} label over the widget, nullable
+   * @param url the {@code String} YouTube embedded video link the player should play. <strong>Must
+   *        not be null!</strong> Should follow the URL format for embedded YouTube videos, such as
+   *        {@code https://www.youtube.com/embed/<video_id>?<query_params>}
+   * @param startAt the {@code Integer} seconds into the video where the player shall start,
+   *        nullable; if a null or negative value is provided, the property shall default to
+   *        {@code 0} and the player starts from the beginning of the video
+   * @param endAt the {@code Integer} seconds into the video where the player shall terminate,
+   *        nullable; if a null or negative value is provided the player terminates at the end of
+   *        the video
+   * @return
+   */
+  public static SmartWidgetDefinition youtubePlayer(String key, String label, String url,
+      Integer startAt, Integer endAt) {
+    Objects.requireNonNull(url, "Youtube Player URL cannot be null!");
+
+    final Map<String, Object> properties = new HashMap<>();
+    properties.put(PROP_YT_PLAYER_URL, url);
+    if (startAt != null && startAt > 0) {
+      properties.put(PROP_YT_PLAYER_START_SECONDS, startAt);
+    } else {
+      properties.put(PROP_YT_PLAYER_START_SECONDS, 0);
+    }
+
+    if (endAt != null && endAt > 0) {
+      properties.put(PROP_YT_PLAYER_END_SECONDS, endAt);
+    }
+
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.YOUTUBE_PLAYER)
+        .key(key)
+        .label(label)
+        .properties(properties);
+  }
 
   private final ObjectApi objectApi;
   private final ObjectLayoutApi objectLayoutApi;
