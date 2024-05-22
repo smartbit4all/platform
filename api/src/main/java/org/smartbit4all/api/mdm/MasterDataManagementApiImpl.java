@@ -782,10 +782,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           .findFirst()
           .orElse(null);
     }, state -> {
-      if (state.getGlobalModification() != null) {
+      if (state.getActiveModifications().stream()
+          .anyMatch(mod -> Objects.equals(branchCaption, mod.getName()))) {
         throw new IllegalStateException(MessageFormat.format(
-            localeSettingApi.get("mdm.globalbranch.alreadyexists"),
-            definitionName));
+            localeSettingApi.get("mdm.branch.alreadyexists"),
+            branchCaption));
       }
     });
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
