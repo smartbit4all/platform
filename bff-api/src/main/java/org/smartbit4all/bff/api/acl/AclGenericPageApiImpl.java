@@ -262,7 +262,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, config.getAclName());
       initGridInView(ctx, config);
       refreshGrid(viewUuid, acl, config);
-      layout.addComponentsItem(createGridLayout(getGridId(config)));
+      layout.addComponentsItem(createGridLayout(view.getUuid(), getGridId(config)));
     }
   }
 
@@ -376,7 +376,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     return accessControlInternalApi.getSubjects(acl, config.getOperation());
   }
 
-  protected SmartComponentLayoutDefinition createGridLayout(String gridId) {
+  protected SmartComponentLayoutDefinition createGridLayout(UUID viewUuid, String gridId) {
     return container(LayoutDirection.VERTICAL)
         .addComponentsItem(form(LayoutDirection.VERTICAL,
             label(null, localeSettingApi.get(PREFIX, gridId))))
