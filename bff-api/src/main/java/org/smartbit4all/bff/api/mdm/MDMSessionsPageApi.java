@@ -40,6 +40,9 @@ public interface MDMSessionsPageApi extends SearchPageApi {
   @WidgetActionHandler(MDMActions.ACTION_OPEN_EDITING)
   void openEditing(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
 
+  @WidgetActionHandler(MDMActions.ACTION_RENAME_EDITING)
+  void renameEditing(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
+
   // TODO we may need this to have a consistent behavior between different strategies.
   // /**
   // * Open editing on global session / branch.

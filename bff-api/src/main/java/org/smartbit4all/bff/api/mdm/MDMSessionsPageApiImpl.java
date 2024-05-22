@@ -90,6 +90,14 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
       return definition;
     }
 
+    public boolean isAdmin() {
+      return OrgUtils.securityPredicate(sessionApi, definition.getAdminGroupName());
+    }
+
+    public boolean isAdminApprover() {
+      return OrgUtils.securityPredicate(sessionApi, definition.getAdminApproverGroupName());
+    }
+
   }
 
   protected SessionsPageContext getContextByViewUUID(UUID viewUuid) {
@@ -182,19 +190,31 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
 
   @Override
   public void startEditing(UUID viewUuid, UiActionRequest request) {
-    String name = (String) request.getParams().get(UiActions.INPUT);
-    if (Strings.isNullOrEmpty(name)) {
-      throw new IllegalArgumentException("A név kitöltése kötelező!");
-    }
+    String name = getNameFromRequest(request);
     SessionsPageContext ctx = getContextByViewUUID(viewUuid);
     masterDataManagementApi.initiateModificationBranch(ctx.definition.getName(),
         name);
     refreshGridData(viewUuid);
   }
 
+  private String getNameFromRequest(UiActionRequest request) {
+    String name = (String) request.getParams().get(UiActions.INPUT);
+    if (Strings.isNullOrEmpty(name)) {
+      throw new IllegalArgumentException("A név kitöltése kötelező!");
+    }
+    return name;
+  }
+
   @Override
   public void openEditing(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request) {
     SessionsPageContext ctx = getContextByViewUUID(viewUuid);
+    MDMModificationApi modificationApi = getModificationApi(viewUuid, widgetId, nodeId, ctx);
+    modificationApi.startEditing();
+    closeOrRefreshPage(ctx);
+  }
+
+  private MDMModificationApi getModificationApi(UUID viewUuid, String widgetId, String nodeId,
+      SessionsPageContext ctx) {
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     String modificationId =
         (String) GridModels.getValueFromGridRow(gridModel, nodeId, MDMModification.ID);
@@ -203,19 +223,37 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     if (modificationApi == null) {
       throw new IllegalStateException("Modification is not available");
     }
-    modificationApi.startEditing();
-    closeOrRefreshPage(ctx);
+    return modificationApi;
+  }
+
+  @Override
+  public void renameEditing(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    String name = getNameFromRequest(request);
+    SessionsPageContext ctx = getContextByViewUUID(viewUuid);
+    MDMModificationApi modificationApi = getModificationApi(viewUuid, widgetId, nodeId, ctx);
+    modificationApi.renameEditing(name);
+    ctx.loadByView();
+    refreshGridData(ctx.view.getUuid());
   }
 
   @Override
   public GridPage onGridPageRender(GridPage page, UUID viewUuid) {
+    SessionsPageContext ctx = getContextByViewUUID(viewUuid);
+    boolean isAdmin = ctx.isAdmin();
     for (GridRow row : page.getRows()) {
       MDMModificationState modificationState = MDMModificationState
           .fromValue(GridModels.getValueFromGridRow(row, MDMModification.STATE).toString());
       if (MDMModificationState.APPROVED != modificationState
           && MDMModificationState.DISPOSED != modificationState) {
         row.addActionsItem(new UiAction().code(MDMActions.ACTION_OPEN_EDITING));
+        if (isAdmin) {
+          row.addActionsItem(new UiAction()
+              .code(MDMActions.ACTION_RENAME_EDITING)
+              .inputType(UiActionInputType.TEXTFIELD));
+        }
       }
+
     }
     return page;
   }

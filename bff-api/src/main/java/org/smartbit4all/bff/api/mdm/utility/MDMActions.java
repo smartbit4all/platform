@@ -15,6 +15,7 @@ public class MDMActions {
    * Opens an already created editing session.
    */
   public static final String ACTION_OPEN_EDITING = "OPEN_EDITING";
+  public static final String ACTION_RENAME_EDITING = "RENAME_EDITING";
   public static final String ACTION_CLOSE_EDITING = "CLOSE_EDITING";
 
   /**

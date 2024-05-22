@@ -91,6 +91,8 @@ public interface MDMModificationApi {
    */
   void startEditing();
 
+  void renameEditing(String name);
+
   /**
    * The current user is removed from the {@link MDMModification#CURRENT_EDITORS}.
    */
