@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -844,13 +845,23 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       }
       Set<String> restrictedProperties =
           new HashSet<>(vectorCollectionDescriptor.getRestrictedProperties());
-      vectorCollection.clear();
+      try {
+        vectorCollection.clear();
+      } catch (IOException e) {
+        throw new IllegalStateException("A vektoradatbázis alaphelyzetbe állítása nem sikerült.");
+      }
       getList().nodesFromCache().forEach(n -> {
-        vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
-            .filter(e -> !excludedProperties.contains(e.getKey()))
-            .filter(e -> e.getValue() != null)
-            .filter(e -> !restrictedProperties.contains(e.getKey()))
-            .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
+        try {
+          vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
+              .filter(e -> !excludedProperties.contains(e.getKey()))
+              .filter(e -> e.getValue() != null)
+              .filter(e -> !restrictedProperties.contains(e.getKey()))
+              .collect(
+                  Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
+        } catch (IOException e) {
+          throw new IllegalStateException(
+              "Az objektumok beszúrása a vektoradatbázisba nem sikerült.");
+        }
       });
     }
   }

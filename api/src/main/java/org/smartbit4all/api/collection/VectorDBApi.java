@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.io.IOException;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
@@ -11,22 +12,24 @@ public interface VectorDBApi extends PrimaryApi<VectorDBContibutionApi> {
   static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
 
   String addPoint(ServiceConnection dbConnection, String collectionName,
-      VectorValue value);
+      VectorValue value) throws IOException;
 
-  String addPoints(ServiceConnection dbConnection, String collectionName,
-      List<VectorValue> values);
+  List<String> addPoints(ServiceConnection dbConnection, String collectionName,
+      List<VectorValue> values) throws IOException;
 
-  String deletePoint(ServiceConnection dbConnection, String collectionName, String id);
+  void deletePoint(ServiceConnection dbConnection, String collectionName, String id)
+      throws IOException;
 
-  String deletePoints(ServiceConnection dbConnection, String collectionName, List<String> ids);
+  void deletePoints(ServiceConnection dbConnection, String collectionName, List<String> ids)
+      throws IOException;
 
-  String createCollection(ServiceConnection dbConnection, String name);
+  void createCollection(ServiceConnection dbConnection, String name) throws IOException;
 
-  String deleteCollection(ServiceConnection dbConnection, String name);
+  void deleteCollection(ServiceConnection dbConnection, String name) throws IOException;
 
-  boolean collectionExists(ServiceConnection dbConnection, String name);
+  boolean collectionExists(ServiceConnection dbConnection, String name) throws IOException;
 
   List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
-      VectorValue searchVector, int limit);
+      VectorValue searchVector, int limit) throws IOException;
 
 }

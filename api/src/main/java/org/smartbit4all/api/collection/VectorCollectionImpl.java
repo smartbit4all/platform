@@ -1,6 +1,8 @@
 package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +20,6 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.utility.StringConstant;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -53,7 +54,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public void ensureExist() {
+  public void ensureExist() throws IOException {
     if (!vectorDBApi.collectionExists(vectorDBService, collectionName)) {
       vectorDBApi.createCollection(vectorDBService, collectionName);
     }
@@ -61,7 +62,7 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void addObject(Object obj, List<String> restictedColumns) {
+  public void addObject(Object obj, List<String> restictedColumns) throws IOException {
     Map<String, Object> objAsMap = objectApi.asType(Map.class, obj);
     VectorValue vectorValue = embed(objAsMap.entrySet().stream()
         .filter(e -> e.getKey() != null && e.getValue() != null)
@@ -76,13 +77,12 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public boolean deleteObject(String id) {
-    String response = vectorDBApi.deletePoint(vectorDBService, collectionName, id);
-    return !Objects.equals(response, StringConstant.EMPTY);
+  public void deleteObject(String id) throws IOException {
+    vectorDBApi.deletePoint(vectorDBService, collectionName, id);
   }
 
   @Override
-  public void clear() {
+  public void clear() throws IOException {
     vectorDBApi.deleteCollection(vectorDBService, collectionName);
     vectorDBApi.createCollection(vectorDBService, collectionName);
   }
@@ -103,7 +103,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public List<VectorSearchResultItem> search(Object obj, int limit) {
+  public List<VectorSearchResultItem> search(Object obj, int limit) throws IOException {
     if (log_audit.isInfoEnabled()) {
       log_audit.info(">>>>LOOKUP: {} collection for {}", collectionName, obj);
     }
@@ -130,7 +130,12 @@ public class VectorCollectionImpl implements VectorCollection {
     @Override
     public ObjectLookupResult lookup(Object values,
         ObjectLookupParameter parameter) {
-      List<VectorSearchResultItem> result = search(values, parameter.getLimit());
+      List<VectorSearchResultItem> result = new ArrayList<>();
+      try {
+        result = search(values, parameter.getLimit());
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
       return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
           .stream().filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
           .map(si -> new ObjectLookupResultItem()

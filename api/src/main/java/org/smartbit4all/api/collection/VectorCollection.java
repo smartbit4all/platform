@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.io.IOException;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
@@ -16,19 +17,19 @@ public interface VectorCollection {
 
   static final String VECTOR_AUDIT_LOG = "vector.audit";
 
-  void ensureExist();
+  void ensureExist() throws IOException;
 
-  default void addObject(Object obj) {
+  default void addObject(Object obj) throws IOException {
     addObject(obj, null);
   }
 
-  void addObject(Object obj, List<String> restictedColumns);
+  void addObject(Object obj, List<String> restictedColumns) throws IOException;
 
-  boolean deleteObject(String id);
+  void deleteObject(String id) throws IOException;
 
-  void clear();
+  void clear() throws IOException;
 
-  List<VectorSearchResultItem> search(Object obj, int limit);
+  List<VectorSearchResultItem> search(Object obj, int limit) throws IOException;
 
   /**
    * Constructs a lookup based on the collection. It is searching with the
