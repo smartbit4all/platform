@@ -73,16 +73,12 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
   private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
       new HttpSessionOAuth2AuthorizationRequestRepository();
 
-  private MissingUserHandler onMissingUser;
+  private OrgUserHandler orgUserHandler = new DefaultOAuth2OrgUserHandler();
 
   private final List<SessionBasedAuthTokenProvider> authTokenProviders;
 
   private boolean createMissingUser = false;
   private String authorizationErrorPath = "/authorization/error";
-
-  public static interface MissingUserHandler {
-    URI onMissingUser(OAuth2AuthenticationToken oauthToken) throws Exception;
-  }
 
   public OAuth2SessionAuthSuccessHandler(String targetUrl) {
     super(targetUrl);
@@ -195,18 +191,10 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
       user = orgApi.getUserByUsername(name);
       URI userUri = null;
       if (user == null) {
-        if (onMissingUser != null) {
-          userUri = onMissingUser.onMissingUser(oauthToken);
-        } else {
-          if (createMissingUser) {
-            log.warn(
-                "A user logined with sso but there was no mathcing local User object. Creating a new one...");
-            userUri = orgApi.saveUser(new User()
-                .username(name));
-          }
-        }
+        userUri = orgUserHandler.onMissingUser(oauthToken);
+        user = orgApi.getUser(userUri);
       } else {
-        checkUser(user);
+        orgUserHandler.checkUser(user, oauthToken);
         userUri = user.getUri();
       }
       if (userUri != null) {
@@ -217,14 +205,6 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
       }
     }
     return user;
-  }
-
-  /**
-   * Throws exception if the user can not be logged in
-   */
-  protected void checkUser(User user) throws Exception {
-    // nope
-    // override this to check user. e.g.: check permissions
   }
 
   private AccountInfo createDefaultAccountInfo(User user, OAuth2AuthorizedClient authorizedClient,
@@ -254,9 +234,9 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     return accountInfo;
   }
 
-  public void setOnMissingUser(MissingUserHandler onMissingUser) {
-    Assert.notNull(onMissingUser, "onMissingUser cannot be null");
-    this.onMissingUser = onMissingUser;
+  public void setOrgUserHandler(OrgUserHandler orgUserHandler) {
+    Assert.notNull(orgUserHandler, "orgUserHandler cannot be null");
+    this.orgUserHandler = orgUserHandler;
   }
 
   public void setAuthorizationRequestRepository(
@@ -278,6 +258,42 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
   public void setAuthorizationErrorPath(String authorizationErrorPath) {
     this.authorizationErrorPath = authorizationErrorPath;
+  }
+
+  public static interface OrgUserHandler {
+    /**
+     * Creates a new org user based on the received OAuth2Token
+     */
+    URI onMissingUser(OAuth2AuthenticationToken oauthToken) throws Exception;
+
+    /**
+     * Throws exception if the user can not be logged in. <br/>
+     * e.g.: check permissions
+     */
+    void checkUser(User user, OAuth2AuthenticationToken oauthToken) throws Exception;
+
+  }
+
+  public class DefaultOAuth2OrgUserHandler implements OrgUserHandler {
+
+
+    @Override
+    public URI onMissingUser(OAuth2AuthenticationToken oauthToken) throws Exception {
+      if (createMissingUser) {
+        log.warn(
+            "A user logined with sso but there was no mathcing local User object. Creating a new one...");
+        return orgApi.saveUser(new User()
+            .username(oauthToken.getName()));
+      } else {
+        return null;
+      }
+    }
+
+    @Override
+    public void checkUser(User user, OAuth2AuthenticationToken oauthToken) throws Exception {
+      // nope
+    }
+
   }
 
 }

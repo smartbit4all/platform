@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.util.ObjectUtils;
 import io.jsonwebtoken.lang.Assert;
 
 /**
@@ -106,11 +107,18 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
     URI sessionUri = null;
     try {
       sessionUri = URI.create(principalName);
-      return sessionManagementApi.readSession(sessionUri);
+      if (isValidUri(sessionUri)) {
+        return sessionManagementApi.readSession(sessionUri);
+      }
     } catch (Exception e) {
       // do nothing here when the principalName does not represent a session
-      return null;
     }
+    return null;
+  }
+
+  private boolean isValidUri(URI sessionUri) {
+    return !ObjectUtils.isEmpty(sessionUri.getScheme())
+        && !ObjectUtils.isEmpty(sessionUri.getPath());
   }
 
   @SuppressWarnings("unchecked")
