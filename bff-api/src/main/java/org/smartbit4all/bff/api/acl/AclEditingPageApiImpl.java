@@ -223,13 +223,13 @@ public class AclEditingPageApiImpl extends PageApiImpl<ACL> implements AclEditin
 
   }
 
-  private boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
+  protected boolean checkSubjectIsAlreadyInAcl(ACL acl, URI subjectUri) {
     return acl.getRootEntry().getEntries().stream().map(entry -> entry.getSubject().getRef())
         .collect(toList())
         .contains(subjectUri);
   }
 
-  private SmartWidgetDefinition createAclMatrixWidget(View view, ACL acl, List<String> operations) {
+  protected SmartWidgetDefinition createAclMatrixWidget(View view, ACL acl, List<String> operations) {
     ObjectMapHelper parameters = parameters(view);
     String label = parameters.get(PARAM_TITLE, String.class);
     if (Strings.isNullOrEmpty(label)) {
