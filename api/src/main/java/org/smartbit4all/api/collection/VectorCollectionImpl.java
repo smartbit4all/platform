@@ -1,7 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +18,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -54,7 +53,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public void ensureExist() throws IOException {
+  public void ensureExist() {
     if (!vectorDBApi.collectionExists(vectorDBService, collectionName)) {
       vectorDBApi.createCollection(vectorDBService, collectionName);
     }
@@ -62,27 +61,31 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void addObject(Object obj, List<String> restictedColumns) throws IOException {
-    Map<String, Object> objAsMap = objectApi.asType(Map.class, obj);
-    VectorValue vectorValue = embed(objAsMap.entrySet().stream()
-        .filter(e -> e.getKey() != null && e.getValue() != null)
+  public String addObject(Object obj, List<String> restictedColumns) {
+    return add(((Map<String, Object>) objectApi.asType(Map.class, obj)).entrySet().stream()
         .filter(e -> restictedColumns == null || !restictedColumns.contains(e.getKey()))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
-    if (vectorValue == null) {
-      log.error("The embedding failed on object: {}", obj);
-      return;
-    }
-    vectorValue.setInputObject(objAsMap);
-    vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
   }
 
   @Override
-  public void deleteObject(String id) throws IOException {
+  public String add(Map<String, Object> objAsMap) {
+    VectorValue vectorValue = embed(objAsMap.entrySet().stream()
+        .filter(e -> e.getKey() != null && e.getValue() != null)
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+    if (vectorValue == null) {
+      throw new IllegalArgumentException("The embedding failed on object: " + objAsMap);
+    }
+    vectorValue.setInputObject(objAsMap);
+    return vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
+  }
+
+  @Override
+  public void deleteObject(String id) {
     vectorDBApi.deletePoint(vectorDBService, collectionName, id);
   }
 
   @Override
-  public void clear() throws IOException {
+  public void clear() {
     vectorDBApi.deleteCollection(vectorDBService, collectionName);
     vectorDBApi.createCollection(vectorDBService, collectionName);
   }
@@ -103,7 +106,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public List<VectorSearchResultItem> search(Object obj, int limit) throws IOException {
+  public List<VectorSearchResultItem> search(Object obj, int limit) {
     if (log_audit.isInfoEnabled()) {
       log_audit.info(">>>>LOOKUP: {} collection for {}", collectionName, obj);
     }
@@ -131,11 +134,7 @@ public class VectorCollectionImpl implements VectorCollection {
     public ObjectLookupResult lookup(Object values,
         ObjectLookupParameter parameter) {
       List<VectorSearchResultItem> result = new ArrayList<>();
-      try {
-        result = search(values, parameter.getLimit());
-      } catch (IOException e) {
-        log.error(e.getMessage(), e);
-      }
+      result = search(values, parameter.getLimit());
       return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
           .stream().filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
           .map(si -> new ObjectLookupResultItem()

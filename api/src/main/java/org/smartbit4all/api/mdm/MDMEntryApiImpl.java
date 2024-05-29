@@ -1,10 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +59,10 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -845,23 +844,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       }
       Set<String> restrictedProperties =
           new HashSet<>(vectorCollectionDescriptor.getRestrictedProperties());
-      try {
-        vectorCollection.clear();
-      } catch (IOException e) {
-        throw new IllegalStateException("A vektoradatbázis alaphelyzetbe állítása nem sikerült.");
-      }
+      vectorCollection.clear();
       getList().nodesFromCache().forEach(n -> {
-        try {
-          vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
-              .filter(e -> !excludedProperties.contains(e.getKey()))
-              .filter(e -> e.getValue() != null)
-              .filter(e -> !restrictedProperties.contains(e.getKey()))
-              .collect(
-                  Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
-        } catch (IOException e) {
-          throw new IllegalStateException(
-              "Az objektumok beszúrása a vektoradatbázisba nem sikerült.");
-        }
+        vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
+            .filter(e -> !excludedProperties.contains(e.getKey()))
+            .filter(e -> e.getValue() != null)
+            .filter(e -> !restrictedProperties.contains(e.getKey()))
+            .collect(
+                Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
       });
     }
   }

@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
@@ -19,17 +20,19 @@ public interface VectorCollection {
 
   void ensureExist() throws IOException;
 
-  default void addObject(Object obj) throws IOException {
-    addObject(obj, null);
+  default String addObject(Object obj) {
+    return addObject(obj, null);
   }
 
-  void addObject(Object obj, List<String> restictedColumns) throws IOException;
+  String addObject(Object obj, List<String> restictedColumns);
 
-  void deleteObject(String id) throws IOException;
+  String add(Map<String, Object> obj);
 
-  void clear() throws IOException;
+  void deleteObject(String id);
 
-  List<VectorSearchResultItem> search(Object obj, int limit) throws IOException;
+  void clear();
+
+  List<VectorSearchResultItem> search(Object obj, int limit);
 
   /**
    * Constructs a lookup based on the collection. It is searching with the
