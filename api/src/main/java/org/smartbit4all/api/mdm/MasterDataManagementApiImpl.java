@@ -916,7 +916,22 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
         resultStateWrapper.getCurrentStateUri(), resultStateWrapper.prevState,
         resultStateWrapper.branchUri);
+
+    log.info("Global branch opened for [ definition: {} ]", definitionName);
+    if (log.isDebugEnabled()) {
+      logDefinitionStateChange(resultStateWrapper);
+    }
+
     return resultStateWrapper.getCurrentStateUri();
+  }
+
+  private void logDefinitionStateChange(MasterDataManagementApiImpl.MDMDefitionStateWrapper state) {
+    if (state == null) {
+      log.debug("Attempted to log definition state change, but state is null!");
+    } else {
+      log.debug("Prev state: {} | Current state: {} | branch: {} ",
+          state.prevState, state.getCurrentStateUri(), state.branchUri);
+    }
   }
 
   @Override
@@ -960,6 +975,12 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     fireModificationEvent(MODIFICATION_FINALIZED, null,
         getDefinition(definitionName).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState, stateWrapper.branchUri);
+
+    log.info("Finalised and merged global branch for [ definition: {} ]", definitionName);
+    if (log.isDebugEnabled()) {
+      logDefinitionStateChange(stateWrapper);
+    }
+
     MDMDefinitionState state =
         objectApi.load(stateWrapper.prevState).getObject(MDMDefinitionState.class);
     Map<String, MDMEntryDescriptor> descriptors = state.getGlobalModification().getDescriptors();
@@ -996,6 +1017,12 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     fireModificationEvent(MODIFICATION_CANCELLED, null,
         getDefinition(definitionName).getUri(),
         stateWrapper.getCurrentStateUri(), stateWrapper.prevState, stateWrapper.branchUri);
+
+    log.info("Global branch dropped for [ definition: {} ]", definitionName);
+    if (log.isDebugEnabled()) {
+      logDefinitionStateChange(stateWrapper);
+    }
+
     return stateWrapper.getCurrentStateUri();
   }
 
