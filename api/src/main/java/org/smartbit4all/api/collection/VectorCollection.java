@@ -1,9 +1,11 @@
 package org.smartbit4all.api.collection;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
+import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 
@@ -26,9 +28,25 @@ public interface VectorCollection {
 
   String addObject(Object obj, List<String> restictedColumns);
 
-  String add(Map<String, Object> obj);
+  /**
+   * Add a given value to the vector index and append some additional data. The value itself is not included in the index entry.
+   * @param value
+   * @param additionalData
+   * @return
+   */
+  String add(Map<String, Object> value, Map<String, Object> additionalData);
 
-  void deleteObject(String id);
+  /**
+   * Add a given value to the vector index and append some additional data. The value itself is not included in the index entry.
+   * @param value
+   * @param additionalData
+   * @return
+   */
+  String add(String value, Map<String, Object> additionalData);
+  
+  void delete(String id);
+
+  void delete(Collection<String> ids);
 
   void clear();
 

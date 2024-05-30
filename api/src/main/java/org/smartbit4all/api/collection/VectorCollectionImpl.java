@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,26 +63,45 @@ public class VectorCollectionImpl implements VectorCollection {
   @SuppressWarnings("unchecked")
   @Override
   public String addObject(Object obj, List<String> restictedColumns) {
-    return add(((Map<String, Object>) objectApi.asType(Map.class, obj)).entrySet().stream()
+    Map<String, Object> map = (Map<String, Object>) objectApi.asType(Map.class, obj);
+    return add(map.entrySet().stream()
         .filter(e -> restictedColumns == null || !restictedColumns.contains(e.getKey()))
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue)), map);
   }
 
   @Override
-  public String add(Map<String, Object> objAsMap) {
-    VectorValue vectorValue = embed(objAsMap.entrySet().stream()
+  public String add(Map<String, Object> value, Map<String, Object> additionalData) {
+    VectorValue vectorValue = embed(value.entrySet().stream()
         .filter(e -> e.getKey() != null && e.getValue() != null)
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
     if (vectorValue == null) {
-      throw new IllegalArgumentException("The embedding failed on object: " + objAsMap);
+      throw new IllegalArgumentException("The embedding failed on object: " + value);
     }
-    vectorValue.setInputObject(objAsMap);
+    vectorValue.setInputObject(additionalData);
+    return vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
+  }
+  
+  @Override
+  public String add(String value, Map<String, Object> additionalData) {
+    VectorValue vectorValue = embed(value);
+    if (vectorValue == null) {
+      throw new IllegalArgumentException("The embedding failed on object: " + value);
+    }
+    vectorValue.setInputObject(additionalData);
     return vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
   }
 
   @Override
-  public void deleteObject(String id) {
+  public void delete(String id) {
     vectorDBApi.deletePoint(vectorDBService, collectionName, id);
+  }
+
+  @Override
+  public void delete(Collection<String> ids) {
+    if(ids == null || ids.isEmpty()) {
+      return;
+    }
+    vectorDBApi.deletePoints(vectorDBService, collectionName, ids instanceof List ? (List)ids : ids.stream().collect(toList()));
   }
 
   @Override
