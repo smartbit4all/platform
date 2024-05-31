@@ -669,3 +669,12 @@ components:
             Signals whether the selection should be set only during initialisation, or every time
             the tree is rendered.
       required: [path, handleSelection, oneTimeOnly]
+    UiTreeSortOrder:
+      type: object
+      properties:
+        order:
+          enum: [ASC, DESC]
+          default: ASC
+        property:
+          enum: [NATURAL, CAPTION, IDENTIFIER]
+          default: NATURAL
