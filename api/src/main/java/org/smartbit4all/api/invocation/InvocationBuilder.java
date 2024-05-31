@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
-
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.Invocations.ListWrapper;
@@ -132,10 +133,21 @@ public class InvocationBuilder<T> implements InvocationHandler {
             if (mapWrapper.getMap() == null) {
               mapWrapper.setMap(new HashMap<>());
             } else {
-              if (mapWrapper.getMap().values().stream()
-                  .anyMatch(Objects::isNull)) {
-                throw new IllegalArgumentException(
-                    "Map method parameter cannot contain null value");
+              final Set<String> keysWithNullValues = mapWrapper.getMap().entrySet().stream()
+                  .filter(e -> Objects.isNull(e.getValue()))
+                  .map(Map.Entry::getKey)
+                  .distinct()
+                  .collect(Collectors.toSet());
+              if (!keysWithNullValues.isEmpty()) {
+                log.warn(
+                    "Map passed to an invocation request with NULL value for the following key(s): {}",
+                    keysWithNullValues);
+                log.warn(
+                    "Invocation requests do not tolerate NULL values in maps. Your parameter is going to be sanitised of NULL values.");
+                // create a new map for sanitisation, to bypass immutable collections:
+                final Map<String, ?> sanitisedMap = new HashMap<>(mapWrapper.getMap());
+                keysWithNullValues.forEach(sanitisedMap::remove);
+                mapWrapper.setMap(sanitisedMap);
               }
             }
           } catch (Exception e) {
