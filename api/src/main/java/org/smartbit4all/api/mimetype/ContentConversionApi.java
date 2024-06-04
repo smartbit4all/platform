@@ -40,6 +40,16 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
   List<String> getAvailableConversionTargets(String fromMimeType);
 
   /**
+   * Returns the currently available conversions from the mime type we have set.
+   * 
+   * @param fromMimeType The mime type we would like to convert.
+   * @param toMimeType The mime type we would like to have as a result of the conversion chain.
+   * @return The list of mime types to go through. If empty then there is no way to convert. If it
+   *         has only one item then only one conversion is enough.
+   */
+  List<String> getConversionPath(String fromMimeType, String toMimeType);
+
+  /**
    * The conversion operation itself. The result of the conversion is saved as
    * {@link BinaryDataObject} and we get back the URI of the saved content.
    * 
