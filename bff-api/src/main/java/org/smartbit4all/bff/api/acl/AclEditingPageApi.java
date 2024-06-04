@@ -2,13 +2,13 @@ package org.smartbit4all.bff.api.acl;
 
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.bff.api.config.PlatformViewNames;
 
 @ViewApi(PlatformViewNames.ACL_MATRIX_PAGE)
 public interface AclEditingPageApi extends PageApi<ACL> {

@@ -214,3 +214,10 @@ components:
           description: |
             The unique name of the value set within its namespace.
       required: [qualifiedName]
+    KeyValuePair:
+      required: [key]
+      properties:
+        key:
+          type: string
+        value:
+          type: object

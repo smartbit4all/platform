@@ -1,13 +1,13 @@
 package org.smartbit4all.bff.api.generic;
 
 import java.util.UUID;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
-import org.smartbit4all.bff.api.config.PlatformViewNames;
 
 /**
  * The GenericPageApi doesn't have any specific action, it's actions are handled in via

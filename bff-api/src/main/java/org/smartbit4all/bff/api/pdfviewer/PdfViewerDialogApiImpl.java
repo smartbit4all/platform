@@ -2,11 +2,11 @@ package org.smartbit4all.bff.api.pdfviewer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.bff.api.config.PlatformViewNames;
 import org.smartbit4all.bff.api.pdfviewer.bean.PdfViewerDialogModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;

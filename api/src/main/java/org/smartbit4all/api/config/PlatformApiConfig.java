@@ -513,7 +513,7 @@ public class PlatformApiConfig {
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
-          .editorViewName(MDMConstants.MDM_EDIT)
+          .editorViewName(PlatformViewNames.SERVICE_CONNECTION_EDITOR)
           .displayNameList(new LangString().defaultValue("Conversion Services")
               .putValueByLocaleItem("hu", "Konverzió kiszolgálók")
               .putValueByLocaleItem("en", "Conversion Services"))

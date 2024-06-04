@@ -1,11 +1,11 @@
 package org.smartbit4all.bff.api.validation;
 
 import java.util.UUID;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.bff.api.config.PlatformViewNames;
 import org.smartbit4all.bff.api.validationresult.bean.ValidationResultPageModel;
 
 @ViewApi(PlatformViewNames.VALIDATION_RESULT_PAGE)

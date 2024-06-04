@@ -573,6 +573,7 @@ components:
       description: |
         This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary
         parameters. It can be managed as MDM entry for different purposes.
+      required: [parameters]
       properties:
         uri:
           type: string

@@ -22,6 +22,8 @@ import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
+import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
+import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApiImpl;
 import org.springframework.context.annotation.Bean;
@@ -140,4 +142,16 @@ public class PlatformBffApiConfig {
             .map(BinaryContentData.SIZE, BinaryContentData.SIZE)
             .map(BinaryContentData.CONTENT_HASH, BinaryContentData.CONTENT_HASH);
   }
+
+  @Bean
+  ServiceConnectionEditorPageApi serviceConnectionEditorPageApi() {
+    return new ServiceConnectionEditorPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<ServiceConnectionEditorPageApi> serviceConnectionEditorPageApiProvider(
+      ServiceConnectionEditorPageApi api) {
+    return Invocations.asProvider(ServiceConnectionEditorPageApi.class, api);
+  }
+
 }

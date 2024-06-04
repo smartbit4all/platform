@@ -11,6 +11,8 @@ public abstract class MDMConstants {
   public static final String MDM_SESSIONS = "MDMSessions";
   public static final String MDM_ENTRY_DESCRIPTOR = "MDMEntryDescriptor";
 
+
+
   public static final String PROPERTY_URI = "uri";
 
   private MDMConstants() {}

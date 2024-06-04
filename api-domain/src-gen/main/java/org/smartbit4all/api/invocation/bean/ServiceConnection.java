@@ -66,7 +66,7 @@ public class ServiceConnection {
   private String endpoint;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, Object> parameters = null;
+  private Map<String, Object> parameters = new HashMap<>();
 
   public ServiceConnection() { 
   }
@@ -241,9 +241,6 @@ public class ServiceConnection {
   }
 
   public ServiceConnection putParametersItem(String key, Object parametersItem) {
-    if (this.parameters == null) {
-      this.parameters = new HashMap<>();
-    }
     this.parameters.put(key, parametersItem);
     return this;
   }
@@ -252,10 +249,11 @@ public class ServiceConnection {
    * Get parameters
    * @return parameters
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
   public Map<String, Object> getParameters() {
     return parameters;
@@ -263,7 +261,7 @@ public class ServiceConnection {
 
 
   @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
   }

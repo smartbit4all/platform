@@ -1,4 +1,4 @@
-package org.smartbit4all.bff.api.config;
+package org.smartbit4all.api.config;
 
 public class PlatformViewNames {
 
@@ -12,5 +12,6 @@ public class PlatformViewNames {
   public static final String ACL_GENERIC_PAGE = "acl-generic-page";
   public static final String ACL_MATRIX_PAGE = "acl-matrix-page";
   public static final String PDF_VIEWER_DIALOG = "PdfViewerDialog";
+  public static final String SERVICE_CONNECTION_EDITOR = "MDMServiceConnectionEditor";
 
 }
