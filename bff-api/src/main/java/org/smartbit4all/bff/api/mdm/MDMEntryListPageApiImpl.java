@@ -331,6 +331,15 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     } else {
       columns = searchIndexColumns;
     }
+    createGridModel(view, context, columns);
+    initFilterModel(context);
+    refreshGrid(context);
+
+    return new SearchPageModel()
+        .pageTitle(getPageTitle(context));
+  }
+
+  protected GridModel createGridModel(View view, PageContext context, List<String> columns) {
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
@@ -382,11 +391,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
-    initFilterModel(context);
-    refreshGrid(context);
 
-    return new SearchPageModel()
-        .pageTitle(getPageTitle(context));
+    return entryGridModel;
   }
 
   private void initFilterModel(PageContext ctx) {

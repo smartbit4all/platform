@@ -153,13 +153,18 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
       view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING)
           .inputType(UiActionInputType.TEXTFIELD));
     }
+    createGridModel(view);
+
+    view.style(new Style().addClassesToAddItem("mdm-session-page"));
+    return model;
+  }
+
+  protected GridModel createGridModel(View view) {
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(), WIDGET_RESULT_GRID);
     GridModels.hideColumns(gridModel, MDMModification.ID, MDMModification.BRANCH_URI);
     gridModel.setPaginator(true);
-
-    view.style(new Style().addClassesToAddItem("mdm-session-page"));
-    return model;
+    return gridModel;
   }
 
   protected FilterExpressionBuilderModel createFilterExpressionBuilderModel() {
