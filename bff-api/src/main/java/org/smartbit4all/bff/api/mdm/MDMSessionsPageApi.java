@@ -2,11 +2,11 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 
 /**

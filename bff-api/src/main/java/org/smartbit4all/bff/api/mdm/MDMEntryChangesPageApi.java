@@ -2,12 +2,12 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
-import org.smartbit4all.bff.api.mdm.utility.MDMActions;
 
 /**
  * Generic page api to show modifications on MDM entries.

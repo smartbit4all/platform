@@ -1,4 +1,4 @@
-package org.smartbit4all.bff.api.mdm.utility;
+package org.smartbit4all.api.mdm;
 
 public class MDMActions {
   private MDMActions() {}
