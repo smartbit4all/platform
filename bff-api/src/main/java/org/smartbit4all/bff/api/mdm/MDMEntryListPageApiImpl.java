@@ -335,15 +335,6 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
             context.getDefinition().getName(), context.getEntryDescriptor().getName());
-    if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
-      List<String> newCols = new ArrayList<>();
-      newCols.add(BranchedObjectEntry.BRANCHING_STATE);
-      newCols.addAll(
-          columns.stream()
-              .filter(col -> !BranchedObjectEntry.BRANCHING_STATE.equals(col))
-              .collect(toList()));
-      entryGridModel.getView().setOrderedColumnNames(newCols);
-    }
     GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
         BranchedObjectEntry.BRANCH_URI);
     if (columns.contains(MDMConstants.PROPERTY_URI)) {
@@ -367,9 +358,27 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       entryGridModel.setView(gridViewOptions.get(0));
       entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
     }
-
     entryGridModel.qualifier(context.entryDescriptor.getName());
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
+    // BranchedObjectEntry.BRANCHING_STATE should be handled after init
+    if (columns.contains(BranchedObjectEntry.BRANCHING_STATE)) {
+      if (context.mdmBranch == null) {
+        GridModels.hideColumns(entryGridModel, BranchedObjectEntry.BRANCHING_STATE);
+      } else {
+        List<String> currentColumns = entryGridModel.getView().getOrderedColumnNames();
+        List<String> newCols = new ArrayList<>();
+        newCols.add(BranchedObjectEntry.BRANCHING_STATE);
+        newCols.addAll(
+            currentColumns.stream()
+                .filter(col -> !BranchedObjectEntry.BRANCHING_STATE.equals(col))
+                .collect(toList()));
+        entryGridModel.getView().setOrderedColumnNames(newCols);
+        entryGridModel.getView().getDescriptor().getColumns().stream()
+            .filter(col -> BranchedObjectEntry.BRANCHING_STATE.equals(col.getPropertyName()))
+            .forEach(col -> col.alwaysShow(true));
+      }
+    }
+
     gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
