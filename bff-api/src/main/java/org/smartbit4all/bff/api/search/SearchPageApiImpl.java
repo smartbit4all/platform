@@ -129,6 +129,10 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
             .collect(toList()),
         ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
 
+    if (ctx.pageConfig.getDefaultRowActions() != null) {
+      gridModel.setDefaultRowActions(ctx.pageConfig.getDefaultRowActions());
+    }
+
     final List<GridView> gridViewOptions = ctx.pageConfig.getGridViewOptions();
     if (gridViewOptions != null && !gridViewOptions.isEmpty()) {
       gridModel.setView(gridViewOptions.get(0));

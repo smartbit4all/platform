@@ -405,7 +405,10 @@ components:
           type: array
           items:
             type: GridView
-
+        defaultRowActions:
+          type: array
+          items:
+            type: string
     SmartFilterType:
       type: string
       enum: [SIMPLE, ADVANCED]
