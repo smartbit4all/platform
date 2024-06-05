@@ -67,7 +67,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
         gridModelApi.createGridModel(KeyValuePair.class, ORDERED_COLUMNS,
             GRID_ID);
     gridModel.setPageSize(5);
-    gridModel.setPageSizeOptions(List.of(5, 10));
+    gridModel.setPageSizeOptions(Arrays.asList(5, 10));
     gridModelApi.initGridInView(viewUuid, GRID_ID, gridModel);
     gridModelApi.addGridPageCallback(viewUuid, GRID_ID,
         invocationApi.builder(ServiceConnectionEditorPageApi.class)
@@ -111,7 +111,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
             localeSettingApi.get(GRID_ID, KeyValuePair.KEY)),
         ObjectLayoutBuilder.textfield(KeyValuePair.VALUE,
             localeSettingApi.get(GRID_ID, KeyValuePair.VALUE)));
-    List<UiAction> dialogActions = List.of(new UiAction().code("SAVE").submit(true),
+    List<UiAction> dialogActions = Arrays.asList(new UiAction().code("SAVE").submit(true),
         new UiAction().code(GenericPageApi.ACTION_CLOSE_VIEW));
     viewApi.showView(new View()
         .viewName(PlatformViewNames.GENERIC_PAGE)
@@ -121,12 +121,12 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
             layout)
         .constraint(new ViewConstraint()
             .componentConstraints(
-                List.of(
+                Arrays.asList(
                     new ComponentConstraint().dataName(KeyValuePair.KEY).mandatory(true)
                         .enabled(keyEditable),
                     new ComponentConstraint().dataName(KeyValuePair.VALUE).mandatory(true))))
         .actions(dialogActions)
-        .eventHandlers(List.of(new ViewEventHandler()
+        .eventHandlers(Arrays.asList(new ViewEventHandler()
             .viewEventType(ViewEventTypeEnum.INSTEAD)
             .addPathItem(ViewEventApi.ACTION)
             .addPathItem("SAVE")
