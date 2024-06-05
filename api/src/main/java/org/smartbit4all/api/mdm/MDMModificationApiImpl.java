@@ -260,19 +260,20 @@ public class MDMModificationApiImpl implements MDMModificationApi {
 
   @Override
   public void renameEditing(String name) {
+    String trimmedName = name.trim();
     modifyDefinitionState(definition.getName(),
         state -> {
           MDMModification m = getModification(state);
-          m.name(name);
+          m.name(trimmedName);
           return state;
         },
         this::getBranchFromPrevState,
         state -> {
           if (state.getActiveModifications().stream()
-              .anyMatch(mod -> Objects.equals(name, mod.getName()))) {
+              .anyMatch(mod -> Objects.equals(trimmedName, mod.getName()))) {
             throw new IllegalStateException(MessageFormat.format(
                 localeSettingApi.get("mdm.branch.alreadyexists"),
-                name));
+                trimmedName));
           }
         });
   }

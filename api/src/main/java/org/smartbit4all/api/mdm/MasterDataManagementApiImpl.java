@@ -760,6 +760,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public String initiateModificationBranch(String definitionName,
       String branchCaption) {
+    String trimmedBranchCaption = branchCaption.trim();
     String id = UUID.randomUUID().toString();
     MDMDefitionStateWrapper resultStateWrapper = modifyDefinitionState(definitionName, state -> {
       UserActivityLog createActivityLog = null;
@@ -771,10 +772,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
       return state.addActiveModificationsItem(new MDMModification()
           .id(id)
-          .name(branchCaption)
+          .name(trimmedBranchCaption)
           .state(MDMModificationState.ACTIVE)
           .created(createActivityLog)
-          .branchUri(objectApi.getLatestUri(branchApi.makeBranch(branchCaption).getUri())));
+          .branchUri(objectApi.getLatestUri(branchApi.makeBranch(trimmedBranchCaption).getUri())));
     }, (prevState, currState) -> {
       return currState.getActiveModifications().stream()
           .filter(mod -> id.equals(mod.getId()))
@@ -783,10 +784,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           .orElse(null);
     }, state -> {
       if (state.getActiveModifications().stream()
-          .anyMatch(mod -> Objects.equals(branchCaption, mod.getName()))) {
+          .anyMatch(mod -> Objects.equals(trimmedBranchCaption, mod.getName()))) {
         throw new IllegalStateException(MessageFormat.format(
             localeSettingApi.get("mdm.branch.alreadyexists"),
-            branchCaption));
+            trimmedBranchCaption));
       }
     });
     fireModificationEvent(MODIFICATION_STARTED, null, getDefinition(definitionName).getUri(),
