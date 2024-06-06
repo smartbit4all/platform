@@ -6,9 +6,25 @@ image/jpeg jpeg jpg jpe JPG
 image/gif gif GIF
 
 application/pdf pdf
-application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
+# Word: Pre-2007
+application/msword doc DOC
+# Word: Post-2007
+application/vnd.openxmlformats-officedocument.wordprocessingml.document docx DOCX
 
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx
+# Excel: Pre-2007
+application/vnd.ms-excel xls XLS
+# Excel: Post-2007
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx XLSX xlsm XLSM
 
 audio/mpeg mpeg mp3
 video/mp4 mp4
+
+# Various compressed archives:
+application/x-7z-compressed 7z
+application/zip zip ZIP
+application/vnd.rar rar
+application/x-tar tar
+application/gzip gz
+application/zip zip ZIP
+application/x-bzip bz
+application/x-bzip2 bz2
