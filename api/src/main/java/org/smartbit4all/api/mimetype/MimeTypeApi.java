@@ -3,6 +3,7 @@ package org.smartbit4all.api.mimetype;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.activation.MimetypesFileTypeMap;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,6 +31,13 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GIF_MIMETYPE = MediaType.GIF.toString();
 
   public static final String XLSX_MIMETYPE = MediaType.OOXML_SHEET.toString();
+  public static final String PPTX_MIMETYPE = MediaType.OOXML_PRESENTATION.toString();
+
+  public static final String DOC_MIMETYPE = MediaType.MICROSOFT_WORD.toString();
+  public static final String XLS_MIMETYPE = MediaType.MICROSOFT_EXCEL.toString();
+  public static final String PPT_MIMETYPE = MediaType.MICROSOFT_POWERPOINT.toString();
+
+  public static final String ZIP_MIMETYPE = MediaType.ZIP.toString();
 
   public static final String PDF_EXT = "pdf";
   public static final String DOCX_EXT = "docx";
@@ -43,6 +51,12 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GIF_EXT = "gif";
 
   public static final String XLSX_EXT = "xlsx";
+  public static final String XLS_EXT = "xls";
+
+  public static final String PPT_EXT = "ppt";
+  public static final String PPTX_EXT = "pptx";
+
+  public static final String ZIP_EXT = "zip";
 
 
   /**
@@ -84,11 +98,36 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(JPEG_MIMETYPE, "jpeg");
     extensionsByMimeType.put(GIF_MIMETYPE, "gif");
 
-    extensionsByMimeType.put(XLSX_MIMETYPE, "xlsx");
+    extensionsByMimeType.put(XLSX_MIMETYPE, XLSX_EXT);
+    extensionsByMimeType.put(DOC_MIMETYPE, DOC_EXT);
+    extensionsByMimeType.put(XLS_MIMETYPE, XLS_EXT);
+    extensionsByMimeType.put(PPT_MIMETYPE, PPT_EXT);
+    extensionsByMimeType.put(PPTX_MIMETYPE, PPTX_EXT);
+    extensionsByMimeType.put(ZIP_MIMETYPE, ZIP_EXT);
   }
 
   public String getMimeType(String filename) {
-    return fileTypeMap.getContentType(filename);
+    return getMimeTypeFromBuiltIns(filename).orElseGet(() -> fileTypeMap.getContentType(filename));
+  }
+
+  private Optional<String> getMimeTypeFromBuiltIns(final String filename) {
+    if (!Strings.isNullOrEmpty(filename)) {
+
+      final int lastDot = filename.lastIndexOf('.');
+      if (lastDot > 0) {
+
+        final String ext = filename.substring(lastDot + 1);
+        if (!Strings.isNullOrEmpty(ext)) {
+
+          return extensionsByMimeType.entrySet().stream()
+              .filter(e -> ext.toLowerCase().equals(e.getValue()))
+              .findAny()
+              .map(Map.Entry::getKey)
+              .filter(it -> !Strings.isNullOrEmpty(it));
+        }
+      }
+    }
+    return Optional.empty();
   }
 
   public String getExtension(String mimeType) {
