@@ -1,5 +1,7 @@
 package org.smartbit4all.api.config;
 
+import org.smartbit4all.api.binarydata.BinaryContentDataApi;
+import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -825,6 +827,11 @@ public class PlatformApiConfig {
   @Bean
   SubscriptionConfigApi subscriptionConfigApi() {
     return new SubscriptionConfigApiImpl();
+  }
+
+  @Bean
+  BinaryContentDataApi binaryContentDataApi() {
+    return new BinaryContentDataApiImpl();
   }
 
 }
