@@ -113,9 +113,11 @@ public class ObjectChangeDataToString {
     List<String> translations = new ArrayList<>();
     for (int i = 0; i < splitByNumbers.length; ++i) {
       String[] splitByDots = splitByNumbers[i].split("\\.");
-      String translation = localeSettingApi.get(splitByDots);
-      if (!splitByDots[splitByDots.length - 1].equals(translation)) {
-        translations.add(translation);
+      if (splitByDots.length > 0) {
+        String translation = localeSettingApi.get(splitByDots);
+        if (!splitByDots[splitByDots.length - 1].equals(translation)) {
+          translations.add(translation);
+        }
       }
     }
     return translations;
