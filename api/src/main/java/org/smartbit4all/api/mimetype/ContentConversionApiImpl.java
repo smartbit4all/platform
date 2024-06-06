@@ -79,18 +79,31 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
       String fromMimeType, String toMimeType, Set<String> alreadyVisited) {
     // If the toMimeType is included then we arrived and we can return the last EnpointPair as
     // result.
+    if (fromMimeType.equals(toMimeType)) {
+      return Collections.emptyList();
+    }
     List<EndpointPair<String>> result = new ArrayList<>();
     Optional<EndpointPair<String>> toOption =
-        incidentEdges.stream().filter(ep -> ep.target().equals(toMimeType)).findFirst();
+        incidentEdges.stream()
+            .filter(ep -> ep.source().equals(fromMimeType) && ep.target().equals(toMimeType))
+            .findFirst();
     if (toOption.isPresent()) {
       result.add(toOption.get());
       return result;
     }
     // Go further to find the toMimeType.
-    return incidentEdges.stream().filter(ep -> alreadyVisited.contains(ep.target())).map(ep -> {
+    return incidentEdges.stream().filter(ep -> !alreadyVisited.contains(ep.target())).map(ep -> {
       alreadyVisited.add(ep.target());
-      return pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
-          fromMimeType, toMimeType, alreadyVisited);
+      List<EndpointPair<String>> pathRecursive =
+          pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
+              ep.target(), toMimeType, alreadyVisited);
+      if (!pathRecursive.isEmpty()) {
+        List<EndpointPair<String>> tmp = new ArrayList<EndpointPair<String>>();
+        tmp.add(ep);
+        tmp.addAll(pathRecursive);
+        pathRecursive = tmp;
+      }
+      return pathRecursive;
     }).filter(l -> !l.isEmpty()).findFirst().orElse(Collections.emptyList());
   }
 
