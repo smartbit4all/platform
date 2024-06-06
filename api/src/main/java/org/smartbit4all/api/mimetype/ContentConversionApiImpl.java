@@ -122,6 +122,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
       return new BinaryContentData()
           .created(sessionApi != null ? sessionApi.createActivityLog() : null).dataUri(dataUri)
           .extension(mimeTypeApi.getExtension(toMimeType))
+          .mimeType(toMimeType)
           .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType));
     }
     return null;

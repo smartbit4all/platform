@@ -144,4 +144,15 @@ public abstract class UriUtils {
     return split[split.length - 1];
   }
 
+  public static final String getSchema(URI uri) {
+    if (uri == null) {
+      return StringConstant.EMPTY;
+    }
+    String scheme = uri.getScheme();
+    if (scheme != null) {
+      return scheme;
+    }
+    return StringConstant.EMPTY;
+  }
+
 }
