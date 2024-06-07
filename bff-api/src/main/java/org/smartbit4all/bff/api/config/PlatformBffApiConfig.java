@@ -20,12 +20,14 @@ import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.attachment.AttachmentListPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
+import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApiImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -144,11 +146,13 @@ public class PlatformBffApiConfig {
   }
 
   @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
   ServiceConnectionEditorPageApi serviceConnectionEditorPageApi() {
     return new ServiceConnectionEditorPageApiImpl();
   }
 
   @Bean
+  @ConditionalOnBean(ServiceConnectionEditorPageApi.class)
   public ProviderApiInvocationHandler<ServiceConnectionEditorPageApi> serviceConnectionEditorPageApiProvider(
       ServiceConnectionEditorPageApi api) {
     return Invocations.asProvider(ServiceConnectionEditorPageApi.class, api);
