@@ -14,4 +14,7 @@ public interface BinaryContentDataApi {
 
   String readStringContent(URI dataUri, Charset charset) throws IOException;
 
+  BinaryContentData constructFromClassResource(String fileRelativePath,
+      String schemaToSave);
+
 }

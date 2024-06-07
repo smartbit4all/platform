@@ -110,6 +110,13 @@ public class MimeTypeApi implements InitializingBean {
     return getMimeTypeFromBuiltIns(filename).orElseGet(() -> fileTypeMap.getContentType(filename));
   }
 
+  /**
+   * Retrieves the MIME type from built-in extensions based on the provided filename.
+   *
+   * @param filename the name of the file to determine the MIME type for
+   * @return an {@link Optional} containing the MIME type if found, otherwise an empty
+   *         {@link Optional}
+   */
   private Optional<String> getMimeTypeFromBuiltIns(final String filename) {
     if (!Strings.isNullOrEmpty(filename)) {
 
@@ -130,6 +137,12 @@ public class MimeTypeApi implements InitializingBean {
     return Optional.empty();
   }
 
+  /**
+   * Retrieves the file extension for the given MIME type.
+   *
+   * @param mimeType the MIME type to get the file extension for
+   * @return the file extension associated with the given MIME type
+   */
   public String getExtension(String mimeType) {
     String extension = extensionsByMimeType.get(mimeType);
     if (extension == null) {
@@ -138,6 +151,30 @@ public class MimeTypeApi implements InitializingBean {
     return extension;
   }
 
+  /**
+   * Retrieves the file extension from the provided filename.
+   *
+   * @param fileName the name of the file to extract the extension from
+   * @return the file extension if found, otherwise null
+   */
+  public String getExtensionFromFileName(String fileName) {
+    if (fileName == null) {
+      return null;
+    }
+    int dotIndex = fileName.lastIndexOf(StringConstant.DOT);
+    if (dotIndex < 0) {
+      return null;
+    }
+    return fileName.substring(dotIndex + 1);
+  }
+
+  /**
+   * Ensures the filename has the correct extension based on the provided MIME type.
+   *
+   * @param filename the name of the file to ensure the extension for
+   * @param mimeType the MIME type to determine the correct extension
+   * @return the filename with the correct extension
+   */
   public String ensureFileExtension(String filename, String mimeType) {
     String extension = getExtension(mimeType);
     String suffix = StringConstant.DOT + extension;
@@ -153,6 +190,13 @@ public class MimeTypeApi implements InitializingBean {
     }
   }
 
+  /**
+   * Ensures the filename has a .pdf extension. If the filename is null or empty, returns
+   * "file.pdf". If the filename ends with .docx, replaces the .docx extension with .pdf.
+   *
+   * @param filename the name of the file to ensure the .pdf extension for
+   * @return the filename with the .pdf extension
+   */
   public String ensurePdfFilename(String filename) {
     if (Strings.isNullOrEmpty(filename)) {
       return "file.pdf";
