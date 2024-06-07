@@ -109,7 +109,7 @@ public class ObjectChangeDataToString {
    * @return
    */
   private static List<String> translate(LocaleSettingApi localeSettingApi, String path) {
-    String[] splitByNumbers = path.split("\\d");
+    String[] splitByNumbers = path.split("\\.\\d\\.");
     List<String> translations = new ArrayList<>();
     for (int i = 0; i < splitByNumbers.length; ++i) {
       String[] splitByDots = splitByNumbers[i].split("\\.");
