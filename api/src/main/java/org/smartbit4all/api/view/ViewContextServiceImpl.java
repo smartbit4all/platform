@@ -795,6 +795,11 @@ public class ViewContextServiceImpl implements ViewContextService {
       if (e.getCause() instanceof RuntimeException) {
         throw (RuntimeException) e.getCause();
       }
+      if (e.getCause() != null && e.getCause().getMessage() != null) {
+        throw new RuntimeException(
+            e.getCause().getMessage(),
+            e);
+      }
       throw new RuntimeException(
           "InvocationTargetException without cause calling method "
               + getMethodName(invocationRequest, method),
