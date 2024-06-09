@@ -343,8 +343,9 @@ public class ValueSetApiImpl implements ValueSetApi {
         valueSetData.getValues().stream()
             .map(o -> ((ObjectNode) o)),
         additionalValues.stream()
-            .filter(u -> !valueUris.contains(objectApi.getLatestUri(branchUri)))
-            .map(objectApi::loadLatest)), path)
+            .filter(u -> !valueUris.contains(objectApi.getLatestUri(u)))
+            .map(objectApi::loadLatest)),
+        path)
         // .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
         .sorted(Values.CASE_INSENSITIVE_ORDER)
         .map(o -> ((Object) o))
