@@ -66,6 +66,7 @@ public class VectorCollectionImpl implements VectorCollection {
     Map<String, Object> map = objectApi.asType(Map.class, obj);
     return add(map.entrySet().stream()
         .filter(e -> restictedColumns == null || !restictedColumns.contains(e.getKey()))
+        .filter(e -> e.getKey() != null && e.getValue() != null)
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue)), map);
   }
 
