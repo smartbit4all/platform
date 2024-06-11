@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
-import static java.util.stream.Collectors.toList;
 
 public class VectorCollectionImpl implements VectorCollection {
 
@@ -63,9 +63,10 @@ public class VectorCollectionImpl implements VectorCollection {
   @SuppressWarnings("unchecked")
   @Override
   public String addObject(Object obj, List<String> restictedColumns) {
-    Map<String, Object> map = (Map<String, Object>) objectApi.asType(Map.class, obj);
+    Map<String, Object> map = objectApi.asType(Map.class, obj);
     return add(map.entrySet().stream()
         .filter(e -> restictedColumns == null || !restictedColumns.contains(e.getKey()))
+        .filter(e -> e.getKey() != null && e.getValue() != null)
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue)), map);
   }
 
@@ -80,7 +81,7 @@ public class VectorCollectionImpl implements VectorCollection {
     vectorValue.setInputObject(additionalData);
     return vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
   }
-  
+
   @Override
   public String add(String value, Map<String, Object> additionalData) {
     VectorValue vectorValue = embed(value);
@@ -98,10 +99,11 @@ public class VectorCollectionImpl implements VectorCollection {
 
   @Override
   public void delete(Collection<String> ids) {
-    if(ids == null || ids.isEmpty()) {
+    if (ids == null || ids.isEmpty()) {
       return;
     }
-    vectorDBApi.deletePoints(vectorDBService, collectionName, ids instanceof List ? (List)ids : ids.stream().collect(toList()));
+    vectorDBApi.deletePoints(vectorDBService, collectionName,
+        ids instanceof List ? (List) ids : ids.stream().collect(toList()));
   }
 
   @Override
