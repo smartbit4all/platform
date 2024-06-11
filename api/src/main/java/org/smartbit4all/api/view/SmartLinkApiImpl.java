@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.UUID;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
@@ -20,8 +21,12 @@ public class SmartLinkApiImpl implements SmartLinkApi {
 
   @Override
   public URI publishView(String channel, View view) {
+    Objects.requireNonNull(view, "view cannot be null!");
+    Objects.requireNonNull(channel, "channel cannot be null!");
+
+    view.putParametersItem(PARAM_OPENED_FROM_SMART_LINK, Boolean.TRUE);
     // TODO sanitize channel name
-    // TODO basePaht in url?
+    // TODO basePath in url?
     StoredMap linkMap = collectionApi.map(ViewContextService.SCHEMA, channel);
     UUID uuid = UUID.randomUUID();
     SmartLinkData smartLinkData = new SmartLinkData()
