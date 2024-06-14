@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -39,6 +40,11 @@ public class OidcClientLogoutHandler extends AbstractAuthenticationTargetUrlRequ
   @Autowired
   private ClientRegistrationRepository clientRegistrationRepository;
 
+  /**
+   * when auto discovery of oidc endoints is not active (issuerUri is not set), then this field can
+   * be used to explicitly configure the logout url
+   */
+  private String explAuthServerEndSessionEndpoint;
   private final String clientRegistrationId;
   private URI endSessionEndpoint;
 
@@ -104,6 +110,9 @@ public class OidcClientLogoutHandler extends AbstractAuthenticationTargetUrlRequ
         result = URI.create(endSessionEndpointUrl.toString());
       }
     }
+    if (result == null && !ObjectUtils.isEmpty(explAuthServerEndSessionEndpoint)) {
+      result = URI.create(explAuthServerEndSessionEndpoint);
+    }
 
     return result;
   }
@@ -164,6 +173,10 @@ public class OidcClientLogoutHandler extends AbstractAuthenticationTargetUrlRequ
           clientRegistrationId);
     }
 
+  }
+
+  public void setExplAuthServerEndSessionEndpoint(String explAuthServerEndSessionEndpoint) {
+    this.explAuthServerEndSessionEndpoint = explAuthServerEndSessionEndpoint;
   }
 
 }

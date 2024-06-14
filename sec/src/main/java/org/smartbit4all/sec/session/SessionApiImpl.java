@@ -1,13 +1,7 @@
 package org.smartbit4all.sec.session;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SessionApiImpl implements SessionApi {
@@ -117,82 +109,14 @@ public class SessionApiImpl implements SessionApi {
     return sessionManagementApi.removeSessionParameter(getSessionUri(), key);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> T getParameterObject(String key, Class<T> clazz) {
-    String valueTxt = getParameter(key);
-    if (String.class.isAssignableFrom(clazz)) {
-      return (T) valueTxt;
-    }
-
-    if (ObjectUtils.isEmpty(valueTxt)) {
-      return null;
-    }
-    if (objectMapper.canDeserialize(objectMapper.constructType(clazz))) {
-      try {
-        return objectMapper.readValue(valueTxt, clazz);
-      } catch (JsonProcessingException e) {
-        log.warn(
-            "Parameter can not be deserialized from session with ObjectMapper. Key: [{}], class: [{}]",
-            key,
-            clazz.getName(), e);
-      }
-    }
-    if (Serializable.class.isAssignableFrom(clazz)) {
-      try {
-        return deserializeSerializable(valueTxt);
-      } catch (Exception e) {
-        log.warn(
-            "Parameter can not be deserialized from session as Serializable. Key: [{}], class: [{}]",
-            key,
-            clazz.getName(), e);
-      }
-    }
-    throw new IllegalArgumentException(
-        "The requested parameter can not be deserialized as class " + clazz.getName());
+    return sessionManagementApi.getSessionParameterObject(getSessionUri(), key, clazz);
   }
 
   @Override
   public <T> void setParameterObject(String key, T value) {
-    Assert.notNull(key, ERR_NULLKEY);
-    Assert.notNull(value, ERR_NULLVALUE);
-
-    Class<? extends Object> clazz = value.getClass();
-    if (String.class.isAssignableFrom(clazz)) {
-      sessionManagementApi.setSessionParameter(getSessionUri(), key, (String) value);
-      return;
-    }
-
-    String valueTxt = null;
-
-    if (objectMapper.canSerialize(clazz)) {
-      try {
-        valueTxt = objectMapper.writeValueAsString(value);
-      } catch (JsonProcessingException e) {
-        log.warn(
-            "Parameter can not be serialized from session with ObjectMapper. Key: [{}], class: [{}]",
-            key,
-            clazz.getName(), e);
-      }
-    }
-
-    if (valueTxt == null && Serializable.class.isAssignableFrom(clazz)) {
-      try {
-        valueTxt = serializeSerializable((Serializable) value);
-      } catch (Exception e) {
-        log.warn(
-            "Parameter can not be deserialized from session as Serializable. Key: [{}], class: [{}]",
-            key,
-            clazz.getName(), e);
-      }
-    }
-    if (valueTxt != null) {
-      sessionManagementApi.setSessionParameter(getSessionUri(), key, valueTxt);
-    } else {
-      throw new IllegalArgumentException(
-          "The the given value of class [" + clazz.getName()
-              + "] can not be serilalized and set as session parameter!");
-    }
+    sessionManagementApi.setSessionParameterObject(getSessionUri(), key, value);
   }
 
   @Override
@@ -238,24 +162,6 @@ public class SessionApiImpl implements SessionApi {
     // TODO manage the zone from the session...
     result.timestamp(OffsetDateTime.now());
     return result;
-  }
-
-  // TODO serilaize and deserialize paramaters should be moved to SessionManagementApiImpl...
-
-  private <T> T deserializeSerializable(String valueTxt) throws Exception {
-    byte[] data = Base64.getDecoder().decode(valueTxt);
-    ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-    Object o = ois.readObject();
-    ois.close();
-    return (T) o;
-  }
-
-  private String serializeSerializable(Serializable object) throws Exception {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ObjectOutputStream oos = new ObjectOutputStream(baos);
-    oos.writeObject(object);
-    oos.close();
-    return Base64.getEncoder().encodeToString(baos.toByteArray());
   }
 
 }

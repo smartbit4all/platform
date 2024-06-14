@@ -32,6 +32,7 @@ import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
+import org.smartbit4all.sec.utils.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -39,6 +40,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This SessionApi implementation manages sessions with the {@link StorageApi} storing the sessions
@@ -70,6 +72,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Autowired
   private CollectionApi collectionApi;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Autowired(required = false)
   private SessionPublisherApi sessionPublisherApi;
@@ -262,8 +267,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     }
   }
 
-  private URI updateSession(URI sessionUri, UnaryOperator<Session> update) {
-    Session prevSession = storage.get().read(sessionUri, Session.class);
+  @Override
+  public URI updateSession(URI sessionUri, UnaryOperator<Session> update) {
+    Session prevSession = readSession(sessionUri);
     URI uri = storage.get().update(sessionUri, Session.class, update);
     currentSession.remove();
     Session nextSession = storage.get().read(uri, Session.class);
@@ -546,6 +552,25 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Override
   public void setRefreshTokenExpirationTime(int minutes) {
     refreshTimeoutMins = minutes;
+  }
+
+  @Override
+  public <T> void setSessionParameterObject(URI sessionUri, String key, T value) {
+    Objects.requireNonNull(key, "key can not be null!");
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    if (value == null) {
+      this.removeSessionParameter(sessionUri, key);
+    } else {
+      String valueTxt = SessionUtils.serializeSessionParameter(value, objectMapper);
+      this.setSessionParameter(sessionUri, key, valueTxt);
+    }
+  }
+
+  @Override
+  public <T> T getSessionParameterObject(URI sessionUri, String key, Class<T> clazz) {
+    Session session = storage.get().read(sessionUri, Session.class);
+    String valueTxt = session.getParameters().get(key);
+    return SessionUtils.deserializeSessionParameter(valueTxt, clazz, objectMapper);
   }
 
 }

@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
@@ -51,6 +52,10 @@ public interface SessionManagementApi {
   Session initCurrentSession(URI sessionUri);
 
   void setSessionParameter(URI sessionUri, String key, String value);
+
+  <T> void setSessionParameterObject(URI sessionUri, String key, T value);
+
+  <T> T getSessionParameterObject(URI sessionUri, String key, Class<T> clazz);
 
   String removeSessionParameter(URI sessionUri, String key);
 
@@ -111,5 +116,7 @@ public interface SessionManagementApi {
    *        always refreshable
    */
   void setRefreshTokenExpirationTime(final int minutes);
+
+  URI updateSession(URI sessionUri, UnaryOperator<Session> update);
 
 }
