@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * @author Szabolcs Bazil Papp
  *
  */
@@ -262,7 +262,11 @@ public final class ViewConstraintConfigurer {
 
     private ConstraintConfigurer(final List<String> keys) {
       componentConstraints = keys.stream()
-          .map(it -> new ComponentConstraint().dataName(it))
+          .map(it -> new ComponentConstraint()
+              .visible(null)
+              .enabled(null)
+              .mandatory(null)
+              .dataName(it))
           .collect(Collectors.toList());
       constraintTarget = null;
     }
@@ -279,8 +283,8 @@ public final class ViewConstraintConfigurer {
       this.componentConstraints = Collections.emptyList();
     }
 
-    public ConditionConfigurer as(final boolean visible, final boolean enabled,
-        final boolean mandatory) {
+    public ConditionConfigurer as(final Boolean visible, final Boolean enabled,
+        final Boolean mandatory) {
       final ConstraintMarker marker = new ConstraintMarker(visible, enabled, mandatory);
       if (constraintTarget == null) {
         return new ConditionConfigurer(componentConstraints, marker);
@@ -290,23 +294,27 @@ public final class ViewConstraintConfigurer {
     }
 
     public ConditionConfigurer visible() {
-      return as(true, false, false);
+      return as(true, null, null);
     }
 
     public ConditionConfigurer enabled() {
-      return as(true, true, false);
+      return as(true, true, null);
     }
 
     public ConditionConfigurer mandatory() {
       return as(true, true, true);
     }
 
-    public ConditionConfigurer optional() {
-      return enabled();
-    }
+    // public ConditionConfigurer optional() {
+    // return enabled();
+    // }
 
     public ConditionConfigurer disabled() {
-      return visible();
+      return as(null, false, false);
+    }
+
+    public ConditionConfigurer disabledAndVisible() {
+      return as(true, false, false);
     }
 
     public ConditionConfigurer hidden() {
@@ -406,11 +414,11 @@ public final class ViewConstraintConfigurer {
 
   private enum ConstraintTarget {
     // @formatter:off
-    ANY(it -> true),
-    HIDDEN(it -> !it.getVisible()), 
-    VISIBLE(ComponentConstraint::getVisible), 
-    ENABLED(ComponentConstraint::getEnabled), 
-    MANDATORY(ComponentConstraint::getMandatory);
+    ANY(cc -> true),
+    HIDDEN(cc -> !Boolean.TRUE.equals(cc.getVisible())),
+    VISIBLE(cc -> cc.getVisible() == null || cc.getVisible()),
+    ENABLED(cc -> Boolean.TRUE.equals(cc.getEnabled())),
+    MANDATORY(cc -> Boolean.TRUE.equals(cc.getMandatory()));
     // @formatter:on
 
     private final Predicate<ComponentConstraint> p;
@@ -426,11 +434,11 @@ public final class ViewConstraintConfigurer {
 
 
   private static final class ConstraintMarker {
-    private final boolean visible;
-    private final boolean enabled;
-    private final boolean mandatory;
+    private final Boolean visible;
+    private final Boolean enabled;
+    private final Boolean mandatory;
 
-    private ConstraintMarker(boolean visible, boolean enabled, boolean mandatory) {
+    private ConstraintMarker(Boolean visible, Boolean enabled, Boolean mandatory) {
       this.visible = visible;
       this.enabled = enabled;
       this.mandatory = mandatory;
@@ -440,13 +448,16 @@ public final class ViewConstraintConfigurer {
       return new ComponentConstraint()
           .dataName(componentConstraint.getDataName())
           .valueSet(componentConstraint.getValueSet())
-          .visible(visible)
-          .enabled(enabled)
-          .mandatory(mandatory);
+          .visible(visible != null ? visible : componentConstraint.getVisible())
+          .enabled(enabled != null ? enabled : componentConstraint.getEnabled())
+          .mandatory(mandatory != null ? mandatory : componentConstraint.getMandatory());
     }
 
     private void modify(final ComponentConstraint componentConstraint) {
-      componentConstraint.visible(visible).enabled(enabled).mandatory(mandatory);
+      componentConstraint
+          .visible(visible != null ? visible : componentConstraint.getVisible())
+          .enabled(enabled != null ? enabled : componentConstraint.getEnabled())
+          .mandatory(mandatory != null ? mandatory : componentConstraint.getMandatory());
     }
 
   }
