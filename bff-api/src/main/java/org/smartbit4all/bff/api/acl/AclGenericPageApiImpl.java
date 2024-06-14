@@ -106,7 +106,6 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     private static final String VAR_ACLOBJECTNODE_URI = "VAR_ACLOBJECTNODE_URI";
 
     protected PageContext load(View view) {
-      System.out.println("ctx loaded");
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
       this.view = view;
       ObjectMapHelper params = parameters(view);
