@@ -103,6 +103,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     String key = GridModels.getValueFromGridRow(gridModel, nodeId, KeyValuePair.KEY).toString();
     Object value = serviceConnection.getParameters().get(key);
     showParamEditor(viewUuid, new KeyValuePair().key(key).value(value), false);
+    setModel(viewUuid, serviceConnection);
   }
 
   void showParamEditor(UUID viewUuid, KeyValuePair pageModel, Boolean keyEditable) {
