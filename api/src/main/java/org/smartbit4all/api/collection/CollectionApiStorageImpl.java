@@ -115,28 +115,64 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Override
   public <T> StoredReference<T> reference(String logicalSchema, String name, Class<T> clazz) {
-    String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredReferenceStorageImpl<>(schema,
-        constructGlobalUri(schema, name, STOREDREF), name, null, objectApi.definition(clazz),
-        objectApi,
-        branchApi);
+    return referenceInner(logicalSchema, name, clazz, true);
   }
 
   @Override
   public <T> StoredReference<T> reference(URI scopeObjectUri, String logicalSchema, String name,
       Class<T> clazz) {
-    String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredReferenceStorageImpl<>(schema,
-        constructScopedUri(schema,
-            name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF),
-        name, scopeObjectUri, objectApi.definition(clazz), objectApi, branchApi);
+    return referenceInner(scopeObjectUri, logicalSchema, name, clazz, true);
   }
 
   @Override
   public <T> StoredReference<T> reference(URI refUri, Class<T> clazz) {
+    return referenceInner(refUri, clazz, true);
+  }
+
+  @Override
+  public <T> StoredReference<T> referenceVersioned(String logicalSchema, String name,
+      Class<T> clazz) {
+    return referenceInner(logicalSchema, name, clazz, false);
+  }
+
+  @Override
+  public <T> StoredReference<T> referenceVersioned(URI scopeObjectUri, String logicalSchema,
+      String name,
+      Class<T> clazz) {
+    return referenceInner(scopeObjectUri, logicalSchema, name, clazz, false);
+  }
+
+  @Override
+  public <T> StoredReference<T> referenceVersioned(URI refUri, Class<T> clazz) {
+    return referenceInner(refUri, clazz, false);
+  }
+
+
+  private final <T> StoredReference<T> referenceInner(String logicalSchema, String name,
+      Class<T> clazz,
+      boolean singleVersion) {
+    String schema = constructCollectionShemaName(logicalSchema, singleVersion);
+    return new StoredReferenceStorageImpl<>(schema,
+        constructGlobalUri(schema, name, STOREDREF, singleVersion), name, null,
+        objectApi.definition(clazz),
+        objectApi,
+        branchApi);
+  }
+
+  private final <T> StoredReference<T> referenceInner(URI scopeObjectUri, String logicalSchema,
+      String name, Class<T> clazz, boolean singleVersion) {
+    String schema = constructCollectionShemaName(logicalSchema, singleVersion);
+    return new StoredReferenceStorageImpl<>(schema,
+        constructScopedUri(schema,
+            name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF, singleVersion),
+        name, scopeObjectUri, objectApi.definition(clazz), objectApi, branchApi);
+  }
+
+  private final <T> StoredReference<T> referenceInner(URI refUri, Class<T> clazz,
+      boolean singleVersion) {
     Storage storage = storageApi.getStorage(refUri);
     String logicalSchema = storage.getScheme();
-    String schema = constructCollectionShemaName(logicalSchema);
+    String schema = constructCollectionShemaName(logicalSchema, singleVersion);
     return new StoredReferenceStorageImpl<>(schema,
         refUri,
         clazz.getName(), null, objectApi.definition(clazz), objectApi, branchApi);
@@ -190,25 +226,40 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   }
 
   public static final URI constructGlobalUri(String logicalSchema, String mapName, String kind) {
+    return constructGlobalUri(logicalSchema, mapName, kind, true);
+  }
+
+  public static final URI constructGlobalUri(String logicalSchema, String mapName, String kind,
+      boolean singleVersion) {
     return UriUtils.createUri(logicalSchema, null,
         StringConstant.SLASH + kind + StringConstant.SLASH + mapName
-            + Storage.SINGLE_VERSION_URI_POSTFIX,
+            + (singleVersion ? Storage.SINGLE_VERSION_URI_POSTFIX : StringConstant.EMPTY),
         null);
   }
 
   public static final URI constructScopedUri(String logicalSchema, String mapName,
-      URI uriWithoutVersion,
-      String kind) {
+      URI uriWithoutVersion, String kind) {
+    return constructScopedUri(logicalSchema, mapName, uriWithoutVersion, kind, true);
+  }
+
+  public static final URI constructScopedUri(String logicalSchema, String mapName,
+      URI uriWithoutVersion, String kind, boolean singleVersion) {
     return UriUtils.createUri(logicalSchema, null,
         uriWithoutVersion.getPath() + StringConstant.SLASH + kind + StringConstant.SLASH
-            + mapName
-            + Storage.SINGLE_VERSION_URI_POSTFIX,
+            + mapName + (singleVersion ? Storage.SINGLE_VERSION_URI_POSTFIX : StringConstant.EMPTY),
         null);
   }
 
   private final String constructCollectionShemaName(String logicalShema) {
-    String result = logicalShema + StringConstant.MINUS_SIGN + "collections";
-    setupStorage(result);
+    return constructCollectionShemaName(logicalShema, true);
+  }
+
+  private final String constructCollectionShemaName(String logicalShema, boolean singleVersion) {
+    String result = logicalShema + StringConstant.MINUS_SIGN
+        + (singleVersion ? "collections" : "v-collections");
+    if (singleVersion) {
+      setupStorage(result);
+    }
     return result;
   }
 
