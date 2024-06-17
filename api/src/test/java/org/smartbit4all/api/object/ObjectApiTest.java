@@ -1,5 +1,10 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -14,6 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -44,7 +51,9 @@ import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.api.sample.bean.SampleProperties;
+import org.smartbit4all.api.sample.bean.SamplePropertyContainer;
 import org.smartbit4all.api.sample.bean.SamplePropertyContainerWithId;
+import org.smartbit4all.api.sample.bean.SampleStandaloneObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -62,10 +71,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
@@ -756,6 +761,25 @@ class ObjectApiTest {
                 SampleProperties.PRIMARY)))
         .containsExactly(idStrings);
 
+  }
+
+  @Test
+  @DisplayName("Updating nested value on a path already carrying a typesafe modification succeeds.")
+  @Disabled
+  void updatingNodeOnPathWithTypeSafeObject_thenSettingValueOnFurtherNestedPath_succeeds() {
+    final ObjectNode node = objectApi.create("foo", new SampleStandaloneObject());
+    node.setValue(new SamplePropertyContainer().name("Incorrect Name"),
+        SampleStandaloneObject.PROPERTY_CONTAINER);
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+        () -> node.setValue("My Name",
+            SampleStandaloneObject.PROPERTY_CONTAINER,
+            SamplePropertyContainer.NAME),
+        "Failed to set 'My Name' to node.propertyContainer.name!");
+
+    assertThat(node.getValueAsString(
+        SampleStandaloneObject.PROPERTY_CONTAINER,
+        SamplePropertyContainer.NAME))
+            .isEqualTo("My Name");
   }
 
   private final Subject getSubject(List<Subject> subjects, URI uri) {
