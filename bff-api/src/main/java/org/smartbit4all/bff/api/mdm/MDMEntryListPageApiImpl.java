@@ -204,7 +204,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       inactives = Boolean.TRUE.equals(variables(getView()).get(VARIABLE_INACTIVES, Boolean.class));
 
       branchingStrategy = getEntryDescriptor().getBranchingStrategy();
-      if (branchingStrategy == null) {
+      if (getBranchingStrategy() == null) {
         log.warn("branchingStrategy null, using default NONE");
         branchingStrategy = MDMBranchingStrategy.NONE;
       }
@@ -292,6 +292,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
     public MDMModificationApi getModificationApi() {
       return modificationApi;
+    }
+
+    public MDMBranchingStrategy getBranchingStrategy() {
+      return branchingStrategy;
     }
   }
 
@@ -420,7 +424,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     boolean isAdmin = ctx.isAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
     boolean inactiveEnabled = Boolean.TRUE.equals(ctx.getEntryDescriptor().getInactiveMgmt());
-    boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
+    boolean branchingEnabled = ctx.getBranchingStrategy() != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     UiActionBuilder uiActions = UiActions.builder()
         .add(ACTION_DO_QUERY);
@@ -816,7 +820,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   protected GridPage addWidgetEntryGridActionsInner(GridPage page, PageContext ctx) {
     boolean isAdmin = ctx.isAdmin();
     boolean branchActive = ctx.getEntryApi().hasBranch();
-    boolean branchingEnabled = ctx.branchingStrategy != MDMBranchingStrategy.NONE;
+    boolean branchingEnabled = ctx.getBranchingStrategy() != MDMBranchingStrategy.NONE;
     boolean entryEditingEnabled = branchActive || !branchingEnabled;
     boolean approvingEnabled = mdmApprovalApi != null;
 
