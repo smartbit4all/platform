@@ -3,6 +3,8 @@ package org.smartbit4all.domain.service.query;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.SB4FunctionImpl;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.TableData;
@@ -17,6 +19,8 @@ import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.DataSetEntry;
 
 public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInput, DataSetEntry> {
+
+  private static final Logger log = LoggerFactory.getLogger(QueryAndSaveResultAsDataSet.class);
 
   /**
    * {@link DataSetApi} to save the result of the query.
@@ -50,7 +54,9 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
   public void execute() throws Exception {
     // First we execute the query.
 
-    System.out.println(input());
+    if (log.isDebugEnabled()) {
+      log.debug("Preparing to execute query: {}", input());
+    }
 
     QueryOutput queryOutput = CrudApis.getCrudApi().executeQuery(input());
     if (queryOutput.isResultSerialized()) {

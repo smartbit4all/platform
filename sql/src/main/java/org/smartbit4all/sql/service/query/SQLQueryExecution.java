@@ -57,6 +57,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.SqlProvider;
 
 /**
  * Responsible for managing all the information during SQL execution of a query. This will be
@@ -224,26 +225,39 @@ final class SQLQueryExecution {
       }
     }
 
-    jdbcTemplate.query(new PreparedStatementCreator() {
+    jdbcTemplate.query(new LoggablePreparedStatementCreator(builder),
+        new ResultSetExtractor<QueryOutput>() {
 
-      @Override
-      public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement stmt = con.prepareStatement(builder.getStatement());
-        select.bind(builder, stmt);
-        if (log.isDebugEnabled()) {
-          log.debug(builder.getStatement());
-        }
-        return stmt;
-      }
-    }, new ResultSetExtractor<QueryOutput>() {
+          @Override
+          public QueryOutput extractData(ResultSet rs) throws SQLException, DataAccessException {
+            fetchResult(rs, columnMap, builder);
+            return null;
+          }
 
-      @Override
-      public QueryOutput extractData(ResultSet rs) throws SQLException, DataAccessException {
-        fetchResult(rs, columnMap, builder);
-        return null;
-      }
+        });
 
-    });
+  }
+
+  // instance-level class to allow access to the 'select' member
+  private final class LoggablePreparedStatementCreator
+      implements PreparedStatementCreator, SqlProvider {
+    private final SQLStatementBuilderIF builder;
+
+    private LoggablePreparedStatementCreator(SQLStatementBuilderIF builder) {
+      this.builder = builder;
+    }
+
+    @Override // implementing SqlProvider allows debug logging in JdbcTemplate
+    public String getSql() {
+      return builder.getStatement();
+    }
+
+    @Override
+    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+      PreparedStatement stmt = con.prepareStatement(builder.getStatement());
+      select.bind(builder, stmt);
+      return stmt;
+    }
 
   }
 
