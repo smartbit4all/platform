@@ -76,6 +76,9 @@ public final class ObjectNodeList {
   }
 
   public <T> Stream<T> stream(Class<T> clazz) {
+    if (clazz == URI.class) {
+      return (Stream<T>) stream().map(ObjectNodeReference::getObjectUri);
+    }
     return nodeStream().map(node -> node.getObject(clazz));
   }
 
