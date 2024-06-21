@@ -37,6 +37,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
 
   /**
+   * Regex pattern for only numbers used for versioning. With no starting zeros.
+   */
+  private static final String REGEX_ONLYNUMBERS = "^0|[1-9]\\d*$";
+
+  /**
    * The postfix of the URI in case of version reference followed by a serial number of the version.
    */
   public static final String versionPostfix = ".v";
@@ -134,7 +139,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public <T> List<StorageObject<T>> load(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
     // TODO The same thread locks must be used and acquired by all the threads.
-    return uris.parallelStream().map(u -> load(storage, u, clazz, options))
+    return uris.parallelStream()
+        .map(u -> load(storage, u, clazz, options))
         .collect(Collectors.toList());
   }
 
@@ -394,7 +400,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     // return null;
     // }
     String path = uri.getPath();
-    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
+    int idxVersionPostfix = getVersionPostfixIdx(path);
     if (idxVersionPostfix >= 0) {
       String version = path.substring(idxVersionPostfix + versionPostfix.length());
       try {
@@ -422,12 +428,21 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     }
     String path = uri.getPath();
     String fragment = uri.getFragment();
-    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
+    int idxVersionPostfix = getVersionPostfixIdx(path);
     if (idxVersionPostfix >= 0) {
       return UriUtils.createUri(uri.getScheme(), null, path.substring(0, idxVersionPostfix),
           fragment);
     }
     return uri;
+  }
+
+  private static int getVersionPostfixIdx(String path) {
+    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
+    if (idxVersionPostfix >= 0
+        && path.substring(idxVersionPostfix + versionPostfix.length()).matches(REGEX_ONLYNUMBERS)) {
+      return idxVersionPostfix;
+    }
+    return -1;
   }
 
   public static final URI getUriWithVersion(URI uri, long versionNumber) {
