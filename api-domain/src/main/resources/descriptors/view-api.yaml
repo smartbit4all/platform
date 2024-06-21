@@ -491,6 +491,8 @@ components:
           $ref: '#/components/schemas/OpenPendingData'
         currentRequest:
           $ref: '#/components/schemas/ServerRequestTrack'
+        deviceInfo:
+          $ref: '#/components/schemas/DeviceInfo'
     ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
@@ -531,6 +533,31 @@ components:
             If the server call is wrapped inside this ViewContextChange, then this field will
             contain the result of the original call.
           type: object
+    DeviceInfo:
+      type: object
+      description: Information of the device running the current view context.
+      required: [deviceId, parameters]
+      properties:
+        deviceId:
+          description: | 
+            Unique identifier of the client's device. E.g.: android_id.
+          type: string
+        deviceType:
+          description: |
+            The type of the device. E.g.: browser, android, iOS or else. 
+            This information is not required and should be used with caution since the clients may 
+            define their own type differently.
+          type: string
+        userAgent:
+          description: The user-agent information from the client.
+          type: string
+        ipAddress:
+          description: IP address of the client.
+          type: string
+        parameters:
+          type: object
+          description: Any additional parameters that the client may share with the server.
+          additionalProperties: true
     View:
       type: object
       required:
@@ -901,6 +928,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ViewStateUpdate'
+        deviceInfo:
+          $ref: '#/components/schemas/DeviceInfo'
     ViewApiError:
       type: object
       description: Generic API error object.

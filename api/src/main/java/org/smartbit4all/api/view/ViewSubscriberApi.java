@@ -2,7 +2,9 @@ package org.smartbit4all.api.view;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 
@@ -14,5 +16,8 @@ public interface ViewSubscriberApi {
 
   void fireViewOpened(URI sessionUri, URI userUri, OffsetDateTime timestamp,
       View view, String objectIdentifier, String objectName);
+
+  void fireDeviceInfoChanged(DeviceInfo deviceInfo, Session session, UUID viewContextUuid,
+      OffsetDateTime timestamp);
 
 }

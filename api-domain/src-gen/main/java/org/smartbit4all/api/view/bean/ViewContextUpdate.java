@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.ViewStateUpdate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -37,7 +38,8 @@ import javax.validation.Valid;
 @ApiModel(description = "State update of a ViewContext.")
 @JsonPropertyOrder({
   ViewContextUpdate.UUID,
-  ViewContextUpdate.UPDATES
+  ViewContextUpdate.UPDATES,
+  ViewContextUpdate.DEVICE_INFO
 })
 @JsonTypeName("ViewContextUpdate")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +49,9 @@ public class ViewContextUpdate {
 
   public static final String UPDATES = "updates";
   private List<ViewStateUpdate> updates = null;
+
+  public static final String DEVICE_INFO = "deviceInfo";
+  private DeviceInfo deviceInfo;
 
   public ViewContextUpdate() { 
   }
@@ -115,6 +120,34 @@ public class ViewContextUpdate {
   }
 
 
+  public ViewContextUpdate deviceInfo(DeviceInfo deviceInfo) {
+    
+    this.deviceInfo = deviceInfo;
+    return this;
+  }
+
+   /**
+   * Get deviceInfo
+   * @return deviceInfo
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEVICE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public DeviceInfo getDeviceInfo() {
+    return deviceInfo;
+  }
+
+
+  @JsonProperty(DEVICE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeviceInfo(DeviceInfo deviceInfo) {
+    this.deviceInfo = deviceInfo;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -125,12 +158,13 @@ public class ViewContextUpdate {
     }
     ViewContextUpdate viewContextUpdate = (ViewContextUpdate) o;
     return Objects.equals(this.uuid, viewContextUpdate.uuid) &&
-        Objects.equals(this.updates, viewContextUpdate.updates);
+        Objects.equals(this.updates, viewContextUpdate.updates) &&
+        Objects.equals(this.deviceInfo, viewContextUpdate.deviceInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, updates);
+    return Objects.hash(uuid, updates, deviceInfo);
   }
 
   @Override
@@ -139,6 +173,7 @@ public class ViewContextUpdate {
     sb.append("class ViewContextUpdate {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    updates: ").append(toIndentedString(updates)).append("\n");
+    sb.append("    deviceInfo: ").append(toIndentedString(deviceInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }

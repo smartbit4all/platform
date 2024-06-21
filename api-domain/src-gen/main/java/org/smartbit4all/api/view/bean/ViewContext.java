@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ClipboardData;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.OpenPendingData;
@@ -49,7 +50,8 @@ import javax.validation.Valid;
   ViewContext.DOWNLOADS,
   ViewContext.CLIPBOARD_DATA,
   ViewContext.OPEN_PENDING_DATA,
-  ViewContext.CURRENT_REQUEST
+  ViewContext.CURRENT_REQUEST,
+  ViewContext.DEVICE_INFO
 })
 @JsonTypeName("ViewContext")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -77,6 +79,9 @@ public class ViewContext {
 
   public static final String CURRENT_REQUEST = "currentRequest";
   private ServerRequestTrack currentRequest;
+
+  public static final String DEVICE_INFO = "deviceInfo";
+  private DeviceInfo deviceInfo;
 
   public ViewContext() { 
   }
@@ -332,6 +337,34 @@ public class ViewContext {
   }
 
 
+  public ViewContext deviceInfo(DeviceInfo deviceInfo) {
+    
+    this.deviceInfo = deviceInfo;
+    return this;
+  }
+
+   /**
+   * Get deviceInfo
+   * @return deviceInfo
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEVICE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public DeviceInfo getDeviceInfo() {
+    return deviceInfo;
+  }
+
+
+  @JsonProperty(DEVICE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeviceInfo(DeviceInfo deviceInfo) {
+    this.deviceInfo = deviceInfo;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -348,12 +381,13 @@ public class ViewContext {
         Objects.equals(this.downloads, viewContext.downloads) &&
         Objects.equals(this.clipboardData, viewContext.clipboardData) &&
         Objects.equals(this.openPendingData, viewContext.openPendingData) &&
-        Objects.equals(this.currentRequest, viewContext.currentRequest);
+        Objects.equals(this.currentRequest, viewContext.currentRequest) &&
+        Objects.equals(this.deviceInfo, viewContext.deviceInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, links, downloads, clipboardData, openPendingData, currentRequest);
+    return Objects.hash(uri, uuid, views, links, downloads, clipboardData, openPendingData, currentRequest, deviceInfo);
   }
 
   @Override
@@ -368,6 +402,7 @@ public class ViewContext {
     sb.append("    clipboardData: ").append(toIndentedString(clipboardData)).append("\n");
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("    currentRequest: ").append(toIndentedString(currentRequest)).append("\n");
+    sb.append("    deviceInfo: ").append(toIndentedString(deviceInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }

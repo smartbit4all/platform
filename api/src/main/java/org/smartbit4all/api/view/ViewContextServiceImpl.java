@@ -250,18 +250,33 @@ public class ViewContextServiceImpl implements ViewContextService {
       throw new IllegalArgumentException("currentViewContext doesn't match paramater");
     }
     startServerRequest(new ServerRequestTrack().type(ServerRequestType.UPDATE_VIEW_CONTEXT));
-    if (!updates.getUpdates().stream().allMatch(
+    if (updates.getUpdates() != null && !updates.getUpdates().stream().allMatch(
         update -> update.getState() == ViewState.OPENED
             || update.getState() == ViewState.CLOSED)) {
       throw new IllegalArgumentException("Only OPENED and CLOSED updates allowed");
     }
     updateCurrentViewContext(
         c -> {
-          updates.getUpdates().forEach(u -> ViewContexts.updateViewState(c, u));
-          c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
+          processUpdates(c, updates);
+          processDeviceInfo(c, updates);
           return c;
         });
     finishServerRequest();
+  }
+
+  private void processUpdates(ViewContext c, ViewContextUpdate updates) {
+    if (updates.getUpdates() != null) {
+      updates.getUpdates().forEach(u -> ViewContexts.updateViewState(c, u));
+      c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
+    }
+  }
+
+  private void processDeviceInfo(ViewContext c, ViewContextUpdate updates) {
+    if (updates.getDeviceInfo() != null
+        && !Objects.equals(updates.getDeviceInfo(), c.getDeviceInfo())) {
+      c.setDeviceInfo(updates.getDeviceInfo());
+      publisherApi.fireDeviceInfoChanged(c.getUuid(), updates.getDeviceInfo());
+    }
   }
 
   @Override

@@ -2,10 +2,13 @@ package org.smartbit4all.api.view;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
@@ -66,6 +69,23 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
           api.fireViewOpened(sessionApi.getSessionUri(), sessionApi.getUserUri(),
               OffsetDateTime.now(),
               view2, objectIdentifier, objectName);
+        });
+  }
+
+  @Override
+  public void fireDeviceInfoChanged(UUID viewContextUuid, DeviceInfo deviceInfo) {
+    Objects.requireNonNull(viewContextUuid, "viewContextUuid can not be null!");
+    Objects.requireNonNull(deviceInfo, "deviceInfo can not be null!");
+
+    if (sessionApi == null || sessionManagementApi == null) {
+      return;
+    }
+    invocationApi
+        .publisher(ViewPublisherApi.class, ViewSubscriberApi.class,
+            ViewPublisherApi.DEVICE_INFO_CHANGED)
+        .publish(api -> {
+          Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
+          api.fireDeviceInfoChanged(deviceInfo, session, viewContextUuid, OffsetDateTime.now());
         });
   }
 
