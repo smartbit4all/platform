@@ -497,7 +497,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
       storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
         if (requestUris != null) {
-          requestUris.forEach(rac::addInvocationRequestsItem);
+          requestUris.forEach(
+              requestUri -> rac.addInvocationRequestsItem(objectApi.getLatestUri(requestUri)));
         }
         return rac;
       });
