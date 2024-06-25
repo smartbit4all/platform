@@ -630,7 +630,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     ACL acl = accessControlInternalApi.getAclFromObject(
         ctx.getAclObjectNode().getObject(ACLObject.class),
         gridConfig.getAclName());
-    checkForExistingSubjects(acl, subjects, gridConfig);
+    checkForExistingSubjects(viewUuid, acl, subjects, gridConfig);
     if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
       showEditComment("", invocationApi.builder(AclGenericPageApi.class)
           .build(api -> api.saveSubjectSelectedWithComment(
@@ -644,7 +644,8 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     }
   }
 
-  private void checkForExistingSubjects(ACL acl, List<Subject> subjects, AclGridConfig gridConfig) {
+  protected void checkForExistingSubjects(UUID viewUuid, ACL acl, List<Subject> subjects,
+      AclGridConfig gridConfig) {
     for (Subject subject : subjects) {
       if (checkSubjectIsAlreadyInAcl(acl, subject.getRef(), gridConfig.getOperation())) {
         String message = localeSettingApi.get(PREFIX, "ALREADY_SELECTED");
@@ -676,7 +677,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       ACL acl = accessControlInternalApi.getAclFromObject(aclObject, gridConfig.getAclName());
       String operation = gridConfig.getOperation();
       List<ACLSubject> currentSubjects = accessControlInternalApi.getSubjects(acl, operation);
-      checkForExistingSubjects(acl, subjects, gridConfig);
+      checkForExistingSubjects(viewUuid, acl, subjects, gridConfig);
       for (Subject subject : subjects) {
         currentSubjects.add(
             new ACLSubject()
