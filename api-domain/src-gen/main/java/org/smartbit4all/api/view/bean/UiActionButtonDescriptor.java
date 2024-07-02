@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.view.bean.IconPosition;
+import org.smartbit4all.api.view.bean.UiActionTooltip;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,7 +35,12 @@ import javax.validation.Valid;
 @ApiModel(description = "Describes a button which is presented on the UiAction dialog. ")
 @JsonPropertyOrder({
   UiActionButtonDescriptor.CAPTION,
-  UiActionButtonDescriptor.COLOR
+  UiActionButtonDescriptor.COLOR,
+  UiActionButtonDescriptor.ICON,
+  UiActionButtonDescriptor.ICON_COLOR,
+  UiActionButtonDescriptor.ICON_POSITION,
+  UiActionButtonDescriptor.TOOLTIP,
+  UiActionButtonDescriptor.CSS_CLASS
 })
 @JsonTypeName("UiActionButtonDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,6 +50,21 @@ public class UiActionButtonDescriptor {
 
   public static final String COLOR = "color";
   private String color;
+
+  public static final String ICON = "icon";
+  private String icon;
+
+  public static final String ICON_COLOR = "iconColor";
+  private String iconColor;
+
+  public static final String ICON_POSITION = "iconPosition";
+  private IconPosition iconPosition;
+
+  public static final String TOOLTIP = "tooltip";
+  private UiActionTooltip tooltip;
+
+  public static final String CSS_CLASS = "cssClass";
+  private String cssClass;
 
   public UiActionButtonDescriptor() { 
   }
@@ -103,6 +125,143 @@ public class UiActionButtonDescriptor {
   }
 
 
+  public UiActionButtonDescriptor icon(String icon) {
+    
+    this.icon = icon;
+    return this;
+  }
+
+   /**
+   * Get icon
+   * @return icon
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIcon() {
+    return icon;
+  }
+
+
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+
+  public UiActionButtonDescriptor iconColor(String iconColor) {
+    
+    this.iconColor = iconColor;
+    return this;
+  }
+
+   /**
+   * Get iconColor
+   * @return iconColor
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ICON_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIconColor() {
+    return iconColor;
+  }
+
+
+  @JsonProperty(ICON_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIconColor(String iconColor) {
+    this.iconColor = iconColor;
+  }
+
+
+  public UiActionButtonDescriptor iconPosition(IconPosition iconPosition) {
+    
+    this.iconPosition = iconPosition;
+    return this;
+  }
+
+   /**
+   * Get iconPosition
+   * @return iconPosition
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ICON_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public IconPosition getIconPosition() {
+    return iconPosition;
+  }
+
+
+  @JsonProperty(ICON_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIconPosition(IconPosition iconPosition) {
+    this.iconPosition = iconPosition;
+  }
+
+
+  public UiActionButtonDescriptor tooltip(UiActionTooltip tooltip) {
+    
+    this.tooltip = tooltip;
+    return this;
+  }
+
+   /**
+   * Get tooltip
+   * @return tooltip
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionTooltip getTooltip() {
+    return tooltip;
+  }
+
+
+  @JsonProperty(TOOLTIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTooltip(UiActionTooltip tooltip) {
+    this.tooltip = tooltip;
+  }
+
+
+  public UiActionButtonDescriptor cssClass(String cssClass) {
+    
+    this.cssClass = cssClass;
+    return this;
+  }
+
+   /**
+   * Get cssClass
+   * @return cssClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CSS_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCssClass() {
+    return cssClass;
+  }
+
+
+  @JsonProperty(CSS_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCssClass(String cssClass) {
+    this.cssClass = cssClass;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -113,12 +272,17 @@ public class UiActionButtonDescriptor {
     }
     UiActionButtonDescriptor uiActionButtonDescriptor = (UiActionButtonDescriptor) o;
     return Objects.equals(this.caption, uiActionButtonDescriptor.caption) &&
-        Objects.equals(this.color, uiActionButtonDescriptor.color);
+        Objects.equals(this.color, uiActionButtonDescriptor.color) &&
+        Objects.equals(this.icon, uiActionButtonDescriptor.icon) &&
+        Objects.equals(this.iconColor, uiActionButtonDescriptor.iconColor) &&
+        Objects.equals(this.iconPosition, uiActionButtonDescriptor.iconPosition) &&
+        Objects.equals(this.tooltip, uiActionButtonDescriptor.tooltip) &&
+        Objects.equals(this.cssClass, uiActionButtonDescriptor.cssClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(caption, color);
+    return Objects.hash(caption, color, icon, iconColor, iconPosition, tooltip, cssClass);
   }
 
   @Override
@@ -127,6 +291,11 @@ public class UiActionButtonDescriptor {
     sb.append("class UiActionButtonDescriptor {\n");
     sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
+    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    iconColor: ").append(toIndentedString(iconColor)).append("\n");
+    sb.append("    iconPosition: ").append(toIndentedString(iconPosition)).append("\n");
+    sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
+    sb.append("    cssClass: ").append(toIndentedString(cssClass)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -539,7 +539,7 @@ components:
       required: [deviceId, parameters]
       properties:
         deviceId:
-          description: | 
+          description: |
             Unique identifier of the client's device. E.g.: android_id.
           type: string
         deviceType:
@@ -1292,6 +1292,16 @@ components:
         caption:
           type: string
         color:
+          type: string
+        icon:
+          type: string
+        iconColor:
+          type: string
+        iconPosition:
+          $ref: '#/components/schemas/IconPosition'
+        tooltip:
+          $ref: '#/components/schemas/UiActionTooltip'
+        cssClass:
           type: string
     UiActionButtonType:
       type: string
