@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.bean.Style;
 
 /**
@@ -133,4 +135,33 @@ public class GridModels {
         .forEach(col -> col
             .style(style));
   }
+
+  public static void setGridHeadersPrefix(LocaleSettingApi localeSettingApi, GridModel gridModel,
+      String... columnPrefix) {
+    GridView gridView = gridModel.getView();
+
+    String[] keys;
+    int idxLastKey;
+    if (columnPrefix == null) {
+      keys = new String[1];
+      idxLastKey = 0;
+    } else {
+      keys = new String[columnPrefix.length + 1];
+      System.arraycopy(
+          columnPrefix, 0,
+          keys, 0,
+          columnPrefix.length);
+      idxLastKey = columnPrefix.length;
+    }
+    List<GridColumnMeta> headers = gridView.getDescriptor().getColumns();
+    List<String> columns = gridView.getOrderedColumnNames();
+
+
+    for (int i = 0; i < columns.size(); ++i) {
+      String column = columns.get(i);
+      keys[idxLastKey] = column;
+      headers.get(i).label(localeSettingApi.get(keys));
+    }
+  }
+
 }
