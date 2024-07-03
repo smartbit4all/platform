@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
@@ -18,11 +19,13 @@ import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentWidgetType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWidgetDefinition;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import org.smartbit4all.core.utility.RichTextEditorFeatures.Properties;
@@ -216,6 +219,11 @@ public final class ObjectLayoutBuilder {
         .selection(selectionDefinition);
   }
 
+  public static SmartWidgetDefinition combobox(String key, String label,
+      Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi) {
+    return enumSelector(key, label, enumClass, localeSettingApi, SmartFormWidgetType.SELECT);
+  }
+
   public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()
@@ -223,6 +231,12 @@ public final class ObjectLayoutBuilder {
         .key(key)
         .label(label)
         .selection(selectionDefinition);
+  }
+
+  public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
+      Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi) {
+    return enumSelector(key, label, enumClass, localeSettingApi,
+        SmartFormWidgetType.SELECT_MULTIPLE);
   }
 
   public static SmartWidgetDefinition datePicker(String key, String label) {
@@ -246,6 +260,25 @@ public final class ObjectLayoutBuilder {
         .key(key)
         .label(label)
         .selection(selectionDefinition);
+  }
+
+  public static SmartWidgetDefinition radioButtonGroup(String key, String label,
+      Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi) {
+    return enumSelector(key, label, enumClass, localeSettingApi, SmartFormWidgetType.RADIO_BUTTON);
+  }
+
+  private static SmartWidgetDefinition enumSelector(String key, String label,
+      Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi,
+      SmartFormWidgetType type) {
+    return new SmartWidgetDefinition()
+        .type(type)
+        .key(key)
+        .label(label)
+        .values(Arrays.stream(enumClass.getEnumConstants())
+            .map(it -> new Value()
+                .code(it.toString())
+                .displayValue(localeSettingApi == null ? it.toString() : localeSettingApi.get(it)))
+            .collect(Collectors.toList()));
   }
 
   public static String widgetKey(String... elements) {
