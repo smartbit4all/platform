@@ -267,6 +267,29 @@ public final class ObjectLayoutBuilder {
     return enumSelector(key, label, enumClass, localeSettingApi, SmartFormWidgetType.RADIO_BUTTON);
   }
 
+  /**
+   * Creates a simple radio button group with a 'yes' and a 'no' option backed by a single
+   * {@link Boolean} property.
+   * 
+   * @param key the {@link String} path to the {@code Boolean} property, starting from a page model,
+   *        delimited by {@link StringConstant#DOT}s
+   * @param label the {@link String} label to display above the radio buttons
+   * @param trueLabel the {@link String} label to associate with the true value
+   * @param falseLabel the {@link String} label to associate with the false value
+   * @return a {@link SmartWidgetDefinition} defining a two element radio button group for
+   *         manipulating a boolean value
+   */
+  public static SmartWidgetDefinition radioButtonGroupBoolean(String key, String label,
+      String trueLabel, String falseLabel) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.RADIO_BUTTON)
+        .key(key)
+        .label(label)
+        .values(Arrays.asList(
+            new Value().code("true").displayValue(trueLabel),
+            new Value().code("false").displayValue(falseLabel)));
+  }
+
   private static SmartWidgetDefinition enumSelector(String key, String label,
       Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi,
       SmartFormWidgetType type) {
