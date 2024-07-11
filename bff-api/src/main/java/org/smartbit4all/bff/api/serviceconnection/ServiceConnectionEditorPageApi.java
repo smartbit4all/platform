@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.serviceconnection;
 
 import java.util.UUID;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
@@ -8,7 +9,7 @@ import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 
-@ViewApi(value = "MDMServiceConnectionEditor")
+@ViewApi(value = PlatformViewNames.SERVICE_CONNECTION_EDITOR)
 public interface ServiceConnectionEditorPageApi extends MDMEntryEditPageApi {
 
   String ADD_PARAMETER = "ADD_PARAMETER";
