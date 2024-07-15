@@ -25,4 +25,39 @@ components:
           type: string
         token:
           type: string
+    ApiKey:
+      type: object
+      required: [uri, token, user, created, scope]
+      description: |
+        "Holds information of the user and the token it can use the scoped apis with."
+      properties:
+        uri:
+          description: "The identifier of the api key"
+          type: string
+          format: uri
+        token:
+          description: "The generated token which can be used to access apis."
+          type: string
+        user:
+          description: "The URI identifier of the user the api key is created for."
+          type: string
+          format: uri
+        scope:
+          description: "The apis that can be accessed with this api key."
+          type: array
+          items:
+            type: string
+        expiration:
+          description: | 
+            "The expiration date of the api key. It can be null, meaning the api key lasts forever
+             or until revocation."
+          type: string
+          format: date-time
+        created:
+          description: "Information of the creation"
+          type: UserActivityLog
+        revoked:
+          description: |
+            "Information of the revocation. It can be null, meaning the token is not revoked."
+          type: UserActivityLog
     
