@@ -28,12 +28,16 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
   public Object initModel(View view) {
     boolean editable = editable(view);
     if (!editable) {
-      ArrayList<ComponentConstraint> constraints = new ArrayList<>();
-      constraints.add(new ComponentConstraint().dataName("**").enabled(false));
-      view.getConstraint().setComponentConstraints(constraints);
+      disablePage(view);
     }
 
     return parameters(view).require(MDMEntryListPageApi.PARAM_RAW_MODEL, Map.class);
+  }
+
+  protected void disablePage(View view) {
+    ArrayList<ComponentConstraint> constraints = new ArrayList<>();
+    constraints.add(new ComponentConstraint().dataName("**").enabled(false));
+    view.getConstraint().setComponentConstraints(constraints);
   }
 
   @Override
