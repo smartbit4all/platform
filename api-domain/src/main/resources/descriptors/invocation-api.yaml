@@ -589,6 +589,10 @@ components:
           description: |
             As a crucial parameter for the access the authentication token (bearer token or similar).
           type: string
+        username:
+          type: string
+        password:
+          type: string
         apiVersion:
           description: |
             The optional version parameter of the api endpoint.

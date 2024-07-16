@@ -40,6 +40,8 @@ import javax.validation.Valid;
   ServiceConnection.NAME,
   ServiceConnection.API_NAME,
   ServiceConnection.AUTH_TOKEN,
+  ServiceConnection.USERNAME,
+  ServiceConnection.PASSWORD,
   ServiceConnection.API_VERSION,
   ServiceConnection.ENDPOINT,
   ServiceConnection.PARAMETERS
@@ -58,6 +60,12 @@ public class ServiceConnection {
 
   public static final String AUTH_TOKEN = "authToken";
   private String authToken;
+
+  public static final String USERNAME = "username";
+  private String username;
+
+  public static final String PASSWORD = "password";
+  private String password;
 
   public static final String API_VERSION = "apiVersion";
   private String apiVersion;
@@ -180,6 +188,60 @@ public class ServiceConnection {
   }
 
 
+  public ServiceConnection username(String username) {
+    
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * Get username
+   * @return username
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(USERNAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUsername() {
+    return username;
+  }
+
+
+  @JsonProperty(USERNAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+
+  public ServiceConnection password(String password) {
+    
+    this.password = password;
+    return this;
+  }
+
+   /**
+   * Get password
+   * @return password
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPassword() {
+    return password;
+  }
+
+
+  @JsonProperty(PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+
   public ServiceConnection apiVersion(String apiVersion) {
     
     this.apiVersion = apiVersion;
@@ -280,6 +342,8 @@ public class ServiceConnection {
         Objects.equals(this.name, serviceConnection.name) &&
         Objects.equals(this.apiName, serviceConnection.apiName) &&
         Objects.equals(this.authToken, serviceConnection.authToken) &&
+        Objects.equals(this.username, serviceConnection.username) &&
+        Objects.equals(this.password, serviceConnection.password) &&
         Objects.equals(this.apiVersion, serviceConnection.apiVersion) &&
         Objects.equals(this.endpoint, serviceConnection.endpoint) &&
         Objects.equals(this.parameters, serviceConnection.parameters);
@@ -287,7 +351,7 @@ public class ServiceConnection {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, apiName, authToken, apiVersion, endpoint, parameters);
+    return Objects.hash(uri, name, apiName, authToken, username, password, apiVersion, endpoint, parameters);
   }
 
   @Override
@@ -298,6 +362,8 @@ public class ServiceConnection {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
     sb.append("    authToken: ").append(toIndentedString(authToken)).append("\n");
+    sb.append("    username: ").append(toIndentedString(username)).append("\n");
+    sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    apiVersion: ").append(toIndentedString(apiVersion)).append("\n");
     sb.append("    endpoint: ").append(toIndentedString(endpoint)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
