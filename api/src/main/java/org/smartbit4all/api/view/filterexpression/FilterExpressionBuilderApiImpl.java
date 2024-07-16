@@ -330,10 +330,24 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
   private void setFilterGroupsVisibility(FilterExpressionBuilderUiModel model, boolean open) {
     model.setShowGroups(open);
 
+    UiAction actionToRemove;
+    UiAction actionToAdd;
     if (open) {
-      model.setPossibleActions(UI_ACTIONS_CLOSED);
+      actionToRemove = OPEN_FILTER_GROUPS_ACTION;
+      actionToAdd = CLOSE_FILTER_GROUPS_ACTION;
     } else {
-      model.setPossibleActions(UI_ACTIONS_OPENED);
+      actionToRemove = CLOSE_FILTER_GROUPS_ACTION;
+      actionToAdd = OPEN_FILTER_GROUPS_ACTION;
+    }
+    swapActions(model, actionToRemove, actionToAdd);
+  }
+
+  protected void swapActions(FilterExpressionBuilderUiModel model, UiAction actionToRemove,
+      UiAction actionToAdd) {
+    List<UiAction> possibleActions = model.getPossibleActions();
+    int currentIndex = possibleActions.indexOf(actionToRemove);
+    if (currentIndex >= 0) {
+      possibleActions.set(currentIndex, actionToAdd);
     }
   }
 
