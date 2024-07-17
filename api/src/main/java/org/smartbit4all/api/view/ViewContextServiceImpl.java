@@ -72,8 +72,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -419,8 +419,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     return null;
   }
 
-  @EventListener(ApplicationStartedEvent.class)
-  private void initViews(ApplicationStartedEvent applicationPreparedEvent) {
+  @EventListener(ContextRefreshedEvent.class)
+  private void initViews(ContextRefreshedEvent applicationPreparedEvent) {
+    apiByViewName.clear();
     ctx.getBeansWithAnnotation(ViewApi.class).values()
         .forEach(this::setupScreenApi);
   }
