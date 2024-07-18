@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -17,8 +19,6 @@ import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.lang.NonNull;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The object property resolver is the central logic that can help to access the values in an
@@ -328,14 +328,24 @@ public final class ObjectPropertyResolver {
     return performResolution(objectNode, alternativePath, language);
   }
 
-  private static void fillLanguagePlaceholder(String[] parts, String language) {
+  public static final String LANG_PLACEHOLDER = "[lang]";
+
+  public static void fillLanguagePlaceholder(String[] parts, String language) {
     if (language != null) {
       for (int i = 0; i < parts.length; i++) {
-        if (parts[i].equals("[lang]")) {
+        if (LANG_PLACEHOLDER.equals(parts[i])) {
           parts[i] = language;
         }
       }
     }
+  }
+
+  public static String fillLanguagePlaceholder(String s, String language) {
+    if (Strings.isNullOrEmpty(s) || Strings.isNullOrEmpty(language)) {
+      return s;
+    }
+
+    return s.replace(LANG_PLACEHOLDER, language);
   }
 
   public ObjectNode getContextObjectNode(String objectName) {
