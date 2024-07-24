@@ -6,7 +6,6 @@ import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 
-
 public interface UserEditorPageApi extends PageApi<UserEditingModel> {
 
   public static final String SAVE_USER = "SAVE_USER";

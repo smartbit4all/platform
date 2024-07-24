@@ -14,7 +14,7 @@ public interface UserListPageApi extends PageApi<Object> {
   public static final String OPEN_USER_EDITOR_PAGE = "OPEN_USER_EDITOR_PAGE";
   public static final String ADD_USER = "ADD_USER";
 
-  Object createPageModel(View view);
+  void initGrid(View view);
 
   GridPage extendPageData(GridPage page);
 
