@@ -10,9 +10,9 @@ import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.object.bean.ObjectContainer;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -41,61 +41,43 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
 
   @Override
   public Object initModel(View view) {
-    Object pageModel = createPageModel(view);
+    ObjectContainer pageModel = new ObjectContainer();
 
-    view.actions(getUserListActions());
-
+    initGrid(view);
     gridModelApi.setDataFromUris(view.getUuid(), USER_GRID, userSearch,
         orgApi.getAllUsers().stream().map(User::getUri));
+
+    view.actions(getUserListActions());
 
     return pageModel;
   }
 
   @Override
-  public Object createPageModel(View view) {
-
-    UserEditingModel pageModel = new UserEditingModel();
-
+  public void initGrid(View view) {
     GridModel userGridModel = gridModelApi.createGridModel(
         userSearch.getDefinition().getDefinition(), getGridColumns(),
         User.class.getSimpleName());
-
     gridModelApi.initGridInView(view.getUuid(), USER_GRID, userGridModel);
-
-
     gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
         invocationApi.builder(UserListPageApi.class)
             .build(a -> a.extendPageData(null)));
-    return pageModel;
   }
 
   @Override
   public GridPage extendPageData(GridPage page) {
-    if (page == null) {
-      return page;
-    }
-
     if (page.getRows() != null) {
       for (GridRow row : page.getRows()) {
-        addActionsToRow(row);
+        row.getActions().addAll(getUserRowActions());
       }
     }
-
     return page;
   }
-
-  protected void addActionsToRow(GridRow row) {
-    row.getActions().addAll(getUserRowActions());
-  }
-
 
   @Override
   public void openUserEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
-
     URI userUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
-
     viewApi.showView(new View().viewName(getUserEditorPageName()).objectUri(userUri));
   }
 
@@ -109,9 +91,6 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     return OrgViewNames.USER_EDITOR_PAGE;
   }
 
-  /**
-   * @return the column names to show on ui in order
-   */
   protected List<String> getGridColumns() {
     return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
   }

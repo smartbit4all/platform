@@ -1,30 +1,41 @@
 package org.smartbit4all.bff.api.org;
 
+import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.core.object.ObjectLayoutApi;
+import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.ObjectUtils;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
 
   @Autowired
   protected OrgApi orgApi;
-
   @Autowired(required = false)
   protected PasswordEncoder passwordEncoder;
+  @Autowired
+  LocaleSettingApi localeSettingApi;
 
   public UserEditorPageApiImpl() {
     super(UserEditingModel.class);
@@ -32,46 +43,92 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
   @Override
   public UserEditingModel initModel(View view) {
+    UserEditingModel pageModel = new UserEditingModel();
 
     view.actions(getUserEditorActions());
-
-    UserEditingModel pageModel = new UserEditingModel();
 
     URI userUri = view.getObjectUri();
 
     if (userUri != null) {
       pageModel.user(orgApi.getUser(userUri));
       pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(Group::getUri)
-          .collect(Collectors.toList()));
+          .collect(toList()));
     } else {
       pageModel.user(new User().name("").email("").username(""));
       pageModel.actualGroups(new ArrayList<>());
     }
-
     pageModel.getUser().password("");
     pageModel.possibleGroups(orgApi.getAllGroups());
+
+    putLayoutIntoView(view);
+    putConstraintIntoView(view);
 
     return pageModel;
   }
 
+  private void putLayoutIntoView(View view) {
+    SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
+        textfield(widgetKey(UserEditingModel.USER, User.NAME),
+            localeSettingApi.get(UserEditingModel.USER, User.NAME)),
+        textfield(widgetKey(UserEditingModel.USER, User.USERNAME),
+            localeSettingApi.get(UserEditingModel.USER, User.USERNAME)),
+        textfield(widgetKey(UserEditingModel.USER, User.PASSWORD),
+            localeSettingApi.get(UserEditingModel.USER, User.PASSWORD)),
+        textfield(widgetKey(UserEditingModel.USER, User.EMAIL),
+            localeSettingApi.get(UserEditingModel.USER, User.EMAIL))
+    // TODO When the remove group method will work, this will be relevant again
+    // ,new SmartWidgetDefinition().type(SmartFormWidgetType.SELECT_MULTIPLE)
+    // .key(UserEditingModel.ACTUAL_GROUPS)
+    // .label(UserEditingModel.ACTUAL_GROUPS)
+    // .values(orgApi.getAllGroups().stream()
+    // .map(g -> new Value().code(g.getUri().toString()).displayValue(g.getTitle()))
+    // .collect(toList()))
+    );
+    view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout);
+  }
+
+  private void putConstraintIntoView(View view) {
+    ViewConstraint viewConstraint = new ViewConstraint().componentConstraints(Arrays.asList(
+        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.NAME))
+            .enabled(true).mandatory(true).visible(true),
+        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.USERNAME))
+            .enabled(true).mandatory(true).visible(true),
+        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.PASSWORD))
+            .enabled(true).mandatory(true).visible(true),
+        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.EMAIL))
+            .enabled(true).mandatory(true).visible(true)));
+    view.setConstraint(viewConstraint);
+  }
+
   @Override
   public void saveUser(UUID viewUuid, UiActionRequest request) {
-
-    UserEditingModel pageModel = extractClientModel(request);
-
-    User user = pageModel.getUser();
-
-    String password =
-        passwordEncoder == null ? user.getPassword() : passwordEncoder.encode(user.getPassword());
-    user.password(password);
-
-    if (orgApi.getActiveUsers().stream().map(User::getUri).collect(Collectors.toList())
-        .contains(user.getUri())) {
-      orgApi.updateUser(user);
-    } else {
-      orgApi.saveUser(user);
+    UserEditingModel clientModel = extractClientModel(request);
+    User user = clientModel.getUser();
+    String clientPassword = user.getPassword();
+    if (!ObjectUtils.isEmpty(clientPassword)) {
+      String password =
+          passwordEncoder == null ? clientPassword : passwordEncoder.encode(clientPassword);
+      user.password(password);
     }
-
+    URI userUri;
+    if (orgApi.getActiveUsers().stream().map(User::getUri).collect(toList())
+        .contains(user.getUri())) {
+      userUri = orgApi.updateUser(user);
+    } else {
+      userUri = orgApi.saveUser(user);
+    }
+    // TODO When the remove group method will work, this will be relevant again
+    // List<URI> actualGroupUris = clientModel.getActualGroups();
+    // orgApi.getGroupsOfUser(userUri).stream().forEach(g -> {
+    // if (actualGroupUris.stream().noneMatch(u -> u.equals(g.getUri()))) {
+    // orgApi.removeUserFromGroup(userUri, g.getUri());
+    // }
+    // });
+    // actualGroupUris.forEach(gu -> {
+    // if (orgApi.getUsersOfGroup(gu).stream().noneMatch(u -> u.getUri().equals(userUri))) {
+    // OrgUtils.applyGroupByName(orgApi, orgApi.getGroup(gu), orgApi.getUser(userUri));
+    // }
+    // });
     viewApi.closeView(viewUuid);
   }
 
