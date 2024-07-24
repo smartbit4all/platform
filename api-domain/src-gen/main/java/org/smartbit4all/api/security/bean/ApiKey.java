@@ -58,7 +58,7 @@ public class ApiKey {
   private URI user;
 
   public static final String SCOPE = "scope";
-  private List<String> scope = new ArrayList<>();
+  private List<URI> scope = new ArrayList<>();
 
   public static final String EXPIRATION = "expiration";
   private OffsetDateTime expiration;
@@ -158,13 +158,13 @@ public class ApiKey {
   }
 
 
-  public ApiKey scope(List<String> scope) {
+  public ApiKey scope(List<URI> scope) {
     
     this.scope = scope;
     return this;
   }
 
-  public ApiKey addScopeItem(String scopeItem) {
+  public ApiKey addScopeItem(URI scopeItem) {
     this.scope.add(scopeItem);
     return this;
   }
@@ -175,18 +175,19 @@ public class ApiKey {
   **/
   @javax.annotation.Nonnull
   @NotNull
+  @Valid
   @ApiModelProperty(required = true, value = "The apis that can be accessed with this api key.")
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<String> getScope() {
+  public List<URI> getScope() {
     return scope;
   }
 
 
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setScope(List<String> scope) {
+  public void setScope(List<URI> scope) {
     this.scope = scope;
   }
 

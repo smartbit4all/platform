@@ -21,6 +21,8 @@ import org.smartbit4all.bff.api.attachment.AttachmentListPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
+import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
+import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
@@ -156,6 +158,19 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<ServiceConnectionEditorPageApi> serviceConnectionEditorPageApiProvider(
       ServiceConnectionEditorPageApi api) {
     return Invocations.asProvider(ServiceConnectionEditorPageApi.class, api);
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  ApiKeyEditorPageApi apiKeyEditorPageApi() {
+    return new ApiKeyEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(ServiceConnectionEditorPageApi.class)
+  public ProviderApiInvocationHandler<ApiKeyEditorPageApi> apiKeyEditorPageApiProvider(
+      ApiKeyEditorPageApi api) {
+    return Invocations.asProvider(ApiKeyEditorPageApi.class, api);
   }
 
 }

@@ -1,6 +1,8 @@
 package org.smartbit4all.sec.apikey;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -9,18 +11,18 @@ public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
 
   private final String apiKey;
 
-  private final String apiName;
+  private final List<URI> scopeUris;
 
-  public ApiKeyAuthenticationToken(String apiKey, String apiName,
+  public ApiKeyAuthenticationToken(String apiKey, List<URI> scopeUris,
       Collection<? extends GrantedAuthority> authorities) {
     super(authorities);
     this.apiKey = apiKey;
-    this.apiName = apiName;
+    this.scopeUris = scopeUris;
     setAuthenticated(false);
   }
 
-  public ApiKeyAuthenticationToken(String apiKey, String apiName) {
-    this(apiKey, apiName, AuthorityUtils.NO_AUTHORITIES);
+  public ApiKeyAuthenticationToken(String apiKey, List<URI> scopeUris) {
+    this(apiKey, scopeUris, AuthorityUtils.NO_AUTHORITIES);
   }
 
   @Override
@@ -33,8 +35,8 @@ public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
     return getApiKey();
   }
 
-  public String getApiName() {
-    return apiName;
+  public List<URI> getScopeUris() {
+    return scopeUris;
   }
 
   public String getApiKey() {

@@ -1,10 +1,14 @@
 package org.smartbit4all.sec.apikey;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -21,18 +25,17 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
   private String apiKeyHeader = DEFAULT_API_KEY_HEADER;
 
   private AuthenticationManager authenticationManager;
+  private ApiKeyApi apiKeyApi;
 
-  public ApiKeyAuthFilter(AuthenticationManager authenticationManager) {
+  public ApiKeyAuthFilter(AuthenticationManager authenticationManager, ApiKeyApi apiKeyApi) {
     this.authenticationManager = authenticationManager;
-  }
-
-  public void setApiKeyHeader(String apiKeyHeader) {
-    this.apiKeyHeader = apiKeyHeader;
+    this.apiKeyApi = apiKeyApi;
   }
 
   @Override
   public void afterPropertiesSet() {
     Assert.notNull(this.authenticationManager, "An AuthenticationManager is required");
+    Assert.notNull(this.apiKeyApi, "An ApiKeyApi is required");
   }
 
   @Override
@@ -41,15 +44,14 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     final boolean debug = this.logger.isDebugEnabled();
     try {
       String apiKey = request.getHeader(apiKeyHeader);
-      String apiName = null; // TODO getApiName or path?
+      List<URI> scopeUris = apiKeyApi.getMatchingApiKeyScopes(request);
 
       if (ObjectUtils.isEmpty(apiKey)) {
         throw new BadCredentialsException("Missing API Key");
       }
 
-      Authentication auth = new ApiKeyAuthenticationToken(apiKey, apiName);
-      Authentication authResult = this.authenticationManager
-          .authenticate(auth);
+      Authentication auth = new ApiKeyAuthenticationToken(apiKey, scopeUris);
+      Authentication authResult = this.authenticationManager.authenticate(auth);
 
       if (debug) {
         this.logger.debug("Authentication success: " + authResult);
@@ -57,14 +59,14 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
       SecurityContextHolder.getContext().setAuthentication(authResult);
       onSuccessfulAuthentication(request, response, authResult);
-    } catch (AuthenticationException failed) {
+    } catch (AuthenticationException e) {
       SecurityContextHolder.clearContext();
 
       if (debug) {
-        this.logger.debug("Authentication request for failed!", failed);
+        this.logger.debug("Authentication with api key has failed!", e);
       }
-
-      onUnsuccessfulAuthentication(request, response, failed);
+      response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+      onUnsuccessfulAuthentication(request, response, e);
 
       return;
     }
@@ -77,5 +79,13 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
   protected void onUnsuccessfulAuthentication(HttpServletRequest request,
       HttpServletResponse response, AuthenticationException failed) throws IOException {}
+
+  public final void setApiKeyHeader(String apiKeyHeader) {
+    Objects.requireNonNull(apiKeyHeader, "apiKeyHeader can not be null!");
+    if (apiKeyHeader.isEmpty()) {
+      throw new IllegalArgumentException("apiKeyHeader can not be empty!");
+    }
+    this.apiKeyHeader = apiKeyHeader;
+  }
 
 }

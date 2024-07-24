@@ -1,5 +1,6 @@
 package org.smartbit4all.sec.apikey;
 
+import java.util.Objects;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -10,12 +11,18 @@ public class ApiKeyAuthenticationConfigurer<B extends HttpSecurityBuilder<B>> ex
     AbstractHttpConfigurer<ApiKeyAuthenticationConfigurer<B>, B> {
 
   private String apiKeyHeaderKey;
+  private ApiKeyApi apiKeyApi;
+
+  public ApiKeyAuthenticationConfigurer(ApiKeyApi apiKeyApi) {
+    Objects.requireNonNull(apiKeyApi, "apiKeyApi can not be null!");
+    this.apiKeyApi = apiKeyApi;
+  }
 
   @Override
   public void configure(B http) {
     AuthenticationManager authenticationManager = http
         .getSharedObject(AuthenticationManager.class);
-    ApiKeyAuthFilter apiKeyAuthFilter = new ApiKeyAuthFilter(authenticationManager);
+    ApiKeyAuthFilter apiKeyAuthFilter = new ApiKeyAuthFilter(authenticationManager, apiKeyApi);
     if (!ObjectUtils.isEmpty(apiKeyHeaderKey)) {
       apiKeyAuthFilter.setApiKeyHeader(apiKeyHeaderKey);
     }
@@ -24,6 +31,7 @@ public class ApiKeyAuthenticationConfigurer<B extends HttpSecurityBuilder<B>> ex
   }
 
   public ApiKeyAuthenticationConfigurer<B> apiKeyHeaderKey(String apiKeyHeaderKey) {
+    Objects.requireNonNull(apiKeyHeaderKey, "apiKeyHeaderKey can not be null!");
     this.apiKeyHeaderKey = apiKeyHeaderKey;
     return this;
   }

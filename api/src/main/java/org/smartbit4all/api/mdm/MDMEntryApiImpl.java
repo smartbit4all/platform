@@ -1,5 +1,9 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,10 +63,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management entry api. The implementation is based on
@@ -333,13 +333,26 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   private void updatePropertyWithUserActiviyLog(ObjectNode objectNode, String property) {
     if (sessionApi != null) {
-      String prop = property;
-      if (descriptor.getPropertyMappings() != null
-          && descriptor.getPropertyMappings().containsKey(Props.CREATED)) {
-        prop = descriptor.getPropertyMappings().get(Props.CREATED);
+      property = getMappedPropertyPath(property);
+      objectNode.setValue(sessionApi.createActivityLog(), property);
+
+      // RESTORED and REMOVED properties can not be set at the same time.
+      if (MDMEntryApi.Props.RESTORED.equals(property)) {
+        String removedProperty = getMappedPropertyPath(MDMEntryApi.Props.REMOVED);
+        objectNode.setValue(null, removedProperty);
+      } else if (MDMEntryApi.Props.REMOVED.equals(property)) {
+        String restoredProperty = getMappedPropertyPath(MDMEntryApi.Props.RESTORED);
+        objectNode.setValue(null, restoredProperty);
       }
-      objectNode.setValue(sessionApi.createActivityLog(), prop);
     }
+  }
+
+  private String getMappedPropertyPath(String property) {
+    if (descriptor.getPropertyMappings() != null
+        && descriptor.getPropertyMappings().containsKey(property)) {
+      property = descriptor.getPropertyMappings().get(property);
+    }
+    return property;
   }
 
   protected void checkIfUniquePropertyUsed(List<ObjectNode> objectNodes,
@@ -600,19 +613,22 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     boolean remove = list.remove(objectUri);
     if (!remove) {
       return false;
-    } else {
-      Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
-      if (!uniqueMaps.isEmpty()) {
-        // remove unique values from StoredMaps
-        ObjectNode objectNode = objectApi.load(objectUri);
-        removeValueFromUniqueMaps(uniqueMaps, objectNode);
-      }
+    }
+    ObjectNode objectNode = objectApi.load(objectUri);
+    Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
+    if (!uniqueMaps.isEmpty()) {
+      // remove unique values from StoredMaps
+      removeValueFromUniqueMaps(uniqueMaps, objectNode);
     }
     BranchedObject removeNewBranchedObjects =
         branchApi.removeNewBranchedObjects(branchUri, objectUri);
     if (removeNewBranchedObjects != null) {
       return true;
     }
+
+    updatePropertyWithUserActiviyLog(objectNode, Props.REMOVED);
+    objectUri = objectApi.save(objectNode);
+
     StoredList inactiveList = getInactiveList();
     if (inactiveList != null) {
       inactiveList.branch(branchUri);
@@ -626,8 +642,8 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   public boolean restore(URI objectUri) {
     Map<MDMEntryConstraint, ConstraintEntry> uniqueMaps = getUniqueMapsByconstraints();
 
+    ObjectNode originalObjectNode = objectApi.load(objectUri);
     if (!uniqueMaps.isEmpty()) {
-      ObjectNode originalObjectNode = objectApi.load(objectUri);
       Map<ObjectNode, URI> objNodeToCheckWithBranchedUri = new HashMap<>();
       objNodeToCheckWithBranchedUri.put(originalObjectNode, objectUri);
 
@@ -640,6 +656,9 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     if (inactiveList != null) {
       inactiveList.branch(branchUri);
       if (inactiveList.remove(objectUri)) {
+        updatePropertyWithUserActiviyLog(originalObjectNode, Props.RESTORED);
+        objectUri = objectApi.save(originalObjectNode);
+
         StoredList list = getList();
         list.branch(branchUri);
         list.add(objectUri);

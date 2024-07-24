@@ -2,6 +2,7 @@ package org.smartbit4all.api.mdm;
 
 import java.net.URI;
 import java.util.Map;
+import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
@@ -14,6 +15,7 @@ import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -261,5 +263,17 @@ public interface MasterDataManagementApi {
       VectorCollectionDescriptor vectorCollectionDescriptor);
 
   MDMModification getModificationFromState(MDMDefinitionState state, URI branch);
+
+  SearchIndexImpl<?> createSearchIndexForEntry(MDMEntryDescriptor entryDescriptor,
+      String mdmDefName);
+
+  SearchIndexImpl<BranchedObjectEntry> createSearchIndexForEntryInstance(
+      MDMEntryDescriptor entryDescriptor, String mdmDefName);
+
+  default ObjectNode getActualObjectNodeOfBranchedNode(ObjectNode branchedObjectEntryNode) {
+    return getActualObjectNodeOfBranchedNode(branchedObjectEntryNode, null);
+  }
+
+  ObjectNode getActualObjectNodeOfBranchedNode(ObjectNode branchedObjectEntryNode, String aspect);
 
 }

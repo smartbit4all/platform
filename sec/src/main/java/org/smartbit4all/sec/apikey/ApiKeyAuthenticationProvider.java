@@ -1,6 +1,8 @@
 package org.smartbit4all.sec.apikey;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,18 +37,17 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
     ApiKeyAuthenticationToken authToken = (ApiKeyAuthenticationToken) authentication;
 
     String token = authToken.getApiKey();
-    String apiName = authToken.getApiName();
+    List<URI> scopeUris = authToken.getScopeUris();
 
     ApiKey apiKey = apiKeyApi.findApiKeyWithToken(token);
 
-
-    ApiKeyCheckResult checkResult = apiKeyApi.checkApiKey(apiKey, apiName);
+    ApiKeyCheckResult checkResult = apiKeyApi.checkApiKey(apiKey, scopeUris);
     if (ApiKeyCheckResult.OK == checkResult) {
       User user = orgApi.getUser(apiKey.getUri());
       return new UsernamePasswordAuthenticationToken(user, "", roleProvider.apply(user));
     }
 
-    log.debug("{} apiName: [{}]", checkResult.details, apiName);
+    log.debug("{} scopeUris: {}", checkResult.details, scopeUris);
     throw new BadCredentialsException(checkResult.details);
   }
 

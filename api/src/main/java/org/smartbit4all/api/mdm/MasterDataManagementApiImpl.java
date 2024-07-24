@@ -310,8 +310,14 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             "MDMDefinition cannot be created with this invalid name: " + d.getName());
       }
 
-      d.setSearchIndexForEntries(
-          BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName());
+      d.setSearchIndexForEntries(ObjectUtils.isEmpty(d.getSearchIndexForEntries())
+          ? BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName()
+          : d.getSearchIndexForEntries());
+      if (Objects.equals(d.getSearchIndexForEntries(), d.getName())) {
+        log.warn(
+            "The registered MDM entry's name and searchIndexForEntries name is the same. "
+                + "This may result in malfuncion with the search indexes!");
+      }
       d.setAdminGroupName(constructEntrySecurityGroupName(o.getDefinition(), d));
     });
     if (uri == null) {
@@ -536,10 +542,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     for (MDMDefinition definition : definitions) {
       getAllEntryDescriptors(definition).values().stream().forEach(descriptor -> {
         collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
-            () -> createSearchIndexForEntry(definition, descriptor), Object.class);
+            () -> setupSearchIndexForEntry(definition, descriptor), Object.class);
         collectionApi.searchIndexComputeIfAbsent(definition.getName(),
             descriptor.getSearchIndexForEntries(),
-            () -> createSearchIndexForEntryInstance(definition, descriptor),
+            () -> setupSearchIndexForEntryInstance(definition, descriptor),
             BranchedObjectEntry.class);
       });
     }
@@ -561,24 +567,39 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
    */
   private final void addEntryPropertyToSearchIndex(SearchIndexImpl<?> searchIndex,
       String propertyName, String aspect, Class<?> typeClass, int length, String... path) {
+    Objects.requireNonNull(propertyName, "propertyName can not be null!");
+    Objects.requireNonNull(path, "path can not be null!");
+
     // The object node is an BranchedObjectEntry.definition.entry node and can be used by the
     // ObjectApi
     // to navigate to every property let it be original or branched.
     searchIndex.mapComplex(propertyName, typeClass, length, node -> {
-      BranchingStateEnum stateEnum =
-          node.getValue(BranchingStateEnum.class, BranchedObjectEntry.BRANCHING_STATE);
-
-      ObjectNode objectNode;
-
-      if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
-        objectNode =
-            getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri());
-      } else {
-        objectNode =
-            getNodeOrElseAspect(aspect, node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri());
-      }
+      ObjectNode objectNode = getActualObjectNodeOfBranchedNode(node, aspect);
       return objectNode.getValue(path);
     });
+  }
+
+  @Override
+  public final ObjectNode getActualObjectNodeOfBranchedNode(ObjectNode branchedObjectEntryNode,
+      String aspect) {
+    Objects.requireNonNull(branchedObjectEntryNode, "branchedObjectEntryNode can not be null!");
+
+    BranchingStateEnum stateEnum =
+        branchedObjectEntryNode.getValue(BranchingStateEnum.class,
+            BranchedObjectEntry.BRANCHING_STATE);
+
+    ObjectNode objectNode;
+
+    if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
+      objectNode =
+          getNodeOrElseAspect(aspect,
+              branchedObjectEntryNode.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri());
+    } else {
+      objectNode =
+          getNodeOrElseAspect(aspect,
+              branchedObjectEntryNode.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri());
+    }
+    return objectNode;
   }
 
   private final ObjectNode getNodeOrElseAspect(String aspect, URI branchedUri) {
@@ -594,11 +615,36 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     return objectNode;
   }
 
-  private final SearchIndex<BranchedObjectEntry> createSearchIndexForEntryInstance(
+  private void checkTableColumnDescriptor(MDMTableColumnDescriptor tcd) {
+    Objects.requireNonNull(tcd, "tcd can not be null!");
+    Objects.requireNonNull(tcd.getName(), "tcd.getName() can not be null!");
+    Objects.requireNonNull(tcd.getPath(), "tcd.getPath() can not be null!");
+  }
+
+  private final SearchIndex<BranchedObjectEntry> setupSearchIndexForEntryInstance(
       MDMDefinition def,
       MDMEntryDescriptor entryDescriptor) {
+    String defName = def.getName();
     SearchIndexImpl<BranchedObjectEntry> result =
-        new SearchIndexImpl<>(def.getName(),
+        createSearchIndexForEntryInstance(entryDescriptor, defName);
+    // Setup the result index and call the init to initialize all the inner constructions.
+    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
+        filterExpressionApi, comparatorProvider);
+    try {
+      result.afterPropertiesSet();
+    } catch (Exception e) {
+      log.error("Unable to initialize the search index for the {} - {}", defName,
+          entryDescriptor);
+    }
+    return result;
+  }
+
+  @Override
+  public final SearchIndexImpl<BranchedObjectEntry> createSearchIndexForEntryInstance(
+      MDMEntryDescriptor entryDescriptor,
+      String mdmDefName) {
+    SearchIndexImpl<BranchedObjectEntry> result =
+        new SearchIndexImpl<>(mdmDefName,
             entryDescriptor.getSearchIndexForEntries(),
             entryDescriptor.getSchema(),
             BranchedObjectEntry.class);
@@ -612,6 +658,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
+            checkTableColumnDescriptor(tcd);
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
             addEntryPropertyToSearchIndex(result, tcd.getName(),
                 tcd.getAspectName(), getTypeOfColumn(objectDefinition, tcd), -1,
@@ -630,15 +677,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             }
           });
     }
-    // Setup the result index and call the init to initialize all the inner constructions.
-    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi, comparatorProvider);
-    try {
-      result.afterPropertiesSet();
-    } catch (Exception e) {
-      log.error("Unable to initialize the search index for the {} - {}", def.getName(),
-          entryDescriptor);
-    }
     return result;
   }
 
@@ -652,10 +690,26 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     return typeClass;
   }
 
-  private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,
+  private final SearchIndex<Object> setupSearchIndexForEntry(MDMDefinition def,
       MDMEntryDescriptor entryDescriptor) {
+    SearchIndexImpl<?> result = createSearchIndexForEntry(entryDescriptor, def.getName());
+    // Setup the result index and call the init to initialize all the inner constructions.
+    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
+        filterExpressionApi, comparatorProvider);
+    try {
+      result.afterPropertiesSet();
+    } catch (Exception e) {
+      log.error("Unable to initialize the search index for the {} - {}", def.getName(),
+          entryDescriptor);
+    }
+    return (SearchIndex<Object>) result;
+  }
+
+  @Override
+  public final SearchIndexImpl<?> createSearchIndexForEntry(MDMEntryDescriptor entryDescriptor,
+      String mdmDefName) {
     SearchIndexImpl<?> result =
-        new SearchIndexImpl<>(def.getName(), entryDescriptor.getName(), entryDescriptor.getSchema(),
+        new SearchIndexImpl<>(mdmDefName, entryDescriptor.getName(), entryDescriptor.getSchema(),
             getClazz(entryDescriptor.getTypeQualifiedName(), Object.class));
     // The normal index for the published objects has the same column structure. But in this case
     // the mapping is simple because we get directly get the list of objects not BranchedObjectEntry
@@ -673,6 +727,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> {
+            checkTableColumnDescriptor(tcd);
             String[] path = tcd.getPath().toArray(StringConstant.EMPTY_ARRAY);
             if (tcd.getAspectName() == null) {
               result.map(tcd.getName(),
@@ -717,16 +772,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             }
           });
     }
-    // Setup the result index and call the init to initialize all the inner constructions.
-    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
-        filterExpressionApi, comparatorProvider);
-    try {
-      result.afterPropertiesSet();
-    } catch (Exception e) {
-      log.error("Unable to initialize the search index for the {} - {}", def.getName(),
-          entryDescriptor);
-    }
-    return (SearchIndex<Object>) result;
+    return result;
   }
 
   private Class<?> getTypeOfColumn(ObjectDefinition<?> objectDefinition,

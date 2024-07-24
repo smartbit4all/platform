@@ -68,7 +68,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.PROPERTY_MAPPINGS,
   MDMEntryDescriptor.FILTER_MODEL,
   MDMEntryDescriptor.FILTER_MODEL_ADMIN,
-  MDMEntryDescriptor.IMPORTABLE
+  MDMEntryDescriptor.IMPORTABLE,
+  MDMEntryDescriptor.HIDDEN
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -147,6 +148,9 @@ public class MDMEntryDescriptor {
 
   public static final String IMPORTABLE = "importable";
   private Boolean importable = false;
+
+  public static final String HIDDEN = "hidden";
+  private Boolean hidden = false;
 
   public MDMEntryDescriptor() { 
   }
@@ -884,6 +888,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor hidden(Boolean hidden) {
+    
+    this.hidden = hidden;
+    return this;
+  }
+
+   /**
+   * This flag decides it the described entry could be edited on the ui.
+   * @return hidden
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "This flag decides it the described entry could be edited on the ui.")
+  @JsonProperty(HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHidden() {
+    return hidden;
+  }
+
+
+  @JsonProperty(HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHidden(Boolean hidden) {
+    this.hidden = hidden;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -917,12 +948,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.propertyMappings, mdMEntryDescriptor.propertyMappings) &&
         Objects.equals(this.filterModel, mdMEntryDescriptor.filterModel) &&
         Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin) &&
-        Objects.equals(this.importable, mdMEntryDescriptor.importable);
+        Objects.equals(this.importable, mdMEntryDescriptor.importable) &&
+        Objects.equals(this.hidden, mdMEntryDescriptor.hidden);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden);
   }
 
   @Override
@@ -954,6 +986,7 @@ public class MDMEntryDescriptor {
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    filterModelAdmin: ").append(toIndentedString(filterModelAdmin)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
+    sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("}");
     return sb.toString();
   }

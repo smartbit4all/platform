@@ -2,8 +2,12 @@ package org.smartbit4all.testing.mdm;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -65,6 +69,7 @@ import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.ValueSetData;
@@ -1272,6 +1277,81 @@ class MDMApiTest {
         .forEach(g -> orgApi.addUserToGroup(uri, orgApi.getGroupByName(g.getName()).getUri()));
 
     return uri;
+  }
+
+  @Test
+  @Order(9)
+  void testUserActivityLogHandling() throws Exception {
+
+    authService.login(admin, "asd");
+
+    MDMEntryApi mdmEntryApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
+        SampleCategoryType.class.getSimpleName());
+
+    String testTypeCode = "testUserActivityLogHandling_TYPE1";
+    ObjectNode sampleNode = objectApi.create(SCHEMA, new SampleCategoryType()
+        .code(testTypeCode)
+        .name("Type one")
+        .description("This is the first category type."));
+
+    List<URI> saveResult = mdmEntryApi.save(sampleNode);
+    assertThat(saveResult).isNotEmpty().hasSize(1);
+    URI sampleUri = saveResult.get(0);
+    sampleNode = objectApi.loadLatest(sampleUri);
+
+    checkUserActivityLogs(sampleNode, true, false, false, false, false);
+
+    sampleNode.setValue(testTypeCode + "_MODIFIED", SampleCategoryType.CODE);
+
+    saveResult = mdmEntryApi.save(sampleNode);
+    assertThat(saveResult).isNotEmpty().hasSize(1);
+    sampleUri = saveResult.get(0);
+    sampleNode = objectApi.loadLatest(sampleUri);
+
+    checkUserActivityLogs(sampleNode, true, true, false, false, false);
+
+    boolean isRemoved = mdmEntryApi.remove(sampleUri);
+    assertTrue(isRemoved);
+    sampleNode = objectApi.loadLatest(sampleUri);
+    sampleUri = sampleNode.getObjectUri();
+
+    checkUserActivityLogs(sampleNode, true, true, false, false, true);
+    assertThat(mdmEntryApi.getList().nodes())
+        .noneMatch(node -> node.getValueAsString(SampleCategoryType.CODE).contains(testTypeCode));
+
+    boolean isRestored = mdmEntryApi.restore(sampleUri);
+    assertTrue(isRestored);
+    sampleNode = objectApi.loadLatest(sampleUri);
+    sampleUri = sampleNode.getObjectUri();
+
+    checkUserActivityLogs(sampleNode, true, true, false, true, false);
+    assertThat(mdmEntryApi.getList().nodes())
+        .haveExactly(1, new Condition<>(
+            node -> node.getValueAsString(SampleCategoryType.CODE).contains(testTypeCode),
+            "only one matching can be restored"));
+
+    // TODO test for MDMEntryApi.Props.MERGED
+
+  }
+
+  private void checkUserActivityLogs(ObjectNode sampleNode, boolean createdShouldExist,
+      boolean updatedShouldExist, boolean mergedShouldExist, boolean restoredShouldExist,
+      boolean removedShouldExist) {
+    checkUserActivityLog(sampleNode, createdShouldExist, MDMEntryApi.Props.CREATED);
+    checkUserActivityLog(sampleNode, updatedShouldExist, MDMEntryApi.Props.UPDATED);
+    checkUserActivityLog(sampleNode, mergedShouldExist, MDMEntryApi.Props.MERGED);
+    checkUserActivityLog(sampleNode, restoredShouldExist, MDMEntryApi.Props.RESTORED);
+    checkUserActivityLog(sampleNode, removedShouldExist, MDMEntryApi.Props.REMOVED);
+  }
+
+  private void checkUserActivityLog(ObjectNode sampleNode, boolean shouldExist, String prop) {
+    UserActivityLog userActivityLog = sampleNode.getValue(UserActivityLog.class, prop);
+    if (shouldExist) {
+      assertNotNull(userActivityLog);
+      assertEquals(admin, userActivityLog.getUserName());
+    } else {
+      assertNull(userActivityLog);
+    }
   }
 
   @Test

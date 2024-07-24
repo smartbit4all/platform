@@ -158,6 +158,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
         masterDataManagementApi.getEntryDescriptors(ctx.definition, ctx.mdmBranch)
             .values().stream()
             .filter(this::filterDescriptor)
+            .filter(entyDesc -> !entyDesc.getHidden())
             .filter(entyDesc -> checkDescriptorSecurity(entyDesc,
                 ctx.definition.getAdminApproverGroupName()))
             .map(e -> e.getOrder() != null ? e : e.order(Long.MAX_VALUE))

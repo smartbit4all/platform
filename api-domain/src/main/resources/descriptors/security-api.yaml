@@ -47,6 +47,7 @@ components:
           type: array
           items:
             type: string
+            format: uri
         expiration:
           description: | 
             "The expiration date of the api key. It can be null, meaning the api key lasts forever
@@ -60,4 +61,18 @@ components:
           description: |
             "Information of the revocation. It can be null, meaning the token is not revoked."
           type: UserActivityLog
-    
+    ApiKeyScope:
+      type: object
+      required: [uri, name]
+      description: |
+        "The api scope that tha apiKey can handle"
+      properties:
+        uri:
+          description: "The identifier of the api key"
+          type: string
+          format: uri
+        name:
+          type: string
+        pathPattern:
+          description: "A regex pattern that will be used to validate the incoming http request uri."
+          type: string

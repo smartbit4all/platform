@@ -1,10 +1,13 @@
 package org.smartbit4all.sec.apikey;
 
-import java.net.URI;
 import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Base class of ApiKey implementation to offer the same functionalities to the {@link ApiKeyApi}
@@ -12,21 +15,30 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ApiKeyImplementationBase {
 
-  protected static final String SCHEMA = "security-api-key";
-  protected static final String SM_KEYSBYTOKEN = "apikeys-by-token";
-
   @Autowired
   protected ObjectApi objectApi;
 
   @Autowired
   protected CollectionApi collectionApi;
 
-  protected final StoredMap getUserScopedMap(URI userUri) {
-    return collectionApi.map(userUri, SCHEMA, SM_KEYSBYTOKEN);
+  @Autowired
+  protected MasterDataManagementApi mdmApi;
+
+  @Autowired
+  protected SessionApi sessionApi;
+
+  @Autowired
+  protected PasswordEncoder passwordEncoder;
+
+  protected final MDMEntryApi getApiKeyMdmEntryApi() {
+    return mdmApi.getApi(
+        MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION, PlatformApiConfig.API_KEYS);
   }
 
-  protected final StoredMap getGlobalMap() {
-    return collectionApi.map(SCHEMA, SM_KEYSBYTOKEN);
+  protected final MDMEntryApi getApiKeyScopeMdmEntryApi() {
+    return mdmApi.getApi(
+        MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+        PlatformApiConfig.API_KEY_SCOPES);
   }
 
 }
