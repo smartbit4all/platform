@@ -67,10 +67,14 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   public GridPage extendPageData(GridPage page) {
     if (page.getRows() != null) {
       for (GridRow row : page.getRows()) {
-        row.getActions().addAll(getUserRowActions());
+        addActionsToRow(row);
       }
     }
     return page;
+  }
+
+  protected void addActionsToRow(GridRow row) {
+    row.getActions().addAll(getUserRowActions());
   }
 
   @Override
