@@ -15,7 +15,7 @@ public class GenericPageApiImpl extends PageApiImpl<Object>
   @Override
   public Object initModel(View view) {
     Object model = parameters(view).get(PARAM_MODEL, Object.class);
-    return model == null ? new Object() : model;
+    return model == null ? java.util.Collections.emptyMap() : model;
   }
 
   @Override
