@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
@@ -372,14 +373,23 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
+  public void startTechnicalSession() {
+    startTechnicalSession(null);
+  }
+
+  @Override
   public void startTechnicalSession(URI technicalUserUri) {
-    Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {
       log.warn("Technical session user is overwritten, "
           + "because an authentication was already present "
           + "in the security context!");
     }
+    if (technicalUserUri == null) {
+      technicalUserUri = getOrCreateSystemUser();
+    }
+
+    Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
 
     User technicalUser = orgApi.getUser(technicalUserUri);
     if (technicalUser == null) {
@@ -408,6 +418,19 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     SessionAuthToken authToken = SessionAuthToken.create(session);
     SecurityContextHolder.getContext().setAuthentication(authToken);
 
+  }
+
+  private URI getOrCreateSystemUser() {
+    User systemUser = OrgUtils.createUserByUserName(orgApi, new User()
+        .name("System")
+        .username(OrgApi.SYSTEM_USERNAME)
+        .putAttributesItem(OrgApi.SYSTEM_USER,
+            OrgApi.SYSTEM_USER));
+    if (systemUser != null) {
+      return systemUser.getUri();
+    }
+
+    return null;
   }
 
   /**

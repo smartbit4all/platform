@@ -76,6 +76,8 @@ public interface SessionManagementApi {
 
   void startTechnicalSession(URI technicalUserUri);
 
+  void startTechnicalSession();
+
   void setSession(URI sessionUri);
 
   /**
