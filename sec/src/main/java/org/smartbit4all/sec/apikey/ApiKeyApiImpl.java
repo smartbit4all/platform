@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.StoredMap;
-import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
@@ -127,7 +126,7 @@ public class ApiKeyApiImpl extends ApiKeyImplementationBase implements ApiKeyApi
           new ValueSetDefinitionData()
               .kind(ValueSetDefinitionKind.LIST)
               .storageSchema(MasterDataManagementApi.SCHEMA)
-              .containerName(PlatformApiConfig.API_KEY_SCOPES)
+              .containerName(ApiKeyConfig.API_KEY_SCOPES)
               .typeClass(ApiKeyScope.class.getName())
               .qualifiedName(ApiKeyConstants.APIKEY_SCOPE);
       valueSetApi.save(SCHEMA, userValueSetDefinitionData);

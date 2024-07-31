@@ -1,7 +1,6 @@
 package org.smartbit4all.sec.apikey;
 
 import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.session.SessionApi;
@@ -32,13 +31,14 @@ public abstract class ApiKeyImplementationBase {
 
   protected final MDMEntryApi getApiKeyMdmEntryApi() {
     return mdmApi.getApi(
-        MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION, PlatformApiConfig.API_KEYS);
+        MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+        ApiKeyConfig.API_KEYS);
   }
 
   protected final MDMEntryApi getApiKeyScopeMdmEntryApi() {
     return mdmApi.getApi(
         MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
-        PlatformApiConfig.API_KEY_SCOPES);
+        ApiKeyConfig.API_KEY_SCOPES);
   }
 
 }
