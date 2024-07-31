@@ -65,7 +65,7 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
   }
 
   @Override
-  public List<Subject> getAllReverseSubjects(String modelName, List<URI> baseList) {
+  public List<Subject> getAllContainingSubjects(String modelName, List<URI> baseList) {
     return getSubjects(modelName, baseList);
   }
 
