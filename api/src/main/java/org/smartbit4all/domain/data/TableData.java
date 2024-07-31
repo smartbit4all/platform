@@ -707,4 +707,8 @@ public final class TableData<E extends EntityDefinition> {
     this.uri = uri;
   }
 
+  public void hideRows(List<DataRow> rows) {
+    this.rowModel.hideRows(rows);
+  }
+
 }
