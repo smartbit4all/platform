@@ -133,8 +133,6 @@ public class DynamicOidcClientLogoutHandler extends AbstractAuthenticationTarget
    * will make so that {@code post_logout_redirect_uri} will be set to the base url for the client
    * application.
    *
-   * @param postLogoutRedirectUri - A template for creating the {@code post_logout_redirect_uri}
-   *        query parameter
    */
   private URI postLogoutRedirectUri(HttpServletRequest request,
       OAuthClientProperties clientProperties) {
