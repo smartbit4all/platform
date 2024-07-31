@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class SampleSubjectContributionApi extends ContributionApiImpl
     implements SubjectContributionApi {
@@ -61,15 +61,26 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
 
   @Override
   public List<Subject> getAllSubjects(String modelName, List<URI> baseList) {
+    return getSubjects(modelName, baseList);
+  }
+
+  @Override
+  public List<Subject> getAllReverseSubjects(String modelName, List<URI> baseList) {
+    return getSubjects(modelName, baseList);
+  }
+
+  protected List<Subject> getSubjects(String modelName, List<URI> baseList) {
     if (baseList == null || objectApi == null) {
       return Collections.emptyList();
     }
+    // Here we add all the parent organizations because we are part of it. If we need to have
+    // another approach then we need to register this contribution on other name.
     return baseList.stream()
         .filter(s -> objectApi.definition(s).instanceOf(SampleCategory.class))
-        .map(u -> new Subject()
+        .map(e -> new Subject()
             .model(modelName)
             .type(SampleCategory.class.getName())
-            .ref(u))
+            .ref(e))
         .collect(toList());
   }
 

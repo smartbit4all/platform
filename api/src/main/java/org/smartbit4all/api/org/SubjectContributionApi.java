@@ -47,6 +47,13 @@ public interface SubjectContributionApi extends ContributionApi {
   List<Subject> getAllSubjects(String modelName, List<URI> baseList);
 
   /**
+   * @param modelName The name of the subject model.
+   * @param baseList The base list of the subjects.
+   * @return All the subjects that is implicitly expand into the elements of the list.
+   */
+  List<Subject> getAllContainingSubjects(String modelName, List<URI> baseList);
+
+  /**
    * Return list of displayable names of subjects.
    *
    * @param modelName The name of the subject model.

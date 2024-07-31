@@ -187,6 +187,15 @@ public interface SecurityGatewayService {
   List<Group> getSubGroups(URI groupUri);
 
   /**
+   * Return list of groups that containes the group.
+   * 
+   * @param groupUri
+   * @return
+   */
+  @Deprecated
+  List<Group> getParentGroups(URI groupUri);
+
+  /**
    * Get all information of a group.
    * 
    * @param name

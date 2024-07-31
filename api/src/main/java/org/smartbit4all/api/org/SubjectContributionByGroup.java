@@ -81,6 +81,23 @@ public class SubjectContributionByGroup extends ContributionApiImpl
   }
 
   @Override
+  public List<Subject> getAllContainingSubjects(String modelName, List<URI> baseList) {
+    if (baseList == null || objectApi == null || orgApi == null) {
+      return Collections.emptyList();
+    }
+    return baseList.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(Group.class))
+        .flatMap(s -> Stream.concat(
+            Stream.of(orgApi.getGroup(s)),
+            orgApi.getParentGroups(s).stream()))
+        .map(g -> new Subject()
+            .model(modelName)
+            .type(Group.class.getName())
+            .ref(g.getUri()))
+        .collect(toList());
+  }
+
+  @Override
   public List<String> getDisplayValue(String modelName, List<URI> subjects) {
     return subjects.stream()
         .filter(s -> objectApi.definition(s).instanceOf(Group.class))
