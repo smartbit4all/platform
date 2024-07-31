@@ -18,6 +18,7 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.sec.authentication.DefaultAuthTokenProvider;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
 import org.smartbit4all.sec.token.SessionTokenHandler;
@@ -69,6 +70,9 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
   @Autowired
   private OrgApi orgApi;
+  @Autowired
+
+  private ObjectApi objectApi;
 
   private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
       new HttpSessionOAuth2AuthorizationRequestRepository();
@@ -185,26 +189,31 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
   private User setSessionUser(URI sessionURI, OAuth2AuthenticationToken oauthToken)
       throws Exception {
     String name = oauthToken.getName();
-    Session session = sessionManagementApi.readSession(sessionURI);
-    User user = null;
-    if (session.getUser() == null) {
-      user = orgApi.getUserByUsername(name);
-      URI userUri = null;
-      if (user == null) {
-        userUri = orgUserHandler.onMissingUser(oauthToken);
-        user = orgApi.getUser(userUri);
-      } else {
-        orgUserHandler.checkUser(user, oauthToken);
-        userUri = user.getUri();
-      }
-      if (userUri != null) {
-        sessionManagementApi.setSessionUser(sessionURI, userUri);
-      } else {
-        throw new Exception(
-            "There was no user found or has no rights to log in with the authenticated ouath2 token!");
-      }
+    User user = orgApi.getUserByUsername(name);
+    URI userUri = null;
+    if (user == null) {
+      userUri = orgUserHandler.onMissingUser(oauthToken);
+      user = orgApi.getUser(userUri);
+    } else {
+      orgUserHandler.checkUser(user, oauthToken);
+      userUri = user.getUri();
     }
-    return user;
+    if (userUri == null) {
+      throw new Exception(
+          "There was no user found or has no rights to log in with the authenticated ouath2 token!");
+    }
+
+    Session session = sessionManagementApi.readSession(sessionURI);
+    URI currentSessionUserUri = session.getUser();
+    if (currentSessionUserUri == null) {
+      sessionManagementApi.setSessionUser(sessionURI, userUri);
+      return user;
+    }
+    if (objectApi.equalsIgnoreVersion(currentSessionUserUri, userUri)) {
+      return user;
+    }
+    throw new IllegalStateException(
+        "There is already a different user in the session. It is not possible to override it!");
   }
 
   private AccountInfo createDefaultAccountInfo(User user, OAuth2AuthorizedClient authorizedClient,
