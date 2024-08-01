@@ -1,6 +1,5 @@
 package org.smartbit4all.api.config;
 
-import java.util.stream.Collectors;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
@@ -11,8 +10,6 @@ import org.smartbit4all.api.collection.EmbeddingApi;
 import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
-import org.smartbit4all.api.collection.SearchIndex;
-import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.StorageSequenceApi;
 import org.smartbit4all.api.collection.StorageSequenceApiImpl;
 import org.smartbit4all.api.collection.VectorDBApi;
@@ -34,10 +31,10 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
-import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMSearchIndexApi;
+import org.smartbit4all.api.mdm.MDMSearchIndexApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
-import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
@@ -73,7 +70,6 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.SubscriptionConfigApi;
 import org.smartbit4all.api.object.SubscriptionConfigApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
-import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ObjectValidationOperation;
@@ -90,7 +86,6 @@ import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
 import org.smartbit4all.api.session.SessionManagementApi;
-import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.ApplicationInfo;
 import org.smartbit4all.api.setting.ImageSettingApi;
 import org.smartbit4all.api.setting.ImageSettingApiImpl;
@@ -131,7 +126,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApiImpl;
-import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
@@ -166,10 +160,6 @@ public class PlatformApiConfig {
   public static final String TICKETING_CONNECTIONS = "ticketingConnections";
 
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
-
-  public static final String API_KEYS = "apiKeys";
-
-  public static final String API_KEY_SCOPES = "apiKeyScopes";
 
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
@@ -295,6 +285,11 @@ public class PlatformApiConfig {
   @Bean
   public BranchApi branchApi() {
     return new BranchApiImpl();
+  }
+
+  @Bean
+  public MDMSearchIndexApi mdmSearchIndexApi() {
+    return new MDMSearchIndexApiImpl();
   }
 
   @Bean
@@ -561,104 +556,8 @@ public class PlatformApiConfig {
                   .addPathItem(ServiceConnection.AUTH_TOKEN));
       result.addDescriptor(entry);
     }
-    {
-      MDMEntryDescriptor entry = new MDMEntryDescriptor()
-          .order(9L)
-          .schema(MasterDataManagementApi.SCHEMA)
-          .publishedListName(API_KEYS)
-          .name(API_KEYS)
-          .addConstraintsItem(new MDMEntryConstraint()
-              .kind(KindEnum.UNIQUECASEINSENSITIVE)
-              .addPathItem(ApiKey.TOKEN))
-          .editorViewName(PlatformViewNames.API_KEY_EDITOR)
-          .displayNameList(new LangString().defaultValue("Api keys")
-              .putValueByLocaleItem("hu", "Api kulcsok")
-              .putValueByLocaleItem("en", "Api keys"))
-          .displayNameForm(new LangString().defaultValue("Api key")
-              .putValueByLocaleItem("hu", "Api kulcs")
-              .putValueByLocaleItem("en", "Api key"))
-          .typeQualifiedName(ApiKey.class.getName())
-          .searchIndexForEntries(API_KEYS + "_admin")
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKey.USER)
-                  .addPathItem(ApiKey.USER)
-                  .addPathItem(User.USERNAME))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKey.SCOPE)
-                  .addPathItem(ApiKey.SCOPE)) // search index is overridden on this column
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKey.CREATED)
-                  .addPathItem(ApiKey.CREATED)
-                  .addPathItem(UserActivityLog.TIMESTAMP))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKey.EXPIRATION)
-                  .addPathItem(ApiKey.EXPIRATION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKey.REVOKED)
-                  .addPathItem(ApiKey.REVOKED)
-                  .addPathItem(UserActivityLog.TIMESTAMP))
-          .putPropertyMappingsItem(MDMEntryApi.Props.CREATED, ApiKey.CREATED)
-          .putPropertyMappingsItem(MDMEntryApi.Props.REMOVED, ApiKey.REVOKED);
-      result.addDescriptor(entry);
-    }
-    {
-      MDMEntryDescriptor entry = new MDMEntryDescriptor()
-          .order(Long.MAX_VALUE)
-          .schema(MasterDataManagementApi.SCHEMA)
-          .branchingStrategy(MDMBranchingStrategy.NONE)
-          .publishedListName(API_KEY_SCOPES)
-          .name(API_KEY_SCOPES)
-          .hidden(Boolean.TRUE)
-          .typeQualifiedName(ApiKeyScope.class.getName())
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKeyScope.NAME)
-                  .addPathItem(ApiKeyScope.NAME))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name(ApiKeyScope.PATH_PATTERN)
-                  .addPathItem(ApiKeyScope.PATH_PATTERN));
-      result.addDescriptor(entry);
-    }
+
     return result;
-  }
-
-  @Bean
-  public SearchIndex<ApiKey> apiKeySearchIndex(MasterDataManagementApi mdmManagementApi) {
-    MDMDefinition definition = systemIntegrationPlatformMdmOption().getDefinition();
-    MDMEntryDescriptor apiKeyDesc = definition.getDescriptors().get(API_KEYS);
-    SearchIndexImpl<?> apiKeyPublishedSI =
-        mdmManagementApi.createSearchIndexForEntry(apiKeyDesc, definition.getName());
-    apiKeyPublishedSI.mapComplex(ApiKey.SCOPE, String.class, 500, this::concatenateScopeNames);
-    return (SearchIndex<ApiKey>) apiKeyPublishedSI;
-  }
-
-  @Bean
-  public SearchIndex<BranchedObjectEntry> apiKeySearchIndexAdmin(
-      MasterDataManagementApi mdmManagementApi) {
-    MDMDefinition definition = systemIntegrationPlatformMdmOption().getDefinition();
-    MDMEntryDescriptor apiKeyDesc = definition.getDescriptors().get(API_KEYS);
-    SearchIndexImpl<BranchedObjectEntry> apiKeyAdminSI =
-        mdmManagementApi.createSearchIndexForEntryInstance(apiKeyDesc, definition.getName());
-    apiKeyAdminSI.mapComplex(ApiKey.SCOPE, String.class, 500,
-        branchingNode -> {
-          ObjectNode apiKeyNode =
-              mdmManagementApi.getActualObjectNodeOfBranchedNode(branchingNode);
-          return concatenateScopeNames(apiKeyNode);
-        });
-
-    return apiKeyAdminSI;
-  }
-
-  private String concatenateScopeNames(ObjectNode apiKeyNode) {
-    return apiKeyNode.list(ApiKey.SCOPE).nodeStream()
-        .map(scopeNode -> scopeNode.getValueAsString(ApiKeyScope.NAME))
-        .collect(Collectors.joining(", "));
   }
 
   @Bean

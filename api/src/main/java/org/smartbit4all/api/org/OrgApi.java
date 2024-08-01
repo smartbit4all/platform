@@ -144,6 +144,11 @@ public interface OrgApi {
   List<Group> getSubGroups(URI groupUri);
 
   /**
+   * Return list of groups that contains the specified group and it's container groups.
+   */
+  List<Group> getParentGroups(URI groupUri);
+
+  /**
    * Return list of groups directly containd by the specified group. (No recursion.)
    */
   List<Group> getConnectingSubGroups(URI groupUri);

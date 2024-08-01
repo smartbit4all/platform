@@ -1,5 +1,7 @@
 package org.smartbit4all.sec.localauth;
 
+import java.util.Collections;
+import java.util.List;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authentication.DefaultAuthenticationDataProvider;
@@ -15,10 +17,10 @@ public class LocalAuthenticationDataProvider extends DefaultAuthenticationDataPr
   }
 
   @Override
-  public AuthenticationProviderData getProviderData(Session session) {
-    AuthenticationProviderData providerData = super.getProviderData(session);
+  public List<AuthenticationProviderData> getProviderDataList(Session session) {
+    AuthenticationProviderData providerData = super.getProviderDataList(session).get(0);
     providerData.putParametersItem("authenticationPath", authenticationPath + "/login");
-    return providerData;
+    return Collections.singletonList(providerData);
   }
 
 }

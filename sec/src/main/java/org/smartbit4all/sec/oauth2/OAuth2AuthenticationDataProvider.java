@@ -1,5 +1,6 @@
 package org.smartbit4all.sec.oauth2;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +43,13 @@ public class OAuth2AuthenticationDataProvider implements AuthenticationDataProvi
   }
 
   @Override
-  public AuthenticationProviderData getProviderData(Session session) {
+  public List<AuthenticationProviderData> getProviderDataList(Session session) {
     Map<String, String> parameters = new HashMap<>();
     parameters.put("authUrl", authorizationRequestBaseUri + "/" + registrationId);
 
-    return new AuthenticationProviderData()
+    return Collections.singletonList(new AuthenticationProviderData()
         .kind(getKind())
-        .parameters(parameters);
+        .parameters(parameters));
   }
 
   public String getKind() {

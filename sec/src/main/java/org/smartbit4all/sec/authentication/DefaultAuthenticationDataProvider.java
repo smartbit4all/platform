@@ -1,5 +1,6 @@
 package org.smartbit4all.sec.authentication;
 
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
@@ -33,9 +34,9 @@ public class DefaultAuthenticationDataProvider implements AuthenticationDataProv
   }
 
   @Override
-  public AuthenticationProviderData getProviderData(Session session) {
-    return new AuthenticationProviderData()
-        .kind(kind);
+  public List<AuthenticationProviderData> getProviderDataList(Session session) {
+    return Collections.singletonList(new AuthenticationProviderData()
+        .kind(kind));
   }
 
 }

@@ -16,13 +16,16 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
@@ -53,17 +56,29 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       pageModel.user(orgApi.getUser(userUri));
       pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(Group::getUri)
           .collect(toList()));
+      putConstraintIntoView(view, false);
     } else {
       pageModel.user(new User().name("").email("").username(""));
       pageModel.actualGroups(new ArrayList<>());
+      putConstraintIntoView(view, true);
     }
     pageModel.getUser().password("");
     pageModel.possibleGroups(orgApi.getAllGroups());
 
     putLayoutIntoView(view);
-    putConstraintIntoView(view);
 
     return pageModel;
+  }
+
+
+
+  @Override
+  public void changePassword(UUID viewUuid, UiActionRequest request) {
+    ObjectMapHelper actionRequestHelper = actionRequestHelper(request);
+    String newPassword = actionRequestHelper.get(UiActions.INPUT2, String.class);
+    UserEditingModel model = getModel(viewUuid);
+    model.getUser().password(newPassword);
+    setModel(viewUuid, model);
   }
 
   private void putLayoutIntoView(View view) {
@@ -87,17 +102,17 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout);
   }
 
-  private void putConstraintIntoView(View view) {
+  private void putConstraintIntoView(View view, boolean passwordIsVisible) {
     ViewConstraint viewConstraint = new ViewConstraint().componentConstraints(Arrays.asList(
         new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.NAME))
             .enabled(true).mandatory(true).visible(true),
         new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.USERNAME))
             .enabled(true).mandatory(true).visible(true),
-        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.PASSWORD))
-            .enabled(true).mandatory(true).visible(true),
         new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.EMAIL))
-            .enabled(true).mandatory(true).visible(true)));
-    view.setConstraint(viewConstraint);
+            .enabled(true).mandatory(true).visible(true),
+        new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.PASSWORD))
+            .enabled(true).mandatory(true).visible(passwordIsVisible)));
+    view.constraint(viewConstraint);
   }
 
   @Override
@@ -105,10 +120,13 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     UserEditingModel clientModel = extractClientModel(request);
     User user = clientModel.getUser();
     String clientPassword = user.getPassword();
+
     if (!ObjectUtils.isEmpty(clientPassword)) {
       String password =
           passwordEncoder == null ? clientPassword : passwordEncoder.encode(clientPassword);
       user.password(password);
+    }else {
+      user.password(objectApi.loadLatest(user.getUri()).getValueAsString(User.PASSWORD));
     }
     URI userUri;
     if (orgApi.getActiveUsers().stream().map(User::getUri).collect(toList())
@@ -143,7 +161,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
   protected List<UiAction> getUserEditorActions() {
     return Arrays.asList(new UiAction().code(SAVE_USER).submit(true),
-        new UiAction().code(CANCEL));
+        new UiAction().code(CANCEL),
+        new UiAction().code(CHANGE_PASSWORD).input2Type(UiActionInputType.TEXTFIELD));
   }
 
 }

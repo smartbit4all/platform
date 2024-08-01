@@ -62,14 +62,26 @@ public class SubjectContributionByUser extends ContributionApiImpl
 
   @Override
   public List<Subject> getAllSubjects(String modelName, List<URI> baseList) {
-    if (baseList == null || objectApi == null || orgApi == null) {
+    return getSubjects(modelName, baseList);
+  }
+
+  @Override
+  public List<Subject> getAllContainingSubjects(String modelName, List<URI> baseList) {
+    return getSubjects(modelName, baseList);
+  }
+
+  protected List<Subject> getSubjects(String modelName, List<URI> baseList) {
+    if (baseList == null || objectApi == null) {
       return Collections.emptyList();
     }
-    return baseList.stream().filter(s -> objectApi.definition(s).instanceOf(User.class))
-        .map(u -> new Subject()
+    // Here we add all the parent organizations because we are part of it. If we need to have
+    // another approach then we need to register this contribution on other name.
+    return baseList.stream()
+        .filter(s -> objectApi.definition(s).instanceOf(User.class))
+        .map(e -> new Subject()
             .model(modelName)
             .type(User.class.getName())
-            .ref(u))
+            .ref(e))
         .collect(toList());
   }
 

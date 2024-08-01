@@ -99,7 +99,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     List<AuthenticationProviderData> poviderData = authenticationDataProviders.stream()
         .filter(p -> p.supports(currentSession))
-        .map(p -> p.getProviderData(currentSession))
+        .flatMap(p -> p.getProviderDataList(currentSession).stream())
         .collect(Collectors.toList());
 
     if (ObjectUtils.isEmpty(poviderData)) {

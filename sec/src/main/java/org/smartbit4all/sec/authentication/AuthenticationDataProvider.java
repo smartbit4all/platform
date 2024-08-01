@@ -1,5 +1,6 @@
 package org.smartbit4all.sec.authentication;
 
+import java.util.List;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import org.smartbit4all.api.session.bean.Session;
 
@@ -11,6 +12,6 @@ public interface AuthenticationDataProvider {
 
   boolean supports(Session session);
 
-  AuthenticationProviderData getProviderData(Session session);
+  List<AuthenticationProviderData> getProviderDataList(Session session);
 
 }

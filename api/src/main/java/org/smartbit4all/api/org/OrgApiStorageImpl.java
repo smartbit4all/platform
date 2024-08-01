@@ -2,9 +2,6 @@ package org.smartbit4all.api.org;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import com.google.common.base.Objects;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -58,6 +55,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ObjectUtils;
+import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -463,6 +463,11 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public List<Group> getSubGroups(URI groupUri) {
     return storage.get().read(getAllSubgroups(groupUri), Group.class);
+  }
+
+  @Override
+  public List<Group> getParentGroups(URI groupUri) {
+    return storage.get().read(getAllParentGroups(groupUri), Group.class);
   }
 
   @Override
