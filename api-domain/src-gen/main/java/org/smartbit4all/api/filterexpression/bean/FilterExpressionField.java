@@ -53,7 +53,8 @@ import javax.validation.Valid;
   FilterExpressionField.FILTER_FIELD_TYPE,
   FilterExpressionField.POSSIBLE_VALUES,
   FilterExpressionField.WIDGET_TYPE,
-  FilterExpressionField.SUB_FIELD_LIST
+  FilterExpressionField.SUB_FIELD_LIST,
+  FilterExpressionField.TOOLBAR_ID
 })
 @JsonTypeName("FilterExpressionField")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -102,6 +103,9 @@ public class FilterExpressionField {
 
   public static final String SUB_FIELD_LIST = "subFieldList";
   private FilterExpressionFieldList subFieldList;
+
+  public static final String TOOLBAR_ID = "toolbarId";
+  private String toolbarId;
 
   public FilterExpressionField() { 
   }
@@ -532,6 +536,33 @@ public class FilterExpressionField {
   }
 
 
+  public FilterExpressionField toolbarId(String toolbarId) {
+    
+    this.toolbarId = toolbarId;
+    return this;
+  }
+
+   /**
+   * Identifier of the toolbar associated with this widget. 
+   * @return toolbarId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Identifier of the toolbar associated with this widget. ")
+  @JsonProperty(TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getToolbarId() {
+    return toolbarId;
+  }
+
+
+  @JsonProperty(TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setToolbarId(String toolbarId) {
+    this.toolbarId = toolbarId;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -555,12 +586,13 @@ public class FilterExpressionField {
         Objects.equals(this.filterFieldType, filterExpressionField.filterFieldType) &&
         Objects.equals(this.possibleValues, filterExpressionField.possibleValues) &&
         Objects.equals(this.widgetType, filterExpressionField.widgetType) &&
-        Objects.equals(this.subFieldList, filterExpressionField.subFieldList);
+        Objects.equals(this.subFieldList, filterExpressionField.subFieldList) &&
+        Objects.equals(this.toolbarId, filterExpressionField.toolbarId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, id, label1, label2, label3, placeholder1, placeholder2, placeholder3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, widgetType, subFieldList);
+    return Objects.hash(label, id, label1, label2, label3, placeholder1, placeholder2, placeholder3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, widgetType, subFieldList, toolbarId);
   }
 
   @Override
@@ -582,6 +614,7 @@ public class FilterExpressionField {
     sb.append("    possibleValues: ").append(toIndentedString(possibleValues)).append("\n");
     sb.append("    widgetType: ").append(toIndentedString(widgetType)).append("\n");
     sb.append("    subFieldList: ").append(toIndentedString(subFieldList)).append("\n");
+    sb.append("    toolbarId: ").append(toIndentedString(toolbarId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

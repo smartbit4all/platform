@@ -181,6 +181,10 @@ components:
           $ref: '#/components/schemas/FilterExpressionFieldWidgetType'
         subFieldList:
           $ref: '#/components/schemas/FilterExpressionFieldList'
+        toolbarId:
+          description: |
+            Identifier of the toolbar associated with this widget.
+          type: string
 
     FilterExpressionBuilder:
       type: object
