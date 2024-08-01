@@ -34,12 +34,16 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This is a key - value pair where the key is a property path. ")
 @JsonPropertyOrder({
+  ObjectPropertyValue.CONTEXT_OBJECT,
   ObjectPropertyValue.PATH,
   ObjectPropertyValue.VALUE
 })
 @JsonTypeName("ObjectPropertyValue")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectPropertyValue {
+  public static final String CONTEXT_OBJECT = "contextObject";
+  private String contextObject;
+
   public static final String PATH = "path";
   private List<String> path = new ArrayList<>();
 
@@ -48,6 +52,33 @@ public class ObjectPropertyValue {
 
   public ObjectPropertyValue() { 
   }
+
+  public ObjectPropertyValue contextObject(String contextObject) {
+    
+    this.contextObject = contextObject;
+    return this;
+  }
+
+   /**
+   * The name of the object in the context. The context is typically a map of string and object. If we denote  an object and it is not an object but an URI then we load the given object automatically and resolve the value. 
+   * @return contextObject
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the object in the context. The context is typically a map of string and object. If we denote  an object and it is not an object but an URI then we load the given object automatically and resolve the value. ")
+  @JsonProperty(CONTEXT_OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getContextObject() {
+    return contextObject;
+  }
+
+
+  @JsonProperty(CONTEXT_OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContextObject(String contextObject) {
+    this.contextObject = contextObject;
+  }
+
 
   public ObjectPropertyValue path(List<String> path) {
     
@@ -118,19 +149,21 @@ public class ObjectPropertyValue {
       return false;
     }
     ObjectPropertyValue objectPropertyValue = (ObjectPropertyValue) o;
-    return Objects.equals(this.path, objectPropertyValue.path) &&
+    return Objects.equals(this.contextObject, objectPropertyValue.contextObject) &&
+        Objects.equals(this.path, objectPropertyValue.path) &&
         Objects.equals(this.value, objectPropertyValue.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, value);
+    return Objects.hash(contextObject, path, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectPropertyValue {\n");
+    sb.append("    contextObject: ").append(toIndentedString(contextObject)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");

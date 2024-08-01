@@ -959,6 +959,11 @@ components:
       type: object
       required: [path]
       properties:
+        contextObject:
+          description: |
+            The name of the object in the context. The context is typically a map of string and object. If we denote 
+            an object and it is not an object but an URI then we load the given object automatically and resolve the value.
+          type: string
         path:
           type: array
           items:
