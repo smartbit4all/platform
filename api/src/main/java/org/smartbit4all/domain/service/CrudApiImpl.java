@@ -107,9 +107,10 @@ public class CrudApiImpl implements CrudApi {
           where.accept(new ExpressionVisitor() {
             @Override
             public <T> void visitIn(ExpressionIn<T> expression) {
-              CrudExecutionApi crudExecutionApi = getExecutionApiForEntityDef(query.getEntityDef());
+              CrudExecutionApi crudExecutionApi =
+                  getExecutionApiForEntityDefOrNull(query.getEntityDef());
               if (expression.values() != null && expression.values().size() > 10
-                  && crudExecutionApi.hasLargeInHandling()) {
+                  && (crudExecutionApi == null || crudExecutionApi.hasLargeInHandling())) {
                 if (expression.getOperand() instanceof OperandProperty<?>) {
                   queryNode.preCalls().call(new SaveInValues(dataSetApi, where, expression));
                 }
@@ -314,6 +315,14 @@ public class CrudApiImpl implements CrudApi {
     }
 
     return execApi;
+  }
+
+  private CrudExecutionApi getExecutionApiForEntityDefOrNull(EntityDefinition entityDef) {
+    try {
+      return getExecutionApiForEntityDef(entityDef);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   private CrudExecutionApi getExecutionApi(EntityDefinition entityDef) {
