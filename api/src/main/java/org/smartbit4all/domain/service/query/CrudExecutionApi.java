@@ -59,4 +59,9 @@ public interface CrudExecutionApi {
 
   String getSchema();
 
+  /**
+   * @return the execution api can use temp tables for in expression with more than 10 values
+   */
+  boolean hasLargeInHandling();
+
 }

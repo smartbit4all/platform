@@ -74,4 +74,9 @@ public class SQLCrudExecutionApi implements CrudExecutionApi {
     return new SQLDeleteExecution<>(jdbcTemplate, input, schema, sqlDBParameter).execute();
   }
 
+  @Override
+  public boolean hasLargeInHandling() {
+    return true;
+  }
+
 }
