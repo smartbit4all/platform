@@ -3,6 +3,7 @@ package org.smartbit4all.api.invocation;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -39,6 +40,20 @@ public class AsyncInvocationBuilder {
   public <T> AsyncInvocationBuilder call(Class<T> apiIf, Consumer<T> apiCall, String channel) {
     nodeRoot = objectApi.create(Invocations.ASYNCINVOCATION_SCHEME,
         new AsyncInvocationRequest().request(invocationApi.builder(apiIf).build(apiCall))
+            .channel(channel));
+    currentNode = nodeRoot;
+    return this;
+  }
+
+  /**
+   * Initiate the whole asynchronous invocation chain by calling the first API.
+   * 
+   * @param apiIf
+   * @return
+   */
+  public <T> AsyncInvocationBuilder call(InvocationRequest invocationRequest, String channel) {
+    nodeRoot = objectApi.create(Invocations.ASYNCINVOCATION_SCHEME,
+        new AsyncInvocationRequest().request(invocationRequest)
             .channel(channel));
     currentNode = nodeRoot;
     return this;
