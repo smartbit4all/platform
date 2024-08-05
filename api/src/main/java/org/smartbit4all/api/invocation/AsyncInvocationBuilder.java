@@ -48,7 +48,6 @@ public class AsyncInvocationBuilder {
   /**
    * Initiate the whole asynchronous invocation chain by calling the first API.
    * 
-   * @param apiIf
    * @return
    */
   public <T> AsyncInvocationBuilder call(InvocationRequest invocationRequest, String channel) {
