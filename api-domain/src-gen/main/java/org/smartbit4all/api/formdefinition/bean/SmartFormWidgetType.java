@@ -60,6 +60,8 @@ public enum SmartFormWidgetType {
   
   TEXT_FIELD_NUMBER("TEXT_FIELD_NUMBER"),
   
+  TEXT_FIELD_LOOKUP("TEXT_FIELD_LOOKUP"),
+  
   TIME("TIME"),
   
   TOGGLE("TOGGLE"),

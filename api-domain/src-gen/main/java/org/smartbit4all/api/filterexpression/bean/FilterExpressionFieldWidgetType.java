@@ -34,6 +34,8 @@ public enum FilterExpressionFieldWidgetType {
   
   TEXT_FIELD_NUMBER("TEXT_FIELD_NUMBER"),
   
+  TEXT_FIELD_LOOKUP("TEXT_FIELD_LOOKUP"),
+  
   TEXT_BOX("TEXT_BOX"),
   
   SELECT("SELECT"),

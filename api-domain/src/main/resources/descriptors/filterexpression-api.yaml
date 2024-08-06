@@ -326,6 +326,7 @@ components:
         - TEXT_FIELD
         - TEXT_FIELD_CHIPS
         - TEXT_FIELD_NUMBER
+        - TEXT_FIELD_LOOKUP
         - TEXT_BOX
         - SELECT
         - SELECT_MULTIPLE

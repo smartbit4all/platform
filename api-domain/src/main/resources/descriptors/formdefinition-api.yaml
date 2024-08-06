@@ -36,6 +36,7 @@ components:
         - TEXT_FIELD
         - TEXT_FIELD_CHIPS
         - TEXT_FIELD_NUMBER
+        - TEXT_FIELD_LOOKUP
         - TIME
         - TOGGLE
         - IMAGE
