@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -14,6 +15,9 @@ public interface ViewPublisherApi {
   static final String VIEW_OPENED = "viewOpened";
   static final String DEVICE_INFO_CHANGED = "deviceInfoChanged";
 
+
+  String ACTION_EXECUTED = "actionExecuted";
+
   void fireActionPerformed(View view, UiActionRequest request, String objectIdentifier,
       String objectName);
 
@@ -25,5 +29,13 @@ public interface ViewPublisherApi {
       String objectName);
 
   void fireDeviceInfoChanged(UUID viewContextUuid, DeviceInfo deviceInfo);
+
+  void fireActionExecuted(
+      View view,
+      UiActionRequest request,
+      String widgetId,
+      String nodeId,
+      Map<String, Object> viewContextBefore,
+      Map<String, Object> viewContextAfter);
 
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
@@ -87,6 +88,38 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
           Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
           api.fireDeviceInfoChanged(deviceInfo, session, viewContextUuid, OffsetDateTime.now());
         });
+  }
+
+  @Override
+  public void fireActionExecuted(
+      View view,
+      UiActionRequest request,
+      String widgetId,
+      String nodeId,
+      Map<String, Object> viewContextBefore,
+      Map<String, Object> viewContextAfter) {
+    if (sessionApi == null || sessionManagementApi == null) {
+      return;
+    }
+
+    final ObjectSerializer serializer = objectApi.getDefaultSerializer();
+    final Map<String, Object> viewAsMap = serializer.toMap(view);
+    final View viewCopy = serializer.fromMap(viewAsMap, View.class);
+    invocationApi
+        .publisher(
+            ViewPublisherApi.class,
+            ViewSubscriberApi.class,
+            ViewPublisherApi.ACTION_EXECUTED)
+        .publish(api -> {
+          final Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
+          api.onActionExecuted(
+              viewCopy, request, widgetId, nodeId,
+              Invocations.mapOf(viewContextBefore, Object.class),
+              Invocations.mapOf(viewContextAfter, Object.class),
+              session,
+              OffsetDateTime.now());
+        });
+
   }
 
 }

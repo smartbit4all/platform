@@ -91,6 +91,21 @@ public class ViewContextServiceImpl implements ViewContextService {
     Map<String, Object> newValues;
   }
 
+  private static final class PerformActionEventContext {
+    final View view;
+    final UiActionRequest request;
+    String widgetId;
+    String nodeId;
+    Map<String, Object> viewContextBefore;
+    Map<String, Object> viewContextAfter;
+
+    private PerformActionEventContext(View view, UiActionRequest request) {
+      this.view = view;
+      this.request = request;
+    }
+
+  }
+
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
   private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
@@ -269,6 +284,12 @@ public class ViewContextServiceImpl implements ViewContextService {
       updates.getUpdates().forEach(u -> ViewContexts.updateViewState(c, u));
       c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
     }
+  }
+
+  private void fireActionExecuted(PerformActionEventContext ctx) {
+    publisherApi.fireActionExecuted(
+        ctx.view, ctx.request, ctx.widgetId,
+        ctx.nodeId, ctx.viewContextBefore, ctx.viewContextAfter);
   }
 
   private void processDeviceInfo(ViewContext c, ViewContextUpdate updates) {
@@ -690,10 +711,12 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
+
+    final PerformActionEventContext ctx = new PerformActionEventContext(view, request);
     startServerRequest(new ServerRequestTrack().type(ServerRequestType.ACTION).request(request)
         .viewUuid(viewUuid).viewName(view.getViewName()));
     List<ViewComparisonResult> comparisons =
-        invokeMethodInternal(eventDescriptor, method, api, viewUuid, request);
+        invokeMethodInternal(ctx, eventDescriptor, method, api, viewUuid, request);
     finishServerRequest();
     return createViewContextChange(comparisons, null); // ActionHandler is void
   }
@@ -726,11 +749,14 @@ public class ViewContextServiceImpl implements ViewContextService {
                   .build(service -> service.setClientPageModelFromRequest(
                       viewUuid, nodeId, widgetId, request))));
     }
+    final PerformActionEventContext ctx = new PerformActionEventContext(view, request);
+    ctx.widgetId = widgetId;
+    ctx.nodeId = nodeId;
     startServerRequest(
         new ServerRequestTrack().type(ServerRequestType.WIDGET_ACTION).request(request)
             .viewUuid(viewUuid).viewName(view.getViewName()).widgetId(widgetId).nodeId(nodeId));
     List<ViewComparisonResult> comparisons =
-        invokeMethodInternal(eventDescriptor, method, api, viewUuid, widgetId,
+        invokeMethodInternal(ctx, eventDescriptor, method, api, viewUuid, widgetId,
             nodeId, request);
     finishServerRequest();
     return createViewContextChange(comparisons, null); // WidgetActionHandler is void
@@ -753,7 +779,8 @@ public class ViewContextServiceImpl implements ViewContextService {
    *        invocation.
    * @return
    */
-  private List<ViewComparisonResult> invokeMethodInternal(ViewEventDescriptor eventDescriptor,
+  private List<ViewComparisonResult> invokeMethodInternal(PerformActionEventContext ctx,
+      ViewEventDescriptor eventDescriptor,
       Method method,
       Object api, Object... args) {
     InvocationRequest insteadOfRequest = null;
@@ -767,6 +794,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
 
     ObjectNode before = beforeInvoke(getMethodName(insteadOfRequest, method));
+    ctx.viewContextBefore = before.getObjectAsMap();
     InvocationRequest invocationRequest = null;
     try {
       // The before events can block the execution of the whole action. If an invocation throws
@@ -821,7 +849,7 @@ public class ViewContextServiceImpl implements ViewContextService {
               + getMethodName(invocationRequest, method),
           e);
     }
-    return afterInvoke(before, getMethodName(invocationRequest, method));
+    return afterInvoke(ctx, before, getMethodName(invocationRequest, method));
   }
 
   private final String getMethodName(InvocationRequest request, Method method) {
@@ -840,12 +868,18 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
-  private List<ViewComparisonResult> afterInvoke(ObjectNode before, String methodName) {
+  private List<ViewComparisonResult> afterInvoke(PerformActionEventContext ctx, ObjectNode before,
+      String methodName) {
     try {
       Map<UUID, View> beforeViews = before.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .collect(toMap(View::getUuid, v -> v));
       ObjectNode after = objectApi.create(SCHEMA, getCurrentViewContextEntry());
+      if (ctx != null) {
+        ctx.viewContextAfter = after.getObjectAsMap();
+        fireActionExecuted(ctx);
+      }
+
       return after.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .filter(v -> beforeViews.containsKey(v.getUuid()))
@@ -1084,7 +1118,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       log.error("Error when calling method " + methodName, tr);
       throw tr;
     }
-    List<ViewComparisonResult> comparisons = afterInvoke(before, methodName);
+    List<ViewComparisonResult> comparisons = afterInvoke(null, before, methodName);
     return createViewContextChange(comparisons, result);
   }
 
