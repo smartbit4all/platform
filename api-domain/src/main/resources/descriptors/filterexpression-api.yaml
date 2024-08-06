@@ -97,6 +97,10 @@ components:
           type: array
           items:
             type: string
+        selectedObjects:
+          type: array
+          items:
+            type: object
         type:
           $ref: '#/components/schemas/FilterExpressionDataType'
 
