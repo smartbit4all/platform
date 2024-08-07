@@ -11,6 +11,11 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.value.bean.GenericValue;
+import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -23,6 +28,20 @@ public class LookupApiImpl implements LookupApi {
 
   @Autowired
   protected FilterExpressionBuilderApi filterExpressionBuilderApi;
+
+  @Override
+  public void addLookupAction(View view, String field) {
+    // maybe move to some other action handling api?
+    view.addActionsItem(
+        new UiAction()
+            .code(ACTION_LOOKUP)
+            .identifier(field)
+            .descriptor(new UiActionDescriptor()
+                .type(UiActionButtonType.ICON)
+                .icon("search")
+                .iconColor(UiActions.Color.ACCENT))
+            .toolbar(field + UiActions.TOOLBAR_SUFFIX));
+  }
 
   @Override
   public void handleSubjectSelected(UUID viewUuid, List<Subject> subjects, String filterId,
