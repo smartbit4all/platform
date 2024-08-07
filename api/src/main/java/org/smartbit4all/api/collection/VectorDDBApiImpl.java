@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.util.List;
+import java.util.Objects;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
@@ -16,49 +17,71 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
   @Override
   public String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value) {
-    return getContributionApi(dbConnection.getApiName()).addPoint(dbConnection, collectionName,
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    return contributionApi.addPoint(dbConnection, collectionName,
         value);
   }
 
   @Override
   public List<String> addPoints(ServiceConnection dbConnection, String collectionName,
       List<VectorValue> values) {
-    return getContributionApi(dbConnection.getApiName()).addPoints(dbConnection, collectionName,
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    return contributionApi.addPoints(dbConnection, collectionName,
         values);
   }
 
   @Override
   public void deletePoint(ServiceConnection dbConnection, String collectionName, String id) {
-    getContributionApi(dbConnection.getApiName()).deletePoint(dbConnection, collectionName,
-        id);
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    contributionApi.deletePoint(dbConnection, collectionName, id);
   }
 
   @Override
   public void deletePoints(ServiceConnection dbConnection, String collectionName,
       List<String> ids) {
-    getContributionApi(dbConnection.getApiName()).deletePoints(dbConnection, collectionName,
-        ids);
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    contributionApi.deletePoints(dbConnection, collectionName, ids);
   }
 
   @Override
   public void createCollection(ServiceConnection dbConnection, String name) {
-    getContributionApi(dbConnection.getApiName()).createCollection(dbConnection, name);
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    contributionApi.createCollection(dbConnection, name);
   }
 
   @Override
   public void deleteCollection(ServiceConnection dbConnection, String name) {
-    getContributionApi(dbConnection.getApiName()).deleteCollection(dbConnection, name);
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    contributionApi.deleteCollection(dbConnection, name);
   }
 
   @Override
   public boolean collectionExists(ServiceConnection dbConnection, String name) {
-    return getContributionApi(dbConnection.getApiName()).collectionExists(dbConnection, name);
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    return contributionApi.collectionExists(dbConnection, name);
   }
 
   @Override
   public List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
       VectorValue searchVector, int limit) {
-    return getContributionApi(dbConnection.getApiName()).search(dbConnection, collectionName,
+    Objects.requireNonNull(dbConnection);
+    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    return contributionApi.search(dbConnection, collectionName,
         searchVector, limit);
   }
 
