@@ -1,11 +1,13 @@
 package org.smartbit4all.api.collection;
 
-import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,8 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.value.bean.GenericValue;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -30,6 +34,8 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import com.google.common.base.Strings;
 
 public class FilterExpressionApiImpl implements FilterExpressionApi {
 
@@ -107,8 +113,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   private boolean operandHasValues(FilterExpressionOperandData operandData) {
     return operandData != null
         && !Boolean.TRUE.equals(operandData.getIsDataName())
-        && operandData.getSelectedValues() != null
-        && !operandData.getSelectedValues().isEmpty();
+        && (!ObjectUtils.isEmpty(operandData.getSelectedValues())
+            || !ObjectUtils.isEmpty(operandData.getSelectedObjects()));
   }
 
   private boolean operandHasValueOrValues(FilterExpressionOperandData operandData) {
@@ -263,6 +269,44 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   private final List<Object> valuesOf(FilterExpressionOperandData op, Class<?> type) {
     if (op != null && Boolean.FALSE.equals(op.getIsDataName())) {
+      if (!ObjectUtils.isEmpty(op.getSelectedValues())) {
+        return convertValues(op.getSelectedValues(), type);
+      }
+      // need some selectionDefinition here...
+      if (!ObjectUtils.isEmpty(op.getSelectedObjects())) {
+        Object first = op.getSelectedObjects().get(0);
+        if (first instanceof GenericValue) {
+          List<String> uris = op.getSelectedObjects().stream()
+              .map(value -> ((GenericValue) value).getUri())
+              .filter(Objects::nonNull)
+              .map(URI::toString)
+              .collect(toList());
+          return convertValues(uris, type);
+        } else if (first instanceof Value) {
+          List<String> uris = op.getSelectedObjects().stream()
+              .map(value -> ((Value) value).getObjectUri())
+              .filter(Objects::nonNull)
+              .map(URI::toString)
+              .collect(toList());
+          return convertValues(uris, type);
+        } else if (first instanceof Map) {
+          List<String> uris = op.getSelectedObjects().stream()
+              .map(value -> {
+                Map<?, ?> map = (Map<?, ?>) value;
+                if (map.containsKey(GenericValue.URI)) {
+                  return objectApi.asType(URI.class, map.get(GenericValue.URI));
+                }
+                if (map.containsKey(Value.OBJECT_URI)) {
+                  return objectApi.asType(URI.class, map.get(Value.OBJECT_URI));
+                }
+                return null;
+              })
+              .filter(Objects::nonNull)
+              .map(URI::toString)
+              .collect(toList());
+          return convertValues(uris, type);
+        }
+      }
       return convertValues(op.getSelectedValues(), type);
     }
     return Collections.emptyList();
