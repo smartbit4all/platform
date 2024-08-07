@@ -5,10 +5,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.tracing.UiActionEventListenerApi;
+import org.smartbit4all.api.tracing.bean.UiActionExecutionEvent;
 import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -108,18 +109,20 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
     invocationApi
         .publisher(
             ViewPublisherApi.class,
-            ViewSubscriberApi.class,
+            UiActionEventListenerApi.class,
             ViewPublisherApi.ACTION_EXECUTED)
         .publish(api -> {
           final Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
-          api.onActionExecuted(
-              viewCopy, request, widgetId, nodeId,
-              Invocations.mapOf(viewContextBefore, Object.class),
-              Invocations.mapOf(viewContextAfter, Object.class),
-              session,
-              OffsetDateTime.now());
+          api.onActionExecuted(new UiActionExecutionEvent()
+              .view(viewCopy)
+              .request(request)
+              .widgetId(widgetId)
+              .nodeId(nodeId)
+              .viewContextBefore(viewContextBefore)
+              .viewContextAfter(viewContextAfter)
+              .session(session)
+              .timestamp(OffsetDateTime.now()));
         });
-
   }
 
 }

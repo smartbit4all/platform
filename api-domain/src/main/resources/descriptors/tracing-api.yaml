@@ -1,0 +1,39 @@
+openapi: 3.0.3
+info:
+  title: Tracing API
+  description: |
+    Event objects and internal data structures for observing the behaviour of platform applications.
+  termsOfService: N/A
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: ArchiveApi
+    description: Archive
+paths: {}
+components:
+  schemas:
+    UiActionExecutionEvent:
+      type: object
+      properties:
+        view:
+          type: View
+        request:
+          type: UiActionRequest
+        widgetId:
+          type: string
+        nodeId:
+          type: string
+        viewContextBefore:
+          type: object
+          additionalProperties:
+            type: object
+        viewContextAfter:
+          type: object
+          additionalProperties:
+            type: object
+        session:
+          type: Session
+        timestamp:
+          type: string
+          format: date-time

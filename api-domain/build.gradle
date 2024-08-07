@@ -22,6 +22,7 @@ smartbit4all {
     	"LocalTime": "java.time.LocalTime",
     	"UiAction": "org.smartbit4all.api.view.bean.UiAction",
     	"UiActionDescriptor": "org.smartbit4all.api.view.bean.UiActionDescriptor",
+    	"UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
     	"View": "org.smartbit4all.api.view.bean.View",
     	"IconPosition": "org.smartbit4all.api.view.bean.IconPosition",
   		"Value": "org.smartbit4all.api.value.bean.Value",
@@ -51,7 +52,8 @@ smartbit4all {
   		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource",
   		"Style": "org.smartbit4all.api.view.bean.Style",
   		"ObjectPropertyResolverContext": "org.smartbit4all.api.object.bean.ObjectPropertyResolverContext",
-  		"SelectionDefinition": "org.smartbit4all.api.formdefinition.bean.SelectionDefinition"
+  		"SelectionDefinition": "org.smartbit4all.api.formdefinition.bean.SelectionDefinition",
+  		"Session": "org.smartbit4all.api.session.bean.Session"
   	]
   }
 }
