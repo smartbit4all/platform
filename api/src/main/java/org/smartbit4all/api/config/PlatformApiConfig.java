@@ -102,6 +102,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.action.LookupApi;
+import org.smartbit4all.api.view.action.LookupApiImpl;
 import org.smartbit4all.api.view.action.ToolbarManagementApi;
 import org.smartbit4all.api.view.action.ToolbarManagementApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -853,6 +855,17 @@ public class PlatformApiConfig {
   @Bean
   BinaryContentDataApi binaryContentDataApi() {
     return new BinaryContentDataApiImpl();
+  }
+
+  @Bean
+  public LookupApi lookupApi() {
+    return new LookupApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<LookupApi> lookupApiProvider(
+      LookupApi api) {
+    return Invocations.asProvider(LookupApi.class, api);
   }
 
 }
