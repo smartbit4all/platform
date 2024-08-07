@@ -81,7 +81,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     setModel(viewUuid, model);
   }
 
-  private void putLayoutIntoView(View view) {
+  public void putLayoutIntoView(View view) {
     SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
         textfield(widgetKey(UserEditingModel.USER, User.NAME),
             localeSettingApi.get(UserEditingModel.USER, User.NAME)),
@@ -125,7 +125,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       String password =
           passwordEncoder == null ? clientPassword : passwordEncoder.encode(clientPassword);
       user.password(password);
-    }else {
+    } else {
       user.password(objectApi.loadLatest(user.getUri()).getValueAsString(User.PASSWORD));
     }
     URI userUri;
