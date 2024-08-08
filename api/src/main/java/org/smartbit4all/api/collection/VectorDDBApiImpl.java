@@ -73,9 +73,9 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
 
   @Override
   public boolean collectionExists(ServiceConnection dbConnection, String name) {
-    log.debug(getContributionApis().toString());
-    log.debug(name);
-    log.debug(dbConnection.toString());
+    log.info(getContributionApis().toString());
+    log.info(name);
+    log.info(dbConnection.toString());
     Objects.requireNonNull(dbConnection);
     VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
