@@ -2,6 +2,8 @@ package org.smartbit4all.api.collection;
 
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
@@ -13,6 +15,8 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
   public VectorDDBApiImpl() {
     super(VectorDBContibutionApi.class);
   }
+
+  private static final Logger log = LoggerFactory.getLogger(VectorDDBApiImpl.class);
 
   @Override
   public String addPoint(ServiceConnection dbConnection, String collectionName,
@@ -69,6 +73,7 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
 
   @Override
   public boolean collectionExists(ServiceConnection dbConnection, String name) {
+    log.debug(getContributionApis().toString());
     Objects.requireNonNull(dbConnection);
     VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
