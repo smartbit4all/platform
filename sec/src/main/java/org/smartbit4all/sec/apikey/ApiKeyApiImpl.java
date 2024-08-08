@@ -162,7 +162,7 @@ public class ApiKeyApiImpl extends ApiKeyImplementationBase implements ApiKeyApi
     Optional<ObjectNode> scopeOpt = entryApi.getList().nodes()
         .filter(n -> name.equals(n.getValueAsString(ApiKeyScope.NAME))).findFirst();
 
-    if (scopeOpt.isEmpty()) {
+    if (!scopeOpt.isPresent()) {
       throw new IllegalArgumentException("apiKeyScope cannot be found");
     }
 
