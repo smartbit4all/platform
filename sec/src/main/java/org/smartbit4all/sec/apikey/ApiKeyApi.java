@@ -25,6 +25,8 @@ public interface ApiKeyApi {
 
   URI getApiKeyScopeByName(String name);
 
+  void deleteApiKeyScope(String name);
+
   List<URI> getMatchingApiKeyScopes(HttpServletRequest httpRequest);
 
   List<URI> updateApiKeyScope(String oldName, String newName, String newPath);

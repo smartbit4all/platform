@@ -4,11 +4,13 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
@@ -94,6 +96,7 @@ public class ApiKeyApiImpl extends ApiKeyImplementationBase implements ApiKeyApi
     return ApiKeyCheckResult.OK;
   }
 
+  @Override
   public void maintainExpiredApiKeys() {
     OffsetDateTime now = OffsetDateTime.now();
     getApiKeyMdmEntryApi().getList().nodes()
@@ -148,6 +151,23 @@ public class ApiKeyApiImpl extends ApiKeyImplementationBase implements ApiKeyApi
             .setValue(newPath, ApiKeyScope.PATH_PATTERN))
         .map(objectApi::save)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void deleteApiKeyScope(String name) {
+    Objects.requireNonNull(name, "name can not be null!");
+
+    MDMEntryApi entryApi = getApiKeyScopeMdmEntryApi();
+
+    Optional<ObjectNode> scopeOpt = entryApi.getList().nodes()
+        .filter(n -> name.equals(n.getValueAsString(ApiKeyScope.NAME))).findFirst();
+
+    if (scopeOpt.isEmpty()) {
+      throw new IllegalArgumentException("apiKeyScope cannot be found");
+    }
+
+    URI scopeToDelete = scopeOpt.get().getObjectUri();
+    entryApi.remove(scopeToDelete);
   }
 
   @Override
