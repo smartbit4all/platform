@@ -75,7 +75,10 @@ import javax.validation.Valid;
   SmartWidgetDefinition.SHOW_CHARACTER_LIMIT_SUFFIX,
   SmartWidgetDefinition.FILTER_ERROR_MESSAGE,
   SmartWidgetDefinition.TOOLBAR_ID,
-  SmartWidgetDefinition.PROPERTIES
+  SmartWidgetDefinition.PROPERTIES,
+  SmartWidgetDefinition.ERROR_MESSAGE,
+  SmartWidgetDefinition.ERROR_ICON,
+  SmartWidgetDefinition.ERROR_COLOR
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -169,6 +172,15 @@ public class SmartWidgetDefinition {
 
   public static final String PROPERTIES = "properties";
   private Map<String, Object> properties = null;
+
+  public static final String ERROR_MESSAGE = "errorMessage";
+  private String errorMessage;
+
+  public static final String ERROR_ICON = "errorIcon";
+  private String errorIcon;
+
+  public static final String ERROR_COLOR = "errorColor";
+  private String errorColor;
 
   public SmartWidgetDefinition() { 
   }
@@ -1022,6 +1034,87 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition errorMessage(String errorMessage) {
+    
+    this.errorMessage = errorMessage;
+    return this;
+  }
+
+   /**
+   * The error message to show for the widget. 
+   * @return errorMessage
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The error message to show for the widget. ")
+  @JsonProperty(ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+
+  @JsonProperty(ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
+
+
+  public SmartWidgetDefinition errorIcon(String errorIcon) {
+    
+    this.errorIcon = errorIcon;
+    return this;
+  }
+
+   /**
+   * The error message to show for the widget. 
+   * @return errorIcon
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The error message to show for the widget. ")
+  @JsonProperty(ERROR_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getErrorIcon() {
+    return errorIcon;
+  }
+
+
+  @JsonProperty(ERROR_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setErrorIcon(String errorIcon) {
+    this.errorIcon = errorIcon;
+  }
+
+
+  public SmartWidgetDefinition errorColor(String errorColor) {
+    
+    this.errorColor = errorColor;
+    return this;
+  }
+
+   /**
+   * The error message to show for the widget. 
+   * @return errorColor
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The error message to show for the widget. ")
+  @JsonProperty(ERROR_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getErrorColor() {
+    return errorColor;
+  }
+
+
+  @JsonProperty(ERROR_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setErrorColor(String errorColor) {
+    this.errorColor = errorColor;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1060,12 +1153,15 @@ public class SmartWidgetDefinition {
         Objects.equals(this.showCharacterLimitSuffix, smartWidgetDefinition.showCharacterLimitSuffix) &&
         Objects.equals(this.filterErrorMessage, smartWidgetDefinition.filterErrorMessage) &&
         Objects.equals(this.toolbarId, smartWidgetDefinition.toolbarId) &&
-        Objects.equals(this.properties, smartWidgetDefinition.properties);
+        Objects.equals(this.properties, smartWidgetDefinition.properties) &&
+        Objects.equals(this.errorMessage, smartWidgetDefinition.errorMessage) &&
+        Objects.equals(this.errorIcon, smartWidgetDefinition.errorIcon) &&
+        Objects.equals(this.errorColor, smartWidgetDefinition.errorColor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties);
+    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties, errorMessage, errorIcon, errorColor);
   }
 
   @Override
@@ -1102,6 +1198,9 @@ public class SmartWidgetDefinition {
     sb.append("    filterErrorMessage: ").append(toIndentedString(filterErrorMessage)).append("\n");
     sb.append("    toolbarId: ").append(toIndentedString(toolbarId)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
+    sb.append("    errorMessage: ").append(toIndentedString(errorMessage)).append("\n");
+    sb.append("    errorIcon: ").append(toIndentedString(errorIcon)).append("\n");
+    sb.append("    errorColor: ").append(toIndentedString(errorColor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

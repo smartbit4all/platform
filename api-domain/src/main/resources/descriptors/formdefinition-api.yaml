@@ -168,6 +168,18 @@ components:
             widget.
           additionalProperties:
             type: object
+        errorMessage:
+          description: |
+            The error message to show for the widget.
+          type: string
+        errorIcon:
+          description: |
+            The error message to show for the widget.
+          type: string
+        errorColor:
+          description: |
+            The error message to show for the widget.
+          type: string
     ValueChangeMode:
       description: |
         This enum defines the value change handling strategy. Currently only one method is supported,
