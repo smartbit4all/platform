@@ -51,7 +51,10 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   @Autowired
   private ObjectApi objectApi;
 
-  private static List<FilterExpressionOperation> parenthesisOperands =
+  private static List<FilterExpressionOperation> unaryOperations =
+      Arrays.asList(FilterExpressionOperation.IS_EMPTY, FilterExpressionOperation.IS_NOT_EMPTY);
+
+  private static List<FilterExpressionOperation> parenthesisOperations =
       Arrays.asList(FilterExpressionOperation.EXPRESSION, FilterExpressionOperation.EXISTS,
           FilterExpressionOperation.NOT_EXISTS);
 
@@ -67,10 +70,14 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
             && (operandHasValueOrValues(field.getExpressionData().getOperand1())
                 || operandHasValueOrValues(field.getExpressionData().getOperand2())
                 || operandHasValueOrValues(field.getExpressionData().getOperand3())
-                || parenthesisOperands.contains(field.getExpressionData().getCurrentOperation())))
+                || parenthesisOperations.contains(field.getExpressionData().getCurrentOperation())
+                || unaryOperations.contains(field.getExpressionData().getCurrentOperation())))
         .map(field -> {
-          if (parenthesisOperands.contains(field.getExpressionData().getCurrentOperation())) {
+          if (parenthesisOperations.contains(field.getExpressionData().getCurrentOperation())) {
             field.getExpressionData().setSubExpression(of(field.getSubFieldList()));
+          }
+          if (unaryOperations.contains(field.getExpressionData().getCurrentOperation())) {
+            field.getExpressionData().operand2(null);
           }
           return field;
         }).map(FilterExpressionField::getExpressionData).map(this::handleLikeExpressions)
