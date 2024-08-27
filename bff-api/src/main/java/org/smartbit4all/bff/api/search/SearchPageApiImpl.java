@@ -241,8 +241,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected void refreshGrid(SearchPageModel model, PageContext ctx) {
     TableData<?> gridContent = null;
-    FilterExpressionList filters = filterExpressionBuilderApi
-        .getFilterExpressionList(ctx.viewUUID, FILTER_BUILDER_WIDGET_ID);
+    FilterExpressionList filters = getFiltersForRefreshGrid(model, ctx);
 
     Stream<ObjectNode> nodesToQuery = getNodesToQuery(ctx);
     if (nodesToQuery != null) {
@@ -279,6 +278,12 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     } else {
       model.noResultText(null);
     }
+  }
+
+  protected FilterExpressionList getFiltersForRefreshGrid(SearchPageModel model, PageContext ctx) {
+    FilterExpressionList filters = filterExpressionBuilderApi
+        .getFilterExpressionList(ctx.viewUUID, FILTER_BUILDER_WIDGET_ID);
+    return filters;
   }
 
   protected void setDataToGrid(UUID uuid, SearchIndex<?> searchIndex, TableData<?> gridContent,
