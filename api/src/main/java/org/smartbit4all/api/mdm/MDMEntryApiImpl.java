@@ -92,7 +92,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   public static final String[] uriPath = {"uri"};
 
-  private final MasterDataManagementApi api;
+  private final MasterDataManagementApi mdmApi;
 
   private final MDMDefinition definition;
 
@@ -127,14 +127,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
    */
   private ObjectCacheEntry<MDMDefinitionState> definitionStateCache;
 
-  public MDMEntryApiImpl(MasterDataManagementApi api, MDMDefinition definition,
+  public MDMEntryApiImpl(MasterDataManagementApi mdmApi, MDMDefinition definition,
       MDMEntryDescriptor descriptor,
       ObjectApi objectApi, CollectionApi collectionApi, InvocationApi invocationApi,
       BranchApi branchApi, ValueSetApi valueSetApi, LocaleSettingApi localeSettingApi,
       SessionApi sessionApi, CompareApi compareApi) {
     super();
     Objects.requireNonNull(descriptor, "Unable to initiate master data entry without descriptor.");
-    this.api = api;
+    this.mdmApi = mdmApi;
     this.definition = definition;
 
     definitionStateCache = objectApi.getCacheEntry(MDMDefinitionState.class);
@@ -623,6 +623,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     BranchedObject removeNewBranchedObjects =
         branchApi.removeNewBranchedObjects(branchUri, objectUri);
     if (removeNewBranchedObjects != null) {
+      fireEntryRemoved(objectUri);
       return true;
     }
 
@@ -635,7 +636,28 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       inactiveList.operationMode(OperationMode.UNIQUE_ON_LATEST);
       inactiveList.add(objectUri);
     }
+    fireEntryInactivated(objectUri);
     return true;
+  }
+
+  private void fireEntryRemoved(URI objectUri) {
+    invocationApi
+        .publisher(
+            MasterDataManagementApi.class,
+            MDMSubscriberApi.class,
+            REMOVED)
+        .publish(api -> api.entryRemoved(definition.getUri(), descriptor.getName(), objectUri,
+            getBranchUri()));
+  }
+
+  private void fireEntryInactivated(URI objectUri) {
+    invocationApi
+        .publisher(
+            MasterDataManagementApi.class,
+            MDMSubscriberApi.class,
+            INACTIVATED)
+        .publish(api -> api.entryInactivated(definition.getUri(), descriptor.getName(), objectUri,
+            getBranchUri()));
   }
 
   @Override
@@ -856,7 +878,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     if (vectorCollectionDescriptor != null) {
       // Remove the whole collection and fill again with all the object.
       // String[] primaryId = getPrimaryId();
-      VectorCollection vectorCollection = api.getVectorCollection(vectorCollectionDescriptor);
+      VectorCollection vectorCollection = mdmApi.getVectorCollection(vectorCollectionDescriptor);
       if (vectorCollection == null) {
         throw new IllegalArgumentException(
             "A frissítéshez érvényes vektoradatbázis kapcsolat és érvényes beágyazó kapcsolat szükséges.");

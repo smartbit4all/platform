@@ -50,6 +50,9 @@ public interface MDMEntryApi {
     public static final String RESTORED = "restored";
   }
 
+  static final String INACTIVATED = "inactivated";
+  static final String REMOVED = "removed";
+
   /**
    * @return The name of the given entry
    */
