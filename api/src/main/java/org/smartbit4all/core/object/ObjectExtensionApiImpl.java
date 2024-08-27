@@ -110,7 +110,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
     ObjectDescriptor objectDescriptor = new ObjectDescriptor()
         .definitionProperties(Collections.emptyMap())
-        .extensionProperties(savePropertyDescriptors(propertyDescriptors))
+        // TODO create on branch
+        .extensionProperties(savePropertyDescriptors(propertyDescriptors, null))
         .name(definitionName)
         .layoutDescriptor(createDefaultLayout(definitionName, evaluationResult.layoutElements));
 
@@ -159,7 +160,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
    *         identified by their names
    */
   private Map<String, URI> savePropertyDescriptors(
-      Collection<ObjectPropertyDescriptor> propertyDescriptors) {
+      Collection<ObjectPropertyDescriptor> propertyDescriptors, URI branchUri) {
     if (propertyDescriptors == null || propertyDescriptors.isEmpty()) {
       return Collections.emptyMap();
     }
@@ -167,7 +168,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     return propertyDescriptors.stream()
         .filter(Objects::nonNull)
         .collect(toMap(ObjectPropertyDescriptor::getPropertyName,
-            this::persistPropertyDescriptor));
+            p -> persistPropertyDescriptor(p, branchUri)));
   }
 
   /**
@@ -177,11 +178,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
    * @param propertyDescriptor an {@link ObjectPropertyDescriptor}, not null
    * @return the {@code URI} of the persisted property descriptor
    */
-  private URI persistPropertyDescriptor(ObjectPropertyDescriptor propertyDescriptor) {
+  private URI persistPropertyDescriptor(ObjectPropertyDescriptor propertyDescriptor,
+      URI branchUri) {
     Objects.requireNonNull(propertyDescriptor, "propertyDescriptor cannot be null!");
 
     return (propertyDescriptor.getUri() == null)
-        ? objectApi.saveAsNew(SCHEMA, propertyDescriptor)
+        ? objectApi.saveAsNew(SCHEMA, propertyDescriptor, branchUri)
         : propertyDescriptor.getUri();
   }
 
@@ -282,8 +284,9 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     updateObjectDefinition(definitionName, evaluationResult);
 
     ObjectDescriptor objectDescriptor = new ObjectDescriptor()
-        .definitionProperties(savePropertyDescriptors(definitionProperties.values()))
-        .extensionProperties(savePropertyDescriptors(extensionProperties.values()))
+        // TODO create on branch
+        .definitionProperties(savePropertyDescriptors(definitionProperties.values(), null))
+        .extensionProperties(savePropertyDescriptors(extensionProperties.values(), null))
         .name(definitionName)
         .layoutDescriptor(createDefaultLayout(definitionName, evaluationResult.layoutElements));
 
@@ -304,6 +307,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
   @Override
   public URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors) {
+    return extend(definitionName, extensionDescriptors, null);
+  }
+
+  @Override
+  public URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors,
+      URI branchUri) {
     if (!exists(definitionName)) {
       throw new IllegalArgumentException("Cannot extend the [ " + definitionName
           + " ] object descriptor, for it does not exist! Try calling 'create()'!");
@@ -312,6 +321,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     PropertyEvaluationResult evaluationResult =
         new PropertyDescriptorEvaluator(objectDefinitionApi, definitionName)
             .evaluate(extensionDescriptors);
+    // TODO update ObjectDefinition on branch
     updateObjectDefinition(definitionName, evaluationResult);
     // let's merge changes in the descriptor:
     Map<String, ObjectPropertyDescriptor> extensionDescriptorsByName = extensionDescriptors
@@ -319,8 +329,10 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             ObjectPropertyDescriptor::getPropertyName,
             Function.identity(),
             (a, b) -> a));
-    final ObjectNode objectDescriptorNode = objectApi.load(collectionApi
-        .map(SCHEMA, EXTENSION_MAP)
+    StoredMap extensionMap = collectionApi
+        .map(SCHEMA, EXTENSION_MAP);
+    extensionMap.branch(branchUri);
+    final ObjectNode objectDescriptorNode = objectApi.load(extensionMap
         .uris()
         .get(definitionName));
     objectDescriptorNode.modify(ObjectDescriptor.class, d -> {
@@ -334,11 +346,12 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
       if (extensionProperties == null) {
         extensionProperties = new HashMap<>();
       }
-      extensionProperties.putAll(savePropertyDescriptors(extensionDescriptorsByName.values()));
+      extensionProperties
+          .putAll(savePropertyDescriptors(extensionDescriptorsByName.values(), branchUri));
 
       return d;
     });
-    return objectApi.save(objectDescriptorNode);
+    return objectApi.save(objectDescriptorNode, branchUri);
   }
 
   @Override
@@ -467,7 +480,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
             .evaluate(propertiesByName.values());
 
     final ObjectDescriptor objectDescriptor = new ObjectDescriptor()
-        .definitionProperties(savePropertyDescriptors(propertiesByName.values()))
+        // TODO save on branch
+        .definitionProperties(savePropertyDescriptors(propertiesByName.values(), null))
         .name(definitionName)
         .layoutDescriptor(createDefaultLayout(definitionName, evaluationResult.layoutElements));
 

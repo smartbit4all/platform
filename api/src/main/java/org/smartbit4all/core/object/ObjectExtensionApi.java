@@ -158,6 +158,43 @@ public interface ObjectExtensionApi {
   URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors);
 
   /**
+   * Further extends an existing {@link ObjectDescriptor} and its corresponding
+   * {@link ObjectDefinition}.
+   *
+   * <p>
+   * No new object descriptor or definition is created by this method, rather one existing one shall
+   * be updated, therefore the specified definition name must be already known to this API. This can
+   * be achieved by invoking {@link #create(String, List)} or
+   * {@link #create(String, ObjectDefinition, List)} with the desired definition name.
+   *
+   * <p>
+   * If a supplied property descriptor's property name clashes with already present among the
+   * {@link ObjectDescriptor#getDefinitionProperties()} of the modified descriptor, these properties
+   * are overridden and promoted to {@link ObjectDescriptor#getExtensionProperties()}.
+   *
+   * <p>
+   * The corresponding layout descriptor is <b>not updated</b>, for it might already have been
+   * subject to prior modifications since its generation. Clients are invited to use the
+   * {@link ObjectLayoutApi#update(String)} builder (using the same definition name) to customise
+   * the relevant layouts with the newly added properties.
+   *
+   * @param definitionName a unique {@code String} name of an existing {@link ObjectDescriptor}, not
+   *        null
+   * @param extensionDescriptors a {@code List} of {@link ObjectPropertyDescriptor}s enumerating the
+   *        extra properties to add, not null, not empty
+   * @param branchUri
+   * @return the {@code URI} of the updated {@link ObjectDescriptor}, not null
+   *
+   * @see ObjectLayoutApi
+   * @see ObjectLayoutApi#update(String)
+   * @see ObjectDefinitionApi
+   * @see #create(String, List)
+   * @see #create(String, ObjectDefinition, List)
+   */
+  URI extend(String definitionName, List<ObjectPropertyDescriptor> extensionDescriptors,
+      URI branchUri);
+
+  /**
    * Checks whether an extension descriptor exists with a given qualified name or not.
    *
    * @param definitionName the {@code String} artificial fully qualified name an
