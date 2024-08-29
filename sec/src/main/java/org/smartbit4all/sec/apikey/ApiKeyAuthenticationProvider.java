@@ -43,7 +43,7 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     ApiKeyCheckResult checkResult = apiKeyApi.checkApiKey(apiKey, scopeUris);
     if (ApiKeyCheckResult.OK == checkResult) {
-      User user = orgApi.getUser(apiKey.getUri());
+      User user = orgApi.getUser(apiKey.getUser());
       return new UsernamePasswordAuthenticationToken(user, "", roleProvider.apply(user));
     }
 
