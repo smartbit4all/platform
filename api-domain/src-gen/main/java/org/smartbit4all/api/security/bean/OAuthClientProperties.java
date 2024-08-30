@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -52,7 +55,9 @@ import javax.validation.Valid;
   OAuthClientProperties.LOGOUT_END_SESSION_ENDPOINT,
   OAuthClientProperties.LOGOUT_REDIRECT_PATH,
   OAuthClientProperties.LABEL,
-  OAuthClientProperties.LOGO
+  OAuthClientProperties.LOGO,
+  OAuthClientProperties.USER_PARAMETER_MAPPING,
+  OAuthClientProperties.ROLE_MAPPING
 })
 @JsonTypeName("OAuthClientProperties")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -119,6 +124,12 @@ public class OAuthClientProperties {
 
   public static final String LOGO = "logo";
   private String logo;
+
+  public static final String USER_PARAMETER_MAPPING = "userParameterMapping";
+  private Map<String, String> userParameterMapping = null;
+
+  public static final String ROLE_MAPPING = "roleMapping";
+  private Map<String, String> roleMapping = null;
 
   public OAuthClientProperties() { 
   }
@@ -696,6 +707,76 @@ public class OAuthClientProperties {
   }
 
 
+  public OAuthClientProperties userParameterMapping(Map<String, String> userParameterMapping) {
+    
+    this.userParameterMapping = userParameterMapping;
+    return this;
+  }
+
+  public OAuthClientProperties putUserParameterMappingItem(String key, String userParameterMappingItem) {
+    if (this.userParameterMapping == null) {
+      this.userParameterMapping = new HashMap<>();
+    }
+    this.userParameterMapping.put(key, userParameterMappingItem);
+    return this;
+  }
+
+   /**
+   * \&quot;This mapping contains the user attribute names stored in the application and the  corresponding attributes stored in the oauth realm. The key is the application, the  value is the realm attribute name.\&quot; 
+   * @return userParameterMapping
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "\"This mapping contains the user attribute names stored in the application and the  corresponding attributes stored in the oauth realm. The key is the application, the  value is the realm attribute name.\" ")
+  @JsonProperty(USER_PARAMETER_MAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getUserParameterMapping() {
+    return userParameterMapping;
+  }
+
+
+  @JsonProperty(USER_PARAMETER_MAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserParameterMapping(Map<String, String> userParameterMapping) {
+    this.userParameterMapping = userParameterMapping;
+  }
+
+
+  public OAuthClientProperties roleMapping(Map<String, String> roleMapping) {
+    
+    this.roleMapping = roleMapping;
+    return this;
+  }
+
+  public OAuthClientProperties putRoleMappingItem(String key, String roleMappingItem) {
+    if (this.roleMapping == null) {
+      this.roleMapping = new HashMap<>();
+    }
+    this.roleMapping.put(key, roleMappingItem);
+    return this;
+  }
+
+   /**
+   * \&quot;This mapping contains the users&#39; role names stored in the oauth realm and the  corresponding group names stored in the application . The key is the realm role name,  the value is the application group name.\&quot; 
+   * @return roleMapping
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "\"This mapping contains the users' role names stored in the oauth realm and the  corresponding group names stored in the application . The key is the realm role name,  the value is the application group name.\" ")
+  @JsonProperty(ROLE_MAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getRoleMapping() {
+    return roleMapping;
+  }
+
+
+  @JsonProperty(ROLE_MAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRoleMapping(Map<String, String> roleMapping) {
+    this.roleMapping = roleMapping;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -725,12 +806,14 @@ public class OAuthClientProperties {
         Objects.equals(this.logoutEndSessionEndpoint, oauthClientProperties.logoutEndSessionEndpoint) &&
         Objects.equals(this.logoutRedirectPath, oauthClientProperties.logoutRedirectPath) &&
         Objects.equals(this.label, oauthClientProperties.label) &&
-        Objects.equals(this.logo, oauthClientProperties.logo);
+        Objects.equals(this.logo, oauthClientProperties.logo) &&
+        Objects.equals(this.userParameterMapping, oauthClientProperties.userParameterMapping) &&
+        Objects.equals(this.roleMapping, oauthClientProperties.roleMapping);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo);
+    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo, userParameterMapping, roleMapping);
   }
 
   @Override
@@ -758,6 +841,8 @@ public class OAuthClientProperties {
     sb.append("    logoutRedirectPath: ").append(toIndentedString(logoutRedirectPath)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
+    sb.append("    userParameterMapping: ").append(toIndentedString(userParameterMapping)).append("\n");
+    sb.append("    roleMapping: ").append(toIndentedString(roleMapping)).append("\n");
     sb.append("}");
     return sb.toString();
   }

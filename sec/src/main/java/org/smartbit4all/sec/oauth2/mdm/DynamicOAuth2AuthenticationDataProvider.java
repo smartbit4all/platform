@@ -20,6 +20,9 @@ public class DynamicOAuth2AuthenticationDataProvider implements AuthenticationDa
   @Autowired
   MasterDataManagementApi mdmApi;
 
+  @Autowired
+  private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
+
   @Override
   public boolean supports(Session session) {
     List<AccountInfo> authentications = session.getAuthentications();
@@ -30,14 +33,14 @@ public class DynamicOAuth2AuthenticationDataProvider implements AuthenticationDa
     // supports when no dynamic authentication yet.
     return authentications.stream()
         .noneMatch(a -> a.getKind() != null
-            && a.getKind().startsWith(DynamicOAuth2Helper.DYNAMIC_OAUTH2_KIND_BASE));
+            && a.getKind().startsWith(DynamicOAuth2PropertiesApi.DYNAMIC_OAUTH2_KIND_BASE));
   }
 
   @Override
   public List<AuthenticationProviderData> getProviderDataList(Session session) {
-    return DynamicOAuth2Helper.getClientPropertyMdmEntryApi(mdmApi).getList().nodesFromCache()
+    return dynamicOAuth2PropertiesApi.getClientPropertyMdmEntryApi().getList().nodesFromCache()
         .map(propertyNode -> new AuthenticationProviderData()
-            .kind(DynamicOAuth2Helper
+            .kind(DynamicOAuth2PropertiesApi
                 .getAuthInfoKind(propertyNode.getValueAsString(OAuthClientProperties.CLIENT_ID)))
             .putParametersItem(AUTHORIZATION_REQUEST_PATH,
                 getAuthRequestPath(propertyNode))

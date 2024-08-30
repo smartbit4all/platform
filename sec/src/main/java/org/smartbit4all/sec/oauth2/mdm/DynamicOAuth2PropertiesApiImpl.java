@@ -10,14 +10,19 @@ import org.smartbit4all.api.security.bean.OAuthClientProperties;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.core.object.ObjectApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class DynamicOAuth2Helper {
+public class DynamicOAuth2PropertiesApiImpl implements DynamicOAuth2PropertiesApi {
 
-  static final String DYNAMIC_OAUTH2_KIND_BASE = "oauth2-";
+  @Autowired
+  private MasterDataManagementApi mdmApi;
+  @Autowired
+  private ObjectApi objectApi;
+  @Autowired
+  private SessionApi sessionApi;
 
-  private DynamicOAuth2Helper() {}
-
-  static List<String> getOAuth2ClientRegIdsOfSession(SessionApi sessionApi) {
+  @Override
+  public List<String> getOAuth2ClientRegIdsOfSession() {
     try {
       return sessionApi.getAuthentications().stream()
           .filter(accInfo -> accInfo.getKind()
@@ -30,19 +35,16 @@ public class DynamicOAuth2Helper {
     }
   }
 
-  static String getAuthInfoKind(String clientRegistrationId) {
-    return DYNAMIC_OAUTH2_KIND_BASE + clientRegistrationId;
-  }
-
-  static final MDMEntryApi getClientPropertyMdmEntryApi(MasterDataManagementApi mdmApi) {
+  @Override
+  public final MDMEntryApi getClientPropertyMdmEntryApi() {
     return mdmApi.getApi(
         MdmBasedDynamicOAuthConfig.MDM_DEF,
         MdmBasedDynamicOAuthConfig.MDM_ENTRY);
   }
 
-  static OAuthClientProperties getClientPropsForRegId(String regId, MasterDataManagementApi mdmApi,
-      ObjectApi objectApi) {
-    URI propUri = DynamicOAuth2Helper.getClientPropertyMdmEntryApi(mdmApi)
+  @Override
+  public OAuthClientProperties getClientPropsForRegId(String regId) {
+    URI propUri = getClientPropertyMdmEntryApi()
         .getUniqueMap(OAuthClientProperties.REGISTRATION_ID)
         .uris().get(regId);
     if (propUri == null) {

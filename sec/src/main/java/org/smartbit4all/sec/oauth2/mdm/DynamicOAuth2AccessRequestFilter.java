@@ -38,12 +38,15 @@ public class DynamicOAuth2AccessRequestFilter extends OncePerRequestFilter {
   @Autowired
   private SessionManagementApi sessionManagementApi;
 
+  @Autowired
+  private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
+
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     List<String> dynamicOAuthRegistrationIdsOfSession =
-        DynamicOAuth2Helper.getOAuth2ClientRegIdsOfSession(sessionApi);
+        dynamicOAuth2PropertiesApi.getOAuth2ClientRegIdsOfSession();
     if (!ObjectUtils.isEmpty(dynamicOAuthRegistrationIdsOfSession)) {
       Authentication principal = SecurityContextHolder.getContext().getAuthentication();
       dynamicOAuthRegistrationIdsOfSession.forEach(clientRegistrationId -> {
@@ -60,7 +63,7 @@ public class DynamicOAuth2AccessRequestFilter extends OncePerRequestFilter {
               "OAuth authorization failed on service access with client registration id [{}].",
               clientRegistrationId);
           sessionManagementApi.removeSessionAuthentication(sessionApi.getSessionUri(),
-              DynamicOAuth2Helper.getAuthInfoKind(clientRegistrationId));
+              DynamicOAuth2PropertiesApi.getAuthInfoKind(clientRegistrationId));
         }
       });
     }

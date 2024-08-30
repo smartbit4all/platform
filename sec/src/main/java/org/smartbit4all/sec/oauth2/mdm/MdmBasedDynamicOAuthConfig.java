@@ -12,6 +12,7 @@ import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.security.bean.OAuthClientProperties;
 import org.smartbit4all.sec.oauth2.OAuth2SessionAuthSuccessHandler;
+import org.smartbit4all.sec.oauth2.OAuth2SessionAuthSuccessHandler.OrgUserHandler;
 import org.smartbit4all.sec.oauth2.SessionOAuth2AuthorizedClientService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,18 +42,18 @@ public class MdmBasedDynamicOAuthConfig {
     return new DynamicOAuth2AuthenticationDataProvider();
   }
 
-  // @Bean
-  // public OrgUserHandler oauth2OrgUserHandler() {
-  // return new DefaultOAuth2U
-  // TODO a user handler that is set up by mdm?
-  // }
+
+  @Bean
+  public OrgUserHandler dynamicOAuthOrgUserHandler() {
+    return new DynamicOAuthOrgUserHandler();
+  }
 
   @Bean
   public OAuth2SessionAuthSuccessHandler oauth2SessionAuthSuccessHandler() {
     OAuth2SessionAuthSuccessHandler oAuth2SessionAuthSuccessHandler =
         new OAuth2SessionAuthSuccessHandler(successfullRedirectPath);
     oAuth2SessionAuthSuccessHandler.setCreateMissingUser(true);
-    // oAuth2SessionAuthSuccessHandler.setOrgUserHandler(orgUserHandler);
+    oAuth2SessionAuthSuccessHandler.setOrgUserHandler(dynamicOAuthOrgUserHandler());
 
     return oAuth2SessionAuthSuccessHandler;
   }

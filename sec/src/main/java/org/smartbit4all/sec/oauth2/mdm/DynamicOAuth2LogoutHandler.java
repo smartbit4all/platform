@@ -28,6 +28,9 @@ public class DynamicOAuth2LogoutHandler implements LogoutHandler {
   @Autowired
   private DynamicOidcClientLogoutHandler oidcClientLogoutHandler;
 
+  @Autowired
+  private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
+
   @Override
   public void logout(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) {
@@ -35,11 +38,11 @@ public class DynamicOAuth2LogoutHandler implements LogoutHandler {
     oidcClientLogoutHandler.handleLogout(request, response, authentication);
 
     List<String> dynamicOAuthRegistrationIdsOfSession =
-        DynamicOAuth2Helper.getOAuth2ClientRegIdsOfSession(sessionApi);
+        dynamicOAuth2PropertiesApi.getOAuth2ClientRegIdsOfSession();
     dynamicOAuthRegistrationIdsOfSession.forEach(clientRegistrationId -> {
 
       sessionManagementApi.removeSessionAuthentication(sessionApi.getSessionUri(),
-          DynamicOAuth2Helper.getAuthInfoKind(clientRegistrationId));
+          DynamicOAuth2PropertiesApi.getAuthInfoKind(clientRegistrationId));
       authorizedClientRepository.removeAuthorizedClient(clientRegistrationId, authentication,
           request,
           response);

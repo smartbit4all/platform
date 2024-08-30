@@ -162,4 +162,19 @@ components:
         logo:
           type: string
           description: "The logo that can be used on ui. TBD"
-      
+        userParameterMapping:
+          type: object
+          description: |
+            "This mapping contains the user attribute names stored in the application and the 
+            corresponding attributes stored in the oauth realm. The key is the application, the 
+            value is the realm attribute name."
+          additionalProperties:
+            type: string
+        roleMapping:
+          type: object
+          description: |
+            "This mapping contains the users' role names stored in the oauth realm and the 
+            corresponding group names stored in the application . The key is the realm role name, 
+            the value is the application group name."
+          additionalProperties:
+            type: string

@@ -1,8 +1,6 @@
 package org.smartbit4all.sec.oauth2.mdm;
 
-import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.security.bean.OAuthClientProperties;
-import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionException;
@@ -17,14 +15,12 @@ import org.springframework.util.ObjectUtils;
 public class MdmBasedClientRegistrationRepository implements ClientRegistrationRepository {
 
   @Autowired
-  private MasterDataManagementApi mdmApi;
-  @Autowired
-  private ObjectApi objectApi;
+  private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
 
   @Override
   public ClientRegistration findByRegistrationId(String registrationId) {
     OAuthClientProperties properties =
-        DynamicOAuth2Helper.getClientPropsForRegId(registrationId, mdmApi, objectApi);
+        dynamicOAuth2PropertiesApi.getClientPropsForRegId(registrationId);
     return clientRegistrationFromProperty(properties);
   }
 

@@ -23,6 +23,8 @@ import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
+import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
@@ -167,10 +169,23 @@ public class PlatformBffApiConfig {
   }
 
   @Bean
-  @ConditionalOnBean(ServiceConnectionEditorPageApi.class)
+  @ConditionalOnBean(ApiKeyEditorPageApi.class)
   public ProviderApiInvocationHandler<ApiKeyEditorPageApi> apiKeyEditorPageApiProvider(
       ApiKeyEditorPageApi api) {
     return Invocations.asProvider(ApiKeyEditorPageApi.class, api);
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  DynamicOAuthPropertiesEditorPageApi dynamicOAuthPropertiesEditorPageApi() {
+    return new DynamicOAuthPropertiesEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(DynamicOAuthPropertiesEditorPageApi.class)
+  public ProviderApiInvocationHandler<DynamicOAuthPropertiesEditorPageApi> dynamicOAuthPropertiesEditorPageApi(
+      DynamicOAuthPropertiesEditorPageApi api) {
+    return Invocations.asProvider(DynamicOAuthPropertiesEditorPageApi.class, api);
   }
 
 }

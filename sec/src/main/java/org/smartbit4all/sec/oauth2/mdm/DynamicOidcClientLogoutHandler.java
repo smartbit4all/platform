@@ -11,11 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.security.bean.OAuthClientProperties;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.oauth2.OAuth2SessionAuthSuccessHandler;
 import org.smartbit4all.sec.oauth2.OidcClientLogoutHandler;
@@ -44,9 +42,7 @@ public class DynamicOidcClientLogoutHandler extends AbstractAuthenticationTarget
   @Autowired
   private ClientRegistrationRepository clientRegistrationRepository;
   @Autowired
-  private MasterDataManagementApi mdmApi;
-  @Autowired
-  private ObjectApi objectApi;
+  private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
 
   public void handleLogout(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) {
@@ -62,14 +58,14 @@ public class DynamicOidcClientLogoutHandler extends AbstractAuthenticationTarget
       HttpServletResponse response, Authentication authentication) {
 
     List<String> dynamicOAuthRegistrationIdsOfSession =
-        DynamicOAuth2Helper.getOAuth2ClientRegIdsOfSession(sessionApi);
+        dynamicOAuth2PropertiesApi.getOAuth2ClientRegIdsOfSession();
     Iterator<String> regIdIter = dynamicOAuthRegistrationIdsOfSession.iterator();
     String targetUrl = null;
     while (regIdIter.hasNext() && targetUrl == null) {
       String clientRegistrationId = regIdIter.next();
 
       OAuthClientProperties clientProperties =
-          DynamicOAuth2Helper.getClientPropsForRegId(clientRegistrationId, mdmApi, objectApi);
+          dynamicOAuth2PropertiesApi.getClientPropsForRegId(clientRegistrationId);
 
       URI endSessionEndpoint = endSessionEndpoint(clientRegistrationId, clientProperties);
       if (endSessionEndpoint == null) {
@@ -78,7 +74,7 @@ public class DynamicOidcClientLogoutHandler extends AbstractAuthenticationTarget
 
       if (authentication instanceof SessionAuthToken) {
         AccountInfo accountInfo = sessionApi
-            .getAuthentication(DynamicOAuth2Helper.getAuthInfoKind(clientRegistrationId));
+            .getAuthentication(DynamicOAuth2PropertiesApi.getAuthInfoKind(clientRegistrationId));
         String idToken =
             accountInfo == null ? null
                 : accountInfo.getParameters()

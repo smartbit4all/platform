@@ -14,5 +14,6 @@ public class PlatformViewNames {
   public static final String PDF_VIEWER_DIALOG = "PdfViewerDialog";
   public static final String SERVICE_CONNECTION_EDITOR = "MDMServiceConnectionEditor";
   public static final String API_KEY_EDITOR = "MDMApiKeyEditor";
+  public static final String DYNAMIC_OAUTH_PROPERTIES_EDITOR = "MDMDynamicOAuthPropertiesEditor";
 
 }
