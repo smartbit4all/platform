@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "One item in the validation result. ")
 @JsonPropertyOrder({
   ObjectValidationItem.SEVERITY,
-  ObjectValidationItem.MESSAGE
+  ObjectValidationItem.MESSAGE,
+  ObjectValidationItem.PROPERTY_PATH
 })
 @JsonTypeName("ObjectValidationItem")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +48,9 @@ public class ObjectValidationItem {
 
   public static final String MESSAGE = "message";
   private LangString message;
+
+  public static final String PROPERTY_PATH = "propertyPath";
+  private List<String> propertyPath = new ArrayList<>();
 
   public ObjectValidationItem() { 
   }
@@ -105,6 +111,39 @@ public class ObjectValidationItem {
   }
 
 
+  public ObjectValidationItem propertyPath(List<String> propertyPath) {
+    
+    this.propertyPath = propertyPath;
+    return this;
+  }
+
+  public ObjectValidationItem addPropertyPathItem(String propertyPathItem) {
+    this.propertyPath.add(propertyPathItem);
+    return this;
+  }
+
+   /**
+   * Get propertyPath
+   * @return propertyPath
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getPropertyPath() {
+    return propertyPath;
+  }
+
+
+  @JsonProperty(PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPropertyPath(List<String> propertyPath) {
+    this.propertyPath = propertyPath;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -115,12 +154,13 @@ public class ObjectValidationItem {
     }
     ObjectValidationItem objectValidationItem = (ObjectValidationItem) o;
     return Objects.equals(this.severity, objectValidationItem.severity) &&
-        Objects.equals(this.message, objectValidationItem.message);
+        Objects.equals(this.message, objectValidationItem.message) &&
+        Objects.equals(this.propertyPath, objectValidationItem.propertyPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(severity, message);
+    return Objects.hash(severity, message, propertyPath);
   }
 
   @Override
@@ -129,6 +169,7 @@ public class ObjectValidationItem {
     sb.append("class ObjectValidationItem {\n");
     sb.append("    severity: ").append(toIndentedString(severity)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
     sb.append("}");
     return sb.toString();
   }

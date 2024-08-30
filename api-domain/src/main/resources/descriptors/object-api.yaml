@@ -819,12 +819,17 @@ components:
     ObjectValidationItem:
       description: |
         One item in the validation result.
+      required: [propertyPath]
       type: object
       properties:
         severity:
           $ref: '#/components/schemas/ObjectValidationSeverity'
         message:
           $ref: '#/components/schemas/LangString'
+        propertyPath:
+          type: array
+          items:
+            type: string
     ObjectValidationSeverity:
       enum: [BLOCKER, ERROR, WARNING, INFO, OK]
     ObjectValidationOperation:
