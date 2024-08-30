@@ -1,35 +1,25 @@
 package org.smartbit4all.bff.api.serviceconnection;
 
 import static java.util.stream.Collectors.toList;
-import static org.smartbit4all.core.object.ObjectLayoutApi.DEFAULT_LAYOUT;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.setting.LocaleSettingApi;
-import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
-import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.bean.KeyValuePair;
 import org.smartbit4all.api.view.UiActions;
-import org.smartbit4all.api.view.ViewEventApi;
-import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.api.view.bean.ViewConstraint;
-import org.smartbit4all.api.view.bean.ViewEventHandler;
-import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
-import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
-import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
-import org.smartbit4all.core.object.ObjectLayoutBuilder;
+import org.smartbit4all.bff.api.utils.BffUtilsApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,6 +37,8 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
   TableDataApi tableDataApi;
   @Autowired
   LocaleSettingApi localeSettingApi;
+  @Autowired
+  BffUtilsApi bffUtilsApi;
 
   @Override
   public Object initModel(View view) {
@@ -91,7 +83,8 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
   @Override
   public void addParameter(UUID viewUuid, UiActionRequest request) {
     setModel(viewUuid, extractClientModel(request));
-    showParamEditor(viewUuid, new KeyValuePair(), true);
+    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID, new KeyValuePair(), true,
+        saveInvocationRequest(viewUuid));
   }
 
   @Override
@@ -102,37 +95,14 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
     String key = GridModels.getValueFromGridRow(gridModel, nodeId, KeyValuePair.KEY).toString();
     Object value = serviceConnection.getParameters().get(key);
-    showParamEditor(viewUuid, new KeyValuePair().key(key).value(value), false);
+    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID, new KeyValuePair().key(key).value(value),
+        false, saveInvocationRequest(viewUuid));
     setModel(viewUuid, serviceConnection);
   }
 
-  void showParamEditor(UUID viewUuid, KeyValuePair pageModel, Boolean keyEditable) {
-    SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
-        ObjectLayoutBuilder.textfield(KeyValuePair.KEY,
-            localeSettingApi.get(GRID_ID, KeyValuePair.KEY)),
-        ObjectLayoutBuilder.textfield(KeyValuePair.VALUE,
-            localeSettingApi.get(GRID_ID, KeyValuePair.VALUE)));
-    List<UiAction> dialogActions = Arrays.asList(new UiAction().code("SAVE").submit(true),
-        new UiAction().code(GenericPageApi.ACTION_CLOSE_VIEW));
-    viewApi.showView(new View()
-        .viewName(PlatformViewNames.GENERIC_PAGE)
-        .type(ViewType.DIALOG)
-        .putParametersItem(GenericPageApi.PARAM_MODEL, pageModel)
-        .putComponentLayoutsItem(DEFAULT_LAYOUT,
-            layout)
-        .constraint(new ViewConstraint()
-            .componentConstraints(
-                Arrays.asList(
-                    new ComponentConstraint().dataName(KeyValuePair.KEY).mandatory(true)
-                        .enabled(keyEditable),
-                    new ComponentConstraint().dataName(KeyValuePair.VALUE).mandatory(true))))
-        .actions(dialogActions)
-        .eventHandlers(Arrays.asList(new ViewEventHandler()
-            .viewEventType(ViewEventTypeEnum.INSTEAD)
-            .addPathItem(ViewEventApi.ACTION)
-            .addPathItem("SAVE")
-            .invocationRequest(invocationApi.builder(ServiceConnectionEditorPageApi.class)
-                .build(api -> api.saveParameterCallback(null, null, viewUuid))))));
+  private InvocationRequest saveInvocationRequest(UUID viewUuid) {
+    return invocationApi.builder(ServiceConnectionEditorPageApi.class)
+        .build(api -> api.saveParameterCallback(null, null, viewUuid));
   }
 
   @Override
@@ -155,7 +125,6 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     setModel(viewUuid, model);
     setGridData(viewUuid, model);
     viewApi.closeView(dialogUuid);
-
   }
 
 }

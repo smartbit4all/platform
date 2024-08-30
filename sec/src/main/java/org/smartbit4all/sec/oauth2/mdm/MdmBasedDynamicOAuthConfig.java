@@ -1,7 +1,7 @@
 package org.smartbit4all.sec.oauth2.mdm;
 
 import org.smartbit4all.api.config.PlatformSecurityOption;
-import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -99,7 +99,7 @@ public class MdmBasedDynamicOAuthConfig {
         .addConstraintsItem(new MDMEntryConstraint()
             .kind(KindEnum.UNIQUECASEINSENSITIVE)
             .addPathItem(OAuthClientProperties.REGISTRATION_ID))
-        .editorViewName(MDMConstants.MDM_EDIT)
+        .editorViewName(PlatformViewNames.DYNAMIC_OAUTH_PROPERTIES_EDITOR)
         .displayNameList(new LangString().defaultValue("OAuth Client Registrations")
             .putValueByLocaleItem("hu", "OAuth Kliens regisztrációk")
             .putValueByLocaleItem("en", "OAuth Client Registrations"))

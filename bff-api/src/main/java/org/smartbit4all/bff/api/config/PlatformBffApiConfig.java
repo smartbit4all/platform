@@ -29,6 +29,8 @@ import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApiImpl;
+import org.smartbit4all.bff.api.utils.BffUtilsApi;
+import org.smartbit4all.bff.api.utils.BffUtilsApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApiImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -37,6 +39,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PlatformBffApiConfig {
+
+  @Bean
+  BffUtilsApi bffUtilsAPi() {
+    return new BffUtilsApiImpl();
+  }
 
   @Bean
   public SearchIndex<User> userSearch() {
@@ -183,7 +190,7 @@ public class PlatformBffApiConfig {
 
   @Bean
   @ConditionalOnBean(DynamicOAuthPropertiesEditorPageApi.class)
-  public ProviderApiInvocationHandler<DynamicOAuthPropertiesEditorPageApi> dynamicOAuthPropertiesEditorPageApi(
+  public ProviderApiInvocationHandler<DynamicOAuthPropertiesEditorPageApi> dynamicOAuthPropertiesEditorPageApiProvider(
       DynamicOAuthPropertiesEditorPageApi api) {
     return Invocations.asProvider(DynamicOAuthPropertiesEditorPageApi.class, api);
   }
