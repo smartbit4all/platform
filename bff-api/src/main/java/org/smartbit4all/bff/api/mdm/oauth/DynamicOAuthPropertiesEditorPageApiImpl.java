@@ -45,7 +45,8 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
   private static final String OAUTHPROPERTY_CLASS_NAME =
       OAuthClientProperties.class.getSimpleName();
 
-  private static final List<String> ORDERED_COLUMNS = List.of(KeyValuePair.KEY, KeyValuePair.VALUE);
+  private static final List<String> ORDERED_COLUMNS =
+      Arrays.asList(KeyValuePair.KEY, KeyValuePair.VALUE);
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
@@ -159,10 +160,10 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
   public GridPage onGridPageRender(GridPage gridPage, UUID viewUuid, String gridId) {
     List<UiAction> actions;
     if (GRID_USERPROP_MAPPING.equals(gridId)) {
-      actions = List.of(uiActionModelTrue(ACTION_EDIT_USERPROP_MAPPING),
+      actions = Arrays.asList(uiActionModelTrue(ACTION_EDIT_USERPROP_MAPPING),
           uiActionModelTrue(ACTION_REMOVE_USERPROP_MAPPING));
     } else if (GRID_ROLE_MAPPING.equals(gridId)) {
-      actions = List.of(uiActionModelTrue(ACTION_EDIT_ROLE_MAPPING),
+      actions = Arrays.asList(uiActionModelTrue(ACTION_EDIT_ROLE_MAPPING),
           uiActionModelTrue(ACTION_REMOVE_ROLE_MAPPING));
     } else {
       actions = Collections.emptyList();
