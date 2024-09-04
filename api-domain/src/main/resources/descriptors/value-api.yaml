@@ -221,3 +221,64 @@ components:
           type: string
         value:
           type: object
+    ValueTransformationConfig:
+      description: |
+        This object is a configuration to define the transformation from an input value set to an output
+        value set. The transformation could be value mapping when the list of the values from the input
+        are mapped one by one to the output values. This object is managed as a MDM entry in the platform.
+        The ValueTransformationApi is using this MDM entry by default. It has a data inline object that contains
+        configuration itself.
+      type: object
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          $ref: '#/components/schemas/ValueTransformationConfigData'
+    ValueTransformationConfigData:
+      description: |
+        This object is a configuration to define the transformation from an input value set to an output
+        value set. The transformation could be value mapping when the list of the values from the input
+        are mapped one by one to the output values. This object is managed as a MDM entry in the platform.
+        The ValueTransformationApi is using this MDM entry by default. If manage it by MDM then we enapsulate this
+        object into a ValueTransformationConfig.
+      type: object
+      required: [name, mappings]
+      properties:
+        name:
+          description: The unique name of the transformation configuration. It matters only if it is managed by MDM.
+          type: string
+        kind:
+          $ref: '#/components/schemas/ValueTransformationKind'
+        mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueTransformationMappingItem'
+        mdmDefinition:
+          description: If the kind is a resolution by MDM entry then this is the name of MDM definition.
+          type: string
+        mdmEntry:
+          description: If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.
+          type: string
+        mdmPropertyName:
+          description: If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.
+          type: string
+        transformation:
+          description: |
+            If the transformation is too complex then a transformation InvocationRequest can be defined let it be script or
+            api call.
+          type: InvocationRequest
+    ValueTransformationMappingItem:
+      description: |
+        The mapping item contains a source value and a target value object pair. Even the source and the target could be
+        object also. In this case we save the JSON object.
+      type: object
+      properties:
+        sourceValue:
+          type: object
+        targetValue:
+          type: object
+    ValueTransformationKind:
+      description: This enumeration defines the kinds of the transformation like MAPPING, RESOLVEBYMDM, CUSTOM etc.
+      enum: [MAPPING, RESOLVEBYMDM, CUSTOM]
