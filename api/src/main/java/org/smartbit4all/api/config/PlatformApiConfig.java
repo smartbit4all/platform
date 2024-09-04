@@ -93,6 +93,8 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.toolbar.bean.ActionDefinition;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
+import org.smartbit4all.api.value.ValueTransformationApi;
+import org.smartbit4all.api.value.ValueTransformationApiImpl;
 import org.smartbit4all.api.view.ActionDefinitionApi;
 import org.smartbit4all.api.view.ActionDefinitionApiImpl;
 import org.smartbit4all.api.view.ActionManagementApi;
@@ -866,6 +868,11 @@ public class PlatformApiConfig {
   public ProviderApiInvocationHandler<LookupApi> lookupApiProvider(
       LookupApi api) {
     return Invocations.asProvider(LookupApi.class, api);
+  }
+
+  @Bean
+  public ValueTransformationApi valueTransformationApi() {
+    return new ValueTransformationApiImpl();
   }
 
 }

@@ -279,6 +279,18 @@ components:
           type: object
         targetValue:
           type: object
+    ValueTransformationResult:
+      description: |
+        This item is returned by the tranform methods. It contains the transformed value or the error code if any.
+      type: object
+      properties:
+        sourceValue:
+          type: object
+        transformedValue:
+          type: object
+        error:
+          description: The error about transforming the given value.
+          type: string
     ValueTransformationKind:
       description: This enumeration defines the kinds of the transformation like MAPPING, RESOLVEBYMDM, CUSTOM etc.
       enum: [MAPPING, RESOLVEBYMDM, CUSTOM]
