@@ -176,6 +176,14 @@ public final class ObjectValidations {
         .severity(getTopSeverity(items));
   }
 
+  public static ObjectValidationResult of(ObjectValidationItem... items) {
+    if (items == null || items.length == 0) {
+      return OK();
+    }
+
+    return of(Arrays.asList(items));
+  }
+
   public static final ObjectValidationResult OK() {
     return new ObjectValidationResult().severity(ObjectValidationSeverity.OK);
   }
@@ -494,6 +502,30 @@ public final class ObjectValidations {
     if (changed) {
       validation.setSeverity(severity);
     }
+  }
+
+  public static ObjectValidationItem blocker(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.BLOCKER)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem error(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.ERROR)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem warning(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.WARNING)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem info(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.INFO)
+        .message(new LangString().defaultValue(localeKey));
   }
 
 
