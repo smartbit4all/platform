@@ -2,8 +2,10 @@ package org.smartbit4all.api.object;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +36,10 @@ import com.google.common.base.Strings;
 public final class ObjectValidations {
 
   public static final String LOCALE_MANDATORY = "mandatory";
+
+  private static final Set<ObjectValidationSeverity> ERROR_SEVERITIES = EnumSet.of(
+      ObjectValidationSeverity.BLOCKER,
+      ObjectValidationSeverity.ERROR);
 
   private ObjectValidations() {}
 
@@ -172,8 +178,19 @@ public final class ObjectValidations {
   }
 
   public static final ObjectValidationResult of(Collection<ObjectValidationItem> items) {
-    return new ObjectValidationResult().items(items.stream().sorted(bySeverity()).collect(toList()))
+    return new ObjectValidationResult()
+        .items(items.stream()
+            .sorted(bySeverity())
+            .collect(toCollection(ArrayList::new)))
         .severity(getTopSeverity(items));
+  }
+
+  public static ObjectValidationResult of(ObjectValidationItem... items) {
+    if (items == null || items.length == 0) {
+      return OK();
+    }
+
+    return of(new ArrayList<>(Arrays.asList(items)));
   }
 
   public static final ObjectValidationResult OK() {
@@ -494,6 +511,34 @@ public final class ObjectValidations {
     if (changed) {
       validation.setSeverity(severity);
     }
+  }
+
+  public static ObjectValidationItem blocker(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.BLOCKER)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem error(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.ERROR)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem warning(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.WARNING)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static ObjectValidationItem info(String localeKey) {
+    return new ObjectValidationItem()
+        .severity(ObjectValidationSeverity.INFO)
+        .message(new LangString().defaultValue(localeKey));
+  }
+
+  public static boolean isError(ObjectValidationResult validationResult) {
+    return validationResult != null && ERROR_SEVERITIES.contains(validationResult.getSeverity());
   }
 
 
