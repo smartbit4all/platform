@@ -1,5 +1,7 @@
 package org.smartbit4all.api.value;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +14,6 @@ import org.smartbit4all.api.value.bean.ValueTransformationKind;
 import org.smartbit4all.api.value.bean.ValueTransformationMappingItem;
 import org.smartbit4all.api.value.bean.ValueTransformationResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ValueTransformationApiImpl implements ValueTransformationApi {
 
@@ -25,7 +25,7 @@ public class ValueTransformationApiImpl implements ValueTransformationApi {
     if (inputValues == null || inputValues.isEmpty()) {
       return Collections.emptyList();
     }
-    MDMEntryApi api = mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_GLOBAL,
+    MDMEntryApi api = mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
         MDM_ENTRY_VALUETRANSFORMATIONCONFIG);
     ValueTransformationConfig config = api.lookup().findByUnique(
         new ObjectPropertyValue().addPathItem(ValueTransformationConfig.DATA)

@@ -568,9 +568,13 @@ public class PlatformApiConfig {
     {
       MDMEntryDescriptor entry = new MDMEntryDescriptor()
           .schema(MasterDataManagementApi.SCHEMA)
-          .publishedListName(VALUE_TRANSFORMATIONS)
-          .name(VALUE_TRANSFORMATIONS)
-          // .editorViewName(MDMConstants.MDM_EDIT)
+          .publishedListName(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
+          .name(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .path(
+                  Arrays.asList(ValueTransformationConfig.DATA,
+                      ValueTransformationConfigData.NAME)))
           .editorViewName(PlatformViewNames.VALUE_TRANSFORMATION_EDITOR)
           .displayNameList(new LangString().defaultValue("Value transformations")
               .putValueByLocaleItem("hu", "Érték átalakítások")
