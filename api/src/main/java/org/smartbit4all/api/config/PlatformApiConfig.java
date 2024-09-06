@@ -1,6 +1,6 @@
 package org.smartbit4all.api.config;
 
-import java.util.List;
+import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
@@ -584,12 +584,14 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("Name")
                   .path(
-                      List.of(ValueTransformationConfig.DATA, ValueTransformationConfigData.NAME)))
+                      Arrays.asList(ValueTransformationConfig.DATA,
+                          ValueTransformationConfigData.NAME)))
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Kind")
                   .path(
-                      List.of(ValueTransformationConfig.DATA, ValueTransformationConfigData.KIND)));
+                      Arrays.asList(ValueTransformationConfig.DATA,
+                          ValueTransformationConfigData.KIND)));
       result.addDescriptor(entry);
     }
 
