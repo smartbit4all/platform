@@ -15,5 +15,6 @@ public class PlatformViewNames {
   public static final String SERVICE_CONNECTION_EDITOR = "MDMServiceConnectionEditor";
   public static final String API_KEY_EDITOR = "MDMApiKeyEditor";
   public static final String DYNAMIC_OAUTH_PROPERTIES_EDITOR = "MDMDynamicOAuthPropertiesEditor";
+  public static final String VALUE_TRANSFORMATION_EDITOR = "MDMValueTransformationEditor";
 
 }

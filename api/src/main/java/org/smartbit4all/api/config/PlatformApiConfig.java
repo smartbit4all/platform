@@ -1,5 +1,6 @@
 package org.smartbit4all.api.config;
 
+import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
@@ -95,6 +96,8 @@ import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.value.ValueTransformationApi;
 import org.smartbit4all.api.value.ValueTransformationApiImpl;
+import org.smartbit4all.api.value.bean.ValueTransformationConfig;
+import org.smartbit4all.api.value.bean.ValueTransformationConfigData;
 import org.smartbit4all.api.view.ActionDefinitionApi;
 import org.smartbit4all.api.view.ActionDefinitionApiImpl;
 import org.smartbit4all.api.view.ActionManagementApi;
@@ -164,6 +167,8 @@ public class PlatformApiConfig {
   public static final String TICKETING_CONNECTIONS = "ticketingConnections";
 
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
+
+  public static final String VALUE_TRANSFORMATIONS = "valueTransformations";
 
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
@@ -558,6 +563,33 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("Authentication token")
                   .addPathItem(ServiceConnection.AUTH_TOKEN));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(VALUE_TRANSFORMATIONS)
+          .name(VALUE_TRANSFORMATIONS)
+          // .editorViewName(MDMConstants.MDM_EDIT)
+          .editorViewName(PlatformViewNames.VALUE_TRANSFORMATION_EDITOR)
+          .displayNameList(new LangString().defaultValue("Value transformations")
+              .putValueByLocaleItem("hu", "Érték átalakítások")
+              .putValueByLocaleItem("en", "Value transformations"))
+          .displayNameForm(new LangString().defaultValue("Value transformations")
+              .putValueByLocaleItem("hu", "Érték átalakítások")
+              .putValueByLocaleItem("en", "Value transformations"))
+          .order(200l)
+          .typeQualifiedName(ValueTransformationConfig.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .path(
+                      List.of(ValueTransformationConfig.DATA, ValueTransformationConfigData.NAME)))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Kind")
+                  .path(
+                      List.of(ValueTransformationConfig.DATA, ValueTransformationConfigData.KIND)));
       result.addDescriptor(entry);
     }
 

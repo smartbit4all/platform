@@ -25,6 +25,8 @@ import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApi;
+import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
@@ -195,4 +197,14 @@ public class PlatformBffApiConfig {
     return Invocations.asProvider(DynamicOAuthPropertiesEditorPageApi.class, api);
   }
 
+  @Bean
+  MDMValueTransformationEditorPageApi valueTransformationEditorPageApi() {
+    return new MDMValueTransformationEditorPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<MDMValueTransformationEditorPageApi> mdmValueTransformationEditorPageApiProvider(
+      MDMValueTransformationEditorPageApi api) {
+    return Invocations.asProvider(MDMValueTransformationEditorPageApi.class, api);
+  }
 }
