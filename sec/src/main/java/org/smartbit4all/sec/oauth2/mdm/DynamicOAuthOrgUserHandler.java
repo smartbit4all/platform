@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.oauth2.mdm;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,6 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.security.bean.OAuthClientProperties;
 import org.smartbit4all.sec.oauth2.OAuth2SessionAuthSuccessHandler.OrgUserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.ObjectUtils;
@@ -33,6 +33,7 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
   private OrgApi orgApi;
   @Autowired
   private DynamicOAuth2PropertiesApi dynamicOAuth2PropertiesApi;
+
 
   private static final Map<String, BiConsumer<User, String>> userParamSetters =
       Collections.unmodifiableMap(createUserParamSetters());
@@ -106,13 +107,9 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
 
   private void addUserToGroups(OAuth2AuthenticationToken oauthToken,
       OAuthClientProperties clientProperties, User user) {
-    Map<String, String> roleMapping = clientProperties.getRoleMapping();
-    if (!ObjectUtils.isEmpty(roleMapping)) {
-      // oauthToken.getPrincipal().getAuthorities()
-      oauthToken.getAuthorities().stream()
-          .map(authority -> grantedAuthority2Group(authority, roleMapping))
-          .filter(Optional::isPresent)
-          .map(Optional::get)
+    Set<Group> groupsByOAuthSettings = getGroupsByOAuthSettings(oauthToken, clientProperties);
+    if (!ObjectUtils.isEmpty(groupsByOAuthSettings)) {
+      groupsByOAuthSettings
           .forEach(group -> addUserToGroup(user, group));
     } else {
       log.warn("There is no role mapping configured for oauth2 client registration {}",
@@ -128,21 +125,19 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
     log.debug("Checking user on OAuth2 login: [{}]", user.getUsername());
 
     OAuthClientProperties clientProperties = getClientProperties(oauthToken);
-    Map<String, String> roleMapping = clientProperties.getRoleMapping();
 
-    Set<Group> groupsByRealm = oauthToken.getAuthorities().stream()
-        .map(authority -> grantedAuthority2Group(authority, roleMapping))
-        .filter(Optional::isPresent)
-        .map(Optional::get).collect(Collectors.toSet());
+    // FIXME shall we update the user attributes on checking???
+
+    Set<Group> groupsByOauthSetting = getGroupsByOAuthSettings(oauthToken, clientProperties);
 
     List<Group> actualGroupsOfUser = orgApi.getGroupsOfUser(user.getUri());
 
     Set<Group> groupsToRemoveFrom = new HashSet<>(actualGroupsOfUser);
-    groupsToRemoveFrom.removeAll(groupsByRealm);
-    groupsByRealm.removeAll(actualGroupsOfUser);
+    groupsToRemoveFrom.removeAll(groupsByOauthSetting);
+    groupsByOauthSetting.removeAll(actualGroupsOfUser);
 
     // add the remained groups
-    groupsByRealm.forEach(group -> addUserToGroup(user, group));
+    groupsByOauthSetting.forEach(group -> addUserToGroup(user, group));
 
     /*
      * FIXME now it removes all other groups that is not defined in the oauth realm. It means that
@@ -151,17 +146,49 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
      * different use cases of the synchronization of groups
      */
     // remove from groups
-    groupsToRemoveFrom.forEach(group -> removeUserFromGroup(user, group));
+    // groupsToRemoveFrom.forEach(group -> removeUserFromGroup(user, group));
 
 
     // FIXME should we consider checks for sub groups here?
 
-    actualGroupsOfUser = orgApi.getGroupsOfUser(user.getUri());
-    if (actualGroupsOfUser.isEmpty()) {
+    if (Boolean.FALSE.equals(clientProperties.getIsUserWithoutGroupAllowedToLogIn())
+        && orgApi.getGroupsOfUser(user.getUri()).isEmpty()) {
       throw new Exception("The user is not added to any organisation group.");
     }
 
   }
+
+  private Set<Group> getGroupsByOAuthSettings(OAuth2AuthenticationToken oauthToken,
+      OAuthClientProperties clientProperties) {
+    List<String> roleAttributes = clientProperties.getRoleAttributes();
+    Map<String, String> roleMapping = clientProperties.getRoleMapping();
+
+    Set<Group> groupsByOauthSetting = new HashSet<>();
+
+    String defaultGroupName = clientProperties.getDefaultGroupName();
+    if (!ObjectUtils.isEmpty(defaultGroupName)) {
+      Group defaultGroup = orgApi.getGroupByName(defaultGroupName);
+      groupsByOauthSetting.add(defaultGroup);
+    }
+
+    if (!ObjectUtils.isEmpty(roleAttributes)) {
+      // TODO role keys now work with only one tag. Deeper than one level role descriptions will not
+      // work not. (e.g.: realm_access.roles, or resource_access.<client_id>.roles)
+      Set<Group> groupsByRealm =
+          roleAttributes.stream()
+              .map(roleAttribute -> oauthToken.getPrincipal().getAttributes().get(roleAttribute))
+              .filter(Collection.class::isInstance)
+              .flatMap(roleNames -> ((Collection<?>) roleNames).stream())
+              .filter(Objects::nonNull)
+              .map(roleName -> grantedAuthority2Group(roleName.toString(), roleMapping))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .collect(Collectors.toSet());
+      groupsByOauthSetting.addAll(groupsByRealm);
+    }
+    return groupsByOauthSetting;
+  }
+
 
   private String getAttribute(OAuth2User principal, String key) {
     Object value = principal.getAttributes().get(key);
@@ -178,10 +205,9 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
     log.info("User [{}] removed from group [{}]", user.getUsername(), group.getName());
   }
 
-  private Optional<Group> grantedAuthority2Group(GrantedAuthority grantedAuthority,
+  private Optional<Group> grantedAuthority2Group(String realmRoleName,
       Map<String, String> roles) {
 
-    String realmRoleName = grantedAuthority.getAuthority();
     String orgGroupName = roles.get(realmRoleName);
     if (!ObjectUtils.isEmpty(orgGroupName)) {
       Group orgGroup = orgApi.getGroupByName(orgGroupName);

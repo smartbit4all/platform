@@ -170,6 +170,21 @@ components:
             value is the realm attribute name."
           additionalProperties:
             type: string
+        isUserWithoutGroupAllowedToLogIn:
+          description: |
+            "When true, users without groups can not log in into the application."
+          type: boolean
+          default: false
+        defaultGroupName:
+          description: |
+            "The name of the SecurityGroup that the logged in user is added to as default."
+          type: string
+        roleAttributes:
+          description: |
+            "The attributes sent by the identity provider holding the lists of the role names."
+          type: array
+          items:
+            type: string
         roleMapping:
           type: object
           description: |

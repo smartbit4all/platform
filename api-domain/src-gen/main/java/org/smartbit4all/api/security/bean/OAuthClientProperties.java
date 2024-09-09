@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,9 @@ import javax.validation.Valid;
   OAuthClientProperties.LABEL,
   OAuthClientProperties.LOGO,
   OAuthClientProperties.USER_PARAMETER_MAPPING,
+  OAuthClientProperties.IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN,
+  OAuthClientProperties.DEFAULT_GROUP_NAME,
+  OAuthClientProperties.ROLE_ATTRIBUTES,
   OAuthClientProperties.ROLE_MAPPING
 })
 @JsonTypeName("OAuthClientProperties")
@@ -127,6 +131,15 @@ public class OAuthClientProperties {
 
   public static final String USER_PARAMETER_MAPPING = "userParameterMapping";
   private Map<String, String> userParameterMapping = null;
+
+  public static final String IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN = "isUserWithoutGroupAllowedToLogIn";
+  private Boolean isUserWithoutGroupAllowedToLogIn = false;
+
+  public static final String DEFAULT_GROUP_NAME = "defaultGroupName";
+  private String defaultGroupName;
+
+  public static final String ROLE_ATTRIBUTES = "roleAttributes";
+  private List<String> roleAttributes = null;
 
   public static final String ROLE_MAPPING = "roleMapping";
   private Map<String, String> roleMapping = null;
@@ -742,6 +755,95 @@ public class OAuthClientProperties {
   }
 
 
+  public OAuthClientProperties isUserWithoutGroupAllowedToLogIn(Boolean isUserWithoutGroupAllowedToLogIn) {
+    
+    this.isUserWithoutGroupAllowedToLogIn = isUserWithoutGroupAllowedToLogIn;
+    return this;
+  }
+
+   /**
+   * \&quot;When true, users without groups can not log in into the application.\&quot; 
+   * @return isUserWithoutGroupAllowedToLogIn
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "\"When true, users without groups can not log in into the application.\" ")
+  @JsonProperty(IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsUserWithoutGroupAllowedToLogIn() {
+    return isUserWithoutGroupAllowedToLogIn;
+  }
+
+
+  @JsonProperty(IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsUserWithoutGroupAllowedToLogIn(Boolean isUserWithoutGroupAllowedToLogIn) {
+    this.isUserWithoutGroupAllowedToLogIn = isUserWithoutGroupAllowedToLogIn;
+  }
+
+
+  public OAuthClientProperties defaultGroupName(String defaultGroupName) {
+    
+    this.defaultGroupName = defaultGroupName;
+    return this;
+  }
+
+   /**
+   * \&quot;The name of the SecurityGroup that the logged in user is added to as default.\&quot; 
+   * @return defaultGroupName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "\"The name of the SecurityGroup that the logged in user is added to as default.\" ")
+  @JsonProperty(DEFAULT_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDefaultGroupName() {
+    return defaultGroupName;
+  }
+
+
+  @JsonProperty(DEFAULT_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultGroupName(String defaultGroupName) {
+    this.defaultGroupName = defaultGroupName;
+  }
+
+
+  public OAuthClientProperties roleAttributes(List<String> roleAttributes) {
+    
+    this.roleAttributes = roleAttributes;
+    return this;
+  }
+
+  public OAuthClientProperties addRoleAttributesItem(String roleAttributesItem) {
+    if (this.roleAttributes == null) {
+      this.roleAttributes = new ArrayList<>();
+    }
+    this.roleAttributes.add(roleAttributesItem);
+    return this;
+  }
+
+   /**
+   * \&quot;The attributes sent by the identity provider holding the lists of the role names.\&quot; 
+   * @return roleAttributes
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "\"The attributes sent by the identity provider holding the lists of the role names.\" ")
+  @JsonProperty(ROLE_ATTRIBUTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getRoleAttributes() {
+    return roleAttributes;
+  }
+
+
+  @JsonProperty(ROLE_ATTRIBUTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRoleAttributes(List<String> roleAttributes) {
+    this.roleAttributes = roleAttributes;
+  }
+
+
   public OAuthClientProperties roleMapping(Map<String, String> roleMapping) {
     
     this.roleMapping = roleMapping;
@@ -808,12 +910,15 @@ public class OAuthClientProperties {
         Objects.equals(this.label, oauthClientProperties.label) &&
         Objects.equals(this.logo, oauthClientProperties.logo) &&
         Objects.equals(this.userParameterMapping, oauthClientProperties.userParameterMapping) &&
+        Objects.equals(this.isUserWithoutGroupAllowedToLogIn, oauthClientProperties.isUserWithoutGroupAllowedToLogIn) &&
+        Objects.equals(this.defaultGroupName, oauthClientProperties.defaultGroupName) &&
+        Objects.equals(this.roleAttributes, oauthClientProperties.roleAttributes) &&
         Objects.equals(this.roleMapping, oauthClientProperties.roleMapping);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo, userParameterMapping, roleMapping);
+    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo, userParameterMapping, isUserWithoutGroupAllowedToLogIn, defaultGroupName, roleAttributes, roleMapping);
   }
 
   @Override
@@ -842,6 +947,9 @@ public class OAuthClientProperties {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
     sb.append("    userParameterMapping: ").append(toIndentedString(userParameterMapping)).append("\n");
+    sb.append("    isUserWithoutGroupAllowedToLogIn: ").append(toIndentedString(isUserWithoutGroupAllowedToLogIn)).append("\n");
+    sb.append("    defaultGroupName: ").append(toIndentedString(defaultGroupName)).append("\n");
+    sb.append("    roleAttributes: ").append(toIndentedString(roleAttributes)).append("\n");
     sb.append("    roleMapping: ").append(toIndentedString(roleMapping)).append("\n");
     sb.append("}");
     return sb.toString();

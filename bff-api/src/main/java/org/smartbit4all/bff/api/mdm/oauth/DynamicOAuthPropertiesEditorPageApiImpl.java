@@ -7,10 +7,12 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.toggle;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -34,13 +36,18 @@ import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
+import org.smartbit4all.bff.api.mdm.util.MDMPropertyValueConverterUtil;
 import org.smartbit4all.bff.api.utils.BffUtilsApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.sec.apikey.ApiKeyInnerApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements DynamicOAuthPropertiesEditorPageApi {
+
+  private static final String SEPARATOR_ROLE_ATTRIBUTES = ";";
 
   private static final String OAUTHPROPERTY_CLASS_NAME =
       OAuthClientProperties.class.getSimpleName();
@@ -63,8 +70,8 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
 
   @Override
   public Object initModel(View view) {
-    OAuthClientProperties model =
-        objectApi.asType(OAuthClientProperties.class, super.initModel(view));
+    Object modelMap = super.initModel(view);
+    OAuthClientProperties model = objectApi.asType(OAuthClientProperties.class, modelMap);
     if (model.getUserParameterMapping() == null) {
       model.userParameterMapping(new LinkedHashMap<>());
     }
@@ -83,7 +90,11 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
     UiActions.add(view,
         uiActionModelTrue(ACTION_ADD_ROLE_MAPPING)
             .toolbar(GRID_ROLE_MAPPING + TOOLBAR_SUFFIX));
-    return model;
+    if (!ObjectUtils.isEmpty(model.getRoleAttributes())) {
+      modelMap = MDMPropertyValueConverterUtil.objListStringValueConvertToString(modelMap,
+          OAuthClientProperties.ROLE_ATTRIBUTES, objectApi, SEPARATOR_ROLE_ATTRIBUTES);
+    }
+    return modelMap;
   }
 
   private SmartComponentLayoutDefinition getLayout(String userPropMapGridId, String roleMapGridId) {
@@ -109,6 +120,9 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
             textField(OAuthClientProperties.LOGOUT_REDIRECT_PATH),
             textField(OAuthClientProperties.LABEL),
             textField(OAuthClientProperties.LOGO),
+            _toggle(OAuthClientProperties.IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN),
+            textField(OAuthClientProperties.DEFAULT_GROUP_NAME),
+            textField(OAuthClientProperties.ROLE_ATTRIBUTES),
             label(null, localeSettingApi.get(OAUTHPROPERTY_CLASS_NAME, userPropMapGridId))))
         .addComponentsItem(grid(userPropMapGridId))
         .addComponentsItem(form(LayoutDirection.VERTICAL,
@@ -118,6 +132,10 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
 
   private SmartWidgetDefinition textField(String key) {
     return textfield(key, localeSettingApi.get(OAUTHPROPERTY_CLASS_NAME, key));
+  }
+
+  private SmartWidgetDefinition _toggle(String key) {
+    return toggle(key, localeSettingApi.get(OAUTHPROPERTY_CLASS_NAME, key));
   }
 
   private ViewConstraint getViewConstraint() {
@@ -230,6 +248,16 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
     }
     setModel(viewUuid, model);
     setGridData(viewUuid, widgetId, model);
+  }
+
+  @Override
+  public void performSave(UUID viewUuid, UiActionRequest request) {
+    ObjectMapHelper params = actionRequestHelper(request);
+    Map<String, Object> modelMap = params.get("model", Map.class);
+    MDMPropertyValueConverterUtil.objStringValueConvertToListString(modelMap,
+        OAuthClientProperties.ROLE_ATTRIBUTES, "\\s*" + SEPARATOR_ROLE_ATTRIBUTES + "\\s*");
+    params.put(UiActions.MODEL, modelMap);
+    super.performSave(viewUuid, request);
   }
 
 }
