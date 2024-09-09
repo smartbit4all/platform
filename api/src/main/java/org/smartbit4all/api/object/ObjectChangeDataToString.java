@@ -17,28 +17,37 @@ public class ObjectChangeDataToString {
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
   public static String toFormattedString(ObjectApi objectApi, LocaleSettingApi localeSettingApi,
-      ObjectChangeData change, boolean htmlFormatted) {
+      ObjectChangeData change, boolean htmlFormatted, boolean translationOnly) {
     StringBuilder sb = new StringBuilder();
-    formatProperties(objectApi, localeSettingApi, sb, "", change.getProperties(), htmlFormatted);
-    formatReferences(objectApi, localeSettingApi, sb, "", change.getReferences(), htmlFormatted);
+    formatProperties(objectApi, localeSettingApi, sb, "", change.getProperties(), htmlFormatted,
+        translationOnly);
+    formatReferences(objectApi, localeSettingApi, sb, "", change.getReferences(), htmlFormatted,
+        translationOnly);
     return sb.toString();
+  }
+
+  public static String toFormattedString(ObjectApi objectApi, LocaleSettingApi localeSettingApi,
+      ObjectChangeData change, boolean htmlFormatted) {
+    return toFormattedString(objectApi, localeSettingApi, change, htmlFormatted, false);
   }
 
   private static void formatReferences(ObjectApi objectApi, LocaleSettingApi localeSettingApi,
       StringBuilder sb,
-      String prefix, List<ReferenceChangeData> references, boolean htmlFormatted) {
+      String prefix, List<ReferenceChangeData> references, boolean htmlFormatted,
+      boolean translationOnly) {
     for (ReferenceChangeData referenceChangeData : references) {
       String newPrefix = prefix + referenceChangeData.getPath() + ".";
       formatProperties(objectApi, localeSettingApi, sb, newPrefix,
-          referenceChangeData.getObjectChange().getProperties(), htmlFormatted);
+          referenceChangeData.getObjectChange().getProperties(), htmlFormatted, translationOnly);
       formatReferences(objectApi, localeSettingApi, sb, newPrefix,
-          referenceChangeData.getObjectChange().getReferences(), htmlFormatted);
+          referenceChangeData.getObjectChange().getReferences(), htmlFormatted, translationOnly);
     }
   }
 
   private static void formatProperties(ObjectApi objectApi, LocaleSettingApi localeSettingApi,
       StringBuilder sb,
-      String prefix, List<PropertyChangeData> properties, boolean htmlFormatted) {
+      String prefix, List<PropertyChangeData> properties, boolean htmlFormatted,
+      boolean translationOnly) {
     for (PropertyChangeData propertyChangeData : properties) {
       String path = prefix + propertyChangeData.getPath();
       if (path != null &&
@@ -48,7 +57,11 @@ public class ObjectChangeDataToString {
       }
       List<String> translations = translate(localeSettingApi, path);
       if (!translations.isEmpty()) {
-        path += " " + translations;
+        if (translationOnly) {
+          path = translations.toString();
+        } else {
+          path += " " + translations;
+        }
       }
       Object oldValue = convertOffsetDatetime(objectApi, propertyChangeData.getOldValue());
       Object newValue = convertOffsetDatetime(objectApi, propertyChangeData.getNewValue());
