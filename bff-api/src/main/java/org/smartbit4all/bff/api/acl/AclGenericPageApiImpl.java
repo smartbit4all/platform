@@ -272,17 +272,20 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     if (gridModel == null) {
       createGridModel(viewUuid, gridId, config.getSearchPageConfig());
-      if (isEnableModify(ctx, gridId) && isEnableAdd(ctx, gridId)) {
-        view.addActionsItem(new UiAction()
-            .code(ADD_SUBJECT)
-            .model(true)
-            .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
-            .identifier(gridId)
-            .descriptor(new UiActionDescriptor()
-                .icon("Plus")
-                .title(" ")
-                .type(UiActionButtonType.ICON)
-                .color(UiActions.Color.ACCENT)));
+    }
+    if (isEnableModify(ctx, gridId) && isEnableAdd(ctx, gridId)) {
+      UiAction addSubjectAction = new UiAction()
+          .code(ADD_SUBJECT)
+          .model(true)
+          .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
+          .identifier(gridId)
+          .descriptor(new UiActionDescriptor()
+              .icon("Plus")
+              .title(" ")
+              .type(UiActionButtonType.ICON)
+              .color(UiActions.Color.ACCENT));
+      if (!view.getActions().contains(addSubjectAction)) {
+        view.addActionsItem(addSubjectAction);
       }
     }
   }
