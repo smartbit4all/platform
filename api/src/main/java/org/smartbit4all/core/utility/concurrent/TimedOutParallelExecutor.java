@@ -1,16 +1,19 @@
 package org.smartbit4all.core.utility.concurrent;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +24,30 @@ public class TimedOutParallelExecutor {
 
   private TimedOutParallelExecutor() {}
 
-  public static <T> void doInParallelStream(Collection<T> input, Consumer<T> task, int threadCount,
+  public static <T> void doTaskParallel(Collection<T> input, Consumer<T> task, int threadCount,
       long timeoutInMillis, String threadName) {
 
     ExecutorService executor =
         Executors.newFixedThreadPool(threadCount, new CustomThreadFactory(threadName));
 
     try {
-      input
-          .forEach(inputItem -> processWithTimeoutVoid(inputItem, task, executor, timeoutInMillis));
+      List<Future<?>> futures = input.stream()
+          .map(inputItem -> executor.submit(() -> {
+            task.accept(inputItem);
+            return null; // Callable<Void> requires a return statement, so we return null
+          }))
+          .collect(Collectors.toList());
+
+      for (Future<?> future : futures) {
+        try {
+          // Wait for task completion within the specified timeout
+          future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+          future.cancel(true);
+        } catch (InterruptedException | ExecutionException e) {
+          throw new RuntimeException("Task execution failed", e);
+        }
+      }
 
     } finally {
       // Shut down the executor service
@@ -45,7 +63,7 @@ public class TimedOutParallelExecutor {
         Executors.newFixedThreadPool(threadCount, new CustomThreadFactory(threadName));
 
     try {
-      return input.stream()
+      return input.stream().parallel()
           .map(inputItem -> processWithTimeout(inputItem, task, executor, timeoutInMillis));
 
     } finally {
@@ -54,21 +72,6 @@ public class TimedOutParallelExecutor {
     }
   }
 
-
-  private static <T> void processWithTimeoutVoid(T inputItem, Consumer<T> task,
-      ExecutorService executor, long timeoutInMillis) {
-    CompletableFuture<Void> futureTask =
-        CompletableFuture.runAsync(() -> task.accept(inputItem), executor);
-
-    try {
-      // Set a timeout for the task
-      futureTask.get(timeoutInMillis, TimeUnit.MILLISECONDS);
-    } catch (TimeoutException e) {
-      log.debug("Task has timed out on item [{}]", inputItem);
-    } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Task execution failed", e);
-    }
-  }
 
   private static <T, R> R processWithTimeout(T inputItem, Function<T, R> task,
       ExecutorService executor, long timeoutInMillis) {
