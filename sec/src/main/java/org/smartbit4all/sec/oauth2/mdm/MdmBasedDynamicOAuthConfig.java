@@ -88,14 +88,14 @@ public class MdmBasedDynamicOAuthConfig {
   @Bean
   MDMDefinitionOption oauth2MdmOption() {
     MDMDefinition mdmDefinition =
-        new MDMDefinition().name(MdmBasedDynamicOAuthConfig.MDM_DEF)
-            .adminGroupName(PlatformSecurityOption.admin.getName());
+        new MDMDefinition().name(MdmBasedDynamicOAuthConfig.MDM_DEF);
     MDMDefinitionOption result = new MDMDefinitionOption(mdmDefinition);
 
     MDMEntryDescriptor entry = new MDMEntryDescriptor()
         .schema(MasterDataManagementApi.SCHEMA)
         .publishedListName(MdmBasedDynamicOAuthConfig.MDM_ENTRY)
         .name(MdmBasedDynamicOAuthConfig.MDM_ENTRY)
+        .adminGroupName(PlatformSecurityOption.oAuthPropEditor.getName())
         .addConstraintsItem(new MDMEntryConstraint()
             .kind(KindEnum.UNIQUECASEINSENSITIVE)
             .addPathItem(OAuthClientProperties.REGISTRATION_ID))

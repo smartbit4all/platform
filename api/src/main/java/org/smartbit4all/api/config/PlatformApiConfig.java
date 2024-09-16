@@ -309,8 +309,7 @@ public class PlatformApiConfig {
   @Bean
   MDMDefinitionOption systemIntegrationPlatformMdmOption() {
     MDMDefinition mdmDefinition =
-        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
-            .adminGroupName(PlatformSecurityOption.admin.getName());
+        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION);
     MDMDefinitionOption result =
         new MDMDefinitionOption(mdmDefinition);
     {
@@ -318,6 +317,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(EMBEDDING_CONNECTIONS)
           .name(EMBEDDING_CONNECTIONS)
+          .adminGroupName(PlatformSecurityOption.embeddingConectionEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
@@ -357,6 +357,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(VECTOR_DB_CONNECTIONS)
           .name(VECTOR_DB_CONNECTIONS)
+          .adminGroupName(PlatformSecurityOption.vectorDbEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
@@ -396,6 +397,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(TICKETING_CONNECTIONS)
           .name(TICKETING_CONNECTIONS)
+          .adminGroupName(PlatformSecurityOption.ticketingEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
@@ -435,6 +437,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(OBJECT_VALIDATION_OPERATIONS)
           .name(OBJECT_VALIDATION_OPERATIONS)
+          .adminGroupName(PlatformSecurityOption.objectValidationEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ObjectValidationOperation.CODE))
@@ -468,6 +471,7 @@ public class PlatformApiConfig {
           // .kind(KindEnum.UNIQUECASEINSENSITIVE)
           // .addPathItem(ActionDefinition.QUALIFIED_NAME))
           // .editorViewName(MDMConstants.MDM_EDIT)
+          .adminGroupName(PlatformSecurityOption.actionDefinitionEditor.getName())
           .displayNameList(new LangString().defaultValue("Action Definitions")
               .putValueByLocaleItem("hu", "Műveletleírók")
               .putValueByLocaleItem("en", "Action Definitions"))
@@ -492,6 +496,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(ServiceConnectionApi.SERVICE_CONNECTIONS)
           .name(ServiceConnectionApi.SERVICE_CONNECTIONS)
+          .adminGroupName(PlatformSecurityOption.serviceConnectionEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
@@ -529,6 +534,7 @@ public class PlatformApiConfig {
     {
       MDMEntryDescriptor entry = new MDMEntryDescriptor()
           .schema(MasterDataManagementApi.SCHEMA)
+          .adminGroupName(PlatformSecurityOption.conversionServiceEditor.getName())
           .publishedListName(ContentConversionApi.MDM_CONVERSION_SERVICES)
           .name(ContentConversionApi.MDM_CONVERSION_SERVICES)
           .addConstraintsItem(new MDMEntryConstraint()
@@ -570,6 +576,7 @@ public class PlatformApiConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
           .name(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
+          .adminGroupName(PlatformSecurityOption.valueTransformationEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .path(

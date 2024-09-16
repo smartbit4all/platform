@@ -55,8 +55,7 @@ public class ApiKeyConfig {
   @Bean
   MDMDefinitionOption apiKeyMdmOption() {
     MDMDefinition mdmDefinition =
-        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
-            .adminGroupName(PlatformSecurityOption.admin.getName());
+        new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION);
     MDMDefinitionOption result = new MDMDefinitionOption(mdmDefinition);
 
     {
@@ -65,6 +64,7 @@ public class ApiKeyConfig {
           .schema(MasterDataManagementApi.SCHEMA)
           .publishedListName(API_KEYS)
           .name(API_KEYS)
+          .adminGroupName(PlatformSecurityOption.apiKeyEditor.getName())
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ApiKey.TOKEN))
@@ -111,6 +111,7 @@ public class ApiKeyConfig {
           .branchingStrategy(MDMBranchingStrategy.NONE)
           .publishedListName(API_KEY_SCOPES)
           .name(API_KEY_SCOPES)
+          .adminGroupName(PlatformSecurityOption.apiKeyEditor.getName())
           .hidden(Boolean.TRUE)
           .typeQualifiedName(ApiKeyScope.class.getName())
           .addTableColumnsItem(
