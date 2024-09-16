@@ -205,7 +205,7 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
     }
     GridModel gridModel =
         gridModelApi.createGridModel(searchIndex.getDefinition().getDefinition(),
-            columns, "");
+            columns);
     GridSelectionMode selectionMode =
         Optional.ofNullable(parameters(viewUuid).get(PARAM_SELECTION_MODE, GridSelectionMode.class))
             .orElse(GridSelectionMode.MULTIPLE);
