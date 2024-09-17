@@ -88,7 +88,8 @@ public class MdmBasedDynamicOAuthConfig {
   @Bean
   MDMDefinitionOption oauth2MdmOption() {
     MDMDefinition mdmDefinition =
-        new MDMDefinition().name(MdmBasedDynamicOAuthConfig.MDM_DEF);
+        new MDMDefinition().name(MdmBasedDynamicOAuthConfig.MDM_DEF)
+            .adminGroupName(PlatformSecurityOption.admin.getName());
     MDMDefinitionOption result = new MDMDefinitionOption(mdmDefinition);
 
     MDMEntryDescriptor entry = new MDMEntryDescriptor()
