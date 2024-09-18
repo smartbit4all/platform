@@ -11,6 +11,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.ViewContextServiceImpl.MissinCurrentViewContextException;
 import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,10 +80,17 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
     sessionApi.getAuthentications().forEach(a -> {
       logoutFromAuth(sessionUri, a);
     });
-    // TODO should set the view context so it navigates to the desired page (eg login)
-    // now we remove all views...
-    viewContextService
-        .updateCurrentViewContext(viewContext -> viewContext.views(new ArrayList<>()));
+    clearViewCtx();
+  }
+
+  private void clearViewCtx() {
+    try {
+      viewContextService.updateCurrentViewContext(viewContext -> viewContext
+          .openPendingData(null)
+          .views(new ArrayList<>()));
+    } catch (MissinCurrentViewContextException e) {
+      // nop: without viewctx no need to clear.
+    }
   }
 
   public void onLogout(Consumer<AccountInfo> onLogout) {
