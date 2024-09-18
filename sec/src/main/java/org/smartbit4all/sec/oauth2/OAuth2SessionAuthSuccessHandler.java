@@ -132,6 +132,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
       if (!ObjectUtils.isEmpty(sessionUriTxt)) {
         URI sessionURI = URI.create(sessionUriTxt);
+        sessionManagementApi.initCurrentSession(sessionURI);
 
         String registrationId = oauthToken.getAuthorizedClientRegistrationId();
         OAuth2AuthorizedClient authorizedClient =
