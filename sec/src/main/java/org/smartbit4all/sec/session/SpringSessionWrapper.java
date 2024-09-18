@@ -56,6 +56,7 @@ public class SpringSessionWrapper implements org.springframework.session.Session
   }
 
   private Session readSession() {
+    sessionManagementApi.initCurrentSession(sessionUri);
     Session session = sessionManagementApi.readSession(sessionUri);
     return session;
   }
