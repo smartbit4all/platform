@@ -40,6 +40,7 @@ import javax.validation.Valid;
   MethodData.NAME,
   MethodData.RETURN_TYPE,
   MethodData.PARAMETERS,
+  MethodData.TEMPLATE_BASED,
   MethodData.ANNOTATIONS
 })
 @JsonTypeName("MethodData")
@@ -56,6 +57,9 @@ public class MethodData {
 
   public static final String PARAMETERS = "parameters";
   private List<ParameterData> parameters = new ArrayList<>();
+
+  public static final String TEMPLATE_BASED = "templateBased";
+  private Boolean templateBased = false;
 
   public static final String ANNOTATIONS = "annotations";
   private List<AnnotationData> annotations = null;
@@ -179,6 +183,33 @@ public class MethodData {
   }
 
 
+  public MethodData templateBased(Boolean templateBased) {
+    
+    this.templateBased = templateBased;
+    return this;
+  }
+
+   /**
+   * The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke the method normally. 
+   * @return templateBased
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke the method normally. ")
+  @JsonProperty(TEMPLATE_BASED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getTemplateBased() {
+    return templateBased;
+  }
+
+
+  @JsonProperty(TEMPLATE_BASED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTemplateBased(Boolean templateBased) {
+    this.templateBased = templateBased;
+  }
+
+
   public MethodData annotations(List<AnnotationData> annotations) {
     
     this.annotations = annotations;
@@ -228,12 +259,13 @@ public class MethodData {
         Objects.equals(this.name, methodData.name) &&
         Objects.equals(this.returnType, methodData.returnType) &&
         Objects.equals(this.parameters, methodData.parameters) &&
+        Objects.equals(this.templateBased, methodData.templateBased) &&
         Objects.equals(this.annotations, methodData.annotations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, returnType, parameters, annotations);
+    return Objects.hash(id, name, returnType, parameters, templateBased, annotations);
   }
 
   @Override
@@ -244,6 +276,7 @@ public class MethodData {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    returnType: ").append(toIndentedString(returnType)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    templateBased: ").append(toIndentedString(templateBased)).append("\n");
     sb.append("    annotations: ").append(toIndentedString(annotations)).append("\n");
     sb.append("}");
     return sb.toString();

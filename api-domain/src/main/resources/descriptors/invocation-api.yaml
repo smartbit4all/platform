@@ -464,11 +464,51 @@ components:
           description: The parameters of the given method.
           items:
             $ref: '#/components/schemas/ParameterData'
+        templateBased:
+          description: |
+            The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke
+            the method normally.
+          type: boolean
+          default: false
         annotations:
           type: array
           description: The annotations of the given method.
           items:
             $ref: '#/components/schemas/AnnotationData'
+    MethodTemplate:
+      description: |
+        The method template is a construction for a dynamic methon invocation mechanism. It defines an invokeable methon on
+        an api that is executed by the InvocationExtensionApi that has different contributions to manage the different kind of
+        protokolls like REST, SOAP, SQL etc. The objects are managed in an MDMEntry contained by the MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION
+        definition. Based on the MDMEntry the api registry scheduled job will add these api calls to the registry.
+      type: object
+      required: [uri,data,template,connection]
+      properties:
+        uri:
+          type: string
+          format: uri
+        interfaceName:
+          type: string
+          description: |
+            The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than
+            one implementation from an interface class provided by one or more module. But they have to have a unique name in this
+            case.
+        apiName:
+          type: string
+          description: |
+            The name of the api that is equal to the name of the interface if we have only one instance. But if we have
+            more than one provided implementation than it is uniquely identify them. Normally in java spring application this
+            is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is
+            going to collect them all.
+        data:
+          description: |
+            The method data to describe the callable operation.
+          $ref: '#/components/schemas/ParameterData'
+        template:
+          type: string
+        connection:
+          type: string
+          description: The name of the service connection to use.
     ParameterData:
       type: object
       required: [name,typeName]
