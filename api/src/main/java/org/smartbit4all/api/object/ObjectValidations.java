@@ -405,6 +405,7 @@ public final class ObjectValidations {
     if (layout != null) {
       widgets = flattenLayout(layout)
           .flatMap(it -> formWidgets(it))
+          .filter(it -> SmartFormWidgetType.LABEL != it.getType())
           .map(SmartWidgetDefinition::getKey)
           .collect(toList());
     } else {
@@ -415,11 +416,10 @@ public final class ObjectValidations {
     Map<String, Boolean> fieldsEnabled = constraints.stream()
         .collect(groupingBy(it -> it.getDataName()))
         .values().stream()
-        .flatMap(v -> {
-          Optional<ComponentConstraint> lastElement = v.stream()
-              .reduce((first, second) -> second);
-          return lastElement.isPresent() ? Stream.of(lastElement.get()) : Stream.empty();
-        })
+        .flatMap(v -> v.stream()
+            .reduce((first, second) -> second)
+            .map(Stream::of)
+            .orElseGet(Stream::empty))
         .collect(Collectors.toMap(ComponentConstraint::getDataName, c -> isTrue(c.getEnabled())));
 
     Optional<String> enabledFields = widgets.stream()
