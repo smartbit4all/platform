@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.utility.ObjectStreamUtils;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,9 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   @Autowired
   protected ViewApi viewApi;
+
+  @Autowired
+  private ViewContextService viewContextService;
 
   private Class<M> clazz;
 
@@ -52,7 +57,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   /**
    * Executes a modification on the model.
-   * 
+   *
    * @param view The view.
    * @param modelModification The modification lambda. The model can be modified by reference (no
    *        replace)
@@ -63,7 +68,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   /**
    * Executes a modification on the model.
-   * 
+   *
    * @param uuid The uuid of the view.
    * @param modelModification The modification lambda. The model can be modified by reference (no
    *        replace)
@@ -238,6 +243,48 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
   protected void resetInitialModel(UUID viewUuid) {
     View view = viewApi.getView(viewUuid);
     view.getParameters().put(ViewContexts.INITIAL_MODEL, getModel(viewUuid));
+  }
+
+  @Override
+  public boolean hasModelChanged(UUID viewUuid, boolean includeChildComponents) {
+    M currentModel = getModel(viewUuid);
+    M persistedModel =
+        parameters(viewUuid).get(ViewContexts.INITIAL_MODEL, getClazz());
+
+    boolean anyChange = !modelEquals(currentModel, persistedModel);
+    if (anyChange || !includeChildComponents) {
+      // if this view is changed, or we don't need to check children, we have the result
+      return anyChange;
+    }
+    return viewApi.getChildrenOfView(viewUuid).stream()
+        .map(uuid -> viewApi.getView(uuid))
+        .anyMatch(view -> {
+          Object api = viewContextService.getApiByViewName(view.getViewName());
+          if (api instanceof PageApi<?>) {
+            return ((PageApi<?>) api).hasModelChanged(view.getUuid(), includeChildComponents);
+          }
+          return false;
+        });
+  }
+
+  protected boolean modelEquals(M m1, M m2) {
+    Map<String, Object> map1 = convertToMap(m1);
+    Map<String, Object> map2 = convertToMap(m2);
+
+    return ObjectStreamUtils.mapEq(map1, map2);
+  }
+
+  @SuppressWarnings("unchecked")
+  protected Map<String, Object> convertToMap(M m1) {
+    Map<String, Object> map1;
+    if (m1 == null) {
+      map1 = Collections.emptyMap();
+    } else if (m1 instanceof Map) {
+      map1 = (Map<String, Object>) m1;
+    } else {
+      map1 = objectApi.definition(getClazz()).toMap(m1);
+    }
+    return map1;
   }
 
 }
