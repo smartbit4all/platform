@@ -59,8 +59,10 @@ public class OAuth2AccessRequestFilter extends OncePerRequestFilter {
               .build();
       try {
         this.authorizedClientManager.authorize(authorizeRequest);
+        sessionManagementApi.removeSessionAuthentication(sessionApi.getSessionUri(),
+            getAuthInfoKind());
       } catch (OAuth2AuthorizationException ex) {
-        log.debug("OAuth authorization failed on service access.");
+        log.warn("OAuth authorization failed on service access.");
         sessionManagementApi.removeSessionAuthentication(sessionApi.getSessionUri(),
             getAuthInfoKind());
       }
