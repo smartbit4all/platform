@@ -590,7 +590,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     return page;
   }
 
-  private void updateGridRow(Boolean hasStateColumn,
+  protected void updateGridRow(Boolean hasStateColumn,
       Map<String, MDMModificationItem> modificationItems,
       MDMModificationState modificationState, GridRow row,
       boolean isApprover, boolean isAdmin) {
