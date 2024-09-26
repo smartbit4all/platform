@@ -30,7 +30,7 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
   @Autowired
   private AuthenticationManager authenticationManager;
 
-  @Autowired
+  @Autowired(required = false)
   private ViewContextService viewContextService;
 
   @Autowired(required = false)
@@ -84,6 +84,9 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
   }
 
   private void clearViewCtx() {
+    if (viewContextService == null) {
+      return;
+    }
     try {
       viewContextService.updateCurrentViewContext(viewContext -> viewContext
           .openPendingData(null)
