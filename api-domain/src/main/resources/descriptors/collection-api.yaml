@@ -94,6 +94,9 @@ components:
           format: uri
         collectionType:
           enum: [LIST, MAP, REFERENCE]
+        singleVersion:
+          type: boolean
+          default: true
     VectorCollectionDescriptor:
       type: object
       description: |
