@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -130,7 +130,6 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     // TODO release the already retrieved locks if there is any lock that is unavailable.
     for (Lock lock : result) {
       lock.lock();
-      result.add(lock);
     }
     return result;
   }
