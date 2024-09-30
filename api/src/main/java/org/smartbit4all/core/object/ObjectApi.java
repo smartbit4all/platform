@@ -361,6 +361,17 @@ public interface ObjectApi {
   Lock getLock(URI uri);
 
   /**
+   * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the
+   * lock creation. We can use this lock one time to place a lock and remove it at the end.
+   * 
+   * @param uris The URI collection of the objects we would like to lock. It doesn't matter if it is
+   *        latest or not the lock will be applied on the object not on the version of the object.
+   * @return A list of {@link Lock} object that can be used like a normal Java Lock. They are
+   *         already locked if returned!
+   */
+  List<Lock> lockAll(List<URI> uris);
+
+  /**
    * Retrieves the last modification of the given object identified by the URI.
    * 
    * @param uri The uri of the object

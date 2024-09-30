@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -39,9 +39,9 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -271,7 +271,7 @@ public class ObjectApiImpl implements ObjectApi {
   public boolean equalsIgnoreVersion(URI a, URI b) {
     URI uri1 = getLatestUri(a);
     URI uri2 = getLatestUri(b);
-    return Objects.equal(uri1, uri2);
+    return Objects.equals(uri1, uri2);
   }
 
   @SuppressWarnings("unchecked")
@@ -565,6 +565,34 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public Lock getLock(URI uri) {
     return retrievalApi.getLock(uri);
+  }
+
+  @Override
+  public List<Lock> lockAll(List<URI> uris) {
+    Objects.requireNonNull(uris);
+    List<Lock> locks = uris.stream()
+        .map(u -> getLock(u)).collect(toList());
+    // Try to retrieve all the locks but release the already retrieved ones if there is any lock
+    // that is unavailable. Wait a little bit and try again.
+    List<Lock> result = new ArrayList<>();
+    while (result.size() != locks.size()) {
+      for (Lock lock : result) {
+        if (lock.tryLock()) {
+          result.add(lock);
+        } else {
+          result.stream().forEach(l -> l.unlock());
+          result.clear();
+          break;
+        }
+      }
+      try {
+        Thread.sleep(150);
+      } catch (InterruptedException e) {
+        throw new IllegalStateException(
+            "Unable to retrieve all locks for the following objects (" + uris + ")", e);
+      }
+    }
+    return result;
   }
 
   @Override
