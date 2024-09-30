@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -41,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -576,7 +576,7 @@ public class ObjectApiImpl implements ObjectApi {
     // that is unavailable. Wait a little bit and try again.
     List<Lock> result = new ArrayList<>();
     while (result.size() != locks.size()) {
-      for (Lock lock : result) {
+      for (Lock lock : locks) {
         if (lock.tryLock()) {
           result.add(lock);
         } else {
