@@ -1,53 +1,24 @@
 package org.smartbit4all.sql.storage;
 
 import java.net.URI;
-import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
-import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.Property;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class StorageSQL extends ObjectStorageImpl {
 
-  private EntityDefinition entityDef;
+  @Autowired
+  ObjectEntryDef objectEntryDef;
 
-  private Property<URI> key;
+  @Autowired
+  ObjectVersionDef objectVersionDef;
 
-  private Property<BinaryData> contentField;
-
-  private String keyName;
-
-  private String contentFieldName;
-
-  public StorageSQL(
-      EntityDefinition entityDef,
-      Property<URI> key,
-      Property<BinaryData> contentField, ObjectDefinitionApi objectDefinitionApi) {
-
-    this(entityDef, objectDefinitionApi);
-
-    this.key = key;
-    this.contentField = contentField;
-  }
-
-  public StorageSQL(
-      EntityDefinition entityDef,
-      String keyName,
-      String contentName, ObjectDefinitionApi objectDefinitionApi) {
-
-    this(entityDef, objectDefinitionApi);
-
-    this.keyName = keyName;
-    this.contentFieldName = contentName;
-  }
-
-  private StorageSQL(EntityDefinition entityDef, ObjectDefinitionApi objectDefinitionApi) {
+  public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
-    this.entityDef = entityDef;
   }
 
   @Override
@@ -243,24 +214,6 @@ public class StorageSQL extends ObjectStorageImpl {
   // BinaryData content = row.get(getContentField());
   // return serializer.fromJsonBinaryData(content, clazz);
   // }
-
-  @SuppressWarnings("unchecked")
-  private Property<URI> getKey() {
-    if (key != null) {
-      return key;
-    } else {
-      return (Property<URI>) entityDef.getProperty(keyName);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private Property<BinaryData> getContentField() {
-    if (contentField != null) {
-      return contentField;
-    } else {
-      return (Property<BinaryData>) entityDef.getProperty(contentFieldName);
-    }
-  }
 
   @Override
   public boolean exists(URI uri) {
