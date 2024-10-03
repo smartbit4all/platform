@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDefinitionDescriptor;
 
 /**
  * Facilitates registration and management of object layout archetypes.
@@ -20,7 +21,6 @@ public interface ObjectLayoutApi {
   String THIS_CONTEXT = "this";
 
   String DEFAULT_LAYOUT = "default";
-
 
   Stream<ObjectNode> findAllObjectLayoutDescriptors();
 
@@ -39,5 +39,7 @@ public interface ObjectLayoutApi {
   ObjectDisplay getObjectDisplay(URI objectUri, ObjectLayoutDescriptor descriptor);
 
   ObjectDisplay getSketchDisplay(ObjectNode objectNode, ObjectLayoutDescriptor descriptor);
+
+  LayoutDefinitionDescriptor getLayoutDefinitionDescriptor(String jsonString);
 
 }

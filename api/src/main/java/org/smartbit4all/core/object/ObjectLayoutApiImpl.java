@@ -21,15 +21,23 @@ import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDefinitionDescriptor;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 public class ObjectLayoutApiImpl implements ObjectLayoutApi {
 
   private static final String MAP = "layout-descriptors";
   private static final Logger log = LoggerFactory.getLogger(ObjectLayoutApiImpl.class);
+
+  private final ObjectMapper objectMapper = ObjectSerializerByObjectMapper.getObjectMapper();
 
   @Autowired
   private ObjectApi objectApi;
@@ -39,6 +47,8 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
   private InvocationApi invocationApi;
   @Autowired(required = false)
   private SessionApi sessionApi;
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   @Override
   public Stream<ObjectNode> findAllObjectLayoutDescriptors() {
@@ -182,6 +192,19 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     return new ObjectPropertyResolverContextObject()
         .name(THIS_CONTEXT)
         .uri(objectUri);
+  }
+
+  @Override
+  public LayoutDefinitionDescriptor getLayoutDefinitionDescriptor(String jsonString) {
+    if (ObjectUtils.isEmpty(jsonString)) {
+      return null;
+    }
+    ObjectReader reader = objectMapper.readerFor(LayoutDefinitionDescriptor.class);
+    try {
+      return reader.readValue(jsonString);
+    } catch (JsonProcessingException e) {
+      throw new IllegalArgumentException(localeSettingApi.get("exception.objectMapper.reader"));
+    }
   }
 
   @Override
