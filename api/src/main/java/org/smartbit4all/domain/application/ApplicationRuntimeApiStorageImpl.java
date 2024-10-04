@@ -197,6 +197,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    log.info("Initialize ApplicationRuntimeData");
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
         .baseUrl(getBaseUrl()).ipAddress(InetAddress.getLocalHost().getHostAddress())
         .serverPort(getPort()).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
@@ -205,8 +206,10 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       storageCluster = storageApi.get(CLUSTER);
       storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     } catch (Exception e) {
+      log.error("Couldn't create Storage", e);
       return;
     }
+    log.info("ApplicationRuntimeData initialized");
   }
 
   private String getBaseUrl() {
