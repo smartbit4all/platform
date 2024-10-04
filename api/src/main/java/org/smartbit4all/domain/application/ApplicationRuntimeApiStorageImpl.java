@@ -132,6 +132,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @EventListener(ApplicationStartedEvent.class)
   public void initRuntime() {
     if (storageCluster == null) {
+      log.error("Storage is not initialized");
       return;
     }
     long currentTimeMillis = System.currentTimeMillis();
@@ -141,13 +142,17 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       runtimeData.setLastTouchTime(currentTimeMillis);
       maintaining.set(Boolean.TRUE);
       try {
+        log.info("Saving Storage");
         runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
+        log.info("Storage saved");
       } finally {
         maintaining.remove();
       }
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
+      log.info("Saveing new storage finished");
     }
+    log.info("Setting up Storage finished");
   }
 
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
@@ -158,11 +163,13 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     if (self.isDone()) {
+      log.info("Updating storage: " + runtimeUri);
       // The application runtime is already exists and must be updated in the storage.
       try {
         storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
           return r.lastTouchTime(currentTimeMillis);
         });
+        log.info("Storage updated: " + runtimeUri);
       } catch (ObjectNotFoundException e) {
         log.error("ApplicationRuntime not found! {}, {}", runtimeUri, getBaseUrl());
         storageCluster.restoreArchived(runtimeUri);
@@ -171,6 +178,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
         });
       }
       self.get().getData().setLastTouchTime(currentTimeMillis);
+    } else {
+      log.info("Storage is not ready yet");
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
