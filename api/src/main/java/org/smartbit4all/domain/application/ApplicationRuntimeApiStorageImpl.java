@@ -131,6 +131,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRuntime() {
+    long startTime = System.currentTimeMillis();
     if (storageCluster == null) {
       log.error("Storage is not initialized");
       return;
@@ -153,6 +154,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       log.info("Saveing new storage finished");
     }
     log.info("Setting up Storage finished");
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
+    log.info("initRuntime execution time: {} ms", duration);
   }
 
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")

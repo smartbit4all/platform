@@ -209,6 +209,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRegistry() {
+    long startTime = System.currentTimeMillis();
+
     if (storage.get() == null) {
       return;
     }
@@ -252,6 +254,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     fillPrimaryApiMap();
 
     initRuntimeChannels();
+
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
+    log.info("initRegistry execution time: {} ms", duration);
   }
 
   private void initRuntimeChannels() {

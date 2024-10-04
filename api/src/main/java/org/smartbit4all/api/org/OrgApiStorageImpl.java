@@ -244,6 +244,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @EventListener(ApplicationStartedEvent.class)
   public void initSecurityOptions() throws Exception {
+    long startTime = System.currentTimeMillis();
     if (securityOptions != null) {
       groupByNameCache.invalidateAll();
       usersOfGroupCache.invalidateAll();
@@ -253,6 +254,11 @@ public class OrgApiStorageImpl implements OrgApi {
       }
       updateSubGroupsOfSecurityGroups(analizedGroups);
     }
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
+    log.info("initSecurityOptions execution time: {} ms", duration);
   }
 
   private void updateSubGroupsOfSecurityGroups(Map<SecurityGroup, Group> analizedGroups) {
