@@ -133,7 +133,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   public void initRuntime() {
     long startTime = System.currentTimeMillis();
     if (storageCluster == null) {
-      log.error("Storage is not initialized");
       return;
     }
     long currentTimeMillis = System.currentTimeMillis();
@@ -143,17 +142,13 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       runtimeData.setLastTouchTime(currentTimeMillis);
       maintaining.set(Boolean.TRUE);
       try {
-        log.info("Saving Storage");
         runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
-        log.info("Storage saved");
       } finally {
         maintaining.remove();
       }
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
-      log.info("Saveing new storage finished");
     }
-    log.info("Setting up Storage finished");
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
@@ -169,13 +164,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     if (self.isDone()) {
-      log.info("Updating storage: " + runtimeUri);
       // The application runtime is already exists and must be updated in the storage.
       try {
         storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
           return r.lastTouchTime(currentTimeMillis);
         });
-        log.info("Storage updated: " + runtimeUri);
       } catch (ObjectNotFoundException e) {
         log.error("ApplicationRuntime not found! {}, {}", runtimeUri, getBaseUrl());
         storageCluster.restoreArchived(runtimeUri);
@@ -185,7 +178,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       }
       self.get().getData().setLastTouchTime(currentTimeMillis);
     } else {
-      log.info("Storage is not ready yet");
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
@@ -212,7 +204,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    log.info("Initialize ApplicationRuntimeData");
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
         .baseUrl(getBaseUrl()).ipAddress(InetAddress.getLocalHost().getHostAddress())
         .serverPort(getPort()).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
@@ -224,7 +215,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       log.error("Couldn't create Storage", e);
       return;
     }
-    log.info("ApplicationRuntimeData initialized");
   }
 
   private String getBaseUrl() {
