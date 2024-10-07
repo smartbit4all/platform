@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import org.smartbit4all.core.object.ObjectNode;
 
 public class SearchIndexContext {
@@ -56,6 +57,11 @@ public class SearchIndexContext {
     return this;
   }
 
+  public Object getOrCreateRowVariable(String key,
+      Function<? super String, ? extends Object> func) {
+    return this.rowVariables.computeIfAbsent(key, func);
+  }
+
   public Map<String, Object> getGlobalVariables() {
     return globalVariables;
   }
@@ -72,6 +78,11 @@ public class SearchIndexContext {
   public SearchIndexContext putGlobalVariablesItem(String key, Object globalVariablesItem) {
     this.globalVariables.put(key, globalVariablesItem);
     return this;
+  }
+
+  public Object getOrCreateGlobalVariable(String key,
+      Function<? super String, ? extends Object> func) {
+    return this.globalVariables.computeIfAbsent(key, func);
   }
 
 }

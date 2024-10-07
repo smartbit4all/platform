@@ -96,11 +96,8 @@ public class MDMSearchIndexApiImpl implements MDMSearchIndexApi {
         context -> {
           ObjectNode node = context.getRowNode();
           String key = String.valueOf(node.getObjectAsMap());
-          ObjectNode actual = (ObjectNode) context.getRowVariables().get(key);
-          if (actual == null) {
-            actual = getActualObjectNodeOfBranchedNode(node, aspect);
-            context.putRowVariablesItem(key, actual);
-          }
+          ObjectNode actual = (ObjectNode) context.getOrCreateRowVariable(key,
+              k -> getActualObjectNodeOfBranchedNode(node, aspect));
           return actual.getValue(path);
         });
   }
