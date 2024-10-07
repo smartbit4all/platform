@@ -478,9 +478,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
       Comparator<Object> comparator,
-
       Function<ObjectNode, Object> complexProcessor) {
     objectMapping.mapComplex(propertyName, dataType, length, comparator, complexProcessor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapContext(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      Function<SearchIndexContext, Object> contextProcessor) {
+    objectMapping.mapContext(propertyName, dataType, length, comparator, contextProcessor);
     return this;
   }
 
