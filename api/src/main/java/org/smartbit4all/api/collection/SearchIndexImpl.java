@@ -483,10 +483,25 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return this;
   }
 
+  public SearchIndexImpl<O> mapContext(String propertyName,
+      Function<SearchIndexContext, Object> contextProcessor) {
+    objectMapping.mapContext(propertyName, String.class, -1,
+        null, contextProcessor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapContext(String propertyName, Class<?> dataType, int length,
+      Function<SearchIndexContext, Object> contextProcessor) {
+    objectMapping.mapContext(propertyName, dataType, length,
+        null, contextProcessor);
+    return this;
+  }
+
   public SearchIndexImpl<O> mapContext(String propertyName, Class<?> dataType, int length,
       Comparator<Object> comparator,
       Function<SearchIndexContext, Object> contextProcessor) {
-    objectMapping.mapContext(propertyName, dataType, length, comparator, contextProcessor);
+    objectMapping.mapContext(propertyName, dataType, length,
+        comparator, contextProcessor);
     return this;
   }
 

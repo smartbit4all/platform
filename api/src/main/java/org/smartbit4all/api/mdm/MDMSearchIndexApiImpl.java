@@ -92,7 +92,7 @@ public class MDMSearchIndexApiImpl implements MDMSearchIndexApi {
     // The object node is an BranchedObjectEntry.definition.entry node and can be used by the
     // ObjectApi
     // to navigate to every property let it be original or branched.
-    searchIndex.mapContext(propertyName, typeClass, length, null,
+    searchIndex.mapContext(propertyName, typeClass, length,
         context -> {
           ObjectNode node = context.getRowNode();
           String key = String.valueOf(node.getObjectAsMap());

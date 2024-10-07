@@ -208,11 +208,6 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
-      Function<ObjectNode, Object> complexProcessor) {
-    return mapComplex(propertyName, dataType, length, null, complexProcessor);
-  }
-
-  public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
       Comparator<Object> comparator,
       Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
