@@ -16,5 +16,6 @@ public class PlatformViewNames {
   public static final String API_KEY_EDITOR = "MDMApiKeyEditor";
   public static final String DYNAMIC_OAUTH_PROPERTIES_EDITOR = "MDMDynamicOAuthPropertiesEditor";
   public static final String VALUE_TRANSFORMATION_EDITOR = "MDMValueTransformationEditor";
-
+  public static final String JSON_PARSER_DIALOG = "JsonParserDialog";
+  public static final String LAYOUT_DESRIPTOR_DIALOG = "LayoutDescriptorDialog";
 }
