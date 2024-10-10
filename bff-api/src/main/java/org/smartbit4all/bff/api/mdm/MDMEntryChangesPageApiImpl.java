@@ -13,6 +13,7 @@ import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLa
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
+import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.Style;
@@ -79,6 +81,7 @@ import org.smartbit4all.bff.api.mdm.bean.MDMEntryChangesPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
@@ -115,6 +118,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  private ViewPublisherApi viewPublisherApi;
 
   /**
    * The page context is a useful object to encapsulate all the parameters necessary to execute the
@@ -272,39 +278,45 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
         uiActions
             // branchingStrategy = STRICT_PARALLEL
-            .addIf(new UiAction().code(MDMActions.ACTION_CLOSE_EDITING),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_CLOSE_EDITING),
                 !globalBranching, branchActive)
             // branchingStrategy = GLOBAL
-            .addIf(new UiAction().code(MDMActions.ACTION_START_EDITING).confirm(true),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_START_EDITING).confirm(true),
                 isAdmin, globalBranching, !branchActive)
-            .addIf(new UiAction().code(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_CANCEL_CHANGES).confirm(true),
                 canEdit, !underApproval, branchActive)
             // approval handling
-            .addIf(new UiAction().code(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_SEND_FOR_APPROVAL).confirm(true),
                 isAdmin, !underApproval, branchActive)
-            .addIf(new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_ADMIN_APPROVE_OK).confirm(true),
                 isApprover, underApproval, branchActive)
             .addIf(
-                new UiAction().code(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
+                createUiActionWithDescriptor(MDMActions.ACTION_ADMIN_APPROVE_NOT_OK).confirm(true)
                     .input2Type(UiActionInputType.TEXTAREA),
                 isApprover, underApproval, branchActive);
       } else {
         uiActions
             // branchingStrategy = STRICT_PARALLEL
-            .addIf(new UiAction().code(MDMActions.ACTION_CLOSE_EDITING),
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_CLOSE_EDITING),
                 isAdmin, !globalBranching, branchActive)
             // branchingStrategy = GLOBAL
-            .addIf(MDMActions.ACTION_START_EDITING,
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_START_EDITING),
                 isAdmin, globalBranching, !branchActive)
-            .addIf(MDMActions.ACTION_FINALIZE_CHANGES,
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_FINALIZE_CHANGES),
                 isAdmin, globalBranching, branchActive)
-            .addIf(MDMActions.ACTION_CANCEL_CHANGES,
+            .addIf(createUiActionWithDescriptor(MDMActions.ACTION_CANCEL_CHANGES),
                 isAdmin, globalBranching, branchActive);
       }
 
       uiActions.add(MDMActions.REFRESH);
       ctx.view.actions(uiActions.build());
     }
+  }
+
+  private UiAction createUiActionWithDescriptor(String actionCode) {
+    return new UiAction().code(actionCode).descriptor(
+        new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(), actionCode)));
   }
 
   protected void createLayout(PageContext ctx) {
@@ -393,6 +405,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
               .filter(col -> !BranchedObjectEntry.BRANCHING_STATE.equals(col))
               .collect(toList()));
       entryGridModel.getView().setOrderedColumnNames(newCols);
+      entryGridModel.getView().getDescriptor().label(entryApi.getDisplayNameList());
     }
     GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
         BranchedObjectEntry.BRANCH_URI);
@@ -461,6 +474,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         String.valueOf(System.currentTimeMillis()));
     context.loadByView();
     refreshActions(context);
+    fireActionPerformed(request, context);
   }
 
   protected PageContext getContextByViewUUID(UUID viewUuid) {
@@ -481,7 +495,24 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       throw new IllegalStateException("Trying to cancel changes without active modification!");
     }
     ctx.modificationApi.cancel();
+
+    fireActionPerformed(request, ctx);
     closeOrRefreshPage(ctx);
+  }
+
+  private void fireActionPerformed(UiActionRequest request, PageContext ctx) {
+    viewPublisherApi.fireActionPerformed(ctx.view, request,
+        ctx.modificationApi.getModification().getId(),
+        ctx.modificationApi.getModification().getName());
+  }
+
+  private void fireActionPerformed(UiActionRequest request, PageContext ctx, Object prevModel,
+      Object nextModel) {
+    viewPublisherApi.fireActionPerformed(ctx.view, request,
+        ctx.modificationApi.getModification().getId(),
+        ctx.modificationApi.getModification().getName(),
+        prevModel,
+        nextModel);
   }
 
   @Override
@@ -490,6 +521,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     if (ctx.definition.getBranchingStrategy() == MDMBranchingStrategy.STRICT_PARALLEL) {
       // stopEditing is enabled in this strategy
       ctx.modificationApi.stopEditing();
+      fireActionPerformed(request, ctx);
       closeOrRefreshPage(ctx);
     }
   }
@@ -524,6 +556,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       throw new IllegalStateException("Trying to finalize changes without active modification!");
     }
     ctx.modificationApi.merge();
+    fireActionPerformed(request, ctx);
     closeOrRefreshPage(ctx);
   }
 
@@ -538,16 +571,20 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     if (approvers == null || approvers.size() != 1) {
       throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
     }
-    sendForApproval(viewUuid, approvers.get(0));
+    sendForApproval(viewUuid, approvers.get(0), request);
   }
 
-  protected void sendForApproval(UUID viewUuid, URI approverUri) {
+  protected void sendForApproval(UUID viewUuid, URI approverUri, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.getModificationApi() == null) {
       throw new IllegalStateException("Trying to cancel changes without active modification!");
     }
     ctx.getModificationApi().sendForApproval(approverUri);
     ctx.getModificationApi().stopEditing();
+
+    String approverName = objectApi.loadLatest(approverUri).getValueAsString(User.NAME);
+    fireActionPerformed(request, ctx, Collections.emptyMap(),
+        Collections.singletonMap("mdmAdminApprover", approverName));
     closeOrRefreshPage(ctx);
   }
 
@@ -558,6 +595,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       throw new IllegalStateException("Trying to approve changes without active modification!");
     }
     ctx.getModificationApi().approvalAccepted();
+
+    fireActionPerformed(request, ctx);
     closeOrRefreshPage(ctx);
   }
 
@@ -569,6 +608,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     }
     String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
     ctx.getModificationApi().approvalRejected(reason);
+
+    fireActionPerformed(request, ctx);
     closeOrRefreshPage(ctx);
   }
 
@@ -634,7 +675,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       map.put(MDMDefinitionOption.STATE_NAME, localeSettingApi.get(itemState));
 
       builder
-          .addIf(createApproveToEntryAction(), isApprover,
+          .addIf(createUiActionWithDescriptor(MDMActions.ACTION_APPROVE_ENTRY), isApprover,
               modificationState == MDMModificationState.APPROVING
                   && (itemState == null || itemState == StateEnum.FIXED
                       || itemState == StateEnum.REJECTED))
@@ -642,7 +683,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
               modificationState == MDMModificationState.APPROVING
                   && (itemState == null || itemState == StateEnum.FIXED
                       || itemState == StateEnum.APPROVED))
-          .addIf(createFixToEntryAction(), isAdmin,
+          .addIf(createUiActionWithDescriptor(MDMActions.ACTION_FIX_ENTRY), isAdmin,
               (modificationState == MDMModificationState.ACTIVE
                   || modificationState == MDMModificationState.REJECTED)
                   && (itemState == StateEnum.REJECTED));
@@ -668,13 +709,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
         : URI.create(rawBranchUri.toString());
   }
 
-  private UiAction createFixToEntryAction() {
-    return new UiAction().code(MDMActions.ACTION_FIX_ENTRY)
-        .descriptor(new UiActionDescriptor()
-            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                MDMActions.ACTION_FIX_ENTRY)));
-  }
-
   private UiAction createRejectToEntryAction() {
     return new UiAction().code(MDMActions.ACTION_REJECT_ENTRY)
         .inputType(UiActionInputType.TEXTAREA)
@@ -692,13 +726,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
                     .color("primary"))
                 .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
                     MDMActions.ACTION_REJECT_ENTRY, "input", "title"))));
-  }
-
-  private UiAction createApproveToEntryAction() {
-    return new UiAction().code(MDMActions.ACTION_APPROVE_ENTRY)
-        .descriptor(new UiActionDescriptor()
-            .title(localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(),
-                MDMActions.ACTION_APPROVE_ENTRY)));
   }
 
   private UiAction createAddCommentToEntryAction() {
@@ -740,7 +767,15 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
       ctx.modificationApi.addComment(objectUri, comment);
+
+      // publish comment added
+      Map<String, Object> objectAsMap =
+          objectApi.create(objectUri.getScheme(), row.getData()).getObjectAsMap();
+      objectAsMap.put("mdmComment", comment);
+      objectAsMap.put("mdmEntryType", gridModel.getView().getDescriptor().getLabel());
       UiActions.add(row.getActions(), createOpenCommentsToEntryAction());
+      fireActionPerformed(request, ctx, Collections.emptyMap(),
+          objectAsMap);
     });
   }
 
@@ -792,6 +827,8 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
                       .feedbackType(UiActionFeedbackType.NONE)
                       .color("gray")))
               .build()));
+
+      fireActionPerformed(request, result);
     });
   }
 
@@ -821,6 +858,10 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       PageContext ctx = new PageContext();
       ctx.view = viewApi.getView(viewUuid);
       ctx.loadOnlyDefinitionByView();
+      Map<String, MDMModificationItem> modificationItems =
+          ctx.getModificationApi().getModification().getModificationItems();
+      StateEnum prevState =
+          modificationItems == null ? null : modificationItems.get(objectUri.toString()).getState();
       ctx.modificationApi.updateItemState(objectUri, stateConst);
       if (commentConst != null) {
         ctx.modificationApi.addComment(objectUri, commentConst);
@@ -829,6 +870,17 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       updateGridRow(true, ctx.getModificationApi().getModification().getModificationItems(),
           ctx.getModificationApi().getModification().getState(), row,
           ctx.isCurrentApprover(), ctx.isAdmin());
+
+      // publish state change
+      ObjectNode objectNodeToPublish = objectApi.create(objectUri.getScheme(), row.getData());
+      Map<String, Object> objectAsMap =
+          objectNodeToPublish.getObjectAsMap();
+      objectAsMap.put("mdmEntryType", gridModel.getView().getDescriptor().getLabel());
+      objectAsMap.put("mdmModificationItemState", stateConst);
+      UiActions.add(row.getActions(), createOpenCommentsToEntryAction());
+      fireActionPerformed(request, ctx,
+          Collections.singletonMap("mdmModificationItemState", prevState),
+          objectAsMap);
     });
   }
 }
