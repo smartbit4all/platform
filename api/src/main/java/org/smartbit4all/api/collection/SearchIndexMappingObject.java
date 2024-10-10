@@ -181,7 +181,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, comparator, null, null));
+              dataType == null ? getType(propertyName) : dataType, length, comparator,
+              null, null, null));
     }
     return this;
   }
@@ -200,15 +201,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     if (pathes.length > 0) {
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, comparator, processor,
-              null));
+              dataType == null ? getType(propertyName) : dataType, length, comparator,
+              processor, null, null));
     }
     return this;
-  }
-
-  public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
-      Function<ObjectNode, Object> complexProcessor) {
-    return mapComplex(propertyName, dataType, length, null, complexProcessor);
   }
 
   public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
@@ -216,8 +212,18 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
     mappingsByPropertyName.put(propertyName,
-        new SearchIndexMappingProperty(propertyName, null, dataType, length, comparator, null,
-            complexProcessor));
+        new SearchIndexMappingProperty(propertyName, null, dataType, length, comparator,
+            null, complexProcessor, null));
+    return this;
+  }
+
+  public SearchIndexMappingObject mapContext(String propertyName, Class<?> dataType, int length,
+      Comparator<Object> comparator,
+      Function<SearchIndexContext, Object> contextProcessor) {
+    Objects.requireNonNull(contextProcessor);
+    mappingsByPropertyName.put(propertyName,
+        new SearchIndexMappingProperty(propertyName, null, dataType, length, comparator,
+            null, null, contextProcessor));
     return this;
   }
 
@@ -356,8 +362,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     // Fill the TableDatas
     TableData<?> tableData = result.result;
+    SearchIndexContext context = new SearchIndexContext();
     objects.forEach(o -> {
       ObjectNode n = o.getObjectNode();
+      context.rowNode(n);
+      context.getRowVariables().clear();
       DataRow row = tableData.addRow();
       for (DataColumn<?> col : tableData.columns()) {
         Object value = null;
@@ -381,6 +390,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             value = mapping.processor.apply(n.getValue(mapping.path));
           } else if (mapping.complexProcessor != null) {
             value = mapping.complexProcessor.apply(n);
+          } else if (mapping.contextProcessor != null) {
+            value = mapping.contextProcessor.apply(context);
           }
         }
         if (value != null && !col.getProperty().type().isInstance(value)) {

@@ -80,6 +80,9 @@ components:
     LayoutDefinitionDescriptor:
       type: object
       properties:
+        uri:
+          type: string
+          format: uri
         name:
           type: string
         layout:

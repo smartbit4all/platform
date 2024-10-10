@@ -91,6 +91,8 @@ import org.smartbit4all.api.setting.ApplicationInfo;
 import org.smartbit4all.api.setting.ImageSettingApi;
 import org.smartbit4all.api.setting.ImageSettingApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.setting.Locales;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDefinitionDescriptor;
 import org.smartbit4all.api.toolbar.bean.ActionDefinition;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
@@ -133,6 +135,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
 import org.smartbit4all.core.object.ObjectDefinitionProvidedApiImpl;
+import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
@@ -307,7 +310,7 @@ public class PlatformApiConfig {
   }
 
   @Bean
-  MDMDefinitionOption systemIntegrationPlatformMdmOption() {
+  MDMDefinitionOption systemIntegrationPlatformMdmOption(LocaleSettingApi localeSettingApi) {
     MDMDefinition mdmDefinition =
         new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
             .adminGroupName(PlatformSecurityOption.admin.getName());
@@ -606,7 +609,28 @@ public class PlatformApiConfig {
                           ValueTransformationConfigData.KIND)));
       result.addDescriptor(entry);
     }
-
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(ObjectLayoutApi.SCHEMA)
+          .publishedListName(ObjectLayoutApi.MDM_LAYOUT_DESCRIPTORS)
+          .name(ObjectLayoutApi.MDM_LAYOUT_DESCRIPTORS)
+          .adminGroupName(PlatformSecurityOption.layoutDescriptorEditor.getName())
+          .editorViewName(PlatformViewNames.LAYOUT_DESRIPTOR_DIALOG)
+          .displayNameList(new LangString().defaultValue("Layout descriptors")
+              .putValueByLocaleItem(Locales.L_HU, "Képernyőelrendezés leírók")
+              .putValueByLocaleItem(Locales.L_EN, "Layout descriptors"))
+          .displayNameForm(new LangString().defaultValue("Layout descriptor")
+              .putValueByLocaleItem(Locales.L_HU, "Képernyőelrendezés leíró")
+              .putValueByLocaleItem(Locales.L_EN, "Layout descriptor"))
+          .order(6l)
+          .typeQualifiedName(LayoutDefinitionDescriptor.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name(localeSettingApi.get(LayoutDefinitionDescriptor.class.getName(),
+                      LayoutDefinitionDescriptor.NAME))
+                  .addPathItem(LayoutDefinitionDescriptor.NAME));
+      result.addDescriptor(entry);
+    }
     return result;
   }
 

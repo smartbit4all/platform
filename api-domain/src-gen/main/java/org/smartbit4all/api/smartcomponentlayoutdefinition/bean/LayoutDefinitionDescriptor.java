@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -33,6 +34,7 @@ import javax.validation.Valid;
  * LayoutDefinitionDescriptor
  */
 @JsonPropertyOrder({
+  LayoutDefinitionDescriptor.URI,
   LayoutDefinitionDescriptor.NAME,
   LayoutDefinitionDescriptor.LAYOUT,
   LayoutDefinitionDescriptor.CONSTRAINT
@@ -40,6 +42,9 @@ import javax.validation.Valid;
 @JsonTypeName("LayoutDefinitionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class LayoutDefinitionDescriptor {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String NAME = "name";
   private String name;
 
@@ -51,6 +56,34 @@ public class LayoutDefinitionDescriptor {
 
   public LayoutDefinitionDescriptor() { 
   }
+
+  public LayoutDefinitionDescriptor uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
 
   public LayoutDefinitionDescriptor name(String name) {
     
@@ -144,20 +177,22 @@ public class LayoutDefinitionDescriptor {
       return false;
     }
     LayoutDefinitionDescriptor layoutDefinitionDescriptor = (LayoutDefinitionDescriptor) o;
-    return Objects.equals(this.name, layoutDefinitionDescriptor.name) &&
+    return Objects.equals(this.uri, layoutDefinitionDescriptor.uri) &&
+        Objects.equals(this.name, layoutDefinitionDescriptor.name) &&
         Objects.equals(this.layout, layoutDefinitionDescriptor.layout) &&
         Objects.equals(this.constraint, layoutDefinitionDescriptor.constraint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, layout, constraint);
+    return Objects.hash(uri, name, layout, constraint);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class LayoutDefinitionDescriptor {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    layout: ").append(toIndentedString(layout)).append("\n");
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");

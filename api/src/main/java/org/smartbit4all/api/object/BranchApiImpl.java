@@ -350,7 +350,9 @@ public class BranchApiImpl implements BranchApi {
     return on.getDefinition().getOutgoingReferences().values().stream().flatMap(rd -> {
       if (rd.getSourceKind() == ReferencePropertyKind.REFERENCE) {
         if (rd.getAggregation() == AggregationKind.INLINE) {
-          return discoverAllInlineReference(on.ref(rd.getSourcePropertyPath()).get());
+          if (on.ref(rd.getSourcePropertyPath()).isPresent()) {
+            return discoverAllInlineReference(on.ref(rd.getSourcePropertyPath()).get());
+          }
         }
         return Stream.of(on.ref(rd.getSourcePropertyPath()));
       } else if (rd.getSourceKind() == ReferencePropertyKind.LIST) {

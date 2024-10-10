@@ -16,6 +16,8 @@ public interface ObjectLayoutApi {
 
   String SCHEMA = "object-layout";
 
+  String MDM_LAYOUT_DESCRIPTORS = "layoutDescriptors";
+
   String SESSION_CONTEXT = "session";
   String USER_CONTEXT = "user";
   String THIS_CONTEXT = "this";
