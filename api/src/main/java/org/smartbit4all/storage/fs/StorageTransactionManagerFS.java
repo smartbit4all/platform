@@ -170,7 +170,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
           if (entry.getValue() != null) {
             for (StorageSaveEvent event : entry.getValue()) {
               if (event != null) {
-                storageFS.invokeOnSucceedFunctions(entry.getKey(), event);
+                storageFS.invokeOnSucceedFunctionsFS(entry.getKey(), event);
               }
             }
           }
