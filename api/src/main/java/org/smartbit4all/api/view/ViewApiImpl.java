@@ -605,6 +605,17 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public Map<String, Object> getAllParameters(UUID viewUuid) {
     Objects.requireNonNull(viewUuid);
+    List<View> viewHierarchy = getViewHierarchy(viewUuid);
+    // Now merge all the parameters into a single map.
+    Collections.reverse(viewHierarchy);
+    Map<String, Object> result = new HashMap<>();
+    for (View actualView : viewHierarchy) {
+      result.putAll(actualView.getParameters());
+    }
+    return result;
+  }
+
+  private List<View> getViewHierarchy(UUID viewUuid) {
     List<View> viewHierarchy = new ArrayList<>();
     View view = viewContextService.getViewFromCurrentViewContext(viewUuid);
     while (view != null) {
@@ -622,13 +633,22 @@ public class ViewApiImpl implements ViewApi {
         view = null;
       }
     }
-    // Now merge all the parameters into a single map.
-    Collections.reverse(viewHierarchy);
-    Map<String, Object> result = new HashMap<>();
+    return viewHierarchy;
+  }
+
+  @Override
+  public InvocationRequest getCallbackFromAll(UUID viewUuid, String requestId) {
+    List<View> viewHierarchy = getViewHierarchy(viewUuid);
     for (View actualView : viewHierarchy) {
-      result.putAll(actualView.getParameters());
+      InvocationRequest request =
+          objectApi.asType(InvocationRequest.class, actualView.getCallbacks().get(requestId));
+      if (request != null) {
+        return request;
+      }
     }
-    return result;
+
+    // no result
+    return null;
   }
 
 }

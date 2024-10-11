@@ -215,4 +215,13 @@ public interface ViewApi {
    */
   Map<String, Object> getAllParameters(UUID viewUuid);
 
+  /**
+   * Retrieve the callback from the given view merging with the parent callbacks.
+   * 
+   * @param viewUuid The uuid of the view.
+   * @param requestId The id of the request.
+   * @return
+   */
+  InvocationRequest getCallbackFromAll(UUID viewUuid, String requestId);
+
 }
