@@ -666,8 +666,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId, row -> BranchedObjectEntry.BRANCH_URI,
-        (u, ctx) -> ctx.getEntryApi().cancel(u));
+        (u, ctx) -> cancelDraftEntryInner(u, ctx));
     refreshGrid(context);
+  }
+
+  protected boolean cancelDraftEntryInner(URI u, PageContext ctx) {
+    return ctx.getEntryApi().cancel(u);
   }
 
   @Override
