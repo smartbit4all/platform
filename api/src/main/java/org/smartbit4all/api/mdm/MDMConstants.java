@@ -14,6 +14,7 @@ public abstract class MDMConstants {
 
 
   public static final String PROPERTY_URI = "uri";
+  public static final String MDM_ADMIN_APPROVER = "mdmAdminApprover";
 
   private MDMConstants() {}
 }

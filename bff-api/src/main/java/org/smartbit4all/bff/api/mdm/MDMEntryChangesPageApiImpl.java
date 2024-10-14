@@ -584,7 +584,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     String approverName = objectApi.loadLatest(approverUri).getValueAsString(User.NAME);
     fireActionPerformed(request, ctx, Collections.emptyMap(),
-        Collections.singletonMap("mdmAdminApprover", approverName));
+        Collections.singletonMap(MDMConstants.MDM_ADMIN_APPROVER, approverName));
     closeOrRefreshPage(ctx);
   }
 
