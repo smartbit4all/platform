@@ -20,19 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.ParameterData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The method template is a construction for a dynamic methon invocation mechanism. It defines an invokeable methon on an api that is executed by the InvocationExtensionApi that has different contributions to manage the different kind of protokolls like REST, SOAP, SQL etc. The objects are managed in an MDMEntry contained by the MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION definition. Based on the MDMEntry the api registry scheduled job will add these api calls to the registry. 
  */
-@ApiModel(description = "The method template is a construction for a dynamic methon invocation mechanism. It defines an invokeable methon on an api that is executed by the InvocationExtensionApi that has different contributions to manage the different kind of protokolls like REST, SOAP, SQL etc. The objects are managed in an MDMEntry contained by the MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION definition. Based on the MDMEntry the api registry scheduled job will add these api calls to the registry. ")
+@Schema(description = "The method template is a construction for a dynamic methon invocation mechanism. It defines an invokeable methon on an api that is executed by the InvocationExtensionApi that has different contributions to manage the different kind of protokolls like REST, SOAP, SQL etc. The objects are managed in an MDMEntry contained by the MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION definition. Based on the MDMEntry the api registry scheduled job will add these api calls to the registry. ")
 @JsonPropertyOrder({
   MethodTemplate.URI,
   MethodTemplate.INTERFACE_NAME,
@@ -41,8 +40,7 @@ import javax.validation.Valid;
   MethodTemplate.TEMPLATE,
   MethodTemplate.CONNECTION
 })
-@JsonTypeName("MethodTemplate")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodTemplate {
   public static final String URI = "uri";
   private URI uri;
@@ -62,7 +60,7 @@ public class MethodTemplate {
   public static final String CONNECTION = "connection";
   private String connection;
 
-  public MethodTemplate() { 
+  public MethodTemplate() {
   }
 
   public MethodTemplate uri(URI uri) {
@@ -71,14 +69,15 @@ public class MethodTemplate {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,19 +92,19 @@ public class MethodTemplate {
     this.uri = uri;
   }
 
-
   public MethodTemplate interfaceName(String interfaceName) {
     
     this.interfaceName = interfaceName;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. 
    * @return interfaceName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. ")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. ")
   @JsonProperty(INTERFACE_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,19 +119,19 @@ public class MethodTemplate {
     this.interfaceName = interfaceName;
   }
 
-
   public MethodTemplate apiName(String apiName) {
     
     this.apiName = apiName;
     return this;
   }
 
-   /**
+  /**
    * The name of the api that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. 
    * @return apiName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the api that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. ")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the api that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. ")
   @JsonProperty(API_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -147,21 +146,21 @@ public class MethodTemplate {
     this.apiName = apiName;
   }
 
-
   public MethodTemplate data(ParameterData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -176,20 +175,20 @@ public class MethodTemplate {
     this.data = data;
   }
 
-
   public MethodTemplate template(String template) {
     
     this.template = template;
     return this;
   }
 
-   /**
+  /**
    * Get template
    * @return template
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TEMPLATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -204,20 +203,20 @@ public class MethodTemplate {
     this.template = template;
   }
 
-
   public MethodTemplate connection(String connection) {
     
     this.connection = connection;
     return this;
   }
 
-   /**
+  /**
    * The name of the service connection to use.
    * @return connection
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the service connection to use.")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the service connection to use.")
   @JsonProperty(CONNECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -231,7 +230,6 @@ public class MethodTemplate {
   public void setConnection(String connection) {
     this.connection = connection;
   }
-
 
   @Override
   public boolean equals(Object o) {

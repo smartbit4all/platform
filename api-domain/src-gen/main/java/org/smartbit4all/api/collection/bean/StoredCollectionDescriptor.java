@@ -211,12 +211,13 @@ public class StoredCollectionDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get singleVersion
    * @return singleVersion
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SINGLE_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +231,6 @@ public class StoredCollectionDescriptor {
   public void setSingleVersion(Boolean singleVersion) {
     this.singleVersion = singleVersion;
   }
-
 
   @Override
   public boolean equals(Object o) {

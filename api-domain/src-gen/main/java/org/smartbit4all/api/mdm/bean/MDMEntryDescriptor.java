@@ -153,7 +153,7 @@ public class MDMEntryDescriptor {
   private Boolean hidden = false;
 
   public static final String DISPLAY_NAME_PROPERTY_PATH = "displayNamePropertyPath";
-  private List<String> displayNamePropertyPath = null;
+  private List<String> displayNamePropertyPath = new ArrayList<>();
 
   public MDMEntryDescriptor() {
   }
@@ -938,12 +938,13 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get displayNamePropertyPath
    * @return displayNamePropertyPath
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME_PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -957,7 +958,6 @@ public class MDMEntryDescriptor {
   public void setDisplayNamePropertyPath(List<String> displayNamePropertyPath) {
     this.displayNamePropertyPath = displayNamePropertyPath;
   }
-
 
   @Override
   public boolean equals(Object o) {

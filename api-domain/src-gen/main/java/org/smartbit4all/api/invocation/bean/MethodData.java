@@ -185,19 +185,19 @@ public class MethodData {
     this.parameters = parameters;
   }
 
-  public MethodData annotations(List<@Valid AnnotationData> annotations) {
   public MethodData templateBased(Boolean templateBased) {
     
     this.templateBased = templateBased;
     return this;
   }
 
-   /**
+  /**
    * The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke the method normally. 
    * @return templateBased
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke the method normally. ")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The template based flag show if the InvocationApi should looking for the temnplate definition from the MDM or can invoke the method normally. ")
   @JsonProperty(TEMPLATE_BASED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,7 +212,7 @@ public class MethodData {
     this.templateBased = templateBased;
   }
 
-
+  public MethodData annotations(List<@Valid AnnotationData> annotations) {
     
     this.annotations = annotations;
     return this;

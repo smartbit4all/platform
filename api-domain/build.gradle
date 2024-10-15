@@ -53,8 +53,8 @@ smartbit4all {
         "Style"                         : "org.smartbit4all.api.view.bean.Style",
         "ObjectPropertyResolverContext" : "org.smartbit4all.api.object.bean.ObjectPropertyResolverContext",
         "SelectionDefinition"           : "org.smartbit4all.api.formdefinition.bean.SelectionDefinition",
-        "Session"                       : "org.smartbit4all.api.session.bean.Session"
-  		"ViewConstraint": "org.smartbit4all.api.view.bean.ViewConstraint"
+        "Session"                       : "org.smartbit4all.api.session.bean.Session",
+        "ViewConstraint"                : "org.smartbit4all.api.view.bean.ViewConstraint"
     ]
   }
 }
