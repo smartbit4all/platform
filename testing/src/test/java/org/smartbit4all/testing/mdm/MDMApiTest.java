@@ -1574,7 +1574,8 @@ class MDMApiTest {
       BranchedObjectEntry firstType = list.get(0);
       String firstTypeName = objectApi.loadLatest(firstType.getOriginalUri())
           .getValueAsString(SampleCategoryType.CODE);
-      typeApi.remove(firstType.getOriginalUri());
+      URI firstTypeBranchedUri = typeApi.save(objectApi.load(firstType.getOriginalUri())).get(0);
+      typeApi.remove(firstTypeBranchedUri);
 
       // Test constraint check on restore.
       BranchedObjectEntry secondType = list.get(1);
@@ -1583,7 +1584,7 @@ class MDMApiTest {
       secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
       URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
       assertThrows(IllegalArgumentException.class,
-          () -> typeApi.restore(firstType.getOriginalUri()),
+          () -> typeApi.restore(firstTypeBranchedUri),
           "On restore the constraint check doesn't work properly.");
 
       // Test constraint check on cancel.

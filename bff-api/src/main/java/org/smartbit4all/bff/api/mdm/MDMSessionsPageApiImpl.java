@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -25,8 +26,10 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -50,6 +53,9 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  private ViewPublisherApi viewPublisherApi;
 
   /**
    * The page context is a useful object to encapsulate all the parameters necessary to execute the
@@ -150,7 +156,7 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     view.getActions().removeIf(a -> ACTION_CLOSE.equals(a.getCode()));
     view.getActions().removeIf(a -> ACTION_QUERY.equals(a.getCode()));
     if (pageContext.checkAdmin()) {
-      view.addActionsItem(new UiAction().code(MDMActions.ACTION_START_EDITING)
+      view.addActionsItem(createUiActionWithDescriptor(MDMActions.ACTION_START_EDITING)
           .inputType(UiActionInputType.TEXTFIELD));
     }
     createGridModel(view);
@@ -197,9 +203,11 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
   public void startEditing(UUID viewUuid, UiActionRequest request) {
     String name = getNameFromRequest(request);
     SessionsPageContext ctx = getContextByViewUUID(viewUuid);
-    masterDataManagementApi.initiateModificationBranch(ctx.definition.getName(),
-        name);
+    String modificationId =
+        masterDataManagementApi.initiateModificationBranch(ctx.definition.getName(),
+            name);
     refreshGridData(viewUuid);
+    viewPublisherApi.fireActionPerformed(ctx.getView(), request, modificationId, name);
   }
 
   private String getNameFromRequest(UiActionRequest request) {
@@ -215,6 +223,8 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     SessionsPageContext ctx = getContextByViewUUID(viewUuid);
     MDMModificationApi modificationApi = getModificationApi(viewUuid, widgetId, nodeId, ctx);
     modificationApi.startEditing();
+    viewPublisherApi.fireActionPerformed(ctx.getView(), request,
+        modificationApi.getModification().getId(), modificationApi.getModification().getName());
     closeOrRefreshPage(ctx);
   }
 
@@ -240,6 +250,11 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     modificationApi.renameEditing(name);
     ctx.loadByView();
     refreshGridData(ctx.view.getUuid());
+    viewPublisherApi.fireActionPerformed(ctx.getView(), request,
+        modificationApi.getModification().getId(), modificationApi.getModification().getName(),
+        Collections.singletonMap("mdmModificationName",
+            modificationApi.getModification().getName()),
+        Collections.singletonMap("mdmModificationName", name));
   }
 
   @Override
@@ -251,16 +266,21 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
           .fromValue(GridModels.getValueFromGridRow(row, MDMModification.STATE).toString());
       if (MDMModificationState.APPROVED != modificationState
           && MDMModificationState.DISPOSED != modificationState) {
-        row.addActionsItem(new UiAction().code(MDMActions.ACTION_OPEN_EDITING));
+        row.addActionsItem(createUiActionWithDescriptor(MDMActions.ACTION_OPEN_EDITING));
         if (isAdmin) {
-          row.addActionsItem(new UiAction()
-              .code(MDMActions.ACTION_RENAME_EDITING)
+          row.addActionsItem(createUiActionWithDescriptor(MDMActions.ACTION_RENAME_EDITING)
               .inputType(UiActionInputType.TEXTFIELD));
         }
       }
 
     }
     return page;
+  }
+
+  private UiAction createUiActionWithDescriptor(String actionCode) {
+    return new UiAction().code(actionCode).descriptor(
+        new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMSessionsPageApi.class.getSimpleName(), actionCode)));
   }
 
   protected void closeOrRefreshPage(SessionsPageContext ctx) {

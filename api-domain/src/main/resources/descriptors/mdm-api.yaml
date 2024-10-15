@@ -193,6 +193,10 @@ components:
                   description: This flag decides it the described entry could be edited on the ui.
                   type: boolean
                   default: false
+                displayNamePropertyPath:
+                  type: array
+                  items:
+                    type: string
         MDMTableColumnDescriptor:
             type: object
             description: |

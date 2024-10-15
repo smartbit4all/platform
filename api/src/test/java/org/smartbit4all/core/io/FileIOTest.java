@@ -14,6 +14,7 @@ import java.util.Random;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
@@ -198,9 +199,10 @@ public class FileIOTest {
 
   private Random rnd = new Random();
 
-  // @Test
+  @Test
+  @Disabled
   void randomAcccessTest() throws IOException {
-    String versionFileName = "version00";
+    String versionFileName = "testio/version00";
     File versionFile = new File(versionFileName);
     int indexSize = 12;
     {
@@ -227,7 +229,7 @@ public class FileIOTest {
       RandomAccessFile raf = new RandomAccessFile(versionFile, "rws");
       long dataPosition;
       if (i == 0) {
-        dataPosition = 1024 * indexSize;
+        dataPosition = 1024;
       } else {
         // Seak to the prevoius entry and read the position of the previous one and add the length.
         raf.seek((i - 1) * indexSize);

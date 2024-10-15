@@ -39,4 +39,18 @@ public class MDMActions {
   public static final String ACTION_REJECT_ENTRY = "REJECT_ENTRY";
   public static final String ACTION_APPROVE_ENTRY = "APPROVE_ENTRY";
   public static final String ACTION_FIX_ENTRY = "FIX_ENTRY";
+
+  public static final String ACTION_DO_QUERY = "DO_QUERY";
+  public static final String ACTION_TOGGLE_INACTIVES = "TOGGLE_INACTIVES";
+  public static final String ACTION_NEW_ENTRY = "NEW_ENTRY";
+  public static final String ACTION_EDIT_ENTRY = "EDIT_ENTRY";
+  public static final String ACTION_VIEW_ENTRY = "VIEW_ENTRY";
+  public static final String ACTION_VIEW_ORIGINAL_ENTRY = "VIEW_ORIGINAL_ENTRY";
+  public static final String ACTION_DELETE_ENTRY = "DELETE_ENTRY";
+  public static final String ACTION_INACTIVATE_ENTRY = "INACTIVATE_ENTRY";
+  public static final String ACTION_CANCEL_DRAFT_ENTRY = "CANCEL_DRAFT_ENTRY";
+  public static final String ACTION_RESTORE_ENTRY = "RESTORE_ENTRY";
+  public static final String ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE = "SHOW_ENTRY_DESCRIPTOR_PAGE";
+  public static final String ACTION_RECREATE_INDEX = "ACTION_RECREATE_INDEX";
+  public static final String ACTION_IMPORT_ENTRIES = "IMPORT_ENTRIES";
 }

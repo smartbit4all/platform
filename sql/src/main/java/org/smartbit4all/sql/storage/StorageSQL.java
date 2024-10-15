@@ -1,6 +1,10 @@
 package org.smartbit4all.sql.storage;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -218,6 +222,24 @@ public class StorageSQL extends ObjectStorageImpl {
   @Override
   public boolean exists(URI uri) {
     return true;
+  }
+
+  @Override
+  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+      Function<URI, O> reader) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  protected void saveSingleVersionObject(StorageObject<?> object) throws IOException {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  protected URI saveVersionedObject(StorageObject<?> object) throws IOException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

@@ -1,7 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -24,15 +25,21 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import org.smartbit4all.storage.fs.StoragePerformanceRecord;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * The abstract basic implementation of the {@link ObjectStorage}.
  *
  * @author Peter Boros
  */
-public abstract class ObjectStorageImpl implements ObjectStorage {
+public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationContextAware {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
 
@@ -46,6 +53,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    */
   public static final String versionPostfix = ".v";
 
+  protected static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
+
+  protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
    * OverlappingFileLockException caused by locking the same file in the same JVM. The file locks
@@ -54,9 +65,71 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   private Map<URI, StorageObjectLockEntry> locks = new HashMap<>();
 
   /**
+   * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
+   * {@link StorageApi}.
+   */
+  protected ObjectDefinition<StorageObjectData> storageObjectDataDef;
+
+  /**
+   * The {@link ObjectDefinition} of the {@link StorageObjectRelationData} that is basic api object
+   * of the {@link StorageApi}.
+   */
+  protected ObjectDefinition<StorageObjectRelationData> storageObjectRelationDataDef;
+
+  /**
    * The operations on the locks are exclusive.
    */
   private Lock lockMutex = new ReentrantLock(true);
+
+  /**
+   * The application context.
+   */
+  protected ApplicationContext applicationContext;
+
+  /**
+   * The runtime api is responsible for registering the objects.
+   */
+  private ApplicationRuntimeApi myRuntimeApi;
+
+  /**
+   * False if we hasn't try to get the {@link ApplicationRuntimeApi} bean and set the
+   * {@link #myRuntimeApi}.
+   */
+  boolean runtimeWasSet = false;
+
+  public static final StoragePerformanceRecord performanceRecord = new StoragePerformanceRecord();
+
+  /**
+   * The performance record for the monitoring of the storage. It is related to the actual thread.
+   */
+  private static final ThreadLocal<StoragePerformanceRecord> currentPerformanceRecord =
+      new ThreadLocal<>();
+
+  public static void startRequest() {
+    currentPerformanceRecord.set(new StoragePerformanceRecord());
+  }
+
+  public static StoragePerformanceRecord finishRequest() {
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    currentPerformanceRecord.remove();
+    return record;
+  }
+
+  protected void addRead(long time) {
+    performanceRecord.addRead(time);
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    if (record != null) {
+      record.addRead(time);
+    }
+  }
+
+  protected void addWrite(long time) {
+    performanceRecord.addWrite(time);
+    StoragePerformanceRecord record = currentPerformanceRecord.get();
+    if (record != null) {
+      record.addWrite(time);
+    }
+  }
 
   /**
    * The extension point for the given {@link ObjectStorage} implementation to add a supplier
@@ -95,6 +168,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   protected ObjectStorageImpl(ObjectDefinitionApi objectDefinitionApi) {
     super();
     this.objectDefinitionApi = objectDefinitionApi;
+    this.storageObjectDataDef = objectDefinitionApi.definition(StorageObjectData.class);
+    this.storageObjectRelationDataDef =
+        objectDefinitionApi.definition(StorageObjectRelationData.class);
   }
 
   @Override
@@ -148,6 +224,60 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public StorageObject<?> load(Storage storage, URI uri, StorageLoadOption... options) {
     return load(storage, uri, null, options);
   }
+
+  @Override
+  public StorageObject<?> save(StorageObject<?> object) {
+    StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
+
+    if (storageObjectLock != null) {
+      storageObjectLock.lock();
+    }
+    try {
+
+      long startTime = System.currentTimeMillis();
+
+      if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
+        saveSingleVersionObject(object);
+      } else {
+        saveVersionedObject(object);
+      }
+
+      long endTime = System.currentTimeMillis();
+      addWrite(endTime - startTime);
+
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
+    } finally {
+      if (storageObjectLock != null) {
+        storageObjectLock.unlock();
+      }
+    }
+    return object;
+  }
+
+  /**
+   * This save the object as a single object. It's is faster but we don't have the previous
+   * versions. We save the descriptor, the serialized form of the {@link StorageObjectData}, the
+   * object itself and the references in one file. In this way there is no need to read the
+   * descriptor and the object data separately. This structure is useful for administration data
+   * like clustering or invocation registry. The transaction management is the same, we use a temp
+   * file as write buffer and do an atomic move at the end of the transaction.
+   *
+   * @param object The object.
+   * @throws IOException If Exception occurred then it will be thrown to be able to manage the
+   *         locking in the {@link #save(StorageObject)}.
+   */
+  protected abstract void saveSingleVersionObject(StorageObject<?> object) throws IOException;
+
+  /**
+   * This save the object to have every modification as version of the object.
+   *
+   * @param object The object.
+   * @return The URI of the saved version.
+   * @throws IOException If Exception occurred then it will be thrown to be able to manage the
+   *         locking in the {@link #save(StorageObject)}.
+   */
+  protected abstract URI saveVersionedObject(StorageObject<?> object) throws IOException;
 
   /**
    * Analyze the uri and the {@link StorageObjectData} to extract the object definition from the
@@ -206,25 +336,20 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
-  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
-    // By default it won't return anything. The management of the set is an extra functionality.
-    return Collections.emptyList();
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> u);
   }
 
   @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    // By default it won't return anything. The management of the set is an extra functionality.
-    return Collections.emptyList();
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
   }
+
+  protected abstract <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+      Function<URI, O> reader);
 
   @Override
   public boolean move(URI uri, URI targetUri) {
-    // By default it won't return anything. The management of the set is an extra functionality.
-    return false;
-  }
-
-  @Override
-  public boolean delete(URI uri) {
     // By default it won't return anything. The management of the set is an extra functionality.
     return false;
   }
@@ -447,8 +572,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   public static final URI getUriWithVersion(URI uri, long versionNumber) {
     URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(uri);
-    return URI
-        .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber);
+    return uriWithoutVersion != null ? URI
+        .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber)
+        : null;
 
   }
 
@@ -496,6 +622,30 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   @Override
   public Long lastModified(URI uri) {
     return System.currentTimeMillis();
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
+
+  /**
+   * The runtime api is an optional Api responsible for registering the actual
+   *
+   * @return
+   */
+  protected ApplicationRuntimeApi runtimeApi() {
+    if (!runtimeWasSet) {
+      try {
+        myRuntimeApi =
+            applicationContext != null ? applicationContext.getBean(ApplicationRuntimeApi.class)
+                : null;
+      } catch (BeansException e) {
+        log.debug("The application doesn't have ApplicationRuntimeApi registered.");
+      }
+      runtimeWasSet = true;
+    }
+    return myRuntimeApi;
   }
 
 }

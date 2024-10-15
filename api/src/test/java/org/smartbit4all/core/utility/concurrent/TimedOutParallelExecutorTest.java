@@ -24,7 +24,7 @@ public class TimedOutParallelExecutorTest {
     List<Integer> numbers = IntStream.range(1, 10).boxed().collect(Collectors.toList());
 
     TimedOutParallelExecutor.doTaskParallel(numbers, this::longRunningTask, 2, timeout,
-        "parallel-test");
+        "parallel-test", false);
 
 
   }
@@ -60,7 +60,6 @@ public class TimedOutParallelExecutorTest {
         for (int i = 0; i < Integer.MAX_VALUE / 100; i++) {
           Math.sqrt(i); // Arbitrary computation to simulate CPU load
         }
-
         // Check for interruption periodically
         if (Thread.currentThread().isInterrupted()) {
           throw new InterruptedException("Task was interrupted");

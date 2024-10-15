@@ -293,6 +293,7 @@ public class MDMEntryDescriptorPageApiImpl
                       .addPathItem(GenericValue.ICON)))
               .displayNameForm(new LangString().defaultValue(name))
               .displayNameList(new LangString().defaultValue(name))
+              .displayNamePropertyPath(Arrays.asList(GenericValue.NAME))
               .listPageGridViews(Collections.emptyList())
               .isValueSet(Boolean.TRUE)
               .vectorCollection(vectorCollectionDescriptor)

@@ -628,7 +628,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     }
 
     updatePropertyWithUserActiviyLog(objectNode, Props.REMOVED);
-    objectUri = objectApi.save(objectNode);
+    objectUri = objectApi.save(objectNode, branchUri);
 
     StoredList inactiveList = getInactiveList();
     if (inactiveList != null) {
@@ -679,7 +679,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       inactiveList.branch(branchUri);
       if (inactiveList.remove(objectUri)) {
         updatePropertyWithUserActiviyLog(originalObjectNode, Props.RESTORED);
-        objectUri = objectApi.save(originalObjectNode);
+        objectUri = objectApi.save(originalObjectNode, branchUri);
 
         StoredList list = getList();
         list.branch(branchUri);
