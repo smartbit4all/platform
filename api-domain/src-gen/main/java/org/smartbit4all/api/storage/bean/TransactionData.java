@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 /**
  * The transaction data for the storage transaction management. For every new transaction a new transaction data will be created to  have a common entry point for. 
  */
+@Schema(description = "The transaction data for the storage transaction management. For every new transaction a new transaction data will be created to  have a common entry point for. ")
 @JsonPropertyOrder({
   TransactionData.URI,
   TransactionData.USER_URI,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   TransactionData.FINISH_TIME,
   TransactionData.STATE
 })
-@JsonTypeName("TransactionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TransactionData {
   public static final String URI = "uri";
@@ -61,7 +61,7 @@ public class TransactionData {
   public static final String STATE = "state";
   private TransactionState state;
 
-  public TransactionData() { 
+  public TransactionData() {
   }
 
   public TransactionData uri(URI uri) {
@@ -70,14 +70,15 @@ public class TransactionData {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the transaction.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifier of the transaction.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -92,20 +93,20 @@ public class TransactionData {
     this.uri = uri;
   }
 
-
   public TransactionData userUri(URI userUri) {
     
     this.userUri = userUri;
     return this;
   }
 
-   /**
+  /**
    * The uri of the user who is inititaed the transaction.
    * @return userUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the user who is inititaed the transaction.")
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,21 +121,21 @@ public class TransactionData {
     this.userUri = userUri;
   }
 
-
   public TransactionData startTime(OffsetDateTime startTime) {
     
     this.startTime = startTime;
     return this;
   }
 
-   /**
+  /**
    * The start time of the given transaction.
    * @return startTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The start time of the given transaction.")
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -149,21 +150,21 @@ public class TransactionData {
     this.startTime = startTime;
   }
 
-
   public TransactionData lastTouch(OffsetDateTime lastTouch) {
     
     this.lastTouch = lastTouch;
     return this;
   }
 
-   /**
+  /**
    * If a transaction is executing then the server is responsible for updating the transaction record with a given frequency.  This information will be used by the other servers to detect if the server is down and the transaction will never be finished. 
    * @return lastTouch
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "If a transaction is executing then the server is responsible for updating the transaction record with a given frequency.  This information will be used by the other servers to detect if the server is down and the transaction will never be finished. ")
   @JsonProperty(LAST_TOUCH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -178,20 +179,20 @@ public class TransactionData {
     this.lastTouch = lastTouch;
   }
 
-
   public TransactionData finishTime(OffsetDateTime finishTime) {
     
     this.finishTime = finishTime;
     return this;
   }
 
-   /**
+  /**
    * If a transaction is finished on a proper way then this time is set. 
    * @return finishTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If a transaction is finished on a proper way then this time is set. ")
   @JsonProperty(FINISH_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,20 +207,20 @@ public class TransactionData {
     this.finishTime = finishTime;
   }
 
-
   public TransactionData state(TransactionState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +234,6 @@ public class TransactionData {
   public void setState(TransactionState state) {
     this.state = state;
   }
-
 
   @Override
   public boolean equals(Object o) {

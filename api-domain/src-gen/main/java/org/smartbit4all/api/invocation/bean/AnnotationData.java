@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * Tha annotation denotes the given item like method, parameter or api itself. 
  */
+@Schema(description = "Tha annotation denotes the given item like method, parameter or api itself. ")
 @JsonPropertyOrder({
   AnnotationData.QUALIFIED_NAME,
   AnnotationData.PARAMETERS
 })
-@JsonTypeName("AnnotationData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AnnotationData {
   public static final String QUALIFIED_NAME = "qualifiedName";
@@ -46,7 +46,7 @@ public class AnnotationData {
   public static final String PARAMETERS = "parameters";
   private List<@Valid InvocationParameter> parameters = new ArrayList<>();
 
-  public AnnotationData() { 
+  public AnnotationData() {
   }
 
   public AnnotationData qualifiedName(String qualifiedName) {
@@ -55,12 +55,13 @@ public class AnnotationData {
     return this;
   }
 
-   /**
+  /**
    * The qualified name of the given annotation.
    * @return qualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The qualified name of the given annotation.")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,7 +76,6 @@ public class AnnotationData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public AnnotationData parameters(List<@Valid InvocationParameter> parameters) {
     
     this.parameters = parameters;
@@ -83,18 +83,22 @@ public class AnnotationData {
   }
 
   public AnnotationData addParametersItem(InvocationParameter parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new ArrayList<>();
+    }
     this.parameters.add(parametersItem);
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +112,6 @@ public class AnnotationData {
   public void setParameters(List<@Valid InvocationParameter> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

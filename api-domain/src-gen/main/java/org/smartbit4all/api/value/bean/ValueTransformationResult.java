@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * This item is returned by the tranform methods. It contains the transformed value or the error code if any. 
  */
+@Schema(description = "This item is returned by the tranform methods. It contains the transformed value or the error code if any. ")
 @JsonPropertyOrder({
   ValueTransformationResult.SOURCE_VALUE,
   ValueTransformationResult.TRANSFORMED_VALUE,
   ValueTransformationResult.ERROR
 })
-@JsonTypeName("ValueTransformationResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationResult {
   public static final String SOURCE_VALUE = "sourceValue";
@@ -46,7 +46,7 @@ public class ValueTransformationResult {
   public static final String ERROR = "error";
   private String error;
 
-  public ValueTransformationResult() { 
+  public ValueTransformationResult() {
   }
 
   public ValueTransformationResult sourceValue(Object sourceValue) {
@@ -55,12 +55,13 @@ public class ValueTransformationResult {
     return this;
   }
 
-   /**
+  /**
    * Get sourceValue
    * @return sourceValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,19 +76,19 @@ public class ValueTransformationResult {
     this.sourceValue = sourceValue;
   }
 
-
   public ValueTransformationResult transformedValue(Object transformedValue) {
     
     this.transformedValue = transformedValue;
     return this;
   }
 
-   /**
+  /**
    * Get transformedValue
    * @return transformedValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TRANSFORMED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,19 +103,19 @@ public class ValueTransformationResult {
     this.transformedValue = transformedValue;
   }
 
-
   public ValueTransformationResult error(String error) {
     
     this.error = error;
     return this;
   }
 
-   /**
+  /**
    * The error about transforming the given value.
    * @return error
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error about transforming the given value.")
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +129,6 @@ public class ValueTransformationResult {
   public void setError(String error) {
     this.error = error;
   }
-
 
   @Override
   public boolean equals(Object o) {

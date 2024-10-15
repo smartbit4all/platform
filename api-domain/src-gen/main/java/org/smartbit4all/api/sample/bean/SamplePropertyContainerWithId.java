@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * An example object containing and id and an inline SampleProperties object with some named inline fields and an inline string-string map. 
  */
+@Schema(description = "An example object containing and id and an inline SampleProperties object with some named inline fields and an inline string-string map. ")
 @JsonPropertyOrder({
   SamplePropertyContainerWithId.URI,
   SamplePropertyContainerWithId.ID,
   SamplePropertyContainerWithId.PROPS
 })
-@JsonTypeName("SamplePropertyContainerWithId")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SamplePropertyContainerWithId {
   public static final String URI = "uri";
@@ -48,7 +48,7 @@ public class SamplePropertyContainerWithId {
   public static final String PROPS = "props";
   private SampleProperties props;
 
-  public SamplePropertyContainerWithId() { 
+  public SamplePropertyContainerWithId() {
   }
 
   public SamplePropertyContainerWithId uri(URI uri) {
@@ -57,13 +57,14 @@ public class SamplePropertyContainerWithId {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,19 +79,19 @@ public class SamplePropertyContainerWithId {
     this.uri = uri;
   }
 
-
   public SamplePropertyContainerWithId id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,20 +106,20 @@ public class SamplePropertyContainerWithId {
     this.id = id;
   }
 
-
   public SamplePropertyContainerWithId props(SampleProperties props) {
     
     this.props = props;
     return this;
   }
 
-   /**
+  /**
    * Get props
    * @return props
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PROPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class SamplePropertyContainerWithId {
   public void setProps(SampleProperties props) {
     this.props = props;
   }
-
 
   @Override
   public boolean equals(Object o) {

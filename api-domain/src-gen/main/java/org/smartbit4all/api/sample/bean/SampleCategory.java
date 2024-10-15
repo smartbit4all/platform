@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * A recursive category holder for other categories and different items. 
  */
+@Schema(description = "A recursive category holder for other categories and different items. ")
 @JsonPropertyOrder({
   SampleCategory.URI,
   SampleCategory.NAME,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   SampleCategory.SINGLE_LINK,
   SampleCategory.KEY_WORDS
 })
-@JsonTypeName("SampleCategory")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleCategory {
   public static final String URI = "uri";
@@ -119,7 +119,7 @@ public class SampleCategory {
   public static final String KEY_WORDS = "keyWords";
   private List<String> keyWords = new ArrayList<>();
 
-  public SampleCategory() { 
+  public SampleCategory() {
   }
 
   public SampleCategory uri(URI uri) {
@@ -128,14 +128,15 @@ public class SampleCategory {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -150,19 +151,19 @@ public class SampleCategory {
     this.uri = uri;
   }
 
-
   public SampleCategory name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -177,19 +178,19 @@ public class SampleCategory {
     this.name = name;
   }
 
-
   public SampleCategory color(ColorEnum color) {
     
     this.color = color;
     return this;
   }
 
-   /**
+  /**
    * Get color
    * @return color
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -204,19 +205,19 @@ public class SampleCategory {
     this.color = color;
   }
 
-
   public SampleCategory cost(Long cost) {
     
     this.cost = cost;
     return this;
   }
 
-   /**
+  /**
    * Get cost
    * @return cost
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -231,20 +232,20 @@ public class SampleCategory {
     this.cost = cost;
   }
 
-
   public SampleCategory createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * Get createdAt
    * @return createdAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,7 +260,6 @@ public class SampleCategory {
     this.createdAt = createdAt;
   }
 
-
   public SampleCategory subCategories(List<URI> subCategories) {
     
     this.subCategories = subCategories;
@@ -267,18 +267,22 @@ public class SampleCategory {
   }
 
   public SampleCategory addSubCategoriesItem(URI subCategoriesItem) {
+    if (this.subCategories == null) {
+      this.subCategories = new ArrayList<>();
+    }
     this.subCategories.add(subCategoriesItem);
     return this;
   }
 
-   /**
+  /**
    * Get subCategories
    * @return subCategories
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUB_CATEGORIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -293,7 +297,6 @@ public class SampleCategory {
     this.subCategories = subCategories;
   }
 
-
   public SampleCategory containerItems(List<URI> containerItems) {
     
     this.containerItems = containerItems;
@@ -301,18 +304,22 @@ public class SampleCategory {
   }
 
   public SampleCategory addContainerItemsItem(URI containerItemsItem) {
+    if (this.containerItems == null) {
+      this.containerItems = new ArrayList<>();
+    }
     this.containerItems.add(containerItemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get containerItems
    * @return containerItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CONTAINER_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -327,7 +334,6 @@ public class SampleCategory {
     this.containerItems = containerItems;
   }
 
-
   public SampleCategory links(List<@Valid SampleLinkObject> links) {
     
     this.links = links;
@@ -335,18 +341,22 @@ public class SampleCategory {
   }
 
   public SampleCategory addLinksItem(SampleLinkObject linksItem) {
+    if (this.links == null) {
+      this.links = new ArrayList<>();
+    }
     this.links.add(linksItem);
     return this;
   }
 
-   /**
+  /**
    * Get links
    * @return links
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -361,20 +371,20 @@ public class SampleCategory {
     this.links = links;
   }
 
-
   public SampleCategory singleLink(SampleLinkObject singleLink) {
     
     this.singleLink = singleLink;
     return this;
   }
 
-   /**
+  /**
    * Get singleLink
    * @return singleLink
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SINGLE_LINK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -389,7 +399,6 @@ public class SampleCategory {
     this.singleLink = singleLink;
   }
 
-
   public SampleCategory keyWords(List<String> keyWords) {
     
     this.keyWords = keyWords;
@@ -397,17 +406,21 @@ public class SampleCategory {
   }
 
   public SampleCategory addKeyWordsItem(String keyWordsItem) {
+    if (this.keyWords == null) {
+      this.keyWords = new ArrayList<>();
+    }
     this.keyWords.add(keyWordsItem);
     return this;
   }
 
-   /**
+  /**
    * Get keyWords
    * @return keyWords
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KEY_WORDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -421,7 +434,6 @@ public class SampleCategory {
   public void setKeyWords(List<String> keyWords) {
     this.keyWords = keyWords;
   }
-
 
   @Override
   public boolean equals(Object o) {

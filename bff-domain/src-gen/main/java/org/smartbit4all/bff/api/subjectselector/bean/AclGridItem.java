@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   AclGridItem.NAME,
   AclGridItem.COMMENT
 })
-@JsonTypeName("AclGridItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AclGridItem {
   public static final String SUBJECT = "subject";
@@ -47,7 +46,7 @@ public class AclGridItem {
   public static final String COMMENT = "comment";
   private String comment;
 
-  public AclGridItem() { 
+  public AclGridItem() {
   }
 
   public AclGridItem subject(Subject subject) {
@@ -56,13 +55,14 @@ public class AclGridItem {
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +77,19 @@ public class AclGridItem {
     this.subject = subject;
   }
 
-
   public AclGridItem name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +104,19 @@ public class AclGridItem {
     this.name = name;
   }
 
-
   public AclGridItem comment(String comment) {
     
     this.comment = comment;
     return this;
   }
 
-   /**
+  /**
    * Get comment
    * @return comment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +130,6 @@ public class AclGridItem {
   public void setComment(String comment) {
     this.comment = comment;
   }
-
 
   @Override
   public boolean equals(Object o) {

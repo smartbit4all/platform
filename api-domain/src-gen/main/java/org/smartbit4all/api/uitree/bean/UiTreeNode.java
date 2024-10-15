@@ -49,7 +49,6 @@ import jakarta.validation.Valid;
   UiTreeNode.NODE_TYPE,
   UiTreeNode.ACTIONS
 })
-@JsonTypeName("UiTreeNode")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeNode {
   public static final String OBJECT_URI = "objectUri";
@@ -91,7 +90,7 @@ public class UiTreeNode {
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
 
-  public UiTreeNode() { 
+  public UiTreeNode() {
   }
 
   public UiTreeNode objectUri(URI objectUri) {
@@ -100,13 +99,14 @@ public class UiTreeNode {
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,20 +121,20 @@ public class UiTreeNode {
     this.objectUri = objectUri;
   }
 
-
   public UiTreeNode branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
   }
 
-   /**
+  /**
    * Get branchUri
    * @return branchUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,19 +149,19 @@ public class UiTreeNode {
     this.branchUri = branchUri;
   }
 
-
   public UiTreeNode identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,19 +176,19 @@ public class UiTreeNode {
     this.identifier = identifier;
   }
 
-
   public UiTreeNode parentIdentifier(String parentIdentifier) {
     
     this.parentIdentifier = parentIdentifier;
     return this;
   }
 
-   /**
+  /**
    * Get parentIdentifier
    * @return parentIdentifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARENT_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,19 +203,19 @@ public class UiTreeNode {
     this.parentIdentifier = parentIdentifier;
   }
 
-
   public UiTreeNode icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,19 +230,19 @@ public class UiTreeNode {
     this.icon = icon;
   }
 
-
   public UiTreeNode caption(String caption) {
     
     this.caption = caption;
     return this;
   }
 
-   /**
+  /**
    * Get caption
    * @return caption
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -257,7 +257,6 @@ public class UiTreeNode {
     this.caption = caption;
   }
 
-
   public UiTreeNode classes(List<String> classes) {
     
     this.classes = classes;
@@ -265,17 +264,21 @@ public class UiTreeNode {
   }
 
   public UiTreeNode addClassesItem(String classesItem) {
+    if (this.classes == null) {
+      this.classes = new ArrayList<>();
+    }
     this.classes.add(classesItem);
     return this;
   }
 
-   /**
+  /**
    * Get classes
    * @return classes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLASSES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -290,19 +293,19 @@ public class UiTreeNode {
     this.classes = classes;
   }
 
-
   public UiTreeNode hasChildren(Boolean hasChildren) {
     
     this.hasChildren = hasChildren;
     return this;
   }
 
-   /**
+  /**
    * Get hasChildren
    * @return hasChildren
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HAS_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,7 +320,6 @@ public class UiTreeNode {
     this.hasChildren = hasChildren;
   }
 
-
   public UiTreeNode children(List<String> children) {
     
     this.children = children;
@@ -325,17 +327,21 @@ public class UiTreeNode {
   }
 
   public UiTreeNode addChildrenItem(String childrenItem) {
+    if (this.children == null) {
+      this.children = new ArrayList<>();
+    }
     this.children.add(childrenItem);
     return this;
   }
 
-   /**
+  /**
    * Get children
    * @return children
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -350,19 +356,19 @@ public class UiTreeNode {
     this.children = children;
   }
 
-
   public UiTreeNode level(Integer level) {
     
     this.level = level;
     return this;
   }
 
-   /**
+  /**
    * Get level
    * @return level
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -377,19 +383,19 @@ public class UiTreeNode {
     this.level = level;
   }
 
-
   public UiTreeNode shortDescription(String shortDescription) {
     
     this.shortDescription = shortDescription;
     return this;
   }
 
-   /**
+  /**
    * Get shortDescription
    * @return shortDescription
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHORT_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -404,19 +410,19 @@ public class UiTreeNode {
     this.shortDescription = shortDescription;
   }
 
-
   public UiTreeNode nodeType(String nodeType) {
     
     this.nodeType = nodeType;
     return this;
   }
 
-   /**
+  /**
    * Get nodeType
    * @return nodeType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NODE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -431,7 +437,6 @@ public class UiTreeNode {
     this.nodeType = nodeType;
   }
 
-
   public UiTreeNode actions(List<UiAction> actions) {
     
     this.actions = actions;
@@ -439,18 +444,22 @@ public class UiTreeNode {
   }
 
   public UiTreeNode addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -464,7 +473,6 @@ public class UiTreeNode {
   public void setActions(List<UiAction> actions) {
     this.actions = actions;
   }
-
 
   @Override
   public boolean equals(Object o) {

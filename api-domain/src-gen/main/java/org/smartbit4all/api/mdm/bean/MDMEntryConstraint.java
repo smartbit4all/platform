@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   MDMEntryConstraint.KIND,
   MDMEntryConstraint.PATH
 })
-@JsonTypeName("MDMEntryConstraint")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryConstraint {
   /**
@@ -80,7 +79,7 @@ public class MDMEntryConstraint {
   public static final String PATH = "path";
   private List<String> path = new ArrayList<>();
 
-  public MDMEntryConstraint() { 
+  public MDMEntryConstraint() {
   }
 
   public MDMEntryConstraint kind(KindEnum kind) {
@@ -89,13 +88,14 @@ public class MDMEntryConstraint {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +110,6 @@ public class MDMEntryConstraint {
     this.kind = kind;
   }
 
-
   public MDMEntryConstraint path(List<String> path) {
     
     this.path = path;
@@ -118,17 +117,21 @@ public class MDMEntryConstraint {
   }
 
   public MDMEntryConstraint addPathItem(String pathItem) {
+    if (this.path == null) {
+      this.path = new ArrayList<>();
+    }
     this.path.add(pathItem);
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +145,6 @@ public class MDMEntryConstraint {
   public void setPath(List<String> path) {
     this.path = path;
   }
-
 
   @Override
   public boolean equals(Object o) {

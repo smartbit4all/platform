@@ -42,7 +42,6 @@ import jakarta.validation.Valid;
   User.ATTRIBUTES,
   User.PRIMARY_ACCOUNT
 })
-@JsonTypeName("User")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class User {
   public static final String URI = "uri";
@@ -69,7 +68,7 @@ public class User {
   public static final String PRIMARY_ACCOUNT = "primaryAccount";
   private URI primaryAccount;
 
-  public User() { 
+  public User() {
   }
 
   public User uri(URI uri) {
@@ -78,14 +77,15 @@ public class User {
     return this;
   }
 
-   /**
+  /**
    * The uri of the user
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the user")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,19 +100,19 @@ public class User {
     this.uri = uri;
   }
 
-
   public User username(String username) {
     
     this.username = username;
     return this;
   }
 
-   /**
+  /**
    * The username
    * @return username
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The username")
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,19 +127,19 @@ public class User {
     this.username = username;
   }
 
-
   public User name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name fo the user
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name fo the user")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,19 +154,19 @@ public class User {
     this.name = name;
   }
 
-
   public User email(String email) {
     
     this.email = email;
     return this;
   }
 
-   /**
+  /**
    * The registered email address that indentifies the user
    * @return email
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The registered email address that indentifies the user")
   @JsonProperty(EMAIL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,19 +181,19 @@ public class User {
     this.email = email;
   }
 
-
   public User password(String password) {
     
     this.password = password;
     return this;
   }
 
-   /**
+  /**
    * The encripted password of the user
    * @return password
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The encripted password of the user")
   @JsonProperty(PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,19 +208,19 @@ public class User {
     this.password = password;
   }
 
-
   public User inactive(Boolean inactive) {
     
     this.inactive = inactive;
     return this;
   }
 
-   /**
+  /**
    * Get inactive
    * @return inactive
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INACTIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,7 +235,6 @@ public class User {
     this.inactive = inactive;
   }
 
-
   public User attributes(Map<String, String> attributes) {
     
     this.attributes = attributes;
@@ -247,13 +246,14 @@ public class User {
     return this;
   }
 
-   /**
+  /**
    * Get attributes
    * @return attributes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ATTRIBUTES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -268,20 +268,20 @@ public class User {
     this.attributes = attributes;
   }
 
-
   public User primaryAccount(URI primaryAccount) {
     
     this.primaryAccount = primaryAccount;
     return this;
   }
 
-   /**
+  /**
    * The reference to the primary account if any.
    * @return primaryAccount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference to the primary account if any.")
   @JsonProperty(PRIMARY_ACCOUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -295,7 +295,6 @@ public class User {
   public void setPrimaryAccount(URI primaryAccount) {
     this.primaryAccount = primaryAccount;
   }
-
 
   @Override
   public boolean equals(Object o) {
@@ -329,7 +328,7 @@ public class User {
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    password: ").append("*").append("\n");
     sb.append("    inactive: ").append(toIndentedString(inactive)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("    primaryAccount: ").append(toIndentedString(primaryAccount)).append("\n");

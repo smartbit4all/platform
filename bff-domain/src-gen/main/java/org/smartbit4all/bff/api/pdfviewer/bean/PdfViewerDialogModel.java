@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   PdfViewerDialogModel.HIDE_SIDEBAR,
   PdfViewerDialogModel.ERROR_MSG
 })
-@JsonTypeName("PdfViewerDialogModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PdfViewerDialogModel {
   public static final String TITLE = "title";
@@ -46,7 +45,7 @@ public class PdfViewerDialogModel {
   public static final String ERROR_MSG = "errorMsg";
   private String errorMsg;
 
-  public PdfViewerDialogModel() { 
+  public PdfViewerDialogModel() {
   }
 
   public PdfViewerDialogModel title(String title) {
@@ -55,12 +54,13 @@ public class PdfViewerDialogModel {
     return this;
   }
 
-   /**
+  /**
    * The title to be shown by the dialog 
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The title to be shown by the dialog ")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,19 +75,19 @@ public class PdfViewerDialogModel {
     this.title = title;
   }
 
-
   public PdfViewerDialogModel hideSidebar(Boolean hideSidebar) {
     
     this.hideSidebar = hideSidebar;
     return this;
   }
 
-   /**
+  /**
    * Hides the sidebar showing a preview of all pages of the document. 
    * @return hideSidebar
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Hides the sidebar showing a preview of all pages of the document. ")
   @JsonProperty(HIDE_SIDEBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,19 +102,19 @@ public class PdfViewerDialogModel {
     this.hideSidebar = hideSidebar;
   }
 
-
   public PdfViewerDialogModel errorMsg(String errorMsg) {
     
     this.errorMsg = errorMsg;
     return this;
   }
 
-   /**
+  /**
    * The error message to be shown if the PDF cannot be loaded. 
    * @return errorMsg
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error message to be shown if the PDF cannot be loaded. ")
   @JsonProperty(ERROR_MSG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +128,6 @@ public class PdfViewerDialogModel {
   public void setErrorMsg(String errorMsg) {
     this.errorMsg = errorMsg;
   }
-
 
   @Override
   public boolean equals(Object o) {

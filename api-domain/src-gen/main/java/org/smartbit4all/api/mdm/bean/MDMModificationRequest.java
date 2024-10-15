@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * .
  */
+@Schema(description = ".")
 @JsonPropertyOrder({
   MDMModificationRequest.URI,
   MDMModificationRequest.DATA
 })
-@JsonTypeName("MDMModificationRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModificationRequest {
   public static final String URI = "uri";
@@ -44,7 +44,7 @@ public class MDMModificationRequest {
   public static final String DATA = "data";
   private MDMModificationRequestData data;
 
-  public MDMModificationRequest() { 
+  public MDMModificationRequest() {
   }
 
   public MDMModificationRequest uri(URI uri) {
@@ -53,14 +53,15 @@ public class MDMModificationRequest {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -75,21 +76,21 @@ public class MDMModificationRequest {
     this.uri = uri;
   }
 
-
   public MDMModificationRequest data(MDMModificationRequestData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,7 +104,6 @@ public class MDMModificationRequest {
   public void setData(MDMModificationRequestData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

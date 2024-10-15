@@ -43,7 +43,6 @@ import jakarta.validation.Valid;
   SessionInfoData.AUTHENTICATIONS,
   SessionInfoData.CREATED_AT
 })
-@JsonTypeName("SessionInfoData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SessionInfoData {
   public static final String SID = "sid";
@@ -62,12 +61,12 @@ public class SessionInfoData {
   private String locale;
 
   public static final String AUTHENTICATIONS = "authentications";
-  private List<@Valid AccountInfo> authentications = null;
+  private List<@Valid AccountInfo> authentications = new ArrayList<>();
 
   public static final String CREATED_AT = "createdAt";
   private OffsetDateTime createdAt;
 
-  public SessionInfoData() { 
+  public SessionInfoData() {
   }
 
   public SessionInfoData sid(String sid) {
@@ -76,13 +75,14 @@ public class SessionInfoData {
     return this;
   }
 
-   /**
+  /**
    * Get sid
    * @return sid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,19 +97,19 @@ public class SessionInfoData {
     this.sid = sid;
   }
 
-
   public SessionInfoData refreshToken(String refreshToken) {
     
     this.refreshToken = refreshToken;
     return this;
   }
 
-   /**
+  /**
    * The current refresh token.
    * @return refreshToken
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The current refresh token.")
   @JsonProperty(REFRESH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,20 +124,20 @@ public class SessionInfoData {
     this.refreshToken = refreshToken;
   }
 
-
   public SessionInfoData expiration(OffsetDateTime expiration) {
     
     this.expiration = expiration;
     return this;
   }
 
-   /**
+  /**
    * Get expiration
    * @return expiration
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,19 +152,19 @@ public class SessionInfoData {
     this.expiration = expiration;
   }
 
-
   public SessionInfoData duration(Long duration) {
     
     this.duration = duration;
     return this;
   }
 
-   /**
+  /**
    * The lifetime of the refresh token in seconds. 
    * @return duration
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The lifetime of the refresh token in seconds. ")
   @JsonProperty(DURATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,19 +179,19 @@ public class SessionInfoData {
     this.duration = duration;
   }
 
-
   public SessionInfoData locale(String locale) {
     
     this.locale = locale;
     return this;
   }
 
-   /**
+  /**
    * Get locale
    * @return locale
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -205,7 +205,6 @@ public class SessionInfoData {
   public void setLocale(String locale) {
     this.locale = locale;
   }
-
 
   public SessionInfoData authentications(List<@Valid AccountInfo> authentications) {
     
@@ -221,13 +220,14 @@ public class SessionInfoData {
     return this;
   }
 
-   /**
+  /**
    * Get authentications
    * @return authentications
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -242,20 +242,20 @@ public class SessionInfoData {
     this.authentications = authentications;
   }
 
-
   public SessionInfoData createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * Get createdAt
    * @return createdAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -269,7 +269,6 @@ public class SessionInfoData {
   public void setCreatedAt(OffsetDateTime createdAt) {
     this.createdAt = createdAt;
   }
-
 
   @Override
   public boolean equals(Object o) {

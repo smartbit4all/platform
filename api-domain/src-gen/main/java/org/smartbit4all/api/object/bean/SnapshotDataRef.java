@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   SnapshotDataRef.IS_LOADED,
   SnapshotDataRef.DATA
 })
-@JsonTypeName("SnapshotDataRef")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SnapshotDataRef {
   public static final String OBJECT_URI = "objectUri";
@@ -48,7 +47,7 @@ public class SnapshotDataRef {
   public static final String DATA = "data";
   private SnapshotData data;
 
-  public SnapshotDataRef() { 
+  public SnapshotDataRef() {
   }
 
   public SnapshotDataRef objectUri(URI objectUri) {
@@ -57,13 +56,14 @@ public class SnapshotDataRef {
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,19 +78,19 @@ public class SnapshotDataRef {
     this.objectUri = objectUri;
   }
 
-
   public SnapshotDataRef isLoaded(Boolean isLoaded) {
     
     this.isLoaded = isLoaded;
     return this;
   }
 
-   /**
+  /**
    * Get isLoaded
    * @return isLoaded
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_LOADED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,20 +105,20 @@ public class SnapshotDataRef {
     this.isLoaded = isLoaded;
   }
 
-
   public SnapshotDataRef data(SnapshotData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +132,6 @@ public class SnapshotDataRef {
   public void setData(SnapshotData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

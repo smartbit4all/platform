@@ -31,20 +31,20 @@ import jakarta.validation.Valid;
 /**
  * The vector search result items. 
  */
+@Schema(description = "The vector search result items. ")
 @JsonPropertyOrder({
   VectorSearchResultItem.SCORE,
   VectorSearchResultItem.VALUE
 })
-@JsonTypeName("VectorSearchResultItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorSearchResultItem {
   public static final String SCORE = "score";
   private Float score;
 
   public static final String VALUE = "value";
-  private Map<String, Object> value = null;
+  private Map<String, Object> value = new HashMap<>();
 
-  public VectorSearchResultItem() { 
+  public VectorSearchResultItem() {
   }
 
   public VectorSearchResultItem score(Float score) {
@@ -53,12 +53,13 @@ public class VectorSearchResultItem {
     return this;
   }
 
-   /**
+  /**
    * The score of the found item.
    * @return score
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The score of the found item.")
   @JsonProperty(SCORE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,7 +73,6 @@ public class VectorSearchResultItem {
   public void setScore(Float score) {
     this.score = score;
   }
-
 
   public VectorSearchResultItem value(Map<String, Object> value) {
     
@@ -88,12 +88,13 @@ public class VectorSearchResultItem {
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +108,6 @@ public class VectorSearchResultItem {
   public void setValue(Map<String, Object> value) {
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object o) {

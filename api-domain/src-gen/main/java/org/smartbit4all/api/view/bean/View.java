@@ -72,7 +72,6 @@ import jakarta.validation.Valid;
   View.STYLE,
   View.PARENT_STYLE
 })
-@JsonTypeName("View")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class View {
   public static final String UUID = "uuid";
@@ -147,7 +146,7 @@ public class View {
   public static final String PARENT_STYLE = "parentStyle";
   private Style parentStyle;
 
-  public View() { 
+  public View() {
   }
 
   public View uuid(UUID uuid) {
@@ -156,14 +155,15 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of the View.
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of the View.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -178,20 +178,20 @@ public class View {
     this.uuid = uuid;
   }
 
-
   public View viewName(String viewName) {
     
     this.viewName = viewName;
     return this;
   }
 
-   /**
+  /**
    * Get viewName
    * @return viewName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -206,20 +206,20 @@ public class View {
     this.viewName = viewName;
   }
 
-
   public View objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,20 +234,20 @@ public class View {
     this.objectUri = objectUri;
   }
 
-
   public View branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
   }
 
-   /**
+  /**
    * Get branchUri
    * @return branchUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +262,6 @@ public class View {
     this.branchUri = branchUri;
   }
 
-
   public View parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -274,13 +273,14 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.")
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -295,7 +295,6 @@ public class View {
     this.parameters = parameters;
   }
 
-
   public View variables(Map<String, Object> variables) {
     
     this.variables = variables;
@@ -307,13 +306,14 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * The variable to store while the page is opened. It will be cleared if we open it again.
    * @return variables
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The variable to store while the page is opened. It will be cleared if we open it again.")
   @JsonProperty(VARIABLES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -328,21 +328,21 @@ public class View {
     this.variables = variables;
   }
 
-
   public View state(ViewState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -357,21 +357,21 @@ public class View {
     this.state = state;
   }
 
-
   public View type(ViewType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -386,20 +386,20 @@ public class View {
     this.type = type;
   }
 
-
   public View containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
     return this;
   }
 
-   /**
+  /**
    * Get containerUuid
    * @return containerUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -414,19 +414,19 @@ public class View {
     this.containerUuid = containerUuid;
   }
 
-
   public View model(Object model) {
     
     this.model = model;
     return this;
   }
 
-   /**
+  /**
    * Get model
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -441,20 +441,20 @@ public class View {
     this.model = model;
   }
 
-
   public View constraint(ViewConstraint constraint) {
     
     this.constraint = constraint;
     return this;
   }
 
-   /**
+  /**
    * Get constraint
    * @return constraint
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONSTRAINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -469,7 +469,6 @@ public class View {
     this.constraint = constraint;
   }
 
-
   public View closedChildrenViews(List<@Valid ViewPlaceholder> closedChildrenViews) {
     
     this.closedChildrenViews = closedChildrenViews;
@@ -477,18 +476,22 @@ public class View {
   }
 
   public View addClosedChildrenViewsItem(ViewPlaceholder closedChildrenViewsItem) {
+    if (this.closedChildrenViews == null) {
+      this.closedChildrenViews = new ArrayList<>();
+    }
     this.closedChildrenViews.add(closedChildrenViewsItem);
     return this;
   }
 
-   /**
+  /**
    * Get closedChildrenViews
    * @return closedChildrenViews
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -503,7 +506,6 @@ public class View {
     this.closedChildrenViews = closedChildrenViews;
   }
 
-
   public View downloadableItems(Map<String, URI> downloadableItems) {
     
     this.downloadableItems = downloadableItems;
@@ -515,14 +517,15 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Get downloadableItems
    * @return downloadableItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DOWNLOADABLE_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -537,7 +540,6 @@ public class View {
     this.downloadableItems = downloadableItems;
   }
 
-
   public View actions(List<@Valid UiAction> actions) {
     
     this.actions = actions;
@@ -545,18 +547,22 @@ public class View {
   }
 
   public View addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -571,7 +577,6 @@ public class View {
     this.actions = actions;
   }
 
-
   public View eventHandlers(List<@Valid ViewEventHandler> eventHandlers) {
     
     this.eventHandlers = eventHandlers;
@@ -579,18 +584,22 @@ public class View {
   }
 
   public View addEventHandlersItem(ViewEventHandler eventHandlersItem) {
+    if (this.eventHandlers == null) {
+      this.eventHandlers = new ArrayList<>();
+    }
     this.eventHandlers.add(eventHandlersItem);
     return this;
   }
 
-   /**
+  /**
    * Get eventHandlers
    * @return eventHandlers
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(EVENT_HANDLERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -605,7 +614,6 @@ public class View {
     this.eventHandlers = eventHandlers;
   }
 
-
   public View widgetModels(Map<String, Object> widgetModels) {
     
     this.widgetModels = widgetModels;
@@ -617,13 +625,14 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Get widgetModels
    * @return widgetModels
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(WIDGET_MODELS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -638,7 +647,6 @@ public class View {
     this.widgetModels = widgetModels;
   }
 
-
   public View widgetServerModels(Map<String, Object> widgetServerModels) {
     
     this.widgetServerModels = widgetServerModels;
@@ -650,13 +658,14 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Get widgetServerModels
    * @return widgetServerModels
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(WIDGET_SERVER_MODELS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -671,7 +680,6 @@ public class View {
     this.widgetServerModels = widgetServerModels;
   }
 
-
   public View valueSets(Map<String, ValueSet> valueSets) {
     
     this.valueSets = valueSets;
@@ -683,14 +691,15 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Get valueSets
    * @return valueSets
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VALUE_SETS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -705,19 +714,19 @@ public class View {
     this.valueSets = valueSets;
   }
 
-
   public View keepModelOnImplicitClose(Boolean keepModelOnImplicitClose) {
     
     this.keepModelOnImplicitClose = keepModelOnImplicitClose;
     return this;
   }
 
-   /**
+  /**
    * Get keepModelOnImplicitClose
    * @return keepModelOnImplicitClose
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KEEP_MODEL_ON_IMPLICIT_CLOSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -732,7 +741,6 @@ public class View {
     this.keepModelOnImplicitClose = keepModelOnImplicitClose;
   }
 
-
   public View callbacks(Map<String, Object> callbacks) {
     
     this.callbacks = callbacks;
@@ -744,13 +752,14 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * Get callbacks
    * @return callbacks
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CALLBACKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -765,7 +774,6 @@ public class View {
     this.callbacks = callbacks;
   }
 
-
   public View layouts(Map<String, SmartLayoutDefinition> layouts) {
     
     this.layouts = layouts;
@@ -777,14 +785,15 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * The layouts defined in the view. This named layouts can be used by the UI to render
    * @return layouts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The layouts defined in the view. This named layouts can be used by the UI to render")
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -799,7 +808,6 @@ public class View {
     this.layouts = layouts;
   }
 
-
   public View componentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
     
     this.componentLayouts = componentLayouts;
@@ -811,14 +819,15 @@ public class View {
     return this;
   }
 
-   /**
+  /**
    * The components layouts defined in the view. This named layouts can be used by the UI to render
    * @return componentLayouts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The components layouts defined in the view. This named layouts can be used by the UI to render")
   @JsonProperty(COMPONENT_LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -833,20 +842,20 @@ public class View {
     this.componentLayouts = componentLayouts;
   }
 
-
   public View style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -861,20 +870,20 @@ public class View {
     this.style = style;
   }
 
-
   public View parentStyle(Style parentStyle) {
     
     this.parentStyle = parentStyle;
     return this;
   }
 
-   /**
+  /**
    * Get parentStyle
    * @return parentStyle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARENT_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -888,7 +897,6 @@ public class View {
   public void setParentStyle(Style parentStyle) {
     this.parentStyle = parentStyle;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * This object is a transient one but can be used for UI editing and caching also. It contains the subject and the ACLOperations  if the given subject and the operation is attached. 
  */
+@Schema(description = "This object is a transient one but can be used for UI editing and caching also. It contains the subject and the ACLOperations  if the given subject and the operation is attached. ")
 @JsonPropertyOrder({
   ACLSubject.SUBJECT,
   ACLSubject.OPERATION
 })
-@JsonTypeName("ACLSubject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubject {
   public static final String SUBJECT = "subject";
@@ -44,7 +44,7 @@ public class ACLSubject {
   public static final String OPERATION = "operation";
   private ACLOperation operation;
 
-  public ACLSubject() { 
+  public ACLSubject() {
   }
 
   public ACLSubject subject(Subject subject) {
@@ -53,13 +53,14 @@ public class ACLSubject {
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,21 +75,21 @@ public class ACLSubject {
     this.subject = subject;
   }
 
-
   public ACLSubject operation(ACLOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -102,7 +103,6 @@ public class ACLSubject {
   public void setOperation(ACLOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

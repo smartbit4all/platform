@@ -47,7 +47,6 @@ import jakarta.validation.Valid;
   DocumentViewProcess.MAIN_IMAGE,
   DocumentViewProcess.THUMBNAILS
 })
-@JsonTypeName("DocumentViewProcess")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DocumentViewProcess {
   public static final String DISPLAY_MODE = "displayMode";
@@ -81,9 +80,9 @@ public class DocumentViewProcess {
   private ImageWithAlt mainImage;
 
   public static final String THUMBNAILS = "thumbnails";
-  private List<@Valid ImageWithAlt> thumbnails = null;
+  private List<@Valid ImageWithAlt> thumbnails = new ArrayList<>();
 
-  public DocumentViewProcess() { 
+  public DocumentViewProcess() {
   }
 
   public DocumentViewProcess displayMode(DisplayMode displayMode) {
@@ -92,13 +91,14 @@ public class DocumentViewProcess {
     return this;
   }
 
-   /**
+  /**
    * Get displayMode
    * @return displayMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +113,19 @@ public class DocumentViewProcess {
     this.displayMode = displayMode;
   }
 
-
   public DocumentViewProcess pageIndex(String pageIndex) {
     
     this.pageIndex = pageIndex;
     return this;
   }
 
-   /**
+  /**
    * Get pageIndex
    * @return pageIndex
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +140,19 @@ public class DocumentViewProcess {
     this.pageIndex = pageIndex;
   }
 
-
   public DocumentViewProcess pageCount(Integer pageCount) {
     
     this.pageCount = pageCount;
     return this;
   }
 
-   /**
+  /**
    * Get pageCount
    * @return pageCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,19 +167,19 @@ public class DocumentViewProcess {
     this.pageCount = pageCount;
   }
 
-
   public DocumentViewProcess zoomValue(Integer zoomValue) {
     
     this.zoomValue = zoomValue;
     return this;
   }
 
-   /**
+  /**
    * Get zoomValue
    * @return zoomValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ZOOM_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,19 +194,19 @@ public class DocumentViewProcess {
     this.zoomValue = zoomValue;
   }
 
-
   public DocumentViewProcess text(String text) {
     
     this.text = text;
     return this;
   }
 
-   /**
+  /**
    * Get text
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,19 +221,19 @@ public class DocumentViewProcess {
     this.text = text;
   }
 
-
   public DocumentViewProcess message(String message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * Get message
    * @return message
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -248,19 +248,19 @@ public class DocumentViewProcess {
     this.message = message;
   }
 
-
   public DocumentViewProcess leftButtonEnabled(Boolean leftButtonEnabled) {
     
     this.leftButtonEnabled = leftButtonEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get leftButtonEnabled
    * @return leftButtonEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LEFT_BUTTON_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -275,19 +275,19 @@ public class DocumentViewProcess {
     this.leftButtonEnabled = leftButtonEnabled;
   }
 
-
   public DocumentViewProcess rightButtonEnabled(Boolean rightButtonEnabled) {
     
     this.rightButtonEnabled = rightButtonEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get rightButtonEnabled
    * @return rightButtonEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(RIGHT_BUTTON_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -302,19 +302,19 @@ public class DocumentViewProcess {
     this.rightButtonEnabled = rightButtonEnabled;
   }
 
-
   public DocumentViewProcess loadingSpinnerDisplayed(Boolean loadingSpinnerDisplayed) {
     
     this.loadingSpinnerDisplayed = loadingSpinnerDisplayed;
     return this;
   }
 
-   /**
+  /**
    * Get loadingSpinnerDisplayed
    * @return loadingSpinnerDisplayed
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOADING_SPINNER_DISPLAYED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -329,20 +329,20 @@ public class DocumentViewProcess {
     this.loadingSpinnerDisplayed = loadingSpinnerDisplayed;
   }
 
-
   public DocumentViewProcess mainImage(ImageWithAlt mainImage) {
     
     this.mainImage = mainImage;
     return this;
   }
 
-   /**
+  /**
    * Get mainImage
    * @return mainImage
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MAIN_IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -356,7 +356,6 @@ public class DocumentViewProcess {
   public void setMainImage(ImageWithAlt mainImage) {
     this.mainImage = mainImage;
   }
-
 
   public DocumentViewProcess thumbnails(List<@Valid ImageWithAlt> thumbnails) {
     
@@ -372,13 +371,14 @@ public class DocumentViewProcess {
     return this;
   }
 
-   /**
+  /**
    * Get thumbnails
    * @return thumbnails
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(THUMBNAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -392,7 +392,6 @@ public class DocumentViewProcess {
   public void setThumbnails(List<@Valid ImageWithAlt> thumbnails) {
     this.thumbnails = thumbnails;
   }
-
 
   @Override
   public boolean equals(Object o) {

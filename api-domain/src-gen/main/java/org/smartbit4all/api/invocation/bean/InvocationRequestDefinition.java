@@ -34,20 +34,20 @@ import jakarta.validation.Valid;
 /**
  * The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and indirect, when the invocation itself modifies the related objects. 
  */
+@Schema(description = "The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and indirect, when the invocation itself modifies the related objects. ")
 @JsonPropertyOrder({
   InvocationRequestDefinition.REQUEST,
   InvocationRequestDefinition.RESOLVERS
 })
-@JsonTypeName("InvocationRequestDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequestDefinition {
   public static final String REQUEST = "request";
   private InvocationRequest request;
 
   public static final String RESOLVERS = "resolvers";
-  private List<@Valid InvocationParameterResolver> resolvers = null;
+  private List<@Valid InvocationParameterResolver> resolvers = new ArrayList<>();
 
-  public InvocationRequestDefinition() { 
+  public InvocationRequestDefinition() {
   }
 
   public InvocationRequestDefinition request(InvocationRequest request) {
@@ -56,14 +56,15 @@ public class InvocationRequestDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get request
    * @return request
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +78,6 @@ public class InvocationRequestDefinition {
   public void setRequest(InvocationRequest request) {
     this.request = request;
   }
-
 
   public InvocationRequestDefinition resolvers(List<@Valid InvocationParameterResolver> resolvers) {
     
@@ -93,13 +93,14 @@ public class InvocationRequestDefinition {
     return this;
   }
 
-   /**
+  /**
    * The resolvers are used to setup parameters of the newly created invocation request.
    * @return resolvers
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The resolvers are used to setup parameters of the newly created invocation request.")
   @JsonProperty(RESOLVERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,7 +114,6 @@ public class InvocationRequestDefinition {
   public void setResolvers(List<@Valid InvocationParameterResolver> resolvers) {
     this.resolvers = resolvers;
   }
-
 
   @Override
   public boolean equals(Object o) {

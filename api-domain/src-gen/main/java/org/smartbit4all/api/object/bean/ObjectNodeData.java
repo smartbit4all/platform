@@ -36,6 +36,7 @@ import jakarta.validation.Valid;
 /**
  * This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains  an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification. 
  */
+@Schema(description = "This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains  an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification. ")
 @JsonPropertyOrder({
   ObjectNodeData.OBJECT_URI,
   ObjectNodeData.QUALIFIED_NAME,
@@ -51,7 +52,6 @@ import jakarta.validation.Valid;
   ObjectNodeData.REFERENCE_MAPS,
   ObjectNodeData.RESULT_URI
 })
-@JsonTypeName("ObjectNodeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectNodeData {
   public static final String OBJECT_URI = "objectUri";
@@ -79,7 +79,7 @@ public class ObjectNodeData {
   private Map<String, Object> objectAsMap = new HashMap<>();
 
   public static final String ASPECTS = "aspects";
-  private Map<String, ObjectAspect> aspects = null;
+  private Map<String, ObjectAspect> aspects = new HashMap<>();
 
   public static final String REFERENCES = "references";
   private Map<String, ObjectNodeData> references = new HashMap<>();
@@ -93,7 +93,7 @@ public class ObjectNodeData {
   public static final String RESULT_URI = "resultUri";
   private URI resultUri;
 
-  public ObjectNodeData() { 
+  public ObjectNodeData() {
   }
 
   public ObjectNodeData objectUri(URI objectUri) {
@@ -102,13 +102,14 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * The object URI of the given object state. It is version URI to be able to refere to the given version of the data. 
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object URI of the given object state. It is version URI to be able to refere to the given version of the data. ")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -123,20 +124,20 @@ public class ObjectNodeData {
     this.objectUri = objectUri;
   }
 
-
   public ObjectNodeData qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class. 
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -151,19 +152,19 @@ public class ObjectNodeData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ObjectNodeData storageSchema(String storageSchema) {
     
     this.storageSchema = storageSchema;
     return this;
   }
 
-   /**
+  /**
    * The logical storage scheme if it is used in the given storage implementation. 
    * @return storageSchema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The logical storage scheme if it is used in the given storage implementation. ")
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,20 +179,20 @@ public class ObjectNodeData {
     this.storageSchema = storageSchema;
   }
 
-
   public ObjectNodeData versionNr(Long versionNr) {
     
     this.versionNr = versionNr;
     return this;
   }
 
-   /**
+  /**
    * The version number of the given node. It is filled by the retrieve so if we create a new node then it is 0 by default. 
    * @return versionNr
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The version number of the given node. It is filled by the retrieve so if we create a new node then it is 0 by default. ")
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -206,20 +207,20 @@ public class ObjectNodeData {
     this.versionNr = versionNr;
   }
 
-
   public ObjectNodeData createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * The offset date time when this node version was created. 
    * @return createdAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The offset date time when this node version was created. ")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,19 +235,19 @@ public class ObjectNodeData {
     this.createdAt = createdAt;
   }
 
-
   public ObjectNodeData lastModified(Long lastModified) {
     
     this.lastModified = lastModified;
     return this;
   }
 
-   /**
+  /**
    * The last modification time in long. It is filled by the retrieve so if we create a new node then it is  -1 by default. 
    * @return lastModified
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The last modification time in long. It is filled by the retrieve so if we create a new node then it is  -1 by default. ")
   @JsonProperty(LAST_MODIFIED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -261,21 +262,21 @@ public class ObjectNodeData {
     this.lastModified = lastModified;
   }
 
-
   public ObjectNodeData state(ObjectNodeState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -290,7 +291,6 @@ public class ObjectNodeData {
     this.state = state;
   }
 
-
   public ObjectNodeData objectAsMap(Map<String, Object> objectAsMap) {
     
     this.objectAsMap = objectAsMap;
@@ -302,13 +302,14 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * Get objectAsMap
    * @return objectAsMap
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -322,7 +323,6 @@ public class ObjectNodeData {
   public void setObjectAsMap(Map<String, Object> objectAsMap) {
     this.objectAsMap = objectAsMap;
   }
-
 
   public ObjectNodeData aspects(Map<String, ObjectAspect> aspects) {
     
@@ -338,13 +338,14 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * The aspects are named objects attached to the given object version. 
    * @return aspects
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The aspects are named objects attached to the given object version. ")
   @JsonProperty(ASPECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -359,7 +360,6 @@ public class ObjectNodeData {
     this.aspects = aspects;
   }
 
-
   public ObjectNodeData references(Map<String, ObjectNodeData> references) {
     
     this.references = references;
@@ -371,14 +371,15 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * Get references
    * @return references
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -393,7 +394,6 @@ public class ObjectNodeData {
     this.references = references;
   }
 
-
   public ObjectNodeData referenceLists(Map<String, List<@Valid ObjectNodeData>> referenceLists) {
     
     this.referenceLists = referenceLists;
@@ -405,14 +405,15 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * Get referenceLists
    * @return referenceLists
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -427,7 +428,6 @@ public class ObjectNodeData {
     this.referenceLists = referenceLists;
   }
 
-
   public ObjectNodeData referenceMaps(Map<String, Map<String, ObjectNodeData>> referenceMaps) {
     
     this.referenceMaps = referenceMaps;
@@ -439,14 +439,15 @@ public class ObjectNodeData {
     return this;
   }
 
-   /**
+  /**
    * Get referenceMaps
    * @return referenceMaps
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -461,20 +462,20 @@ public class ObjectNodeData {
     this.referenceMaps = referenceMaps;
   }
 
-
   public ObjectNodeData resultUri(URI resultUri) {
     
     this.resultUri = resultUri;
     return this;
   }
 
-   /**
+  /**
    * The object URI after an ObjectApi.save. It can be used to read the result Uri after save. 
    * @return resultUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object URI after an ObjectApi.save. It can be used to read the result Uri after save. ")
   @JsonProperty(RESULT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -488,7 +489,6 @@ public class ObjectNodeData {
   public void setResultUri(URI resultUri) {
     this.resultUri = resultUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

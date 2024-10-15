@@ -51,7 +51,6 @@ import jakarta.validation.Valid;
   FilterFieldModel.VALUE4,
   FilterFieldModel.ENABLED
 })
-@JsonTypeName("FilterFieldModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldModel {
   public static final String SELECTOR_ID = "selectorId";
@@ -96,7 +95,7 @@ public class FilterFieldModel {
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
 
-  public FilterFieldModel() { 
+  public FilterFieldModel() {
   }
 
   public FilterFieldModel selectorId(String selectorId) {
@@ -105,12 +104,13 @@ public class FilterFieldModel {
     return this;
   }
 
-   /**
+  /**
    * Get selectorId
    * @return selectorId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTOR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,20 +125,20 @@ public class FilterFieldModel {
     this.selectorId = selectorId;
   }
 
-
   public FilterFieldModel label(FilterFieldLabel label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,19 +153,19 @@ public class FilterFieldModel {
     this.label = label;
   }
 
-
   public FilterFieldModel closeable(Boolean closeable) {
     
     this.closeable = closeable;
     return this;
   }
 
-   /**
+  /**
    * Get closeable
    * @return closeable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +180,19 @@ public class FilterFieldModel {
     this.closeable = closeable;
   }
 
-
   public FilterFieldModel draggable(Boolean draggable) {
     
     this.draggable = draggable;
     return this;
   }
 
-   /**
+  /**
    * Get draggable
    * @return draggable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DRAGGABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,20 +207,20 @@ public class FilterFieldModel {
     this.draggable = draggable;
   }
 
-
   public FilterFieldModel selectedOperation(FilterOperation selectedOperation) {
     
     this.selectedOperation = selectedOperation;
     return this;
   }
 
-   /**
+  /**
    * Get selectedOperation
    * @return selectedOperation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,7 +235,6 @@ public class FilterFieldModel {
     this.selectedOperation = selectedOperation;
   }
 
-
   public FilterFieldModel operations(List<FilterOperation> operations) {
     
     this.operations = operations;
@@ -243,18 +242,22 @@ public class FilterFieldModel {
   }
 
   public FilterFieldModel addOperationsItem(FilterOperation operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
     this.operations.add(operationsItem);
     return this;
   }
 
-   /**
+  /**
    * Get operations
    * @return operations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -269,7 +272,6 @@ public class FilterFieldModel {
     this.operations = operations;
   }
 
-
   public FilterFieldModel possibleValues(List<Value> possibleValues) {
     
     this.possibleValues = possibleValues;
@@ -277,18 +279,22 @@ public class FilterFieldModel {
   }
 
   public FilterFieldModel addPossibleValuesItem(Value possibleValuesItem) {
+    if (this.possibleValues == null) {
+      this.possibleValues = new ArrayList<>();
+    }
     this.possibleValues.add(possibleValuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get possibleValues
    * @return possibleValues
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -303,7 +309,6 @@ public class FilterFieldModel {
     this.possibleValues = possibleValues;
   }
 
-
   public FilterFieldModel selectedValues(List<Value> selectedValues) {
     
     this.selectedValues = selectedValues;
@@ -311,18 +316,22 @@ public class FilterFieldModel {
   }
 
   public FilterFieldModel addSelectedValuesItem(Value selectedValuesItem) {
+    if (this.selectedValues == null) {
+      this.selectedValues = new ArrayList<>();
+    }
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectedValues
    * @return selectedValues
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -337,20 +346,20 @@ public class FilterFieldModel {
     this.selectedValues = selectedValues;
   }
 
-
   public FilterFieldModel selectedValue(Value selectedValue) {
     
     this.selectedValue = selectedValue;
     return this;
   }
 
-   /**
+  /**
    * Get selectedValue
    * @return selectedValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -365,19 +374,19 @@ public class FilterFieldModel {
     this.selectedValue = selectedValue;
   }
 
-
   public FilterFieldModel value1(String value1) {
     
     this.value1 = value1;
     return this;
   }
 
-   /**
+  /**
    * Get value1
    * @return value1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -392,19 +401,19 @@ public class FilterFieldModel {
     this.value1 = value1;
   }
 
-
   public FilterFieldModel value2(String value2) {
     
     this.value2 = value2;
     return this;
   }
 
-   /**
+  /**
    * Get value2
    * @return value2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -419,19 +428,19 @@ public class FilterFieldModel {
     this.value2 = value2;
   }
 
-
   public FilterFieldModel value3(String value3) {
     
     this.value3 = value3;
     return this;
   }
 
-   /**
+  /**
    * Get value3
    * @return value3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -446,19 +455,19 @@ public class FilterFieldModel {
     this.value3 = value3;
   }
 
-
   public FilterFieldModel value4(String value4) {
     
     this.value4 = value4;
     return this;
   }
 
-   /**
+  /**
    * Get value4
    * @return value4
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE4)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -473,19 +482,19 @@ public class FilterFieldModel {
     this.value4 = value4;
   }
 
-
   public FilterFieldModel enabled(Boolean enabled) {
     
     this.enabled = enabled;
     return this;
   }
 
-   /**
+  /**
    * Get enabled
    * @return enabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -499,7 +508,6 @@ public class FilterFieldModel {
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

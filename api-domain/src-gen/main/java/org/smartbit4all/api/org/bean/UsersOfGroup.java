@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   UsersOfGroup.GROUP_URI,
   UsersOfGroup.USERS
 })
-@JsonTypeName("UsersOfGroup")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UsersOfGroup {
   public static final String URI = "uri";
@@ -50,7 +49,7 @@ public class UsersOfGroup {
   public static final String USERS = "users";
   private List<URI> users = new ArrayList<>();
 
-  public UsersOfGroup() { 
+  public UsersOfGroup() {
   }
 
   public UsersOfGroup uri(URI uri) {
@@ -59,14 +58,15 @@ public class UsersOfGroup {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -81,21 +81,21 @@ public class UsersOfGroup {
     this.uri = uri;
   }
 
-
   public UsersOfGroup groupUri(URI groupUri) {
     
     this.groupUri = groupUri;
     return this;
   }
 
-   /**
+  /**
    * Get groupUri
    * @return groupUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUP_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +110,6 @@ public class UsersOfGroup {
     this.groupUri = groupUri;
   }
 
-
   public UsersOfGroup users(List<URI> users) {
     
     this.users = users;
@@ -118,18 +117,22 @@ public class UsersOfGroup {
   }
 
   public UsersOfGroup addUsersItem(URI usersItem) {
+    if (this.users == null) {
+      this.users = new ArrayList<>();
+    }
     this.users.add(usersItem);
     return this;
   }
 
-   /**
+  /**
    * Get users
    * @return users
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,7 +146,6 @@ public class UsersOfGroup {
   public void setUsers(List<URI> users) {
     this.users = users;
   }
-
 
   @Override
   public boolean equals(Object o) {

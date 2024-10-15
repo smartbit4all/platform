@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   DataChange.SOURCE,
   DataChange.VALUES
 })
-@JsonTypeName("DataChange")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DataChange {
   public static final String KIND = "kind";
@@ -47,9 +46,9 @@ public class DataChange {
   private String source;
 
   public static final String VALUES = "values";
-  private Map<String, Object> values = null;
+  private Map<String, Object> values = new HashMap<>();
 
-  public DataChange() { 
+  public DataChange() {
   }
 
   public DataChange kind(DataChangeKind kind) {
@@ -58,13 +57,14 @@ public class DataChange {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,19 +79,19 @@ public class DataChange {
     this.kind = kind;
   }
 
-
   public DataChange source(String source) {
     
     this.source = source;
     return this;
   }
 
-   /**
+  /**
    * Source of the event, typically the key of the widget.
    * @return source
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Source of the event, typically the key of the widget.")
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,7 +105,6 @@ public class DataChange {
   public void setSource(String source) {
     this.source = source;
   }
-
 
   public DataChange values(Map<String, Object> values) {
     
@@ -121,12 +120,13 @@ public class DataChange {
     return this;
   }
 
-   /**
+  /**
    * Changed values, in a key-value map.
    * @return values
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Changed values, in a key-value map.")
   @JsonProperty(VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,7 +140,6 @@ public class DataChange {
   public void setValues(Map<String, Object> values) {
     this.values = values;
   }
-
 
   @Override
   public boolean equals(Object o) {

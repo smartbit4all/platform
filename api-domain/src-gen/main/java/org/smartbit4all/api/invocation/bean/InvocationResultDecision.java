@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The evaluation can make a decision on the result of the invocation. Can ask reschedule, continue can finish the call. 
  */
+@Schema(description = "The evaluation can make a decision on the result of the invocation. Can ask reschedule, continue can finish the call. ")
 @JsonPropertyOrder({
   InvocationResultDecision.HANDLER,
   InvocationResultDecision.DECISION,
   InvocationResultDecision.SCHEDULED_AT
 })
-@JsonTypeName("InvocationResultDecision")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationResultDecision {
   public static final String HANDLER = "handler";
@@ -84,7 +84,7 @@ public class InvocationResultDecision {
   public static final String SCHEDULED_AT = "scheduledAt";
   private OffsetDateTime scheduledAt;
 
-  public InvocationResultDecision() { 
+  public InvocationResultDecision() {
   }
 
   public InvocationResultDecision handler(String handler) {
@@ -93,12 +93,13 @@ public class InvocationResultDecision {
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the evaluator api that was the decision maker.
    * @return handler
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the evaluator api that was the decision maker.")
   @JsonProperty(HANDLER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +114,19 @@ public class InvocationResultDecision {
     this.handler = handler;
   }
 
-
   public InvocationResultDecision decision(DecisionEnum decision) {
     
     this.decision = decision;
     return this;
   }
 
-   /**
+  /**
    * Get decision
    * @return decision
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DECISION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,20 +141,20 @@ public class InvocationResultDecision {
     this.decision = decision;
   }
 
-
   public InvocationResultDecision scheduledAt(OffsetDateTime scheduledAt) {
     
     this.scheduledAt = scheduledAt;
     return this;
   }
 
-   /**
+  /**
    * If the error handler decided to reschedule the given invocation or continue with the andThen calls then we can see  the next invocation time in this field. 
    * @return scheduledAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the error handler decided to reschedule the given invocation or continue with the andThen calls then we can see  the next invocation time in this field. ")
   @JsonProperty(SCHEDULED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +168,6 @@ public class InvocationResultDecision {
   public void setScheduledAt(OffsetDateTime scheduledAt) {
     this.scheduledAt = scheduledAt;
   }
-
 
   @Override
   public boolean equals(Object o) {

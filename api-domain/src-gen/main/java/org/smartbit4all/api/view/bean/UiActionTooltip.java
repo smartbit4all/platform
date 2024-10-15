@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   UiActionTooltip.TOOLTIP_DELAY,
   UiActionTooltip.TOOLTIP_HIDE_DELAY
 })
-@JsonTypeName("UiActionTooltip")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionTooltip {
   public static final String TOOLTIP = "tooltip";
@@ -93,7 +92,7 @@ public class UiActionTooltip {
   public static final String TOOLTIP_HIDE_DELAY = "tooltipHideDelay";
   private Long tooltipHideDelay;
 
-  public UiActionTooltip() { 
+  public UiActionTooltip() {
   }
 
   public UiActionTooltip tooltip(String tooltip) {
@@ -102,12 +101,13 @@ public class UiActionTooltip {
     return this;
   }
 
-   /**
+  /**
    * Get tooltip
    * @return tooltip
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,19 +122,19 @@ public class UiActionTooltip {
     this.tooltip = tooltip;
   }
 
-
   public UiActionTooltip tooltipPosition(TooltipPositionEnum tooltipPosition) {
     
     this.tooltipPosition = tooltipPosition;
     return this;
   }
 
-   /**
+  /**
    * Get tooltipPosition
    * @return tooltipPosition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,19 +149,19 @@ public class UiActionTooltip {
     this.tooltipPosition = tooltipPosition;
   }
 
-
   public UiActionTooltip tooltipDelay(Long tooltipDelay) {
     
     this.tooltipDelay = tooltipDelay;
     return this;
   }
 
-   /**
+  /**
    * Get tooltipDelay
    * @return tooltipDelay
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP_DELAY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,19 +176,19 @@ public class UiActionTooltip {
     this.tooltipDelay = tooltipDelay;
   }
 
-
   public UiActionTooltip tooltipHideDelay(Long tooltipHideDelay) {
     
     this.tooltipHideDelay = tooltipHideDelay;
     return this;
   }
 
-   /**
+  /**
    * Get tooltipHideDelay
    * @return tooltipHideDelay
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP_HIDE_DELAY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -202,7 +202,6 @@ public class UiActionTooltip {
   public void setTooltipHideDelay(Long tooltipHideDelay) {
     this.tooltipHideDelay = tooltipHideDelay;
   }
-
 
   @Override
   public boolean equals(Object o) {

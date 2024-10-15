@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * The list of references as a container object for the Api.  
  */
+@Schema(description = "The list of references as a container object for the Api.  ")
 @JsonPropertyOrder({
   ObjectReferenceList.REFERENCE_TYPE_CLASS,
   ObjectReferenceList.REFERENCES
 })
-@JsonTypeName("ObjectReferenceList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectReferenceList {
   public static final String REFERENCE_TYPE_CLASS = "referenceTypeClass";
@@ -46,7 +46,7 @@ public class ObjectReferenceList {
   public static final String REFERENCES = "references";
   private List<@Valid ObjectReference> references = new ArrayList<>();
 
-  public ObjectReferenceList() { 
+  public ObjectReferenceList() {
   }
 
   public ObjectReferenceList referenceTypeClass(String referenceTypeClass) {
@@ -55,13 +55,14 @@ public class ObjectReferenceList {
     return this;
   }
 
-   /**
+  /**
    * The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   
    * @return referenceTypeClass
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
   @JsonProperty(REFERENCE_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -76,7 +77,6 @@ public class ObjectReferenceList {
     this.referenceTypeClass = referenceTypeClass;
   }
 
-
   public ObjectReferenceList references(List<@Valid ObjectReference> references) {
     
     this.references = references;
@@ -84,18 +84,22 @@ public class ObjectReferenceList {
   }
 
   public ObjectReferenceList addReferencesItem(ObjectReference referencesItem) {
+    if (this.references == null) {
+      this.references = new ArrayList<>();
+    }
     this.references.add(referencesItem);
     return this;
   }
 
-   /**
+  /**
    * Get references
    * @return references
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +113,6 @@ public class ObjectReferenceList {
   public void setReferences(List<@Valid ObjectReference> references) {
     this.references = references;
   }
-
 
   @Override
   public boolean equals(Object o) {

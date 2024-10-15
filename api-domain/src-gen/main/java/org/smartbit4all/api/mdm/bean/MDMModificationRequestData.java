@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * .
  */
+@Schema(description = ".")
 @JsonPropertyOrder({
   MDMModificationRequestData.DEFINITION
 })
-@JsonTypeName("MDMModificationRequestData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModificationRequestData {
   public static final String DEFINITION = "definition";
-  private List<Map<String, String>> definition = null;
+  private List<Map<String, String>> definition = new ArrayList<>();
 
-  public MDMModificationRequestData() { 
+  public MDMModificationRequestData() {
   }
 
   public MDMModificationRequestData definition(List<Map<String, String>> definition) {
@@ -59,13 +59,14 @@ public class MDMModificationRequestData {
     return this;
   }
 
-   /**
+  /**
    * Get definition
    * @return definition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,7 +80,6 @@ public class MDMModificationRequestData {
   public void setDefinition(List<Map<String, String>> definition) {
     this.definition = definition;
   }
-
 
   @Override
   public boolean equals(Object o) {

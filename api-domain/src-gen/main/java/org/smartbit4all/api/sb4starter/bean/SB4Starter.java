@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
   SB4Starter.COMMANDS,
   SB4Starter.KEEP_WORKING_DIRECTORY
 })
-@JsonTypeName("SB4Starter")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4Starter {
   public static final String ID = "id";
@@ -51,7 +50,7 @@ public class SB4Starter {
   public static final String KEEP_WORKING_DIRECTORY = "keepWorkingDirectory";
   private Boolean keepWorkingDirectory = false;
 
-  public SB4Starter() { 
+  public SB4Starter() {
   }
 
   public SB4Starter id(UUID id) {
@@ -60,14 +59,15 @@ public class SB4Starter {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,7 +82,6 @@ public class SB4Starter {
     this.id = id;
   }
 
-
   public SB4Starter commands(List<@Valid SB4Command> commands) {
     
     this.commands = commands;
@@ -90,18 +89,22 @@ public class SB4Starter {
   }
 
   public SB4Starter addCommandsItem(SB4Command commandsItem) {
+    if (this.commands == null) {
+      this.commands = new ArrayList<>();
+    }
     this.commands.add(commandsItem);
     return this;
   }
 
-   /**
+  /**
    * Get commands
    * @return commands
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,19 +119,19 @@ public class SB4Starter {
     this.commands = commands;
   }
 
-
   public SB4Starter keepWorkingDirectory(Boolean keepWorkingDirectory) {
     
     this.keepWorkingDirectory = keepWorkingDirectory;
     return this;
   }
 
-   /**
+  /**
    * Get keepWorkingDirectory
    * @return keepWorkingDirectory
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KEEP_WORKING_DIRECTORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +145,6 @@ public class SB4Starter {
   public void setKeepWorkingDirectory(Boolean keepWorkingDirectory) {
     this.keepWorkingDirectory = keepWorkingDirectory;
   }
-
 
   @Override
   public boolean equals(Object o) {

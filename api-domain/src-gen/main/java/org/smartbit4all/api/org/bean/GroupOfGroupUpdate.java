@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   GroupOfGroupUpdate.CHILD_GROUP,
   GroupOfGroupUpdate.OPERATION
 })
-@JsonTypeName("GroupOfGroupUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GroupOfGroupUpdate {
   public static final String URI = "uri";
@@ -53,7 +52,7 @@ public class GroupOfGroupUpdate {
   public static final String OPERATION = "operation";
   private BulkUpdateOperation operation;
 
-  public GroupOfGroupUpdate() { 
+  public GroupOfGroupUpdate() {
   }
 
   public GroupOfGroupUpdate uri(URI uri) {
@@ -62,13 +61,14 @@ public class GroupOfGroupUpdate {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,20 +83,20 @@ public class GroupOfGroupUpdate {
     this.uri = uri;
   }
 
-
   public GroupOfGroupUpdate parentGroup(Group parentGroup) {
     
     this.parentGroup = parentGroup;
     return this;
   }
 
-   /**
+  /**
    * Get parentGroup
    * @return parentGroup
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARENT_GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,20 +111,20 @@ public class GroupOfGroupUpdate {
     this.parentGroup = parentGroup;
   }
 
-
   public GroupOfGroupUpdate childGroup(Group childGroup) {
     
     this.childGroup = childGroup;
     return this;
   }
 
-   /**
+  /**
    * Get childGroup
    * @return childGroup
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CHILD_GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,20 +139,20 @@ public class GroupOfGroupUpdate {
     this.childGroup = childGroup;
   }
 
-
   public GroupOfGroupUpdate operation(BulkUpdateOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,7 +166,6 @@ public class GroupOfGroupUpdate {
   public void setOperation(BulkUpdateOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

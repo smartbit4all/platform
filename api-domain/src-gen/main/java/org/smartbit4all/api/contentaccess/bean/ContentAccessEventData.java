@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   ContentAccessEventData.BINARY_CONTENT,
   ContentAccessEventData.DIRECTION
 })
-@JsonTypeName("ContentAccessEventData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ContentAccessEventData {
   public static final String UUID = "uuid";
@@ -49,7 +48,7 @@ public class ContentAccessEventData {
   public static final String DIRECTION = "direction";
   private Direction direction;
 
-  public ContentAccessEventData() { 
+  public ContentAccessEventData() {
   }
 
   public ContentAccessEventData uuid(UUID uuid) {
@@ -58,13 +57,14 @@ public class ContentAccessEventData {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +79,20 @@ public class ContentAccessEventData {
     this.uuid = uuid;
   }
 
-
   public ContentAccessEventData binaryContent(BinaryContent binaryContent) {
     
     this.binaryContent = binaryContent;
     return this;
   }
 
-   /**
+  /**
    * Get binaryContent
    * @return binaryContent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BINARY_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +107,20 @@ public class ContentAccessEventData {
     this.binaryContent = binaryContent;
   }
 
-
   public ContentAccessEventData direction(Direction direction) {
     
     this.direction = direction;
     return this;
   }
 
-   /**
+  /**
    * Get direction
    * @return direction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +134,6 @@ public class ContentAccessEventData {
   public void setDirection(Direction direction) {
     this.direction = direction;
   }
-
 
   @Override
   public boolean equals(Object o) {

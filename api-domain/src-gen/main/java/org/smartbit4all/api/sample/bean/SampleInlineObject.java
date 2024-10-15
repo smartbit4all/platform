@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   SampleInlineObject.NAME,
   SampleInlineObject.CATEGORY_TYPE
 })
-@JsonTypeName("SampleInlineObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleInlineObject {
   public static final String NAME = "name";
@@ -43,7 +42,7 @@ public class SampleInlineObject {
   public static final String CATEGORY_TYPE = "categoryType";
   private URI categoryType;
 
-  public SampleInlineObject() { 
+  public SampleInlineObject() {
   }
 
   public SampleInlineObject name(String name) {
@@ -52,12 +51,13 @@ public class SampleInlineObject {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,20 +72,20 @@ public class SampleInlineObject {
     this.name = name;
   }
 
-
   public SampleInlineObject categoryType(URI categoryType) {
     
     this.categoryType = categoryType;
     return this;
   }
 
-   /**
+  /**
    * Get categoryType
    * @return categoryType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CATEGORY_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class SampleInlineObject {
   public void setCategoryType(URI categoryType) {
     this.categoryType = categoryType;
   }
-
 
   @Override
   public boolean equals(Object o) {

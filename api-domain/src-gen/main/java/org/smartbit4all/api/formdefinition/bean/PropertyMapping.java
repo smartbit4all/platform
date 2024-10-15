@@ -29,11 +29,11 @@ import jakarta.validation.Valid;
 /**
  * Mapping of two properties.
  */
+@Schema(description = "Mapping of two properties.")
 @JsonPropertyOrder({
   PropertyMapping.DATA,
   PropertyMapping.SELECTION
 })
-@JsonTypeName("PropertyMapping")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PropertyMapping {
   public static final String DATA = "data";
@@ -42,7 +42,7 @@ public class PropertyMapping {
   public static final String SELECTION = "selection";
   private String selection;
 
-  public PropertyMapping() { 
+  public PropertyMapping() {
   }
 
   public PropertyMapping data(String data) {
@@ -51,12 +51,13 @@ public class PropertyMapping {
     return this;
   }
 
-   /**
+  /**
    * Property name in the data model. This will be saved.
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property name in the data model. This will be saved.")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +72,19 @@ public class PropertyMapping {
     this.data = data;
   }
 
-
   public PropertyMapping selection(String selection) {
     
     this.selection = selection;
     return this;
   }
 
-   /**
+  /**
    * Property name in the selection model. This will won&#39;t be saved here, we use it for selection.
    * @return selection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property name in the selection model. This will won't be saved here, we use it for selection.")
   @JsonProperty(SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +98,6 @@ public class PropertyMapping {
   public void setSelection(String selection) {
     this.selection = selection;
   }
-
 
   @Override
   public boolean equals(Object o) {

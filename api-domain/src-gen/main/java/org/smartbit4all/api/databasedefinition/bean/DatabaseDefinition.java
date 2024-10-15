@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * The meta of a whole database. Contains all the tables defined in the database. If it is the result of a comparision then the alter operation codes are set. We can use this model to render DDL scripts or to commit the changes directly into the database. 
  */
+@Schema(description = "The meta of a whole database. Contains all the tables defined in the database. If it is the result of a comparision then the alter operation codes are set. We can use this model to render DDL scripts or to commit the changes directly into the database. ")
 @JsonPropertyOrder({
   DatabaseDefinition.SCHEMA,
   DatabaseDefinition.VERSION,
   DatabaseDefinition.TABLES,
   DatabaseDefinition.DATABASE_KIND
 })
-@JsonTypeName("DatabaseDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DatabaseDefinition {
   public static final String SCHEMA = "schema";
@@ -55,7 +55,7 @@ public class DatabaseDefinition {
   public static final String DATABASE_KIND = "databaseKind";
   private DatabaseKind databaseKind;
 
-  public DatabaseDefinition() { 
+  public DatabaseDefinition() {
   }
 
   public DatabaseDefinition schema(String schema) {
@@ -64,12 +64,13 @@ public class DatabaseDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get schema
    * @return schema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,19 +85,19 @@ public class DatabaseDefinition {
     this.schema = schema;
   }
 
-
   public DatabaseDefinition version(String version) {
     
     this.version = version;
     return this;
   }
 
-   /**
+  /**
    * Get version
    * @return version
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,7 +112,6 @@ public class DatabaseDefinition {
     this.version = version;
   }
 
-
   public DatabaseDefinition tables(List<@Valid TableDefinition> tables) {
     
     this.tables = tables;
@@ -119,18 +119,22 @@ public class DatabaseDefinition {
   }
 
   public DatabaseDefinition addTablesItem(TableDefinition tablesItem) {
+    if (this.tables == null) {
+      this.tables = new ArrayList<>();
+    }
     this.tables.add(tablesItem);
     return this;
   }
 
-   /**
+  /**
    * Get tables
    * @return tables
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TABLES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -145,21 +149,21 @@ public class DatabaseDefinition {
     this.tables = tables;
   }
 
-
   public DatabaseDefinition databaseKind(DatabaseKind databaseKind) {
     
     this.databaseKind = databaseKind;
     return this;
   }
 
-   /**
+  /**
    * Get databaseKind
    * @return databaseKind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATABASE_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -173,7 +177,6 @@ public class DatabaseDefinition {
   public void setDatabaseKind(DatabaseKind databaseKind) {
     this.databaseKind = databaseKind;
   }
-
 
   @Override
   public boolean equals(Object o) {

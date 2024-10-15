@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * AND / OR group of filters / groups.
  */
+@Schema(description = "AND / OR group of filters / groups.")
 @JsonPropertyOrder({
   FilterGroup.NAME,
   FilterGroup.TYPE,
@@ -41,7 +42,6 @@ import jakarta.validation.Valid;
   FilterGroup.FILTER_GROUPS,
   FilterGroup.IS_NEGATED
 })
-@JsonTypeName("FilterGroup")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroup {
   public static final String NAME = "name";
@@ -51,15 +51,15 @@ public class FilterGroup {
   private FilterGroupType type;
 
   public static final String FILTER_FIELDS = "filterFields";
-  private List<@Valid FilterField> filterFields = null;
+  private List<@Valid FilterField> filterFields = new ArrayList<>();
 
   public static final String FILTER_GROUPS = "filterGroups";
-  private List<@Valid FilterGroup> filterGroups = null;
+  private List<@Valid FilterGroup> filterGroups = new ArrayList<>();
 
   public static final String IS_NEGATED = "isNegated";
   private Boolean isNegated;
 
-  public FilterGroup() { 
+  public FilterGroup() {
   }
 
   public FilterGroup name(String name) {
@@ -68,12 +68,13 @@ public class FilterGroup {
     return this;
   }
 
-   /**
+  /**
    * Name of the group.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Name of the group.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,20 +89,20 @@ public class FilterGroup {
     this.name = name;
   }
 
-
   public FilterGroup type(FilterGroupType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,7 +116,6 @@ public class FilterGroup {
   public void setType(FilterGroupType type) {
     this.type = type;
   }
-
 
   public FilterGroup filterFields(List<@Valid FilterField> filterFields) {
     
@@ -131,13 +131,14 @@ public class FilterGroup {
     return this;
   }
 
-   /**
+  /**
    * Get filterFields
    * @return filterFields
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -151,7 +152,6 @@ public class FilterGroup {
   public void setFilterFields(List<@Valid FilterField> filterFields) {
     this.filterFields = filterFields;
   }
-
 
   public FilterGroup filterGroups(List<@Valid FilterGroup> filterGroups) {
     
@@ -167,13 +167,14 @@ public class FilterGroup {
     return this;
   }
 
-   /**
+  /**
    * Get filterGroups
    * @return filterGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,19 +189,19 @@ public class FilterGroup {
     this.filterGroups = filterGroups;
   }
 
-
   public FilterGroup isNegated(Boolean isNegated) {
     
     this.isNegated = isNegated;
     return this;
   }
 
-   /**
+  /**
    * Get isNegated
    * @return isNegated
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_NEGATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -214,7 +215,6 @@ public class FilterGroup {
   public void setIsNegated(Boolean isNegated) {
     this.isNegated = isNegated;
   }
-
 
   @Override
   public boolean equals(Object o) {

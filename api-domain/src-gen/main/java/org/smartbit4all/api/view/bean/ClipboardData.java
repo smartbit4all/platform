@@ -29,16 +29,16 @@ import jakarta.validation.Valid;
 /**
  * Text or media content the client should copy to its system&#39;s clipboard. 
  */
+@Schema(description = "Text or media content the client should copy to its system's clipboard. ")
 @JsonPropertyOrder({
   ClipboardData.TEXT
 })
-@JsonTypeName("ClipboardData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ClipboardData {
   public static final String TEXT = "text";
   private String text;
 
-  public ClipboardData() { 
+  public ClipboardData() {
   }
 
   public ClipboardData text(String text) {
@@ -47,12 +47,13 @@ public class ClipboardData {
     return this;
   }
 
-   /**
+  /**
    * The raw text to copy to clipboard. 
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The raw text to copy to clipboard. ")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -66,7 +67,6 @@ public class ClipboardData {
   public void setText(String text) {
     this.text = text;
   }
-
 
   @Override
   public boolean equals(Object o) {

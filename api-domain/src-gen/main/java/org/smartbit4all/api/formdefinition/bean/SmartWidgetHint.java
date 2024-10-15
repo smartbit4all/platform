@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   SmartWidgetHint.TEXT,
   SmartWidgetHint.POSITION
 })
-@JsonTypeName("SmartWidgetHint")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartWidgetHint {
   public static final String TEXT = "text";
@@ -77,7 +76,7 @@ public class SmartWidgetHint {
   public static final String POSITION = "position";
   private PositionEnum position;
 
-  public SmartWidgetHint() { 
+  public SmartWidgetHint() {
   }
 
   public SmartWidgetHint text(String text) {
@@ -86,12 +85,13 @@ public class SmartWidgetHint {
     return this;
   }
 
-   /**
+  /**
    * Get text
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,19 +106,19 @@ public class SmartWidgetHint {
     this.text = text;
   }
 
-
   public SmartWidgetHint position(PositionEnum position) {
     
     this.position = position;
     return this;
   }
 
-   /**
+  /**
    * Get position
    * @return position
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +132,6 @@ public class SmartWidgetHint {
   public void setPosition(PositionEnum position) {
     this.position = position;
   }
-
 
   @Override
   public boolean equals(Object o) {

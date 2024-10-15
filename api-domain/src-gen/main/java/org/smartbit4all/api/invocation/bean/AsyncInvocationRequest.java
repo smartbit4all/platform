@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * If the invocation is executed asynchronously we need to save te request itself and the result of the call as one object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is awaited by a logic then it can subscribe for the execution result. 
  */
+@Schema(description = "If the invocation is executed asynchronously we need to save te request itself and the result of the call as one object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is awaited by a logic then it can subscribe for the execution result. ")
 @JsonPropertyOrder({
   AsyncInvocationRequest.URI,
   AsyncInvocationRequest.RUNTIME_URI,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   AsyncInvocationRequest.AND_THEN,
   AsyncInvocationRequest.RESULTS
 })
-@JsonTypeName("AsyncInvocationRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AsyncInvocationRequest {
   public static final String URI = "uri";
@@ -63,12 +63,12 @@ public class AsyncInvocationRequest {
   private InvocationRequest evaluate;
 
   public static final String AND_THEN = "andThen";
-  private List<URI> andThen = null;
+  private List<URI> andThen = new ArrayList<>();
 
   public static final String RESULTS = "results";
-  private List<@Valid InvocationResult> results = null;
+  private List<@Valid InvocationResult> results = new ArrayList<>();
 
-  public AsyncInvocationRequest() { 
+  public AsyncInvocationRequest() {
   }
 
   public AsyncInvocationRequest uri(URI uri) {
@@ -77,13 +77,14 @@ public class AsyncInvocationRequest {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,20 +99,20 @@ public class AsyncInvocationRequest {
     this.uri = uri;
   }
 
-
   public AsyncInvocationRequest runtimeUri(URI runtimeUri) {
     
     this.runtimeUri = runtimeUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the appliocation runtime that is currently responsible for the givan invocation.
    * @return runtimeUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the appliocation runtime that is currently responsible for the givan invocation.")
   @JsonProperty(RUNTIME_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -126,19 +127,19 @@ public class AsyncInvocationRequest {
     this.runtimeUri = runtimeUri;
   }
 
-
   public AsyncInvocationRequest channel(String channel) {
     
     this.channel = channel;
     return this;
   }
 
-   /**
+  /**
    * The name of the channel handles the given invocation.
    * @return channel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the channel handles the given invocation.")
   @JsonProperty(CHANNEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,20 +154,20 @@ public class AsyncInvocationRequest {
     this.channel = channel;
   }
 
-
   public AsyncInvocationRequest request(InvocationRequest request) {
     
     this.request = request;
     return this;
   }
 
-   /**
+  /**
    * Get request
    * @return request
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,20 +182,20 @@ public class AsyncInvocationRequest {
     this.request = request;
   }
 
-
   public AsyncInvocationRequest evaluate(InvocationRequest evaluate) {
     
     this.evaluate = evaluate;
     return this;
   }
 
-   /**
+  /**
    * Get evaluate
    * @return evaluate
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EVALUATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +209,6 @@ public class AsyncInvocationRequest {
   public void setEvaluate(InvocationRequest evaluate) {
     this.evaluate = evaluate;
   }
-
 
   public AsyncInvocationRequest andThen(List<URI> andThen) {
     
@@ -224,13 +224,14 @@ public class AsyncInvocationRequest {
     return this;
   }
 
-   /**
+  /**
    * The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. 
    * @return andThen
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. ")
   @JsonProperty(AND_THEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,7 +245,6 @@ public class AsyncInvocationRequest {
   public void setAndThen(List<URI> andThen) {
     this.andThen = andThen;
   }
-
 
   public AsyncInvocationRequest results(List<@Valid InvocationResult> results) {
     
@@ -260,13 +260,14 @@ public class AsyncInvocationRequest {
     return this;
   }
 
-   /**
+  /**
    * Contains the inline list of the results in historic order. If the invocation was executed more then one times  then we have all of them here. 
    * @return results
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Contains the inline list of the results in historic order. If the invocation was executed more then one times  then we have all of them here. ")
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +281,6 @@ public class AsyncInvocationRequest {
   public void setResults(List<@Valid InvocationResult> results) {
     this.results = results;
   }
-
 
   @Override
   public boolean equals(Object o) {

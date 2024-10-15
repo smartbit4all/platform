@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 /**
  * The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values  
  */
+@Schema(description = "The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values  ")
 @JsonPropertyOrder({
   PhysicalObjectId.TYPE,
   PhysicalObjectId.SUB_TYPE,
@@ -37,7 +38,6 @@ import jakarta.validation.Valid;
   PhysicalObjectId.UNIQUE_PART,
   PhysicalObjectId.VALUE
 })
-@JsonTypeName("PhysicalObjectId")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PhysicalObjectId {
   public static final String TYPE = "type";
@@ -55,7 +55,7 @@ public class PhysicalObjectId {
   public static final String VALUE = "value";
   private String value;
 
-  public PhysicalObjectId() { 
+  public PhysicalObjectId() {
   }
 
   public PhysicalObjectId type(PhysicalObjectIdType type) {
@@ -64,14 +64,15 @@ public class PhysicalObjectId {
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,19 +87,19 @@ public class PhysicalObjectId {
     this.type = type;
   }
 
-
   public PhysicalObjectId subType(String subType) {
     
     this.subType = subType;
     return this;
   }
 
-   /**
+  /**
    * The sub type of identifier like code128 in case of the barcode. It can be used to visalize the identifier and generate it. 
    * @return subType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The sub type of identifier like code128 in case of the barcode. It can be used to visalize the identifier and generate it. ")
   @JsonProperty(SUB_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +114,19 @@ public class PhysicalObjectId {
     this.subType = subType;
   }
 
-
   public PhysicalObjectId sequenceNr(Long sequenceNr) {
     
     this.sequenceNr = sequenceNr;
     return this;
   }
 
-   /**
+  /**
    * The serial number the object id is based on.
    * @return sequenceNr
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The serial number the object id is based on.")
   @JsonProperty(SEQUENCE_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +141,19 @@ public class PhysicalObjectId {
     this.sequenceNr = sequenceNr;
   }
 
-
   public PhysicalObjectId uniquePart(String uniquePart) {
     
     this.uniquePart = uniquePart;
     return this;
   }
 
-   /**
+  /**
    * The unique part of the identifier that can be used to save the given object.
    * @return uniquePart
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique part of the identifier that can be used to save the given object.")
   @JsonProperty(UNIQUE_PART)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,20 +168,20 @@ public class PhysicalObjectId {
     this.uniquePart = uniquePart;
   }
 
-
   public PhysicalObjectId value(String value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * The stringified value of the identifier.
    * @return value
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The stringified value of the identifier.")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -194,7 +195,6 @@ public class PhysicalObjectId {
   public void setValue(String value) {
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object o) {

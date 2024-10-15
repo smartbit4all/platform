@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   ApplicationSetupData.NAME,
   ApplicationSetupData.PRE_REQUISITES
 })
-@JsonTypeName("ApplicationSetupData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApplicationSetupData {
   public static final String KIND = "kind";
@@ -48,9 +47,9 @@ public class ApplicationSetupData {
   private String name;
 
   public static final String PRE_REQUISITES = "preRequisites";
-  private List<String> preRequisites = null;
+  private List<String> preRequisites = new ArrayList<>();
 
-  public ApplicationSetupData() { 
+  public ApplicationSetupData() {
   }
 
   public ApplicationSetupData kind(ApplicationSetupKind kind) {
@@ -59,14 +58,15 @@ public class ApplicationSetupData {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -81,20 +81,20 @@ public class ApplicationSetupData {
     this.kind = kind;
   }
 
-
   public ApplicationSetupData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The unique name of the application setup. 
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique name of the application setup. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +108,6 @@ public class ApplicationSetupData {
   public void setName(String name) {
     this.name = name;
   }
-
 
   public ApplicationSetupData preRequisites(List<String> preRequisites) {
     
@@ -124,12 +123,13 @@ public class ApplicationSetupData {
     return this;
   }
 
-   /**
+  /**
    * The names of the setups that are pre requisites of the current one. The setups should be ordered based on this dependencies. 
    * @return preRequisites
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The names of the setups that are pre requisites of the current one. The setups should be ordered based on this dependencies. ")
   @JsonProperty(PRE_REQUISITES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,7 +143,6 @@ public class ApplicationSetupData {
   public void setPreRequisites(List<String> preRequisites) {
     this.preRequisites = preRequisites;
   }
-
 
   @Override
   public boolean equals(Object o) {

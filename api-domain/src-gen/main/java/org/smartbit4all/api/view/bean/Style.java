@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * Style data holder for client
  */
+@Schema(description = "Style data holder for client")
 @JsonPropertyOrder({
   Style.STYLE,
   Style.CLASSES_TO_ADD,
   Style.CLASSES_TO_REMOVE
 })
-@JsonTypeName("Style")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Style {
   public static final String STYLE = "style";
@@ -51,7 +51,7 @@ public class Style {
   public static final String CLASSES_TO_REMOVE = "classesToRemove";
   private List<String> classesToRemove = new ArrayList<>();
 
-  public Style() { 
+  public Style() {
   }
 
   public Style style(Map<String, String> style) {
@@ -65,13 +65,14 @@ public class Style {
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,7 +87,6 @@ public class Style {
     this.style = style;
   }
 
-
   public Style classesToAdd(List<String> classesToAdd) {
     
     this.classesToAdd = classesToAdd;
@@ -94,17 +94,21 @@ public class Style {
   }
 
   public Style addClassesToAddItem(String classesToAddItem) {
+    if (this.classesToAdd == null) {
+      this.classesToAdd = new ArrayList<>();
+    }
     this.classesToAdd.add(classesToAddItem);
     return this;
   }
 
-   /**
+  /**
    * Get classesToAdd
    * @return classesToAdd
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLASSES_TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -119,7 +123,6 @@ public class Style {
     this.classesToAdd = classesToAdd;
   }
 
-
   public Style classesToRemove(List<String> classesToRemove) {
     
     this.classesToRemove = classesToRemove;
@@ -127,17 +130,21 @@ public class Style {
   }
 
   public Style addClassesToRemoveItem(String classesToRemoveItem) {
+    if (this.classesToRemove == null) {
+      this.classesToRemove = new ArrayList<>();
+    }
     this.classesToRemove.add(classesToRemoveItem);
     return this;
   }
 
-   /**
+  /**
    * Get classesToRemove
    * @return classesToRemove
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLASSES_TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -151,7 +158,6 @@ public class Style {
   public void setClassesToRemove(List<String> classesToRemove) {
     this.classesToRemove = classesToRemove;
   }
-
 
   @Override
   public boolean equals(Object o) {

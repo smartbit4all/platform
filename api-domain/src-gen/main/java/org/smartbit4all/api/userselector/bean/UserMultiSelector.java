@@ -38,19 +38,18 @@ import jakarta.validation.Valid;
   UserMultiSelector.SELECTED,
   UserMultiSelector.IS_SAVING
 })
-@JsonTypeName("UserMultiSelector")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserMultiSelector {
   public static final String SELECTORS = "selectors";
-  private List<@Valid UserSelector> selectors = null;
+  private List<@Valid UserSelector> selectors = new ArrayList<>();
 
   public static final String SELECTED = "selected";
-  private List<@Valid UserSelector> selected = null;
+  private List<@Valid UserSelector> selected = new ArrayList<>();
 
   public static final String IS_SAVING = "isSaving";
   private Boolean isSaving;
 
-  public UserMultiSelector() { 
+  public UserMultiSelector() {
   }
 
   public UserMultiSelector selectors(List<@Valid UserSelector> selectors) {
@@ -67,13 +66,14 @@ public class UserMultiSelector {
     return this;
   }
 
-   /**
+  /**
    * Get selectors
    * @return selectors
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,7 +87,6 @@ public class UserMultiSelector {
   public void setSelectors(List<@Valid UserSelector> selectors) {
     this.selectors = selectors;
   }
-
 
   public UserMultiSelector selected(List<@Valid UserSelector> selected) {
     
@@ -103,13 +102,14 @@ public class UserMultiSelector {
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,19 +124,19 @@ public class UserMultiSelector {
     this.selected = selected;
   }
 
-
   public UserMultiSelector isSaving(Boolean isSaving) {
     
     this.isSaving = isSaving;
     return this;
   }
 
-   /**
+  /**
    * Get isSaving
    * @return isSaving
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_SAVING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,7 +150,6 @@ public class UserMultiSelector {
   public void setIsSaving(Boolean isSaving) {
     this.isSaving = isSaving;
   }
-
 
   @Override
   public boolean equals(Object o) {

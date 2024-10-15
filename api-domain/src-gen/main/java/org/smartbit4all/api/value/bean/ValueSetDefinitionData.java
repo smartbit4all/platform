@@ -48,7 +48,6 @@ import jakarta.validation.Valid;
   ValueSetDefinitionData.KEYS,
   ValueSetDefinitionData.EXPRESSION
 })
-@JsonTypeName("ValueSetDefinitionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetDefinitionData {
   public static final String KIND = "kind";
@@ -76,15 +75,15 @@ public class ValueSetDefinitionData {
   private String iconCode;
 
   public static final String INLINE_VALUES = "inlineValues";
-  private List<Object> inlineValues = null;
+  private List<Object> inlineValues = new ArrayList<>();
 
   public static final String KEYS = "keys";
-  private List<Object> keys = null;
+  private List<Object> keys = new ArrayList<>();
 
   public static final String EXPRESSION = "expression";
   private ValueSetExpression expression;
 
-  public ValueSetDefinitionData() { 
+  public ValueSetDefinitionData() {
   }
 
   public ValueSetDefinitionData kind(ValueSetDefinitionKind kind) {
@@ -93,14 +92,15 @@ public class ValueSetDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -115,20 +115,20 @@ public class ValueSetDefinitionData {
     this.kind = kind;
   }
 
-
   public ValueSetDefinitionData qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The logical name of the given value set. In case of an enum it is the fully qualified name of the enum class. 
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The logical name of the given value set. In case of an enum it is the fully qualified name of the enum class. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,20 +143,20 @@ public class ValueSetDefinitionData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ValueSetDefinitionData objectDefinition(URI objectDefinition) {
     
     this.objectDefinition = objectDefinition;
     return this;
   }
 
-   /**
+  /**
    * The object definition of the value set.
    * @return objectDefinition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object definition of the value set.")
   @JsonProperty(OBJECT_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,19 +171,19 @@ public class ValueSetDefinitionData {
     this.objectDefinition = objectDefinition;
   }
 
-
   public ValueSetDefinitionData typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the type class.
    * @return typeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the type class.")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -198,19 +198,19 @@ public class ValueSetDefinitionData {
     this.typeClass = typeClass;
   }
 
-
   public ValueSetDefinitionData keyProperty(String keyProperty) {
     
     this.keyProperty = keyProperty;
     return this;
   }
 
-   /**
+  /**
    * The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. If it is not set then the default is the URI if it exists in the given object. Or it will be the code or id in this order. 
    * @return keyProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. If it is not set then the default is the URI if it exists in the given object. Or it will be the code or id in this order. ")
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -225,19 +225,19 @@ public class ValueSetDefinitionData {
     this.keyProperty = keyProperty;
   }
 
-
   public ValueSetDefinitionData storageSchema(String storageSchema) {
     
     this.storageSchema = storageSchema;
     return this;
   }
 
-   /**
+  /**
    * The name of the storage schema. Necessary to access the objects or the container (list or map).
    * @return storageSchema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the storage schema. Necessary to access the objects or the container (list or map).")
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -252,19 +252,19 @@ public class ValueSetDefinitionData {
     this.storageSchema = storageSchema;
   }
 
-
   public ValueSetDefinitionData containerName(String containerName) {
     
     this.containerName = containerName;
     return this;
   }
 
-   /**
+  /**
    * The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.
    * @return containerName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.")
   @JsonProperty(CONTAINER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -279,19 +279,19 @@ public class ValueSetDefinitionData {
     this.containerName = containerName;
   }
 
-
   public ValueSetDefinitionData iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Optional icon code for the given value set.
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional icon code for the given value set.")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -305,7 +305,6 @@ public class ValueSetDefinitionData {
   public void setIconCode(String iconCode) {
     this.iconCode = iconCode;
   }
-
 
   public ValueSetDefinitionData inlineValues(List<Object> inlineValues) {
     
@@ -321,12 +320,13 @@ public class ValueSetDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The value list that contains the value objects.
    * @return inlineValues
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The value list that contains the value objects.")
   @JsonProperty(INLINE_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -340,7 +340,6 @@ public class ValueSetDefinitionData {
   public void setInlineValues(List<Object> inlineValues) {
     this.inlineValues = inlineValues;
   }
-
 
   public ValueSetDefinitionData keys(List<Object> keys) {
     
@@ -356,12 +355,13 @@ public class ValueSetDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The list of keys. If we have this
    * @return keys
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of keys. If we have this")
   @JsonProperty(KEYS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -376,20 +376,20 @@ public class ValueSetDefinitionData {
     this.keys = keys;
   }
 
-
   public ValueSetDefinitionData expression(ValueSetExpression expression) {
     
     this.expression = expression;
     return this;
   }
 
-   /**
+  /**
    * Get expression
    * @return expression
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -403,7 +403,6 @@ public class ValueSetDefinitionData {
   public void setExpression(ValueSetExpression expression) {
     this.expression = expression;
   }
-
 
   @Override
   public boolean equals(Object o) {

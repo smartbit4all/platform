@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. 
  */
+@Schema(description = "The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. ")
 @JsonPropertyOrder({
   GridViewDescriptor.LABEL,
   GridViewDescriptor.ICON,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   GridViewDescriptor.HIGHLIGHT_PROPERTY,
   GridViewDescriptor.HIGHLIGHT_CLASS
 })
-@JsonTypeName("GridViewDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridViewDescriptor {
   public static final String LABEL = "label";
@@ -117,7 +117,7 @@ public class GridViewDescriptor {
   public static final String HIGHLIGHT_CLASS = "highlightClass";
   private String highlightClass;
 
-  public GridViewDescriptor() { 
+  public GridViewDescriptor() {
   }
 
   public GridViewDescriptor label(String label) {
@@ -126,12 +126,13 @@ public class GridViewDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,19 +147,19 @@ public class GridViewDescriptor {
     this.label = label;
   }
 
-
   public GridViewDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,19 +174,19 @@ public class GridViewDescriptor {
     this.icon = icon;
   }
 
-
   public GridViewDescriptor kind(KindEnum kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -200,7 +201,6 @@ public class GridViewDescriptor {
     this.kind = kind;
   }
 
-
   public GridViewDescriptor columns(List<@Valid GridColumnMeta> columns) {
     
     this.columns = columns;
@@ -208,18 +208,22 @@ public class GridViewDescriptor {
   }
 
   public GridViewDescriptor addColumnsItem(GridColumnMeta columnsItem) {
+    if (this.columns == null) {
+      this.columns = new ArrayList<>();
+    }
     this.columns.add(columnsItem);
     return this;
   }
 
-   /**
+  /**
    * In the table the columns are the columns of the table. In the tree the columns can be used to append the title of a tree node. 
    * @return columns
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "In the table the columns are the columns of the table. In the tree the columns can be used to append the title of a tree node. ")
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -234,20 +238,20 @@ public class GridViewDescriptor {
     this.columns = columns;
   }
 
-
   public GridViewDescriptor selectionMode(GridSelectionMode selectionMode) {
     
     this.selectionMode = selectionMode;
     return this;
   }
 
-   /**
+  /**
    * Get selectionMode
    * @return selectionMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,20 +266,20 @@ public class GridViewDescriptor {
     this.selectionMode = selectionMode;
   }
 
-
   public GridViewDescriptor selectionType(GridSelectionType selectionType) {
     
     this.selectionType = selectionType;
     return this;
   }
 
-   /**
+  /**
    * Get selectionType
    * @return selectionType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -290,19 +294,19 @@ public class GridViewDescriptor {
     this.selectionType = selectionType;
   }
 
-
   public GridViewDescriptor preserveSelectionOnPageChange(Boolean preserveSelectionOnPageChange) {
     
     this.preserveSelectionOnPageChange = preserveSelectionOnPageChange;
     return this;
   }
 
-   /**
+  /**
    * Get preserveSelectionOnPageChange
    * @return preserveSelectionOnPageChange
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PRESERVE_SELECTION_ON_PAGE_CHANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,19 +321,19 @@ public class GridViewDescriptor {
     this.preserveSelectionOnPageChange = preserveSelectionOnPageChange;
   }
 
-
   public GridViewDescriptor showEditColumns(Boolean showEditColumns) {
     
     this.showEditColumns = showEditColumns;
     return this;
   }
 
-   /**
+  /**
    * Get showEditColumns
    * @return showEditColumns
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHOW_EDIT_COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -344,19 +348,19 @@ public class GridViewDescriptor {
     this.showEditColumns = showEditColumns;
   }
 
-
   public GridViewDescriptor highlightProperty(String highlightProperty) {
     
     this.highlightProperty = highlightProperty;
     return this;
   }
 
-   /**
+  /**
    * Get highlightProperty
    * @return highlightProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HIGHLIGHT_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,19 +375,19 @@ public class GridViewDescriptor {
     this.highlightProperty = highlightProperty;
   }
 
-
   public GridViewDescriptor highlightClass(String highlightClass) {
     
     this.highlightClass = highlightClass;
     return this;
   }
 
-   /**
+  /**
    * Get highlightClass
    * @return highlightClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HIGHLIGHT_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -397,7 +401,6 @@ public class GridViewDescriptor {
   public void setHighlightClass(String highlightClass) {
     this.highlightClass = highlightClass;
   }
-
 
   @Override
   public boolean equals(Object o) {

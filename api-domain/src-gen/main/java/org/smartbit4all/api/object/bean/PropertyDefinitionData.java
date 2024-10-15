@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The property definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. This definition is responsible for the properties. 
  */
+@Schema(description = "The property definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. This definition is responsible for the properties. ")
 @JsonPropertyOrder({
   PropertyDefinitionData.URI,
   PropertyDefinitionData.NAME,
@@ -41,7 +42,6 @@ import jakarta.validation.Valid;
   PropertyDefinitionData.WIDGET,
   PropertyDefinitionData.VALUE_SET
 })
-@JsonTypeName("PropertyDefinitionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PropertyDefinitionData {
   public static final String URI = "uri";
@@ -68,7 +68,7 @@ public class PropertyDefinitionData {
   public static final String VALUE_SET = "valueSet";
   private URI valueSet;
 
-  public PropertyDefinitionData() { 
+  public PropertyDefinitionData() {
   }
 
   public PropertyDefinitionData uri(URI uri) {
@@ -77,14 +77,15 @@ public class PropertyDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/org/smartbit4all/mydomain/model/MyObject/firstProperty could be a calculated URI for a given reference. If the property is defined dynamically then the URI is a standard URI. 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/org/smartbit4all/mydomain/model/MyObject/firstProperty could be a calculated URI for a given reference. If the property is defined dynamically then the URI is a standard URI. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -99,20 +100,20 @@ public class PropertyDefinitionData {
     this.uri = uri;
   }
 
-
   public PropertyDefinitionData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The property name.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The property name.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -127,20 +128,20 @@ public class PropertyDefinitionData {
     this.name = name;
   }
 
-
   public PropertyDefinitionData typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well. 
    * @return typeClass
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well. ")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -155,19 +156,19 @@ public class PropertyDefinitionData {
     this.typeClass = typeClass;
   }
 
-
   public PropertyDefinitionData referredType(String referredType) {
     
     this.referredType = referredType;
     return this;
   }
 
-   /**
+  /**
    * If the given property is mapped to a referred property then this is the name of the referred type. 
    * @return referredType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the given property is mapped to a referred property then this is the name of the referred type. ")
   @JsonProperty(REFERRED_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,19 +183,19 @@ public class PropertyDefinitionData {
     this.referredType = referredType;
   }
 
-
   public PropertyDefinitionData referredPropertyName(String referredPropertyName) {
     
     this.referredPropertyName = referredPropertyName;
     return this;
   }
 
-   /**
+  /**
    * If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the 
    * @return referredPropertyName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the ")
   @JsonProperty(REFERRED_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -209,19 +210,19 @@ public class PropertyDefinitionData {
     this.referredPropertyName = referredPropertyName;
   }
 
-
   public PropertyDefinitionData defaultValue(Object defaultValue) {
     
     this.defaultValue = defaultValue;
     return this;
   }
 
-   /**
+  /**
    * The default value that must be the same type as the property itself.
    * @return defaultValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The default value that must be the same type as the property itself.")
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -236,20 +237,20 @@ public class PropertyDefinitionData {
     this.defaultValue = defaultValue;
   }
 
-
   public PropertyDefinitionData widget(SmartWidgetDefinition widget) {
     
     this.widget = widget;
     return this;
   }
 
-   /**
+  /**
    * The default widget definition for the given property. It can be empty but in this case we must have another option to setup the widget for a layout. 
    * @return widget
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The default widget definition for the given property. It can be empty but in this case we must have another option to setup the widget for a layout. ")
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -264,20 +265,20 @@ public class PropertyDefinitionData {
     this.widget = widget;
   }
 
-
   public PropertyDefinitionData valueSet(URI valueSet) {
     
     this.valueSet = valueSet;
     return this;
   }
 
-   /**
+  /**
    * The default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
    * @return valueSet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -291,7 +292,6 @@ public class PropertyDefinitionData {
   public void setValueSet(URI valueSet) {
     this.valueSet = valueSet;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * The change of a property with the path as an identifier. The old value and the new value is also available as Object but we need to handle it as String after a serialization and deserialization. 
  */
+@Schema(description = "The change of a property with the path as an identifier. The old value and the new value is also available as Object but we need to handle it as String after a serialization and deserialization. ")
 @JsonPropertyOrder({
   PropertyChangeData.PATH,
   PropertyChangeData.OLD_VALUE,
   PropertyChangeData.NEW_VALUE
 })
-@JsonTypeName("PropertyChangeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PropertyChangeData {
   public static final String PATH = "path";
@@ -46,7 +46,7 @@ public class PropertyChangeData {
   public static final String NEW_VALUE = "newValue";
   private Object newValue;
 
-  public PropertyChangeData() { 
+  public PropertyChangeData() {
   }
 
   public PropertyChangeData path(String path) {
@@ -55,13 +55,14 @@ public class PropertyChangeData {
     return this;
   }
 
-   /**
+  /**
    * The path identify the given property inside the object.
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The path identify the given property inside the object.")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -76,19 +77,19 @@ public class PropertyChangeData {
     this.path = path;
   }
 
-
   public PropertyChangeData oldValue(Object oldValue) {
     
     this.oldValue = oldValue;
     return this;
   }
 
-   /**
+  /**
    * Get oldValue
    * @return oldValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OLD_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,19 +104,19 @@ public class PropertyChangeData {
     this.oldValue = oldValue;
   }
 
-
   public PropertyChangeData newValue(Object newValue) {
     
     this.newValue = newValue;
     return this;
   }
 
-   /**
+  /**
    * Get newValue
    * @return newValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NEW_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +130,6 @@ public class PropertyChangeData {
   public void setNewValue(Object newValue) {
     this.newValue = newValue;
   }
-
 
   @Override
   public boolean equals(Object o) {

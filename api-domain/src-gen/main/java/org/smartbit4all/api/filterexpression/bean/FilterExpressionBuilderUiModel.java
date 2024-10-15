@@ -56,7 +56,6 @@ import jakarta.validation.Valid;
   FilterExpressionBuilderUiModel.CONFIG,
   FilterExpressionBuilderUiModel.TYPE
 })
-@JsonTypeName("FilterExpressionBuilderUiModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderUiModel {
   public static final String MODEL = "model";
@@ -75,7 +74,7 @@ public class FilterExpressionBuilderUiModel {
   private UiAction deselectUiAction = null;
 
   public static final String POSSIBLE_ACTIONS = "possibleActions";
-  private List<UiAction> possibleActions = null;
+  private List<UiAction> possibleActions = new ArrayList<>();
 
   public static final String SHOW_GROUPS = "showGroups";
   private Boolean showGroups = false;
@@ -139,7 +138,7 @@ public class FilterExpressionBuilderUiModel {
   public static final String TYPE = "type";
   private TypeEnum type;
 
-  public FilterExpressionBuilderUiModel() { 
+  public FilterExpressionBuilderUiModel() {
   }
 
   public FilterExpressionBuilderUiModel model(FilterExpressionBuilderModel model) {
@@ -148,13 +147,14 @@ public class FilterExpressionBuilderUiModel {
     return this;
   }
 
-   /**
+  /**
    * Get model
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -169,20 +169,20 @@ public class FilterExpressionBuilderUiModel {
     this.model = model;
   }
 
-
   public FilterExpressionBuilderUiModel selectedField(FilterExpressionField selectedField) {
     
     this.selectedField = selectedField;
     return this;
   }
 
-   /**
+  /**
    * Get selectedField
    * @return selectedField
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_FIELD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,20 +197,20 @@ public class FilterExpressionBuilderUiModel {
     this.selectedField = selectedField;
   }
 
-
   public FilterExpressionBuilderUiModel selectedFieldEditor(FilterExpressionFieldEditor selectedFieldEditor) {
     
     this.selectedFieldEditor = selectedFieldEditor;
     return this;
   }
 
-   /**
+  /**
    * Get selectedFieldEditor
    * @return selectedFieldEditor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_FIELD_EDITOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -225,20 +225,20 @@ public class FilterExpressionBuilderUiModel {
     this.selectedFieldEditor = selectedFieldEditor;
   }
 
-
   public FilterExpressionBuilderUiModel selectUiAction(UiAction selectUiAction) {
     
     this.selectUiAction = selectUiAction;
     return this;
   }
 
-   /**
+  /**
    * Get selectUiAction
    * @return selectUiAction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECT_UI_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -253,20 +253,20 @@ public class FilterExpressionBuilderUiModel {
     this.selectUiAction = selectUiAction;
   }
 
-
   public FilterExpressionBuilderUiModel deselectUiAction(UiAction deselectUiAction) {
     
     this.deselectUiAction = deselectUiAction;
     return this;
   }
 
-   /**
+  /**
    * Get deselectUiAction
    * @return deselectUiAction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESELECT_UI_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +280,6 @@ public class FilterExpressionBuilderUiModel {
   public void setDeselectUiAction(UiAction deselectUiAction) {
     this.deselectUiAction = deselectUiAction;
   }
-
 
   public FilterExpressionBuilderUiModel possibleActions(List<UiAction> possibleActions) {
     
@@ -296,13 +295,14 @@ public class FilterExpressionBuilderUiModel {
     return this;
   }
 
-   /**
+  /**
    * Get possibleActions
    * @return possibleActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSSIBLE_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,19 +317,19 @@ public class FilterExpressionBuilderUiModel {
     this.possibleActions = possibleActions;
   }
 
-
   public FilterExpressionBuilderUiModel showGroups(Boolean showGroups) {
     
     this.showGroups = showGroups;
     return this;
   }
 
-   /**
+  /**
    * Get showGroups
    * @return showGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHOW_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -344,19 +344,19 @@ public class FilterExpressionBuilderUiModel {
     this.showGroups = showGroups;
   }
 
-
   public FilterExpressionBuilderUiModel readOnly(Boolean readOnly) {
     
     this.readOnly = readOnly;
     return this;
   }
 
-   /**
+  /**
    * Get readOnly
    * @return readOnly
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(READ_ONLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,19 +371,19 @@ public class FilterExpressionBuilderUiModel {
     this.readOnly = readOnly;
   }
 
-
   public FilterExpressionBuilderUiModel extarnalDatabase(Boolean extarnalDatabase) {
     
     this.extarnalDatabase = extarnalDatabase;
     return this;
   }
 
-   /**
+  /**
    * Get extarnalDatabase
    * @return extarnalDatabase
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXTARNAL_DATABASE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -398,20 +398,20 @@ public class FilterExpressionBuilderUiModel {
     this.extarnalDatabase = extarnalDatabase;
   }
 
-
   public FilterExpressionBuilderUiModel filterGroupsAction(UiAction filterGroupsAction) {
     
     this.filterGroupsAction = filterGroupsAction;
     return this;
   }
 
-   /**
+  /**
    * Get filterGroupsAction
    * @return filterGroupsAction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_GROUPS_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -426,20 +426,20 @@ public class FilterExpressionBuilderUiModel {
     this.filterGroupsAction = filterGroupsAction;
   }
 
-
   public FilterExpressionBuilderUiModel groupFilter(FilterExpressionFieldList groupFilter) {
     
     this.groupFilter = groupFilter;
     return this;
   }
 
-   /**
+  /**
    * Get groupFilter
    * @return groupFilter
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP_FILTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -454,20 +454,20 @@ public class FilterExpressionBuilderUiModel {
     this.groupFilter = groupFilter;
   }
 
-
   public FilterExpressionBuilderUiModel groupFilterAction(UiAction groupFilterAction) {
     
     this.groupFilterAction = groupFilterAction;
     return this;
   }
 
-   /**
+  /**
    * Get groupFilterAction
    * @return groupFilterAction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP_FILTER_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -482,20 +482,20 @@ public class FilterExpressionBuilderUiModel {
     this.groupFilterAction = groupFilterAction;
   }
 
-
   public FilterExpressionBuilderUiModel viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
     return this;
   }
 
-   /**
+  /**
    * Get viewUuid
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -510,20 +510,20 @@ public class FilterExpressionBuilderUiModel {
     this.viewUuid = viewUuid;
   }
 
-
   public FilterExpressionBuilderUiModel config(FilterExpressionBuilderApiConfig config) {
     
     this.config = config;
     return this;
   }
 
-   /**
+  /**
    * Get config
    * @return config
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -538,19 +538,19 @@ public class FilterExpressionBuilderUiModel {
     this.config = config;
   }
 
-
   public FilterExpressionBuilderUiModel type(TypeEnum type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -564,7 +564,6 @@ public class FilterExpressionBuilderUiModel {
   public void setType(TypeEnum type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -30,13 +30,13 @@ import jakarta.validation.Valid;
 /**
  * When StorageObjects are saved the saving process may manage StorageSaveEvents which also can be stored. For this purpose this object can be used. A StorageSaveEventObject point to the next event. This way a linked list can be created of these events. 
  */
+@Schema(description = "When StorageObjects are saved the saving process may manage StorageSaveEvents which also can be stored. For this purpose this object can be used. A StorageSaveEventObject point to the next event. This way a linked list can be created of these events. ")
 @JsonPropertyOrder({
   StorageSaveEventObject.URI,
   StorageSaveEventObject.OLD_VERSION,
   StorageSaveEventObject.NEW_VERSION,
   StorageSaveEventObject.NEXT_EVENT
 })
-@JsonTypeName("StorageSaveEventObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageSaveEventObject {
   public static final String URI = "uri";
@@ -51,7 +51,7 @@ public class StorageSaveEventObject {
   public static final String NEXT_EVENT = "nextEvent";
   private URI nextEvent;
 
-  public StorageSaveEventObject() { 
+  public StorageSaveEventObject() {
   }
 
   public StorageSaveEventObject uri(URI uri) {
@@ -60,14 +60,15 @@ public class StorageSaveEventObject {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the StorageSaveEventObject object.   
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the StorageSaveEventObject object.   ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +83,20 @@ public class StorageSaveEventObject {
     this.uri = uri;
   }
 
-
   public StorageSaveEventObject oldVersion(URI oldVersion) {
     
     this.oldVersion = oldVersion;
     return this;
   }
 
-   /**
+  /**
    * The uri of the object before the save event. It can be null if the object is a new instance. 
    * @return oldVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the object before the save event. It can be null if the object is a new instance. ")
   @JsonProperty(OLD_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +111,20 @@ public class StorageSaveEventObject {
     this.oldVersion = oldVersion;
   }
 
-
   public StorageSaveEventObject newVersion(URI newVersion) {
     
     this.newVersion = newVersion;
     return this;
   }
 
-   /**
+  /**
    * The uri of the object after the save event. 
    * @return newVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the object after the save event. ")
   @JsonProperty(NEW_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +139,20 @@ public class StorageSaveEventObject {
     this.newVersion = newVersion;
   }
 
-
   public StorageSaveEventObject nextEvent(URI nextEvent) {
     
     this.nextEvent = nextEvent;
     return this;
   }
 
-   /**
+  /**
    * The uri of the next save event. 
    * @return nextEvent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the next save event. ")
   @JsonProperty(NEXT_EVENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +166,6 @@ public class StorageSaveEventObject {
   public void setNextEvent(URI nextEvent) {
     this.nextEvent = nextEvent;
   }
-
 
   @Override
   public boolean equals(Object o) {

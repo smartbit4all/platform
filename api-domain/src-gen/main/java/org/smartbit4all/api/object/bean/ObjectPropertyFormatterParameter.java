@@ -30,16 +30,16 @@ import jakarta.validation.Valid;
 /**
  * This setting information to resolve a necessary parameters for the message format. 
  */
+@Schema(description = "This setting information to resolve a necessary parameters for the message format. ")
 @JsonPropertyOrder({
   ObjectPropertyFormatterParameter.PROPERTY_URI
 })
-@JsonTypeName("ObjectPropertyFormatterParameter")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyFormatterParameter {
   public static final String PROPERTY_URI = "propertyUri";
   private URI propertyUri;
 
-  public ObjectPropertyFormatterParameter() { 
+  public ObjectPropertyFormatterParameter() {
   }
 
   public ObjectPropertyFormatterParameter propertyUri(URI propertyUri) {
@@ -48,13 +48,14 @@ public class ObjectPropertyFormatterParameter {
     return this;
   }
 
-   /**
+  /**
    * The uri of the property in the resolver context. By default the object itself is named as object. 
    * @return propertyUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the property in the resolver context. By default the object itself is named as object. ")
   @JsonProperty(PROPERTY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -68,7 +69,6 @@ public class ObjectPropertyFormatterParameter {
   public void setPropertyUri(URI propertyUri) {
     this.propertyUri = propertyUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

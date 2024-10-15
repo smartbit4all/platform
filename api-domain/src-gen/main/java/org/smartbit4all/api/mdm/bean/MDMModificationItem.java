@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * This inline object is hold information about modification state and notes to one entry. 
  */
+@Schema(description = "This inline object is hold information about modification state and notes to one entry. ")
 @JsonPropertyOrder({
   MDMModificationItem.OBJECT_URI,
   MDMModificationItem.STATE,
   MDMModificationItem.NOTES
 })
-@JsonTypeName("MDMModificationItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModificationItem {
   public static final String OBJECT_URI = "objectUri";
@@ -86,9 +86,9 @@ public class MDMModificationItem {
   private StateEnum state;
 
   public static final String NOTES = "notes";
-  private List<@Valid MDMModificationNote> notes = null;
+  private List<@Valid MDMModificationNote> notes = new ArrayList<>();
 
-  public MDMModificationItem() { 
+  public MDMModificationItem() {
   }
 
   public MDMModificationItem objectUri(URI objectUri) {
@@ -97,13 +97,14 @@ public class MDMModificationItem {
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,19 +119,19 @@ public class MDMModificationItem {
     this.objectUri = objectUri;
   }
 
-
   public MDMModificationItem state(StateEnum state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +145,6 @@ public class MDMModificationItem {
   public void setState(StateEnum state) {
     this.state = state;
   }
-
 
   public MDMModificationItem notes(List<@Valid MDMModificationNote> notes) {
     
@@ -160,13 +160,14 @@ public class MDMModificationItem {
     return this;
   }
 
-   /**
+  /**
    * Get notes
    * @return notes
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NOTES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,7 +181,6 @@ public class MDMModificationItem {
   public void setNotes(List<@Valid MDMModificationNote> notes) {
     this.notes = notes;
   }
-
 
   @Override
   public boolean equals(Object o) {

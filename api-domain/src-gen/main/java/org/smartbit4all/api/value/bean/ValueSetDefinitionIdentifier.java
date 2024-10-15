@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   ValueSetDefinitionIdentifier.NAMESPACE,
   ValueSetDefinitionIdentifier.QUALIFIED_NAME
 })
-@JsonTypeName("ValueSetDefinitionIdentifier")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetDefinitionIdentifier {
   public static final String NAMESPACE = "namespace";
@@ -42,7 +41,7 @@ public class ValueSetDefinitionIdentifier {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
-  public ValueSetDefinitionIdentifier() { 
+  public ValueSetDefinitionIdentifier() {
   }
 
   public ValueSetDefinitionIdentifier namespace(String namespace) {
@@ -51,12 +50,13 @@ public class ValueSetDefinitionIdentifier {
     return this;
   }
 
-   /**
+  /**
    * The namespace containing an arbitrary number of value sets. If it&#39;s null, the identifier refers to the global namespace. 
    * @return namespace
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The namespace containing an arbitrary number of value sets. If it's null, the identifier refers to the global namespace. ")
   @JsonProperty(NAMESPACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,20 +71,20 @@ public class ValueSetDefinitionIdentifier {
     this.namespace = namespace;
   }
 
-
   public ValueSetDefinitionIdentifier qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The unique name of the value set within its namespace. 
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique name of the value set within its namespace. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -98,7 +98,6 @@ public class ValueSetDefinitionIdentifier {
   public void setQualifiedName(String qualifiedName) {
     this.qualifiedName = qualifiedName;
   }
-
 
   @Override
   public boolean equals(Object o) {

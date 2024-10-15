@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. 
  */
+@Schema(description = "This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. ")
 @JsonPropertyOrder({
   ToolbarDefinition.URI,
   ToolbarDefinition.PRECEDENCE_ORDER,
   ToolbarDefinition.DATA
 })
-@JsonTypeName("ToolbarDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarDefinition {
   public static final String URI = "uri";
@@ -48,7 +48,7 @@ public class ToolbarDefinition {
   public static final String DATA = "data";
   private ToolbarDefinitionData data;
 
-  public ToolbarDefinition() { 
+  public ToolbarDefinition() {
   }
 
   public ToolbarDefinition uri(URI uri) {
@@ -57,14 +57,15 @@ public class ToolbarDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -79,19 +80,19 @@ public class ToolbarDefinition {
     this.uri = uri;
   }
 
-
   public ToolbarDefinition precedenceOrder(Integer precedenceOrder) {
     
     this.precedenceOrder = precedenceOrder;
     return this;
   }
 
-   /**
+  /**
    * A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. 
    * @return precedenceOrder
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. ")
   @JsonProperty(PRECEDENCE_ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,20 +107,20 @@ public class ToolbarDefinition {
     this.precedenceOrder = precedenceOrder;
   }
 
-
   public ToolbarDefinition data(ToolbarDefinitionData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +134,6 @@ public class ToolbarDefinition {
   public void setData(ToolbarDefinitionData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

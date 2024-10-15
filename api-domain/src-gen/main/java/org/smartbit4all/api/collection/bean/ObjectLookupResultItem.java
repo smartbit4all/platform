@@ -31,13 +31,13 @@ import jakarta.validation.Valid;
 /**
  * The result item of an Object lookup. 
  */
+@Schema(description = "The result item of an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupResultItem.ID,
   ObjectLookupResultItem.SCORE_IN_PERCENT,
   ObjectLookupResultItem.OBJECT_AS_MAP,
   ObjectLookupResultItem.OBJECT
 })
-@JsonTypeName("ObjectLookupResultItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupResultItem {
   public static final String ID = "id";
@@ -47,12 +47,12 @@ public class ObjectLookupResultItem {
   private Float scoreInPercent;
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
-  private Map<String, Object> objectAsMap = null;
+  private Map<String, Object> objectAsMap = new HashMap<>();
 
   public static final String OBJECT = "object";
   private Object _object;
 
-  public ObjectLookupResultItem() { 
+  public ObjectLookupResultItem() {
   }
 
   public ObjectLookupResultItem id(String id) {
@@ -61,12 +61,13 @@ public class ObjectLookupResultItem {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the object found.
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the object found.")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,19 +82,19 @@ public class ObjectLookupResultItem {
     this.id = id;
   }
 
-
   public ObjectLookupResultItem scoreInPercent(Float scoreInPercent) {
     
     this.scoreInPercent = scoreInPercent;
     return this;
   }
 
-   /**
+  /**
    * The score of the found item converted to percent. 100% means that the given result is the one tat we are looking for.
    * @return scoreInPercent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The score of the found item converted to percent. 100% means that the given result is the one tat we are looking for.")
   @JsonProperty(SCORE_IN_PERCENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +108,6 @@ public class ObjectLookupResultItem {
   public void setScoreInPercent(Float scoreInPercent) {
     this.scoreInPercent = scoreInPercent;
   }
-
 
   public ObjectLookupResultItem objectAsMap(Map<String, Object> objectAsMap) {
     
@@ -123,12 +123,13 @@ public class ObjectLookupResultItem {
     return this;
   }
 
-   /**
+  /**
    * The object itself.
    * @return objectAsMap
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object itself.")
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,19 +144,19 @@ public class ObjectLookupResultItem {
     this.objectAsMap = objectAsMap;
   }
 
-
   public ObjectLookupResultItem _object(Object _object) {
     
     this._object = _object;
     return this;
   }
 
-   /**
+  /**
    * The object itself alternatively if it can be defined.
    * @return _object
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object itself alternatively if it can be defined.")
   @JsonProperty(OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -169,7 +170,6 @@ public class ObjectLookupResultItem {
   public void setObject(Object _object) {
     this._object = _object;
   }
-
 
   @Override
   public boolean equals(Object o) {

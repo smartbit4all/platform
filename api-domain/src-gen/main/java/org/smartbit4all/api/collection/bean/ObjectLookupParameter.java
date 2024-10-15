@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The parameters of an Object lookup. 
  */
+@Schema(description = "The parameters of an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupParameter.LIMIT,
   ObjectLookupParameter.RELEVANCE_LIMIT_PERCENT,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   ObjectLookupParameter.VALUES_FOR_UPDATE,
   ObjectLookupParameter.VALUES_FOR_CREATION
 })
-@JsonTypeName("ObjectLookupParameter")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupParameter {
   public static final String LIMIT = "limit";
@@ -51,12 +51,12 @@ public class ObjectLookupParameter {
   private Float relevanceLimitRange;
 
   public static final String VALUES_FOR_UPDATE = "valuesForUpdate";
-  private Map<String, Object> valuesForUpdate = null;
+  private Map<String, Object> valuesForUpdate = new HashMap<>();
 
   public static final String VALUES_FOR_CREATION = "valuesForCreation";
-  private Map<String, Object> valuesForCreation = null;
+  private Map<String, Object> valuesForCreation = new HashMap<>();
 
-  public ObjectLookupParameter() { 
+  public ObjectLookupParameter() {
   }
 
   public ObjectLookupParameter limit(Integer limit) {
@@ -65,12 +65,13 @@ public class ObjectLookupParameter {
     return this;
   }
 
-   /**
+  /**
    * The limit of items in the result. 
    * @return limit
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The limit of items in the result. ")
   @JsonProperty(LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,19 +86,19 @@ public class ObjectLookupParameter {
     this.limit = limit;
   }
 
-
   public ObjectLookupParameter relevanceLimitPercent(Float relevanceLimitPercent) {
     
     this.relevanceLimitPercent = relevanceLimitPercent;
     return this;
   }
 
-   /**
+  /**
    * The limit of relevance in percent. If the relevance doesn&#39;t reach this level then it won&#39;t appear in the result. 
    * @return relevanceLimitPercent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The limit of relevance in percent. If the relevance doesn't reach this level then it won't appear in the result. ")
   @JsonProperty(RELEVANCE_LIMIT_PERCENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,19 +113,19 @@ public class ObjectLookupParameter {
     this.relevanceLimitPercent = relevanceLimitPercent;
   }
 
-
   public ObjectLookupParameter relevanceLimitRange(Float relevanceLimitRange) {
     
     this.relevanceLimitRange = relevanceLimitRange;
     return this;
   }
 
-   /**
+  /**
    * The limit of relevance range in percent. The most relevant result are closer to the first one then this limit. If we set this properly then we can see the most relevant as the numberOfRelevant in the result will set to 1. 
    * @return relevanceLimitRange
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The limit of relevance range in percent. The most relevant result are closer to the first one then this limit. If we set this properly then we can see the most relevant as the numberOfRelevant in the result will set to 1. ")
   @JsonProperty(RELEVANCE_LIMIT_RANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +139,6 @@ public class ObjectLookupParameter {
   public void setRelevanceLimitRange(Float relevanceLimitRange) {
     this.relevanceLimitRange = relevanceLimitRange;
   }
-
 
   public ObjectLookupParameter valuesForUpdate(Map<String, Object> valuesForUpdate) {
     
@@ -154,12 +154,13 @@ public class ObjectLookupParameter {
     return this;
   }
 
-   /**
+  /**
    * The values to set in an object that was found by the lookup. These values are copied into the given object after the result values from the lookup was copied into. It contains some default values. 
    * @return valuesForUpdate
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The values to set in an object that was found by the lookup. These values are copied into the given object after the result values from the lookup was copied into. It contains some default values. ")
   @JsonProperty(VALUES_FOR_UPDATE)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,7 +174,6 @@ public class ObjectLookupParameter {
   public void setValuesForUpdate(Map<String, Object> valuesForUpdate) {
     this.valuesForUpdate = valuesForUpdate;
   }
-
 
   public ObjectLookupParameter valuesForCreation(Map<String, Object> valuesForCreation) {
     
@@ -189,12 +189,13 @@ public class ObjectLookupParameter {
     return this;
   }
 
-   /**
+  /**
    * The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied  into the given object after the result values from the lookup was copied into. It contains some default values. 
    * @return valuesForCreation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied  into the given object after the result values from the lookup was copied into. It contains some default values. ")
   @JsonProperty(VALUES_FOR_CREATION)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +209,6 @@ public class ObjectLookupParameter {
   public void setValuesForCreation(Map<String, Object> valuesForCreation) {
     this.valuesForCreation = valuesForCreation;
   }
-
 
   @Override
   public boolean equals(Object o) {

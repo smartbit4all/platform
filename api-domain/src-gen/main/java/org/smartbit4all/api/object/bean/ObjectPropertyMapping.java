@@ -32,20 +32,20 @@ import jakarta.validation.Valid;
 /**
  * This is a mapping definition that denotes the two property. 
  */
+@Schema(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
   ObjectPropertyMapping.FROM_PATH,
   ObjectPropertyMapping.TO_PATH
 })
-@JsonTypeName("ObjectPropertyMapping")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyMapping {
   public static final String FROM_PATH = "fromPath";
-  private List<String> fromPath = null;
+  private List<String> fromPath = new ArrayList<>();
 
   public static final String TO_PATH = "toPath";
-  private List<String> toPath = null;
+  private List<String> toPath = new ArrayList<>();
 
-  public ObjectPropertyMapping() { 
+  public ObjectPropertyMapping() {
   }
 
   public ObjectPropertyMapping fromPath(List<String> fromPath) {
@@ -62,12 +62,13 @@ public class ObjectPropertyMapping {
     return this;
   }
 
-   /**
+  /**
    * Get fromPath
    * @return fromPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FROM_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,7 +82,6 @@ public class ObjectPropertyMapping {
   public void setFromPath(List<String> fromPath) {
     this.fromPath = fromPath;
   }
-
 
   public ObjectPropertyMapping toPath(List<String> toPath) {
     
@@ -97,12 +97,13 @@ public class ObjectPropertyMapping {
     return this;
   }
 
-   /**
+  /**
    * Get toPath
    * @return toPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TO_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,7 +117,6 @@ public class ObjectPropertyMapping {
   public void setToPath(List<String> toPath) {
     this.toPath = toPath;
   }
-
 
   @Override
   public boolean equals(Object o) {

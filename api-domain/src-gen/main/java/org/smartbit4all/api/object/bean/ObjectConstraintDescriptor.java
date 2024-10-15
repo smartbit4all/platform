@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 /**
  * There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object. The values can be used to identify the situation when the given constraint must be applied. 
  */
+@Schema(description = "There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object. The values can be used to identify the situation when the given constraint must be applied. ")
 @JsonPropertyOrder({
   ObjectConstraintDescriptor.NAME,
   ObjectConstraintDescriptor.WHEN,
@@ -48,7 +49,6 @@ import jakarta.validation.Valid;
   ObjectConstraintDescriptor.VALIDATION_RULES,
   ObjectConstraintDescriptor.DISPLAY_NAME
 })
-@JsonTypeName("ObjectConstraintDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectConstraintDescriptor {
   public static final String NAME = "name";
@@ -113,7 +113,7 @@ public class ObjectConstraintDescriptor {
   public static final String DISPLAY_NAME = "displayName";
   private LangString displayName;
 
-  public ObjectConstraintDescriptor() { 
+  public ObjectConstraintDescriptor() {
   }
 
   public ObjectConstraintDescriptor name(String name) {
@@ -122,13 +122,14 @@ public class ObjectConstraintDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,19 +144,19 @@ public class ObjectConstraintDescriptor {
     this.name = name;
   }
 
-
   public ObjectConstraintDescriptor when(WhenEnum when) {
     
     this.when = when;
     return this;
   }
 
-   /**
+  /**
    * Get when
    * @return when
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WHEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,19 +171,19 @@ public class ObjectConstraintDescriptor {
     this.when = when;
   }
 
-
   public ObjectConstraintDescriptor condition(String condition) {
     
     this.condition = condition;
     return this;
   }
 
-   /**
+  /**
    * The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object. 
    * @return condition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object. ")
   @JsonProperty(CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,20 +198,20 @@ public class ObjectConstraintDescriptor {
     this.condition = condition;
   }
 
-
   public ObjectConstraintDescriptor contexts(ObjectPropertyResolverContext contexts) {
     
     this.contexts = contexts;
     return this;
   }
 
-   /**
+  /**
    * Get contexts
    * @return contexts
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -225,7 +226,6 @@ public class ObjectConstraintDescriptor {
     this.contexts = contexts;
   }
 
-
   public ObjectConstraintDescriptor predicates(List<InvocationRequestDefinition> predicates) {
     
     this.predicates = predicates;
@@ -233,18 +233,22 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addPredicatesItem(InvocationRequestDefinition predicatesItem) {
+    if (this.predicates == null) {
+      this.predicates = new ArrayList<>();
+    }
     this.predicates.add(predicatesItem);
     return this;
   }
 
-   /**
+  /**
    * Get predicates
    * @return predicates
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PREDICATES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -259,7 +263,6 @@ public class ObjectConstraintDescriptor {
     this.predicates = predicates;
   }
 
-
   public ObjectConstraintDescriptor componentConstraints(List<ComponentConstraint> componentConstraints) {
     
     this.componentConstraints = componentConstraints;
@@ -267,18 +270,22 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addComponentConstraintsItem(ComponentConstraint componentConstraintsItem) {
+    if (this.componentConstraints == null) {
+      this.componentConstraints = new ArrayList<>();
+    }
     this.componentConstraints.add(componentConstraintsItem);
     return this;
   }
 
-   /**
+  /**
    * The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.
    * @return componentConstraints
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
   @JsonProperty(COMPONENT_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -293,7 +300,6 @@ public class ObjectConstraintDescriptor {
     this.componentConstraints = componentConstraints;
   }
 
-
   public ObjectConstraintDescriptor actionConstraints(List<UiActionConstraint> actionConstraints) {
     
     this.actionConstraints = actionConstraints;
@@ -301,18 +307,22 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addActionConstraintsItem(UiActionConstraint actionConstraintsItem) {
+    if (this.actionConstraints == null) {
+      this.actionConstraints = new ArrayList<>();
+    }
     this.actionConstraints.add(actionConstraintsItem);
     return this;
   }
 
-   /**
+  /**
    * The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.
    * @return actionConstraints
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
   @JsonProperty(ACTION_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -327,7 +337,6 @@ public class ObjectConstraintDescriptor {
     this.actionConstraints = actionConstraints;
   }
 
-
   public ObjectConstraintDescriptor validationRules(List<String> validationRules) {
     
     this.validationRules = validationRules;
@@ -335,17 +344,21 @@ public class ObjectConstraintDescriptor {
   }
 
   public ObjectConstraintDescriptor addValidationRulesItem(String validationRulesItem) {
+    if (this.validationRules == null) {
+      this.validationRules = new ArrayList<>();
+    }
     this.validationRules.add(validationRulesItem);
     return this;
   }
 
-   /**
+  /**
    * The validation rules must be checked before an editing is finalized. The validation result is part of the view.
    * @return validationRules
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The validation rules must be checked before an editing is finalized. The validation result is part of the view.")
   @JsonProperty(VALIDATION_RULES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -360,20 +373,20 @@ public class ObjectConstraintDescriptor {
     this.validationRules = validationRules;
   }
 
-
   public ObjectConstraintDescriptor displayName(LangString displayName) {
     
     this.displayName = displayName;
     return this;
   }
 
-   /**
+  /**
    * Get displayName
    * @return displayName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -387,7 +400,6 @@ public class ObjectConstraintDescriptor {
   public void setDisplayName(LangString displayName) {
     this.displayName = displayName;
   }
-
 
   @Override
   public boolean equals(Object o) {

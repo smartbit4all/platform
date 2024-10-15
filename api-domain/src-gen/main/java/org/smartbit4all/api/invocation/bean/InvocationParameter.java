@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   InvocationParameter.TYPE_CLASS,
   InvocationParameter.INNER_TYPE_CLASS
 })
-@JsonTypeName("InvocationParameter")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationParameter {
   public static final String NAME = "name";
@@ -50,7 +49,7 @@ public class InvocationParameter {
   public static final String INNER_TYPE_CLASS = "innerTypeClass";
   private String innerTypeClass;
 
-  public InvocationParameter() { 
+  public InvocationParameter() {
   }
 
   public InvocationParameter name(String name) {
@@ -59,13 +58,14 @@ public class InvocationParameter {
     return this;
   }
 
-   /**
+  /**
    * The symbolic name of the parameter. Must be set and unique inside an invocation request template.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The symbolic name of the parameter. Must be set and unique inside an invocation request template.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,19 +80,19 @@ public class InvocationParameter {
     this.name = name;
   }
 
-
   public InvocationParameter value(Object value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * The value of the object.
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The value of the object.")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +107,20 @@ public class InvocationParameter {
     this.value = value;
   }
 
-
   public InvocationParameter typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified type class name of the parameter.
    * @return typeClass
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The fully qualified type class name of the parameter.")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -135,19 +135,19 @@ public class InvocationParameter {
     this.typeClass = typeClass;
   }
 
-
   public InvocationParameter innerTypeClass(String innerTypeClass) {
     
     this.innerTypeClass = innerTypeClass;
     return this;
   }
 
-   /**
+  /**
    * If the type of the parameter is List or Map container then the inner type is saved into this property.
    * @return innerTypeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
   @JsonProperty(INNER_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,6 @@ public class InvocationParameter {
   public void setInnerTypeClass(String innerTypeClass) {
     this.innerTypeClass = innerTypeClass;
   }
-
 
   @Override
   public boolean equals(Object o) {

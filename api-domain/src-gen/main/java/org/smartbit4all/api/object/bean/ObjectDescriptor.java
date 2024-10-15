@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 /**
  * The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. 
  */
+@Schema(description = "The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. ")
 @JsonPropertyOrder({
   ObjectDescriptor.URI,
   ObjectDescriptor.NAME,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   ObjectDescriptor.LAYOUT_DESCRIPTOR,
   ObjectDescriptor.OBJECT_DEFINITION
 })
-@JsonTypeName("ObjectDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectDescriptor {
   public static final String URI = "uri";
@@ -61,7 +61,7 @@ public class ObjectDescriptor {
   public static final String OBJECT_DEFINITION = "objectDefinition";
   private URI objectDefinition;
 
-  public ObjectDescriptor() { 
+  public ObjectDescriptor() {
   }
 
   public ObjectDescriptor uri(URI uri) {
@@ -70,14 +70,15 @@ public class ObjectDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -92,20 +93,20 @@ public class ObjectDescriptor {
     this.uri = uri;
   }
 
-
   public ObjectDescriptor name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The extension name is a unique and unmodifiable identifier of the given extension. It is used to construct dynamic object definitions so it must match with the requirements of the an object name (ANSI characters with no white spaces) 
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The extension name is a unique and unmodifiable identifier of the given extension. It is used to construct dynamic object definitions so it must match with the requirements of the an object name (ANSI characters with no white spaces) ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +121,6 @@ public class ObjectDescriptor {
     this.name = name;
   }
 
-
   public ObjectDescriptor definitionProperties(Map<String, URI> definitionProperties) {
     
     this.definitionProperties = definitionProperties;
@@ -132,14 +132,15 @@ public class ObjectDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The properties extracted from the relevant ObjectDefinition. 
    * @return definitionProperties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The properties extracted from the relevant ObjectDefinition. ")
   @JsonProperty(DEFINITION_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -154,7 +155,6 @@ public class ObjectDescriptor {
     this.definitionProperties = definitionProperties;
   }
 
-
   public ObjectDescriptor extensionProperties(Map<String, URI> extensionProperties) {
     
     this.extensionProperties = extensionProperties;
@@ -166,14 +166,15 @@ public class ObjectDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The properties configured by extending the base ObjectDefinition 
    * @return extensionProperties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The properties configured by extending the base ObjectDefinition ")
   @JsonProperty(EXTENSION_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -188,20 +189,20 @@ public class ObjectDescriptor {
     this.extensionProperties = extensionProperties;
   }
 
-
   public ObjectDescriptor layoutDescriptor(URI layoutDescriptor) {
     
     this.layoutDescriptor = layoutDescriptor;
     return this;
   }
 
-   /**
+  /**
    * Get layoutDescriptor
    * @return layoutDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LAYOUT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -216,20 +217,20 @@ public class ObjectDescriptor {
     this.layoutDescriptor = layoutDescriptor;
   }
 
-
   public ObjectDescriptor objectDefinition(URI objectDefinition) {
     
     this.objectDefinition = objectDefinition;
     return this;
   }
 
-   /**
+  /**
    * Get objectDefinition
    * @return objectDefinition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -243,7 +244,6 @@ public class ObjectDescriptor {
   public void setObjectDefinition(URI objectDefinition) {
     this.objectDefinition = objectDefinition;
   }
-
 
   @Override
   public boolean equals(Object o) {

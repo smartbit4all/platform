@@ -44,7 +44,6 @@ import jakarta.validation.Valid;
   OrgBulkUpdate.GROUPS_OF_GROUP,
   OrgBulkUpdate.USERS_OF_GROUP
 })
-@JsonTypeName("OrgBulkUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OrgBulkUpdate {
   public static final String URI = "uri";
@@ -62,7 +61,7 @@ public class OrgBulkUpdate {
   public static final String USERS_OF_GROUP = "usersOfGroup";
   private List<@Valid UserOfGroupUpdate> usersOfGroup = new ArrayList<>();
 
-  public OrgBulkUpdate() { 
+  public OrgBulkUpdate() {
   }
 
   public OrgBulkUpdate uri(URI uri) {
@@ -71,13 +70,14 @@ public class OrgBulkUpdate {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +92,6 @@ public class OrgBulkUpdate {
     this.uri = uri;
   }
 
-
   public OrgBulkUpdate users(List<@Valid UserUpdate> users) {
     
     this.users = users;
@@ -100,18 +99,22 @@ public class OrgBulkUpdate {
   }
 
   public OrgBulkUpdate addUsersItem(UserUpdate usersItem) {
+    if (this.users == null) {
+      this.users = new ArrayList<>();
+    }
     this.users.add(usersItem);
     return this;
   }
 
-   /**
+  /**
    * Get users
    * @return users
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -126,7 +129,6 @@ public class OrgBulkUpdate {
     this.users = users;
   }
 
-
   public OrgBulkUpdate groups(List<@Valid GroupUpdate> groups) {
     
     this.groups = groups;
@@ -134,18 +136,22 @@ public class OrgBulkUpdate {
   }
 
   public OrgBulkUpdate addGroupsItem(GroupUpdate groupsItem) {
+    if (this.groups == null) {
+      this.groups = new ArrayList<>();
+    }
     this.groups.add(groupsItem);
     return this;
   }
 
-   /**
+  /**
    * Get groups
    * @return groups
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -160,7 +166,6 @@ public class OrgBulkUpdate {
     this.groups = groups;
   }
 
-
   public OrgBulkUpdate groupsOfGroup(List<@Valid GroupOfGroupUpdate> groupsOfGroup) {
     
     this.groupsOfGroup = groupsOfGroup;
@@ -168,18 +173,22 @@ public class OrgBulkUpdate {
   }
 
   public OrgBulkUpdate addGroupsOfGroupItem(GroupOfGroupUpdate groupsOfGroupItem) {
+    if (this.groupsOfGroup == null) {
+      this.groupsOfGroup = new ArrayList<>();
+    }
     this.groupsOfGroup.add(groupsOfGroupItem);
     return this;
   }
 
-   /**
+  /**
    * Get groupsOfGroup
    * @return groupsOfGroup
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -194,7 +203,6 @@ public class OrgBulkUpdate {
     this.groupsOfGroup = groupsOfGroup;
   }
 
-
   public OrgBulkUpdate usersOfGroup(List<@Valid UserOfGroupUpdate> usersOfGroup) {
     
     this.usersOfGroup = usersOfGroup;
@@ -202,18 +210,22 @@ public class OrgBulkUpdate {
   }
 
   public OrgBulkUpdate addUsersOfGroupItem(UserOfGroupUpdate usersOfGroupItem) {
+    if (this.usersOfGroup == null) {
+      this.usersOfGroup = new ArrayList<>();
+    }
     this.usersOfGroup.add(usersOfGroupItem);
     return this;
   }
 
-   /**
+  /**
    * Get usersOfGroup
    * @return usersOfGroup
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -227,7 +239,6 @@ public class OrgBulkUpdate {
   public void setUsersOfGroup(List<@Valid UserOfGroupUpdate> usersOfGroup) {
     this.usersOfGroup = usersOfGroup;
   }
-
 
   @Override
   public boolean equals(Object o) {

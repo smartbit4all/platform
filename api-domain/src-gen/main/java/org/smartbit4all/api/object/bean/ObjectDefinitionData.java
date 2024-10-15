@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * The object definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. 
  */
+@Schema(description = "The object definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. ")
 @JsonPropertyOrder({
   ObjectDefinitionData.URI,
   ObjectDefinitionData.QUALIFIED_NAME,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   ObjectDefinitionData.PROPERTIES,
   ObjectDefinitionData.OUTGOING_REFERENCES
 })
-@JsonTypeName("ObjectDefinitionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectDefinitionData {
   public static final String URI = "uri";
@@ -64,7 +64,7 @@ public class ObjectDefinitionData {
   public static final String OUTGOING_REFERENCES = "outgoingReferences";
   private List<@Valid ReferenceDefinitionData> outgoingReferences = new ArrayList<>();
 
-  public ObjectDefinitionData() { 
+  public ObjectDefinitionData() {
   }
 
   public ObjectDefinitionData uri(URI uri) {
@@ -73,14 +73,15 @@ public class ObjectDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/com/smartbit4all/mydomain/model/MyObject could be a calculated URI for a given reference. The object definition 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/com/smartbit4all/mydomain/model/MyObject could be a calculated URI for a given reference. The object definition ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -95,20 +96,20 @@ public class ObjectDefinitionData {
     this.uri = uri;
   }
 
-
   public ObjectDefinitionData qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * Get qualifiedName
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -123,19 +124,19 @@ public class ObjectDefinitionData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ObjectDefinitionData uriProperty(String uriProperty) {
     
     this.uriProperty = uriProperty;
     return this;
   }
 
-   /**
+  /**
    * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
    * @return uriProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
   @JsonProperty(URI_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,19 +151,19 @@ public class ObjectDefinitionData {
     this.uriProperty = uriProperty;
   }
 
-
   public ObjectDefinitionData keyProperty(String keyProperty) {
     
     this.keyProperty = keyProperty;
     return this;
   }
 
-   /**
+  /**
    * The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
    * @return keyProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -177,7 +178,6 @@ public class ObjectDefinitionData {
     this.keyProperty = keyProperty;
   }
 
-
   public ObjectDefinitionData properties(List<@Valid PropertyDefinitionData> properties) {
     
     this.properties = properties;
@@ -185,18 +185,22 @@ public class ObjectDefinitionData {
   }
 
   public ObjectDefinitionData addPropertiesItem(PropertyDefinitionData propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new ArrayList<>();
+    }
     this.properties.add(propertiesItem);
     return this;
   }
 
-   /**
+  /**
    * Get properties
    * @return properties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -211,7 +215,6 @@ public class ObjectDefinitionData {
     this.properties = properties;
   }
 
-
   public ObjectDefinitionData outgoingReferences(List<@Valid ReferenceDefinitionData> outgoingReferences) {
     
     this.outgoingReferences = outgoingReferences;
@@ -219,18 +222,22 @@ public class ObjectDefinitionData {
   }
 
   public ObjectDefinitionData addOutgoingReferencesItem(ReferenceDefinitionData outgoingReferencesItem) {
+    if (this.outgoingReferences == null) {
+      this.outgoingReferences = new ArrayList<>();
+    }
     this.outgoingReferences.add(outgoingReferencesItem);
     return this;
   }
 
-   /**
+  /**
    * Get outgoingReferences
    * @return outgoingReferences
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OUTGOING_REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -244,7 +251,6 @@ public class ObjectDefinitionData {
   public void setOutgoingReferences(List<@Valid ReferenceDefinitionData> outgoingReferences) {
     this.outgoingReferences = outgoingReferences;
   }
-
 
   @Override
   public boolean equals(Object o) {

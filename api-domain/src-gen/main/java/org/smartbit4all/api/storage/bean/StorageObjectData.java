@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The basic data object of the storages. This holds the version history and refers the current version. Also has named references  and collections. 
  */
+@Schema(description = "The basic data object of the storages. This holds the version history and refers the current version. Also has named references  and collections. ")
 @JsonPropertyOrder({
   StorageObjectData.URI,
   StorageObjectData.CURRENT_VERSION,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   StorageObjectData.PENDING_VERSION,
   StorageObjectData.DELETED
 })
-@JsonTypeName("StorageObjectData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectData {
   public static final String URI = "uri";
@@ -56,7 +56,7 @@ public class StorageObjectData {
   public static final String DELETED = "deleted";
   private Boolean deleted = false;
 
-  public StorageObjectData() { 
+  public StorageObjectData() {
   }
 
   public StorageObjectData uri(URI uri) {
@@ -65,14 +65,15 @@ public class StorageObjectData {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object represented by the storage object. 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object represented by the storage object. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -87,21 +88,21 @@ public class StorageObjectData {
     this.uri = uri;
   }
 
-
   public StorageObjectData currentVersion(ObjectVersion currentVersion) {
     
     this.currentVersion = currentVersion;
     return this;
   }
 
-   /**
+  /**
    * Get currentVersion
    * @return currentVersion
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CURRENT_VERSION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,19 +117,19 @@ public class StorageObjectData {
     this.currentVersion = currentVersion;
   }
 
-
   public StorageObjectData className(String className) {
     
     this.className = className;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI. 
    * @return className
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI. ")
   @JsonProperty(CLASS_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,20 +144,20 @@ public class StorageObjectData {
     this.className = className;
   }
 
-
   public StorageObjectData pendingVersion(ObjectVersion pendingVersion) {
     
     this.pendingVersion = pendingVersion;
     return this;
   }
 
-   /**
+  /**
    * Get pendingVersion
    * @return pendingVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PENDING_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,19 +172,19 @@ public class StorageObjectData {
     this.pendingVersion = pendingVersion;
   }
 
-
   public StorageObjectData deleted(Boolean deleted) {
     
     this.deleted = deleted;
     return this;
   }
 
-   /**
+  /**
    * The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object exists but we also know that it is already inactivated. 
    * @return deleted
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object exists but we also know that it is already inactivated. ")
   @JsonProperty(DELETED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,7 +198,6 @@ public class StorageObjectData {
   public void setDeleted(Boolean deleted) {
     this.deleted = deleted;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * Information of the device running the current view context.
  */
+@Schema(description = "Information of the device running the current view context.")
 @JsonPropertyOrder({
   DeviceInfo.DEVICE_ID,
   DeviceInfo.DEVICE_TYPE,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   DeviceInfo.IP_ADDRESS,
   DeviceInfo.PARAMETERS
 })
-@JsonTypeName("DeviceInfo")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DeviceInfo {
   public static final String DEVICE_ID = "deviceId";
@@ -56,7 +56,7 @@ public class DeviceInfo {
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
 
-  public DeviceInfo() { 
+  public DeviceInfo() {
   }
 
   public DeviceInfo deviceId(String deviceId) {
@@ -65,13 +65,14 @@ public class DeviceInfo {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of the client&#39;s device. E.g.: android_id. 
    * @return deviceId
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of the client's device. E.g.: android_id. ")
   @JsonProperty(DEVICE_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,19 +87,19 @@ public class DeviceInfo {
     this.deviceId = deviceId;
   }
 
-
   public DeviceInfo deviceType(String deviceType) {
     
     this.deviceType = deviceType;
     return this;
   }
 
-   /**
+  /**
    * The type of the device. E.g.: browser, android, iOS or else.  This information is not required and should be used with caution since the clients may  define their own type differently. 
    * @return deviceType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The type of the device. E.g.: browser, android, iOS or else.  This information is not required and should be used with caution since the clients may  define their own type differently. ")
   @JsonProperty(DEVICE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +114,19 @@ public class DeviceInfo {
     this.deviceType = deviceType;
   }
 
-
   public DeviceInfo userAgent(String userAgent) {
     
     this.userAgent = userAgent;
     return this;
   }
 
-   /**
+  /**
    * The user-agent information from the client.
    * @return userAgent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The user-agent information from the client.")
   @JsonProperty(USER_AGENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +141,19 @@ public class DeviceInfo {
     this.userAgent = userAgent;
   }
 
-
   public DeviceInfo ipAddress(String ipAddress) {
     
     this.ipAddress = ipAddress;
     return this;
   }
 
-   /**
+  /**
    * IP address of the client.
    * @return ipAddress
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "IP address of the client.")
   @JsonProperty(IP_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +168,6 @@ public class DeviceInfo {
     this.ipAddress = ipAddress;
   }
 
-
   public DeviceInfo parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -179,13 +179,14 @@ public class DeviceInfo {
     return this;
   }
 
-   /**
+  /**
    * Any additional parameters that the client may share with the server.
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Any additional parameters that the client may share with the server.")
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -199,7 +200,6 @@ public class DeviceInfo {
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

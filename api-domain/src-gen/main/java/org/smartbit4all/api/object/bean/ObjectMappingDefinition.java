@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * This is a mapping definition that describes the mapping between two domain object. 
  */
+@Schema(description = "This is a mapping definition that describes the mapping between two domain object. ")
 @JsonPropertyOrder({
   ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.MAPPINGS,
   ObjectMappingDefinition.LIST_MAPPINGS
 })
-@JsonTypeName("ObjectMappingDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectMappingDefinition {
   public static final String FROM_TYPE_QUALIFIED_NAME = "fromTypeQualifiedName";
@@ -55,7 +55,7 @@ public class ObjectMappingDefinition {
   public static final String LIST_MAPPINGS = "listMappings";
   private List<@Valid ObjectListMapping> listMappings = new ArrayList<>();
 
-  public ObjectMappingDefinition() { 
+  public ObjectMappingDefinition() {
   }
 
   public ObjectMappingDefinition fromTypeQualifiedName(String fromTypeQualifiedName) {
@@ -64,12 +64,13 @@ public class ObjectMappingDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get fromTypeQualifiedName
    * @return fromTypeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FROM_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,19 +85,19 @@ public class ObjectMappingDefinition {
     this.fromTypeQualifiedName = fromTypeQualifiedName;
   }
 
-
   public ObjectMappingDefinition toTypeQualifiedName(String toTypeQualifiedName) {
     
     this.toTypeQualifiedName = toTypeQualifiedName;
     return this;
   }
 
-   /**
+  /**
    * Get toTypeQualifiedName
    * @return toTypeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TO_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,7 +112,6 @@ public class ObjectMappingDefinition {
     this.toTypeQualifiedName = toTypeQualifiedName;
   }
 
-
   public ObjectMappingDefinition mappings(List<@Valid ObjectPropertyMapping> mappings) {
     
     this.mappings = mappings;
@@ -119,18 +119,22 @@ public class ObjectMappingDefinition {
   }
 
   public ObjectMappingDefinition addMappingsItem(ObjectPropertyMapping mappingsItem) {
+    if (this.mappings == null) {
+      this.mappings = new ArrayList<>();
+    }
     this.mappings.add(mappingsItem);
     return this;
   }
 
-   /**
+  /**
    * Get mappings
    * @return mappings
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -145,7 +149,6 @@ public class ObjectMappingDefinition {
     this.mappings = mappings;
   }
 
-
   public ObjectMappingDefinition listMappings(List<@Valid ObjectListMapping> listMappings) {
     
     this.listMappings = listMappings;
@@ -153,18 +156,22 @@ public class ObjectMappingDefinition {
   }
 
   public ObjectMappingDefinition addListMappingsItem(ObjectListMapping listMappingsItem) {
+    if (this.listMappings == null) {
+      this.listMappings = new ArrayList<>();
+    }
     this.listMappings.add(listMappingsItem);
     return this;
   }
 
-   /**
+  /**
    * Get listMappings
    * @return listMappings
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LIST_MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -178,7 +185,6 @@ public class ObjectMappingDefinition {
   public void setListMappings(List<@Valid ObjectListMapping> listMappings) {
     this.listMappings = listMappings;
   }
-
 
   @Override
   public boolean equals(Object o) {

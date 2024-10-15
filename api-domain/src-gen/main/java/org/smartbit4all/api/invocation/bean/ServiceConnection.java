@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 /**
  * This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary parameters. It can be managed as MDM entry for different purposes. 
  */
+@Schema(description = "This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary parameters. It can be managed as MDM entry for different purposes. ")
 @JsonPropertyOrder({
   ServiceConnection.URI,
   ServiceConnection.NAME,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   ServiceConnection.ENDPOINT,
   ServiceConnection.PARAMETERS
 })
-@JsonTypeName("ServiceConnection")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServiceConnection {
   public static final String URI = "uri";
@@ -73,7 +73,7 @@ public class ServiceConnection {
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
 
-  public ServiceConnection() { 
+  public ServiceConnection() {
   }
 
   public ServiceConnection uri(URI uri) {
@@ -82,13 +82,14 @@ public class ServiceConnection {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,19 +104,19 @@ public class ServiceConnection {
     this.uri = uri;
   }
 
-
   public ServiceConnection name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The identifier name of the AI service.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier name of the AI service.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,19 +131,19 @@ public class ServiceConnection {
     this.name = name;
   }
 
-
   public ServiceConnection apiName(String apiName) {
     
     this.apiName = apiName;
     return this;
   }
 
-   /**
+  /**
    * The name of the local api to access the given endpoint. Usually it is the name of a contribution api. 
    * @return apiName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the local api to access the given endpoint. Usually it is the name of a contribution api. ")
   @JsonProperty(API_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,19 +158,19 @@ public class ServiceConnection {
     this.apiName = apiName;
   }
 
-
   public ServiceConnection authToken(String authToken) {
     
     this.authToken = authToken;
     return this;
   }
 
-   /**
+  /**
    * As a crucial parameter for the access the authentication token (bearer token or similar). 
    * @return authToken
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "As a crucial parameter for the access the authentication token (bearer token or similar). ")
   @JsonProperty(AUTH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,19 +185,19 @@ public class ServiceConnection {
     this.authToken = authToken;
   }
 
-
   public ServiceConnection username(String username) {
     
     this.username = username;
     return this;
   }
 
-   /**
+  /**
    * Get username
    * @return username
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,19 +212,19 @@ public class ServiceConnection {
     this.username = username;
   }
 
-
   public ServiceConnection password(String password) {
     
     this.password = password;
     return this;
   }
 
-   /**
+  /**
    * Get password
    * @return password
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,19 +239,19 @@ public class ServiceConnection {
     this.password = password;
   }
 
-
   public ServiceConnection apiVersion(String apiVersion) {
     
     this.apiVersion = apiVersion;
     return this;
   }
 
-   /**
+  /**
    * The optional version parameter of the api endpoint. 
    * @return apiVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The optional version parameter of the api endpoint. ")
   @JsonProperty(API_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,19 +266,19 @@ public class ServiceConnection {
     this.apiVersion = apiVersion;
   }
 
-
   public ServiceConnection endpoint(String endpoint) {
     
     this.endpoint = endpoint;
     return this;
   }
 
-   /**
+  /**
    * The endpoint URL typically. 
    * @return endpoint
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The endpoint URL typically. ")
   @JsonProperty(ENDPOINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -292,7 +293,6 @@ public class ServiceConnection {
     this.endpoint = endpoint;
   }
 
-
   public ServiceConnection parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -304,13 +304,14 @@ public class ServiceConnection {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -324,7 +325,6 @@ public class ServiceConnection {
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

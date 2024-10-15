@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   WellKnownDefinition.DATA,
   WellKnownDefinition.CONTENTYPE
 })
-@JsonTypeName("WellKnownDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class WellKnownDefinition {
   public static final String URI = "uri";
@@ -51,7 +50,7 @@ public class WellKnownDefinition {
   public static final String CONTENTYPE = "contentype";
   private String contentype;
 
-  public WellKnownDefinition() { 
+  public WellKnownDefinition() {
   }
 
   public WellKnownDefinition uri(URI uri) {
@@ -60,13 +59,14 @@ public class WellKnownDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,19 +81,19 @@ public class WellKnownDefinition {
     this.uri = uri;
   }
 
-
   public WellKnownDefinition id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,20 +108,20 @@ public class WellKnownDefinition {
     this.id = id;
   }
 
-
   public WellKnownDefinition data(URI data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,19 +136,19 @@ public class WellKnownDefinition {
     this.data = data;
   }
 
-
   public WellKnownDefinition contentype(String contentype) {
     
     this.contentype = contentype;
     return this;
   }
 
-   /**
+  /**
    * Get contentype
    * @return contentype
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTENTYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -162,7 +162,6 @@ public class WellKnownDefinition {
   public void setContentype(String contentype) {
     this.contentype = contentype;
   }
-
 
   @Override
   public boolean equals(Object o) {

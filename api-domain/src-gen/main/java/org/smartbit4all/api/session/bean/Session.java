@@ -48,7 +48,6 @@ import jakarta.validation.Valid;
   Session.VIEW_CONTEXTS,
   Session.CREATED_AT
 })
-@JsonTypeName("Session")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Session {
   public static final String URI = "uri";
@@ -78,7 +77,7 @@ public class Session {
   public static final String CREATED_AT = "createdAt";
   private OffsetDateTime createdAt;
 
-  public Session() { 
+  public Session() {
   }
 
   public Session uri(URI uri) {
@@ -87,13 +86,14 @@ public class Session {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,20 +108,20 @@ public class Session {
     this.uri = uri;
   }
 
-
   public Session expiration(OffsetDateTime expiration) {
     
     this.expiration = expiration;
     return this;
   }
 
-   /**
+  /**
    * Get expiration
    * @return expiration
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,20 +136,20 @@ public class Session {
     this.expiration = expiration;
   }
 
-
   public Session refreshExpiration(OffsetDateTime refreshExpiration) {
     
     this.refreshExpiration = refreshExpiration;
     return this;
   }
 
-   /**
+  /**
    * The expiration time of the current refresh token. If this time is over then the session is definetely invalid. 
    * @return refreshExpiration
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The expiration time of the current refresh token. If this time is over then the session is definetely invalid. ")
   @JsonProperty(REFRESH_EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,19 +164,19 @@ public class Session {
     this.refreshExpiration = refreshExpiration;
   }
 
-
   public Session locale(String locale) {
     
     this.locale = locale;
     return this;
   }
 
-   /**
+  /**
    * Get locale
    * @return locale
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +191,6 @@ public class Session {
     this.locale = locale;
   }
 
-
   public Session authentications(List<@Valid AccountInfo> authentications) {
     
     this.authentications = authentications;
@@ -199,18 +198,22 @@ public class Session {
   }
 
   public Session addAuthenticationsItem(AccountInfo authenticationsItem) {
+    if (this.authentications == null) {
+      this.authentications = new ArrayList<>();
+    }
     this.authentications.add(authenticationsItem);
     return this;
   }
 
-   /**
+  /**
    * Get authentications
    * @return authentications
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -225,20 +228,20 @@ public class Session {
     this.authentications = authentications;
   }
 
-
   public Session user(URI user) {
     
     this.user = user;
     return this;
   }
 
-   /**
+  /**
    * Get user
    * @return user
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -253,7 +256,6 @@ public class Session {
     this.user = user;
   }
 
-
   public Session parameters(Map<String, String> parameters) {
     
     this.parameters = parameters;
@@ -265,13 +267,14 @@ public class Session {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -286,7 +289,6 @@ public class Session {
     this.parameters = parameters;
   }
 
-
   public Session viewContexts(Map<String, URI> viewContexts) {
     
     this.viewContexts = viewContexts;
@@ -298,14 +300,15 @@ public class Session {
     return this;
   }
 
-   /**
+  /**
    * ViewContexts in this session, URIs by UUID.
    * @return viewContexts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ViewContexts in this session, URIs by UUID.")
   @JsonProperty(VIEW_CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -320,20 +323,20 @@ public class Session {
     this.viewContexts = viewContexts;
   }
 
-
   public Session createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * Get createdAt
    * @return createdAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -347,7 +350,6 @@ public class Session {
   public void setCreatedAt(OffsetDateTime createdAt) {
     this.createdAt = createdAt;
   }
-
 
   @Override
   public boolean equals(Object o) {

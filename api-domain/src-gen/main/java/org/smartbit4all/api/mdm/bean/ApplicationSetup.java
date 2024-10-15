@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   ApplicationSetup.URI,
   ApplicationSetup.DATA
 })
-@JsonTypeName("ApplicationSetup")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApplicationSetup {
   public static final String URI = "uri";
@@ -44,7 +43,7 @@ public class ApplicationSetup {
   public static final String DATA = "data";
   private ApplicationSetupData data;
 
-  public ApplicationSetup() { 
+  public ApplicationSetup() {
   }
 
   public ApplicationSetup uri(URI uri) {
@@ -53,13 +52,14 @@ public class ApplicationSetup {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,20 +74,20 @@ public class ApplicationSetup {
     this.uri = uri;
   }
 
-
   public ApplicationSetup data(ApplicationSetupData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -101,7 +101,6 @@ public class ApplicationSetup {
   public void setData(ApplicationSetupData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

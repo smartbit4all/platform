@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * The context objects of a property value resolution. 
  */
+@Schema(description = "The context objects of a property value resolution. ")
 @JsonPropertyOrder({
   ObjectPropertyResolverContext.OBJECTS
 })
-@JsonTypeName("ObjectPropertyResolverContext")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyResolverContext {
   public static final String OBJECTS = "objects";
   private List<@Valid ObjectPropertyResolverContextObject> objects = new ArrayList<>();
 
-  public ObjectPropertyResolverContext() { 
+  public ObjectPropertyResolverContext() {
   }
 
   public ObjectPropertyResolverContext objects(List<@Valid ObjectPropertyResolverContextObject> objects) {
@@ -52,18 +52,22 @@ public class ObjectPropertyResolverContext {
   }
 
   public ObjectPropertyResolverContext addObjectsItem(ObjectPropertyResolverContextObject objectsItem) {
+    if (this.objects == null) {
+      this.objects = new ArrayList<>();
+    }
     this.objects.add(objectsItem);
     return this;
   }
 
-   /**
+  /**
    * Get objects
    * @return objects
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class ObjectPropertyResolverContext {
   public void setObjects(List<@Valid ObjectPropertyResolverContextObject> objects) {
     this.objects = objects;
   }
-
 
   @Override
   public boolean equals(Object o) {

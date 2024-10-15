@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. 
  */
+@Schema(description = "The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. ")
 @JsonPropertyOrder({
   BranchedObjectEntry.BRANCHING_STATE,
   BranchedObjectEntry.ORIGINAL_URI,
   BranchedObjectEntry.BRANCH_URI
 })
-@JsonTypeName("BranchedObjectEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObjectEntry {
   /**
@@ -86,7 +86,7 @@ public class BranchedObjectEntry {
   public static final String BRANCH_URI = "branchUri";
   private URI branchUri;
 
-  public BranchedObjectEntry() { 
+  public BranchedObjectEntry() {
   }
 
   public BranchedObjectEntry branchingState(BranchingStateEnum branchingState) {
@@ -95,12 +95,13 @@ public class BranchedObjectEntry {
     return this;
   }
 
-   /**
+  /**
    * Get branchingState
    * @return branchingState
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCHING_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,20 +116,20 @@ public class BranchedObjectEntry {
     this.branchingState = branchingState;
   }
 
-
   public BranchedObjectEntry originalUri(URI originalUri) {
     
     this.originalUri = originalUri;
     return this;
   }
 
-   /**
+  /**
    * Get originalUri
    * @return originalUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ORIGINAL_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,20 +144,20 @@ public class BranchedObjectEntry {
     this.originalUri = originalUri;
   }
 
-
   public BranchedObjectEntry branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
   }
 
-   /**
+  /**
    * Get branchUri
    * @return branchUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,7 +171,6 @@ public class BranchedObjectEntry {
   public void setBranchUri(URI branchUri) {
     this.branchUri = branchUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

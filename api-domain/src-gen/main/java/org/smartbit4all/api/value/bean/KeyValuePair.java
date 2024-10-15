@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   KeyValuePair.KEY,
   KeyValuePair.VALUE
 })
-@JsonTypeName("KeyValuePair")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class KeyValuePair {
   public static final String KEY = "key";
@@ -42,7 +41,7 @@ public class KeyValuePair {
   public static final String VALUE = "value";
   private Object value;
 
-  public KeyValuePair() { 
+  public KeyValuePair() {
   }
 
   public KeyValuePair key(String key) {
@@ -51,13 +50,14 @@ public class KeyValuePair {
     return this;
   }
 
-   /**
+  /**
    * Get key
    * @return key
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KEY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -72,19 +72,19 @@ public class KeyValuePair {
     this.key = key;
   }
 
-
   public KeyValuePair value(Object value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +98,6 @@ public class KeyValuePair {
   public void setValue(Object value) {
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -42,6 +42,7 @@ import jakarta.validation.Valid;
 /**
  * The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of the given list of object. 
  */
+@Schema(description = "The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of the given list of object. ")
 @JsonPropertyOrder({
   MDMEntryDescriptor.NAME,
   MDMEntryDescriptor.DISPLAY_NAME_LIST,
@@ -70,7 +71,6 @@ import jakarta.validation.Valid;
   MDMEntryDescriptor.IMPORTABLE,
   MDMEntryDescriptor.HIDDEN
 })
-@JsonTypeName("MDMEntryDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptor {
   public static final String NAME = "name";
@@ -98,10 +98,10 @@ public class MDMEntryDescriptor {
   private Boolean inactiveMgmt = true;
 
   public static final String UNIQUE_PROPERTY_PATHS = "uniquePropertyPaths";
-  private List<List<String>> uniquePropertyPaths = null;
+  private List<List<String>> uniquePropertyPaths = new ArrayList<>();
 
   public static final String CONSTRAINTS = "constraints";
-  private List<@Valid MDMEntryConstraint> constraints = null;
+  private List<@Valid MDMEntryConstraint> constraints = new ArrayList<>();
 
   public static final String TABLE_COLUMNS = "tableColumns";
   private List<@Valid MDMTableColumnDescriptor> tableColumns = new ArrayList<>();
@@ -122,7 +122,7 @@ public class MDMEntryDescriptor {
   private InvocationRequest uriConstructor = null;
 
   public static final String EVENT_HANDLERS_BEFORE_SAVE = "eventHandlersBeforeSave";
-  private List<InvocationRequest> eventHandlersBeforeSave = null;
+  private List<InvocationRequest> eventHandlersBeforeSave = new ArrayList<>();
 
   public static final String IS_VALUE_SET = "isValueSet";
   private Boolean isValueSet = false;
@@ -137,7 +137,7 @@ public class MDMEntryDescriptor {
   private VectorCollectionDescriptor vectorCollection = null;
 
   public static final String PROPERTY_MAPPINGS = "propertyMappings";
-  private Map<String, String> propertyMappings = null;
+  private Map<String, String> propertyMappings = new HashMap<>();
 
   public static final String FILTER_MODEL = "filterModel";
   private FilterExpressionBuilderModel filterModel = null;
@@ -151,7 +151,7 @@ public class MDMEntryDescriptor {
   public static final String HIDDEN = "hidden";
   private Boolean hidden = false;
 
-  public MDMEntryDescriptor() { 
+  public MDMEntryDescriptor() {
   }
 
   public MDMEntryDescriptor name(String name) {
@@ -160,12 +160,13 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the qualified name of the given class. It is easy to identify in the message...properties. 
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the qualified name of the given class. It is easy to identify in the message...properties. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,20 +181,20 @@ public class MDMEntryDescriptor {
     this.name = name;
   }
 
-
   public MDMEntryDescriptor displayNameList(LangString displayNameList) {
     
     this.displayNameList = displayNameList;
     return this;
   }
 
-   /**
+  /**
    * Get displayNameList
    * @return displayNameList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,20 +209,20 @@ public class MDMEntryDescriptor {
     this.displayNameList = displayNameList;
   }
 
-
   public MDMEntryDescriptor displayNameForm(LangString displayNameForm) {
     
     this.displayNameForm = displayNameForm;
     return this;
   }
 
-   /**
+  /**
    * Get displayNameForm
    * @return displayNameForm
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME_FORM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -236,19 +237,19 @@ public class MDMEntryDescriptor {
     this.displayNameForm = displayNameForm;
   }
 
-
   public MDMEntryDescriptor order(Long order) {
     
     this.order = order;
     return this;
   }
 
-   /**
+  /**
    * An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries. 
    * @return order
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "An arbitrary number, which can be used for any sorting, for example in Admin pages when managing entries. ")
   @JsonProperty(ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -263,19 +264,19 @@ public class MDMEntryDescriptor {
     this.order = order;
   }
 
-
   public MDMEntryDescriptor adminGroupName(String adminGroupName) {
     
     this.adminGroupName = adminGroupName;
     return this;
   }
 
-   /**
+  /**
    * The name of the administration group. Optional, if we don&#39;t set it then the group defined in the definition will be the master group for this entry. The security group of the entry is named like mdm.definition.entry. 
    * @return adminGroupName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the administration group. Optional, if we don't set it then the group defined in the definition will be the master group for this entry. The security group of the entry is named like mdm.definition.entry. ")
   @JsonProperty(ADMIN_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -290,19 +291,19 @@ public class MDMEntryDescriptor {
     this.adminGroupName = adminGroupName;
   }
 
-
   public MDMEntryDescriptor typeQualifiedName(String typeQualifiedName) {
     
     this.typeQualifiedName = typeQualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the GenericValue object is used. 
    * @return typeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the GenericValue object is used. ")
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,19 +318,19 @@ public class MDMEntryDescriptor {
     this.typeQualifiedName = typeQualifiedName;
   }
 
-
   public MDMEntryDescriptor publishedListName(String publishedListName) {
     
     this.publishedListName = publishedListName;
     return this;
   }
 
-   /**
+  /**
    * Name of Collection.list in which published entries will be stored. 
    * @return publishedListName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Name of Collection.list in which published entries will be stored. ")
   @JsonProperty(PUBLISHED_LIST_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -344,19 +345,19 @@ public class MDMEntryDescriptor {
     this.publishedListName = publishedListName;
   }
 
-
   public MDMEntryDescriptor inactiveMgmt(Boolean inactiveMgmt) {
     
     this.inactiveMgmt = inactiveMgmt;
     return this;
   }
 
-   /**
+  /**
    * The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched. 
    * @return inactiveMgmt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of Collection.list in which the inactive entries will be stored is the list-inactive. If we set this true then the removal will save the removed item in this list. Else the removal is a final operation. This list is also managed in a branched way. So the inactive state is also branched. ")
   @JsonProperty(INACTIVE_MGMT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -370,7 +371,6 @@ public class MDMEntryDescriptor {
   public void setInactiveMgmt(Boolean inactiveMgmt) {
     this.inactiveMgmt = inactiveMgmt;
   }
-
 
   public MDMEntryDescriptor uniquePropertyPaths(List<List<String>> uniquePropertyPaths) {
     
@@ -386,15 +386,16 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! 
    * @return uniquePropertyPaths
    * @deprecated
-  **/
+   */
   @Deprecated
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The paths for the properties which should be unique in the handled objects. If this property is setted then maps generated to hold the unique values. Use the constraints property instead! ")
   @JsonProperty(UNIQUE_PROPERTY_PATHS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -408,7 +409,6 @@ public class MDMEntryDescriptor {
   public void setUniquePropertyPaths(List<List<String>> uniquePropertyPaths) {
     this.uniquePropertyPaths = uniquePropertyPaths;
   }
-
 
   public MDMEntryDescriptor constraints(List<@Valid MDMEntryConstraint> constraints) {
     
@@ -424,13 +424,14 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The new or edited entryies should comply the constraints. 
    * @return constraints
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The new or edited entryies should comply the constraints. ")
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -445,7 +446,6 @@ public class MDMEntryDescriptor {
     this.constraints = constraints;
   }
 
-
   public MDMEntryDescriptor tableColumns(List<@Valid MDMTableColumnDescriptor> tableColumns) {
     
     this.tableColumns = tableColumns;
@@ -453,18 +453,22 @@ public class MDMEntryDescriptor {
   }
 
   public MDMEntryDescriptor addTableColumnsItem(MDMTableColumnDescriptor tableColumnsItem) {
+    if (this.tableColumns == null) {
+      this.tableColumns = new ArrayList<>();
+    }
     this.tableColumns.add(tableColumnsItem);
     return this;
   }
 
-   /**
+  /**
    * The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be hidden and the order is the default column order on the screen. 
    * @return tableColumns
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be hidden and the order is the default column order on the screen. ")
   @JsonProperty(TABLE_COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -479,19 +483,19 @@ public class MDMEntryDescriptor {
     this.tableColumns = tableColumns;
   }
 
-
   public MDMEntryDescriptor editorViewName(String editorViewName) {
     
     this.editorViewName = editorViewName;
     return this;
   }
 
-   /**
+  /**
    * The name of the view editor view to open. If empty then we use the default in the application.
    * @return editorViewName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the view editor view to open. If empty then we use the default in the application.")
   @JsonProperty(EDITOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -506,7 +510,6 @@ public class MDMEntryDescriptor {
     this.editorViewName = editorViewName;
   }
 
-
   public MDMEntryDescriptor listPageGridViews(List<GridView> listPageGridViews) {
     
     this.listPageGridViews = listPageGridViews;
@@ -514,18 +517,22 @@ public class MDMEntryDescriptor {
   }
 
   public MDMEntryDescriptor addListPageGridViewsItem(GridView listPageGridViewsItem) {
+    if (this.listPageGridViews == null) {
+      this.listPageGridViews = new ArrayList<>();
+    }
     this.listPageGridViews.add(listPageGridViewsItem);
     return this;
   }
 
-   /**
+  /**
    * The supported GridViews for presenting the MDM Entry List Page. If none are provided, all table columns are rendered. If more than one GridViews are  provided, it is the PageApi implementation&#39;s responsibility to provide actions for  switching between grid views. 
    * @return listPageGridViews
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The supported GridViews for presenting the MDM Entry List Page. If none are provided, all table columns are rendered. If more than one GridViews are  provided, it is the PageApi implementation's responsibility to provide actions for  switching between grid views. ")
   @JsonProperty(LIST_PAGE_GRID_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -540,19 +547,19 @@ public class MDMEntryDescriptor {
     this.listPageGridViews = listPageGridViews;
   }
 
-
   public MDMEntryDescriptor searchIndexForEntries(String searchIndexForEntries) {
     
     this.searchIndexForEntries = searchIndexForEntries;
     return this;
   }
 
-   /**
+  /**
    * The name of search index that provides the entries.
    * @return searchIndexForEntries
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of search index that provides the entries.")
   @JsonProperty(SEARCH_INDEX_FOR_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -567,19 +574,19 @@ public class MDMEntryDescriptor {
     this.searchIndexForEntries = searchIndexForEntries;
   }
 
-
   public MDMEntryDescriptor schema(String schema) {
     
     this.schema = schema;
     return this;
   }
 
-   /**
+  /**
    * The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used. 
    * @return schema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used. ")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -594,20 +601,20 @@ public class MDMEntryDescriptor {
     this.schema = schema;
   }
 
-
   public MDMEntryDescriptor uriConstructor(InvocationRequest uriConstructor) {
     
     this.uriConstructor = uriConstructor;
     return this;
   }
 
-   /**
+  /**
    * It can be a function that produces the URI for the given object by the other property values. 
    * @return uriConstructor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "It can be a function that produces the URI for the given object by the other property values. ")
   @JsonProperty(URI_CONSTRUCTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -621,7 +628,6 @@ public class MDMEntryDescriptor {
   public void setUriConstructor(InvocationRequest uriConstructor) {
     this.uriConstructor = uriConstructor;
   }
-
 
   public MDMEntryDescriptor eventHandlersBeforeSave(List<InvocationRequest> eventHandlersBeforeSave) {
     
@@ -637,13 +643,14 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * These functions are event handlers to manage the save before event about the given object. 
    * @return eventHandlersBeforeSave
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "These functions are event handlers to manage the save before event about the given object. ")
   @JsonProperty(EVENT_HANDLERS_BEFORE_SAVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -658,19 +665,19 @@ public class MDMEntryDescriptor {
     this.eventHandlersBeforeSave = eventHandlersBeforeSave;
   }
 
-
   public MDMEntryDescriptor isValueSet(Boolean isValueSet) {
     
     this.isValueSet = isValueSet;
     return this;
   }
 
-   /**
+  /**
    * Indicates if this entry is treated as a generic value set (it&#39;s not necessary for the type  to be a GenericValue, but usually it will be) 
    * @return isValueSet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Indicates if this entry is treated as a generic value set (it's not necessary for the type  to be a GenericValue, but usually it will be) ")
   @JsonProperty(IS_VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -685,20 +692,20 @@ public class MDMEntryDescriptor {
     this.isValueSet = isValueSet;
   }
 
-
   public MDMEntryDescriptor branchingStrategy(MDMBranchingStrategy branchingStrategy) {
     
     this.branchingStrategy = branchingStrategy;
     return this;
   }
 
-   /**
+  /**
    * Get branchingStrategy
    * @return branchingStrategy
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCHING_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -713,19 +720,19 @@ public class MDMEntryDescriptor {
     this.branchingStrategy = branchingStrategy;
   }
 
-
   public MDMEntryDescriptor selfContainedRefList(String selfContainedRefList) {
     
     this.selfContainedRefList = selfContainedRefList;
     return this;
   }
 
-   /**
+  /**
    * The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. 
    * @return selfContainedRefList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the self contained reference list like children list. It is used to recurse on the object nodes if a complex  hierarchy is saved via the MDMEntryApi. ")
   @JsonProperty(SELF_CONTAINED_REF_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -740,20 +747,20 @@ public class MDMEntryDescriptor {
     this.selfContainedRefList = selfContainedRefList;
   }
 
-
   public MDMEntryDescriptor vectorCollection(VectorCollectionDescriptor vectorCollection) {
     
     this.vectorCollection = vectorCollection;
     return this;
   }
 
-   /**
+  /**
    * The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction state is not working. 
    * @return vectorCollection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The Vector collection managed by the MDM Entry. It is maintained for the published object in the given entry. The under construction state is not working. ")
   @JsonProperty(VECTOR_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -767,7 +774,6 @@ public class MDMEntryDescriptor {
   public void setVectorCollection(VectorCollectionDescriptor vectorCollection) {
     this.vectorCollection = vectorCollection;
   }
-
 
   public MDMEntryDescriptor propertyMappings(Map<String, String> propertyMappings) {
     
@@ -783,12 +789,13 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties. 
    * @return propertyMappings
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This mapping contains all predefined property name mappings used by MDMEntryApi. For example you can specify which property will  be used as created, updated, approved (these are all UserActivityLog types). If empty, default property names will be used,  this is only a possibility to specify non-default properties. ")
   @JsonProperty(PROPERTY_MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -803,20 +810,20 @@ public class MDMEntryDescriptor {
     this.propertyMappings = propertyMappings;
   }
 
-
   public MDMEntryDescriptor filterModel(FilterExpressionBuilderModel filterModel) {
     
     this.filterModel = filterModel;
     return this;
   }
 
-   /**
+  /**
    * If null, the list cannot be searched in published mode, and there are no filters.
    * @return filterModel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If null, the list cannot be searched in published mode, and there are no filters.")
   @JsonProperty(FILTER_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -831,20 +838,20 @@ public class MDMEntryDescriptor {
     this.filterModel = filterModel;
   }
 
-
   public MDMEntryDescriptor filterModelAdmin(FilterExpressionBuilderModel filterModelAdmin) {
     
     this.filterModelAdmin = filterModelAdmin;
     return this;
   }
 
-   /**
+  /**
    * if null, but filterModel is present, filterModel is applied.
    * @return filterModelAdmin
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "if null, but filterModel is present, filterModel is applied.")
   @JsonProperty(FILTER_MODEL_ADMIN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -859,19 +866,19 @@ public class MDMEntryDescriptor {
     this.filterModelAdmin = filterModelAdmin;
   }
 
-
   public MDMEntryDescriptor importable(Boolean importable) {
     
     this.importable = importable;
     return this;
   }
 
-   /**
+  /**
    * Tells if the records in the entry are importable from a file or not.
    * @return importable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Tells if the records in the entry are importable from a file or not.")
   @JsonProperty(IMPORTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -886,19 +893,19 @@ public class MDMEntryDescriptor {
     this.importable = importable;
   }
 
-
   public MDMEntryDescriptor hidden(Boolean hidden) {
     
     this.hidden = hidden;
     return this;
   }
 
-   /**
+  /**
    * This flag decides it the described entry could be edited on the ui.
    * @return hidden
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This flag decides it the described entry could be edited on the ui.")
   @JsonProperty(HIDDEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -912,7 +919,6 @@ public class MDMEntryDescriptor {
   public void setHidden(Boolean hidden) {
     this.hidden = hidden;
   }
-
 
   @Override
   public boolean equals(Object o) {

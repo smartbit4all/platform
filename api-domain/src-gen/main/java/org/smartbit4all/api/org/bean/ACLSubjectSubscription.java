@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. 
  */
+@Schema(description = "This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. ")
 @JsonPropertyOrder({
   ACLSubjectSubscription.SUBJECT,
   ACLSubjectSubscription.OPERATION_REFERENCE
 })
-@JsonTypeName("ACLSubjectSubscription")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectSubscription {
   public static final String SUBJECT = "subject";
@@ -44,7 +44,7 @@ public class ACLSubjectSubscription {
   public static final String OPERATION_REFERENCE = "operationReference";
   private ACLOperationReference operationReference;
 
-  public ACLSubjectSubscription() { 
+  public ACLSubjectSubscription() {
   }
 
   public ACLSubjectSubscription subject(Subject subject) {
@@ -53,14 +53,15 @@ public class ACLSubjectSubscription {
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -75,20 +76,20 @@ public class ACLSubjectSubscription {
     this.subject = subject;
   }
 
-
   public ACLSubjectSubscription operationReference(ACLOperationReference operationReference) {
     
     this.operationReference = operationReference;
     return this;
   }
 
-   /**
+  /**
    * Get operationReference
    * @return operationReference
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,7 +103,6 @@ public class ACLSubjectSubscription {
   public void setOperationReference(ACLOperationReference operationReference) {
     this.operationReference = operationReference;
   }
-
 
   @Override
   public boolean equals(Object o) {

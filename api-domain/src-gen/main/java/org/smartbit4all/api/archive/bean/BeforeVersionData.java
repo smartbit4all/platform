@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   BeforeVersionData.PATH,
   BeforeVersionData.VERSION
 })
-@JsonTypeName("BeforeVersionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BeforeVersionData {
   public static final String PATH = "path";
@@ -42,7 +41,7 @@ public class BeforeVersionData {
   public static final String VERSION = "version";
   private Integer version;
 
-  public BeforeVersionData() { 
+  public BeforeVersionData() {
   }
 
   public BeforeVersionData path(String path) {
@@ -51,12 +50,13 @@ public class BeforeVersionData {
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +71,19 @@ public class BeforeVersionData {
     this.path = path;
   }
 
-
   public BeforeVersionData version(Integer version) {
     
     this.version = version;
     return this;
   }
 
-   /**
+  /**
    * Get version
    * @return version
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +97,6 @@ public class BeforeVersionData {
   public void setVersion(Integer version) {
     this.version = version;
   }
-
 
   @Override
   public boolean equals(Object o) {

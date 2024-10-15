@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * The context object of a property value resolution with the name of the object in the given context and the uri of this. 
  */
+@Schema(description = "The context object of a property value resolution with the name of the object in the given context and the uri of this. ")
 @JsonPropertyOrder({
   ObjectPropertyResolverContextObject.NAME,
   ObjectPropertyResolverContextObject.URI,
   ObjectPropertyResolverContextObject.OBJECT_AS_MAP
 })
-@JsonTypeName("ObjectPropertyResolverContextObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyResolverContextObject {
   public static final String NAME = "name";
@@ -47,9 +47,9 @@ public class ObjectPropertyResolverContextObject {
   private URI uri;
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
-  private Map<String, Object> objectAsMap = null;
+  private Map<String, Object> objectAsMap = new HashMap<>();
 
-  public ObjectPropertyResolverContextObject() { 
+  public ObjectPropertyResolverContextObject() {
   }
 
   public ObjectPropertyResolverContextObject name(String name) {
@@ -58,12 +58,13 @@ public class ObjectPropertyResolverContextObject {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,20 +79,20 @@ public class ObjectPropertyResolverContextObject {
     this.name = name;
   }
 
-
   public ObjectPropertyResolverContextObject uri(URI uri) {
     
     this.uri = uri;
     return this;
   }
 
-   /**
+  /**
    * The uri of the storage object to use for resolve.
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the storage object to use for resolve.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,7 +106,6 @@ public class ObjectPropertyResolverContextObject {
   public void setUri(URI uri) {
     this.uri = uri;
   }
-
 
   public ObjectPropertyResolverContextObject objectAsMap(Map<String, Object> objectAsMap) {
     
@@ -121,12 +121,13 @@ public class ObjectPropertyResolverContextObject {
     return this;
   }
 
-   /**
+  /**
    * The inline object as value to use for resolve.
    * @return objectAsMap
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The inline object as value to use for resolve.")
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,7 +141,6 @@ public class ObjectPropertyResolverContextObject {
   public void setObjectAsMap(Map<String, Object> objectAsMap) {
     this.objectAsMap = objectAsMap;
   }
-
 
   @Override
   public boolean equals(Object o) {

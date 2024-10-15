@@ -35,13 +35,13 @@ import jakarta.validation.Valid;
 /**
  * The object branch data is used to hold all the operations about an object on a branch. This object is constructed when the first opartion is executed with the given object. 
  */
+@Schema(description = "The object branch data is used to hold all the operations about an object on a branch. This object is constructed when the first opartion is executed with the given object. ")
 @JsonPropertyOrder({
   BranchedObject.SOURCE_OBJECT_LATEST_URI,
   BranchedObject.BRANCHED_OBJECT_LATEST_URI,
   BranchedObject.COLLECTION_DESCRIPTOR,
   BranchedObject.OPERATIONS
 })
-@JsonTypeName("BranchedObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObject {
   public static final String SOURCE_OBJECT_LATEST_URI = "sourceObjectLatestUri";
@@ -56,7 +56,7 @@ public class BranchedObject {
   public static final String OPERATIONS = "operations";
   private List<@Valid BranchOperation> operations = new ArrayList<>();
 
-  public BranchedObject() { 
+  public BranchedObject() {
   }
 
   public BranchedObject sourceObjectLatestUri(URI sourceObjectLatestUri) {
@@ -65,13 +65,14 @@ public class BranchedObject {
     return this;
   }
 
-   /**
+  /**
    * The latest uri of the source object.
    * @return sourceObjectLatestUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The latest uri of the source object.")
   @JsonProperty(SOURCE_OBJECT_LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -86,20 +87,20 @@ public class BranchedObject {
     this.sourceObjectLatestUri = sourceObjectLatestUri;
   }
 
-
   public BranchedObject branchedObjectLatestUri(URI branchedObjectLatestUri) {
     
     this.branchedObjectLatestUri = branchedObjectLatestUri;
     return this;
   }
 
-   /**
+  /**
    * The latest uri of the branched object.
    * @return branchedObjectLatestUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The latest uri of the branched object.")
   @JsonProperty(BRANCHED_OBJECT_LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,20 +115,20 @@ public class BranchedObject {
     this.branchedObjectLatestUri = branchedObjectLatestUri;
   }
 
-
   public BranchedObject collectionDescriptor(StoredCollectionDescriptor collectionDescriptor) {
     
     this.collectionDescriptor = collectionDescriptor;
     return this;
   }
 
-   /**
+  /**
    * if the branched object is a collection api managed stored collection then we save the descriptor into the stored object for further processing. 
    * @return collectionDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "if the branched object is a collection api managed stored collection then we save the descriptor into the stored object for further processing. ")
   @JsonProperty(COLLECTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +143,6 @@ public class BranchedObject {
     this.collectionDescriptor = collectionDescriptor;
   }
 
-
   public BranchedObject operations(List<@Valid BranchOperation> operations) {
     
     this.operations = operations;
@@ -150,18 +150,22 @@ public class BranchedObject {
   }
 
   public BranchedObject addOperationsItem(BranchOperation operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
     this.operations.add(operationsItem);
     return this;
   }
 
-   /**
+  /**
    * The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. 
    * @return operations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. ")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -175,7 +179,6 @@ public class BranchedObject {
   public void setOperations(List<@Valid BranchOperation> operations) {
     this.operations = operations;
   }
-
 
   @Override
   public boolean equals(Object o) {

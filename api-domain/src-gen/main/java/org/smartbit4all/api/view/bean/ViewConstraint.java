@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * The view constraint object encapsulate the constraints can be applied to any view genericly. It consists of compenet constraints and many more. 
  */
+@Schema(description = "The view constraint object encapsulate the constraints can be applied to any view genericly. It consists of compenet constraints and many more. ")
 @JsonPropertyOrder({
   ViewConstraint.COMPONENT_CONSTRAINTS
 })
-@JsonTypeName("ViewConstraint")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewConstraint {
   public static final String COMPONENT_CONSTRAINTS = "componentConstraints";
   private List<@Valid ComponentConstraint> componentConstraints = new ArrayList<>();
 
-  public ViewConstraint() { 
+  public ViewConstraint() {
   }
 
   public ViewConstraint componentConstraints(List<@Valid ComponentConstraint> componentConstraints) {
@@ -52,18 +52,22 @@ public class ViewConstraint {
   }
 
   public ViewConstraint addComponentConstraintsItem(ComponentConstraint componentConstraintsItem) {
+    if (this.componentConstraints == null) {
+      this.componentConstraints = new ArrayList<>();
+    }
     this.componentConstraints.add(componentConstraintsItem);
     return this;
   }
 
-   /**
+  /**
    * Get componentConstraints
    * @return componentConstraints
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COMPONENT_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class ViewConstraint {
   public void setComponentConstraints(List<@Valid ComponentConstraint> componentConstraints) {
     this.componentConstraints = componentConstraints;
   }
-
 
   @Override
   public boolean equals(Object o) {

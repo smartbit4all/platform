@@ -32,12 +32,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children
  */
+@Schema(description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
 @JsonPropertyOrder({
   NavigationNode.ID,
   NavigationNode.ENTRY,
   NavigationNode.ASSOCIATIONS
 })
-@JsonTypeName("NavigationNode")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationNode {
   public static final String ID = "id";
@@ -47,9 +47,9 @@ public class NavigationNode {
   private NavigationEntry entry;
 
   public static final String ASSOCIATIONS = "associations";
-  private List<NavigationAssociation> associations = null;
+  private List<NavigationAssociation> associations = new ArrayList<>();
 
-  public NavigationNode() { 
+  public NavigationNode() {
   }
 
   public NavigationNode id(String id) {
@@ -58,12 +58,12 @@ public class NavigationNode {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the given node - UUID
    * @return id
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifier of the given node - UUID")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,19 +78,18 @@ public class NavigationNode {
     this.id = id;
   }
 
-
   public NavigationNode entry(NavigationEntry entry) {
     
     this.entry = entry;
     return this;
   }
 
-   /**
+  /**
    * Get entry
    * @return entry
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -104,7 +103,6 @@ public class NavigationNode {
   public void setEntry(NavigationEntry entry) {
     this.entry = entry;
   }
-
 
   public NavigationNode associations(List<NavigationAssociation> associations) {
     
@@ -120,12 +118,12 @@ public class NavigationNode {
     return this;
   }
 
-   /**
+  /**
    * The possible navigation directions.
    * @return associations
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The possible navigation directions.")
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +137,6 @@ public class NavigationNode {
   public void setAssociations(List<NavigationAssociation> associations) {
     this.associations = associations;
   }
-
 
   @Override
   public boolean equals(Object o) {

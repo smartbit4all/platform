@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The application runtime can be saved into the storage in this object. 
  */
+@Schema(description = "The application runtime can be saved into the storage in this object. ")
 @JsonPropertyOrder({
   ApplicationRuntimeData.URI,
   ApplicationRuntimeData.UUID,
@@ -46,7 +47,6 @@ import jakarta.validation.Valid;
   ApplicationRuntimeData.LAST_TOUCH_TIME,
   ApplicationRuntimeData.APIS
 })
-@JsonTypeName("ApplicationRuntimeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApplicationRuntimeData {
   public static final String URI = "uri";
@@ -77,9 +77,9 @@ public class ApplicationRuntimeData {
   private Long lastTouchTime;
 
   public static final String APIS = "apis";
-  private List<URI> apis = null;
+  private List<URI> apis = new ArrayList<>();
 
-  public ApplicationRuntimeData() { 
+  public ApplicationRuntimeData() {
   }
 
   public ApplicationRuntimeData uri(URI uri) {
@@ -88,14 +88,15 @@ public class ApplicationRuntimeData {
     return this;
   }
 
-   /**
+  /**
    * The URI of the instance.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The URI of the instance.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,21 +111,21 @@ public class ApplicationRuntimeData {
     this.uri = uri;
   }
 
-
   public ApplicationRuntimeData uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the runtime instance.
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifier of the runtime instance.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -139,20 +140,20 @@ public class ApplicationRuntimeData {
     this.uuid = uuid;
   }
 
-
   public ApplicationRuntimeData ipAddress(String ipAddress) {
     
     this.ipAddress = ipAddress;
     return this;
   }
 
-   /**
+  /**
    * The ip address of the runtime.
    * @return ipAddress
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The ip address of the runtime.")
   @JsonProperty(IP_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -167,19 +168,19 @@ public class ApplicationRuntimeData {
     this.ipAddress = ipAddress;
   }
 
-
   public ApplicationRuntimeData baseUrl(String baseUrl) {
     
     this.baseUrl = baseUrl;
     return this;
   }
 
-   /**
+  /**
    * The base url of the runtime.
    * @return baseUrl
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The base url of the runtime.")
   @JsonProperty(BASE_URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,19 +195,19 @@ public class ApplicationRuntimeData {
     this.baseUrl = baseUrl;
   }
 
-
   public ApplicationRuntimeData serverPort(Integer serverPort) {
     
     this.serverPort = serverPort;
     return this;
   }
 
-   /**
+  /**
    * The server port of the runtime.
    * @return serverPort
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The server port of the runtime.")
   @JsonProperty(SERVER_PORT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,20 +222,20 @@ public class ApplicationRuntimeData {
     this.serverPort = serverPort;
   }
 
-
   public ApplicationRuntimeData startupTime(Long startupTime) {
     
     this.startupTime = startupTime;
     return this;
   }
 
-   /**
+  /**
    * The startup time of the given runtime.
    * @return startupTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The startup time of the given runtime.")
   @JsonProperty(STARTUP_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -249,19 +250,19 @@ public class ApplicationRuntimeData {
     this.startupTime = startupTime;
   }
 
-
   public ApplicationRuntimeData stopTime(Long stopTime) {
     
     this.stopTime = stopTime;
     return this;
   }
 
-   /**
+  /**
    * The stop time of the given runtime.
    * @return stopTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The stop time of the given runtime.")
   @JsonProperty(STOP_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -276,19 +277,19 @@ public class ApplicationRuntimeData {
     this.stopTime = stopTime;
   }
 
-
   public ApplicationRuntimeData timeOffset(Long timeOffset) {
     
     this.timeOffset = timeOffset;
     return this;
   }
 
-   /**
+  /**
    * The server time offset compared to the storage time.
    * @return timeOffset
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The server time offset compared to the storage time.")
   @JsonProperty(TIME_OFFSET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,20 +304,20 @@ public class ApplicationRuntimeData {
     this.timeOffset = timeOffset;
   }
 
-
   public ApplicationRuntimeData lastTouchTime(Long lastTouchTime) {
     
     this.lastTouchTime = lastTouchTime;
     return this;
   }
 
-   /**
+  /**
    * The last time when the given runtime updated the entry in the storage.
    * @return lastTouchTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The last time when the given runtime updated the entry in the storage.")
   @JsonProperty(LAST_TOUCH_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -330,7 +331,6 @@ public class ApplicationRuntimeData {
   public void setLastTouchTime(Long lastTouchTime) {
     this.lastTouchTime = lastTouchTime;
   }
-
 
   public ApplicationRuntimeData apis(List<URI> apis) {
     
@@ -346,13 +346,14 @@ public class ApplicationRuntimeData {
     return this;
   }
 
-   /**
+  /**
    * The available apis of the runtime.
    * @return apis
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The available apis of the runtime.")
   @JsonProperty(APIS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -366,7 +367,6 @@ public class ApplicationRuntimeData {
   public void setApis(List<URI> apis) {
     this.apis = apis;
   }
-
 
   @Override
   public boolean equals(Object o) {

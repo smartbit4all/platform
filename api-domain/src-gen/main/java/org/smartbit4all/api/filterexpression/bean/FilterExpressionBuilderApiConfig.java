@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   FilterExpressionBuilderApiConfig.EXTARNAL_DATABASE,
   FilterExpressionBuilderApiConfig.AVAILABLE_ACTIONS
 })
-@JsonTypeName("FilterExpressionBuilderApiConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderApiConfig {
   public static final String READ_ONLY = "readOnly";
@@ -49,7 +48,7 @@ public class FilterExpressionBuilderApiConfig {
   public static final String AVAILABLE_ACTIONS = "availableActions";
   private List<String> availableActions = new ArrayList<>();
 
-  public FilterExpressionBuilderApiConfig() { 
+  public FilterExpressionBuilderApiConfig() {
   }
 
   public FilterExpressionBuilderApiConfig readOnly(Boolean readOnly) {
@@ -58,12 +57,13 @@ public class FilterExpressionBuilderApiConfig {
     return this;
   }
 
-   /**
+  /**
    * Get readOnly
    * @return readOnly
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(READ_ONLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,19 +78,19 @@ public class FilterExpressionBuilderApiConfig {
     this.readOnly = readOnly;
   }
 
-
   public FilterExpressionBuilderApiConfig extarnalDatabase(Boolean extarnalDatabase) {
     
     this.extarnalDatabase = extarnalDatabase;
     return this;
   }
 
-   /**
+  /**
    * Get extarnalDatabase
    * @return extarnalDatabase
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXTARNAL_DATABASE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,7 +105,6 @@ public class FilterExpressionBuilderApiConfig {
     this.extarnalDatabase = extarnalDatabase;
   }
 
-
   public FilterExpressionBuilderApiConfig availableActions(List<String> availableActions) {
     
     this.availableActions = availableActions;
@@ -113,17 +112,21 @@ public class FilterExpressionBuilderApiConfig {
   }
 
   public FilterExpressionBuilderApiConfig addAvailableActionsItem(String availableActionsItem) {
+    if (this.availableActions == null) {
+      this.availableActions = new ArrayList<>();
+    }
     this.availableActions.add(availableActionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get availableActions
    * @return availableActions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(AVAILABLE_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -137,7 +140,6 @@ public class FilterExpressionBuilderApiConfig {
   public void setAvailableActions(List<String> availableActions) {
     this.availableActions = availableActions;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. 
  */
+@Schema(description = "This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannelRegistry.RUNTIMES
 })
-@JsonTypeName("RuntimeAsyncChannelRegistry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RuntimeAsyncChannelRegistry {
   public static final String RUNTIMES = "runtimes";
   private List<@Valid RuntimeAsyncChannelList> runtimes = new ArrayList<>();
 
-  public RuntimeAsyncChannelRegistry() { 
+  public RuntimeAsyncChannelRegistry() {
   }
 
   public RuntimeAsyncChannelRegistry runtimes(List<@Valid RuntimeAsyncChannelList> runtimes) {
@@ -52,18 +52,22 @@ public class RuntimeAsyncChannelRegistry {
   }
 
   public RuntimeAsyncChannelRegistry addRuntimesItem(RuntimeAsyncChannelList runtimesItem) {
+    if (this.runtimes == null) {
+      this.runtimes = new ArrayList<>();
+    }
     this.runtimes.add(runtimesItem);
     return this;
   }
 
-   /**
+  /**
    * The list of runtimes managing channels.
    * @return runtimes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The list of runtimes managing channels.")
   @JsonProperty(RUNTIMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class RuntimeAsyncChannelRegistry {
   public void setRuntimes(List<@Valid RuntimeAsyncChannelList> runtimes) {
     this.runtimes = runtimes;
   }
-
 
   @Override
   public boolean equals(Object o) {

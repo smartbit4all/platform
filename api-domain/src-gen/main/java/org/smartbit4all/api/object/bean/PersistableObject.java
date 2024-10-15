@@ -30,16 +30,16 @@ import jakarta.validation.Valid;
 /**
  * Ancestor type for persistable objects.  The purpose of this class to offer a skeleton ObjectDefinition upon encountering an unknown or dynamic type during storage saves and retrievals. 
  */
+@Schema(description = "Ancestor type for persistable objects.  The purpose of this class to offer a skeleton ObjectDefinition upon encountering an unknown or dynamic type during storage saves and retrievals. ")
 @JsonPropertyOrder({
   PersistableObject.URI
 })
-@JsonTypeName("PersistableObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PersistableObject {
   public static final String URI = "uri";
   private URI uri;
 
-  public PersistableObject() { 
+  public PersistableObject() {
   }
 
   public PersistableObject uri(URI uri) {
@@ -48,13 +48,14 @@ public class PersistableObject {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of this instance in persistent storage.  Ownership of this inline property is a requirement for storage implementations to successfully save and load objects. 
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of this instance in persistent storage.  Ownership of this inline property is a requirement for storage implementations to successfully save and load objects. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -68,7 +69,6 @@ public class PersistableObject {
   public void setUri(URI uri) {
     this.uri = uri;
   }
-
 
   @Override
   public boolean equals(Object o) {

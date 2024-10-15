@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The group is just a UI structure to define a tree structure for the available filter fields. In a group there is an ordered list of filter fields. The group can imply a parenthesis in the xpression or an exist node. Theoreticaly the groups are hierarchical but the pratcticaly it is not. The kind of the group defines what operation is available for the filter fields in the group.  DISPLAY: means thet we can choose an available filter field from the group and place it into the field list related with the current group or in any sub list except under an exist. BRACKET: The given groups defines a bracket. If we choose any of the fiels to add to a filter list then this imlicitely create a bracket node. It can not be added under an exist node. EXIST: The same as the BRACKET but with an exist node. 
  */
+@Schema(description = "The group is just a UI structure to define a tree structure for the available filter fields. In a group there is an ordered list of filter fields. The group can imply a parenthesis in the xpression or an exist node. Theoreticaly the groups are hierarchical but the pratcticaly it is not. The kind of the group defines what operation is available for the filter fields in the group.  DISPLAY: means thet we can choose an available filter field from the group and place it into the field list related with the current group or in any sub list except under an exist. BRACKET: The given groups defines a bracket. If we choose any of the fiels to add to a filter list then this imlicitely create a bracket node. It can not be added under an exist node. EXIST: The same as the BRACKET but with an exist node. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderGroup.LABEL,
   FilterExpressionBuilderGroup.BUILDER_GROUP_KIND,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   FilterExpressionBuilderGroup.ROOT_LIST_ID,
   FilterExpressionBuilderGroup.SUB_GROUPS
 })
-@JsonTypeName("FilterExpressionBuilderGroup")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderGroup {
   public static final String LABEL = "label";
@@ -87,15 +87,15 @@ public class FilterExpressionBuilderGroup {
   private BuilderGroupKindEnum builderGroupKind;
 
   public static final String FIELDS = "fields";
-  private List<@Valid FilterExpressionBuilderField> fields = null;
+  private List<@Valid FilterExpressionBuilderField> fields = new ArrayList<>();
 
   public static final String ROOT_LIST_ID = "rootListId";
   private String rootListId;
 
   public static final String SUB_GROUPS = "subGroups";
-  private List<@Valid FilterExpressionBuilderGroup> subGroups = null;
+  private List<@Valid FilterExpressionBuilderGroup> subGroups = new ArrayList<>();
 
-  public FilterExpressionBuilderGroup() { 
+  public FilterExpressionBuilderGroup() {
   }
 
   public FilterExpressionBuilderGroup label(String label) {
@@ -104,12 +104,13 @@ public class FilterExpressionBuilderGroup {
     return this;
   }
 
-   /**
+  /**
    * The visual display name fo the group.
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The visual display name fo the group.")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,19 +125,19 @@ public class FilterExpressionBuilderGroup {
     this.label = label;
   }
 
-
   public FilterExpressionBuilderGroup builderGroupKind(BuilderGroupKindEnum builderGroupKind) {
     
     this.builderGroupKind = builderGroupKind;
     return this;
   }
 
-   /**
+  /**
    * Defines if the given groups is just a visual sugar to group somehow the available filter fields or it is definetely a bracket or exists. 
    * @return builderGroupKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines if the given groups is just a visual sugar to group somehow the available filter fields or it is definetely a bracket or exists. ")
   @JsonProperty(BUILDER_GROUP_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,7 +151,6 @@ public class FilterExpressionBuilderGroup {
   public void setBuilderGroupKind(BuilderGroupKindEnum builderGroupKind) {
     this.builderGroupKind = builderGroupKind;
   }
-
 
   public FilterExpressionBuilderGroup fields(List<@Valid FilterExpressionBuilderField> fields) {
     
@@ -166,13 +166,14 @@ public class FilterExpressionBuilderGroup {
     return this;
   }
 
-   /**
+  /**
    * Get fields
    * @return fields
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,19 +188,19 @@ public class FilterExpressionBuilderGroup {
     this.fields = fields;
   }
 
-
   public FilterExpressionBuilderGroup rootListId(String rootListId) {
     
     this.rootListId = rootListId;
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the root list in the workplace.
    * @return rootListId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the root list in the workplace.")
   @JsonProperty(ROOT_LIST_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -213,7 +214,6 @@ public class FilterExpressionBuilderGroup {
   public void setRootListId(String rootListId) {
     this.rootListId = rootListId;
   }
-
 
   public FilterExpressionBuilderGroup subGroups(List<@Valid FilterExpressionBuilderGroup> subGroups) {
     
@@ -229,13 +229,14 @@ public class FilterExpressionBuilderGroup {
     return this;
   }
 
-   /**
+  /**
    * Get subGroups
    * @return subGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUB_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -249,7 +250,6 @@ public class FilterExpressionBuilderGroup {
   public void setSubGroups(List<@Valid FilterExpressionBuilderGroup> subGroups) {
     this.subGroups = subGroups;
   }
-
 
   @Override
   public boolean equals(Object o) {

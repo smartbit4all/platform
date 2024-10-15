@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * Map of references as a container object for the Api. It can be used to key the URIs with some searchable string key. 
  */
+@Schema(description = "Map of references as a container object for the Api. It can be used to key the URIs with some searchable string key. ")
 @JsonPropertyOrder({
   ObjectMap.URI,
   ObjectMap.NAME,
   ObjectMap.URIS
 })
-@JsonTypeName("ObjectMap")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectMap {
   public static final String URI = "uri";
@@ -49,7 +49,7 @@ public class ObjectMap {
   public static final String URIS = "uris";
   private Map<String, URI> uris = new HashMap<>();
 
-  public ObjectMap() { 
+  public ObjectMap() {
   }
 
   public ObjectMap uri(URI uri) {
@@ -58,14 +58,15 @@ public class ObjectMap {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,20 +81,20 @@ public class ObjectMap {
     this.uri = uri;
   }
 
-
   public ObjectMap name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name is a unique identifier in the given context, let is be user, group or global.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name is a unique identifier in the given context, let is be user, group or global.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +109,6 @@ public class ObjectMap {
     this.name = name;
   }
 
-
   public ObjectMap uris(Map<String, URI> uris) {
     
     this.uris = uris;
@@ -120,14 +120,15 @@ public class ObjectMap {
     return this;
   }
 
-   /**
+  /**
    * Get uris
    * @return uris
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,7 +142,6 @@ public class ObjectMap {
   public void setUris(Map<String, URI> uris) {
     this.uris = uris;
   }
-
 
   @Override
   public boolean equals(Object o) {

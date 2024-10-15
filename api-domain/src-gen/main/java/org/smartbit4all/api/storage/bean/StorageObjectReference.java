@@ -30,11 +30,11 @@ import jakarta.validation.Valid;
 /**
  * This is the generic reference to another storage object. This object has no data but the object URI itself. So there is no need to have history at all. This object is used only by the storage itself to form a special link to an object. It is included into the storage set container and can be used to iterate through the referred objects. Of course this results a two phase read but this is the trade off for the flexibility. 
  */
+@Schema(description = "This is the generic reference to another storage object. This object has no data but the object URI itself. So there is no need to have history at all. This object is used only by the storage itself to form a special link to an object. It is included into the storage set container and can be used to iterate through the referred objects. Of course this results a two phase read but this is the trade off for the flexibility. ")
 @JsonPropertyOrder({
   StorageObjectReference.URI,
   StorageObjectReference.OBJECT_URI
 })
-@JsonTypeName("StorageObjectReference")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectReference {
   public static final String URI = "uri";
@@ -43,7 +43,7 @@ public class StorageObjectReference {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
 
-  public StorageObjectReference() { 
+  public StorageObjectReference() {
   }
 
   public StorageObjectReference uri(URI uri) {
@@ -52,14 +52,15 @@ public class StorageObjectReference {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the StorageObjectReference object.   
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the StorageObjectReference object.   ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -74,21 +75,21 @@ public class StorageObjectReference {
     this.uri = uri;
   }
 
-
   public StorageObjectReference objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * The uri of the original object refrred by the reference object.   
    * @return objectUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the original object refrred by the reference object.   ")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -102,7 +103,6 @@ public class StorageObjectReference {
   public void setObjectUri(URI objectUri) {
     this.objectUri = objectUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

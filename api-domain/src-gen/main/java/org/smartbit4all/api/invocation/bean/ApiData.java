@@ -36,6 +36,7 @@ import jakarta.validation.Valid;
 /**
  * An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage. If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated and will be able to call the newly started node. If we have a primary api that collects the available secondary apis of an interface then the primary api local instances will be notified about the availability of the given interface instance. The remote registration is not saved here to avoid circular references. 
  */
+@Schema(description = "An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage. If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated and will be able to call the newly started node. If we have a primary api that collects the available secondary apis of an interface then the primary api local instances will be notified about the availability of the given interface instance. The remote registration is not saved here to avoid circular references. ")
 @JsonPropertyOrder({
   ApiData.URI,
   ApiData.INTERFACE_NAME,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   ApiData.PUBLISHED_EVENTS,
   ApiData.EVENT_SUBSCRIPTIONS
 })
-@JsonTypeName("ApiData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiData {
   public static final String URI = "uri";
@@ -65,7 +65,7 @@ public class ApiData {
   public static final String EVENT_SUBSCRIPTIONS = "eventSubscriptions";
   private List<@Valid EventSubscriptionData> eventSubscriptions = new ArrayList<>();
 
-  public ApiData() { 
+  public ApiData() {
   }
 
   public ApiData uri(URI uri) {
@@ -74,14 +74,15 @@ public class ApiData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -96,20 +97,20 @@ public class ApiData {
     this.uri = uri;
   }
 
-
   public ApiData interfaceName(String interfaceName) {
     
     this.interfaceName = interfaceName;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. 
    * @return interfaceName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. ")
   @JsonProperty(INTERFACE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -124,20 +125,20 @@ public class ApiData {
     this.interfaceName = interfaceName;
   }
 
-
   public ApiData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name of the instance that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. 
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the instance that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -152,7 +153,6 @@ public class ApiData {
     this.name = name;
   }
 
-
   public ApiData methods(List<@Valid MethodData> methods) {
     
     this.methods = methods;
@@ -160,18 +160,22 @@ public class ApiData {
   }
 
   public ApiData addMethodsItem(MethodData methodsItem) {
+    if (this.methods == null) {
+      this.methods = new ArrayList<>();
+    }
     this.methods.add(methodsItem);
     return this;
   }
 
-   /**
+  /**
    * The available methods of the given api interface. All of the methods in the interface are provided by default. If we need limited interface then we need to create this interface and publish it. 
    * @return methods
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The available methods of the given api interface. All of the methods in the interface are provided by default. If we need limited interface then we need to create this interface and publish it. ")
   @JsonProperty(METHODS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -186,7 +190,6 @@ public class ApiData {
     this.methods = methods;
   }
 
-
   public ApiData publishedEvents(List<@Valid PublishedEventData> publishedEvents) {
     
     this.publishedEvents = publishedEvents;
@@ -194,18 +197,22 @@ public class ApiData {
   }
 
   public ApiData addPublishedEventsItem(PublishedEventData publishedEventsItem) {
+    if (this.publishedEvents == null) {
+      this.publishedEvents = new ArrayList<>();
+    }
     this.publishedEvents.add(publishedEventsItem);
     return this;
   }
 
-   /**
+  /**
    * The available events of the given api interface. These are only the logical names of the events that must be globaly unique to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation. 
    * @return publishedEvents
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The available events of the given api interface. These are only the logical names of the events that must be globaly unique to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation. ")
   @JsonProperty(PUBLISHED_EVENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -220,7 +227,6 @@ public class ApiData {
     this.publishedEvents = publishedEvents;
   }
 
-
   public ApiData eventSubscriptions(List<@Valid EventSubscriptionData> eventSubscriptions) {
     
     this.eventSubscriptions = eventSubscriptions;
@@ -228,18 +234,22 @@ public class ApiData {
   }
 
   public ApiData addEventSubscriptionsItem(EventSubscriptionData eventSubscriptionsItem) {
+    if (this.eventSubscriptions == null) {
+      this.eventSubscriptions = new ArrayList<>();
+    }
     this.eventSubscriptions.add(eventSubscriptionsItem);
     return this;
   }
 
-   /**
+  /**
    * The   
    * @return eventSubscriptions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The   ")
   @JsonProperty(EVENT_SUBSCRIPTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -253,7 +263,6 @@ public class ApiData {
   public void setEventSubscriptions(List<@Valid EventSubscriptionData> eventSubscriptions) {
     this.eventSubscriptions = eventSubscriptions;
   }
-
 
   @Override
   public boolean equals(Object o) {

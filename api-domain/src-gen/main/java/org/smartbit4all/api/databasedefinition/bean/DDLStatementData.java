@@ -33,13 +33,13 @@ import jakarta.validation.Valid;
 /**
  * A DDL statement that can be a statement on its own and a container statement also. If it is a complex stetament then it has inner statements also. In case of the database level alter script we have create tables as inner statements and in the create table we will have column definitions. 
  */
+@Schema(description = "A DDL statement that can be a statement on its own and a container statement also. If it is a complex stetament then it has inner statements also. In case of the database level alter script we have create tables as inner statements and in the create table we will have column definitions. ")
 @JsonPropertyOrder({
   DDLStatementData.PREFIX,
   DDLStatementData.SUFFIX,
   DDLStatementData.KIND,
   DDLStatementData.INNER_STATEMENTS
 })
-@JsonTypeName("DDLStatementData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DDLStatementData {
   public static final String PREFIX = "prefix";
@@ -54,7 +54,7 @@ public class DDLStatementData {
   public static final String INNER_STATEMENTS = "innerStatements";
   private List<@Valid DDLStatementData> innerStatements = new ArrayList<>();
 
-  public DDLStatementData() { 
+  public DDLStatementData() {
   }
 
   public DDLStatementData prefix(String prefix) {
@@ -63,12 +63,13 @@ public class DDLStatementData {
     return this;
   }
 
-   /**
+  /**
    * Get prefix
    * @return prefix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PREFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +84,19 @@ public class DDLStatementData {
     this.prefix = prefix;
   }
 
-
   public DDLStatementData suffix(String suffix) {
     
     this.suffix = suffix;
     return this;
   }
 
-   /**
+  /**
    * Get suffix
    * @return suffix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +111,20 @@ public class DDLStatementData {
     this.suffix = suffix;
   }
 
-
   public DDLStatementData kind(DDLStatementKind kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +139,6 @@ public class DDLStatementData {
     this.kind = kind;
   }
 
-
   public DDLStatementData innerStatements(List<@Valid DDLStatementData> innerStatements) {
     
     this.innerStatements = innerStatements;
@@ -146,18 +146,22 @@ public class DDLStatementData {
   }
 
   public DDLStatementData addInnerStatementsItem(DDLStatementData innerStatementsItem) {
+    if (this.innerStatements == null) {
+      this.innerStatements = new ArrayList<>();
+    }
     this.innerStatements.add(innerStatementsItem);
     return this;
   }
 
-   /**
+  /**
    * Get innerStatements
    * @return innerStatements
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(INNER_STATEMENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -171,7 +175,6 @@ public class DDLStatementData {
   public void setInnerStatements(List<@Valid DDLStatementData> innerStatements) {
     this.innerStatements = innerStatements;
   }
-
 
   @Override
   public boolean equals(Object o) {

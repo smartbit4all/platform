@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   FilterExpressionBuilder.URI,
   FilterExpressionBuilder.DATA
 })
-@JsonTypeName("FilterExpressionBuilder")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilder {
   public static final String URI = "uri";
@@ -44,7 +43,7 @@ public class FilterExpressionBuilder {
   public static final String DATA = "data";
   private FilterExpressionBuilderModel data;
 
-  public FilterExpressionBuilder() { 
+  public FilterExpressionBuilder() {
   }
 
   public FilterExpressionBuilder uri(URI uri) {
@@ -53,13 +52,14 @@ public class FilterExpressionBuilder {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,20 +74,20 @@ public class FilterExpressionBuilder {
     this.uri = uri;
   }
 
-
   public FilterExpressionBuilder data(FilterExpressionBuilderModel data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -101,7 +101,6 @@ public class FilterExpressionBuilder {
   public void setData(FilterExpressionBuilderModel data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

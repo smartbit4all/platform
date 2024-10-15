@@ -29,11 +29,11 @@ import jakarta.validation.Valid;
 /**
  * The order by object.. 
  */
+@Schema(description = "The order by object.. ")
 @JsonPropertyOrder({
   FilterExpressionOrderBy.PROPERTY_NAME,
   FilterExpressionOrderBy.ORDER
 })
-@JsonTypeName("FilterExpressionOrderBy")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionOrderBy {
   public static final String PROPERTY_NAME = "propertyName";
@@ -77,7 +77,7 @@ public class FilterExpressionOrderBy {
   public static final String ORDER = "order";
   private OrderEnum order;
 
-  public FilterExpressionOrderBy() { 
+  public FilterExpressionOrderBy() {
   }
 
   public FilterExpressionOrderBy propertyName(String propertyName) {
@@ -86,12 +86,13 @@ public class FilterExpressionOrderBy {
     return this;
   }
 
-   /**
+  /**
    * The property name of the order by column.
    * @return propertyName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The property name of the order by column.")
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,19 +107,19 @@ public class FilterExpressionOrderBy {
     this.propertyName = propertyName;
   }
 
-
   public FilterExpressionOrderBy order(OrderEnum order) {
     
     this.order = order;
     return this;
   }
 
-   /**
+  /**
    * Get order
    * @return order
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class FilterExpressionOrderBy {
   public void setOrder(OrderEnum order) {
     this.order = order;
   }
-
 
   @Override
   public boolean equals(Object o) {

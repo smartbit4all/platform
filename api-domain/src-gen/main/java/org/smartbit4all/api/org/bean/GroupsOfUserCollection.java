@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   GroupsOfUserCollection.URI,
   GroupsOfUserCollection.GROUPS_OF_USER_COLLECTION
 })
-@JsonTypeName("GroupsOfUserCollection")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GroupsOfUserCollection {
   public static final String URI = "uri";
@@ -47,7 +46,7 @@ public class GroupsOfUserCollection {
   public static final String GROUPS_OF_USER_COLLECTION = "groupsOfUserCollection";
   private List<@Valid GroupsOfUser> groupsOfUserCollection = new ArrayList<>();
 
-  public GroupsOfUserCollection() { 
+  public GroupsOfUserCollection() {
   }
 
   public GroupsOfUserCollection uri(URI uri) {
@@ -56,14 +55,15 @@ public class GroupsOfUserCollection {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +78,6 @@ public class GroupsOfUserCollection {
     this.uri = uri;
   }
 
-
   public GroupsOfUserCollection groupsOfUserCollection(List<@Valid GroupsOfUser> groupsOfUserCollection) {
     
     this.groupsOfUserCollection = groupsOfUserCollection;
@@ -86,18 +85,22 @@ public class GroupsOfUserCollection {
   }
 
   public GroupsOfUserCollection addGroupsOfUserCollectionItem(GroupsOfUser groupsOfUserCollectionItem) {
+    if (this.groupsOfUserCollection == null) {
+      this.groupsOfUserCollection = new ArrayList<>();
+    }
     this.groupsOfUserCollection.add(groupsOfUserCollectionItem);
     return this;
   }
 
-   /**
+  /**
    * Get groupsOfUserCollection
    * @return groupsOfUserCollection
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS_OF_USER_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +114,6 @@ public class GroupsOfUserCollection {
   public void setGroupsOfUserCollection(List<@Valid GroupsOfUser> groupsOfUserCollection) {
     this.groupsOfUserCollection = groupsOfUserCollection;
   }
-
 
   @Override
   public boolean equals(Object o) {

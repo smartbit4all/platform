@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 /**
  * The information about an event of consumer method and the way how to invoke the given api with the event. 
  */
+@Schema(description = "The information about an event of consumer method and the way how to invoke the given api with the event. ")
 @JsonPropertyOrder({
   EventSubscriptionData.API,
   EventSubscriptionData.EVENT,
@@ -39,7 +40,6 @@ import jakarta.validation.Valid;
   EventSubscriptionData.CHANNEL,
   EventSubscriptionData.TYPE
 })
-@JsonTypeName("EventSubscriptionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class EventSubscriptionData {
   public static final String API = "api";
@@ -63,7 +63,7 @@ public class EventSubscriptionData {
   public static final String TYPE = "type";
   private EventSubscriptionType type;
 
-  public EventSubscriptionData() { 
+  public EventSubscriptionData() {
   }
 
   public EventSubscriptionData api(String api) {
@@ -72,13 +72,14 @@ public class EventSubscriptionData {
     return this;
   }
 
-   /**
+  /**
    * The name of the api publishing the event.
    * @return api
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the api publishing the event.")
   @JsonProperty(API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,20 +94,20 @@ public class EventSubscriptionData {
     this.api = api;
   }
 
-
   public EventSubscriptionData event(String event) {
     
     this.event = event;
     return this;
   }
 
-   /**
+  /**
    * The name of the publised event.
    * @return event
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the publised event.")
   @JsonProperty(EVENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -121,20 +122,20 @@ public class EventSubscriptionData {
     this.event = event;
   }
 
-
   public EventSubscriptionData subscribedApi(String subscribedApi) {
     
     this.subscribedApi = subscribedApi;
     return this;
   }
 
-   /**
+  /**
    * The api to call when the event published.
    * @return subscribedApi
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The api to call when the event published.")
   @JsonProperty(SUBSCRIBED_API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -149,20 +150,20 @@ public class EventSubscriptionData {
     this.subscribedApi = subscribedApi;
   }
 
-
   public EventSubscriptionData subscribedMethod(String subscribedMethod) {
     
     this.subscribedMethod = subscribedMethod;
     return this;
   }
 
-   /**
+  /**
    * The name of the method to call in the subscribed api.
    * @return subscribedMethod
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the method to call in the subscribed api.")
   @JsonProperty(SUBSCRIBED_METHOD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -177,19 +178,19 @@ public class EventSubscriptionData {
     this.subscribedMethod = subscribedMethod;
   }
 
-
   public EventSubscriptionData asynchronous(Boolean asynchronous) {
     
     this.asynchronous = asynchronous;
     return this;
   }
 
-   /**
+  /**
    * True if the event is accepted in asynchronous way. This is an instruction for the publisher.
    * @return asynchronous
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "True if the event is accepted in asynchronous way. This is an instruction for the publisher.")
   @JsonProperty(ASYNCHRONOUS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -204,19 +205,19 @@ public class EventSubscriptionData {
     this.asynchronous = asynchronous;
   }
 
-
   public EventSubscriptionData channel(String channel) {
     
     this.channel = channel;
     return this;
   }
 
-   /**
+  /**
    * Defines the asynchronous channel to use for processing the invocation.
    * @return channel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines the asynchronous channel to use for processing the invocation.")
   @JsonProperty(CHANNEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -231,21 +232,21 @@ public class EventSubscriptionData {
     this.channel = channel;
   }
 
-
   public EventSubscriptionData type(EventSubscriptionType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -259,7 +260,6 @@ public class EventSubscriptionData {
   public void setType(EventSubscriptionType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

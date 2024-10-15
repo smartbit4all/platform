@@ -32,13 +32,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   UserSelectorPageModel.SELECTION
 })
-@JsonTypeName("UserSelectorPageModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserSelectorPageModel {
   public static final String SELECTION = "selection";
   private String selection;
 
-  public UserSelectorPageModel() { 
+  public UserSelectorPageModel() {
   }
 
   public UserSelectorPageModel selection(String selection) {
@@ -47,12 +46,13 @@ public class UserSelectorPageModel {
     return this;
   }
 
-   /**
+  /**
    * Get selection
    * @return selection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -66,7 +66,6 @@ public class UserSelectorPageModel {
   public void setSelection(String selection) {
     this.selection = selection;
   }
-
 
   @Override
   public boolean equals(Object o) {

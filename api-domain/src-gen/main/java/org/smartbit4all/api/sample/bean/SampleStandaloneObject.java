@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   SampleStandaloneObject.ATTACHMENT,
   SampleStandaloneObject.PROPERTY_CONTAINER
 })
-@JsonTypeName("SampleStandaloneObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleStandaloneObject {
   public static final String URI = "uri";
@@ -53,7 +52,7 @@ public class SampleStandaloneObject {
   public static final String PROPERTY_CONTAINER = "propertyContainer";
   private SamplePropertyContainer propertyContainer;
 
-  public SampleStandaloneObject() { 
+  public SampleStandaloneObject() {
   }
 
   public SampleStandaloneObject uri(URI uri) {
@@ -62,13 +61,14 @@ public class SampleStandaloneObject {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +83,19 @@ public class SampleStandaloneObject {
     this.uri = uri;
   }
 
-
   public SampleStandaloneObject favouriteNumber(Long favouriteNumber) {
     
     this.favouriteNumber = favouriteNumber;
     return this;
   }
 
-   /**
+  /**
    * Get favouriteNumber
    * @return favouriteNumber
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FAVOURITE_NUMBER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +110,20 @@ public class SampleStandaloneObject {
     this.favouriteNumber = favouriteNumber;
   }
 
-
   public SampleStandaloneObject attachment(BinaryContentData attachment) {
     
     this.attachment = attachment;
     return this;
   }
 
-   /**
+  /**
    * Get attachment
    * @return attachment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ATTACHMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +138,20 @@ public class SampleStandaloneObject {
     this.attachment = attachment;
   }
 
-
   public SampleStandaloneObject propertyContainer(SamplePropertyContainer propertyContainer) {
     
     this.propertyContainer = propertyContainer;
     return this;
   }
 
-   /**
+  /**
    * Get propertyContainer
    * @return propertyContainer
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PROPERTY_CONTAINER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +165,6 @@ public class SampleStandaloneObject {
   public void setPropertyContainer(SamplePropertyContainer propertyContainer) {
     this.propertyContainer = propertyContainer;
   }
-
 
   @Override
   public boolean equals(Object o) {

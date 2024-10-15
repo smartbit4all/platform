@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex to be able to select the given object. This type defines how get the unique identifier. 
  */
+@Schema(description = "The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex to be able to select the given object. This type defines how get the unique identifier. ")
 @JsonPropertyOrder({
   SubjectTypeDescriptor.NAME,
   SubjectTypeDescriptor.TITLE,
@@ -39,7 +40,6 @@ import jakarta.validation.Valid;
   SubjectTypeDescriptor.PARENT_IDENTIFIER_PROPERTY_NAME,
   SubjectTypeDescriptor.API_NAME
 })
-@JsonTypeName("SubjectTypeDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectTypeDescriptor {
   public static final String NAME = "name";
@@ -60,7 +60,7 @@ public class SubjectTypeDescriptor {
   public static final String API_NAME = "apiName";
   private String apiName;
 
-  public SubjectTypeDescriptor() { 
+  public SubjectTypeDescriptor() {
   }
 
   public SubjectTypeDescriptor name(String name) {
@@ -69,13 +69,14 @@ public class SubjectTypeDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The name of the subject type.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the subject type.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,20 +91,20 @@ public class SubjectTypeDescriptor {
     this.name = name;
   }
 
-
   public SubjectTypeDescriptor title(LangString title) {
     
     this.title = title;
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,21 +119,21 @@ public class SubjectTypeDescriptor {
     this.title = title;
   }
 
-
   public SubjectTypeDescriptor selectionConfig(SearchPageConfig selectionConfig) {
     
     this.selectionConfig = selectionConfig;
     return this;
   }
 
-   /**
+  /**
    * The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the columns of the grid and the filter model. 
    * @return selectionConfig
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the columns of the grid and the filter model. ")
   @JsonProperty(SELECTION_CONFIG)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -147,19 +148,19 @@ public class SubjectTypeDescriptor {
     this.selectionConfig = selectionConfig;
   }
 
-
   public SubjectTypeDescriptor parentPropertyName(String parentPropertyName) {
     
     this.parentPropertyName = parentPropertyName;
     return this;
   }
 
-   /**
+  /**
    * The property name of the parent property. If it is set then the selector page can show hierarchical view. 
    * @return parentPropertyName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The property name of the parent property. If it is set then the selector page can show hierarchical view. ")
   @JsonProperty(PARENT_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -174,19 +175,19 @@ public class SubjectTypeDescriptor {
     this.parentPropertyName = parentPropertyName;
   }
 
-
   public SubjectTypeDescriptor parentIdentifierPropertyName(String parentIdentifierPropertyName) {
     
     this.parentIdentifierPropertyName = parentIdentifierPropertyName;
     return this;
   }
 
-   /**
+  /**
    * The property name of the unique identifier property. If it is set then the selector page can show hierarchical view. 
    * @return parentIdentifierPropertyName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The property name of the unique identifier property. If it is set then the selector page can show hierarchical view. ")
   @JsonProperty(PARENT_IDENTIFIER_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -201,19 +202,19 @@ public class SubjectTypeDescriptor {
     this.parentIdentifierPropertyName = parentIdentifierPropertyName;
   }
 
-
   public SubjectTypeDescriptor apiName(String apiName) {
     
     this.apiName = apiName;
     return this;
   }
 
-   /**
+  /**
    * The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add  
    * @return apiName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add  ")
   @JsonProperty(API_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -227,7 +228,6 @@ public class SubjectTypeDescriptor {
   public void setApiName(String apiName) {
     this.apiName = apiName;
   }
-
 
   @Override
   public boolean equals(Object o) {

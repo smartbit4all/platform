@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   MDMEntryChangesPageModel.LATEST_MODIFICATION_NOTE,
   MDMEntryChangesPageModel.APPROVER_NAME
 })
-@JsonTypeName("MDMEntryChangesPageModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryChangesPageModel {
   public static final String LATEST_MODIFICATION_NOTE = "latestModificationNote";
@@ -43,7 +42,7 @@ public class MDMEntryChangesPageModel {
   public static final String APPROVER_NAME = "approverName";
   private String approverName;
 
-  public MDMEntryChangesPageModel() { 
+  public MDMEntryChangesPageModel() {
   }
 
   public MDMEntryChangesPageModel latestModificationNote(MDMModificationNote latestModificationNote) {
@@ -52,13 +51,14 @@ public class MDMEntryChangesPageModel {
     return this;
   }
 
-   /**
+  /**
    * Get latestModificationNote
    * @return latestModificationNote
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LATEST_MODIFICATION_NOTE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,19 +73,19 @@ public class MDMEntryChangesPageModel {
     this.latestModificationNote = latestModificationNote;
   }
 
-
   public MDMEntryChangesPageModel approverName(String approverName) {
     
     this.approverName = approverName;
     return this;
   }
 
-   /**
+  /**
    * Get approverName
    * @return approverName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(APPROVER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class MDMEntryChangesPageModel {
   public void setApproverName(String approverName) {
     this.approverName = approverName;
   }
-
 
   @Override
   public boolean equals(Object o) {

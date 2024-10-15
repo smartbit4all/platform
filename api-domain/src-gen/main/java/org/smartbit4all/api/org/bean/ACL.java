@@ -30,16 +30,16 @@ import jakarta.validation.Valid;
 /**
  * The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. 
  */
+@Schema(description = "The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. ")
 @JsonPropertyOrder({
   ACL.ROOT_ENTRY
 })
-@JsonTypeName("ACL")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACL {
   public static final String ROOT_ENTRY = "rootEntry";
   private ACLEntry rootEntry;
 
-  public ACL() { 
+  public ACL() {
   }
 
   public ACL rootEntry(ACLEntry rootEntry) {
@@ -48,14 +48,15 @@ public class ACL {
     return this;
   }
 
-   /**
+  /**
    * Get rootEntry
    * @return rootEntry
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ROOT_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -69,7 +70,6 @@ public class ACL {
   public void setRootEntry(ACLEntry rootEntry) {
     this.rootEntry = rootEntry;
   }
-
 
   @Override
   public boolean equals(Object o) {

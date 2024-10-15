@@ -39,19 +39,18 @@ import jakarta.validation.Valid;
   GroupEditingModel.POSSIBLE_GROUPS,
   GroupEditingModel.CHILD_GROUPS
 })
-@JsonTypeName("GroupEditingModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GroupEditingModel {
   public static final String GROUP = "group";
   private Group group = null;
 
   public static final String POSSIBLE_GROUPS = "possibleGroups";
-  private List<Group> possibleGroups = null;
+  private List<Group> possibleGroups = new ArrayList<>();
 
   public static final String CHILD_GROUPS = "childGroups";
-  private List<URI> childGroups = null;
+  private List<URI> childGroups = new ArrayList<>();
 
-  public GroupEditingModel() { 
+  public GroupEditingModel() {
   }
 
   public GroupEditingModel group(Group group) {
@@ -60,13 +59,14 @@ public class GroupEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The copy of the group object to edit
    * @return group
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The copy of the group object to edit")
   @JsonProperty(GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,7 +80,6 @@ public class GroupEditingModel {
   public void setGroup(Group group) {
     this.group = group;
   }
-
 
   public GroupEditingModel possibleGroups(List<Group> possibleGroups) {
     
@@ -96,13 +95,14 @@ public class GroupEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The list of groups that exist within the current app. 
    * @return possibleGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of groups that exist within the current app. ")
   @JsonProperty(POSSIBLE_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,7 +116,6 @@ public class GroupEditingModel {
   public void setPossibleGroups(List<Group> possibleGroups) {
     this.possibleGroups = possibleGroups;
   }
-
 
   public GroupEditingModel childGroups(List<URI> childGroups) {
     
@@ -132,13 +131,14 @@ public class GroupEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The list of groups that are considered child groups of the group. 
    * @return childGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of groups that are considered child groups of the group. ")
   @JsonProperty(CHILD_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +152,6 @@ public class GroupEditingModel {
   public void setChildGroups(List<URI> childGroups) {
     this.childGroups = childGroups;
   }
-
 
   @Override
   public boolean equals(Object o) {

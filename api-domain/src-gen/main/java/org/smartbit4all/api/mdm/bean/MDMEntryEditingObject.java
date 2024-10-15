@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do. 
  */
+@Schema(description = "A generic object to use as the editing object for the master data management page apis. The list page constructs this object and pass to the editor page. When saving the editing the list can decide what to do. ")
 @JsonPropertyOrder({
   MDMEntryEditingObject.BRANCH_OBJECT_ENTRY,
   MDMEntryEditingObject.ORIGINAL_OBJECT,
   MDMEntryEditingObject.BRANCHED_OBJECT
 })
-@JsonTypeName("MDMEntryEditingObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryEditingObject {
   public static final String BRANCH_OBJECT_ENTRY = "branchObjectEntry";
@@ -47,7 +47,7 @@ public class MDMEntryEditingObject {
   public static final String BRANCHED_OBJECT = "branchedObject";
   private Object branchedObject;
 
-  public MDMEntryEditingObject() { 
+  public MDMEntryEditingObject() {
   }
 
   public MDMEntryEditingObject branchObjectEntry(BranchedObjectEntry branchObjectEntry) {
@@ -56,13 +56,14 @@ public class MDMEntryEditingObject {
     return this;
   }
 
-   /**
+  /**
    * The BranchedObjectEntry that is the original data we have.
    * @return branchObjectEntry
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The BranchedObjectEntry that is the original data we have.")
   @JsonProperty(BRANCH_OBJECT_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +78,19 @@ public class MDMEntryEditingObject {
     this.branchObjectEntry = branchObjectEntry;
   }
 
-
   public MDMEntryEditingObject originalObject(Object originalObject) {
     
     this.originalObject = originalObject;
     return this;
   }
 
-   /**
+  /**
    * The original object loaded if any.
    * @return originalObject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The original object loaded if any.")
   @JsonProperty(ORIGINAL_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +105,19 @@ public class MDMEntryEditingObject {
     this.originalObject = originalObject;
   }
 
-
   public MDMEntryEditingObject branchedObject(Object branchedObject) {
     
     this.branchedObject = branchedObject;
     return this;
   }
 
-   /**
+  /**
    * The branched object loaded if any.
    * @return branchedObject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The branched object loaded if any.")
   @JsonProperty(BRANCHED_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class MDMEntryEditingObject {
   public void setBranchedObject(Object branchedObject) {
     this.branchedObject = branchedObject;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   ValueSetOperand.DATA,
   ValueSetOperand.EXPRESSION
 })
-@JsonTypeName("ValueSetOperand")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetOperand {
   public static final String NAMESPACE = "namespace";
@@ -52,7 +51,7 @@ public class ValueSetOperand {
   public static final String EXPRESSION = "expression";
   private ValueSetExpression expression;
 
-  public ValueSetOperand() { 
+  public ValueSetOperand() {
   }
 
   public ValueSetOperand namespace(String namespace) {
@@ -61,13 +60,14 @@ public class ValueSetOperand {
     return this;
   }
 
-   /**
+  /**
    * The namespace of the referred value set. 
    * @return namespace
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The namespace of the referred value set. ")
   @JsonProperty(NAMESPACE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +82,20 @@ public class ValueSetOperand {
     this.namespace = namespace;
   }
 
-
   public ValueSetOperand name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name of the referred value set. 
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the referred value set. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,20 +110,20 @@ public class ValueSetOperand {
     this.name = name;
   }
 
-
   public ValueSetOperand data(ValueSetDefinitionData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +138,20 @@ public class ValueSetOperand {
     this.data = data;
   }
 
-
   public ValueSetOperand expression(ValueSetExpression expression) {
     
     this.expression = expression;
     return this;
   }
 
-   /**
+  /**
    * Get expression
    * @return expression
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +165,6 @@ public class ValueSetOperand {
   public void setExpression(ValueSetExpression expression) {
     this.expression = expression;
   }
-
 
   @Override
   public boolean equals(Object o) {

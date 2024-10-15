@@ -42,7 +42,6 @@ import jakarta.validation.Valid;
   GridColumnMeta.CONTENT_TYPE,
   GridColumnMeta.STYLE
 })
-@JsonTypeName("GridColumnMeta")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridColumnMeta {
   public static final String LABEL = "label";
@@ -72,7 +71,7 @@ public class GridColumnMeta {
   public static final String STYLE = "style";
   private Style style = null;
 
-  public GridColumnMeta() { 
+  public GridColumnMeta() {
   }
 
   public GridColumnMeta label(String label) {
@@ -81,13 +80,14 @@ public class GridColumnMeta {
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -102,20 +102,20 @@ public class GridColumnMeta {
     this.label = label;
   }
 
-
   public GridColumnMeta propertyName(String propertyName) {
     
     this.propertyName = propertyName;
     return this;
   }
 
-   /**
+  /**
    * Get propertyName
    * @return propertyName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -130,19 +130,19 @@ public class GridColumnMeta {
     this.propertyName = propertyName;
   }
 
-
   public GridColumnMeta typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * Get typeClass
    * @return typeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,19 +157,19 @@ public class GridColumnMeta {
     this.typeClass = typeClass;
   }
 
-
   public GridColumnMeta typeFormat(String typeFormat) {
     
     this.typeFormat = typeFormat;
     return this;
   }
 
-   /**
+  /**
    * The format instruction for the column. This format string must be JavaScript format stringh for Angular.
    * @return typeFormat
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The format instruction for the column. This format string must be JavaScript format stringh for Angular.")
   @JsonProperty(TYPE_FORMAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,19 +184,19 @@ public class GridColumnMeta {
     this.typeFormat = typeFormat;
   }
 
-
   public GridColumnMeta alwaysHidden(Boolean alwaysHidden) {
     
     this.alwaysHidden = alwaysHidden;
     return this;
   }
 
-   /**
+  /**
    * Get alwaysHidden
    * @return alwaysHidden
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ALWAYS_HIDDEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,19 +211,19 @@ public class GridColumnMeta {
     this.alwaysHidden = alwaysHidden;
   }
 
-
   public GridColumnMeta alwaysShow(Boolean alwaysShow) {
     
     this.alwaysShow = alwaysShow;
     return this;
   }
 
-   /**
+  /**
    * Get alwaysShow
    * @return alwaysShow
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ALWAYS_SHOW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,19 +238,19 @@ public class GridColumnMeta {
     this.alwaysShow = alwaysShow;
   }
 
-
   public GridColumnMeta hideLabel(Boolean hideLabel) {
     
     this.hideLabel = hideLabel;
     return this;
   }
 
-   /**
+  /**
    * Hide column header label.
    * @return hideLabel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Hide column header label.")
   @JsonProperty(HIDE_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,20 +265,20 @@ public class GridColumnMeta {
     this.hideLabel = hideLabel;
   }
 
-
   public GridColumnMeta contentType(GridColumnContentType contentType) {
     
     this.contentType = contentType;
     return this;
   }
 
-   /**
+  /**
    * Get contentType
    * @return contentType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTENT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -293,20 +293,20 @@ public class GridColumnMeta {
     this.contentType = contentType;
   }
 
-
   public GridColumnMeta style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * If present, this Style will be applied to the column. 
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If present, this Style will be applied to the column. ")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -320,7 +320,6 @@ public class GridColumnMeta {
   public void setStyle(Style style) {
     this.style = style;
   }
-
 
   @Override
   public boolean equals(Object o) {

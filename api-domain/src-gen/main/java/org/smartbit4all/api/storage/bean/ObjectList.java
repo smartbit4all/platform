@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * The list of references as a container object for the Api.  
  */
+@Schema(description = "The list of references as a container object for the Api.  ")
 @JsonPropertyOrder({
   ObjectList.URI,
   ObjectList.URIS
 })
-@JsonTypeName("ObjectList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectList {
   public static final String URI = "uri";
@@ -46,7 +46,7 @@ public class ObjectList {
   public static final String URIS = "uris";
   private List<URI> uris = new ArrayList<>();
 
-  public ObjectList() { 
+  public ObjectList() {
   }
 
   public ObjectList uri(URI uri) {
@@ -55,14 +55,15 @@ public class ObjectList {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +78,6 @@ public class ObjectList {
     this.uri = uri;
   }
 
-
   public ObjectList uris(List<URI> uris) {
     
     this.uris = uris;
@@ -85,18 +85,22 @@ public class ObjectList {
   }
 
   public ObjectList addUrisItem(URI urisItem) {
+    if (this.uris == null) {
+      this.uris = new ArrayList<>();
+    }
     this.uris.add(urisItem);
     return this;
   }
 
-   /**
+  /**
    * Get uris
    * @return uris
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +114,6 @@ public class ObjectList {
   public void setUris(List<URI> uris) {
     this.uris = uris;
   }
-
 
   @Override
   public boolean equals(Object o) {

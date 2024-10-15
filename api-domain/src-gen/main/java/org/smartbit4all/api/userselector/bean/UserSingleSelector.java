@@ -37,16 +37,15 @@ import jakarta.validation.Valid;
   UserSingleSelector.SELECTORS,
   UserSingleSelector.SELECTED
 })
-@JsonTypeName("UserSingleSelector")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserSingleSelector {
   public static final String SELECTORS = "selectors";
-  private List<@Valid UserSelector> selectors = null;
+  private List<@Valid UserSelector> selectors = new ArrayList<>();
 
   public static final String SELECTED = "selected";
   private UserSelector selected;
 
-  public UserSingleSelector() { 
+  public UserSingleSelector() {
   }
 
   public UserSingleSelector selectors(List<@Valid UserSelector> selectors) {
@@ -63,13 +62,14 @@ public class UserSingleSelector {
     return this;
   }
 
-   /**
+  /**
    * Get selectors
    * @return selectors
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,20 +84,20 @@ public class UserSingleSelector {
     this.selectors = selectors;
   }
 
-
   public UserSingleSelector selected(UserSelector selected) {
     
     this.selected = selected;
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,7 +111,6 @@ public class UserSingleSelector {
   public void setSelected(UserSelector selected) {
     this.selected = selected;
   }
-
 
   @Override
   public boolean equals(Object o) {

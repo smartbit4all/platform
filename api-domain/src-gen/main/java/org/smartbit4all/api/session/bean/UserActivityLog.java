@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * When a user executes an activity this entry is created based on the current session. It contains the information we know about the user and the time of the execution. The user is not necessarily user of the system so the user uri is optional and the user is a copied value from the session. 
  */
+@Schema(description = "When a user executes an activity this entry is created based on the current session. It contains the information we know about the user and the time of the execution. The user is not necessarily user of the system so the user uri is optional and the user is a copied value from the session. ")
 @JsonPropertyOrder({
   UserActivityLog.USER_URI,
   UserActivityLog.USER_NAME,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   UserActivityLog.NAME,
   UserActivityLog.TIMESTAMP
 })
-@JsonTypeName("UserActivityLog")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserActivityLog {
   public static final String USER_URI = "userUri";
@@ -56,7 +56,7 @@ public class UserActivityLog {
   public static final String TIMESTAMP = "timestamp";
   private OffsetDateTime timestamp;
 
-  public UserActivityLog() { 
+  public UserActivityLog() {
   }
 
   public UserActivityLog userUri(URI userUri) {
@@ -65,13 +65,14 @@ public class UserActivityLog {
     return this;
   }
 
-   /**
+  /**
    * The uri reference of the user.
    * @return userUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri reference of the user.")
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -86,19 +87,19 @@ public class UserActivityLog {
     this.userUri = userUri;
   }
 
-
   public UserActivityLog userName(String userName) {
     
     this.userName = userName;
     return this;
   }
 
-   /**
+  /**
    * The login name of the user.
    * @return userName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The login name of the user.")
   @JsonProperty(USER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +114,19 @@ public class UserActivityLog {
     this.userName = userName;
   }
 
-
   public UserActivityLog role(String role) {
     
     this.role = role;
     return this;
   }
 
-   /**
+  /**
    * The role of the user.
    * @return role
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The role of the user.")
   @JsonProperty(ROLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +141,19 @@ public class UserActivityLog {
     this.role = role;
   }
 
-
   public UserActivityLog name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The natural name of the user.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The natural name of the user.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,20 +168,20 @@ public class UserActivityLog {
     this.name = name;
   }
 
-
   public UserActivityLog timestamp(OffsetDateTime timestamp) {
     
     this.timestamp = timestamp;
     return this;
   }
 
-   /**
+  /**
    * Get timestamp
    * @return timestamp
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,7 +195,6 @@ public class UserActivityLog {
   public void setTimestamp(OffsetDateTime timestamp) {
     this.timestamp = timestamp;
   }
-
 
   @Override
   public boolean equals(Object o) {

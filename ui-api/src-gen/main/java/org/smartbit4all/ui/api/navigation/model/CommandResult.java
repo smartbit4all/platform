@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   CommandResult.MESSAGE_TO_OPEN,
   CommandResult.VIEW
 })
-@JsonTypeName("CommandResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class CommandResult {
   public static final String UI_TO_OPEN = "uiToOpen";
@@ -49,7 +48,7 @@ public class CommandResult {
   public static final String VIEW = "view";
   private ViewModelData view;
 
-  public CommandResult() { 
+  public CommandResult() {
   }
 
   public CommandResult uiToOpen(NavigationTarget uiToOpen) {
@@ -58,13 +57,14 @@ public class CommandResult {
     return this;
   }
 
-   /**
+  /**
    * Get uiToOpen
    * @return uiToOpen
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UI_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +79,20 @@ public class CommandResult {
     this.uiToOpen = uiToOpen;
   }
 
-
   public CommandResult messageToOpen(Message messageToOpen) {
     
     this.messageToOpen = messageToOpen;
     return this;
   }
 
-   /**
+  /**
    * Get messageToOpen
    * @return messageToOpen
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +107,20 @@ public class CommandResult {
     this.messageToOpen = messageToOpen;
   }
 
-
   public CommandResult view(ViewModelData view) {
     
     this.view = view;
     return this;
   }
 
-   /**
+  /**
    * Get view
    * @return view
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +134,6 @@ public class CommandResult {
   public void setView(ViewModelData view) {
     this.view = view;
   }
-
 
   @Override
   public boolean equals(Object o) {

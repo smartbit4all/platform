@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * This object containt the page information of the content. The currently seen row range, the total row cont and other options. 
  */
+@Schema(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GridPage.LOWER_BOUND,
   GridPage.UPPER_BOUND,
   GridPage.ROWS
 })
-@JsonTypeName("GridPage")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridPage {
   public static final String LOWER_BOUND = "lowerBound";
@@ -48,9 +48,9 @@ public class GridPage {
   private Integer upperBound;
 
   public static final String ROWS = "rows";
-  private List<@Valid GridRow> rows = null;
+  private List<@Valid GridRow> rows = new ArrayList<>();
 
-  public GridPage() { 
+  public GridPage() {
   }
 
   public GridPage lowerBound(Integer lowerBound) {
@@ -59,12 +59,13 @@ public class GridPage {
     return this;
   }
 
-   /**
+  /**
    * The index of the first row in the current page. Startes from 1 and inclusive.
    * @return lowerBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The index of the first row in the current page. Startes from 1 and inclusive.")
   @JsonProperty(LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,19 +80,19 @@ public class GridPage {
     this.lowerBound = lowerBound;
   }
 
-
   public GridPage upperBound(Integer upperBound) {
     
     this.upperBound = upperBound;
     return this;
   }
 
-   /**
+  /**
    * The index of the last row in the current page inclusive.
    * @return upperBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The index of the last row in the current page inclusive.")
   @JsonProperty(UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,7 +106,6 @@ public class GridPage {
   public void setUpperBound(Integer upperBound) {
     this.upperBound = upperBound;
   }
-
 
   public GridPage rows(List<@Valid GridRow> rows) {
     
@@ -121,13 +121,14 @@ public class GridPage {
     return this;
   }
 
-   /**
+  /**
    * Get rows
    * @return rows
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +142,6 @@ public class GridPage {
   public void setRows(List<@Valid GridRow> rows) {
     this.rows = rows;
   }
-
 
   @Override
   public boolean equals(Object o) {

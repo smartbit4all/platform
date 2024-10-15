@@ -31,13 +31,13 @@ import jakarta.validation.Valid;
 /**
  * This inline object is the comment on the MDM modification. It can be global for the whole notification and can refer tor an entry or even an object in an entry. The objet is a bit tricky because we can refer the object by the branched and the original uri also. 
  */
+@Schema(description = "This inline object is the comment on the MDM modification. It can be global for the whole notification and can refer tor an entry or even an object in an entry. The objet is a bit tricky because we can refer the object by the branched and the original uri also. ")
 @JsonPropertyOrder({
   MDMModificationNote.CREATED,
   MDMModificationNote.NOTE,
   MDMModificationNote.ENTRY,
   MDMModificationNote.OBJECT_URI
 })
-@JsonTypeName("MDMModificationNote")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModificationNote {
   public static final String CREATED = "created";
@@ -52,7 +52,7 @@ public class MDMModificationNote {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
 
-  public MDMModificationNote() { 
+  public MDMModificationNote() {
   }
 
   public MDMModificationNote created(UserActivityLog created) {
@@ -61,13 +61,14 @@ public class MDMModificationNote {
     return this;
   }
 
-   /**
+  /**
    * Get created
    * @return created
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,19 +83,19 @@ public class MDMModificationNote {
     this.created = created;
   }
 
-
   public MDMModificationNote note(String note) {
     
     this.note = note;
     return this;
   }
 
-   /**
+  /**
    * Get note
    * @return note
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NOTE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,19 +110,19 @@ public class MDMModificationNote {
     this.note = note;
   }
 
-
   public MDMModificationNote entry(String entry) {
     
     this.entry = entry;
     return this;
   }
 
-   /**
+  /**
    * The name of the entry the note is refering to. 
    * @return entry
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the entry the note is refering to. ")
   @JsonProperty(ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,20 +137,20 @@ public class MDMModificationNote {
     this.entry = entry;
   }
 
-
   public MDMModificationNote objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * The object URI the note is refering to. 
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object URI the note is refering to. ")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,7 +164,6 @@ public class MDMModificationNote {
   public void setObjectUri(URI objectUri) {
     this.objectUri = objectUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -30,11 +30,11 @@ import jakarta.validation.Valid;
 /**
  * The change of a reference in and object as another object change. 
  */
+@Schema(description = "The change of a reference in and object as another object change. ")
 @JsonPropertyOrder({
   ReferenceChangeData.PATH,
   ReferenceChangeData.OBJECT_CHANGE
 })
-@JsonTypeName("ReferenceChangeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ReferenceChangeData {
   public static final String PATH = "path";
@@ -43,7 +43,7 @@ public class ReferenceChangeData {
   public static final String OBJECT_CHANGE = "objectChange";
   private ObjectChangeData objectChange;
 
-  public ReferenceChangeData() { 
+  public ReferenceChangeData() {
   }
 
   public ReferenceChangeData path(String path) {
@@ -52,13 +52,14 @@ public class ReferenceChangeData {
     return this;
   }
 
-   /**
+  /**
    * The path identify the given property inside the object.
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The path identify the given property inside the object.")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -73,20 +74,20 @@ public class ReferenceChangeData {
     this.path = path;
   }
 
-
   public ReferenceChangeData objectChange(ObjectChangeData objectChange) {
     
     this.objectChange = objectChange;
     return this;
   }
 
-   /**
+  /**
    * Get objectChange
    * @return objectChange
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_CHANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +101,6 @@ public class ReferenceChangeData {
   public void setObjectChange(ObjectChangeData objectChange) {
     this.objectChange = objectChange;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 /**
  * The meta of a database table. As a result of the comparision it can have operationCode that defines if it is a tabel to  create, alter or delete. 
  */
+@Schema(description = "The meta of a database table. As a result of the comparision it can have operationCode that defines if it is a tabel to  create, alter or delete. ")
 @JsonPropertyOrder({
   TableDefinition.SCHEMA,
   TableDefinition.NAME,
@@ -48,7 +49,6 @@ import jakarta.validation.Valid;
   TableDefinition.PRIMARY_KEY,
   TableDefinition.OPERATION
 })
-@JsonTypeName("TableDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TableDefinition {
   public static final String SCHEMA = "schema";
@@ -78,7 +78,7 @@ public class TableDefinition {
   public static final String OPERATION = "operation";
   private AlterOperation operation;
 
-  public TableDefinition() { 
+  public TableDefinition() {
   }
 
   public TableDefinition schema(String schema) {
@@ -87,12 +87,13 @@ public class TableDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get schema
    * @return schema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,19 +108,19 @@ public class TableDefinition {
     this.schema = schema;
   }
 
-
   public TableDefinition name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,19 +135,19 @@ public class TableDefinition {
     this.name = name;
   }
 
-
   public TableDefinition shortName(String shortName) {
     
     this.shortName = shortName;
     return this;
   }
 
-   /**
+  /**
    * Get shortName
    * @return shortName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHORT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,19 +162,19 @@ public class TableDefinition {
     this.shortName = shortName;
   }
 
-
   public TableDefinition comment(String comment) {
     
     this.comment = comment;
     return this;
   }
 
-   /**
+  /**
    * Get comment
    * @return comment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,7 +189,6 @@ public class TableDefinition {
     this.comment = comment;
   }
 
-
   public TableDefinition columns(List<@Valid ColumnDefinition> columns) {
     
     this.columns = columns;
@@ -196,18 +196,22 @@ public class TableDefinition {
   }
 
   public TableDefinition addColumnsItem(ColumnDefinition columnsItem) {
+    if (this.columns == null) {
+      this.columns = new ArrayList<>();
+    }
     this.columns.add(columnsItem);
     return this;
   }
 
-   /**
+  /**
    * Get columns
    * @return columns
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -222,7 +226,6 @@ public class TableDefinition {
     this.columns = columns;
   }
 
-
   public TableDefinition indexes(List<@Valid IndexDefinition> indexes) {
     
     this.indexes = indexes;
@@ -230,18 +233,22 @@ public class TableDefinition {
   }
 
   public TableDefinition addIndexesItem(IndexDefinition indexesItem) {
+    if (this.indexes == null) {
+      this.indexes = new ArrayList<>();
+    }
     this.indexes.add(indexesItem);
     return this;
   }
 
-   /**
+  /**
    * Get indexes
    * @return indexes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(INDEXES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -256,7 +263,6 @@ public class TableDefinition {
     this.indexes = indexes;
   }
 
-
   public TableDefinition foreignKeys(List<@Valid ForeignKeyDefinition> foreignKeys) {
     
     this.foreignKeys = foreignKeys;
@@ -264,18 +270,22 @@ public class TableDefinition {
   }
 
   public TableDefinition addForeignKeysItem(ForeignKeyDefinition foreignKeysItem) {
+    if (this.foreignKeys == null) {
+      this.foreignKeys = new ArrayList<>();
+    }
     this.foreignKeys.add(foreignKeysItem);
     return this;
   }
 
-   /**
+  /**
    * Get foreignKeys
    * @return foreignKeys
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FOREIGN_KEYS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -290,21 +300,21 @@ public class TableDefinition {
     this.foreignKeys = foreignKeys;
   }
 
-
   public TableDefinition primaryKey(PrimaryKeyDefinition primaryKey) {
     
     this.primaryKey = primaryKey;
     return this;
   }
 
-   /**
+  /**
    * Get primaryKey
    * @return primaryKey
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PRIMARY_KEY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -319,21 +329,21 @@ public class TableDefinition {
     this.primaryKey = primaryKey;
   }
 
-
   public TableDefinition operation(AlterOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -347,7 +357,6 @@ public class TableDefinition {
   public void setOperation(AlterOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

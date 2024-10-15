@@ -31,20 +31,20 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * This object can hold a navigation path in a navigation. The path must start with an entry object uri. This uri must be available as root or child of another node. The next path segment is an association and an entry uri again. This can be used for selection and using these path we can restore the state of a navigation. 
  */
+@Schema(description = "This object can hold a navigation path in a navigation. The path must start with an entry object uri. This uri must be available as root or child of another node. The next path segment is an association and an entry uri again. This can be used for selection and using these path we can restore the state of a navigation. ")
 @JsonPropertyOrder({
   NavigationPath.URI,
   NavigationPath.SEGMENTS
 })
-@JsonTypeName("NavigationPath")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationPath {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String SEGMENTS = "segments";
-  private List<String> segments = null;
+  private List<String> segments = new ArrayList<>();
 
-  public NavigationPath() { 
+  public NavigationPath() {
   }
 
   public NavigationPath uri(URI uri) {
@@ -53,12 +53,12 @@ public class NavigationPath {
     return this;
   }
 
-   /**
+  /**
    * The navigation can be saved using this.
    * @return uri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The navigation can be saved using this.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,7 +72,6 @@ public class NavigationPath {
   public void setUri(URI uri) {
     this.uri = uri;
   }
-
 
   public NavigationPath segments(List<String> segments) {
     
@@ -88,12 +87,12 @@ public class NavigationPath {
     return this;
   }
 
-   /**
+  /**
    * Get segments
    * @return segments
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEGMENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +106,6 @@ public class NavigationPath {
   public void setSegments(List<String> segments) {
     this.segments = segments;
   }
-
 
   @Override
   public boolean equals(Object o) {

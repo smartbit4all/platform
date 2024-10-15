@@ -35,24 +35,24 @@ import jakarta.validation.Valid;
 /**
  * State update of a ViewContext.
  */
+@Schema(description = "State update of a ViewContext.")
 @JsonPropertyOrder({
   ViewContextUpdate.UUID,
   ViewContextUpdate.UPDATES,
   ViewContextUpdate.DEVICE_INFO
 })
-@JsonTypeName("ViewContextUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContextUpdate {
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String UPDATES = "updates";
-  private List<@Valid ViewStateUpdate> updates = null;
+  private List<@Valid ViewStateUpdate> updates = new ArrayList<>();
 
   public static final String DEVICE_INFO = "deviceInfo";
   private DeviceInfo deviceInfo;
 
-  public ViewContextUpdate() { 
+  public ViewContextUpdate() {
   }
 
   public ViewContextUpdate uuid(UUID uuid) {
@@ -61,13 +61,14 @@ public class ViewContextUpdate {
     return this;
   }
 
-   /**
+  /**
    * ViewContext&#39;s unique identifier.
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "ViewContext's unique identifier.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,7 +82,6 @@ public class ViewContextUpdate {
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
   }
-
 
   public ViewContextUpdate updates(List<@Valid ViewStateUpdate> updates) {
     
@@ -97,13 +97,14 @@ public class ViewContextUpdate {
     return this;
   }
 
-   /**
+  /**
    * Get updates
    * @return updates
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPDATES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,20 +119,20 @@ public class ViewContextUpdate {
     this.updates = updates;
   }
 
-
   public ViewContextUpdate deviceInfo(DeviceInfo deviceInfo) {
     
     this.deviceInfo = deviceInfo;
     return this;
   }
 
-   /**
+  /**
    * Get deviceInfo
    * @return deviceInfo
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEVICE_INFO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +146,6 @@ public class ViewContextUpdate {
   public void setDeviceInfo(DeviceInfo deviceInfo) {
     this.deviceInfo = deviceInfo;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * API: The association meta describes a possible navigation between entry metas. It is part of the configuration.
  */
+@Schema(description = "API: The association meta describes a possible navigation between entry metas. It is part of the configuration.")
 @JsonPropertyOrder({
   NavigationAssociationMeta.URI,
   NavigationAssociationMeta.NAME,
@@ -36,7 +37,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NavigationAssociationMeta.END_ENTRY,
   NavigationAssociationMeta.ASSOCIATION_ENTRY
 })
-@JsonTypeName("NavigationAssociationMeta")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationAssociationMeta {
   public static final String URI = "uri";
@@ -54,7 +54,7 @@ public class NavigationAssociationMeta {
   public static final String ASSOCIATION_ENTRY = "associationEntry";
   private NavigationEntryMeta associationEntry;
 
-  public NavigationAssociationMeta() { 
+  public NavigationAssociationMeta() {
   }
 
   public NavigationAssociationMeta uri(URI uri) {
@@ -63,12 +63,12 @@ public class NavigationAssociationMeta {
     return this;
   }
 
-   /**
+  /**
    * The uri of the resource that uniquely identifies the given navigation inside the navigation api.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the resource that uniquely identifies the given navigation inside the navigation api.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -83,19 +83,18 @@ public class NavigationAssociationMeta {
     this.uri = uri;
   }
 
-
   public NavigationAssociationMeta name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The well-formed name of the association.
    * @return name
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The well-formed name of the association.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,19 +109,18 @@ public class NavigationAssociationMeta {
     this.name = name;
   }
 
-
   public NavigationAssociationMeta startEntry(NavigationEntryMeta startEntry) {
     
     this.startEntry = startEntry;
     return this;
   }
 
-   /**
+  /**
    * Get startEntry
    * @return startEntry
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(START_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -137,19 +135,18 @@ public class NavigationAssociationMeta {
     this.startEntry = startEntry;
   }
 
-
   public NavigationAssociationMeta endEntry(NavigationEntryMeta endEntry) {
     
     this.endEntry = endEntry;
     return this;
   }
 
-   /**
+  /**
    * Get endEntry
    * @return endEntry
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(END_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,19 +161,18 @@ public class NavigationAssociationMeta {
     this.endEntry = endEntry;
   }
 
-
   public NavigationAssociationMeta associationEntry(NavigationEntryMeta associationEntry) {
     
     this.associationEntry = associationEntry;
     return this;
   }
 
-   /**
+  /**
    * Get associationEntry
    * @return associationEntry
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ASSOCIATION_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,7 +186,6 @@ public class NavigationAssociationMeta {
   public void setAssociationEntry(NavigationEntryMeta associationEntry) {
     this.associationEntry = associationEntry;
   }
-
 
   @Override
   public boolean equals(Object o) {

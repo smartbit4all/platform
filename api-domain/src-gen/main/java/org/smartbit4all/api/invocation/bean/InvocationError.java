@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * The error or exception can be saved into this object that occurred while executing an invocation. 
  */
+@Schema(description = "The error or exception can be saved into this object that occurred while executing an invocation. ")
 @JsonPropertyOrder({
   InvocationError.DEFINITION,
   InvocationError.MESSAGE,
   InvocationError.STACK_TRACE
 })
-@JsonTypeName("InvocationError")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationError {
   public static final String DEFINITION = "definition";
@@ -49,7 +49,7 @@ public class InvocationError {
   public static final String STACK_TRACE = "stackTrace";
   private List<String> stackTrace = new ArrayList<>();
 
-  public InvocationError() { 
+  public InvocationError() {
   }
 
   public InvocationError definition(String definition) {
@@ -58,13 +58,14 @@ public class InvocationError {
     return this;
   }
 
-   /**
+  /**
    * The error or exception typically defined in a programming language like java. The fully qualified name of this class is the definition of the error. 
    * @return definition
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The error or exception typically defined in a programming language like java. The fully qualified name of this class is the definition of the error. ")
   @JsonProperty(DEFINITION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -79,19 +80,19 @@ public class InvocationError {
     this.definition = definition;
   }
 
-
   public InvocationError message(String message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * The programmer defined message of exception that can help to identify the exact problem. 
    * @return message
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The programmer defined message of exception that can help to identify the exact problem. ")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,7 +107,6 @@ public class InvocationError {
     this.message = message;
   }
 
-
   public InvocationError stackTrace(List<String> stackTrace) {
     
     this.stackTrace = stackTrace;
@@ -114,17 +114,21 @@ public class InvocationError {
   }
 
   public InvocationError addStackTraceItem(String stackTraceItem) {
+    if (this.stackTrace == null) {
+      this.stackTrace = new ArrayList<>();
+    }
     this.stackTrace.add(stackTraceItem);
     return this;
   }
 
-   /**
+  /**
    * To be able to identify the original problem, the invocation can provide a deeper information about the exception. This ordered list contains the line of the stack trace if available. 
    * @return stackTrace
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "To be able to identify the original problem, the invocation can provide a deeper information about the exception. This ordered list contains the line of the stack trace if available. ")
   @JsonProperty(STACK_TRACE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -138,7 +142,6 @@ public class InvocationError {
   public void setStackTrace(List<String> stackTrace) {
     this.stackTrace = stackTrace;
   }
-
 
   @Override
   public boolean equals(Object o) {

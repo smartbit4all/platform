@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   UiTreePathPart.OBJECT_URI,
   UiTreePathPart.NODE_TYPE
 })
-@JsonTypeName("UiTreePathPart")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreePathPart {
   public static final String OBJECT_URI = "objectUri";
@@ -43,7 +42,7 @@ public class UiTreePathPart {
   public static final String NODE_TYPE = "nodeType";
   private String nodeType;
 
-  public UiTreePathPart() { 
+  public UiTreePathPart() {
   }
 
   public UiTreePathPart objectUri(URI objectUri) {
@@ -52,13 +51,14 @@ public class UiTreePathPart {
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,19 +73,19 @@ public class UiTreePathPart {
     this.objectUri = objectUri;
   }
 
-
   public UiTreePathPart nodeType(String nodeType) {
     
     this.nodeType = nodeType;
     return this;
   }
 
-   /**
+  /**
    * Get nodeType
    * @return nodeType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NODE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class UiTreePathPart {
   public void setNodeType(String nodeType) {
     this.nodeType = nodeType;
   }
-
 
   @Override
   public boolean equals(Object o) {

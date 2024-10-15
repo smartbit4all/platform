@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The parameter of a given method. 
  */
+@Schema(description = "The parameter of a given method. ")
 @JsonPropertyOrder({
   ParameterData.NAME,
   ParameterData.TYPE_NAME,
   ParameterData.KIND
 })
-@JsonTypeName("ParameterData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ParameterData {
   public static final String NAME = "name";
@@ -47,7 +47,7 @@ public class ParameterData {
   public static final String KIND = "kind";
   private InvocationParameterKind kind;
 
-  public ParameterData() { 
+  public ParameterData() {
   }
 
   public ParameterData name(String name) {
@@ -56,13 +56,14 @@ public class ParameterData {
     return this;
   }
 
-   /**
+  /**
    * Unique name of the parameter.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique name of the parameter.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,20 +78,20 @@ public class ParameterData {
     this.name = name;
   }
 
-
   public ParameterData typeName(String typeName) {
     
     this.typeName = typeName;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the parameter data.
    * @return typeName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The fully qualified name of the parameter data.")
   @JsonProperty(TYPE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -105,20 +106,20 @@ public class ParameterData {
     this.typeName = typeName;
   }
 
-
   public ParameterData kind(InvocationParameterKind kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class ParameterData {
   public void setKind(InvocationParameterKind kind) {
     this.kind = kind;
   }
-
 
   @Override
   public boolean equals(Object o) {

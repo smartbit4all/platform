@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * An abstract expression part.
  */
+@Schema(description = "An abstract expression part.")
 @JsonPropertyOrder({
   FilterExpressionPart.PART_KIND,
   FilterExpressionPart.FILTER_FIELD,
   FilterExpressionPart.FILTER_FIELD_META
 })
-@JsonTypeName("FilterExpressionPart")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionPart {
   public static final String PART_KIND = "partKind";
@@ -49,7 +49,7 @@ public class FilterExpressionPart {
   public static final String FILTER_FIELD_META = "filterFieldMeta";
   private FilterFieldMeta filterFieldMeta;
 
-  public FilterExpressionPart() { 
+  public FilterExpressionPart() {
   }
 
   public FilterExpressionPart partKind(FilterExpressionPartKind partKind) {
@@ -58,13 +58,14 @@ public class FilterExpressionPart {
     return this;
   }
 
-   /**
+  /**
    * Get partKind
    * @return partKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PART_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +80,20 @@ public class FilterExpressionPart {
     this.partKind = partKind;
   }
 
-
   public FilterExpressionPart filterField(FilterField filterField) {
     
     this.filterField = filterField;
     return this;
   }
 
-   /**
+  /**
    * Get filterField
    * @return filterField
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_FIELD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +108,20 @@ public class FilterExpressionPart {
     this.filterField = filterField;
   }
 
-
   public FilterExpressionPart filterFieldMeta(FilterFieldMeta filterFieldMeta) {
     
     this.filterFieldMeta = filterFieldMeta;
     return this;
   }
 
-   /**
+  /**
    * Get filterFieldMeta
    * @return filterFieldMeta
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_FIELD_META)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +135,6 @@ public class FilterExpressionPart {
   public void setFilterFieldMeta(FilterFieldMeta filterFieldMeta) {
     this.filterFieldMeta = filterFieldMeta;
   }
-
 
   @Override
   public boolean equals(Object o) {

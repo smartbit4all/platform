@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   UserUpdate.USER,
   UserUpdate.OPERATION
 })
-@JsonTypeName("UserUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserUpdate {
   public static final String URI = "uri";
@@ -49,7 +48,7 @@ public class UserUpdate {
   public static final String OPERATION = "operation";
   private BulkUpdateOperation operation;
 
-  public UserUpdate() { 
+  public UserUpdate() {
   }
 
   public UserUpdate uri(URI uri) {
@@ -58,13 +57,14 @@ public class UserUpdate {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +79,20 @@ public class UserUpdate {
     this.uri = uri;
   }
 
-
   public UserUpdate user(User user) {
     
     this.user = user;
     return this;
   }
 
-   /**
+  /**
    * Get user
    * @return user
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +107,20 @@ public class UserUpdate {
     this.user = user;
   }
 
-
   public UserUpdate operation(BulkUpdateOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +134,6 @@ public class UserUpdate {
   public void setOperation(BulkUpdateOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

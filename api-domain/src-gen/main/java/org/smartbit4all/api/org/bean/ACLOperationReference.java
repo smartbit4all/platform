@@ -30,13 +30,13 @@ import jakarta.validation.Valid;
 /**
  * This object is used as  
  */
+@Schema(description = "This object is used as  ")
 @JsonPropertyOrder({
   ACLOperationReference.OPERATION,
   ACLOperationReference.COMMENT,
   ACLOperationReference.ENTITY_URI,
   ACLOperationReference.CONFIG
 })
-@JsonTypeName("ACLOperationReference")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLOperationReference {
   public static final String OPERATION = "operation";
@@ -51,7 +51,7 @@ public class ACLOperationReference {
   public static final String CONFIG = "config";
   private String config;
 
-  public ACLOperationReference() { 
+  public ACLOperationReference() {
   }
 
   public ACLOperationReference operation(String operation) {
@@ -60,12 +60,13 @@ public class ACLOperationReference {
     return this;
   }
 
-   /**
+  /**
    * The name of the operation that is the same as the one stored in the operations list.
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the operation that is the same as the one stored in the operations list.")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,19 +81,19 @@ public class ACLOperationReference {
     this.operation = operation;
   }
 
-
   public ACLOperationReference comment(String comment) {
     
     this.comment = comment;
     return this;
   }
 
-   /**
+  /**
    * The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. 
    * @return comment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +108,20 @@ public class ACLOperationReference {
     this.comment = comment;
   }
 
-
   public ACLOperationReference entityUri(URI entityUri) {
     
     this.entityUri = entityUri;
     return this;
   }
 
-   /**
+  /**
    * The reference to the context entity of the operation is attached to. 
    * @return entityUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference to the context entity of the operation is attached to. ")
   @JsonProperty(ENTITY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,19 +136,19 @@ public class ACLOperationReference {
     this.entityUri = entityUri;
   }
 
-
   public ACLOperationReference config(String config) {
     
     this.config = config;
     return this;
   }
 
-   /**
+  /**
    * This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. 
    * @return config
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. ")
   @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +162,6 @@ public class ACLOperationReference {
   public void setConfig(String config) {
     this.config = config;
   }
-
 
   @Override
   public boolean equals(Object o) {

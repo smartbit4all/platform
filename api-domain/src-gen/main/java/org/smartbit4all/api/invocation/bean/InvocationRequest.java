@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. 
  */
+@Schema(description = "The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. ")
 @JsonPropertyOrder({
   InvocationRequest.INTERFACE_CLASS,
   InvocationRequest.NAME,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   InvocationRequest.PARAMETERS,
   InvocationRequest.SESSION_URI
 })
-@JsonTypeName("InvocationRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequest {
   public static final String INTERFACE_CLASS = "interfaceClass";
@@ -67,7 +67,7 @@ public class InvocationRequest {
   public static final String SESSION_URI = "sessionUri";
   private URI sessionUri;
 
-  public InvocationRequest() { 
+  public InvocationRequest() {
   }
 
   public InvocationRequest interfaceClass(String interfaceClass) {
@@ -76,13 +76,14 @@ public class InvocationRequest {
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the interface.
    * @return interfaceClass
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The fully qualified name of the interface.")
   @JsonProperty(INTERFACE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,19 +98,19 @@ public class InvocationRequest {
     this.interfaceClass = interfaceClass;
   }
 
-
   public InvocationRequest name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the interface.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the interface.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,20 +125,20 @@ public class InvocationRequest {
     this.name = name;
   }
 
-
   public InvocationRequest methodName(String methodName) {
     
     this.methodName = methodName;
     return this;
   }
 
-   /**
+  /**
    * The name of the method to call
    * @return methodName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the method to call")
   @JsonProperty(METHOD_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -152,19 +153,19 @@ public class InvocationRequest {
     this.methodName = methodName;
   }
 
-
   public InvocationRequest scriptKind(String scriptKind) {
     
     this.scriptKind = scriptKind;
     return this;
   }
 
-   /**
+  /**
    * The script language managed by the ScripEngine
    * @return scriptKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The script language managed by the ScripEngine")
   @JsonProperty(SCRIPT_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,19 +180,19 @@ public class InvocationRequest {
     this.scriptKind = scriptKind;
   }
 
-
   public InvocationRequest scriptBody(String scriptBody) {
     
     this.scriptBody = scriptBody;
     return this;
   }
 
-   /**
+  /**
    * The script language managed by the ScripEngine
    * @return scriptBody
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The script language managed by the ScripEngine")
   @JsonProperty(SCRIPT_BODY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +207,6 @@ public class InvocationRequest {
     this.scriptBody = scriptBody;
   }
 
-
   public InvocationRequest parameters(List<@Valid InvocationParameter> parameters) {
     
     this.parameters = parameters;
@@ -214,18 +214,22 @@ public class InvocationRequest {
   }
 
   public InvocationRequest addParametersItem(InvocationParameter parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new ArrayList<>();
+    }
     this.parameters.add(parametersItem);
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -240,20 +244,20 @@ public class InvocationRequest {
     this.parameters = parameters;
   }
 
-
   public InvocationRequest sessionUri(URI sessionUri) {
     
     this.sessionUri = sessionUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the session that belongs to the request. Optional and can be used to inherit session for the asynchronous call. 
    * @return sessionUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the session that belongs to the request. Optional and can be used to inherit session for the asynchronous call. ")
   @JsonProperty(SESSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -267,7 +271,6 @@ public class InvocationRequest {
   public void setSessionUri(URI sessionUri) {
     this.sessionUri = sessionUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

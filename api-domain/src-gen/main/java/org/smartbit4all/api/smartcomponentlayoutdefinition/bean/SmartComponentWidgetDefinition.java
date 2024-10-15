@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   SmartComponentWidgetDefinition.FILTER_EXPRESSION_FIELD_LIST,
   SmartComponentWidgetDefinition.FILTER_TYPE
 })
-@JsonTypeName("SmartComponentWidgetDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartComponentWidgetDefinition {
   public static final String TYPE = "type";
@@ -53,7 +52,7 @@ public class SmartComponentWidgetDefinition {
   public static final String FILTER_TYPE = "filterType";
   private SmartFilterType filterType = null;
 
-  public SmartComponentWidgetDefinition() { 
+  public SmartComponentWidgetDefinition() {
   }
 
   public SmartComponentWidgetDefinition type(ComponentWidgetType type) {
@@ -62,14 +61,15 @@ public class SmartComponentWidgetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -84,19 +84,19 @@ public class SmartComponentWidgetDefinition {
     this.type = type;
   }
 
-
   public SmartComponentWidgetDefinition identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,20 +111,20 @@ public class SmartComponentWidgetDefinition {
     this.identifier = identifier;
   }
 
-
   public SmartComponentWidgetDefinition filterExpressionFieldList(FilterExpressionFieldList filterExpressionFieldList) {
     
     this.filterExpressionFieldList = filterExpressionFieldList;
     return this;
   }
 
-   /**
+  /**
    * Get filterExpressionFieldList
    * @return filterExpressionFieldList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_EXPRESSION_FIELD_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,20 +139,20 @@ public class SmartComponentWidgetDefinition {
     this.filterExpressionFieldList = filterExpressionFieldList;
   }
 
-
   public SmartComponentWidgetDefinition filterType(SmartFilterType filterType) {
     
     this.filterType = filterType;
     return this;
   }
 
-   /**
+  /**
    * Get filterType
    * @return filterType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,7 +166,6 @@ public class SmartComponentWidgetDefinition {
   public void setFilterType(SmartFilterType filterType) {
     this.filterType = filterType;
   }
-
 
   @Override
   public boolean equals(Object o) {

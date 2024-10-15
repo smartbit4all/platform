@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * If a runtime starts managing a given channel then this object hold all the invocation requests currently managed by the runtime. If the given runtime is stopped then the other runtimes will enqueue these lost invocation requests. 
  */
+@Schema(description = "If a runtime starts managing a given channel then this object hold all the invocation requests currently managed by the runtime. If the given runtime is stopped then the other runtimes will enqueue these lost invocation requests. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannel.URI,
   RuntimeAsyncChannel.RUNTIME_URI,
   RuntimeAsyncChannel.INVOCATION_REQUESTS
 })
-@JsonTypeName("RuntimeAsyncChannel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RuntimeAsyncChannel {
   public static final String URI = "uri";
@@ -50,7 +50,7 @@ public class RuntimeAsyncChannel {
   public static final String INVOCATION_REQUESTS = "invocationRequests";
   private List<URI> invocationRequests = new ArrayList<>();
 
-  public RuntimeAsyncChannel() { 
+  public RuntimeAsyncChannel() {
   }
 
   public RuntimeAsyncChannel uri(URI uri) {
@@ -59,13 +59,14 @@ public class RuntimeAsyncChannel {
     return this;
   }
 
-   /**
+  /**
    * The URI of the channel.
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the channel.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,20 +81,20 @@ public class RuntimeAsyncChannel {
     this.uri = uri;
   }
 
-
   public RuntimeAsyncChannel runtimeUri(URI runtimeUri) {
     
     this.runtimeUri = runtimeUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the appliocation runtime that is currently responsible for the givan invocation.
    * @return runtimeUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the appliocation runtime that is currently responsible for the givan invocation.")
   @JsonProperty(RUNTIME_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +109,6 @@ public class RuntimeAsyncChannel {
     this.runtimeUri = runtimeUri;
   }
 
-
   public RuntimeAsyncChannel invocationRequests(List<URI> invocationRequests) {
     
     this.invocationRequests = invocationRequests;
@@ -116,18 +116,22 @@ public class RuntimeAsyncChannel {
   }
 
   public RuntimeAsyncChannel addInvocationRequestsItem(URI invocationRequestsItem) {
+    if (this.invocationRequests == null) {
+      this.invocationRequests = new ArrayList<>();
+    }
     this.invocationRequests.add(invocationRequestsItem);
     return this;
   }
 
-   /**
+  /**
    * The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.
    * @return invocationRequests
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.")
   @JsonProperty(INVOCATION_REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,7 +145,6 @@ public class RuntimeAsyncChannel {
   public void setInvocationRequests(List<URI> invocationRequests) {
     this.invocationRequests = invocationRequests;
   }
-
 
   @Override
   public boolean equals(Object o) {

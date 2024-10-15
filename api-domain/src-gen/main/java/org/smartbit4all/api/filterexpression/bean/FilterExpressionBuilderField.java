@@ -33,13 +33,13 @@ import jakarta.validation.Valid;
 /**
  * The available filter fields contains the pre setup filter field as a template. It can be easily copied and added to the filter field list. 
  */
+@Schema(description = "The available filter fields contains the pre setup filter field as a template. It can be easily copied and added to the filter field list. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderField.LABEL,
   FilterExpressionBuilderField.FIELD_TEMPLATE,
   FilterExpressionBuilderField.LIMIT_OF_USAGE,
   FilterExpressionBuilderField.INSTANCE_IDS
 })
-@JsonTypeName("FilterExpressionBuilderField")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderField {
   public static final String LABEL = "label";
@@ -52,9 +52,9 @@ public class FilterExpressionBuilderField {
   private Integer limitOfUsage;
 
   public static final String INSTANCE_IDS = "instanceIds";
-  private List<String> instanceIds = null;
+  private List<String> instanceIds = new ArrayList<>();
 
-  public FilterExpressionBuilderField() { 
+  public FilterExpressionBuilderField() {
   }
 
   public FilterExpressionBuilderField label(String label) {
@@ -63,12 +63,13 @@ public class FilterExpressionBuilderField {
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,20 +84,20 @@ public class FilterExpressionBuilderField {
     this.label = label;
   }
 
-
   public FilterExpressionBuilderField fieldTemplate(FilterExpressionField fieldTemplate) {
     
     this.fieldTemplate = fieldTemplate;
     return this;
   }
 
-   /**
+  /**
    * Get fieldTemplate
    * @return fieldTemplate
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FIELD_TEMPLATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,19 +112,19 @@ public class FilterExpressionBuilderField {
     this.fieldTemplate = fieldTemplate;
   }
 
-
   public FilterExpressionBuilderField limitOfUsage(Integer limitOfUsage) {
     
     this.limitOfUsage = limitOfUsage;
     return this;
   }
 
-   /**
+  /**
    * If less or equal zero then there is no limit how many time we can use the given filter. Else it is the limit where the typical value is 1 becase we can use the given filter field only once. 
    * @return limitOfUsage
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If less or equal zero then there is no limit how many time we can use the given filter. Else it is the limit where the typical value is 1 becase we can use the given filter field only once. ")
   @JsonProperty(LIMIT_OF_USAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +138,6 @@ public class FilterExpressionBuilderField {
   public void setLimitOfUsage(Integer limitOfUsage) {
     this.limitOfUsage = limitOfUsage;
   }
-
 
   public FilterExpressionBuilderField instanceIds(List<String> instanceIds) {
     
@@ -153,12 +153,13 @@ public class FilterExpressionBuilderField {
     return this;
   }
 
-   /**
+  /**
    * The unique identifiers of fields initiated from this builder field in the workplace.
    * @return instanceIds
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifiers of fields initiated from this builder field in the workplace.")
   @JsonProperty(INSTANCE_IDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -172,7 +173,6 @@ public class FilterExpressionBuilderField {
   public void setInstanceIds(List<String> instanceIds) {
     this.instanceIds = instanceIds;
   }
-
 
   @Override
   public boolean equals(Object o) {

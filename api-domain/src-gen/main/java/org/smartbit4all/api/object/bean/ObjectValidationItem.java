@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * One item in the validation result. 
  */
+@Schema(description = "One item in the validation result. ")
 @JsonPropertyOrder({
   ObjectValidationItem.SEVERITY,
   ObjectValidationItem.MESSAGE,
   ObjectValidationItem.PROPERTY_PATH
 })
-@JsonTypeName("ObjectValidationItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationItem {
   public static final String SEVERITY = "severity";
@@ -51,7 +51,7 @@ public class ObjectValidationItem {
   public static final String PROPERTY_PATH = "propertyPath";
   private List<String> propertyPath = new ArrayList<>();
 
-  public ObjectValidationItem() { 
+  public ObjectValidationItem() {
   }
 
   public ObjectValidationItem severity(ObjectValidationSeverity severity) {
@@ -60,13 +60,14 @@ public class ObjectValidationItem {
     return this;
   }
 
-   /**
+  /**
    * Get severity
    * @return severity
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,20 +82,20 @@ public class ObjectValidationItem {
     this.severity = severity;
   }
 
-
   public ObjectValidationItem message(LangString message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * Get message
    * @return message
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,7 +110,6 @@ public class ObjectValidationItem {
     this.message = message;
   }
 
-
   public ObjectValidationItem propertyPath(List<String> propertyPath) {
     
     this.propertyPath = propertyPath;
@@ -117,17 +117,21 @@ public class ObjectValidationItem {
   }
 
   public ObjectValidationItem addPropertyPathItem(String propertyPathItem) {
+    if (this.propertyPath == null) {
+      this.propertyPath = new ArrayList<>();
+    }
     this.propertyPath.add(propertyPathItem);
     return this;
   }
 
-   /**
+  /**
    * Get propertyPath
    * @return propertyPath
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,7 +145,6 @@ public class ObjectValidationItem {
   public void setPropertyPath(List<String> propertyPath) {
     this.propertyPath = propertyPath;
   }
-
 
   @Override
   public boolean equals(Object o) {

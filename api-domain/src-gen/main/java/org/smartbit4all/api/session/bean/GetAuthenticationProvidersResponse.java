@@ -36,13 +36,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   GetAuthenticationProvidersResponse.AUTHENTICATION_PROVIDERS
 })
-@JsonTypeName("GetAuthenticationProvidersResponse")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GetAuthenticationProvidersResponse {
   public static final String AUTHENTICATION_PROVIDERS = "authenticationProviders";
   private List<@Valid AuthenticationProviderData> authenticationProviders = new ArrayList<>();
 
-  public GetAuthenticationProvidersResponse() { 
+  public GetAuthenticationProvidersResponse() {
   }
 
   public GetAuthenticationProvidersResponse authenticationProviders(List<@Valid AuthenticationProviderData> authenticationProviders) {
@@ -52,18 +51,22 @@ public class GetAuthenticationProvidersResponse {
   }
 
   public GetAuthenticationProvidersResponse addAuthenticationProvidersItem(AuthenticationProviderData authenticationProvidersItem) {
+    if (this.authenticationProviders == null) {
+      this.authenticationProviders = new ArrayList<>();
+    }
     this.authenticationProviders.add(authenticationProvidersItem);
     return this;
   }
 
-   /**
+  /**
    * Get authenticationProviders
    * @return authenticationProviders
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(AUTHENTICATION_PROVIDERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +80,6 @@ public class GetAuthenticationProvidersResponse {
   public void setAuthenticationProviders(List<@Valid AuthenticationProviderData> authenticationProviders) {
     this.authenticationProviders = authenticationProviders;
   }
-
 
   @Override
   public boolean equals(Object o) {

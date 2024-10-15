@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * The contained storage object for the StoredList that contains the data as an ordered sequence of URI. 
  */
+@Schema(description = "The contained storage object for the StoredList that contains the data as an ordered sequence of URI. ")
 @JsonPropertyOrder({
   StoredListData.URI,
   StoredListData.NAME,
   StoredListData.URIS
 })
-@JsonTypeName("StoredListData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredListData {
   public static final String URI = "uri";
@@ -50,7 +50,7 @@ public class StoredListData {
   public static final String URIS = "uris";
   private List<URI> uris = new ArrayList<>();
 
-  public StoredListData() { 
+  public StoredListData() {
   }
 
   public StoredListData uri(URI uri) {
@@ -59,14 +59,15 @@ public class StoredListData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -81,20 +82,20 @@ public class StoredListData {
     this.uri = uri;
   }
 
-
   public StoredListData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +110,6 @@ public class StoredListData {
     this.name = name;
   }
 
-
   public StoredListData uris(List<URI> uris) {
     
     this.uris = uris;
@@ -117,18 +117,22 @@ public class StoredListData {
   }
 
   public StoredListData addUrisItem(URI urisItem) {
+    if (this.uris == null) {
+      this.uris = new ArrayList<>();
+    }
     this.uris.add(urisItem);
     return this;
   }
 
-   /**
+  /**
    * Get uris
    * @return uris
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +146,6 @@ public class StoredListData {
   public void setUris(List<URI> uris) {
     this.uris = uris;
   }
-
 
   @Override
   public boolean equals(Object o) {

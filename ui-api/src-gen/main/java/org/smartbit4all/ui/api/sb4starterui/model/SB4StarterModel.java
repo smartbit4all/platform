@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
   SB4StarterModel.SB4_STARTER_URL,
   SB4StarterModel.EDIT_COMMAND_KIND
 })
-@JsonTypeName("SB4StarterModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4StarterModel {
   public static final String STATE = "state";
@@ -57,7 +56,7 @@ public class SB4StarterModel {
   public static final String EDIT_COMMAND_KIND = "editCommandKind";
   private CommandKind editCommandKind = null;
 
-  public SB4StarterModel() { 
+  public SB4StarterModel() {
   }
 
   public SB4StarterModel state(SB4StarterState state) {
@@ -66,13 +65,14 @@ public class SB4StarterModel {
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,20 +87,20 @@ public class SB4StarterModel {
     this.state = state;
   }
 
-
   public SB4StarterModel startContent(BinaryContent startContent) {
     
     this.startContent = startContent;
     return this;
   }
 
-   /**
+  /**
    * Get startContent
    * @return startContent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(START_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,20 +115,20 @@ public class SB4StarterModel {
     this.startContent = startContent;
   }
 
-
   public SB4StarterModel resultContent(BinaryContent resultContent) {
     
     this.resultContent = resultContent;
     return this;
   }
 
-   /**
+  /**
    * Get resultContent
    * @return resultContent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(RESULT_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,19 +143,19 @@ public class SB4StarterModel {
     this.resultContent = resultContent;
   }
 
-
   public SB4StarterModel sb4StarterUrl(String sb4StarterUrl) {
     
     this.sb4StarterUrl = sb4StarterUrl;
     return this;
   }
 
-   /**
+  /**
    * Get sb4StarterUrl
    * @return sb4StarterUrl
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SB4_STARTER_URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,20 +170,20 @@ public class SB4StarterModel {
     this.sb4StarterUrl = sb4StarterUrl;
   }
 
-
   public SB4StarterModel editCommandKind(CommandKind editCommandKind) {
     
     this.editCommandKind = editCommandKind;
     return this;
   }
 
-   /**
+  /**
    * Get editCommandKind
    * @return editCommandKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EDIT_COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,7 +197,6 @@ public class SB4StarterModel {
   public void setEditCommandKind(CommandKind editCommandKind) {
     this.editCommandKind = editCommandKind;
   }
-
 
   @Override
   public boolean equals(Object o) {

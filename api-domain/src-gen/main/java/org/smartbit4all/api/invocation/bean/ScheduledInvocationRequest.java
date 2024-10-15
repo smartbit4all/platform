@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * This placeholder object is scheduling an AyncInvocationRequest for a channel. The scheduling is not so precise it is just around the real execution time. It is used by the channel to identify the invocation to be executed in the  near future. These invocation are going to be activated and scheduled into the in memory executor. 
  */
+@Schema(description = "This placeholder object is scheduling an AyncInvocationRequest for a channel. The scheduling is not so precise it is just around the real execution time. It is used by the channel to identify the invocation to be executed in the  near future. These invocation are going to be activated and scheduled into the in memory executor. ")
 @JsonPropertyOrder({
   ScheduledInvocationRequest.REQUEST_URI,
   ScheduledInvocationRequest.SCHEDULED_AT
 })
-@JsonTypeName("ScheduledInvocationRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ScheduledInvocationRequest {
   public static final String REQUEST_URI = "requestUri";
@@ -44,7 +44,7 @@ public class ScheduledInvocationRequest {
   public static final String SCHEDULED_AT = "scheduledAt";
   private OffsetDateTime scheduledAt;
 
-  public ScheduledInvocationRequest() { 
+  public ScheduledInvocationRequest() {
   }
 
   public ScheduledInvocationRequest requestUri(URI requestUri) {
@@ -53,13 +53,14 @@ public class ScheduledInvocationRequest {
     return this;
   }
 
-   /**
+  /**
    * The uri of the AsynInvocationRequest.
    * @return requestUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the AsynInvocationRequest.")
   @JsonProperty(REQUEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,20 +75,20 @@ public class ScheduledInvocationRequest {
     this.requestUri = requestUri;
   }
 
-
   public ScheduledInvocationRequest scheduledAt(OffsetDateTime scheduledAt) {
     
     this.scheduledAt = scheduledAt;
     return this;
   }
 
-   /**
+  /**
    * Get scheduledAt
    * @return scheduledAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEDULED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -101,7 +102,6 @@ public class ScheduledInvocationRequest {
   public void setScheduledAt(OffsetDateTime scheduledAt) {
     this.scheduledAt = scheduledAt;
   }
-
 
   @Override
   public boolean equals(Object o) {

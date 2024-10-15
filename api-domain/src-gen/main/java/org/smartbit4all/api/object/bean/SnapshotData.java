@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. 
  */
+@Schema(description = "The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. ")
 @JsonPropertyOrder({
   SnapshotData.OBJECT_URI,
   SnapshotData.QUALIFIED_NAME,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   SnapshotData.REFERENCE_MAPS,
   SnapshotData.RESULT_URI
 })
-@JsonTypeName("SnapshotData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SnapshotData {
   public static final String OBJECT_URI = "objectUri";
@@ -69,7 +69,7 @@ public class SnapshotData {
   private Boolean latestUri = false;
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
-  private Map<String, Object> objectAsMap = null;
+  private Map<String, Object> objectAsMap = new HashMap<>();
 
   public static final String REFERENCES = "references";
   private Map<String, SnapshotDataRef> references = new HashMap<>();
@@ -83,7 +83,7 @@ public class SnapshotData {
   public static final String RESULT_URI = "resultUri";
   private URI resultUri;
 
-  public SnapshotData() { 
+  public SnapshotData() {
   }
 
   public SnapshotData objectUri(URI objectUri) {
@@ -92,13 +92,14 @@ public class SnapshotData {
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,19 +114,19 @@ public class SnapshotData {
     this.objectUri = objectUri;
   }
 
-
   public SnapshotData qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * Get qualifiedName
    * @return qualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +141,19 @@ public class SnapshotData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public SnapshotData storageSchema(String storageSchema) {
     
     this.storageSchema = storageSchema;
     return this;
   }
 
-   /**
+  /**
    * Get storageSchema
    * @return storageSchema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,19 +168,19 @@ public class SnapshotData {
     this.storageSchema = storageSchema;
   }
 
-
   public SnapshotData versionNr(Long versionNr) {
     
     this.versionNr = versionNr;
     return this;
   }
 
-   /**
+  /**
    * Get versionNr
    * @return versionNr
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,19 +195,19 @@ public class SnapshotData {
     this.versionNr = versionNr;
   }
 
-
   public SnapshotData includeData(Boolean includeData) {
     
     this.includeData = includeData;
     return this;
   }
 
-   /**
+  /**
    * Indicates whether the data of the node is included in the snapshot.
    * @return includeData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Indicates whether the data of the node is included in the snapshot.")
   @JsonProperty(INCLUDE_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,19 +222,19 @@ public class SnapshotData {
     this.includeData = includeData;
   }
 
-
   public SnapshotData latestUri(Boolean latestUri) {
     
     this.latestUri = latestUri;
     return this;
   }
 
-   /**
+  /**
    * Indicates whether the data of the node contains latest uri in the snapshot. It counts only if it doesn&#39;t contain the data. 
    * @return latestUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Indicates whether the data of the node contains latest uri in the snapshot. It counts only if it doesn't contain the data. ")
   @JsonProperty(LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,7 +248,6 @@ public class SnapshotData {
   public void setLatestUri(Boolean latestUri) {
     this.latestUri = latestUri;
   }
-
 
   public SnapshotData objectAsMap(Map<String, Object> objectAsMap) {
     
@@ -263,12 +263,13 @@ public class SnapshotData {
     return this;
   }
 
-   /**
+  /**
    * Get objectAsMap
    * @return objectAsMap
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -283,7 +284,6 @@ public class SnapshotData {
     this.objectAsMap = objectAsMap;
   }
 
-
   public SnapshotData references(Map<String, SnapshotDataRef> references) {
     
     this.references = references;
@@ -295,14 +295,15 @@ public class SnapshotData {
     return this;
   }
 
-   /**
+  /**
    * Get references
    * @return references
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -317,7 +318,6 @@ public class SnapshotData {
     this.references = references;
   }
 
-
   public SnapshotData referenceLists(Map<String, List<@Valid SnapshotDataRef>> referenceLists) {
     
     this.referenceLists = referenceLists;
@@ -329,14 +329,15 @@ public class SnapshotData {
     return this;
   }
 
-   /**
+  /**
    * Get referenceLists
    * @return referenceLists
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -351,7 +352,6 @@ public class SnapshotData {
     this.referenceLists = referenceLists;
   }
 
-
   public SnapshotData referenceMaps(Map<String, Map<String, SnapshotDataRef>> referenceMaps) {
     
     this.referenceMaps = referenceMaps;
@@ -363,14 +363,15 @@ public class SnapshotData {
     return this;
   }
 
-   /**
+  /**
    * Get referenceMaps
    * @return referenceMaps
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -385,20 +386,20 @@ public class SnapshotData {
     this.referenceMaps = referenceMaps;
   }
 
-
   public SnapshotData resultUri(URI resultUri) {
     
     this.resultUri = resultUri;
     return this;
   }
 
-   /**
+  /**
    * The object URI after an ObjectApi.save. It can be used to read the result Uri after save. 
    * @return resultUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object URI after an ObjectApi.save. It can be used to read the result Uri after save. ")
   @JsonProperty(RESULT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -412,7 +413,6 @@ public class SnapshotData {
   public void setResultUri(URI resultUri) {
     this.resultUri = resultUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * This is the backend object to setup the grid access api. The parameterization contain all the possible parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the parameters of the View parameters as grid.identifier.config 
  */
+@Schema(description = "This is the backend object to setup the grid access api. The parameterization contain all the possible parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the parameters of the View parameters as grid.identifier.config ")
 @JsonPropertyOrder({
   GridDataAccessConfig.DATA_URI,
   GridDataAccessConfig.IDENTIFIER_PATH,
@@ -41,14 +42,13 @@ import jakarta.validation.Valid;
   GridDataAccessConfig.API_CLASS,
   GridDataAccessConfig.KIND
 })
-@JsonTypeName("GridDataAccessConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridDataAccessConfig {
   public static final String DATA_URI = "dataUri";
   private URI dataUri;
 
   public static final String IDENTIFIER_PATH = "identifierPath";
-  private List<String> identifierPath = null;
+  private List<String> identifierPath = new ArrayList<>();
 
   public static final String ID_PROPERTY = "idProperty";
   private String idProperty;
@@ -101,7 +101,7 @@ public class GridDataAccessConfig {
   public static final String KIND = "kind";
   private KindEnum kind;
 
-  public GridDataAccessConfig() { 
+  public GridDataAccessConfig() {
   }
 
   public GridDataAccessConfig dataUri(URI dataUri) {
@@ -110,13 +110,14 @@ public class GridDataAccessConfig {
     return this;
   }
 
-   /**
+  /**
    * The uri of the table data that contains the data of the list.
    * @return dataUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the table data that contains the data of the list.")
   @JsonProperty(DATA_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class GridDataAccessConfig {
   public void setDataUri(URI dataUri) {
     this.dataUri = dataUri;
   }
-
 
   public GridDataAccessConfig identifierPath(List<String> identifierPath) {
     
@@ -146,12 +146,13 @@ public class GridDataAccessConfig {
     return this;
   }
 
-   /**
+  /**
    * The path to access the identifier GridRow.data
    * @return identifierPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The path to access the identifier GridRow.data")
   @JsonProperty(IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,19 +167,19 @@ public class GridDataAccessConfig {
     this.identifierPath = identifierPath;
   }
 
-
   public GridDataAccessConfig idProperty(String idProperty) {
     
     this.idProperty = idProperty;
     return this;
   }
 
-   /**
+  /**
    * If presented as TREE, this property will be used as id property.
    * @return idProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If presented as TREE, this property will be used as id property.")
   @JsonProperty(ID_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -193,19 +194,19 @@ public class GridDataAccessConfig {
     this.idProperty = idProperty;
   }
 
-
   public GridDataAccessConfig parentIdProperty(String parentIdProperty) {
     
     this.parentIdProperty = parentIdProperty;
     return this;
   }
 
-   /**
+  /**
    * If presented as TREE, this property will be used as parentId property.
    * @return parentIdProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If presented as TREE, this property will be used as parentId property.")
   @JsonProperty(PARENT_ID_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -220,19 +221,19 @@ public class GridDataAccessConfig {
     this.parentIdProperty = parentIdProperty;
   }
 
-
   public GridDataAccessConfig apiClass(String apiClass) {
     
     this.apiClass = apiClass;
     return this;
   }
 
-   /**
+  /**
    * Get apiClass
    * @return apiClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(API_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,19 +248,19 @@ public class GridDataAccessConfig {
     this.apiClass = apiClass;
   }
 
-
   public GridDataAccessConfig kind(KindEnum kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -273,7 +274,6 @@ public class GridDataAccessConfig {
   public void setKind(KindEnum kind) {
     this.kind = kind;
   }
-
 
   @Override
   public boolean equals(Object o) {

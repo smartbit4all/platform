@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * The ordered list of InvocationResult that are the result of the InvocationRequests from an InvocationBatchRequest. 
  */
+@Schema(description = "The ordered list of InvocationResult that are the result of the InvocationRequests from an InvocationBatchRequest. ")
 @JsonPropertyOrder({
   InvocationBatchResult.RESULTS
 })
-@JsonTypeName("InvocationBatchResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationBatchResult {
   public static final String RESULTS = "results";
   private List<@Valid InvocationResult> results = new ArrayList<>();
 
-  public InvocationBatchResult() { 
+  public InvocationBatchResult() {
   }
 
   public InvocationBatchResult results(List<@Valid InvocationResult> results) {
@@ -52,18 +52,22 @@ public class InvocationBatchResult {
   }
 
   public InvocationBatchResult addResultsItem(InvocationResult resultsItem) {
+    if (this.results == null) {
+      this.results = new ArrayList<>();
+    }
     this.results.add(resultsItem);
     return this;
   }
 
-   /**
+  /**
    * The invocation results included in the batch.
    * @return results
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The invocation results included in the batch.")
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class InvocationBatchResult {
   public void setResults(List<@Valid InvocationResult> results) {
     this.results = results;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -33,13 +33,13 @@ import jakarta.validation.Valid;
 /**
  * Represent a viewmodel&#39;s data.
  */
+@Schema(description = "Represent a viewmodel's data.")
 @JsonPropertyOrder({
   ViewModelDataSimple.UUID,
   ViewModelDataSimple.PATH,
   ViewModelDataSimple.NAVIGATION_TARGET,
   ViewModelDataSimple.CHILDREN
 })
-@JsonTypeName("ViewModelDataSimple")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewModelDataSimple {
   public static final String UUID = "uuid";
@@ -54,7 +54,7 @@ public class ViewModelDataSimple {
   public static final String CHILDREN = "children";
   private Map<String, ViewModelDataSimple> children = new HashMap<>();
 
-  public ViewModelDataSimple() { 
+  public ViewModelDataSimple() {
   }
 
   public ViewModelDataSimple uuid(UUID uuid) {
@@ -63,14 +63,15 @@ public class ViewModelDataSimple {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -85,19 +86,19 @@ public class ViewModelDataSimple {
     this.uuid = uuid;
   }
 
-
   public ViewModelDataSimple path(String path) {
     
     this.path = path;
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,20 +113,20 @@ public class ViewModelDataSimple {
     this.path = path;
   }
 
-
   public ViewModelDataSimple navigationTarget(NavigationTarget navigationTarget) {
     
     this.navigationTarget = navigationTarget;
     return this;
   }
 
-   /**
+  /**
    * Get navigationTarget
    * @return navigationTarget
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,7 +141,6 @@ public class ViewModelDataSimple {
     this.navigationTarget = navigationTarget;
   }
 
-
   public ViewModelDataSimple children(Map<String, ViewModelDataSimple> children) {
     
     this.children = children;
@@ -152,14 +152,15 @@ public class ViewModelDataSimple {
     return this;
   }
 
-   /**
+  /**
    * Get children
    * @return children
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -173,7 +174,6 @@ public class ViewModelDataSimple {
   public void setChildren(Map<String, ViewModelDataSimple> children) {
     this.children = children;
   }
-
 
   @Override
   public boolean equals(Object o) {

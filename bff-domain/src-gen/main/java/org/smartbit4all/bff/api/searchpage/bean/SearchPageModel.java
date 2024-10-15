@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   SearchPageModel.HISTORY_PAGE_SIZE,
   SearchPageModel.NO_RESULT_TEXT
 })
-@JsonTypeName("SearchPageModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchPageModel {
   public static final String PAGE_TITLE = "pageTitle";
@@ -56,7 +55,7 @@ public class SearchPageModel {
   public static final String NO_RESULT_TEXT = "noResultText";
   private String noResultText;
 
-  public SearchPageModel() { 
+  public SearchPageModel() {
   }
 
   public SearchPageModel pageTitle(String pageTitle) {
@@ -65,12 +64,13 @@ public class SearchPageModel {
     return this;
   }
 
-   /**
+  /**
    * Title of this page.
    * @return pageTitle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Title of this page.")
   @JsonProperty(PAGE_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,20 +85,20 @@ public class SearchPageModel {
     this.pageTitle = pageTitle;
   }
 
-
   public SearchPageModel filters(FilterExpressionFieldList filters) {
     
     this.filters = filters;
     return this;
   }
 
-   /**
+  /**
    * Get filters
    * @return filters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,20 +113,20 @@ public class SearchPageModel {
     this.filters = filters;
   }
 
-
   public SearchPageModel historyRange(ObjectHistoryRangeData historyRange) {
     
     this.historyRange = historyRange;
     return this;
   }
 
-   /**
+  /**
    * Get historyRange
    * @return historyRange
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HISTORY_RANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,19 +141,19 @@ public class SearchPageModel {
     this.historyRange = historyRange;
   }
 
-
   public SearchPageModel historyPageSize(Integer historyPageSize) {
     
     this.historyPageSize = historyPageSize;
     return this;
   }
 
-   /**
+  /**
    * Get historyPageSize
    * @return historyPageSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HISTORY_PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,19 +168,19 @@ public class SearchPageModel {
     this.historyPageSize = historyPageSize;
   }
 
-
   public SearchPageModel noResultText(String noResultText) {
     
     this.noResultText = noResultText;
     return this;
   }
 
-   /**
+  /**
    * If there is no result for the search, then show this text instead of the empty table.
    * @return noResultText
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If there is no result for the search, then show this text instead of the empty table.")
   @JsonProperty(NO_RESULT_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,7 +194,6 @@ public class SearchPageModel {
   public void setNoResultText(String noResultText) {
     this.noResultText = noResultText;
   }
-
 
   @Override
   public boolean equals(Object o) {

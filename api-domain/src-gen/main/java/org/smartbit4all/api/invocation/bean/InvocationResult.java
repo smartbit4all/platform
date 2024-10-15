@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 /**
  * As a result of the invocation we get back this object that contains the result if the invocation was successful. This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The decision about the next step is also saved into this object. 
  */
+@Schema(description = "As a result of the invocation we get back this object that contains the result if the invocation was successful. This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The decision about the next step is also saved into this object. ")
 @JsonPropertyOrder({
   InvocationResult.RETURN_VALUE,
   InvocationResult.TYPE_CLASS,
@@ -41,7 +42,6 @@ import jakarta.validation.Valid;
   InvocationResult.DECISION,
   InvocationResult.ERROR
 })
-@JsonTypeName("InvocationResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationResult {
   public static final String RETURN_VALUE = "returnValue";
@@ -65,7 +65,7 @@ public class InvocationResult {
   public static final String ERROR = "error";
   private InvocationError error;
 
-  public InvocationResult() { 
+  public InvocationResult() {
   }
 
   public InvocationResult returnValue(Object returnValue) {
@@ -74,12 +74,13 @@ public class InvocationResult {
     return this;
   }
 
-   /**
+  /**
    * The return value of the call if it was successful. If the return value is void then this value is null.
    * @return returnValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The return value of the call if it was successful. If the return value is void then this value is null.")
   @JsonProperty(RETURN_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,19 +95,19 @@ public class InvocationResult {
     this.returnValue = returnValue;
   }
 
-
   public InvocationResult typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * The fully qualified type class name of the parameter.
    * @return typeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified type class name of the parameter.")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,19 +122,19 @@ public class InvocationResult {
     this.typeClass = typeClass;
   }
 
-
   public InvocationResult innerTypeClass(String innerTypeClass) {
     
     this.innerTypeClass = innerTypeClass;
     return this;
   }
 
-   /**
+  /**
    * If the type of the parameter is List or Map container then the inner type is saved into this property.
    * @return innerTypeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
   @JsonProperty(INNER_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -148,21 +149,21 @@ public class InvocationResult {
     this.innerTypeClass = innerTypeClass;
   }
 
-
   public InvocationResult startTime(OffsetDateTime startTime) {
     
     this.startTime = startTime;
     return this;
   }
 
-   /**
+  /**
    * Get startTime
    * @return startTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -177,21 +178,21 @@ public class InvocationResult {
     this.startTime = startTime;
   }
 
-
   public InvocationResult endTime(OffsetDateTime endTime) {
     
     this.endTime = endTime;
     return this;
   }
 
-   /**
+  /**
    * Get endTime
    * @return endTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(END_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -206,20 +207,20 @@ public class InvocationResult {
     this.endTime = endTime;
   }
 
-
   public InvocationResult decision(InvocationResultDecision decision) {
     
     this.decision = decision;
     return this;
   }
 
-   /**
+  /**
    * Get decision
    * @return decision
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DECISION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,20 +235,20 @@ public class InvocationResult {
     this.decision = decision;
   }
 
-
   public InvocationResult error(InvocationError error) {
     
     this.error = error;
     return this;
   }
 
-   /**
+  /**
    * Get error
    * @return error
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -261,7 +262,6 @@ public class InvocationResult {
   public void setError(InvocationError error) {
     this.error = error;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * State update of a view.
  */
+@Schema(description = "State update of a view.")
 @JsonPropertyOrder({
   ViewStateUpdate.UUID,
   ViewStateUpdate.STATE
 })
-@JsonTypeName("ViewStateUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewStateUpdate {
   public static final String UUID = "uuid";
@@ -44,7 +44,7 @@ public class ViewStateUpdate {
   public static final String STATE = "state";
   private ViewState state = ViewState.TO_OPEN;
 
-  public ViewStateUpdate() { 
+  public ViewStateUpdate() {
   }
 
   public ViewStateUpdate uuid(UUID uuid) {
@@ -53,13 +53,14 @@ public class ViewStateUpdate {
     return this;
   }
 
-   /**
+  /**
    * ViewContext&#39;s unique identifier.
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "ViewContext's unique identifier.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,20 +75,20 @@ public class ViewStateUpdate {
     this.uuid = uuid;
   }
 
-
   public ViewStateUpdate state(ViewState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -101,7 +102,6 @@ public class ViewStateUpdate {
   public void setState(ViewState state) {
     this.state = state;
   }
-
 
   @Override
   public boolean equals(Object o) {

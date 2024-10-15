@@ -32,13 +32,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   RefreshSessionRequest.REFRESH_TOKEN
 })
-@JsonTypeName("RefreshSessionRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RefreshSessionRequest {
   public static final String REFRESH_TOKEN = "refreshToken";
   private String refreshToken;
 
-  public RefreshSessionRequest() { 
+  public RefreshSessionRequest() {
   }
 
   public RefreshSessionRequest refreshToken(String refreshToken) {
@@ -47,13 +46,14 @@ public class RefreshSessionRequest {
     return this;
   }
 
-   /**
+  /**
    * Get refreshToken
    * @return refreshToken
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFRESH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -67,7 +67,6 @@ public class RefreshSessionRequest {
   public void setRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
   }
-
 
   @Override
   public boolean equals(Object o) {

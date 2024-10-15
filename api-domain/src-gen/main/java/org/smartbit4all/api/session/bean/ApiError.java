@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   ApiError.CODE,
   ApiError.MESSAGE
 })
-@JsonTypeName("ApiError")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiError {
   public static final String CODE = "code";
@@ -42,7 +41,7 @@ public class ApiError {
   public static final String MESSAGE = "message";
   private String message;
 
-  public ApiError() { 
+  public ApiError() {
   }
 
   public ApiError code(String code) {
@@ -51,13 +50,14 @@ public class ApiError {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -72,20 +72,20 @@ public class ApiError {
     this.code = code;
   }
 
-
   public ApiError message(String message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * Get message
    * @return message
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -99,7 +99,6 @@ public class ApiError {
   public void setMessage(String message) {
     this.message = message;
   }
-
 
   @Override
   public boolean equals(Object o) {

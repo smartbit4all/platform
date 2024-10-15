@@ -30,13 +30,13 @@ import jakarta.validation.Valid;
 /**
  * This object can be used as parameter object to name a stored object managed by the CollectionApi. 
  */
+@Schema(description = "This object can be used as parameter object to name a stored object managed by the CollectionApi. ")
 @JsonPropertyOrder({
   StoredCollectionDescriptor.NAME,
   StoredCollectionDescriptor.SCHEMA,
   StoredCollectionDescriptor.SCOPE_URI,
   StoredCollectionDescriptor.COLLECTION_TYPE
 })
-@JsonTypeName("StoredCollectionDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredCollectionDescriptor {
   public static final String NAME = "name";
@@ -88,7 +88,7 @@ public class StoredCollectionDescriptor {
   public static final String COLLECTION_TYPE = "collectionType";
   private CollectionTypeEnum collectionType;
 
-  public StoredCollectionDescriptor() { 
+  public StoredCollectionDescriptor() {
   }
 
   public StoredCollectionDescriptor name(String name) {
@@ -97,13 +97,14 @@ public class StoredCollectionDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -118,19 +119,19 @@ public class StoredCollectionDescriptor {
     this.name = name;
   }
 
-
   public StoredCollectionDescriptor schema(String schema) {
     
     this.schema = schema;
     return this;
   }
 
-   /**
+  /**
    * Get schema
    * @return schema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,20 +146,20 @@ public class StoredCollectionDescriptor {
     this.schema = schema;
   }
 
-
   public StoredCollectionDescriptor scopeUri(URI scopeUri) {
     
     this.scopeUri = scopeUri;
     return this;
   }
 
-   /**
+  /**
    * Get scopeUri
    * @return scopeUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCOPE_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,19 +174,19 @@ public class StoredCollectionDescriptor {
     this.scopeUri = scopeUri;
   }
 
-
   public StoredCollectionDescriptor collectionType(CollectionTypeEnum collectionType) {
     
     this.collectionType = collectionType;
     return this;
   }
 
-   /**
+  /**
    * Get collectionType
    * @return collectionType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLLECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -199,7 +200,6 @@ public class StoredCollectionDescriptor {
   public void setCollectionType(CollectionTypeEnum collectionType) {
     this.collectionType = collectionType;
   }
-
 
   @Override
   public boolean equals(Object o) {

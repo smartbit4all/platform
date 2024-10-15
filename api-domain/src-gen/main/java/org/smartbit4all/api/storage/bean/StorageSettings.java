@@ -30,11 +30,11 @@ import jakarta.validation.Valid;
 /**
  * This is a privilegized object for saving the settings information about a Storage as a logical unit of the global storage. The named references and collections attached to this settings can be access by name. 
  */
+@Schema(description = "This is a privilegized object for saving the settings information about a Storage as a logical unit of the global storage. The named references and collections attached to this settings can be access by name. ")
 @JsonPropertyOrder({
   StorageSettings.URI,
   StorageSettings.SCHEME_NAME
 })
-@JsonTypeName("StorageSettings")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageSettings {
   public static final String URI = "uri";
@@ -43,7 +43,7 @@ public class StorageSettings {
   public static final String SCHEME_NAME = "schemeName";
   private String schemeName;
 
-  public StorageSettings() { 
+  public StorageSettings() {
   }
 
   public StorageSettings uri(URI uri) {
@@ -52,14 +52,15 @@ public class StorageSettings {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -74,19 +75,19 @@ public class StorageSettings {
     this.uri = uri;
   }
 
-
   public StorageSettings schemeName(String schemeName) {
     
     this.schemeName = schemeName;
     return this;
   }
 
-   /**
+  /**
    * Get schemeName
    * @return schemeName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEME_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +101,6 @@ public class StorageSettings {
   public void setSchemeName(String schemeName) {
     this.schemeName = schemeName;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -44,6 +44,7 @@ import jakarta.validation.Valid;
 /**
  * The layout definition of the SmartTextField widget.
  */
+@Schema(description = "The layout definition of the SmartTextField widget.")
 @JsonPropertyOrder({
   SmartWidgetDefinition.TYPE,
   SmartWidgetDefinition.INPUT_MODE,
@@ -79,7 +80,6 @@ import jakarta.validation.Valid;
   SmartWidgetDefinition.ERROR_ICON,
   SmartWidgetDefinition.ERROR_COLOR
 })
-@JsonTypeName("SmartWidgetDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartWidgetDefinition {
   public static final String TYPE = "type";
@@ -134,10 +134,10 @@ public class SmartWidgetDefinition {
   private Boolean isPassword = false;
 
   public static final String VALUES = "values";
-  private List<Value> values = null;
+  private List<Value> values = new ArrayList<>();
 
   public static final String CHILDREN_COMPONENTS = "childrenComponents";
-  private List<@Valid SmartWidgetDefinition> childrenComponents = null;
+  private List<@Valid SmartWidgetDefinition> childrenComponents = new ArrayList<>();
 
   public static final String SELECTION = "selection";
   private SelectionDefinition selection;
@@ -170,7 +170,7 @@ public class SmartWidgetDefinition {
   private String toolbarId;
 
   public static final String PROPERTIES = "properties";
-  private Map<String, Object> properties = null;
+  private Map<String, Object> properties = new HashMap<>();
 
   public static final String ERROR_MESSAGE = "errorMessage";
   private String errorMessage;
@@ -181,7 +181,7 @@ public class SmartWidgetDefinition {
   public static final String ERROR_COLOR = "errorColor";
   private String errorColor;
 
-  public SmartWidgetDefinition() { 
+  public SmartWidgetDefinition() {
   }
 
   public SmartWidgetDefinition type(SmartFormWidgetType type) {
@@ -190,14 +190,15 @@ public class SmartWidgetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -212,20 +213,20 @@ public class SmartWidgetDefinition {
     this.type = type;
   }
 
-
   public SmartWidgetDefinition inputMode(SmartFormInputMode inputMode) {
     
     this.inputMode = inputMode;
     return this;
   }
 
-   /**
+  /**
    * Get inputMode
    * @return inputMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INPUT_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -240,20 +241,20 @@ public class SmartWidgetDefinition {
     this.inputMode = inputMode;
   }
 
-
   public SmartWidgetDefinition key(String key) {
     
     this.key = key;
     return this;
   }
 
-   /**
+  /**
    * The path of the desired parameter in the object.
    * @return key
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The path of the desired parameter in the object.")
   @JsonProperty(KEY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -268,20 +269,20 @@ public class SmartWidgetDefinition {
     this.key = key;
   }
 
-
   public SmartWidgetDefinition label(String label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * The label of the text field
    * @return label
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The label of the text field")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -296,19 +297,19 @@ public class SmartWidgetDefinition {
     this.label = label;
   }
 
-
   public SmartWidgetDefinition placeholder(String placeholder) {
     
     this.placeholder = placeholder;
     return this;
   }
 
-   /**
+  /**
    * The placeholder of the text field
    * @return placeholder
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The placeholder of the text field")
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -323,19 +324,19 @@ public class SmartWidgetDefinition {
     this.placeholder = placeholder;
   }
 
-
   public SmartWidgetDefinition prefix(String prefix) {
     
     this.prefix = prefix;
     return this;
   }
 
-   /**
+  /**
    * Text that appears as a prefix
    * @return prefix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Text that appears as a prefix")
   @JsonProperty(PREFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -350,19 +351,19 @@ public class SmartWidgetDefinition {
     this.prefix = prefix;
   }
 
-
   public SmartWidgetDefinition suffix(String suffix) {
     
     this.suffix = suffix;
     return this;
   }
 
-   /**
+  /**
    * Text that appears as a suffix
    * @return suffix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Text that appears as a suffix")
   @JsonProperty(SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -377,19 +378,19 @@ public class SmartWidgetDefinition {
     this.suffix = suffix;
   }
 
-
   public SmartWidgetDefinition mask(String mask) {
     
     this.mask = mask;
     return this;
   }
 
-   /**
+  /**
    * A descriptor that masks the input
    * @return mask
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A descriptor that masks the input")
   @JsonProperty(MASK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -404,19 +405,19 @@ public class SmartWidgetDefinition {
     this.mask = mask;
   }
 
-
   public SmartWidgetDefinition icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * An icon which appears as a suffix
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "An icon which appears as a suffix")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -431,19 +432,19 @@ public class SmartWidgetDefinition {
     this.icon = icon;
   }
 
-
   public SmartWidgetDefinition iconColor(String iconColor) {
     
     this.iconColor = iconColor;
     return this;
   }
 
-   /**
+  /**
    * Material theme class of the icon
    * @return iconColor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Material theme class of the icon")
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -458,20 +459,20 @@ public class SmartWidgetDefinition {
     this.iconColor = iconColor;
   }
 
-
   public SmartWidgetDefinition iconPosition(IconPosition iconPosition) {
     
     this.iconPosition = iconPosition;
     return this;
   }
 
-   /**
+  /**
    * Position of the icon (pre/post)
    * @return iconPosition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Position of the icon (pre/post)")
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -486,19 +487,19 @@ public class SmartWidgetDefinition {
     this.iconPosition = iconPosition;
   }
 
-
   public SmartWidgetDefinition showLabel(Boolean showLabel) {
     
     this.showLabel = showLabel;
     return this;
   }
 
-   /**
+  /**
    * Defines if the label appears above the widget or not
    * @return showLabel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines if the label appears above the widget or not")
   @JsonProperty(SHOW_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -513,19 +514,19 @@ public class SmartWidgetDefinition {
     this.showLabel = showLabel;
   }
 
-
   public SmartWidgetDefinition cssClass(String cssClass) {
     
     this.cssClass = cssClass;
     return this;
   }
 
-   /**
+  /**
    * Optional css class of the widget
    * @return cssClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional css class of the widget")
   @JsonProperty(CSS_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -540,19 +541,19 @@ public class SmartWidgetDefinition {
     this.cssClass = cssClass;
   }
 
-
   public SmartWidgetDefinition cssLabelClass(String cssLabelClass) {
     
     this.cssLabelClass = cssLabelClass;
     return this;
   }
 
-   /**
+  /**
    * Optional css class of the label of the widget
    * @return cssLabelClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional css class of the label of the widget")
   @JsonProperty(CSS_LABEL_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -567,20 +568,20 @@ public class SmartWidgetDefinition {
     this.cssLabelClass = cssLabelClass;
   }
 
-
   public SmartWidgetDefinition style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -595,20 +596,20 @@ public class SmartWidgetDefinition {
     this.style = style;
   }
 
-
   public SmartWidgetDefinition labelStyle(Style labelStyle) {
     
     this.labelStyle = labelStyle;
     return this;
   }
 
-   /**
+  /**
    * Get labelStyle
    * @return labelStyle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -623,19 +624,19 @@ public class SmartWidgetDefinition {
     this.labelStyle = labelStyle;
   }
 
-
   public SmartWidgetDefinition isPassword(Boolean isPassword) {
     
     this.isPassword = isPassword;
     return this;
   }
 
-   /**
+  /**
    * Defines if the widget is a password input
    * @return isPassword
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines if the widget is a password input")
   @JsonProperty(IS_PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -649,7 +650,6 @@ public class SmartWidgetDefinition {
   public void setIsPassword(Boolean isPassword) {
     this.isPassword = isPassword;
   }
-
 
   public SmartWidgetDefinition values(List<Value> values) {
     
@@ -665,13 +665,14 @@ public class SmartWidgetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get values
    * @return values
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -685,7 +686,6 @@ public class SmartWidgetDefinition {
   public void setValues(List<Value> values) {
     this.values = values;
   }
-
 
   public SmartWidgetDefinition childrenComponents(List<@Valid SmartWidgetDefinition> childrenComponents) {
     
@@ -701,13 +701,14 @@ public class SmartWidgetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get childrenComponents
    * @return childrenComponents
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CHILDREN_COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -722,20 +723,20 @@ public class SmartWidgetDefinition {
     this.childrenComponents = childrenComponents;
   }
 
-
   public SmartWidgetDefinition selection(SelectionDefinition selection) {
     
     this.selection = selection;
     return this;
   }
 
-   /**
+  /**
    * Get selection
    * @return selection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -750,20 +751,20 @@ public class SmartWidgetDefinition {
     this.selection = selection;
   }
 
-
   public SmartWidgetDefinition direction(SmartFormWidgetDirection direction) {
     
     this.direction = direction;
     return this;
   }
 
-   /**
+  /**
    * Get direction
    * @return direction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -778,20 +779,20 @@ public class SmartWidgetDefinition {
     this.direction = direction;
   }
 
-
   public SmartWidgetDefinition matrix(SmartMatrixModel matrix) {
     
     this.matrix = matrix;
     return this;
   }
 
-   /**
+  /**
    * Get matrix
    * @return matrix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MATRIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -806,20 +807,20 @@ public class SmartWidgetDefinition {
     this.matrix = matrix;
   }
 
-
   public SmartWidgetDefinition hint(SmartWidgetHint hint) {
     
     this.hint = hint;
     return this;
   }
 
-   /**
+  /**
    * Get hint
    * @return hint
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -834,19 +835,19 @@ public class SmartWidgetDefinition {
     this.hint = hint;
   }
 
-
   public SmartWidgetDefinition widgetDescription(String widgetDescription) {
     
     this.widgetDescription = widgetDescription;
     return this;
   }
 
-   /**
+  /**
    * Get widgetDescription
    * @return widgetDescription
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WIDGET_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -861,19 +862,19 @@ public class SmartWidgetDefinition {
     this.widgetDescription = widgetDescription;
   }
 
-
   public SmartWidgetDefinition maxLength(Long maxLength) {
     
     this.maxLength = maxLength;
     return this;
   }
 
-   /**
+  /**
    * Get maxLength
    * @return maxLength
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MAX_LENGTH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -888,20 +889,20 @@ public class SmartWidgetDefinition {
     this.maxLength = maxLength;
   }
 
-
   public SmartWidgetDefinition valueChangeMode(ValueChangeMode valueChangeMode) {
     
     this.valueChangeMode = valueChangeMode;
     return this;
   }
 
-   /**
+  /**
    * Get valueChangeMode
    * @return valueChangeMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_CHANGE_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -916,19 +917,19 @@ public class SmartWidgetDefinition {
     this.valueChangeMode = valueChangeMode;
   }
 
-
   public SmartWidgetDefinition showCharacterLimitSuffix(Boolean showCharacterLimitSuffix) {
     
     this.showCharacterLimitSuffix = showCharacterLimitSuffix;
     return this;
   }
 
-   /**
+  /**
    * Get showCharacterLimitSuffix
    * @return showCharacterLimitSuffix
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHOW_CHARACTER_LIMIT_SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -943,19 +944,19 @@ public class SmartWidgetDefinition {
     this.showCharacterLimitSuffix = showCharacterLimitSuffix;
   }
 
-
   public SmartWidgetDefinition filterErrorMessage(String filterErrorMessage) {
     
     this.filterErrorMessage = filterErrorMessage;
     return this;
   }
 
-   /**
+  /**
    * The default error message to show if the widget features an autocompletion filter operation, which returns no elements. 
    * @return filterErrorMessage
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The default error message to show if the widget features an autocompletion filter operation, which returns no elements. ")
   @JsonProperty(FILTER_ERROR_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -970,19 +971,19 @@ public class SmartWidgetDefinition {
     this.filterErrorMessage = filterErrorMessage;
   }
 
-
   public SmartWidgetDefinition toolbarId(String toolbarId) {
     
     this.toolbarId = toolbarId;
     return this;
   }
 
-   /**
+  /**
    * Identifier of the toolbar associated with this widget. 
    * @return toolbarId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of the toolbar associated with this widget. ")
   @JsonProperty(TOOLBAR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -996,7 +997,6 @@ public class SmartWidgetDefinition {
   public void setToolbarId(String toolbarId) {
     this.toolbarId = toolbarId;
   }
-
 
   public SmartWidgetDefinition properties(Map<String, Object> properties) {
     
@@ -1012,12 +1012,13 @@ public class SmartWidgetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Additional properties the client may use to customise the appearance or behaviour of the widget. 
    * @return properties
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Additional properties the client may use to customise the appearance or behaviour of the widget. ")
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1032,19 +1033,19 @@ public class SmartWidgetDefinition {
     this.properties = properties;
   }
 
-
   public SmartWidgetDefinition errorMessage(String errorMessage) {
     
     this.errorMessage = errorMessage;
     return this;
   }
 
-   /**
+  /**
    * The error message to show for the widget. 
    * @return errorMessage
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error message to show for the widget. ")
   @JsonProperty(ERROR_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1059,19 +1060,19 @@ public class SmartWidgetDefinition {
     this.errorMessage = errorMessage;
   }
 
-
   public SmartWidgetDefinition errorIcon(String errorIcon) {
     
     this.errorIcon = errorIcon;
     return this;
   }
 
-   /**
+  /**
    * The error message to show for the widget. 
    * @return errorIcon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error message to show for the widget. ")
   @JsonProperty(ERROR_ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1086,19 +1087,19 @@ public class SmartWidgetDefinition {
     this.errorIcon = errorIcon;
   }
 
-
   public SmartWidgetDefinition errorColor(String errorColor) {
     
     this.errorColor = errorColor;
     return this;
   }
 
-   /**
+  /**
    * The error message to show for the widget. 
    * @return errorColor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error message to show for the widget. ")
   @JsonProperty(ERROR_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1112,7 +1113,6 @@ public class SmartWidgetDefinition {
   public void setErrorColor(String errorColor) {
     this.errorColor = errorColor;
   }
-
 
   @Override
   public boolean equals(Object o) {

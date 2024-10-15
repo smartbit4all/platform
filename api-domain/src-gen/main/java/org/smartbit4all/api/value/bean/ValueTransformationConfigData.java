@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. If manage it by MDM then we enapsulate this object into a ValueTransformationConfig. 
  */
+@Schema(description = "This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. If manage it by MDM then we enapsulate this object into a ValueTransformationConfig. ")
 @JsonPropertyOrder({
   ValueTransformationConfigData.NAME,
   ValueTransformationConfigData.KIND,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   ValueTransformationConfigData.MDM_PROPERTY_NAME,
   ValueTransformationConfigData.TRANSFORMATION
 })
-@JsonTypeName("ValueTransformationConfigData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationConfigData {
   public static final String NAME = "name";
@@ -68,7 +68,7 @@ public class ValueTransformationConfigData {
   public static final String TRANSFORMATION = "transformation";
   private InvocationRequest transformation = null;
 
-  public ValueTransformationConfigData() { 
+  public ValueTransformationConfigData() {
   }
 
   public ValueTransformationConfigData name(String name) {
@@ -77,13 +77,14 @@ public class ValueTransformationConfigData {
     return this;
   }
 
-   /**
+  /**
    * The unique name of the transformation configuration. It matters only if it is managed by MDM.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique name of the transformation configuration. It matters only if it is managed by MDM.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -98,20 +99,20 @@ public class ValueTransformationConfigData {
     this.name = name;
   }
 
-
   public ValueTransformationConfigData kind(ValueTransformationKind kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -126,7 +127,6 @@ public class ValueTransformationConfigData {
     this.kind = kind;
   }
 
-
   public ValueTransformationConfigData mappings(List<@Valid ValueTransformationMappingItem> mappings) {
     
     this.mappings = mappings;
@@ -134,18 +134,22 @@ public class ValueTransformationConfigData {
   }
 
   public ValueTransformationConfigData addMappingsItem(ValueTransformationMappingItem mappingsItem) {
+    if (this.mappings == null) {
+      this.mappings = new ArrayList<>();
+    }
     this.mappings.add(mappingsItem);
     return this;
   }
 
-   /**
+  /**
    * Get mappings
    * @return mappings
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -160,19 +164,19 @@ public class ValueTransformationConfigData {
     this.mappings = mappings;
   }
 
-
   public ValueTransformationConfigData mdmDefinition(String mdmDefinition) {
     
     this.mdmDefinition = mdmDefinition;
     return this;
   }
 
-   /**
+  /**
    * If the kind is a resolution by MDM entry then this is the name of MDM definition.
    * @return mdmDefinition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the kind is a resolution by MDM entry then this is the name of MDM definition.")
   @JsonProperty(MDM_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,19 +191,19 @@ public class ValueTransformationConfigData {
     this.mdmDefinition = mdmDefinition;
   }
 
-
   public ValueTransformationConfigData mdmEntry(String mdmEntry) {
     
     this.mdmEntry = mdmEntry;
     return this;
   }
 
-   /**
+  /**
    * If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.
    * @return mdmEntry
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.")
   @JsonProperty(MDM_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -214,19 +218,19 @@ public class ValueTransformationConfigData {
     this.mdmEntry = mdmEntry;
   }
 
-
   public ValueTransformationConfigData mdmPropertyName(String mdmPropertyName) {
     
     this.mdmPropertyName = mdmPropertyName;
     return this;
   }
 
-   /**
+  /**
    * If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.
    * @return mdmPropertyName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.")
   @JsonProperty(MDM_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -241,20 +245,20 @@ public class ValueTransformationConfigData {
     this.mdmPropertyName = mdmPropertyName;
   }
 
-
   public ValueTransformationConfigData transformation(InvocationRequest transformation) {
     
     this.transformation = transformation;
     return this;
   }
 
-   /**
+  /**
    * If the transformation is too complex then a transformation InvocationRequest can be defined let it be script or api call. 
    * @return transformation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the transformation is too complex then a transformation InvocationRequest can be defined let it be script or api call. ")
   @JsonProperty(TRANSFORMATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -268,7 +272,6 @@ public class ValueTransformationConfigData {
   public void setTransformation(InvocationRequest transformation) {
     this.transformation = transformation;
   }
-
 
   @Override
   public boolean equals(Object o) {

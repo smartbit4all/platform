@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 /**
  * This object holds all information about abritrary data in a tree representation.
  */
+@Schema(description = "This object holds all information about abritrary data in a tree representation.")
 @JsonPropertyOrder({
   UiTreeState.CONFIG,
   UiTreeState.VIEW_UUID,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   UiTreeState.DEFAULT_SELECTION,
   UiTreeState.PARAMS
 })
-@JsonTypeName("UiTreeState")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeState {
   public static final String CONFIG = "config";
@@ -72,9 +72,9 @@ public class UiTreeState {
   private UiTreeDefaultSelection defaultSelection;
 
   public static final String PARAMS = "params";
-  private Map<String, Object> params = null;
+  private Map<String, Object> params = new HashMap<>();
 
-  public UiTreeState() { 
+  public UiTreeState() {
   }
 
   public UiTreeState config(String config) {
@@ -83,12 +83,13 @@ public class UiTreeState {
     return this;
   }
 
-   /**
+  /**
    * Get config
    * @return config
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,20 +104,20 @@ public class UiTreeState {
     this.config = config;
   }
 
-
   public UiTreeState viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
     return this;
   }
 
-   /**
+  /**
    * Get viewUuid
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,7 +132,6 @@ public class UiTreeState {
     this.viewUuid = viewUuid;
   }
 
-
   public UiTreeState nodes(Map<String, UiTreeNode> nodes) {
     
     this.nodes = nodes;
@@ -143,14 +143,15 @@ public class UiTreeState {
     return this;
   }
 
-   /**
+  /**
    * Get nodes
    * @return nodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -165,7 +166,6 @@ public class UiTreeState {
     this.nodes = nodes;
   }
 
-
   public UiTreeState rootNodes(List<String> rootNodes) {
     
     this.rootNodes = rootNodes;
@@ -173,17 +173,21 @@ public class UiTreeState {
   }
 
   public UiTreeState addRootNodesItem(String rootNodesItem) {
+    if (this.rootNodes == null) {
+      this.rootNodes = new ArrayList<>();
+    }
     this.rootNodes.add(rootNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get rootNodes
    * @return rootNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ROOT_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -198,7 +202,6 @@ public class UiTreeState {
     this.rootNodes = rootNodes;
   }
 
-
   public UiTreeState expandedNodes(List<String> expandedNodes) {
     
     this.expandedNodes = expandedNodes;
@@ -206,17 +209,21 @@ public class UiTreeState {
   }
 
   public UiTreeState addExpandedNodesItem(String expandedNodesItem) {
+    if (this.expandedNodes == null) {
+      this.expandedNodes = new ArrayList<>();
+    }
     this.expandedNodes.add(expandedNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get expandedNodes
    * @return expandedNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(EXPANDED_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -231,7 +238,6 @@ public class UiTreeState {
     this.expandedNodes = expandedNodes;
   }
 
-
   public UiTreeState selectedNodes(List<String> selectedNodes) {
     
     this.selectedNodes = selectedNodes;
@@ -239,17 +245,21 @@ public class UiTreeState {
   }
 
   public UiTreeState addSelectedNodesItem(String selectedNodesItem) {
+    if (this.selectedNodes == null) {
+      this.selectedNodes = new ArrayList<>();
+    }
     this.selectedNodes.add(selectedNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectedNodes
    * @return selectedNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -264,20 +274,20 @@ public class UiTreeState {
     this.selectedNodes = selectedNodes;
   }
 
-
   public UiTreeState defaultSelection(UiTreeDefaultSelection defaultSelection) {
     
     this.defaultSelection = defaultSelection;
     return this;
   }
 
-   /**
+  /**
    * Get defaultSelection
    * @return defaultSelection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -291,7 +301,6 @@ public class UiTreeState {
   public void setDefaultSelection(UiTreeDefaultSelection defaultSelection) {
     this.defaultSelection = defaultSelection;
   }
-
 
   public UiTreeState params(Map<String, Object> params) {
     
@@ -307,12 +316,13 @@ public class UiTreeState {
     return this;
   }
 
-   /**
+  /**
    * Additional parameters for tree.  
    * @return params
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Additional parameters for tree.  ")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -326,7 +336,6 @@ public class UiTreeState {
   public void setParams(Map<String, Object> params) {
     this.params = params;
   }
-
 
   @Override
   public boolean equals(Object o) {

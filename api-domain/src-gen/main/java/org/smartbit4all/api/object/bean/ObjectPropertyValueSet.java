@@ -33,20 +33,20 @@ import jakarta.validation.Valid;
 /**
  * This is a set of value from an object. It can denote the type of the object but not necessarily. If we need a subset of properties from an object then it is the best way to extract a value set and use this as a parameter. 
  */
+@Schema(description = "This is a set of value from an object. It can denote the type of the object but not necessarily. If we need a subset of properties from an object then it is the best way to extract a value set and use this as a parameter. ")
 @JsonPropertyOrder({
   ObjectPropertyValueSet.QUALIFIED_NAME,
   ObjectPropertyValueSet.VALUES
 })
-@JsonTypeName("ObjectPropertyValueSet")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyValueSet {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
   public static final String VALUES = "values";
-  private List<@Valid ObjectPropertyValue> values = null;
+  private List<@Valid ObjectPropertyValue> values = new ArrayList<>();
 
-  public ObjectPropertyValueSet() { 
+  public ObjectPropertyValueSet() {
   }
 
   public ObjectPropertyValueSet qualifiedName(String qualifiedName) {
@@ -55,12 +55,13 @@ public class ObjectPropertyValueSet {
     return this;
   }
 
-   /**
+  /**
    * Get qualifiedName
    * @return qualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,7 +75,6 @@ public class ObjectPropertyValueSet {
   public void setQualifiedName(String qualifiedName) {
     this.qualifiedName = qualifiedName;
   }
-
 
   public ObjectPropertyValueSet values(List<@Valid ObjectPropertyValue> values) {
     
@@ -90,13 +90,14 @@ public class ObjectPropertyValueSet {
     return this;
   }
 
-   /**
+  /**
    * Get values
    * @return values
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,7 +111,6 @@ public class ObjectPropertyValueSet {
   public void setValues(List<@Valid ObjectPropertyValue> values) {
     this.values = values;
   }
-
 
   @Override
   public boolean equals(Object o) {

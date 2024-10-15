@@ -44,7 +44,6 @@ import jakarta.validation.Valid;
   Message.POSSIBLE_RESULTS,
   Message.SELECT_RESULT
 })
-@JsonTypeName("Message")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Message {
   public static final String UUID = "uuid";
@@ -68,7 +67,7 @@ public class Message {
   public static final String SELECT_RESULT = "selectResult";
   private MessageResult selectResult;
 
-  public Message() { 
+  public Message() {
   }
 
   public Message uuid(UUID uuid) {
@@ -77,14 +76,15 @@ public class Message {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of message. Will be generated if left empty.
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of message. Will be generated if left empty.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -99,20 +99,20 @@ public class Message {
     this.uuid = uuid;
   }
 
-
   public Message viewModelUuid(UUID viewModelUuid) {
     
     this.viewModelUuid = viewModelUuid;
     return this;
   }
 
-   /**
+  /**
    * Identifier of viewModel to refresh after message is answered.
    * @return viewModelUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of viewModel to refresh after message is answered.")
   @JsonProperty(VIEW_MODEL_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,21 +127,21 @@ public class Message {
     this.viewModelUuid = viewModelUuid;
   }
 
-
   public Message type(MessageType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -156,19 +156,19 @@ public class Message {
     this.type = type;
   }
 
-
   public Message header(String header) {
     
     this.header = header;
     return this;
   }
 
-   /**
+  /**
    * Get header
    * @return header
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HEADER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,19 +183,19 @@ public class Message {
     this.header = header;
   }
 
-
   public Message text(String text) {
     
     this.text = text;
     return this;
   }
 
-   /**
+  /**
    * Get text
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,7 +210,6 @@ public class Message {
     this.text = text;
   }
 
-
   public Message possibleResults(List<@Valid MessageResult> possibleResults) {
     
     this.possibleResults = possibleResults;
@@ -218,18 +217,22 @@ public class Message {
   }
 
   public Message addPossibleResultsItem(MessageResult possibleResultsItem) {
+    if (this.possibleResults == null) {
+      this.possibleResults = new ArrayList<>();
+    }
     this.possibleResults.add(possibleResultsItem);
     return this;
   }
 
-   /**
+  /**
    * Get possibleResults
    * @return possibleResults
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(POSSIBLE_RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -244,20 +247,20 @@ public class Message {
     this.possibleResults = possibleResults;
   }
 
-
   public Message selectResult(MessageResult selectResult) {
     
     this.selectResult = selectResult;
     return this;
   }
 
-   /**
+  /**
    * Get selectResult
    * @return selectResult
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECT_RESULT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -271,7 +274,6 @@ public class Message {
   public void setSelectResult(MessageResult selectResult) {
     this.selectResult = selectResult;
   }
-
 
   @Override
   public boolean equals(Object o) {

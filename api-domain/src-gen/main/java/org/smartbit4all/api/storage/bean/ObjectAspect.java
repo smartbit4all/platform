@@ -31,20 +31,20 @@ import jakarta.validation.Valid;
 /**
  * The instance of an aspect with the fully qualified name of the type. It can help to read the object of the aspect with type information.  
  */
+@Schema(description = "The instance of an aspect with the fully qualified name of the type. It can help to read the object of the aspect with type information.  ")
 @JsonPropertyOrder({
   ObjectAspect.TYPE_QUALIFIED_NAME,
   ObjectAspect.OBJECT_AS_MAP
 })
-@JsonTypeName("ObjectAspect")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectAspect {
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
   private String typeQualifiedName;
 
   public static final String OBJECT_AS_MAP = "objectAsMap";
-  private Map<String, Object> objectAsMap = null;
+  private Map<String, Object> objectAsMap = new HashMap<>();
 
-  public ObjectAspect() { 
+  public ObjectAspect() {
   }
 
   public ObjectAspect typeQualifiedName(String typeQualifiedName) {
@@ -53,12 +53,13 @@ public class ObjectAspect {
     return this;
   }
 
-   /**
+  /**
    * The fully qualified name of the given object saved into this aspect.
    * @return typeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the given object saved into this aspect.")
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,7 +73,6 @@ public class ObjectAspect {
   public void setTypeQualifiedName(String typeQualifiedName) {
     this.typeQualifiedName = typeQualifiedName;
   }
-
 
   public ObjectAspect objectAsMap(Map<String, Object> objectAsMap) {
     
@@ -88,12 +88,13 @@ public class ObjectAspect {
     return this;
   }
 
-   /**
+  /**
    * Get objectAsMap
    * @return objectAsMap
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +108,6 @@ public class ObjectAspect {
   public void setObjectAsMap(Map<String, Object> objectAsMap) {
     this.objectAsMap = objectAsMap;
   }
-
 
   @Override
   public boolean equals(Object o) {

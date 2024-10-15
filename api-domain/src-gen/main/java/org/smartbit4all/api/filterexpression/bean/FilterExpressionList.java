@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * The filter expressions can be gathered into a list. In case of a plain filter expression this is the root object of the expression list. 
  */
+@Schema(description = "The filter expressions can be gathered into a list. In case of a plain filter expression this is the root object of the expression list. ")
 @JsonPropertyOrder({
   FilterExpressionList.EXPRESSIONS
 })
-@JsonTypeName("FilterExpressionList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionList {
   public static final String EXPRESSIONS = "expressions";
   private List<@Valid FilterExpressionData> expressions = new ArrayList<>();
 
-  public FilterExpressionList() { 
+  public FilterExpressionList() {
   }
 
   public FilterExpressionList expressions(List<@Valid FilterExpressionData> expressions) {
@@ -52,18 +52,22 @@ public class FilterExpressionList {
   }
 
   public FilterExpressionList addExpressionsItem(FilterExpressionData expressionsItem) {
+    if (this.expressions == null) {
+      this.expressions = new ArrayList<>();
+    }
     this.expressions.add(expressionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get expressions
    * @return expressions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(EXPRESSIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class FilterExpressionList {
   public void setExpressions(List<@Valid FilterExpressionData> expressions) {
     this.expressions = expressions;
   }
-
 
   @Override
   public boolean equals(Object o) {

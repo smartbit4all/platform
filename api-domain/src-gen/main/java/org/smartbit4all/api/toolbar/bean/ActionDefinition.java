@@ -36,6 +36,7 @@ import jakarta.validation.Valid;
 /**
  * This is the registry entry of the UiActions in the MDM Entry of the registry. 
  */
+@Schema(description = "This is the registry entry of the UiActions in the MDM Entry of the registry. ")
 @JsonPropertyOrder({
   ActionDefinition.URI,
   ActionDefinition.PRECEDENCE_ORDER,
@@ -45,7 +46,6 @@ import jakarta.validation.Valid;
   ActionDefinition.DESCRIPTOR,
   ActionDefinition.CONTEXT_CHECKS
 })
-@JsonTypeName("ActionDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ActionDefinition {
   public static final String URI = "uri";
@@ -67,9 +67,9 @@ public class ActionDefinition {
   private UiActionDescriptor descriptor = null;
 
   public static final String CONTEXT_CHECKS = "contextChecks";
-  private List<InvocationRequest> contextChecks = null;
+  private List<InvocationRequest> contextChecks = new ArrayList<>();
 
-  public ActionDefinition() { 
+  public ActionDefinition() {
   }
 
   public ActionDefinition uri(URI uri) {
@@ -78,14 +78,15 @@ public class ActionDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,19 +101,19 @@ public class ActionDefinition {
     this.uri = uri;
   }
 
-
   public ActionDefinition precedenceOrder(Integer precedenceOrder) {
     
     this.precedenceOrder = precedenceOrder;
     return this;
   }
 
-   /**
+  /**
    * A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. 
    * @return precedenceOrder
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. ")
   @JsonProperty(PRECEDENCE_ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,20 +128,20 @@ public class ActionDefinition {
     this.precedenceOrder = precedenceOrder;
   }
 
-
   public ActionDefinition qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The namespace and the code of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. The namespace can be the name of an object or even a special page. The last  segment is the code itself. 
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The namespace and the code of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. The namespace can be the name of an object or even a special page. The last  segment is the code itself. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -155,20 +156,20 @@ public class ActionDefinition {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ActionDefinition action(UiAction action) {
     
     this.action = action;
     return this;
   }
 
-   /**
+  /**
    * The action itself with the well know parameters.
    * @return action
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The action itself with the well know parameters.")
   @JsonProperty(ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +184,6 @@ public class ActionDefinition {
     this.action = action;
   }
 
-
   public ActionDefinition invocations(List<InvocationRequest> invocations) {
     
     this.invocations = invocations;
@@ -191,18 +191,22 @@ public class ActionDefinition {
   }
 
   public ActionDefinition addInvocationsItem(InvocationRequest invocationsItem) {
+    if (this.invocations == null) {
+      this.invocations = new ArrayList<>();
+    }
     this.invocations.add(invocationsItem);
     return this;
   }
 
-   /**
+  /**
    * Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. 
    * @return invocations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. ")
   @JsonProperty(INVOCATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -217,20 +221,20 @@ public class ActionDefinition {
     this.invocations = invocations;
   }
 
-
   public ActionDefinition descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
   }
 
-   /**
+  /**
    * The UiAction descriptor for the action. If it is set then the it overrides the action.descriptor. 
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The UiAction descriptor for the action. If it is set then the it overrides the action.descriptor. ")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,7 +248,6 @@ public class ActionDefinition {
   public void setDescriptor(UiActionDescriptor descriptor) {
     this.descriptor = descriptor;
   }
-
 
   public ActionDefinition contextChecks(List<InvocationRequest> contextChecks) {
     
@@ -260,13 +263,14 @@ public class ActionDefinition {
     return this;
   }
 
-   /**
+  /**
    * Invocation requests that check the context objects of the action and produce constraints for them if necessary. In this check we can remove the given action or disable. 
    * @return contextChecks
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Invocation requests that check the context objects of the action and produce constraints for them if necessary. In this check we can remove the given action or disable. ")
   @JsonProperty(CONTEXT_CHECKS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +284,6 @@ public class ActionDefinition {
   public void setContextChecks(List<InvocationRequest> contextChecks) {
     this.contextChecks = contextChecks;
   }
-
 
   @Override
   public boolean equals(Object o) {

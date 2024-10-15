@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The method of an api that can be called. 
  */
+@Schema(description = "The method of an api that can be called. ")
 @JsonPropertyOrder({
   MethodData.ID,
   MethodData.NAME,
@@ -41,7 +42,6 @@ import jakarta.validation.Valid;
   MethodData.PARAMETERS,
   MethodData.ANNOTATIONS
 })
-@JsonTypeName("MethodData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodData {
   public static final String ID = "id";
@@ -57,9 +57,9 @@ public class MethodData {
   private List<@Valid ParameterData> parameters = new ArrayList<>();
 
   public static final String ANNOTATIONS = "annotations";
-  private List<@Valid AnnotationData> annotations = null;
+  private List<@Valid AnnotationData> annotations = new ArrayList<>();
 
-  public MethodData() { 
+  public MethodData() {
   }
 
   public MethodData id(String id) {
@@ -68,12 +68,13 @@ public class MethodData {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the given method inside its api. It consists of the name and the names of the parameter types. It must be unique by definition even for the runtime envorinment to be able to invoke the proper method. 
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the given method inside its api. It consists of the name and the names of the parameter types. It must be unique by definition even for the runtime envorinment to be able to invoke the proper method. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,20 +89,20 @@ public class MethodData {
     this.id = id;
   }
 
-
   public MethodData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,19 +117,19 @@ public class MethodData {
     this.name = name;
   }
 
-
   public MethodData returnType(String returnType) {
     
     this.returnType = returnType;
     return this;
   }
 
-   /**
+  /**
    * The qualified name of the type / class or structure. Migth be empty if there is no return value at all.
    * @return returnType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The qualified name of the type / class or structure. Migth be empty if there is no return value at all.")
   @JsonProperty(RETURN_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,7 +144,6 @@ public class MethodData {
     this.returnType = returnType;
   }
 
-
   public MethodData parameters(List<@Valid ParameterData> parameters) {
     
     this.parameters = parameters;
@@ -151,18 +151,22 @@ public class MethodData {
   }
 
   public MethodData addParametersItem(ParameterData parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new ArrayList<>();
+    }
     this.parameters.add(parametersItem);
     return this;
   }
 
-   /**
+  /**
    * The parameters of the given method.
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The parameters of the given method.")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -176,7 +180,6 @@ public class MethodData {
   public void setParameters(List<@Valid ParameterData> parameters) {
     this.parameters = parameters;
   }
-
 
   public MethodData annotations(List<@Valid AnnotationData> annotations) {
     
@@ -192,13 +195,14 @@ public class MethodData {
     return this;
   }
 
-   /**
+  /**
    * The annotations of the given method.
    * @return annotations
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The annotations of the given method.")
   @JsonProperty(ANNOTATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,7 +216,6 @@ public class MethodData {
   public void setAnnotations(List<@Valid AnnotationData> annotations) {
     this.annotations = annotations;
   }
-
 
   @Override
   public boolean equals(Object o) {

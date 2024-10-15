@@ -40,6 +40,7 @@ import jakarta.validation.Valid;
 /**
  * This object represents an ongoing modification in an MDMDefinition. It is strored inline in  the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy). 
  */
+@Schema(description = "This object represents an ongoing modification in an MDMDefinition. It is strored inline in  the MDMDefinitionState, and may be global, entry or group level (just like BranchingStrategy). ")
 @JsonPropertyOrder({
   MDMModification.ID,
   MDMModification.NAME,
@@ -56,7 +57,6 @@ import jakarta.validation.Valid;
   MDMModification.DESCRIPTORS,
   MDMModification.MODIFICATION_ITEMS
 })
-@JsonTypeName("MDMModification")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModification {
   public static final String ID = "id";
@@ -93,15 +93,15 @@ public class MDMModification {
   private MDMModificationState state;
 
   public static final String NOTES = "notes";
-  private List<@Valid MDMModificationNote> notes = null;
+  private List<@Valid MDMModificationNote> notes = new ArrayList<>();
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
 
   public static final String MODIFICATION_ITEMS = "modificationItems";
-  private Map<String, MDMModificationItem> modificationItems = null;
+  private Map<String, MDMModificationItem> modificationItems = new HashMap<>();
 
-  public MDMModification() { 
+  public MDMModification() {
   }
 
   public MDMModification id(String id) {
@@ -110,12 +110,13 @@ public class MDMModification {
     return this;
   }
 
-   /**
+  /**
    * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,19 +131,19 @@ public class MDMModification {
     this.id = id;
   }
 
-
   public MDMModification name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The human readable nam of the modification. It should be unique among the current active modifications. 
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The human readable nam of the modification. It should be unique among the current active modifications. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,19 +158,19 @@ public class MDMModification {
     this.name = name;
   }
 
-
   public MDMModification description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * The detailed description of the modification. 
    * @return description
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The detailed description of the modification. ")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,20 +185,20 @@ public class MDMModification {
     this.description = description;
   }
 
-
   public MDMModification branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
   }
 
-   /**
+  /**
    * Get branchUri
    * @return branchUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,20 +213,20 @@ public class MDMModification {
     this.branchUri = branchUri;
   }
 
-
   public MDMModification created(UserActivityLog created) {
     
     this.created = created;
     return this;
   }
 
-   /**
+  /**
    * Get created
    * @return created
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -240,20 +241,20 @@ public class MDMModification {
     this.created = created;
   }
 
-
   public MDMModification updated(UserActivityLog updated) {
     
     this.updated = updated;
     return this;
   }
 
-   /**
+  /**
    * Get updated
    * @return updated
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPDATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -268,7 +269,6 @@ public class MDMModification {
     this.updated = updated;
   }
 
-
   public MDMModification currentEditors(List<URI> currentEditors) {
     
     this.currentEditors = currentEditors;
@@ -276,18 +276,22 @@ public class MDMModification {
   }
 
   public MDMModification addCurrentEditorsItem(URI currentEditorsItem) {
+    if (this.currentEditors == null) {
+      this.currentEditors = new ArrayList<>();
+    }
     this.currentEditors.add(currentEditorsItem);
     return this;
   }
 
-   /**
+  /**
    * The current editors are the users working actively on the modification. For this a user must start the editing actively on the UI. After this the editing should be finished. If the editing is active then the user can see the editing state of the given modification. There can be only one modification where the given user is editor in a moment. 
    * @return currentEditors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The current editors are the users working actively on the modification. For this a user must start the editing actively on the UI. After this the editing should be finished. If the editing is active then the user can see the editing state of the given modification. There can be only one modification where the given user is editor in a moment. ")
   @JsonProperty(CURRENT_EDITORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -302,20 +306,20 @@ public class MDMModification {
     this.currentEditors = currentEditors;
   }
 
-
   public MDMModification sentToApproval(UserActivityLog sentToApproval) {
     
     this.sentToApproval = sentToApproval;
     return this;
   }
 
-   /**
+  /**
    * When the modification is sent to approval then this object is set to see who and when has been sent to approval. 
    * @return sentToApproval
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "When the modification is sent to approval then this object is set to see who and when has been sent to approval. ")
   @JsonProperty(SENT_TO_APPROVAL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -330,20 +334,20 @@ public class MDMModification {
     this.sentToApproval = sentToApproval;
   }
 
-
   public MDMModification approver(URI approver) {
     
     this.approver = approver;
     return this;
   }
 
-   /**
+  /**
    * Get approver
    * @return approver
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(APPROVER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -358,20 +362,20 @@ public class MDMModification {
     this.approver = approver;
   }
 
-
   public MDMModification approved(UserActivityLog approved) {
     
     this.approved = approved;
     return this;
   }
 
-   /**
+  /**
    * When the modification is approved by the approver and result is set. 
    * @return approved
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "When the modification is approved by the approver and result is set. ")
   @JsonProperty(APPROVED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -386,20 +390,20 @@ public class MDMModification {
     this.approved = approved;
   }
 
-
   public MDMModification state(MDMModificationState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -413,7 +417,6 @@ public class MDMModification {
   public void setState(MDMModificationState state) {
     this.state = state;
   }
-
 
   public MDMModification notes(List<@Valid MDMModificationNote> notes) {
     
@@ -429,13 +432,14 @@ public class MDMModification {
     return this;
   }
 
-   /**
+  /**
    * Get notes
    * @return notes
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NOTES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -450,7 +454,6 @@ public class MDMModification {
     this.notes = notes;
   }
 
-
   public MDMModification descriptors(Map<String, MDMEntryDescriptor> descriptors) {
     
     this.descriptors = descriptors;
@@ -462,14 +465,15 @@ public class MDMModification {
     return this;
   }
 
-   /**
+  /**
    * Get descriptors
    * @return descriptors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -483,7 +487,6 @@ public class MDMModification {
   public void setDescriptors(Map<String, MDMEntryDescriptor> descriptors) {
     this.descriptors = descriptors;
   }
-
 
   public MDMModification modificationItems(Map<String, MDMModificationItem> modificationItems) {
     
@@ -499,13 +502,14 @@ public class MDMModification {
     return this;
   }
 
-   /**
+  /**
    * Get modificationItems
    * @return modificationItems
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODIFICATION_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -519,7 +523,6 @@ public class MDMModification {
   public void setModificationItems(Map<String, MDMModificationItem> modificationItems) {
     this.modificationItems = modificationItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

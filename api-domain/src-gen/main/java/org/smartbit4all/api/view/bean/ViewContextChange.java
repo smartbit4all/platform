@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
+@Schema(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextChange.VIEW_CONTEXT,
   ViewContextChange.CHANGES,
   ViewContextChange.RESULT
 })
-@JsonTypeName("ViewContextChange")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContextChange {
   public static final String VIEW_CONTEXT = "viewContext";
@@ -51,7 +51,7 @@ public class ViewContextChange {
   public static final String RESULT = "result";
   private Object result;
 
-  public ViewContextChange() { 
+  public ViewContextChange() {
   }
 
   public ViewContextChange viewContext(ViewContextData viewContext) {
@@ -60,14 +60,15 @@ public class ViewContextChange {
     return this;
   }
 
-   /**
+  /**
    * Get viewContext
    * @return viewContext
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEW_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,7 +83,6 @@ public class ViewContextChange {
     this.viewContext = viewContext;
   }
 
-
   public ViewContextChange changes(List<@Valid ComponentModelChange> changes) {
     
     this.changes = changes;
@@ -90,18 +90,22 @@ public class ViewContextChange {
   }
 
   public ViewContextChange addChangesItem(ComponentModelChange changesItem) {
+    if (this.changes == null) {
+      this.changes = new ArrayList<>();
+    }
     this.changes.add(changesItem);
     return this;
   }
 
-   /**
+  /**
    * Get changes
    * @return changes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CHANGES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,19 +120,19 @@ public class ViewContextChange {
     this.changes = changes;
   }
 
-
   public ViewContextChange result(Object result) {
     
     this.result = result;
     return this;
   }
 
-   /**
+  /**
    * If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call. 
    * @return result
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call. ")
   @JsonProperty(RESULT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +146,6 @@ public class ViewContextChange {
   public void setResult(Object result) {
     this.result = result;
   }
-
 
   @Override
   public boolean equals(Object o) {

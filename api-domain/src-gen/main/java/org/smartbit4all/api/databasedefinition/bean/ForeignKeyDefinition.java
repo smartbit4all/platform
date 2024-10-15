@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * The meta of an index in a database table. 
  */
+@Schema(description = "The meta of an index in a database table. ")
 @JsonPropertyOrder({
   ForeignKeyDefinition.NAME,
   ForeignKeyDefinition.REFERRED_TABLE_NAME,
   ForeignKeyDefinition.COLUMN_MAPS,
   ForeignKeyDefinition.OPERATION
 })
-@JsonTypeName("ForeignKeyDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ForeignKeyDefinition {
   public static final String NAME = "name";
@@ -55,7 +55,7 @@ public class ForeignKeyDefinition {
   public static final String OPERATION = "operation";
   private AlterOperation operation;
 
-  public ForeignKeyDefinition() { 
+  public ForeignKeyDefinition() {
   }
 
   public ForeignKeyDefinition name(String name) {
@@ -64,12 +64,13 @@ public class ForeignKeyDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,19 +85,19 @@ public class ForeignKeyDefinition {
     this.name = name;
   }
 
-
   public ForeignKeyDefinition referredTableName(String referredTableName) {
     
     this.referredTableName = referredTableName;
     return this;
   }
 
-   /**
+  /**
    * Get referredTableName
    * @return referredTableName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFERRED_TABLE_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,7 +112,6 @@ public class ForeignKeyDefinition {
     this.referredTableName = referredTableName;
   }
 
-
   public ForeignKeyDefinition columnMaps(List<@Valid ColumnMapEntry> columnMaps) {
     
     this.columnMaps = columnMaps;
@@ -119,18 +119,22 @@ public class ForeignKeyDefinition {
   }
 
   public ForeignKeyDefinition addColumnMapsItem(ColumnMapEntry columnMapsItem) {
+    if (this.columnMaps == null) {
+      this.columnMaps = new ArrayList<>();
+    }
     this.columnMaps.add(columnMapsItem);
     return this;
   }
 
-   /**
+  /**
    * Get columnMaps
    * @return columnMaps
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLUMN_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -145,20 +149,20 @@ public class ForeignKeyDefinition {
     this.columnMaps = columnMaps;
   }
 
-
   public ForeignKeyDefinition operation(AlterOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -172,7 +176,6 @@ public class ForeignKeyDefinition {
   public void setOperation(AlterOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

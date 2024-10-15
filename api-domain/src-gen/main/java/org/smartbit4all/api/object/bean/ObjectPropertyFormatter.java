@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat but later on it can use different formatters if it is necessary. 
  */
+@Schema(description = "This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat but later on it can use different formatters if it is necessary. ")
 @JsonPropertyOrder({
   ObjectPropertyFormatter.FORMAT_STRING,
   ObjectPropertyFormatter.PARAMETERS,
   ObjectPropertyFormatter.REQUIRED_PROPERTIES
 })
-@JsonTypeName("ObjectPropertyFormatter")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyFormatter {
   public static final String FORMAT_STRING = "formatString";
@@ -51,7 +51,7 @@ public class ObjectPropertyFormatter {
   public static final String REQUIRED_PROPERTIES = "requiredProperties";
   private List<URI> requiredProperties = new ArrayList<>();
 
-  public ObjectPropertyFormatter() { 
+  public ObjectPropertyFormatter() {
   }
 
   public ObjectPropertyFormatter formatString(String formatString) {
@@ -60,12 +60,13 @@ public class ObjectPropertyFormatter {
     return this;
   }
 
-   /**
+  /**
    * The format string by the syntactical rules of the formatter. 
    * @return formatString
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The format string by the syntactical rules of the formatter. ")
   @JsonProperty(FORMAT_STRING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,7 +81,6 @@ public class ObjectPropertyFormatter {
     this.formatString = formatString;
   }
 
-
   public ObjectPropertyFormatter parameters(List<@Valid ObjectPropertyFormatterParameter> parameters) {
     
     this.parameters = parameters;
@@ -88,18 +88,22 @@ public class ObjectPropertyFormatter {
   }
 
   public ObjectPropertyFormatter addParametersItem(ObjectPropertyFormatterParameter parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new ArrayList<>();
+    }
     this.parameters.add(parametersItem);
     return this;
   }
 
-   /**
+  /**
    * The properties in order bound to the given parameter. 
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The properties in order bound to the given parameter. ")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +118,6 @@ public class ObjectPropertyFormatter {
     this.parameters = parameters;
   }
 
-
   public ObjectPropertyFormatter requiredProperties(List<URI> requiredProperties) {
     
     this.requiredProperties = requiredProperties;
@@ -122,18 +125,22 @@ public class ObjectPropertyFormatter {
   }
 
   public ObjectPropertyFormatter addRequiredPropertiesItem(URI requiredPropertiesItem) {
+    if (this.requiredProperties == null) {
+      this.requiredProperties = new ArrayList<>();
+    }
     this.requiredProperties.add(requiredPropertiesItem);
     return this;
   }
 
-   /**
+  /**
    * Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.
    * @return requiredProperties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.")
   @JsonProperty(REQUIRED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -147,7 +154,6 @@ public class ObjectPropertyFormatter {
   public void setRequiredProperties(List<URI> requiredProperties) {
     this.requiredProperties = requiredProperties;
   }
-
 
   @Override
   public boolean equals(Object o) {

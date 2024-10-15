@@ -36,6 +36,7 @@ import jakarta.validation.Valid;
 /**
  * This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. 
  */
+@Schema(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
 @JsonPropertyOrder({
   SearchPageConfig.URI,
   SearchPageConfig.PAGE_TITLE,
@@ -54,7 +55,6 @@ import jakarta.validation.Valid;
   SearchPageConfig.GRID_VIEW_OPTIONS,
   SearchPageConfig.DEFAULT_ROW_ACTIONS
 })
-@JsonTypeName("SearchPageConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchPageConfig {
   public static final String URI = "uri";
@@ -103,9 +103,9 @@ public class SearchPageConfig {
   private List<GridView> gridViewOptions = new ArrayList<>();
 
   public static final String DEFAULT_ROW_ACTIONS = "defaultRowActions";
-  private List<String> defaultRowActions = null;
+  private List<String> defaultRowActions = new ArrayList<>();
 
-  public SearchPageConfig() { 
+  public SearchPageConfig() {
   }
 
   public SearchPageConfig uri(URI uri) {
@@ -114,13 +114,14 @@ public class SearchPageConfig {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,19 +136,19 @@ public class SearchPageConfig {
     this.uri = uri;
   }
 
-
   public SearchPageConfig pageTitle(String pageTitle) {
     
     this.pageTitle = pageTitle;
     return this;
   }
 
-   /**
+  /**
    * The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel label property will be the page title and we skip set the label of the component itself. So we can skip this value. 
    * @return pageTitle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel label property will be the page title and we skip set the label of the component itself. So we can skip this value. ")
   @JsonProperty(PAGE_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -162,20 +163,20 @@ public class SearchPageConfig {
     this.pageTitle = pageTitle;
   }
 
-
   public SearchPageConfig filterModel(FilterExpressionBuilderModel filterModel) {
     
     this.filterModel = filterModel;
     return this;
   }
 
-   /**
+  /**
    * Get filterModel
    * @return filterModel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,19 +191,19 @@ public class SearchPageConfig {
     this.filterModel = filterModel;
   }
 
-
   public SearchPageConfig searchIndexSchema(String searchIndexSchema) {
     
     this.searchIndexSchema = searchIndexSchema;
     return this;
   }
 
-   /**
+  /**
    * The schema name of the search index.
    * @return searchIndexSchema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The schema name of the search index.")
   @JsonProperty(SEARCH_INDEX_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,19 +218,19 @@ public class SearchPageConfig {
     this.searchIndexSchema = searchIndexSchema;
   }
 
-
   public SearchPageConfig searchIndexName(String searchIndexName) {
     
     this.searchIndexName = searchIndexName;
     return this;
   }
 
-   /**
+  /**
    * The name of the search index.
    * @return searchIndexName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the search index.")
   @JsonProperty(SEARCH_INDEX_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,20 +245,20 @@ public class SearchPageConfig {
     this.searchIndexName = searchIndexName;
   }
 
-
   public SearchPageConfig container(StoredCollectionDescriptor container) {
     
     this.container = container;
     return this;
   }
 
-   /**
+  /**
    * The conteiner to run the query against.
    * @return container
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The conteiner to run the query against.")
   @JsonProperty(CONTAINER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,20 +273,20 @@ public class SearchPageConfig {
     this.container = container;
   }
 
-
   public SearchPageConfig historyObjectUri(URI historyObjectUri) {
     
     this.historyObjectUri = historyObjectUri;
     return this;
   }
 
-   /**
+  /**
    * If we set this property then the given search page is iterating through the version of this object.
    * @return historyObjectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set this property then the given search page is iterating through the version of this object.")
   @JsonProperty(HISTORY_OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -300,19 +301,19 @@ public class SearchPageConfig {
     this.historyObjectUri = historyObjectUri;
   }
 
-
   public SearchPageConfig historyLowerBound(Long historyLowerBound) {
     
     this.historyLowerBound = historyLowerBound;
     return this;
   }
 
-   /**
+  /**
    * If we set this property then the page is loading the given version as the oldest one.
    * @return historyLowerBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set this property then the page is loading the given version as the oldest one.")
   @JsonProperty(HISTORY_LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -327,19 +328,19 @@ public class SearchPageConfig {
     this.historyLowerBound = historyLowerBound;
   }
 
-
   public SearchPageConfig historyUpperBound(Long historyUpperBound) {
     
     this.historyUpperBound = historyUpperBound;
     return this;
   }
 
-   /**
+  /**
    * If we set this property then the page is loading the given version as the newest one.
    * @return historyUpperBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set this property then the page is loading the given version as the newest one.")
   @JsonProperty(HISTORY_UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -354,19 +355,19 @@ public class SearchPageConfig {
     this.historyUpperBound = historyUpperBound;
   }
 
-
   public SearchPageConfig historyLoadAllLimit(Integer historyLoadAllLimit) {
     
     this.historyLoadAllLimit = historyLoadAllLimit;
     return this;
   }
 
-   /**
+  /**
    * The nummber is history elements are well-known. The last version number show how many version we have. Under this limit we load all the versions and like a normal list of object. 
    * @return historyLoadAllLimit
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The nummber is history elements are well-known. The last version number show how many version we have. Under this limit we load all the versions and like a normal list of object. ")
   @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -381,19 +382,19 @@ public class SearchPageConfig {
     this.historyLoadAllLimit = historyLoadAllLimit;
   }
 
-
   public SearchPageConfig historyPageSize(Integer historyPageSize) {
     
     this.historyPageSize = historyPageSize;
     return this;
   }
 
-   /**
+  /**
    * If we set this property and skip any or all of the lower or upper bound then we load this this number of versions after the lower bound or before the upper bound or before the latest version. It will be the initial size of the pageing while iteration through the history entries. 
    * @return historyPageSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set this property and skip any or all of the lower or upper bound then we load this this number of versions after the lower bound or before the upper bound or before the latest version. It will be the initial size of the pageing while iteration through the history entries. ")
   @JsonProperty(HISTORY_PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -408,19 +409,19 @@ public class SearchPageConfig {
     this.historyPageSize = historyPageSize;
   }
 
-
   public SearchPageConfig pageSize(Integer pageSize) {
     
     this.pageSize = pageSize;
     return this;
   }
 
-   /**
+  /**
    * If we set this property then the result grid will have this page size. 
    * @return pageSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set this property then the result grid will have this page size. ")
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -435,19 +436,19 @@ public class SearchPageConfig {
     this.pageSize = pageSize;
   }
 
-
   public SearchPageConfig skipInitialQuery(Boolean skipInitialQuery) {
     
     this.skipInitialQuery = skipInitialQuery;
     return this;
   }
 
-   /**
+  /**
    * Execute query right after the page is opened or not.
    * @return skipInitialQuery
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Execute query right after the page is opened or not.")
   @JsonProperty(SKIP_INITIAL_QUERY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -462,19 +463,19 @@ public class SearchPageConfig {
     this.skipInitialQuery = skipInitialQuery;
   }
 
-
   public SearchPageConfig noResultText(String noResultText) {
     
     this.noResultText = noResultText;
     return this;
   }
 
-   /**
+  /**
    * If there is no result for the search, then show this text instead of the empty table.
    * @return noResultText
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If there is no result for the search, then show this text instead of the empty table.")
   @JsonProperty(NO_RESULT_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -489,7 +490,6 @@ public class SearchPageConfig {
     this.noResultText = noResultText;
   }
 
-
   public SearchPageConfig gridViewOptions(List<GridView> gridViewOptions) {
     
     this.gridViewOptions = gridViewOptions;
@@ -497,18 +497,22 @@ public class SearchPageConfig {
   }
 
   public SearchPageConfig addGridViewOptionsItem(GridView gridViewOptionsItem) {
+    if (this.gridViewOptions == null) {
+      this.gridViewOptions = new ArrayList<>();
+    }
     this.gridViewOptions.add(gridViewOptionsItem);
     return this;
   }
 
-   /**
+  /**
    * The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. 
    * @return gridViewOptions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. ")
   @JsonProperty(GRID_VIEW_OPTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -522,7 +526,6 @@ public class SearchPageConfig {
   public void setGridViewOptions(List<GridView> gridViewOptions) {
     this.gridViewOptions = gridViewOptions;
   }
-
 
   public SearchPageConfig defaultRowActions(List<String> defaultRowActions) {
     
@@ -538,12 +541,13 @@ public class SearchPageConfig {
     return this;
   }
 
-   /**
+  /**
    * Get defaultRowActions
    * @return defaultRowActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_ROW_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -557,7 +561,6 @@ public class SearchPageConfig {
   public void setDefaultRowActions(List<String> defaultRowActions) {
     this.defaultRowActions = defaultRowActions;
   }
-
 
   @Override
   public boolean equals(Object o) {

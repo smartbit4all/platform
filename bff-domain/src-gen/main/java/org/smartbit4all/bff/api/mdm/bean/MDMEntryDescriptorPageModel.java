@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   MDMEntryDescriptorPageModel.IMPORTABLE,
   MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES
 })
-@JsonTypeName("MDMEntryDescriptorPageModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptorPageModel {
   public static final String CODE = "code";
@@ -55,7 +54,7 @@ public class MDMEntryDescriptorPageModel {
   public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
   private String restrictedProperties;
 
-  public MDMEntryDescriptorPageModel() { 
+  public MDMEntryDescriptorPageModel() {
   }
 
   public MDMEntryDescriptorPageModel code(String code) {
@@ -64,12 +63,13 @@ public class MDMEntryDescriptorPageModel {
     return this;
   }
 
-   /**
+  /**
    * The name of the entry.
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the entry.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,19 +84,19 @@ public class MDMEntryDescriptorPageModel {
     this.code = code;
   }
 
-
   public MDMEntryDescriptorPageModel name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The display name of the entry.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The display name of the entry.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,20 +111,20 @@ public class MDMEntryDescriptorPageModel {
     this.name = name;
   }
 
-
   public MDMEntryDescriptorPageModel vectorCollection(VectorCollectionDescriptor vectorCollection) {
     
     this.vectorCollection = vectorCollection;
     return this;
   }
 
-   /**
+  /**
    * The descriptor of the VectorCollection bound to this entry.
    * @return vectorCollection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The descriptor of the VectorCollection bound to this entry.")
   @JsonProperty(VECTOR_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,19 +139,19 @@ public class MDMEntryDescriptorPageModel {
     this.vectorCollection = vectorCollection;
   }
 
-
   public MDMEntryDescriptorPageModel importable(Boolean importable) {
     
     this.importable = importable;
     return this;
   }
 
-   /**
+  /**
    * Get importable
    * @return importable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IMPORTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,19 +166,19 @@ public class MDMEntryDescriptorPageModel {
     this.importable = importable;
   }
 
-
   public MDMEntryDescriptorPageModel restrictedProperties(String restrictedProperties) {
     
     this.restrictedProperties = restrictedProperties;
     return this;
   }
 
-   /**
+  /**
    * Get restrictedProperties
    * @return restrictedProperties
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(RESTRICTED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +192,6 @@ public class MDMEntryDescriptorPageModel {
   public void setRestrictedProperties(String restrictedProperties) {
     this.restrictedProperties = restrictedProperties;
   }
-
 
   @Override
   public boolean equals(Object o) {

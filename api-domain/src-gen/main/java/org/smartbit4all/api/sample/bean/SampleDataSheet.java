@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   SampleDataSheet.URI,
   SampleDataSheet.NAME
 })
-@JsonTypeName("SampleDataSheet")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleDataSheet {
   public static final String URI = "uri";
@@ -43,7 +42,7 @@ public class SampleDataSheet {
   public static final String NAME = "name";
   private String name;
 
-  public SampleDataSheet() { 
+  public SampleDataSheet() {
   }
 
   public SampleDataSheet uri(URI uri) {
@@ -52,13 +51,14 @@ public class SampleDataSheet {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,19 +73,19 @@ public class SampleDataSheet {
     this.uri = uri;
   }
 
-
   public SampleDataSheet name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class SampleDataSheet {
   public void setName(String name) {
     this.name = name;
   }
-
 
   @Override
   public boolean equals(Object o) {

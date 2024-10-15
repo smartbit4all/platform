@@ -38,19 +38,18 @@ import jakarta.validation.Valid;
   ArchiveConfigData.DELETE_ALL,
   ArchiveConfigData.DELETE_BEFORE_VERSION
 })
-@JsonTypeName("ArchiveConfigData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ArchiveConfigData {
   public static final String ROOT_DIR = "rootDir";
   private String rootDir;
 
   public static final String DELETE_ALL = "deleteAll";
-  private List<String> deleteAll = null;
+  private List<String> deleteAll = new ArrayList<>();
 
   public static final String DELETE_BEFORE_VERSION = "deleteBeforeVersion";
-  private List<@Valid BeforeVersionData> deleteBeforeVersion = null;
+  private List<@Valid BeforeVersionData> deleteBeforeVersion = new ArrayList<>();
 
-  public ArchiveConfigData() { 
+  public ArchiveConfigData() {
   }
 
   public ArchiveConfigData rootDir(String rootDir) {
@@ -59,12 +58,13 @@ public class ArchiveConfigData {
     return this;
   }
 
-   /**
+  /**
    * Get rootDir
    * @return rootDir
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROOT_DIR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,7 +78,6 @@ public class ArchiveConfigData {
   public void setRootDir(String rootDir) {
     this.rootDir = rootDir;
   }
-
 
   public ArchiveConfigData deleteAll(List<String> deleteAll) {
     
@@ -94,12 +93,13 @@ public class ArchiveConfigData {
     return this;
   }
 
-   /**
+  /**
    * Get deleteAll
    * @return deleteAll
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DELETE_ALL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,7 +113,6 @@ public class ArchiveConfigData {
   public void setDeleteAll(List<String> deleteAll) {
     this.deleteAll = deleteAll;
   }
-
 
   public ArchiveConfigData deleteBeforeVersion(List<@Valid BeforeVersionData> deleteBeforeVersion) {
     
@@ -129,13 +128,14 @@ public class ArchiveConfigData {
     return this;
   }
 
-   /**
+  /**
    * Get deleteBeforeVersion
    * @return deleteBeforeVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DELETE_BEFORE_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,7 +149,6 @@ public class ArchiveConfigData {
   public void setDeleteBeforeVersion(List<@Valid BeforeVersionData> deleteBeforeVersion) {
     this.deleteBeforeVersion = deleteBeforeVersion;
   }
-
 
   @Override
   public boolean equals(Object o) {

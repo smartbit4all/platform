@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture  or whatever else. It is normally constructed by a Converter that creates the result from the input object. 
  */
+@Schema(description = "The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture  or whatever else. It is normally constructed by a Converter that creates the result from the input object. ")
 @JsonPropertyOrder({
   VectorValue.INPUT_TYPE,
   VectorValue.INPUT_OBJECT,
   VectorValue.CONVERSION,
   VectorValue.VECTOR
 })
-@JsonTypeName("VectorValue")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorValue {
   public static final String INPUT_TYPE = "inputType";
@@ -55,7 +55,7 @@ public class VectorValue {
   public static final String VECTOR = "vector";
   private List<Float> vector = new ArrayList<>();
 
-  public VectorValue() { 
+  public VectorValue() {
   }
 
   public VectorValue inputType(String inputType) {
@@ -64,13 +64,14 @@ public class VectorValue {
     return this;
   }
 
-   /**
+  /**
    * The type of the input object.
    * @return inputType
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The type of the input object.")
   @JsonProperty(INPUT_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -85,7 +86,6 @@ public class VectorValue {
     this.inputType = inputType;
   }
 
-
   public VectorValue inputObject(Map<String, Object> inputObject) {
     
     this.inputObject = inputObject;
@@ -97,13 +97,14 @@ public class VectorValue {
     return this;
   }
 
-   /**
+  /**
    * The input object itself.
    * @return inputObject
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The input object itself.")
   @JsonProperty(INPUT_OBJECT)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -118,19 +119,19 @@ public class VectorValue {
     this.inputObject = inputObject;
   }
 
-
   public VectorValue conversion(String conversion) {
     
     this.conversion = conversion;
     return this;
   }
 
-   /**
+  /**
    * The name fo the conversion algorithm like ada2 in case of string.
    * @return conversion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name fo the conversion algorithm like ada2 in case of string.")
   @JsonProperty(CONVERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +146,6 @@ public class VectorValue {
     this.conversion = conversion;
   }
 
-
   public VectorValue vector(List<Float> vector) {
     
     this.vector = vector;
@@ -153,17 +153,21 @@ public class VectorValue {
   }
 
   public VectorValue addVectorItem(Float vectorItem) {
+    if (this.vector == null) {
+      this.vector = new ArrayList<>();
+    }
     this.vector.add(vectorItem);
     return this;
   }
 
-   /**
+  /**
    * Get vector
    * @return vector
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VECTOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -177,7 +181,6 @@ public class VectorValue {
   public void setVector(List<Float> vector) {
     this.vector = vector;
   }
-
 
   @Override
   public boolean equals(Object o) {

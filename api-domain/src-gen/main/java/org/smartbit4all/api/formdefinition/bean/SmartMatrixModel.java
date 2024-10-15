@@ -41,22 +41,21 @@ import jakarta.validation.Valid;
   SmartMatrixModel.DATA,
   SmartMatrixModel.MULTI_SELECT
 })
-@JsonTypeName("SmartMatrixModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartMatrixModel {
   public static final String ROWS = "rows";
-  private List<Value> rows = null;
+  private List<Value> rows = new ArrayList<>();
 
   public static final String COLUMNS = "columns";
-  private List<Value> columns = null;
+  private List<Value> columns = new ArrayList<>();
 
   public static final String DATA = "data";
-  private Map<String, Object> data = null;
+  private Map<String, Object> data = new HashMap<>();
 
   public static final String MULTI_SELECT = "multiSelect";
   private Boolean multiSelect = false;
 
-  public SmartMatrixModel() { 
+  public SmartMatrixModel() {
   }
 
   public SmartMatrixModel rows(List<Value> rows) {
@@ -73,13 +72,14 @@ public class SmartMatrixModel {
     return this;
   }
 
-   /**
+  /**
    * The keys
    * @return rows
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The keys")
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -93,7 +93,6 @@ public class SmartMatrixModel {
   public void setRows(List<Value> rows) {
     this.rows = rows;
   }
-
 
   public SmartMatrixModel columns(List<Value> columns) {
     
@@ -109,13 +108,14 @@ public class SmartMatrixModel {
     return this;
   }
 
-   /**
+  /**
    * The possible values
    * @return columns
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The possible values")
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +129,6 @@ public class SmartMatrixModel {
   public void setColumns(List<Value> columns) {
     this.columns = columns;
   }
-
 
   public SmartMatrixModel data(Map<String, Object> data) {
     
@@ -145,12 +144,13 @@ public class SmartMatrixModel {
     return this;
   }
 
-   /**
+  /**
    * A map for key - values
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A map for key - values")
   @JsonProperty(DATA)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,19 +165,19 @@ public class SmartMatrixModel {
     this.data = data;
   }
 
-
   public SmartMatrixModel multiSelect(Boolean multiSelect) {
     
     this.multiSelect = multiSelect;
     return this;
   }
 
-   /**
+  /**
    * Get multiSelect
    * @return multiSelect
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MULTI_SELECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +191,6 @@ public class SmartMatrixModel {
   public void setMultiSelect(Boolean multiSelect) {
     this.multiSelect = multiSelect;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * In generally if we have an object stored by a Storage then we might need to store some object references for this.  The related object references are more or less a list of URI or other identifier easy to serialize in every storage mechanism.  The Storage can publish events when the given object is changed. This can be filtered by this register.  The reference can be temporary so we can define a time limit when the Storage will remove the reference.  The relation can be renewed by adding it again and again. This object itself is managed by the ObjectStorage to store this in an  optimal way for the given storage mechanism. 
  */
+@Schema(description = "In generally if we have an object stored by a Storage then we might need to store some object references for this.  The related object references are more or less a list of URI or other identifier easy to serialize in every storage mechanism.  The Storage can publish events when the given object is changed. This can be filtered by this register.  The reference can be temporary so we can define a time limit when the Storage will remove the reference.  The relation can be renewed by adding it again and again. This object itself is managed by the ObjectStorage to store this in an  optimal way for the given storage mechanism. ")
 @JsonPropertyOrder({
   ObjectReference.URI,
   ObjectReference.REFERENCE_ID,
   ObjectReference.EXPIRATION_TIME
 })
-@JsonTypeName("ObjectReference")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectReference {
   public static final String URI = "uri";
@@ -48,7 +48,7 @@ public class ObjectReference {
   public static final String EXPIRATION_TIME = "expirationTime";
   private OffsetDateTime expirationTime;
 
-  public ObjectReference() { 
+  public ObjectReference() {
   }
 
   public ObjectReference uri(URI uri) {
@@ -57,14 +57,15 @@ public class ObjectReference {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the referenced object. This is an URI that identifies the object in the domain. 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the referenced object. This is an URI that identifies the object in the domain. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -79,19 +80,19 @@ public class ObjectReference {
     this.uri = uri;
   }
 
-
   public ObjectReference referenceId(String referenceId) {
     
     this.referenceId = referenceId;
     return this;
   }
 
-   /**
+  /**
    * To separate the references from the same class the api can use this field to store specific data about the referred object. 
    * @return referenceId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "To separate the references from the same class the api can use this field to store specific data about the referred object. ")
   @JsonProperty(REFERENCE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,20 +107,20 @@ public class ObjectReference {
     this.referenceId = referenceId;
   }
 
-
   public ObjectReference expirationTime(OffsetDateTime expirationTime) {
     
     this.expirationTime = expirationTime;
     return this;
   }
 
-   /**
+  /**
    * The expiration time for the reference.
    * @return expirationTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The expiration time for the reference.")
   @JsonProperty(EXPIRATION_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +134,6 @@ public class ObjectReference {
   public void setExpirationTime(OffsetDateTime expirationTime) {
     this.expirationTime = expirationTime;
   }
-
 
   @Override
   public boolean equals(Object o) {

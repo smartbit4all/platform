@@ -40,19 +40,18 @@ import jakarta.validation.Valid;
   UserEditingModel.POSSIBLE_GROUPS,
   UserEditingModel.ACTUAL_GROUPS
 })
-@JsonTypeName("UserEditingModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserEditingModel {
   public static final String USER = "user";
   private User user = null;
 
   public static final String POSSIBLE_GROUPS = "possibleGroups";
-  private List<Group> possibleGroups = null;
+  private List<Group> possibleGroups = new ArrayList<>();
 
   public static final String ACTUAL_GROUPS = "actualGroups";
-  private List<URI> actualGroups = null;
+  private List<URI> actualGroups = new ArrayList<>();
 
-  public UserEditingModel() { 
+  public UserEditingModel() {
   }
 
   public UserEditingModel user(User user) {
@@ -61,13 +60,14 @@ public class UserEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The copy of the user object to edit
    * @return user
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The copy of the user object to edit")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,7 +81,6 @@ public class UserEditingModel {
   public void setUser(User user) {
     this.user = user;
   }
-
 
   public UserEditingModel possibleGroups(List<Group> possibleGroups) {
     
@@ -97,13 +96,14 @@ public class UserEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The list of groups that exist within the current app. 
    * @return possibleGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of groups that exist within the current app. ")
   @JsonProperty(POSSIBLE_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +117,6 @@ public class UserEditingModel {
   public void setPossibleGroups(List<Group> possibleGroups) {
     this.possibleGroups = possibleGroups;
   }
-
 
   public UserEditingModel actualGroups(List<URI> actualGroups) {
     
@@ -133,13 +132,14 @@ public class UserEditingModel {
     return this;
   }
 
-   /**
+  /**
    * The list of groups directly attached to the given user. At the end of the editing the save will ensure that these groups will be associated with the user. 
    * @return actualGroups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of groups directly attached to the given user. At the end of the editing the save will ensure that these groups will be associated with the user. ")
   @JsonProperty(ACTUAL_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +153,6 @@ public class UserEditingModel {
   public void setActualGroups(List<URI> actualGroups) {
     this.actualGroups = actualGroups;
   }
-
 
   @Override
   public boolean equals(Object o) {

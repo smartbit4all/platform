@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * Describes the default selected node of the tree after rendering. 
  */
+@Schema(description = "Describes the default selected node of the tree after rendering. ")
 @JsonPropertyOrder({
   UiTreeDefaultSelection.PATH,
   UiTreeDefaultSelection.HANDLE_SELECTION,
   UiTreeDefaultSelection.ONE_TIME_ONLY
 })
-@JsonTypeName("UiTreeDefaultSelection")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeDefaultSelection {
   public static final String PATH = "path";
@@ -47,7 +47,7 @@ public class UiTreeDefaultSelection {
   public static final String ONE_TIME_ONLY = "oneTimeOnly";
   private Boolean oneTimeOnly = true;
 
-  public UiTreeDefaultSelection() { 
+  public UiTreeDefaultSelection() {
   }
 
   public UiTreeDefaultSelection path(UiTreePath path) {
@@ -56,14 +56,15 @@ public class UiTreeDefaultSelection {
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,20 +79,20 @@ public class UiTreeDefaultSelection {
     this.path = path;
   }
 
-
   public UiTreeDefaultSelection handleSelection(Boolean handleSelection) {
     
     this.handleSelection = handleSelection;
     return this;
   }
 
-   /**
+  /**
    * Signals whether the tree should handle the default selected node after rendering. 
    * @return handleSelection
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Signals whether the tree should handle the default selected node after rendering. ")
   @JsonProperty(HANDLE_SELECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,20 +107,20 @@ public class UiTreeDefaultSelection {
     this.handleSelection = handleSelection;
   }
 
-
   public UiTreeDefaultSelection oneTimeOnly(Boolean oneTimeOnly) {
     
     this.oneTimeOnly = oneTimeOnly;
     return this;
   }
 
-   /**
+  /**
    * Signals whether the selection should be set only during initialisation, or every time the tree is rendered. 
    * @return oneTimeOnly
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Signals whether the selection should be set only during initialisation, or every time the tree is rendered. ")
   @JsonProperty(ONE_TIME_ONLY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -133,7 +134,6 @@ public class UiTreeDefaultSelection {
   public void setOneTimeOnly(Boolean oneTimeOnly) {
     this.oneTimeOnly = oneTimeOnly;
   }
-
 
   @Override
   public boolean equals(Object o) {

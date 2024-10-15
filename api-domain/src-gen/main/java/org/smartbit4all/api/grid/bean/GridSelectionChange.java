@@ -32,11 +32,11 @@ import jakarta.validation.Valid;
 /**
  * This object contains all information about a grid&#39;s selection change. 
  */
+@Schema(description = "This object contains all information about a grid's selection change. ")
 @JsonPropertyOrder({
   GridSelectionChange.SELECTED,
   GridSelectionChange.UNSELECTED
 })
-@JsonTypeName("GridSelectionChange")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridSelectionChange {
   public static final String SELECTED = "selected";
@@ -45,7 +45,7 @@ public class GridSelectionChange {
   public static final String UNSELECTED = "unselected";
   private List<String> unselected = new ArrayList<>();
 
-  public GridSelectionChange() { 
+  public GridSelectionChange() {
   }
 
   public GridSelectionChange selected(List<String> selected) {
@@ -55,17 +55,21 @@ public class GridSelectionChange {
   }
 
   public GridSelectionChange addSelectedItem(String selectedItem) {
+    if (this.selected == null) {
+      this.selected = new ArrayList<>();
+    }
     this.selected.add(selectedItem);
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,7 +84,6 @@ public class GridSelectionChange {
     this.selected = selected;
   }
 
-
   public GridSelectionChange unselected(List<String> unselected) {
     
     this.unselected = unselected;
@@ -88,17 +91,21 @@ public class GridSelectionChange {
   }
 
   public GridSelectionChange addUnselectedItem(String unselectedItem) {
+    if (this.unselected == null) {
+      this.unselected = new ArrayList<>();
+    }
     this.unselected.add(unselectedItem);
     return this;
   }
 
-   /**
+  /**
    * Get unselected
    * @return unselected
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UNSELECTED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,7 +119,6 @@ public class GridSelectionChange {
   public void setUnselected(List<String> unselected) {
     this.unselected = unselected;
   }
-
 
   @Override
   public boolean equals(Object o) {

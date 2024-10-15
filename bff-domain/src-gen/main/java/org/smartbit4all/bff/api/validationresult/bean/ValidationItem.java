@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   ValidationItem.SEVERITY,
   ValidationItem.MESSAGE
 })
-@JsonTypeName("ValidationItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValidationItem {
   public static final String SEVERITY = "severity";
@@ -43,7 +42,7 @@ public class ValidationItem {
   public static final String MESSAGE = "message";
   private String message;
 
-  public ValidationItem() { 
+  public ValidationItem() {
   }
 
   public ValidationItem severity(ObjectValidationSeverity severity) {
@@ -52,13 +51,14 @@ public class ValidationItem {
     return this;
   }
 
-   /**
+  /**
    * Get severity
    * @return severity
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,19 +73,19 @@ public class ValidationItem {
     this.severity = severity;
   }
 
-
   public ValidationItem message(String message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * Get message
    * @return message
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class ValidationItem {
   public void setMessage(String message) {
     this.message = message;
   }
-
 
   @Override
   public boolean equals(Object o) {

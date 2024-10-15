@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. 
  */
+@Schema(description = "If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
 @JsonPropertyOrder({
   ACLOperation.NAME,
   ACLOperation.COMMENT,
   ACLOperation.TYPE
 })
-@JsonTypeName("ACLOperation")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLOperation {
   public static final String NAME = "name";
@@ -46,7 +46,7 @@ public class ACLOperation {
   public static final String TYPE = "type";
   private String type;
 
-  public ACLOperation() { 
+  public ACLOperation() {
   }
 
   public ACLOperation name(String name) {
@@ -55,13 +55,14 @@ public class ACLOperation {
     return this;
   }
 
-   /**
+  /**
    * The name of the operation that is the same as the one stored in the operations list.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the operation that is the same as the one stored in the operations list.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -76,19 +77,19 @@ public class ACLOperation {
     this.name = name;
   }
 
-
   public ACLOperation comment(String comment) {
     
     this.comment = comment;
     return this;
   }
 
-   /**
+  /**
    * This is a comment that can be set to specify the reason of having this operation set for  the given subject. 
    * @return comment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This is a comment that can be set to specify the reason of having this operation set for  the given subject. ")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,19 +104,19 @@ public class ACLOperation {
     this.comment = comment;
   }
 
-
   public ACLOperation type(String type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * If needed, a type can specified for this ALCSubject&#39;s operation. 
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If needed, a type can specified for this ALCSubject's operation. ")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +130,6 @@ public class ACLOperation {
   public void setType(String type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * This object represents the rage of an object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. The history range can be used to store our iteration while we are walking on the history to display or analyze it. If we create a list for iterating over the history then this object can be the model of the given page. 
  */
+@Schema(description = "This object represents the rage of an object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. The history range can be used to store our iteration while we are walking on the history to display or analyze it. If we create a list for iterating over the history then this object can be the model of the given page. ")
 @JsonPropertyOrder({
   ObjectHistoryRangeData.OBJECT_URI,
   ObjectHistoryRangeData.LOWER_BOUND,
   ObjectHistoryRangeData.UPPER_BOUND
 })
-@JsonTypeName("ObjectHistoryRangeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryRangeData {
   public static final String OBJECT_URI = "objectUri";
@@ -48,7 +48,7 @@ public class ObjectHistoryRangeData {
   public static final String UPPER_BOUND = "upperBound";
   private ObjectHistoryIteratorData upperBound;
 
-  public ObjectHistoryRangeData() { 
+  public ObjectHistoryRangeData() {
   }
 
   public ObjectHistoryRangeData objectUri(URI objectUri) {
@@ -57,13 +57,14 @@ public class ObjectHistoryRangeData {
     return this;
   }
 
-   /**
+  /**
    * The uri (let it be latest or version) of the object. The range refers its history.
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri (let it be latest or version) of the object. The range refers its history.")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,20 +79,20 @@ public class ObjectHistoryRangeData {
     this.objectUri = objectUri;
   }
 
-
   public ObjectHistoryRangeData lowerBound(ObjectHistoryIteratorData lowerBound) {
     
     this.lowerBound = lowerBound;
     return this;
   }
 
-   /**
+  /**
    * Get lowerBound
    * @return lowerBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,20 +107,20 @@ public class ObjectHistoryRangeData {
     this.lowerBound = lowerBound;
   }
 
-
   public ObjectHistoryRangeData upperBound(ObjectHistoryIteratorData upperBound) {
     
     this.upperBound = upperBound;
     return this;
   }
 
-   /**
+  /**
    * Get upperBound
    * @return upperBound
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +134,6 @@ public class ObjectHistoryRangeData {
   public void setUpperBound(ObjectHistoryIteratorData upperBound) {
     this.upperBound = upperBound;
   }
-
 
   @Override
   public boolean equals(Object o) {

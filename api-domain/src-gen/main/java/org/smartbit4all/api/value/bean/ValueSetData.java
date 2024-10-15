@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The instance of the ValueSetDefintion that conatins every information inline. 
  */
+@Schema(description = "The instance of the ValueSetDefintion that conatins every information inline. ")
 @JsonPropertyOrder({
   ValueSetData.QUALIFIED_NAME,
   ValueSetData.KEY_PROPERTY,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   ValueSetData.VALUES,
   ValueSetData.FILTER_MODEL
 })
-@JsonTypeName("ValueSetData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetData {
   public static final String QUALIFIED_NAME = "qualifiedName";
@@ -71,7 +71,7 @@ public class ValueSetData {
   public static final String FILTER_MODEL = "filterModel";
   private FilterExpressionBuilderModel filterModel = null;
 
-  public ValueSetData() { 
+  public ValueSetData() {
   }
 
   public ValueSetData qualifiedName(String qualifiedName) {
@@ -80,13 +80,14 @@ public class ValueSetData {
     return this;
   }
 
-   /**
+  /**
    * Get qualifiedName
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -101,19 +102,19 @@ public class ValueSetData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ValueSetData keyProperty(String keyProperty) {
     
     this.keyProperty = keyProperty;
     return this;
   }
 
-   /**
+  /**
    * The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. 
    * @return keyProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. ")
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +129,6 @@ public class ValueSetData {
     this.keyProperty = keyProperty;
   }
 
-
   public ValueSetData properties(List<PropertyDefinitionData> properties) {
     
     this.properties = properties;
@@ -136,18 +136,22 @@ public class ValueSetData {
   }
 
   public ValueSetData addPropertiesItem(PropertyDefinitionData propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new ArrayList<>();
+    }
     this.properties.add(propertiesItem);
     return this;
   }
 
-   /**
+  /**
    * Get properties
    * @return properties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -162,19 +166,19 @@ public class ValueSetData {
     this.properties = properties;
   }
 
-
   public ValueSetData iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Optional icon code for the given value set.
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional icon code for the given value set.")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -189,19 +193,19 @@ public class ValueSetData {
     this.iconCode = iconCode;
   }
 
-
   public ValueSetData undefined(Boolean undefined) {
     
     this.undefined = undefined;
     return this;
   }
 
-   /**
+  /**
    * If true then the value set is not defined and not accessible. 
    * @return undefined
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true then the value set is not defined and not accessible. ")
   @JsonProperty(UNDEFINED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -216,19 +220,19 @@ public class ValueSetData {
     this.undefined = undefined;
   }
 
-
   public ValueSetData lazy(Boolean lazy) {
     
     this.lazy = lazy;
     return this;
   }
 
-   /**
+  /**
    * If true then the values doesn&#39;t contains the the whole values set or it migth be empty and we have to ask for filtered set of values using the filter fields available. 
    * @return lazy
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true then the values doesn't contains the the whole values set or it migth be empty and we have to ask for filtered set of values using the filter fields available. ")
   @JsonProperty(LAZY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -243,7 +247,6 @@ public class ValueSetData {
     this.lazy = lazy;
   }
 
-
   public ValueSetData values(List<Object> values) {
     
     this.values = values;
@@ -251,17 +254,21 @@ public class ValueSetData {
   }
 
   public ValueSetData addValuesItem(Object valuesItem) {
+    if (this.values == null) {
+      this.values = new ArrayList<>();
+    }
     this.values.add(valuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get values
    * @return values
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -276,20 +283,20 @@ public class ValueSetData {
     this.values = values;
   }
 
-
   public ValueSetData filterModel(FilterExpressionBuilderModel filterModel) {
     
     this.filterModel = filterModel;
     return this;
   }
 
-   /**
+  /**
    * The filter expression model for the search from values.
    * @return filterModel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The filter expression model for the search from values.")
   @JsonProperty(FILTER_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,7 +310,6 @@ public class ValueSetData {
   public void setFilterModel(FilterExpressionBuilderModel filterModel) {
     this.filterModel = filterModel;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   SampleCategoryType.NAME,
   SampleCategoryType.DESCRIPTION
 })
-@JsonTypeName("SampleCategoryType")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleCategoryType {
   public static final String URI = "uri";
@@ -51,7 +50,7 @@ public class SampleCategoryType {
   public static final String DESCRIPTION = "description";
   private String description;
 
-  public SampleCategoryType() { 
+  public SampleCategoryType() {
   }
 
   public SampleCategoryType uri(URI uri) {
@@ -60,13 +59,14 @@ public class SampleCategoryType {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,19 +81,19 @@ public class SampleCategoryType {
     this.uri = uri;
   }
 
-
   public SampleCategoryType code(String code) {
     
     this.code = code;
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,19 +108,19 @@ public class SampleCategoryType {
     this.code = code;
   }
 
-
   public SampleCategoryType name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,19 +135,19 @@ public class SampleCategoryType {
     this.name = name;
   }
 
-
   public SampleCategoryType description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * Get description
    * @return description
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,6 @@ public class SampleCategoryType {
   public void setDescription(String description) {
     this.description = description;
   }
-
 
   @Override
   public boolean equals(Object o) {

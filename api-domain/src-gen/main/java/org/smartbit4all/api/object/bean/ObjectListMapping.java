@@ -34,28 +34,28 @@ import jakarta.validation.Valid;
 /**
  * This is a mapping definition that denotes the two property. 
  */
+@Schema(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
   ObjectListMapping.UNIQUE_PROPERTY_MAPPING,
   ObjectListMapping.FROM_PRIMITIVE_PATH,
   ObjectListMapping.TO_LIST_PATH,
   ObjectListMapping.OBJECT_MAPPING
 })
-@JsonTypeName("ObjectListMapping")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectListMapping {
   public static final String UNIQUE_PROPERTY_MAPPING = "uniquePropertyMapping";
   private ObjectPropertyMapping uniquePropertyMapping;
 
   public static final String FROM_PRIMITIVE_PATH = "fromPrimitivePath";
-  private List<String> fromPrimitivePath = null;
+  private List<String> fromPrimitivePath = new ArrayList<>();
 
   public static final String TO_LIST_PATH = "toListPath";
-  private List<String> toListPath = null;
+  private List<String> toListPath = new ArrayList<>();
 
   public static final String OBJECT_MAPPING = "objectMapping";
   private ObjectMappingDefinition objectMapping;
 
-  public ObjectListMapping() { 
+  public ObjectListMapping() {
   }
 
   public ObjectListMapping uniquePropertyMapping(ObjectPropertyMapping uniquePropertyMapping) {
@@ -64,13 +64,14 @@ public class ObjectListMapping {
     return this;
   }
 
-   /**
+  /**
    * Get uniquePropertyMapping
    * @return uniquePropertyMapping
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UNIQUE_PROPERTY_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,7 +85,6 @@ public class ObjectListMapping {
   public void setUniquePropertyMapping(ObjectPropertyMapping uniquePropertyMapping) {
     this.uniquePropertyMapping = uniquePropertyMapping;
   }
-
 
   public ObjectListMapping fromPrimitivePath(List<String> fromPrimitivePath) {
     
@@ -100,12 +100,13 @@ public class ObjectListMapping {
     return this;
   }
 
-   /**
+  /**
    * If it is set then we have to add this property as a primitive value to the list.
    * @return fromPrimitivePath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If it is set then we have to add this property as a primitive value to the list.")
   @JsonProperty(FROM_PRIMITIVE_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -119,7 +120,6 @@ public class ObjectListMapping {
   public void setFromPrimitivePath(List<String> fromPrimitivePath) {
     this.fromPrimitivePath = fromPrimitivePath;
   }
-
 
   public ObjectListMapping toListPath(List<String> toListPath) {
     
@@ -135,12 +135,13 @@ public class ObjectListMapping {
     return this;
   }
 
-   /**
+  /**
    * Get toListPath
    * @return toListPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TO_LIST_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -155,20 +156,20 @@ public class ObjectListMapping {
     this.toListPath = toListPath;
   }
 
-
   public ObjectListMapping objectMapping(ObjectMappingDefinition objectMapping) {
     
     this.objectMapping = objectMapping;
     return this;
   }
 
-   /**
+  /**
    * Get objectMapping
    * @return objectMapping
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,7 +183,6 @@ public class ObjectListMapping {
   public void setObjectMapping(ObjectMappingDefinition objectMapping) {
     this.objectMapping = objectMapping;
   }
-
 
   @Override
   public boolean equals(Object o) {

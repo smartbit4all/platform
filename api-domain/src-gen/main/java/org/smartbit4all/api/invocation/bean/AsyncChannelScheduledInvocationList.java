@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * For every asynchronous channel it is a central registry for the invocations to execute later. These invocations are  not owned by any of the runtimes, they are awaiting for picking up for execution. An active AsynInvocationRequest reside in this resigtry or in the RuntimeAsyncChannel object of the given runtime. 
  */
+@Schema(description = "For every asynchronous channel it is a central registry for the invocations to execute later. These invocations are  not owned by any of the runtimes, they are awaiting for picking up for execution. An active AsynInvocationRequest reside in this resigtry or in the RuntimeAsyncChannel object of the given runtime. ")
 @JsonPropertyOrder({
   AsyncChannelScheduledInvocationList.INVOCATION_REQUESTS
 })
-@JsonTypeName("AsyncChannelScheduledInvocationList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AsyncChannelScheduledInvocationList {
   public static final String INVOCATION_REQUESTS = "invocationRequests";
   private List<@Valid ScheduledInvocationRequest> invocationRequests = new ArrayList<>();
 
-  public AsyncChannelScheduledInvocationList() { 
+  public AsyncChannelScheduledInvocationList() {
   }
 
   public AsyncChannelScheduledInvocationList invocationRequests(List<@Valid ScheduledInvocationRequest> invocationRequests) {
@@ -52,18 +52,22 @@ public class AsyncChannelScheduledInvocationList {
   }
 
   public AsyncChannelScheduledInvocationList addInvocationRequestsItem(ScheduledInvocationRequest invocationRequestsItem) {
+    if (this.invocationRequests == null) {
+      this.invocationRequests = new ArrayList<>();
+    }
     this.invocationRequests.add(invocationRequestsItem);
     return this;
   }
 
-   /**
+  /**
    * The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.
    * @return invocationRequests
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.")
   @JsonProperty(INVOCATION_REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class AsyncChannelScheduledInvocationList {
   public void setInvocationRequests(List<@Valid ScheduledInvocationRequest> invocationRequests) {
     this.invocationRequests = invocationRequests;
   }
-
 
   @Override
   public boolean equals(Object o) {

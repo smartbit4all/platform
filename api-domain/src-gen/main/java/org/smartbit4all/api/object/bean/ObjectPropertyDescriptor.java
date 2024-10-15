@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
 /**
  * The object property is the descriptor of a property available for a management. 
  */
+@Schema(description = "The object property is the descriptor of a property available for a management. ")
 @JsonPropertyOrder({
   ObjectPropertyDescriptor.URI,
   ObjectPropertyDescriptor.PROPERTY_NAME,
@@ -53,7 +54,6 @@ import jakarta.validation.Valid;
   ObjectPropertyDescriptor.BUILT_IN,
   ObjectPropertyDescriptor.TAGS
 })
-@JsonTypeName("ObjectPropertyDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyDescriptor {
   public static final String URI = "uri";
@@ -130,7 +130,7 @@ public class ObjectPropertyDescriptor {
   public static final String TAGS = "tags";
   private List<String> tags = new ArrayList<>();
 
-  public ObjectPropertyDescriptor() { 
+  public ObjectPropertyDescriptor() {
   }
 
   public ObjectPropertyDescriptor uri(URI uri) {
@@ -139,14 +139,15 @@ public class ObjectPropertyDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -161,20 +162,20 @@ public class ObjectPropertyDescriptor {
     this.uri = uri;
   }
 
-
   public ObjectPropertyDescriptor propertyName(String propertyName) {
     
     this.propertyName = propertyName;
     return this;
   }
 
-   /**
+  /**
    * The string name of the property to be used to access it on its host object. 
    * @return propertyName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The string name of the property to be used to access it on its host object. ")
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -189,20 +190,20 @@ public class ObjectPropertyDescriptor {
     this.propertyName = propertyName;
   }
 
-
   public ObjectPropertyDescriptor propertyKind(PropertyKindEnum propertyKind) {
     
     this.propertyKind = propertyKind;
     return this;
   }
 
-   /**
+  /**
    * Denotes whether this property is a navigable storage reference or an inline value on the host object. 
    * @return propertyKind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Denotes whether this property is a navigable storage reference or an inline value on the host object. ")
   @JsonProperty(PROPERTY_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -217,20 +218,20 @@ public class ObjectPropertyDescriptor {
     this.propertyKind = propertyKind;
   }
 
-
   public ObjectPropertyDescriptor propertyQualifiedName(String propertyQualifiedName) {
     
     this.propertyQualifiedName = propertyQualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The class of the object denoted by this property. This is the actual type used, thus for referential properties this value is likely \&quot;java.net.URI\&quot;. 
    * @return propertyQualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The class of the object denoted by this property. This is the actual type used, thus for referential properties this value is likely \"java.net.URI\". ")
   @JsonProperty(PROPERTY_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -245,19 +246,19 @@ public class ObjectPropertyDescriptor {
     this.propertyQualifiedName = propertyQualifiedName;
   }
 
-
   public ObjectPropertyDescriptor referencedTypeQualifiedName(String referencedTypeQualifiedName) {
     
     this.referencedTypeQualifiedName = referencedTypeQualifiedName;
     return this;
   }
 
-   /**
+  /**
    * The class of the object referenced by the property. This shall have a value only, if this property is a REFERENCE property kind 
    * @return referencedTypeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The class of the object referenced by the property. This shall have a value only, if this property is a REFERENCE property kind ")
   @JsonProperty(REFERENCED_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,20 +273,20 @@ public class ObjectPropertyDescriptor {
     this.referencedTypeQualifiedName = referencedTypeQualifiedName;
   }
 
-
   public ObjectPropertyDescriptor aggregation(AggregationKind aggregation) {
     
     this.aggregation = aggregation;
     return this;
   }
 
-   /**
+  /**
    * Get aggregation
    * @return aggregation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(AGGREGATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -300,21 +301,21 @@ public class ObjectPropertyDescriptor {
     this.aggregation = aggregation;
   }
 
-
   public ObjectPropertyDescriptor propertyStructure(ReferencePropertyKind propertyStructure) {
     
     this.propertyStructure = propertyStructure;
     return this;
   }
 
-   /**
+  /**
    * Get propertyStructure
    * @return propertyStructure
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTY_STRUCTURE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -329,20 +330,20 @@ public class ObjectPropertyDescriptor {
     this.propertyStructure = propertyStructure;
   }
 
-
   public ObjectPropertyDescriptor valueSet(ValueSetDefinitionIdentifier valueSet) {
     
     this.valueSet = valueSet;
     return this;
   }
 
-   /**
+  /**
    * Get valueSet
    * @return valueSet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -357,20 +358,20 @@ public class ObjectPropertyDescriptor {
     this.valueSet = valueSet;
   }
 
-
   public ObjectPropertyDescriptor widget(SmartWidgetDefinition widget) {
     
     this.widget = widget;
     return this;
   }
 
-   /**
+  /**
    * The widget to use to render this property by default. If none are supplied during the construction of this instance, this property may be initialised using heuristics. 
    * @return widget
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The widget to use to render this property by default. If none are supplied during the construction of this instance, this property may be initialised using heuristics. ")
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -385,19 +386,19 @@ public class ObjectPropertyDescriptor {
     this.widget = widget;
   }
 
-
   public ObjectPropertyDescriptor defaultValue(Object defaultValue) {
     
     this.defaultValue = defaultValue;
     return this;
   }
 
-   /**
+  /**
    * The value this property should hold when an object owning this property is initialised. 
    * @return defaultValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The value this property should hold when an object owning this property is initialised. ")
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -412,20 +413,20 @@ public class ObjectPropertyDescriptor {
     this.defaultValue = defaultValue;
   }
 
-
   public ObjectPropertyDescriptor defaultConstraint(ObjectConstraintDescriptor defaultConstraint) {
     
     this.defaultConstraint = defaultConstraint;
     return this;
   }
 
-   /**
+  /**
    * Get defaultConstraint
    * @return defaultConstraint
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_CONSTRAINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -440,19 +441,19 @@ public class ObjectPropertyDescriptor {
     this.defaultConstraint = defaultConstraint;
   }
 
-
   public ObjectPropertyDescriptor builtIn(Boolean builtIn) {
     
     this.builtIn = builtIn;
     return this;
   }
 
-   /**
+  /**
    * Marks whether this property shall be treated as a &#39;built-in&#39; quality of the host object. Clients are not allowed to remove a &#39;built-in&#39; property from an object descriptor. 
    * @return builtIn
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Marks whether this property shall be treated as a 'built-in' quality of the host object. Clients are not allowed to remove a 'built-in' property from an object descriptor. ")
   @JsonProperty(BUILT_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -467,7 +468,6 @@ public class ObjectPropertyDescriptor {
     this.builtIn = builtIn;
   }
 
-
   public ObjectPropertyDescriptor tags(List<String> tags) {
     
     this.tags = tags;
@@ -475,17 +475,21 @@ public class ObjectPropertyDescriptor {
   }
 
   public ObjectPropertyDescriptor addTagsItem(String tagsItem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<>();
+    }
     this.tags.add(tagsItem);
     return this;
   }
 
-   /**
+  /**
    * An unrestricted enumeration of tags used for qualifying this descriptor. Applications may use these fields freely to decide whether or not this instance is an appropriate candidate for assembling an ObjectDescriptor, or may disregard it completely. 
    * @return tags
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "An unrestricted enumeration of tags used for qualifying this descriptor. Applications may use these fields freely to decide whether or not this instance is an appropriate candidate for assembling an ObjectDescriptor, or may disregard it completely. ")
   @JsonProperty(TAGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -499,7 +503,6 @@ public class ObjectPropertyDescriptor {
   public void setTags(List<String> tags) {
     this.tags = tags;
   }
-
 
   @Override
   public boolean equals(Object o) {

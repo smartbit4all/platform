@@ -48,7 +48,6 @@ import jakarta.validation.Valid;
   SmartComponentLayoutDefinition.FORM,
   SmartComponentLayoutDefinition.STYLE
 })
-@JsonTypeName("SmartComponentLayoutDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartComponentLayoutDefinition {
   public static final String IDENTIFIER = "identifier";
@@ -67,18 +66,18 @@ public class SmartComponentLayoutDefinition {
   private LayoutDirection direction;
 
   public static final String COMPONENTS = "components";
-  private List<@Valid SmartComponentLayoutDefinition> components = null;
+  private List<@Valid SmartComponentLayoutDefinition> components = new ArrayList<>();
 
   public static final String WIDGET = "widget";
   private SmartComponentWidgetDefinition widget;
 
   public static final String FORM = "form";
-  private List<SmartWidgetDefinition> form = null;
+  private List<SmartWidgetDefinition> form = new ArrayList<>();
 
   public static final String STYLE = "style";
   private Style style = null;
 
-  public SmartComponentLayoutDefinition() { 
+  public SmartComponentLayoutDefinition() {
   }
 
   public SmartComponentLayoutDefinition identifier(String identifier) {
@@ -87,12 +86,13 @@ public class SmartComponentLayoutDefinition {
     return this;
   }
 
-   /**
+  /**
    * An optional identifier to find this element in a layout hierarchy. 
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "An optional identifier to find this element in a layout hierarchy. ")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,21 +107,21 @@ public class SmartComponentLayoutDefinition {
     this.identifier = identifier;
   }
 
-
   public SmartComponentLayoutDefinition type(ComponentType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -136,19 +136,19 @@ public class SmartComponentLayoutDefinition {
     this.type = type;
   }
 
-
   public SmartComponentLayoutDefinition expandable(Boolean expandable) {
     
     this.expandable = expandable;
     return this;
   }
 
-   /**
+  /**
    * Get expandable
    * @return expandable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPANDABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,19 +163,19 @@ public class SmartComponentLayoutDefinition {
     this.expandable = expandable;
   }
 
-
   public SmartComponentLayoutDefinition expandableSectionLabel(String expandableSectionLabel) {
     
     this.expandableSectionLabel = expandableSectionLabel;
     return this;
   }
 
-   /**
+  /**
    * Get expandableSectionLabel
    * @return expandableSectionLabel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPANDABLE_SECTION_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,20 +190,20 @@ public class SmartComponentLayoutDefinition {
     this.expandableSectionLabel = expandableSectionLabel;
   }
 
-
   public SmartComponentLayoutDefinition direction(LayoutDirection direction) {
     
     this.direction = direction;
     return this;
   }
 
-   /**
+  /**
    * Get direction
    * @return direction
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,7 +217,6 @@ public class SmartComponentLayoutDefinition {
   public void setDirection(LayoutDirection direction) {
     this.direction = direction;
   }
-
 
   public SmartComponentLayoutDefinition components(List<@Valid SmartComponentLayoutDefinition> components) {
     
@@ -233,13 +232,14 @@ public class SmartComponentLayoutDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get components
    * @return components
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -254,20 +254,20 @@ public class SmartComponentLayoutDefinition {
     this.components = components;
   }
 
-
   public SmartComponentLayoutDefinition widget(SmartComponentWidgetDefinition widget) {
     
     this.widget = widget;
     return this;
   }
 
-   /**
+  /**
    * Get widget
    * @return widget
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -281,7 +281,6 @@ public class SmartComponentLayoutDefinition {
   public void setWidget(SmartComponentWidgetDefinition widget) {
     this.widget = widget;
   }
-
 
   public SmartComponentLayoutDefinition form(List<SmartWidgetDefinition> form) {
     
@@ -297,13 +296,14 @@ public class SmartComponentLayoutDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get form
    * @return form
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FORM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -318,20 +318,20 @@ public class SmartComponentLayoutDefinition {
     this.form = form;
   }
 
-
   public SmartComponentLayoutDefinition style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -345,7 +345,6 @@ public class SmartComponentLayoutDefinition {
   public void setStyle(Style style) {
     this.style = style;
   }
-
 
   @Override
   public boolean equals(Object o) {

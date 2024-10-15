@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * Update request for grid&#39;s current view&#39;s behaviour. 
  */
+@Schema(description = "Update request for grid's current view's behaviour. ")
 @JsonPropertyOrder({
   GridUpdateData.ORDERED_COLUMN_NAMES,
   GridUpdateData.ORDER_BY_LIST,
   GridUpdateData.PAGE_SIZE
 })
-@JsonTypeName("GridUpdateData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridUpdateData {
   public static final String ORDERED_COLUMN_NAMES = "orderedColumnNames";
@@ -50,7 +50,7 @@ public class GridUpdateData {
   public static final String PAGE_SIZE = "pageSize";
   private Integer pageSize;
 
-  public GridUpdateData() { 
+  public GridUpdateData() {
   }
 
   public GridUpdateData orderedColumnNames(List<String> orderedColumnNames) {
@@ -60,17 +60,21 @@ public class GridUpdateData {
   }
 
   public GridUpdateData addOrderedColumnNamesItem(String orderedColumnNamesItem) {
+    if (this.orderedColumnNames == null) {
+      this.orderedColumnNames = new ArrayList<>();
+    }
     this.orderedColumnNames.add(orderedColumnNamesItem);
     return this;
   }
 
-   /**
+  /**
    * Get orderedColumnNames
    * @return orderedColumnNames
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ORDERED_COLUMN_NAMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -85,7 +89,6 @@ public class GridUpdateData {
     this.orderedColumnNames = orderedColumnNames;
   }
 
-
   public GridUpdateData orderByList(List<FilterExpressionOrderBy> orderByList) {
     
     this.orderByList = orderByList;
@@ -93,18 +96,22 @@ public class GridUpdateData {
   }
 
   public GridUpdateData addOrderByListItem(FilterExpressionOrderBy orderByListItem) {
+    if (this.orderByList == null) {
+      this.orderByList = new ArrayList<>();
+    }
     this.orderByList.add(orderByListItem);
     return this;
   }
 
-   /**
+  /**
    * Get orderByList
    * @return orderByList
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ORDER_BY_LIST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -119,19 +126,19 @@ public class GridUpdateData {
     this.orderByList = orderByList;
   }
 
-
   public GridUpdateData pageSize(Integer pageSize) {
     
     this.pageSize = pageSize;
     return this;
   }
 
-   /**
+  /**
    * Get pageSize
    * @return pageSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +152,6 @@ public class GridUpdateData {
   public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
-
 
   @Override
   public boolean equals(Object o) {

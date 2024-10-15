@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * This object is a modification object to add, remove or modify the operations of the ACLSubjectOperations. 
  */
+@Schema(description = "This object is a modification object to add, remove or modify the operations of the ACLSubjectOperations. ")
 @JsonPropertyOrder({
   ACLSubjectOperationModification.SUBJECT,
   ACLSubjectOperationModification.TO_ADD,
   ACLSubjectOperationModification.TO_UPDATE,
   ACLSubjectOperationModification.TO_REMOVE
 })
-@JsonTypeName("ACLSubjectOperationModification")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectOperationModification {
   public static final String SUBJECT = "subject";
@@ -55,7 +55,7 @@ public class ACLSubjectOperationModification {
   public static final String TO_REMOVE = "toRemove";
   private List<String> toRemove = new ArrayList<>();
 
-  public ACLSubjectOperationModification() { 
+  public ACLSubjectOperationModification() {
   }
 
   public ACLSubjectOperationModification subject(Subject subject) {
@@ -64,14 +64,15 @@ public class ACLSubjectOperationModification {
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,7 +87,6 @@ public class ACLSubjectOperationModification {
     this.subject = subject;
   }
 
-
   public ACLSubjectOperationModification toAdd(List<@Valid ACLOperationReference> toAdd) {
     
     this.toAdd = toAdd;
@@ -94,18 +94,22 @@ public class ACLSubjectOperationModification {
   }
 
   public ACLSubjectOperationModification addToAddItem(ACLOperationReference toAddItem) {
+    if (this.toAdd == null) {
+      this.toAdd = new ArrayList<>();
+    }
     this.toAdd.add(toAddItem);
     return this;
   }
 
-   /**
+  /**
    * The operations to add. 
    * @return toAdd
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The operations to add. ")
   @JsonProperty(TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +124,6 @@ public class ACLSubjectOperationModification {
     this.toAdd = toAdd;
   }
 
-
   public ACLSubjectOperationModification toUpdate(List<@Valid ACLOperationReference> toUpdate) {
     
     this.toUpdate = toUpdate;
@@ -128,18 +131,22 @@ public class ACLSubjectOperationModification {
   }
 
   public ACLSubjectOperationModification addToUpdateItem(ACLOperationReference toUpdateItem) {
+    if (this.toUpdate == null) {
+      this.toUpdate = new ArrayList<>();
+    }
     this.toUpdate.add(toUpdateItem);
     return this;
   }
 
-   /**
+  /**
    * The operations to update. 
    * @return toUpdate
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The operations to update. ")
   @JsonProperty(TO_UPDATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -154,7 +161,6 @@ public class ACLSubjectOperationModification {
     this.toUpdate = toUpdate;
   }
 
-
   public ACLSubjectOperationModification toRemove(List<String> toRemove) {
     
     this.toRemove = toRemove;
@@ -162,17 +168,21 @@ public class ACLSubjectOperationModification {
   }
 
   public ACLSubjectOperationModification addToRemoveItem(String toRemoveItem) {
+    if (this.toRemove == null) {
+      this.toRemove = new ArrayList<>();
+    }
     this.toRemove.add(toRemoveItem);
     return this;
   }
 
-   /**
+  /**
    * The operations to remove from the subject. This is the unique identifier of the given operation. 
    * @return toRemove
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The operations to remove from the subject. This is the unique identifier of the given operation. ")
   @JsonProperty(TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -186,7 +196,6 @@ public class ACLSubjectOperationModification {
   public void setToRemove(List<String> toRemove) {
     this.toRemove = toRemove;
   }
-
 
   @Override
   public boolean equals(Object o) {

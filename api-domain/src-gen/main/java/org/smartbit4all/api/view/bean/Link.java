@@ -29,13 +29,13 @@ import jakarta.validation.Valid;
 /**
  * An anchor with a href representing a hyperlink object, which the client will open.  For possible attributes see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a 
  */
+@Schema(description = "An anchor with a href representing a hyperlink object, which the client will open.  For possible attributes see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a ")
 @JsonPropertyOrder({
   Link.URL,
   Link.DOWNLOAD,
   Link.FILENAME,
   Link.TARGET
 })
-@JsonTypeName("Link")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Link {
   public static final String URL = "url";
@@ -89,7 +89,7 @@ public class Link {
   public static final String TARGET = "target";
   private TargetEnum target;
 
-  public Link() { 
+  public Link() {
   }
 
   public Link url(String url) {
@@ -98,13 +98,14 @@ public class Link {
     return this;
   }
 
-   /**
+  /**
    * The URL that this link points to. It will be anchor&#39;s href attribute&#39;s value.
    * @return url
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The URL that this link points to. It will be anchor's href attribute's value.")
   @JsonProperty(URL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -119,19 +120,19 @@ public class Link {
     this.url = url;
   }
 
-
   public Link download(Boolean download) {
     
     this.download = download;
     return this;
   }
 
-   /**
+  /**
    * Specifies if created anchor should contain download attribute.
    * @return download
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Specifies if created anchor should contain download attribute.")
   @JsonProperty(DOWNLOAD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,19 +147,19 @@ public class Link {
     this.download = download;
   }
 
-
   public Link filename(String filename) {
     
     this.filename = filename;
     return this;
   }
 
-   /**
+  /**
    * Used only when download is true, it will download attribute&#39;s value
    * @return filename
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Used only when download is true, it will download attribute's value")
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,19 +174,19 @@ public class Link {
     this.filename = filename;
   }
 
-
   public Link target(TargetEnum target) {
     
     this.target = target;
     return this;
   }
 
-   /**
+  /**
    * Get target
    * @return target
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -199,7 +200,6 @@ public class Link {
   public void setTarget(TargetEnum target) {
     this.target = target;
   }
-
 
   @Override
   public boolean equals(Object o) {

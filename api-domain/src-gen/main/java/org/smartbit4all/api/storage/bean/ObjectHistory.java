@@ -38,16 +38,15 @@ import jakarta.validation.Valid;
   ObjectHistory.OBJECT_HISTORY_ENTRIES,
   ObjectHistory.SELECTED_VERSION_URI
 })
-@JsonTypeName("ObjectHistory")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistory {
   public static final String OBJECT_HISTORY_ENTRIES = "objectHistoryEntries";
-  private List<@Valid ObjectHistoryEntry> objectHistoryEntries = null;
+  private List<@Valid ObjectHistoryEntry> objectHistoryEntries = new ArrayList<>();
 
   public static final String SELECTED_VERSION_URI = "selectedVersionUri";
   private URI selectedVersionUri;
 
-  public ObjectHistory() { 
+  public ObjectHistory() {
   }
 
   public ObjectHistory objectHistoryEntries(List<@Valid ObjectHistoryEntry> objectHistoryEntries) {
@@ -64,13 +63,14 @@ public class ObjectHistory {
     return this;
   }
 
-   /**
+  /**
    * Get objectHistoryEntries
    * @return objectHistoryEntries
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_HISTORY_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,20 +85,20 @@ public class ObjectHistory {
     this.objectHistoryEntries = objectHistoryEntries;
   }
 
-
   public ObjectHistory selectedVersionUri(URI selectedVersionUri) {
     
     this.selectedVersionUri = selectedVersionUri;
     return this;
   }
 
-   /**
+  /**
    * Get selectedVersionUri
    * @return selectedVersionUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +112,6 @@ public class ObjectHistory {
   public void setSelectedVersionUri(URI selectedVersionUri) {
     this.selectedVersionUri = selectedVersionUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   DataChangeEvent.OLD_VALUES,
   DataChangeEvent.NEW_VALUES
 })
-@JsonTypeName("DataChangeEvent")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DataChangeEvent {
   public static final String KIND = "kind";
@@ -48,12 +47,12 @@ public class DataChangeEvent {
   private String source;
 
   public static final String OLD_VALUES = "oldValues";
-  private Map<String, Object> oldValues = null;
+  private Map<String, Object> oldValues = new HashMap<>();
 
   public static final String NEW_VALUES = "newValues";
-  private Map<String, Object> newValues = null;
+  private Map<String, Object> newValues = new HashMap<>();
 
-  public DataChangeEvent() { 
+  public DataChangeEvent() {
   }
 
   public DataChangeEvent kind(DataChangeKind kind) {
@@ -62,13 +61,14 @@ public class DataChangeEvent {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +83,19 @@ public class DataChangeEvent {
     this.kind = kind;
   }
 
-
   public DataChangeEvent source(String source) {
     
     this.source = source;
     return this;
   }
 
-   /**
+  /**
    * Source of the event, typically the key of the widget.
    * @return source
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Source of the event, typically the key of the widget.")
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,7 +109,6 @@ public class DataChangeEvent {
   public void setSource(String source) {
     this.source = source;
   }
-
 
   public DataChangeEvent oldValues(Map<String, Object> oldValues) {
     
@@ -125,12 +124,13 @@ public class DataChangeEvent {
     return this;
   }
 
-   /**
+  /**
    * Values before changed, in a key-value map.
    * @return oldValues
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Values before changed, in a key-value map.")
   @JsonProperty(OLD_VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +144,6 @@ public class DataChangeEvent {
   public void setOldValues(Map<String, Object> oldValues) {
     this.oldValues = oldValues;
   }
-
 
   public DataChangeEvent newValues(Map<String, Object> newValues) {
     
@@ -160,12 +159,13 @@ public class DataChangeEvent {
     return this;
   }
 
-   /**
+  /**
    * Values before changed, in a key-value map.
    * @return newValues
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Values before changed, in a key-value map.")
   @JsonProperty(NEW_VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,7 +179,6 @@ public class DataChangeEvent {
   public void setNewValues(Map<String, Object> newValues) {
     this.newValues = newValues;
   }
-
 
   @Override
   public boolean equals(Object o) {

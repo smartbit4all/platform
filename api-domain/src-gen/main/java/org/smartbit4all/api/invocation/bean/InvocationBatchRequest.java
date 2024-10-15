@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * A list of InvocationRequest that can be used for the InvocationApi functions. 
  */
+@Schema(description = "A list of InvocationRequest that can be used for the InvocationApi functions. ")
 @JsonPropertyOrder({
   InvocationBatchRequest.REQUESTS
 })
-@JsonTypeName("InvocationBatchRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationBatchRequest {
   public static final String REQUESTS = "requests";
   private List<@Valid InvocationRequest> requests = new ArrayList<>();
 
-  public InvocationBatchRequest() { 
+  public InvocationBatchRequest() {
   }
 
   public InvocationBatchRequest requests(List<@Valid InvocationRequest> requests) {
@@ -52,18 +52,22 @@ public class InvocationBatchRequest {
   }
 
   public InvocationBatchRequest addRequestsItem(InvocationRequest requestsItem) {
+    if (this.requests == null) {
+      this.requests = new ArrayList<>();
+    }
     this.requests.add(requestsItem);
     return this;
   }
 
-   /**
+  /**
    * The invocation requests included in the batch.
    * @return requests
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The invocation requests included in the batch.")
   @JsonProperty(REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +81,6 @@ public class InvocationBatchRequest {
   public void setRequests(List<@Valid InvocationRequest> requests) {
     this.requests = requests;
   }
-
 
   @Override
   public boolean equals(Object o) {

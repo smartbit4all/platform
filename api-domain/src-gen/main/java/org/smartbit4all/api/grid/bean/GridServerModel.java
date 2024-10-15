@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * This object represents the server model of a grid component. 
  */
+@Schema(description = "This object represents the server model of a grid component. ")
 @JsonPropertyOrder({
   GridServerModel.SELECTED_ROWS,
   GridServerModel.DEFAULT_GRID_DATA
 })
-@JsonTypeName("GridServerModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridServerModel {
   public static final String SELECTED_ROWS = "selectedRows";
@@ -46,7 +46,7 @@ public class GridServerModel {
   public static final String DEFAULT_GRID_DATA = "defaultGridData";
   private GridUpdateData defaultGridData;
 
-  public GridServerModel() { 
+  public GridServerModel() {
   }
 
   public GridServerModel selectedRows(Map<String, GridRow> selectedRows) {
@@ -60,14 +60,15 @@ public class GridServerModel {
     return this;
   }
 
-   /**
+  /**
    * Get selectedRows
    * @return selectedRows
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_ROWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +83,20 @@ public class GridServerModel {
     this.selectedRows = selectedRows;
   }
 
-
   public GridServerModel defaultGridData(GridUpdateData defaultGridData) {
     
     this.defaultGridData = defaultGridData;
     return this;
   }
 
-   /**
+  /**
    * Get defaultGridData
    * @return defaultGridData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_GRID_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,7 +110,6 @@ public class GridServerModel {
   public void setDefaultGridData(GridUpdateData defaultGridData) {
     this.defaultGridData = defaultGridData;
   }
-
 
   @Override
   public boolean equals(Object o) {

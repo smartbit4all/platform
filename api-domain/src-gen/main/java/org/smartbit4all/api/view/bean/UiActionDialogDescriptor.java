@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 /**
  * Describes the look of a dialog that is related to a specific UiAction. 
  */
+@Schema(description = "Describes the look of a dialog that is related to a specific UiAction. ")
 @JsonPropertyOrder({
   UiActionDialogDescriptor.TITLE,
   UiActionDialogDescriptor.PLACEHOLDER,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   UiActionDialogDescriptor.ACTION_BUTTON,
   UiActionDialogDescriptor.CANCEL_BUTTON
 })
-@JsonTypeName("UiActionDialogDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionDialogDescriptor {
   public static final String TITLE = "title";
@@ -59,7 +59,7 @@ public class UiActionDialogDescriptor {
   public static final String CANCEL_BUTTON = "cancelButton";
   private UiActionButtonDescriptor cancelButton;
 
-  public UiActionDialogDescriptor() { 
+  public UiActionDialogDescriptor() {
   }
 
   public UiActionDialogDescriptor title(String title) {
@@ -68,13 +68,14 @@ public class UiActionDialogDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -89,19 +90,19 @@ public class UiActionDialogDescriptor {
     this.title = title;
   }
 
-
   public UiActionDialogDescriptor placeholder(String placeholder) {
     
     this.placeholder = placeholder;
     return this;
   }
 
-   /**
+  /**
    * Get placeholder
    * @return placeholder
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,19 +117,19 @@ public class UiActionDialogDescriptor {
     this.placeholder = placeholder;
   }
 
-
   public UiActionDialogDescriptor text(String text) {
     
     this.text = text;
     return this;
   }
 
-   /**
+  /**
    * Get text
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,19 +144,19 @@ public class UiActionDialogDescriptor {
     this.text = text;
   }
 
-
   public UiActionDialogDescriptor mask(String mask) {
     
     this.mask = mask;
     return this;
   }
 
-   /**
+  /**
    * Get mask
    * @return mask
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MASK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,21 +171,21 @@ public class UiActionDialogDescriptor {
     this.mask = mask;
   }
 
-
   public UiActionDialogDescriptor actionButton(UiActionButtonDescriptor actionButton) {
     
     this.actionButton = actionButton;
     return this;
   }
 
-   /**
+  /**
    * Get actionButton
    * @return actionButton
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTION_BUTTON)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -199,21 +200,21 @@ public class UiActionDialogDescriptor {
     this.actionButton = actionButton;
   }
 
-
   public UiActionDialogDescriptor cancelButton(UiActionButtonDescriptor cancelButton) {
     
     this.cancelButton = cancelButton;
     return this;
   }
 
-   /**
+  /**
    * Get cancelButton
    * @return cancelButton
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CANCEL_BUTTON)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -227,7 +228,6 @@ public class UiActionDialogDescriptor {
   public void setCancelButton(UiActionButtonDescriptor cancelButton) {
     this.cancelButton = cancelButton;
   }
-
 
   @Override
   public boolean equals(Object o) {

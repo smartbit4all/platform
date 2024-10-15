@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   ObjectValidationOperationDescriptor.TARGET,
   ObjectValidationOperationDescriptor.OPERATION_CODE
 })
-@JsonTypeName("ObjectValidationOperationDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationOperationDescriptor {
   public static final String TARGET = "target";
@@ -42,7 +41,7 @@ public class ObjectValidationOperationDescriptor {
   public static final String OPERATION_CODE = "operationCode";
   private String operationCode;
 
-  public ObjectValidationOperationDescriptor() { 
+  public ObjectValidationOperationDescriptor() {
   }
 
   public ObjectValidationOperationDescriptor target(String target) {
@@ -51,12 +50,13 @@ public class ObjectValidationOperationDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The name of the ObjectValidationOperation&#39;s context, to be interpreted by the specific runtime. Describes on what object and when to perform the referenced validation operation. 
    * @return target
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the ObjectValidationOperation's context, to be interpreted by the specific runtime. Describes on what object and when to perform the referenced validation operation. ")
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +71,19 @@ public class ObjectValidationOperationDescriptor {
     this.target = target;
   }
 
-
   public ObjectValidationOperationDescriptor operationCode(String operationCode) {
     
     this.operationCode = operationCode;
     return this;
   }
 
-   /**
+  /**
    * The unique code of the ObjectValidationOperation to be performed (this is managed by the system integration MDM of the current runtime). 
    * @return operationCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique code of the ObjectValidationOperation to be performed (this is managed by the system integration MDM of the current runtime). ")
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +97,6 @@ public class ObjectValidationOperationDescriptor {
   public void setOperationCode(String operationCode) {
     this.operationCode = operationCode;
   }
-
 
   @Override
   public boolean equals(Object o) {

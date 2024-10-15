@@ -43,7 +43,6 @@ import jakarta.validation.Valid;
   AccountInfo.ROLES,
   AccountInfo.PARAMETERS
 })
-@JsonTypeName("AccountInfo")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AccountInfo {
   public static final String KIND = "kind";
@@ -62,12 +61,12 @@ public class AccountInfo {
   private String imageFormat;
 
   public static final String ROLES = "roles";
-  private List<String> roles = null;
+  private List<String> roles = new ArrayList<>();
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, String> parameters = null;
+  private Map<String, String> parameters = new HashMap<>();
 
-  public AccountInfo() { 
+  public AccountInfo() {
   }
 
   public AccountInfo kind(String kind) {
@@ -76,13 +75,14 @@ public class AccountInfo {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,20 +97,20 @@ public class AccountInfo {
     this.kind = kind;
   }
 
-
   public AccountInfo userName(String userName) {
     
     this.userName = userName;
     return this;
   }
 
-   /**
+  /**
    * Get userName
    * @return userName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USER_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -125,20 +125,20 @@ public class AccountInfo {
     this.userName = userName;
   }
 
-
   public AccountInfo displayName(String displayName) {
     
     this.displayName = displayName;
     return this;
   }
 
-   /**
+  /**
    * Get displayName
    * @return displayName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -153,19 +153,19 @@ public class AccountInfo {
     this.displayName = displayName;
   }
 
-
   public AccountInfo imageContent(byte[] imageContent) {
     
     this.imageContent = imageContent;
     return this;
   }
 
-   /**
+  /**
    * Get imageContent
    * @return imageContent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IMAGE_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +180,19 @@ public class AccountInfo {
     this.imageContent = imageContent;
   }
 
-
   public AccountInfo imageFormat(String imageFormat) {
     
     this.imageFormat = imageFormat;
     return this;
   }
 
-   /**
+  /**
    * Get imageFormat
    * @return imageFormat
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IMAGE_FORMAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +206,6 @@ public class AccountInfo {
   public void setImageFormat(String imageFormat) {
     this.imageFormat = imageFormat;
   }
-
 
   public AccountInfo roles(List<String> roles) {
     
@@ -222,12 +221,13 @@ public class AccountInfo {
     return this;
   }
 
-   /**
+  /**
    * Get roles
    * @return roles
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROLES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -241,7 +241,6 @@ public class AccountInfo {
   public void setRoles(List<String> roles) {
     this.roles = roles;
   }
-
 
   public AccountInfo parameters(Map<String, String> parameters) {
     
@@ -257,12 +256,13 @@ public class AccountInfo {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -276,7 +276,6 @@ public class AccountInfo {
   public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

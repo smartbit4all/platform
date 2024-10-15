@@ -38,16 +38,15 @@ import jakarta.validation.Valid;
   NavigationResponse.ASSOCIATION_META_URI,
   NavigationResponse.REFERENCE_ENTRIES
 })
-@JsonTypeName("NavigationResponse")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationResponse {
   public static final String ASSOCIATION_META_URI = "associationMetaUri";
   private URI associationMetaUri;
 
   public static final String REFERENCE_ENTRIES = "referenceEntries";
-  private List<@Valid NavigationReferenceEntry> referenceEntries = null;
+  private List<@Valid NavigationReferenceEntry> referenceEntries = new ArrayList<>();
 
-  public NavigationResponse() { 
+  public NavigationResponse() {
   }
 
   public NavigationResponse associationMetaUri(URI associationMetaUri) {
@@ -56,13 +55,14 @@ public class NavigationResponse {
     return this;
   }
 
-   /**
+  /**
    * Get associationMetaUri
    * @return associationMetaUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ASSOCIATION_META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,7 +76,6 @@ public class NavigationResponse {
   public void setAssociationMetaUri(URI associationMetaUri) {
     this.associationMetaUri = associationMetaUri;
   }
-
 
   public NavigationResponse referenceEntries(List<@Valid NavigationReferenceEntry> referenceEntries) {
     
@@ -92,13 +91,14 @@ public class NavigationResponse {
     return this;
   }
 
-   /**
+  /**
    * Get referenceEntries
    * @return referenceEntries
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFERENCE_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +112,6 @@ public class NavigationResponse {
   public void setReferenceEntries(List<@Valid NavigationReferenceEntry> referenceEntries) {
     this.referenceEntries = referenceEntries;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * This object is one item on the toolbar. The most tipical that it is an action referring to the action registry. 
  */
+@Schema(description = "This object is one item on the toolbar. The most tipical that it is an action referring to the action registry. ")
 @JsonPropertyOrder({
   ToolbarItem.KIND,
   ToolbarItem.OPERATION,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   ToolbarItem.ACTION_DEFINITION_URI,
   ToolbarItem.DESCRIPTOR
 })
-@JsonTypeName("ToolbarItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarItem {
   public static final String KIND = "kind";
@@ -67,7 +67,7 @@ public class ToolbarItem {
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor = null;
 
-  public ToolbarItem() { 
+  public ToolbarItem() {
   }
 
   public ToolbarItem kind(ToolbarItemKind kind) {
@@ -76,13 +76,14 @@ public class ToolbarItem {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,20 +98,20 @@ public class ToolbarItem {
     this.kind = kind;
   }
 
-
   public ToolbarItem operation(ToolbarItemOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,19 +126,19 @@ public class ToolbarItem {
     this.operation = operation;
   }
 
-
   public ToolbarItem referredToolbar(String referredToolbar) {
     
     this.referredToolbar = referredToolbar;
     return this;
   }
 
-   /**
+  /**
    * The qualified name fo the referenced toolbar that defines the inline items or the sub menu items. 
    * @return referredToolbar
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The qualified name fo the referenced toolbar that defines the inline items or the sub menu items. ")
   @JsonProperty(REFERRED_TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,20 +153,20 @@ public class ToolbarItem {
     this.referredToolbar = referredToolbar;
   }
 
-
   public ToolbarItem toolbar(ToolbarDefinitionData toolbar) {
     
     this.toolbar = toolbar;
     return this;
   }
 
-   /**
+  /**
    * Get toolbar
    * @return toolbar
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +181,19 @@ public class ToolbarItem {
     this.toolbar = toolbar;
   }
 
-
   public ToolbarItem action(String action) {
     
     this.action = action;
     return this;
   }
 
-   /**
+  /**
    * The qualified name of the action. 
    * @return action
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The qualified name of the action. ")
   @JsonProperty(ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,20 +208,20 @@ public class ToolbarItem {
     this.action = action;
   }
 
-
   public ToolbarItem actionDefinitionUri(URI actionDefinitionUri) {
     
     this.actionDefinitionUri = actionDefinitionUri;
     return this;
   }
 
-   /**
+  /**
    * asd 
    * @return actionDefinitionUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "asd ")
   @JsonProperty(ACTION_DEFINITION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,20 +236,20 @@ public class ToolbarItem {
     this.actionDefinitionUri = actionDefinitionUri;
   }
 
-
   public ToolbarItem descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
   }
 
-   /**
+  /**
    * The UiAction descriptor for the action if we would like to override it in the give toolbar. 
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The UiAction descriptor for the action if we would like to override it in the give toolbar. ")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +263,6 @@ public class ToolbarItem {
   public void setDescriptor(UiActionDescriptor descriptor) {
     this.descriptor = descriptor;
   }
-
 
   @Override
   public boolean equals(Object o) {

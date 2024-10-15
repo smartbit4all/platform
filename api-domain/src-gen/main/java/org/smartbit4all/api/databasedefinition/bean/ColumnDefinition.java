@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The meta of a column in a database table. 
  */
+@Schema(description = "The meta of a column in a database table. ")
 @JsonPropertyOrder({
   ColumnDefinition.NAME,
   ColumnDefinition.TYPE_DEFINITION,
@@ -39,7 +40,6 @@ import jakarta.validation.Valid;
   ColumnDefinition.COMMENT,
   ColumnDefinition.OPERATION
 })
-@JsonTypeName("ColumnDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ColumnDefinition {
   public static final String NAME = "name";
@@ -60,7 +60,7 @@ public class ColumnDefinition {
   public static final String OPERATION = "operation";
   private AlterOperation operation;
 
-  public ColumnDefinition() { 
+  public ColumnDefinition() {
   }
 
   public ColumnDefinition name(String name) {
@@ -69,12 +69,13 @@ public class ColumnDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -89,20 +90,20 @@ public class ColumnDefinition {
     this.name = name;
   }
 
-
   public ColumnDefinition typeDefinition(ColumnTypeDefinition typeDefinition) {
     
     this.typeDefinition = typeDefinition;
     return this;
   }
 
-   /**
+  /**
    * Get typeDefinition
    * @return typeDefinition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,19 +118,19 @@ public class ColumnDefinition {
     this.typeDefinition = typeDefinition;
   }
 
-
   public ColumnDefinition nullable(Boolean nullable) {
     
     this.nullable = nullable;
     return this;
   }
 
-   /**
+  /**
    * Get nullable
    * @return nullable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NULLABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,19 +145,19 @@ public class ColumnDefinition {
     this.nullable = nullable;
   }
 
-
   public ColumnDefinition defaultValue(String defaultValue) {
     
     this.defaultValue = defaultValue;
     return this;
   }
 
-   /**
+  /**
    * Get defaultValue
    * @return defaultValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,19 +172,19 @@ public class ColumnDefinition {
     this.defaultValue = defaultValue;
   }
 
-
   public ColumnDefinition comment(String comment) {
     
     this.comment = comment;
     return this;
   }
 
-   /**
+  /**
    * Get comment
    * @return comment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -198,20 +199,20 @@ public class ColumnDefinition {
     this.comment = comment;
   }
 
-
   public ColumnDefinition operation(AlterOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -225,7 +226,6 @@ public class ColumnDefinition {
   public void setOperation(AlterOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   TreeModel.ROOT_NODES,
   TreeModel.SELECTED_NODE_IDENTIFIER
 })
-@JsonTypeName("TreeModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TreeModel {
   public static final String ROOT_NODES = "rootNodes";
@@ -46,7 +45,7 @@ public class TreeModel {
   public static final String SELECTED_NODE_IDENTIFIER = "selectedNodeIdentifier";
   private String selectedNodeIdentifier;
 
-  public TreeModel() { 
+  public TreeModel() {
   }
 
   public TreeModel rootNodes(List<@Valid TreeNode> rootNodes) {
@@ -56,18 +55,22 @@ public class TreeModel {
   }
 
   public TreeModel addRootNodesItem(TreeNode rootNodesItem) {
+    if (this.rootNodes == null) {
+      this.rootNodes = new ArrayList<>();
+    }
     this.rootNodes.add(rootNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get rootNodes
    * @return rootNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ROOT_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,19 +85,19 @@ public class TreeModel {
     this.rootNodes = rootNodes;
   }
 
-
   public TreeModel selectedNodeIdentifier(String selectedNodeIdentifier) {
     
     this.selectedNodeIdentifier = selectedNodeIdentifier;
     return this;
   }
 
-   /**
+  /**
    * Get selectedNodeIdentifier
    * @return selectedNodeIdentifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_NODE_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +111,6 @@ public class TreeModel {
   public void setSelectedNodeIdentifier(String selectedNodeIdentifier) {
     this.selectedNodeIdentifier = selectedNodeIdentifier;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -51,7 +51,6 @@ import jakarta.validation.Valid;
   UiAction.TOOLBAR,
   UiAction.DISABLED
 })
-@JsonTypeName("UiAction")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiAction {
   public static final String CODE = "code";
@@ -79,13 +78,13 @@ public class UiAction {
   private Boolean confirm = false;
 
   public static final String PARAMS = "params";
-  private Map<String, Object> params = null;
+  private Map<String, Object> params = new HashMap<>();
 
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor;
 
   public static final String SUB_ACTIONS = "subActions";
-  private List<@Valid UiAction> subActions = null;
+  private List<@Valid UiAction> subActions = new ArrayList<>();
 
   public static final String TOOLBAR = "toolbar";
   private String toolbar;
@@ -93,7 +92,7 @@ public class UiAction {
   public static final String DISABLED = "disabled";
   private Boolean disabled;
 
-  public UiAction() { 
+  public UiAction() {
   }
 
   public UiAction code(String code) {
@@ -102,12 +101,13 @@ public class UiAction {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,19 +122,19 @@ public class UiAction {
     this.code = code;
   }
 
-
   public UiAction path(String path) {
     
     this.path = path;
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,19 +149,19 @@ public class UiAction {
     this.path = path;
   }
 
-
   public UiAction identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,20 +176,20 @@ public class UiAction {
     this.identifier = identifier;
   }
 
-
   public UiAction inputType(UiActionInputType inputType) {
     
     this.inputType = inputType;
     return this;
   }
 
-   /**
+  /**
    * Get inputType
    * @return inputType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INPUT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -204,20 +204,20 @@ public class UiAction {
     this.inputType = inputType;
   }
 
-
   public UiAction input2Type(UiActionInputType input2Type) {
     
     this.input2Type = input2Type;
     return this;
   }
 
-   /**
+  /**
    * Get input2Type
    * @return input2Type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INPUT2_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,19 +232,19 @@ public class UiAction {
     this.input2Type = input2Type;
   }
 
-
   public UiAction submit(Boolean submit) {
     
     this.submit = submit;
     return this;
   }
 
-   /**
+  /**
    * If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.
    * @return submit
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.")
   @JsonProperty(SUBMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,19 +259,19 @@ public class UiAction {
     this.submit = submit;
   }
 
-
   public UiAction model(Boolean model) {
     
     this.model = model;
     return this;
   }
 
-   /**
+  /**
    * If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -286,19 +286,19 @@ public class UiAction {
     this.model = model;
   }
 
-
   public UiAction confirm(Boolean confirm) {
     
     this.confirm = confirm;
     return this;
   }
 
-   /**
+  /**
    * Get confirm
    * @return confirm
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONFIRM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -312,7 +312,6 @@ public class UiAction {
   public void setConfirm(Boolean confirm) {
     this.confirm = confirm;
   }
-
 
   public UiAction params(Map<String, Object> params) {
     
@@ -328,12 +327,13 @@ public class UiAction {
     return this;
   }
 
-   /**
+  /**
    * Additional parameters for executing the UI action. 
    * @return params
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Additional parameters for executing the UI action. ")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -348,20 +348,20 @@ public class UiAction {
     this.params = params;
   }
 
-
   public UiAction descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
   }
 
-   /**
+  /**
    * Get descriptor
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -375,7 +375,6 @@ public class UiAction {
   public void setDescriptor(UiActionDescriptor descriptor) {
     this.descriptor = descriptor;
   }
-
 
   public UiAction subActions(List<@Valid UiAction> subActions) {
     
@@ -391,13 +390,14 @@ public class UiAction {
     return this;
   }
 
-   /**
+  /**
    * The sub action are set if and only if this action is a sub menu. The sub actions can be null.
    * @return subActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The sub action are set if and only if this action is a sub menu. The sub actions can be null.")
   @JsonProperty(SUB_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -412,19 +412,19 @@ public class UiAction {
     this.subActions = subActions;
   }
 
-
   public UiAction toolbar(String toolbar) {
     
     this.toolbar = toolbar;
     return this;
   }
 
-   /**
+  /**
    * The id of toolbar which this UiAction should be placed on.
    * @return toolbar
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The id of toolbar which this UiAction should be placed on.")
   @JsonProperty(TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -439,19 +439,19 @@ public class UiAction {
     this.toolbar = toolbar;
   }
 
-
   public UiAction disabled(Boolean disabled) {
     
     this.disabled = disabled;
     return this;
   }
 
-   /**
+  /**
    * Whether this action should appear disabled or not.
    * @return disabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Whether this action should appear disabled or not.")
   @JsonProperty(DISABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -465,7 +465,6 @@ public class UiAction {
   public void setDisabled(Boolean disabled) {
     this.disabled = disabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

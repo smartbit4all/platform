@@ -45,7 +45,6 @@ import jakarta.validation.Valid;
   SB4Command.SUCCESSFUL_EXIT_CODES,
   SB4Command.ON_ERROR_COMMANDS
 })
-@JsonTypeName("SB4Command")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4Command {
   public static final String ID = "id";
@@ -69,7 +68,7 @@ public class SB4Command {
   public static final String ON_ERROR_COMMANDS = "onErrorCommands";
   private List<@Valid SB4Command> onErrorCommands = new ArrayList<>();
 
-  public SB4Command() { 
+  public SB4Command() {
   }
 
   public SB4Command id(UUID id) {
@@ -78,14 +77,15 @@ public class SB4Command {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,21 +100,21 @@ public class SB4Command {
     this.id = id;
   }
 
-
   public SB4Command commandKind(CommandKind commandKind) {
     
     this.commandKind = commandKind;
     return this;
   }
 
-   /**
+  /**
    * Get commandKind
    * @return commandKind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -129,21 +129,21 @@ public class SB4Command {
     this.commandKind = commandKind;
   }
 
-
   public SB4Command restUrl(URI restUrl) {
     
     this.restUrl = restUrl;
     return this;
   }
 
-   /**
+  /**
    * Get restUrl
    * @return restUrl
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REST_URL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -158,7 +158,6 @@ public class SB4Command {
     this.restUrl = restUrl;
   }
 
-
   public SB4Command sb4Files(List<@Valid SB4File> sb4Files) {
     
     this.sb4Files = sb4Files;
@@ -166,18 +165,22 @@ public class SB4Command {
   }
 
   public SB4Command addSb4FilesItem(SB4File sb4FilesItem) {
+    if (this.sb4Files == null) {
+      this.sb4Files = new ArrayList<>();
+    }
     this.sb4Files.add(sb4FilesItem);
     return this;
   }
 
-   /**
+  /**
    * Get sb4Files
    * @return sb4Files
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SB4_FILES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -192,20 +195,20 @@ public class SB4Command {
     this.sb4Files = sb4Files;
   }
 
-
   public SB4Command command(String command) {
     
     this.command = command;
     return this;
   }
 
-   /**
+  /**
    * Get command
    * @return command
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COMMAND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -220,7 +223,6 @@ public class SB4Command {
     this.command = command;
   }
 
-
   public SB4Command successfulExitCodes(List<Integer> successfulExitCodes) {
     
     this.successfulExitCodes = successfulExitCodes;
@@ -228,17 +230,21 @@ public class SB4Command {
   }
 
   public SB4Command addSuccessfulExitCodesItem(Integer successfulExitCodesItem) {
+    if (this.successfulExitCodes == null) {
+      this.successfulExitCodes = new ArrayList<>();
+    }
     this.successfulExitCodes.add(successfulExitCodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get successfulExitCodes
    * @return successfulExitCodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUCCESSFUL_EXIT_CODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -253,7 +259,6 @@ public class SB4Command {
     this.successfulExitCodes = successfulExitCodes;
   }
 
-
   public SB4Command onErrorCommands(List<@Valid SB4Command> onErrorCommands) {
     
     this.onErrorCommands = onErrorCommands;
@@ -261,18 +266,22 @@ public class SB4Command {
   }
 
   public SB4Command addOnErrorCommandsItem(SB4Command onErrorCommandsItem) {
+    if (this.onErrorCommands == null) {
+      this.onErrorCommands = new ArrayList<>();
+    }
     this.onErrorCommands.add(onErrorCommandsItem);
     return this;
   }
 
-   /**
+  /**
    * Get onErrorCommands
    * @return onErrorCommands
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ON_ERROR_COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -286,7 +295,6 @@ public class SB4Command {
   public void setOnErrorCommands(List<@Valid SB4Command> onErrorCommands) {
     this.onErrorCommands = onErrorCommands;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -36,6 +36,7 @@ import jakarta.validation.Valid;
 /**
  * This object represents the client model of a grid component. 
  */
+@Schema(description = "This object represents the client model of a grid component. ")
 @JsonPropertyOrder({
   GridModel.VIEW_UUID,
   GridModel.IDENTIFIER,
@@ -53,7 +54,6 @@ import jakarta.validation.Valid;
   GridModel.DEFAULT_ROW_ACTIONS,
   GridModel.PAGINATOR
 })
-@JsonTypeName("GridModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridModel {
   public static final String VIEW_UUID = "viewUuid";
@@ -66,7 +66,7 @@ public class GridModel {
   private String qualifier;
 
   public static final String AVAILABLE_VIEWS = "availableViews";
-  private List<@Valid GridView> availableViews = null;
+  private List<@Valid GridView> availableViews = new ArrayList<>();
 
   public static final String VIEW = "view";
   private GridView view;
@@ -93,15 +93,15 @@ public class GridModel {
   private Integer pageSize;
 
   public static final String PAGE_SIZE_OPTIONS = "pageSizeOptions";
-  private List<Integer> pageSizeOptions = null;
+  private List<Integer> pageSizeOptions = new ArrayList<>();
 
   public static final String DEFAULT_ROW_ACTIONS = "defaultRowActions";
-  private List<String> defaultRowActions = null;
+  private List<String> defaultRowActions = new ArrayList<>();
 
   public static final String PAGINATOR = "paginator";
   private Boolean paginator;
 
-  public GridModel() { 
+  public GridModel() {
   }
 
   public GridModel viewUuid(UUID viewUuid) {
@@ -110,13 +110,14 @@ public class GridModel {
     return this;
   }
 
-   /**
+  /**
    * Get viewUuid
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,19 +132,19 @@ public class GridModel {
     this.viewUuid = viewUuid;
   }
 
-
   public GridModel identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,19 +159,19 @@ public class GridModel {
     this.identifier = identifier;
   }
 
-
   public GridModel qualifier(String qualifier) {
     
     this.qualifier = qualifier;
     return this;
   }
 
-   /**
+  /**
    * Get qualifier
    * @return qualifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(QUALIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,7 +185,6 @@ public class GridModel {
   public void setQualifier(String qualifier) {
     this.qualifier = qualifier;
   }
-
 
   public GridModel availableViews(List<@Valid GridView> availableViews) {
     
@@ -200,13 +200,14 @@ public class GridModel {
     return this;
   }
 
-   /**
+  /**
    * Get availableViews
    * @return availableViews
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(AVAILABLE_VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,20 +222,20 @@ public class GridModel {
     this.availableViews = availableViews;
   }
 
-
   public GridModel view(GridView view) {
     
     this.view = view;
     return this;
   }
 
-   /**
+  /**
    * Get view
    * @return view
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -249,20 +250,20 @@ public class GridModel {
     this.view = view;
   }
 
-
   public GridModel accessConfig(GridDataAccessConfig accessConfig) {
     
     this.accessConfig = accessConfig;
     return this;
   }
 
-   /**
+  /**
    * Get accessConfig
    * @return accessConfig
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACCESS_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -277,21 +278,21 @@ public class GridModel {
     this.accessConfig = accessConfig;
   }
 
-
   public GridModel page(GridPage page) {
     
     this.page = page;
     return this;
   }
 
-   /**
+  /**
    * Get page
    * @return page
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -306,19 +307,19 @@ public class GridModel {
     this.page = page;
   }
 
-
   public GridModel totalRowCount(Integer totalRowCount) {
     
     this.totalRowCount = totalRowCount;
     return this;
   }
 
-   /**
+  /**
    * Get totalRowCount
    * @return totalRowCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOTAL_ROW_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -333,19 +334,19 @@ public class GridModel {
     this.totalRowCount = totalRowCount;
   }
 
-
   public GridModel selectedRowCount(Integer selectedRowCount) {
     
     this.selectedRowCount = selectedRowCount;
     return this;
   }
 
-   /**
+  /**
    * Get selectedRowCount
    * @return selectedRowCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_ROW_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -360,19 +361,19 @@ public class GridModel {
     this.selectedRowCount = selectedRowCount;
   }
 
-
   public GridModel allRowsSelected(Boolean allRowsSelected) {
     
     this.allRowsSelected = allRowsSelected;
     return this;
   }
 
-   /**
+  /**
    * Get allRowsSelected
    * @return allRowsSelected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ALL_ROWS_SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -387,19 +388,19 @@ public class GridModel {
     this.allRowsSelected = allRowsSelected;
   }
 
-
   public GridModel pageIndex(Integer pageIndex) {
     
     this.pageIndex = pageIndex;
     return this;
   }
 
-   /**
+  /**
    * Get pageIndex
    * @return pageIndex
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -414,19 +415,19 @@ public class GridModel {
     this.pageIndex = pageIndex;
   }
 
-
   public GridModel pageSize(Integer pageSize) {
     
     this.pageSize = pageSize;
     return this;
   }
 
-   /**
+  /**
    * Get pageSize
    * @return pageSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -440,7 +441,6 @@ public class GridModel {
   public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
-
 
   public GridModel pageSizeOptions(List<Integer> pageSizeOptions) {
     
@@ -456,12 +456,13 @@ public class GridModel {
     return this;
   }
 
-   /**
+  /**
    * Get pageSizeOptions
    * @return pageSizeOptions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_SIZE_OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -475,7 +476,6 @@ public class GridModel {
   public void setPageSizeOptions(List<Integer> pageSizeOptions) {
     this.pageSizeOptions = pageSizeOptions;
   }
-
 
   public GridModel defaultRowActions(List<String> defaultRowActions) {
     
@@ -491,12 +491,13 @@ public class GridModel {
     return this;
   }
 
-   /**
+  /**
    * Get defaultRowActions
    * @return defaultRowActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_ROW_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -511,19 +512,19 @@ public class GridModel {
     this.defaultRowActions = defaultRowActions;
   }
 
-
   public GridModel paginator(Boolean paginator) {
     
     this.paginator = paginator;
     return this;
   }
 
-   /**
+  /**
    * Get paginator
    * @return paginator
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGINATOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -537,7 +538,6 @@ public class GridModel {
   public void setPaginator(Boolean paginator) {
     this.paginator = paginator;
   }
-
 
   @Override
   public boolean equals(Object o) {

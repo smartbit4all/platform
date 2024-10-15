@@ -42,7 +42,6 @@ import jakarta.validation.Valid;
   Group.BUILT_IN,
   Group.CHILDREN
 })
-@JsonTypeName("Group")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Group {
   public static final String URI = "uri";
@@ -66,7 +65,7 @@ public class Group {
   public static final String CHILDREN = "children";
   private List<URI> children = new ArrayList<>();
 
-  public Group() { 
+  public Group() {
   }
 
   public Group uri(URI uri) {
@@ -75,14 +74,15 @@ public class Group {
     return this;
   }
 
-   /**
+  /**
    * The uri of the group
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the group")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,19 +97,19 @@ public class Group {
     this.uri = uri;
   }
 
-
   public Group title(String title) {
     
     this.title = title;
     return this;
   }
 
-   /**
+  /**
    * The title of the group, can be used as display name
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The title of the group, can be used as display name")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,20 +124,20 @@ public class Group {
     this.title = title;
   }
 
-
   public Group name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name of the group
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the group")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -152,19 +152,19 @@ public class Group {
     this.name = name;
   }
 
-
   public Group description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * The description of the group
    * @return description
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The description of the group")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,19 +179,19 @@ public class Group {
     this.description = description;
   }
 
-
   public Group kindCode(String kindCode) {
     
     this.kindCode = kindCode;
     return this;
   }
 
-   /**
+  /**
    * The kind code of the group. Eg.: role, organization, team etc.
    * @return kindCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The kind code of the group. Eg.: role, organization, team etc.")
   @JsonProperty(KIND_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,19 +206,19 @@ public class Group {
     this.kindCode = kindCode;
   }
 
-
   public Group builtIn(Boolean builtIn) {
     
     this.builtIn = builtIn;
     return this;
   }
 
-   /**
+  /**
    * Built in groups are unmodifiable
    * @return builtIn
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Built in groups are unmodifiable")
   @JsonProperty(BUILT_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +233,6 @@ public class Group {
     this.builtIn = builtIn;
   }
 
-
   public Group children(List<URI> children) {
     
     this.children = children;
@@ -241,18 +240,22 @@ public class Group {
   }
 
   public Group addChildrenItem(URI childrenItem) {
+    if (this.children == null) {
+      this.children = new ArrayList<>();
+    }
     this.children.add(childrenItem);
     return this;
   }
 
-   /**
+  /**
    * The uris of the child groups
    * @return children
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uris of the child groups")
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -266,7 +269,6 @@ public class Group {
   public void setChildren(List<URI> children) {
     this.children = children;
   }
-
 
   @Override
   public boolean equals(Object o) {

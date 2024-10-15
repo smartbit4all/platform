@@ -34,13 +34,13 @@ import jakarta.validation.Valid;
 /**
  * This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. 
  */
+@Schema(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMDefinitionState.URI,
   MDMDefinitionState.GLOBAL_MODIFICATION,
   MDMDefinitionState.ACTIVE_MODIFICATIONS,
   MDMDefinitionState.ARCHIVE
 })
-@JsonTypeName("MDMDefinitionState")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMDefinitionState {
   public static final String URI = "uri";
@@ -55,7 +55,7 @@ public class MDMDefinitionState {
   public static final String ARCHIVE = "archive";
   private URI archive;
 
-  public MDMDefinitionState() { 
+  public MDMDefinitionState() {
   }
 
   public MDMDefinitionState uri(URI uri) {
@@ -64,14 +64,15 @@ public class MDMDefinitionState {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,20 +87,20 @@ public class MDMDefinitionState {
     this.uri = uri;
   }
 
-
   public MDMDefinitionState globalModification(MDMModification globalModification) {
     
     this.globalModification = globalModification;
     return this;
   }
 
-   /**
+  /**
    * Get globalModification
    * @return globalModification
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GLOBAL_MODIFICATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,7 +115,6 @@ public class MDMDefinitionState {
     this.globalModification = globalModification;
   }
 
-
   public MDMDefinitionState activeModifications(List<@Valid MDMModification> activeModifications) {
     
     this.activeModifications = activeModifications;
@@ -122,18 +122,22 @@ public class MDMDefinitionState {
   }
 
   public MDMDefinitionState addActiveModificationsItem(MDMModification activeModificationsItem) {
+    if (this.activeModifications == null) {
+      this.activeModifications = new ArrayList<>();
+    }
     this.activeModifications.add(activeModificationsItem);
     return this;
   }
 
-   /**
+  /**
    * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  
    * @return activeModifications
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  ")
   @JsonProperty(ACTIVE_MODIFICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -148,20 +152,20 @@ public class MDMDefinitionState {
     this.activeModifications = activeModifications;
   }
 
-
   public MDMDefinitionState archive(URI archive) {
     
     this.archive = archive;
     return this;
   }
 
-   /**
+  /**
    * This is a reference to the archived object. It refers always to the last archived modification and it is set when the a new modification is archived from the active modification list. 
    * @return archive
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This is a reference to the archived object. It refers always to the last archived modification and it is set when the a new modification is archived from the active modification list. ")
   @JsonProperty(ARCHIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -175,7 +179,6 @@ public class MDMDefinitionState {
   public void setArchive(URI archive) {
     this.archive = archive;
   }
-
 
   @Override
   public boolean equals(Object o) {

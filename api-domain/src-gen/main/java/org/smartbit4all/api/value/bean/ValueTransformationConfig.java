@@ -31,11 +31,11 @@ import jakarta.validation.Valid;
 /**
  * This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. It has a data inline object that contains configuration itself. 
  */
+@Schema(description = "This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. It has a data inline object that contains configuration itself. ")
 @JsonPropertyOrder({
   ValueTransformationConfig.URI,
   ValueTransformationConfig.DATA
 })
-@JsonTypeName("ValueTransformationConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationConfig {
   public static final String URI = "uri";
@@ -44,7 +44,7 @@ public class ValueTransformationConfig {
   public static final String DATA = "data";
   private ValueTransformationConfigData data;
 
-  public ValueTransformationConfig() { 
+  public ValueTransformationConfig() {
   }
 
   public ValueTransformationConfig uri(URI uri) {
@@ -53,14 +53,15 @@ public class ValueTransformationConfig {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -75,20 +76,20 @@ public class ValueTransformationConfig {
     this.uri = uri;
   }
 
-
   public ValueTransformationConfig data(ValueTransformationConfigData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,7 +103,6 @@ public class ValueTransformationConfig {
   public void setData(ValueTransformationConfigData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

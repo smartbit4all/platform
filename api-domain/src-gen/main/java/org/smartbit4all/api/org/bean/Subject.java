@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. 
  */
+@Schema(description = "The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. ")
 @JsonPropertyOrder({
   Subject.MODEL,
   Subject.TYPE,
   Subject.REF
 })
-@JsonTypeName("Subject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Subject {
   public static final String MODEL = "model";
@@ -47,7 +47,7 @@ public class Subject {
   public static final String REF = "ref";
   private URI ref;
 
-  public Subject() { 
+  public Subject() {
   }
 
   public Subject model(String model) {
@@ -56,12 +56,13 @@ public class Subject {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. 
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. ")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,20 +77,20 @@ public class Subject {
     this.model = model;
   }
 
-
   public Subject type(String type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is saved here it is managed by the code that uses this Subject. 
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is saved here it is managed by the code that uses this Subject. ")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -104,21 +105,21 @@ public class Subject {
     this.type = type;
   }
 
-
   public Subject ref(URI ref) {
     
     this.ref = ref;
     return this;
   }
 
-   /**
+  /**
    * The reference to the object referred by this subject. It can be the latest uri of a user, a group or whatever subject we have. 
    * @return ref
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The reference to the object referred by this subject. It can be the latest uri of a user, a group or whatever subject we have. ")
   @JsonProperty(REF)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -132,7 +133,6 @@ public class Subject {
   public void setRef(URI ref) {
     this.ref = ref;
   }
-
 
   @Override
   public boolean equals(Object o) {

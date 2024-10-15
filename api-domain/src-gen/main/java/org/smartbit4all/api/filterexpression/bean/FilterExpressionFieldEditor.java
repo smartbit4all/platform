@@ -38,16 +38,15 @@ import jakarta.validation.Valid;
   FilterExpressionFieldEditor.LAYOUT_DEF,
   FilterExpressionFieldEditor.POSSIBLE_ACTIONS
 })
-@JsonTypeName("FilterExpressionFieldEditor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionFieldEditor {
   public static final String LAYOUT_DEF = "layoutDef";
   private SmartLayoutDefinition layoutDef = null;
 
   public static final String POSSIBLE_ACTIONS = "possibleActions";
-  private List<UiAction> possibleActions = null;
+  private List<UiAction> possibleActions = new ArrayList<>();
 
-  public FilterExpressionFieldEditor() { 
+  public FilterExpressionFieldEditor() {
   }
 
   public FilterExpressionFieldEditor layoutDef(SmartLayoutDefinition layoutDef) {
@@ -56,13 +55,14 @@ public class FilterExpressionFieldEditor {
     return this;
   }
 
-   /**
+  /**
    * Get layoutDef
    * @return layoutDef
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LAYOUT_DEF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,7 +76,6 @@ public class FilterExpressionFieldEditor {
   public void setLayoutDef(SmartLayoutDefinition layoutDef) {
     this.layoutDef = layoutDef;
   }
-
 
   public FilterExpressionFieldEditor possibleActions(List<UiAction> possibleActions) {
     
@@ -92,13 +91,14 @@ public class FilterExpressionFieldEditor {
     return this;
   }
 
-   /**
+  /**
    * Get possibleActions
    * @return possibleActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSSIBLE_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +112,6 @@ public class FilterExpressionFieldEditor {
   public void setPossibleActions(List<UiAction> possibleActions) {
     this.possibleActions = possibleActions;
   }
-
 
   @Override
   public boolean equals(Object o) {

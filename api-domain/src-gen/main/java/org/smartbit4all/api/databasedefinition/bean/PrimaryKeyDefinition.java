@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * The meta of a primary key in a database table. 
  */
+@Schema(description = "The meta of a primary key in a database table. ")
 @JsonPropertyOrder({
   PrimaryKeyDefinition.NAME,
   PrimaryKeyDefinition.COLUMN_NAMES,
   PrimaryKeyDefinition.OPERATION
 })
-@JsonTypeName("PrimaryKeyDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PrimaryKeyDefinition {
   public static final String NAME = "name";
@@ -50,7 +50,7 @@ public class PrimaryKeyDefinition {
   public static final String OPERATION = "operation";
   private AlterOperation operation;
 
-  public PrimaryKeyDefinition() { 
+  public PrimaryKeyDefinition() {
   }
 
   public PrimaryKeyDefinition name(String name) {
@@ -59,12 +59,13 @@ public class PrimaryKeyDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,7 +80,6 @@ public class PrimaryKeyDefinition {
     this.name = name;
   }
 
-
   public PrimaryKeyDefinition columnNames(List<String> columnNames) {
     
     this.columnNames = columnNames;
@@ -87,17 +87,21 @@ public class PrimaryKeyDefinition {
   }
 
   public PrimaryKeyDefinition addColumnNamesItem(String columnNamesItem) {
+    if (this.columnNames == null) {
+      this.columnNames = new ArrayList<>();
+    }
     this.columnNames.add(columnNamesItem);
     return this;
   }
 
-   /**
+  /**
    * Get columnNames
    * @return columnNames
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLUMN_NAMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,20 +116,20 @@ public class PrimaryKeyDefinition {
     this.columnNames = columnNames;
   }
 
-
   public PrimaryKeyDefinition operation(AlterOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +143,6 @@ public class PrimaryKeyDefinition {
   public void setOperation(AlterOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

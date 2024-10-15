@@ -45,7 +45,6 @@ import jakarta.validation.Valid;
   FilterField.VALUE4,
   FilterField.SELECTED_VALUES
 })
-@JsonTypeName("FilterField")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterField {
   public static final String PROPERTY_URI1 = "propertyUri1";
@@ -73,9 +72,9 @@ public class FilterField {
   private FilterOperandValue value4;
 
   public static final String SELECTED_VALUES = "selectedValues";
-  private List<URI> selectedValues = null;
+  private List<URI> selectedValues = new ArrayList<>();
 
-  public FilterField() { 
+  public FilterField() {
   }
 
   public FilterField propertyUri1(URI propertyUri1) {
@@ -84,13 +83,14 @@ public class FilterField {
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,20 +105,20 @@ public class FilterField {
     this.propertyUri1 = propertyUri1;
   }
 
-
   public FilterField propertyUri2(URI propertyUri2) {
     
     this.propertyUri2 = propertyUri2;
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,20 +133,20 @@ public class FilterField {
     this.propertyUri2 = propertyUri2;
   }
 
-
   public FilterField propertyUri3(URI propertyUri3) {
     
     this.propertyUri3 = propertyUri3;
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,19 +161,19 @@ public class FilterField {
     this.propertyUri3 = propertyUri3;
   }
 
-
   public FilterField operationCode(String operationCode) {
     
     this.operationCode = operationCode;
     return this;
   }
 
-   /**
+  /**
    * Operation code, specifies the operator of the condition.
    * @return operationCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Operation code, specifies the operator of the condition.")
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,20 +188,20 @@ public class FilterField {
     this.operationCode = operationCode;
   }
 
-
   public FilterField value1(FilterOperandValue value1) {
     
     this.value1 = value1;
     return this;
   }
 
-   /**
+  /**
    * Get value1
    * @return value1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -216,20 +216,20 @@ public class FilterField {
     this.value1 = value1;
   }
 
-
   public FilterField value2(FilterOperandValue value2) {
     
     this.value2 = value2;
     return this;
   }
 
-   /**
+  /**
    * Get value2
    * @return value2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,20 +244,20 @@ public class FilterField {
     this.value2 = value2;
   }
 
-
   public FilterField value3(FilterOperandValue value3) {
     
     this.value3 = value3;
     return this;
   }
 
-   /**
+  /**
    * Get value3
    * @return value3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,20 +272,20 @@ public class FilterField {
     this.value3 = value3;
   }
 
-
   public FilterField value4(FilterOperandValue value4) {
     
     this.value4 = value4;
     return this;
   }
 
-   /**
+  /**
    * Get value4
    * @return value4
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE4)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -299,7 +299,6 @@ public class FilterField {
   public void setValue4(FilterOperandValue value4) {
     this.value4 = value4;
   }
-
 
   public FilterField selectedValues(List<URI> selectedValues) {
     
@@ -315,13 +314,14 @@ public class FilterField {
     return this;
   }
 
-   /**
+  /**
    * Get selectedValues
    * @return selectedValues
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -335,7 +335,6 @@ public class FilterField {
   public void setSelectedValues(List<URI> selectedValues) {
     this.selectedValues = selectedValues;
   }
-
 
   @Override
   public boolean equals(Object o) {

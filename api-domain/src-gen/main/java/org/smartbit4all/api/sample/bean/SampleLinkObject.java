@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   SampleLinkObject.CATEGORY,
   SampleLinkObject.ITEM
 })
-@JsonTypeName("SampleLinkObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleLinkObject {
   public static final String LINK_NAME = "linkName";
@@ -47,7 +46,7 @@ public class SampleLinkObject {
   public static final String ITEM = "item";
   private URI item;
 
-  public SampleLinkObject() { 
+  public SampleLinkObject() {
   }
 
   public SampleLinkObject linkName(String linkName) {
@@ -56,12 +55,13 @@ public class SampleLinkObject {
     return this;
   }
 
-   /**
+  /**
    * Get linkName
    * @return linkName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LINK_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,20 +76,20 @@ public class SampleLinkObject {
     this.linkName = linkName;
   }
 
-
   public SampleLinkObject category(URI category) {
     
     this.category = category;
     return this;
   }
 
-   /**
+  /**
    * Get category
    * @return category
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CATEGORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,20 +104,20 @@ public class SampleLinkObject {
     this.category = category;
   }
 
-
   public SampleLinkObject item(URI item) {
     
     this.item = item;
     return this;
   }
 
-   /**
+  /**
    * Get item
    * @return item
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ITEM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,7 +131,6 @@ public class SampleLinkObject {
   public void setItem(URI item) {
     this.item = item;
   }
-
 
   @Override
   public boolean equals(Object o) {

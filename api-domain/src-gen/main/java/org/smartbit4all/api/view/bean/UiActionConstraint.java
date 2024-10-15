@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * The UiAction constraint is responsible for the constraints belong to a given action (button, menu option etc.) on the view. The UI must identify the action by the dataName that is a path of the data name separated by dot like dataSheet.field. 
  */
+@Schema(description = "The UiAction constraint is responsible for the constraints belong to a given action (button, menu option etc.) on the view. The UI must identify the action by the dataName that is a path of the data name separated by dot like dataSheet.field. ")
 @JsonPropertyOrder({
   UiActionConstraint.PATH,
   UiActionConstraint.VISIBLE,
   UiActionConstraint.ENABLED
 })
-@JsonTypeName("UiActionConstraint")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionConstraint {
   public static final String PATH = "path";
@@ -46,7 +46,7 @@ public class UiActionConstraint {
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
 
-  public UiActionConstraint() { 
+  public UiActionConstraint() {
   }
 
   public UiActionConstraint path(String path) {
@@ -55,12 +55,13 @@ public class UiActionConstraint {
     return this;
   }
 
-   /**
+  /**
    * The path format is the following - dataSheet.actionCode.
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The path format is the following - dataSheet.actionCode.")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,19 +76,19 @@ public class UiActionConstraint {
     this.path = path;
   }
 
-
   public UiActionConstraint visible(Boolean visible) {
     
     this.visible = visible;
     return this;
   }
 
-   /**
+  /**
    * Get visible
    * @return visible
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,19 +103,19 @@ public class UiActionConstraint {
     this.visible = visible;
   }
 
-
   public UiActionConstraint enabled(Boolean enabled) {
     
     this.enabled = enabled;
     return this;
   }
 
-   /**
+  /**
    * Get enabled
    * @return enabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +129,6 @@ public class UiActionConstraint {
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

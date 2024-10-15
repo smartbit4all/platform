@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   MessageResult.ICON,
   MessageResult.TYPE
 })
-@JsonTypeName("MessageResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MessageResult {
   public static final String CODE = "code";
@@ -51,7 +50,7 @@ public class MessageResult {
   public static final String TYPE = "type";
   private MessageResultType type;
 
-  public MessageResult() { 
+  public MessageResult() {
   }
 
   public MessageResult code(String code) {
@@ -60,12 +59,13 @@ public class MessageResult {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,19 +80,19 @@ public class MessageResult {
     this.code = code;
   }
 
-
   public MessageResult label(String label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,19 +107,19 @@ public class MessageResult {
     this.label = label;
   }
 
-
   public MessageResult icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,20 +134,20 @@ public class MessageResult {
     this.icon = icon;
   }
 
-
   public MessageResult type(MessageResultType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,6 @@ public class MessageResult {
   public void setType(MessageResultType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

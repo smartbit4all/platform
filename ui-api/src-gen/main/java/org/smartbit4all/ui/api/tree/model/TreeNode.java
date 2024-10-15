@@ -52,7 +52,6 @@ import jakarta.validation.Valid;
   TreeNode.NAVIGATION_TARGET,
   TreeNode.LEVEL
 })
-@JsonTypeName("TreeNode")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TreeNode {
   public static final String KIND = "kind";
@@ -74,10 +73,10 @@ public class TreeNode {
   private String icon;
 
   public static final String ACTIONS = "actions";
-  private List<URI> actions = null;
+  private List<URI> actions = new ArrayList<>();
 
   public static final String STYLES = "styles";
-  private List<String> styles = null;
+  private List<String> styles = new ArrayList<>();
 
   public static final String CHILDREN_NODES = "childrenNodes";
   private List<@Valid TreeNode> childrenNodes = new ArrayList<>();
@@ -100,7 +99,7 @@ public class TreeNode {
   public static final String LEVEL = "level";
   private Integer level;
 
-  public TreeNode() { 
+  public TreeNode() {
   }
 
   public TreeNode kind(TreeNodeKind kind) {
@@ -109,13 +108,14 @@ public class TreeNode {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,19 +130,19 @@ public class TreeNode {
     this.kind = kind;
   }
 
-
   public TreeNode identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,20 +157,20 @@ public class TreeNode {
     this.identifier = identifier;
   }
 
-
   public TreeNode objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -185,19 +185,19 @@ public class TreeNode {
     this.objectUri = objectUri;
   }
 
-
   public TreeNode caption(String caption) {
     
     this.caption = caption;
     return this;
   }
 
-   /**
+  /**
    * Get caption
    * @return caption
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,19 +212,19 @@ public class TreeNode {
     this.caption = caption;
   }
 
-
   public TreeNode shortDescription(String shortDescription) {
     
     this.shortDescription = shortDescription;
     return this;
   }
 
-   /**
+  /**
    * Get shortDescription
    * @return shortDescription
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHORT_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -239,19 +239,19 @@ public class TreeNode {
     this.shortDescription = shortDescription;
   }
 
-
   public TreeNode icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,7 +265,6 @@ public class TreeNode {
   public void setIcon(String icon) {
     this.icon = icon;
   }
-
 
   public TreeNode actions(List<URI> actions) {
     
@@ -281,13 +280,14 @@ public class TreeNode {
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -301,7 +301,6 @@ public class TreeNode {
   public void setActions(List<URI> actions) {
     this.actions = actions;
   }
-
 
   public TreeNode styles(List<String> styles) {
     
@@ -317,12 +316,13 @@ public class TreeNode {
     return this;
   }
 
-   /**
+  /**
    * Get styles
    * @return styles
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -337,7 +337,6 @@ public class TreeNode {
     this.styles = styles;
   }
 
-
   public TreeNode childrenNodes(List<@Valid TreeNode> childrenNodes) {
     
     this.childrenNodes = childrenNodes;
@@ -345,18 +344,22 @@ public class TreeNode {
   }
 
   public TreeNode addChildrenNodesItem(TreeNode childrenNodesItem) {
+    if (this.childrenNodes == null) {
+      this.childrenNodes = new ArrayList<>();
+    }
     this.childrenNodes.add(childrenNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get childrenNodes
    * @return childrenNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CHILDREN_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -371,19 +374,19 @@ public class TreeNode {
     this.childrenNodes = childrenNodes;
   }
 
-
   public TreeNode hasChildren(Boolean hasChildren) {
     
     this.hasChildren = hasChildren;
     return this;
   }
 
-   /**
+  /**
    * Get hasChildren
    * @return hasChildren
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HAS_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -398,19 +401,19 @@ public class TreeNode {
     this.hasChildren = hasChildren;
   }
 
-
   public TreeNode expanded(Boolean expanded) {
     
     this.expanded = expanded;
     return this;
   }
 
-   /**
+  /**
    * Get expanded
    * @return expanded
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPANDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -425,19 +428,19 @@ public class TreeNode {
     this.expanded = expanded;
   }
 
-
   public TreeNode selected(Boolean selected) {
     
     this.selected = selected;
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -452,19 +455,19 @@ public class TreeNode {
     this.selected = selected;
   }
 
-
   public TreeNode childrenNodesLoaded(Boolean childrenNodesLoaded) {
     
     this.childrenNodesLoaded = childrenNodesLoaded;
     return this;
   }
 
-   /**
+  /**
    * Get childrenNodesLoaded
    * @return childrenNodesLoaded
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CHILDREN_NODES_LOADED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -479,20 +482,20 @@ public class TreeNode {
     this.childrenNodesLoaded = childrenNodesLoaded;
   }
 
-
   public TreeNode navigationTarget(NavigationTarget navigationTarget) {
     
     this.navigationTarget = navigationTarget;
     return this;
   }
 
-   /**
+  /**
    * Get navigationTarget
    * @return navigationTarget
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -507,19 +510,19 @@ public class TreeNode {
     this.navigationTarget = navigationTarget;
   }
 
-
   public TreeNode level(Integer level) {
     
     this.level = level;
     return this;
   }
 
-   /**
+  /**
    * Get level
    * @return level
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -533,7 +536,6 @@ public class TreeNode {
   public void setLevel(Integer level) {
     this.level = level;
   }
-
 
   @Override
   public boolean equals(Object o) {

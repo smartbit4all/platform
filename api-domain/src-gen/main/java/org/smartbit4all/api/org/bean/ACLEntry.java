@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. 
  */
+@Schema(description = "The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. ")
 @JsonPropertyOrder({
   ACLEntry.ENTRY_KIND,
   ACLEntry.SUBJECT,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   ACLEntry.OPERATION_OBJECTS,
   ACLEntry.ENTRIES
 })
-@JsonTypeName("ACLEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLEntry {
   /**
@@ -176,7 +176,7 @@ public class ACLEntry {
   public static final String ENTRIES = "entries";
   private List<@Valid ACLEntry> entries = new ArrayList<>();
 
-  public ACLEntry() { 
+  public ACLEntry() {
   }
 
   public ACLEntry entryKind(EntryKindEnum entryKind) {
@@ -185,13 +185,14 @@ public class ACLEntry {
     return this;
   }
 
-   /**
+  /**
    * The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. 
    * @return entryKind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. ")
   @JsonProperty(ENTRY_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -206,20 +207,20 @@ public class ACLEntry {
     this.entryKind = entryKind;
   }
 
-
   public ACLEntry subject(Subject subject) {
     
     this.subject = subject;
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,19 +235,19 @@ public class ACLEntry {
     this.subject = subject;
   }
 
-
   public ACLEntry subjectCondition(SubjectConditionEnum subjectCondition) {
     
     this.subjectCondition = subjectCondition;
     return this;
   }
 
-   /**
+  /**
    * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
    * @return subjectCondition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. ")
   @JsonProperty(SUBJECT_CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -261,19 +262,19 @@ public class ACLEntry {
     this.subjectCondition = subjectCondition;
   }
 
-
   public ACLEntry setOperation(SetOperationEnum setOperation) {
     
     this.setOperation = setOperation;
     return this;
   }
 
-   /**
+  /**
    * Get setOperation
    * @return setOperation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SET_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -288,7 +289,6 @@ public class ACLEntry {
     this.setOperation = setOperation;
   }
 
-
   public ACLEntry operations(List<String> operations) {
     
     this.operations = operations;
@@ -296,17 +296,21 @@ public class ACLEntry {
   }
 
   public ACLEntry addOperationsItem(String operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
     this.operations.add(operationsItem);
     return this;
   }
 
-   /**
+  /**
    * The unique identifiers of the operations defined in the given application. This list contains all the operation names attached to this subject. For historical reason this list and the operationObjects are stored paralel. 
    * @return operations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifiers of the operations defined in the given application. This list contains all the operation names attached to this subject. For historical reason this list and the operationObjects are stored paralel. ")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -321,7 +325,6 @@ public class ACLEntry {
     this.operations = operations;
   }
 
-
   public ACLEntry operationObjects(List<@Valid ACLOperation> operationObjects) {
     
     this.operationObjects = operationObjects;
@@ -329,18 +332,22 @@ public class ACLEntry {
   }
 
   public ACLEntry addOperationObjectsItem(ACLOperation operationObjectsItem) {
+    if (this.operationObjects == null) {
+      this.operationObjects = new ArrayList<>();
+    }
     this.operationObjects.add(operationObjectsItem);
     return this;
   }
 
-   /**
+  /**
    * The list of operation objects attached to the subject of this entry. It will be the primary option for attaching operation to the subject but for historical reason the operations list is also maintained. 
    * @return operationObjects
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The list of operation objects attached to the subject of this entry. It will be the primary option for attaching operation to the subject but for historical reason the operations list is also maintained. ")
   @JsonProperty(OPERATION_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -355,7 +362,6 @@ public class ACLEntry {
     this.operationObjects = operationObjects;
   }
 
-
   public ACLEntry entries(List<@Valid ACLEntry> entries) {
     
     this.entries = entries;
@@ -363,18 +369,22 @@ public class ACLEntry {
   }
 
   public ACLEntry addEntriesItem(ACLEntry entriesItem) {
+    if (this.entries == null) {
+      this.entries = new ArrayList<>();
+    }
     this.entries.add(entriesItem);
     return this;
   }
 
-   /**
+  /**
    * The list if entries in the given set if the kind is SET. 
    * @return entries
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The list if entries in the given set if the kind is SET. ")
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -388,7 +398,6 @@ public class ACLEntry {
   public void setEntries(List<@Valid ACLEntry> entries) {
     this.entries = entries;
   }
-
 
   @Override
   public boolean equals(Object o) {

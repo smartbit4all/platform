@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and  saved without any operation. If the original object is saved on this branch then the operation is registered into  this object and executed directly. 
  */
+@Schema(description = "The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and  saved without any operation. If the original object is saved on this branch then the operation is registered into  this object and executed directly. ")
 @JsonPropertyOrder({
   BranchEntry.URI,
   BranchEntry.CAPTION,
@@ -42,7 +43,6 @@ import jakarta.validation.Valid;
   BranchEntry.BRANCHED_OBJECTS,
   BranchEntry.NEW_OBJECTS
 })
-@JsonTypeName("BranchEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchEntry {
   public static final String URI = "uri";
@@ -63,7 +63,7 @@ public class BranchEntry {
   public static final String NEW_OBJECTS = "newObjects";
   private Map<String, BranchedObject> newObjects = new HashMap<>();
 
-  public BranchEntry() { 
+  public BranchEntry() {
   }
 
   public BranchEntry uri(URI uri) {
@@ -72,14 +72,15 @@ public class BranchEntry {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -94,19 +95,19 @@ public class BranchEntry {
     this.uri = uri;
   }
 
-
   public BranchEntry caption(String caption) {
     
     this.caption = caption;
     return this;
   }
 
-   /**
+  /**
    * The branch could be used as business domain object. If we collect the versions of an object then useng the caption we can identify the intent of the modification. 
    * @return caption
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The branch could be used as business domain object. If we collect the versions of an object then useng the caption we can identify the intent of the modification. ")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,21 +122,21 @@ public class BranchEntry {
     this.caption = caption;
   }
 
-
   public BranchEntry created(UserActivityLog created) {
     
     this.created = created;
     return this;
   }
 
-   /**
+  /**
    * Get created
    * @return created
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -150,20 +151,20 @@ public class BranchEntry {
     this.created = created;
   }
 
-
   public BranchEntry lockedBy(UserActivityLog lockedBy) {
     
     this.lockedBy = lockedBy;
     return this;
   }
 
-   /**
+  /**
    * Get lockedBy
    * @return lockedBy
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOCKED_BY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,7 +179,6 @@ public class BranchEntry {
     this.lockedBy = lockedBy;
   }
 
-
   public BranchEntry branchedObjects(Map<String, BranchedObject> branchedObjects) {
     
     this.branchedObjects = branchedObjects;
@@ -190,14 +190,15 @@ public class BranchEntry {
     return this;
   }
 
-   /**
+  /**
    * The branched objects are identified by the latest URI of the source object. These are the objects that are modified on the branch. It is important to know them because during the merge their uri references should be replaced with the merged uri of the source branch. 
    * @return branchedObjects
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The branched objects are identified by the latest URI of the source object. These are the objects that are modified on the branch. It is important to know them because during the merge their uri references should be replaced with the merged uri of the source branch. ")
   @JsonProperty(BRANCHED_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -212,7 +213,6 @@ public class BranchEntry {
     this.branchedObjects = branchedObjects;
   }
 
-
   public BranchEntry newObjects(Map<String, BranchedObject> newObjects) {
     
     this.newObjects = newObjects;
@@ -224,14 +224,15 @@ public class BranchEntry {
     return this;
   }
 
-   /**
+  /**
    * The branched objects are identified by the latest URI of the new branch object.
    * @return newObjects
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The branched objects are identified by the latest URI of the new branch object.")
   @JsonProperty(NEW_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -245,7 +246,6 @@ public class BranchEntry {
   public void setNewObjects(Map<String, BranchedObject> newObjects) {
     this.newObjects = newObjects;
   }
-
 
   @Override
   public boolean equals(Object o) {

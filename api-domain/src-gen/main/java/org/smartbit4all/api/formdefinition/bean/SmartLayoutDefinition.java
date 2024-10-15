@@ -36,13 +36,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   SmartLayoutDefinition.WIDGETS
 })
-@JsonTypeName("SmartLayoutDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLayoutDefinition {
   public static final String WIDGETS = "widgets";
   private List<@Valid SmartWidgetDefinition> widgets = new ArrayList<>();
 
-  public SmartLayoutDefinition() { 
+  public SmartLayoutDefinition() {
   }
 
   public SmartLayoutDefinition widgets(List<@Valid SmartWidgetDefinition> widgets) {
@@ -52,18 +51,22 @@ public class SmartLayoutDefinition {
   }
 
   public SmartLayoutDefinition addWidgetsItem(SmartWidgetDefinition widgetsItem) {
+    if (this.widgets == null) {
+      this.widgets = new ArrayList<>();
+    }
     this.widgets.add(widgetsItem);
     return this;
   }
 
-   /**
+  /**
    * Get widgets
    * @return widgets
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(WIDGETS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +80,6 @@ public class SmartLayoutDefinition {
   public void setWidgets(List<@Valid SmartWidgetDefinition> widgets) {
     this.widgets = widgets;
   }
-
 
   @Override
   public boolean equals(Object o) {

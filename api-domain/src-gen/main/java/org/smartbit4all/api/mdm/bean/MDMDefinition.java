@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. 
  */
+@Schema(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMDefinition.URI,
   MDMDefinition.NAME,
@@ -45,7 +46,6 @@ import jakarta.validation.Valid;
   MDMDefinition.DESCRIPTORS,
   MDMDefinition.UPDATE_REQUEST
 })
-@JsonTypeName("MDMDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMDefinition {
   public static final String URI = "uri";
@@ -72,7 +72,7 @@ public class MDMDefinition {
   public static final String UPDATE_REQUEST = "updateRequest";
   private InvocationRequest updateRequest = null;
 
-  public MDMDefinition() { 
+  public MDMDefinition() {
   }
 
   public MDMDefinition uri(URI uri) {
@@ -81,14 +81,15 @@ public class MDMDefinition {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,19 +104,19 @@ public class MDMDefinition {
     this.uri = uri;
   }
 
-
   public MDMDefinition name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The logical name of the given mdm definition. This is also the default name of the schema.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The logical name of the given mdm definition. This is also the default name of the schema.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,19 +131,19 @@ public class MDMDefinition {
     this.name = name;
   }
 
-
   public MDMDefinition adminGroupName(String adminGroupName) {
     
     this.adminGroupName = adminGroupName;
     return this;
   }
 
-   /**
+  /**
    * The name of the administration group. If a user is involved in the group then can administer all the entries inside the definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one. It is mandatory to set this group name or else the master data management won&#39;t be able to setup the rights. 
    * @return adminGroupName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the administration group. If a user is involved in the group then can administer all the entries inside the definition. The entries will have their own security group that will be included into this group, so we can manage all the entries one by one. It is mandatory to set this group name or else the master data management won't be able to setup the rights. ")
   @JsonProperty(ADMIN_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,19 +158,19 @@ public class MDMDefinition {
     this.adminGroupName = adminGroupName;
   }
 
-
   public MDMDefinition adminApproverGroupName(String adminApproverGroupName) {
     
     this.adminApproverGroupName = adminApproverGroupName;
     return this;
   }
 
-   /**
+  /**
    * The name of the administration approver group. Optional, if we don&#39;t set it then admin approver functionality won&#39;t be available. 
    * @return adminApproverGroupName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the administration approver group. Optional, if we don't set it then admin approver functionality won't be available. ")
   @JsonProperty(ADMIN_APPROVER_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,20 +185,20 @@ public class MDMDefinition {
     this.adminApproverGroupName = adminApproverGroupName;
   }
 
-
   public MDMDefinition state(URI state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * The reference to the current state of the definition. It contains the necessary runtime informations.
    * @return state
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference to the current state of the definition. It contains the necessary runtime informations.")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,20 +213,20 @@ public class MDMDefinition {
     this.state = state;
   }
 
-
   public MDMDefinition branchingStrategy(MDMBranchingStrategy branchingStrategy) {
     
     this.branchingStrategy = branchingStrategy;
     return this;
   }
 
-   /**
+  /**
    * Get branchingStrategy
    * @return branchingStrategy
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCHING_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -240,7 +241,6 @@ public class MDMDefinition {
     this.branchingStrategy = branchingStrategy;
   }
 
-
   public MDMDefinition descriptors(Map<String, MDMEntryDescriptor> descriptors) {
     
     this.descriptors = descriptors;
@@ -252,14 +252,15 @@ public class MDMDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get descriptors
    * @return descriptors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -274,20 +275,20 @@ public class MDMDefinition {
     this.descriptors = descriptors;
   }
 
-
   public MDMDefinition updateRequest(InvocationRequest updateRequest) {
     
     this.updateRequest = updateRequest;
     return this;
   }
 
-   /**
+  /**
    * Used for updating the master data inside the MDMDefinition. 
    * @return updateRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Used for updating the master data inside the MDMDefinition. ")
   @JsonProperty(UPDATE_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -301,7 +302,6 @@ public class MDMDefinition {
   public void setUpdateRequest(InvocationRequest updateRequest) {
     this.updateRequest = updateRequest;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * This object represents an object version from the object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. If we create a list for iterating over the history then this object can be the model of the given page. 
  */
+@Schema(description = "This object represents an object version from the object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. If we create a list for iterating over the history then this object can be the model of the given page. ")
 @JsonPropertyOrder({
   ObjectHistoryIteratorData.VERSION_URI,
   ObjectHistoryIteratorData.VERSION_NR,
   ObjectHistoryIteratorData.CREATED
 })
-@JsonTypeName("ObjectHistoryIteratorData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryIteratorData {
   public static final String VERSION_URI = "versionUri";
@@ -48,7 +48,7 @@ public class ObjectHistoryIteratorData {
   public static final String CREATED = "created";
   private UserActivityLog created = null;
 
-  public ObjectHistoryIteratorData() { 
+  public ObjectHistoryIteratorData() {
   }
 
   public ObjectHistoryIteratorData versionUri(URI versionUri) {
@@ -57,13 +57,14 @@ public class ObjectHistoryIteratorData {
     return this;
   }
 
-   /**
+  /**
    * The uri version uri of the object history entry.
    * @return versionUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri version uri of the object history entry.")
   @JsonProperty(VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,19 +79,19 @@ public class ObjectHistoryIteratorData {
     this.versionUri = versionUri;
   }
 
-
   public ObjectHistoryIteratorData versionNr(Long versionNr) {
     
     this.versionNr = versionNr;
     return this;
   }
 
-   /**
+  /**
    * The serial version number of the object history entry.
    * @return versionNr
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The serial version number of the object history entry.")
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,20 +106,20 @@ public class ObjectHistoryIteratorData {
     this.versionNr = versionNr;
   }
 
-
   public ObjectHistoryIteratorData created(UserActivityLog created) {
     
     this.created = created;
     return this;
   }
 
-   /**
+  /**
    * The version creation information.
    * @return created
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The version creation information.")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class ObjectHistoryIteratorData {
   public void setCreated(UserActivityLog created) {
     this.created = created;
   }
-
 
   @Override
   public boolean equals(Object o) {

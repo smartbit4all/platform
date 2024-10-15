@@ -33,12 +33,12 @@ import jakarta.validation.Valid;
 /**
  * The information about an event of the publisher. It contains the consumers also by the annotation of the provider apis. 
  */
+@Schema(description = "The information about an event of the publisher. It contains the consumers also by the annotation of the provider apis. ")
 @JsonPropertyOrder({
   PublishedEventData.API,
   PublishedEventData.EVENT,
   PublishedEventData.PARAMETERS
 })
-@JsonTypeName("PublishedEventData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PublishedEventData {
   public static final String API = "api";
@@ -48,9 +48,9 @@ public class PublishedEventData {
   private String event;
 
   public static final String PARAMETERS = "parameters";
-  private List<@Valid ParameterData> parameters = null;
+  private List<@Valid ParameterData> parameters = new ArrayList<>();
 
-  public PublishedEventData() { 
+  public PublishedEventData() {
   }
 
   public PublishedEventData api(String api) {
@@ -59,13 +59,14 @@ public class PublishedEventData {
     return this;
   }
 
-   /**
+  /**
    * The name of the api publishing the event.
    * @return api
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the api publishing the event.")
   @JsonProperty(API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,20 +81,20 @@ public class PublishedEventData {
     this.api = api;
   }
 
-
   public PublishedEventData event(String event) {
     
     this.event = event;
     return this;
   }
 
-   /**
+  /**
    * The name of the publised event.
    * @return event
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the publised event.")
   @JsonProperty(EVENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -107,7 +108,6 @@ public class PublishedEventData {
   public void setEvent(String event) {
     this.event = event;
   }
-
 
   public PublishedEventData parameters(List<@Valid ParameterData> parameters) {
     
@@ -123,13 +123,14 @@ public class PublishedEventData {
     return this;
   }
 
-   /**
+  /**
    * The parameters of the given event. These parameteres are requiered for the subscribed methods. 
    * @return parameters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The parameters of the given event. These parameteres are requiered for the subscribed methods. ")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,7 +144,6 @@ public class PublishedEventData {
   public void setParameters(List<@Valid ParameterData> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

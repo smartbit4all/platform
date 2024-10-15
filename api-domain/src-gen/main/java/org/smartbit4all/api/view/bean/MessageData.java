@@ -45,7 +45,6 @@ import jakarta.validation.Valid;
   MessageData.TEXT_TYPE,
   MessageData.OPTIONS
 })
-@JsonTypeName("MessageData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MessageData {
   public static final String UUID = "uuid";
@@ -67,9 +66,9 @@ public class MessageData {
   private MessageTextType textType;
 
   public static final String OPTIONS = "options";
-  private List<@Valid MessageOption> options = null;
+  private List<@Valid MessageOption> options = new ArrayList<>();
 
-  public MessageData() { 
+  public MessageData() {
   }
 
   public MessageData uuid(UUID uuid) {
@@ -78,14 +77,15 @@ public class MessageData {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of the Message.
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of the Message.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,20 +100,20 @@ public class MessageData {
     this.uuid = uuid;
   }
 
-
   public MessageData viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
     return this;
   }
 
-   /**
+  /**
    * UUID of the View, showing this message. May be null.
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "UUID of the View, showing this message. May be null.")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,21 +128,21 @@ public class MessageData {
     this.viewUuid = viewUuid;
   }
 
-
   public MessageData type(MessageType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -157,19 +157,19 @@ public class MessageData {
     this.type = type;
   }
 
-
   public MessageData header(String header) {
     
     this.header = header;
     return this;
   }
 
-   /**
+  /**
    * Get header
    * @return header
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HEADER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,19 +184,19 @@ public class MessageData {
     this.header = header;
   }
 
-
   public MessageData text(String text) {
     
     this.text = text;
     return this;
   }
 
-   /**
+  /**
    * Get text
    * @return text
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,20 +211,20 @@ public class MessageData {
     this.text = text;
   }
 
-
   public MessageData textType(MessageTextType textType) {
     
     this.textType = textType;
     return this;
   }
 
-   /**
+  /**
    * Get textType
    * @return textType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,7 +238,6 @@ public class MessageData {
   public void setTextType(MessageTextType textType) {
     this.textType = textType;
   }
-
 
   public MessageData options(List<@Valid MessageOption> options) {
     
@@ -254,13 +253,14 @@ public class MessageData {
     return this;
   }
 
-   /**
+  /**
    * Get options
    * @return options
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -274,7 +274,6 @@ public class MessageData {
   public void setOptions(List<@Valid MessageOption> options) {
     this.options = options;
   }
-
 
   @Override
   public boolean equals(Object o) {

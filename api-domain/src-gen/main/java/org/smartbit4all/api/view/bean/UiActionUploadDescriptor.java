@@ -29,6 +29,7 @@ import jakarta.validation.Valid;
 /**
  * Describes the look of an upload component that is related to a specific UiAction. 
  */
+@Schema(description = "Describes the look of an upload component that is related to a specific UiAction. ")
 @JsonPropertyOrder({
   UiActionUploadDescriptor.TITLE,
   UiActionUploadDescriptor.DESCRIPTION,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   UiActionUploadDescriptor.BACKGROUND_COLOUR,
   UiActionUploadDescriptor.TEXT_COLOUR
 })
-@JsonTypeName("UiActionUploadDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionUploadDescriptor {
   public static final String TITLE = "title";
@@ -62,7 +62,7 @@ public class UiActionUploadDescriptor {
   public static final String TEXT_COLOUR = "textColour";
   private String textColour;
 
-  public UiActionUploadDescriptor() { 
+  public UiActionUploadDescriptor() {
   }
 
   public UiActionUploadDescriptor title(String title) {
@@ -71,13 +71,14 @@ public class UiActionUploadDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -92,19 +93,19 @@ public class UiActionUploadDescriptor {
     this.title = title;
   }
 
-
   public UiActionUploadDescriptor description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * Get description
    * @return description
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -119,19 +120,19 @@ public class UiActionUploadDescriptor {
     this.description = description;
   }
 
-
   public UiActionUploadDescriptor maxSize(String maxSize) {
     
     this.maxSize = maxSize;
     return this;
   }
 
-   /**
+  /**
    * Get maxSize
    * @return maxSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MAX_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,19 +147,19 @@ public class UiActionUploadDescriptor {
     this.maxSize = maxSize;
   }
 
-
   public UiActionUploadDescriptor formats(String formats) {
     
     this.formats = formats;
     return this;
   }
 
-   /**
+  /**
    * Get formats
    * @return formats
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FORMATS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,19 +174,19 @@ public class UiActionUploadDescriptor {
     this.formats = formats;
   }
 
-
   public UiActionUploadDescriptor uploadButtonTitle(String uploadButtonTitle) {
     
     this.uploadButtonTitle = uploadButtonTitle;
     return this;
   }
 
-   /**
+  /**
    * Get uploadButtonTitle
    * @return uploadButtonTitle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPLOAD_BUTTON_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -200,19 +201,19 @@ public class UiActionUploadDescriptor {
     this.uploadButtonTitle = uploadButtonTitle;
   }
 
-
   public UiActionUploadDescriptor backgroundColour(String backgroundColour) {
     
     this.backgroundColour = backgroundColour;
     return this;
   }
 
-   /**
+  /**
    * Get backgroundColour
    * @return backgroundColour
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BACKGROUND_COLOUR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -227,19 +228,19 @@ public class UiActionUploadDescriptor {
     this.backgroundColour = backgroundColour;
   }
 
-
   public UiActionUploadDescriptor textColour(String textColour) {
     
     this.textColour = textColour;
     return this;
   }
 
-   /**
+  /**
    * Get textColour
    * @return textColour
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEXT_COLOUR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -253,7 +254,6 @@ public class UiActionUploadDescriptor {
   public void setTextColour(String textColour) {
     this.textColour = textColour;
   }
-
 
   @Override
   public boolean equals(Object o) {

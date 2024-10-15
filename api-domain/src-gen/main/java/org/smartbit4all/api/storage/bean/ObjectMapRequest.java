@@ -32,13 +32,13 @@ import jakarta.validation.Valid;
 /**
  * The request for adding and removing items from the ObjectMap. The Api accept this object as an input and executes the commands. 
  */
+@Schema(description = "The request for adding and removing items from the ObjectMap. The Api accept this object as an input and executes the commands. ")
 @JsonPropertyOrder({
   ObjectMapRequest.MAP_URI,
   ObjectMapRequest.MAP_NAME,
   ObjectMapRequest.URIS_TO_REMOVE,
   ObjectMapRequest.URIS_TO_ADD
 })
-@JsonTypeName("ObjectMapRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectMapRequest {
   public static final String MAP_URI = "mapUri";
@@ -48,12 +48,12 @@ public class ObjectMapRequest {
   private String mapName;
 
   public static final String URIS_TO_REMOVE = "urisToRemove";
-  private Map<String, URI> urisToRemove = null;
+  private Map<String, URI> urisToRemove = new HashMap<>();
 
   public static final String URIS_TO_ADD = "urisToAdd";
-  private Map<String, URI> urisToAdd = null;
+  private Map<String, URI> urisToAdd = new HashMap<>();
 
-  public ObjectMapRequest() { 
+  public ObjectMapRequest() {
   }
 
   public ObjectMapRequest mapUri(URI mapUri) {
@@ -62,13 +62,14 @@ public class ObjectMapRequest {
     return this;
   }
 
-   /**
+  /**
    * If we know the exact uri of the given map, then we can use this to identify the map exactly.
    * @return mapUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we know the exact uri of the given map, then we can use this to identify the map exactly.")
   @JsonProperty(MAP_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +84,19 @@ public class ObjectMapRequest {
     this.mapUri = mapUri;
   }
 
-
   public ObjectMapRequest mapName(String mapName) {
     
     this.mapName = mapName;
     return this;
   }
 
-   /**
+  /**
    * If we know the name of the given map, then we can use this to identify the map exactly in the context.
    * @return mapName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we know the name of the given map, then we can use this to identify the map exactly in the context.")
   @JsonProperty(MAP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,7 +110,6 @@ public class ObjectMapRequest {
   public void setMapName(String mapName) {
     this.mapName = mapName;
   }
-
 
   public ObjectMapRequest urisToRemove(Map<String, URI> urisToRemove) {
     
@@ -125,13 +125,14 @@ public class ObjectMapRequest {
     return this;
   }
 
-   /**
+  /**
    * Get urisToRemove
    * @return urisToRemove
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URIS_TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +146,6 @@ public class ObjectMapRequest {
   public void setUrisToRemove(Map<String, URI> urisToRemove) {
     this.urisToRemove = urisToRemove;
   }
-
 
   public ObjectMapRequest urisToAdd(Map<String, URI> urisToAdd) {
     
@@ -161,13 +161,14 @@ public class ObjectMapRequest {
     return this;
   }
 
-   /**
+  /**
    * Get urisToAdd
    * @return urisToAdd
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URIS_TO_ADD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,7 +182,6 @@ public class ObjectMapRequest {
   public void setUrisToAdd(Map<String, URI> urisToAdd) {
     this.urisToAdd = urisToAdd;
   }
-
 
   @Override
   public boolean equals(Object o) {

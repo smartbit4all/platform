@@ -35,13 +35,13 @@ import jakarta.validation.Valid;
 /**
  * The subject model consists of SubjectDescriptors that defines the available subject types. We can select from the available subjects to compile a Subject instance object that defines a set of user at the end. 
  */
+@Schema(description = "The subject model consists of SubjectDescriptors that defines the available subject types. We can select from the available subjects to compile a Subject instance object that defines a set of user at the end. ")
 @JsonPropertyOrder({
   SubjectModel.URI,
   SubjectModel.NAME,
   SubjectModel.TITLE,
   SubjectModel.DESCRIPTORS
 })
-@JsonTypeName("SubjectModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectModel {
   public static final String URI = "uri";
@@ -56,7 +56,7 @@ public class SubjectModel {
   public static final String DESCRIPTORS = "descriptors";
   private List<@Valid SubjectTypeDescriptor> descriptors = new ArrayList<>();
 
-  public SubjectModel() { 
+  public SubjectModel() {
   }
 
   public SubjectModel uri(URI uri) {
@@ -65,14 +65,15 @@ public class SubjectModel {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -87,19 +88,19 @@ public class SubjectModel {
     this.uri = uri;
   }
 
-
   public SubjectModel name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name of the subject model that identifies it as a global identifier in an application tenant.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the subject model that identifies it as a global identifier in an application tenant.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,20 +115,20 @@ public class SubjectModel {
     this.name = name;
   }
 
-
   public SubjectModel title(LangString title) {
     
     this.title = title;
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +143,6 @@ public class SubjectModel {
     this.title = title;
   }
 
-
   public SubjectModel descriptors(List<@Valid SubjectTypeDescriptor> descriptors) {
     
     this.descriptors = descriptors;
@@ -150,18 +150,22 @@ public class SubjectModel {
   }
 
   public SubjectModel addDescriptorsItem(SubjectTypeDescriptor descriptorsItem) {
+    if (this.descriptors == null) {
+      this.descriptors = new ArrayList<>();
+    }
     this.descriptors.add(descriptorsItem);
     return this;
   }
 
-   /**
+  /**
    * The subject descriptors identified by their unique name.
    * @return descriptors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The subject descriptors identified by their unique name.")
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -175,7 +179,6 @@ public class SubjectModel {
   public void setDescriptors(List<@Valid SubjectTypeDescriptor> descriptors) {
     this.descriptors = descriptors;
   }
-
 
   @Override
   public boolean equals(Object o) {

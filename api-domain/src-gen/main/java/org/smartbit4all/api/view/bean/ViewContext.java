@@ -41,6 +41,7 @@ import jakarta.validation.Valid;
 /**
  * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
+@Schema(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContext.URI,
   ViewContext.UUID,
@@ -52,7 +53,6 @@ import jakarta.validation.Valid;
   ViewContext.CURRENT_REQUEST,
   ViewContext.DEVICE_INFO
 })
-@JsonTypeName("ViewContext")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContext {
   public static final String URI = "uri";
@@ -71,7 +71,7 @@ public class ViewContext {
   private List<@Valid DownloadedFile> downloads = new ArrayList<>();
 
   public static final String CLIPBOARD_DATA = "clipboardData";
-  private List<@Valid ClipboardData> clipboardData = null;
+  private List<@Valid ClipboardData> clipboardData = new ArrayList<>();
 
   public static final String OPEN_PENDING_DATA = "openPendingData";
   private OpenPendingData openPendingData;
@@ -82,7 +82,7 @@ public class ViewContext {
   public static final String DEVICE_INFO = "deviceInfo";
   private DeviceInfo deviceInfo;
 
-  public ViewContext() { 
+  public ViewContext() {
   }
 
   public ViewContext uri(URI uri) {
@@ -91,14 +91,15 @@ public class ViewContext {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,20 +114,20 @@ public class ViewContext {
     this.uri = uri;
   }
 
-
   public ViewContext uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +142,6 @@ public class ViewContext {
     this.uuid = uuid;
   }
 
-
   public ViewContext views(List<@Valid View> views) {
     
     this.views = views;
@@ -149,18 +149,22 @@ public class ViewContext {
   }
 
   public ViewContext addViewsItem(View viewsItem) {
+    if (this.views == null) {
+      this.views = new ArrayList<>();
+    }
     this.views.add(viewsItem);
     return this;
   }
 
-   /**
+  /**
    * Get views
    * @return views
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -175,7 +179,6 @@ public class ViewContext {
     this.views = views;
   }
 
-
   public ViewContext links(List<@Valid Link> links) {
     
     this.links = links;
@@ -183,18 +186,22 @@ public class ViewContext {
   }
 
   public ViewContext addLinksItem(Link linksItem) {
+    if (this.links == null) {
+      this.links = new ArrayList<>();
+    }
     this.links.add(linksItem);
     return this;
   }
 
-   /**
+  /**
    * Get links
    * @return links
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -209,7 +216,6 @@ public class ViewContext {
     this.links = links;
   }
 
-
   public ViewContext downloads(List<@Valid DownloadedFile> downloads) {
     
     this.downloads = downloads;
@@ -217,18 +223,22 @@ public class ViewContext {
   }
 
   public ViewContext addDownloadsItem(DownloadedFile downloadsItem) {
+    if (this.downloads == null) {
+      this.downloads = new ArrayList<>();
+    }
     this.downloads.add(downloadsItem);
     return this;
   }
 
-   /**
+  /**
    * Get downloads
    * @return downloads
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DOWNLOADS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -242,7 +252,6 @@ public class ViewContext {
   public void setDownloads(List<@Valid DownloadedFile> downloads) {
     this.downloads = downloads;
   }
-
 
   public ViewContext clipboardData(List<@Valid ClipboardData> clipboardData) {
     
@@ -258,13 +267,14 @@ public class ViewContext {
     return this;
   }
 
-   /**
+  /**
    * Get clipboardData
    * @return clipboardData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CLIPBOARD_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -279,20 +289,20 @@ public class ViewContext {
     this.clipboardData = clipboardData;
   }
 
-
   public ViewContext openPendingData(OpenPendingData openPendingData) {
     
     this.openPendingData = openPendingData;
     return this;
   }
 
-   /**
+  /**
    * Get openPendingData
    * @return openPendingData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPEN_PENDING_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -307,20 +317,20 @@ public class ViewContext {
     this.openPendingData = openPendingData;
   }
 
-
   public ViewContext currentRequest(ServerRequestTrack currentRequest) {
     
     this.currentRequest = currentRequest;
     return this;
   }
 
-   /**
+  /**
    * Get currentRequest
    * @return currentRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CURRENT_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -335,20 +345,20 @@ public class ViewContext {
     this.currentRequest = currentRequest;
   }
 
-
   public ViewContext deviceInfo(DeviceInfo deviceInfo) {
     
     this.deviceInfo = deviceInfo;
     return this;
   }
 
-   /**
+  /**
    * Get deviceInfo
    * @return deviceInfo
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEVICE_INFO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -362,7 +372,6 @@ public class ViewContext {
   public void setDeviceInfo(DeviceInfo deviceInfo) {
     this.deviceInfo = deviceInfo;
   }
-
 
   @Override
   public boolean equals(Object o) {

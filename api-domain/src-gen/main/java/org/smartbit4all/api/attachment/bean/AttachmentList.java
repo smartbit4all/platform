@@ -34,11 +34,11 @@ import jakarta.validation.Valid;
 /**
  * A list of attached contents belongs to and an object. 
  */
+@Schema(description = "A list of attached contents belongs to and an object. ")
 @JsonPropertyOrder({
   AttachmentList.URI,
   AttachmentList.CONTENTS
 })
-@JsonTypeName("AttachmentList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentList {
   public static final String URI = "uri";
@@ -47,7 +47,7 @@ public class AttachmentList {
   public static final String CONTENTS = "contents";
   private List<@Valid BinaryContentData> contents = new ArrayList<>();
 
-  public AttachmentList() { 
+  public AttachmentList() {
   }
 
   public AttachmentList uri(URI uri) {
@@ -56,14 +56,15 @@ public class AttachmentList {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +79,6 @@ public class AttachmentList {
     this.uri = uri;
   }
 
-
   public AttachmentList contents(List<@Valid BinaryContentData> contents) {
     
     this.contents = contents;
@@ -86,18 +86,22 @@ public class AttachmentList {
   }
 
   public AttachmentList addContentsItem(BinaryContentData contentsItem) {
+    if (this.contents == null) {
+      this.contents = new ArrayList<>();
+    }
     this.contents.add(contentsItem);
     return this;
   }
 
-   /**
+  /**
    * The inline list of the BinaryContentData (it is the the classic attachment).
    * @return contents
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The inline list of the BinaryContentData (it is the the classic attachment).")
   @JsonProperty(CONTENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +115,6 @@ public class AttachmentList {
   public void setContents(List<@Valid BinaryContentData> contents) {
     this.contents = contents;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -31,13 +31,13 @@ import jakarta.validation.Valid;
 /**
  * API: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.
  */
+@Schema(description = "API: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 @JsonPropertyOrder({
   NavigationReferenceEntry.ID,
   NavigationReferenceEntry.START_ENTRY_URI,
   NavigationReferenceEntry.END_ENTRY,
   NavigationReferenceEntry.ASSOCIATION_ENTRY
 })
-@JsonTypeName("NavigationReferenceEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationReferenceEntry {
   public static final String ID = "id";
@@ -52,7 +52,7 @@ public class NavigationReferenceEntry {
   public static final String ASSOCIATION_ENTRY = "associationEntry";
   private NavigationEntry associationEntry;
 
-  public NavigationReferenceEntry() { 
+  public NavigationReferenceEntry() {
   }
 
   public NavigationReferenceEntry id(String id) {
@@ -61,13 +61,14 @@ public class NavigationReferenceEntry {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the reference that is constructed as startEntry.uri + [ \&quot;-\&quot; assocEntry.uri + ] \&quot;-\&quot; + endEntry.uri
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the reference that is constructed as startEntry.uri + [ \"-\" assocEntry.uri + ] \"-\" + endEntry.uri")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +83,20 @@ public class NavigationReferenceEntry {
     this.id = id;
   }
 
-
   public NavigationReferenceEntry startEntryUri(URI startEntryUri) {
     
     this.startEntryUri = startEntryUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the start entry
    * @return startEntryUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the start entry")
   @JsonProperty(START_ENTRY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +111,20 @@ public class NavigationReferenceEntry {
     this.startEntryUri = startEntryUri;
   }
 
-
   public NavigationReferenceEntry endEntry(NavigationEntry endEntry) {
     
     this.endEntry = endEntry;
     return this;
   }
 
-   /**
+  /**
    * Get endEntry
    * @return endEntry
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(END_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +139,20 @@ public class NavigationReferenceEntry {
     this.endEntry = endEntry;
   }
 
-
   public NavigationReferenceEntry associationEntry(NavigationEntry associationEntry) {
     
     this.associationEntry = associationEntry;
     return this;
   }
 
-   /**
+  /**
    * Get associationEntry
    * @return associationEntry
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ASSOCIATION_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +166,6 @@ public class NavigationReferenceEntry {
   public void setAssociationEntry(NavigationEntry associationEntry) {
     this.associationEntry = associationEntry;
   }
-
 
   @Override
   public boolean equals(Object o) {

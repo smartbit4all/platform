@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   SamplePropertyContainer.NAME,
   SamplePropertyContainer.PROPS
 })
-@JsonTypeName("SamplePropertyContainer")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SamplePropertyContainer {
   public static final String NAME = "name";
@@ -43,7 +42,7 @@ public class SamplePropertyContainer {
   public static final String PROPS = "props";
   private SampleProperties props;
 
-  public SamplePropertyContainer() { 
+  public SamplePropertyContainer() {
   }
 
   public SamplePropertyContainer name(String name) {
@@ -52,12 +51,13 @@ public class SamplePropertyContainer {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,20 +72,20 @@ public class SamplePropertyContainer {
     this.name = name;
   }
 
-
   public SamplePropertyContainer props(SampleProperties props) {
     
     this.props = props;
     return this;
   }
 
-   /**
+  /**
    * Get props
    * @return props
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PROPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,6 @@ public class SamplePropertyContainer {
   public void setProps(SampleProperties props) {
     this.props = props;
   }
-
 
   @Override
   public boolean equals(Object o) {

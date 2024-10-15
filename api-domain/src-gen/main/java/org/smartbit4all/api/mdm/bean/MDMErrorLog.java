@@ -34,11 +34,11 @@ import jakarta.validation.Valid;
 /**
  * Import and export operation error log.
  */
+@Schema(description = "Import and export operation error log.")
 @JsonPropertyOrder({
   MDMErrorLog.URI,
   MDMErrorLog.DATA
 })
-@JsonTypeName("MDMErrorLog")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMErrorLog {
   public static final String URI = "uri";
@@ -47,7 +47,7 @@ public class MDMErrorLog {
   public static final String DATA = "data";
   private List<@Valid MDMErrorLogData> data = new ArrayList<>();
 
-  public MDMErrorLog() { 
+  public MDMErrorLog() {
   }
 
   public MDMErrorLog uri(URI uri) {
@@ -56,14 +56,15 @@ public class MDMErrorLog {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +79,6 @@ public class MDMErrorLog {
     this.uri = uri;
   }
 
-
   public MDMErrorLog data(List<@Valid MDMErrorLogData> data) {
     
     this.data = data;
@@ -86,18 +86,22 @@ public class MDMErrorLog {
   }
 
   public MDMErrorLog addDataItem(MDMErrorLogData dataItem) {
+    if (this.data == null) {
+      this.data = new ArrayList<>();
+    }
     this.data.add(dataItem);
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +115,6 @@ public class MDMErrorLog {
   public void setData(List<@Valid MDMErrorLogData> data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

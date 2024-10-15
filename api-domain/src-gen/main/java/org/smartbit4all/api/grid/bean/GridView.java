@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. 
  */
+@Schema(description = "The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. ")
 @JsonPropertyOrder({
   GridView.DESCRIPTOR,
   GridView.ORDERED_COLUMN_NAMES,
   GridView.ORDER_BY_LIST
 })
-@JsonTypeName("GridView")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridView {
   public static final String DESCRIPTOR = "descriptor";
@@ -51,7 +51,7 @@ public class GridView {
   public static final String ORDER_BY_LIST = "orderByList";
   private List<FilterExpressionOrderBy> orderByList = new ArrayList<>();
 
-  public GridView() { 
+  public GridView() {
   }
 
   public GridView descriptor(GridViewDescriptor descriptor) {
@@ -60,13 +60,14 @@ public class GridView {
     return this;
   }
 
-   /**
+  /**
    * Get descriptor
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,7 +82,6 @@ public class GridView {
     this.descriptor = descriptor;
   }
 
-
   public GridView orderedColumnNames(List<String> orderedColumnNames) {
     
     this.orderedColumnNames = orderedColumnNames;
@@ -89,17 +89,21 @@ public class GridView {
   }
 
   public GridView addOrderedColumnNamesItem(String orderedColumnNamesItem) {
+    if (this.orderedColumnNames == null) {
+      this.orderedColumnNames = new ArrayList<>();
+    }
     this.orderedColumnNames.add(orderedColumnNamesItem);
     return this;
   }
 
-   /**
+  /**
    * Get orderedColumnNames
    * @return orderedColumnNames
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ORDERED_COLUMN_NAMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +118,6 @@ public class GridView {
     this.orderedColumnNames = orderedColumnNames;
   }
 
-
   public GridView orderByList(List<FilterExpressionOrderBy> orderByList) {
     
     this.orderByList = orderByList;
@@ -122,18 +125,22 @@ public class GridView {
   }
 
   public GridView addOrderByListItem(FilterExpressionOrderBy orderByListItem) {
+    if (this.orderByList == null) {
+      this.orderByList = new ArrayList<>();
+    }
     this.orderByList.add(orderByListItem);
     return this;
   }
 
-   /**
+  /**
    * Get orderByList
    * @return orderByList
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ORDER_BY_LIST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -147,7 +154,6 @@ public class GridView {
   public void setOrderByList(List<FilterExpressionOrderBy> orderByList) {
     this.orderByList = orderByList;
   }
-
 
   @Override
   public boolean equals(Object o) {

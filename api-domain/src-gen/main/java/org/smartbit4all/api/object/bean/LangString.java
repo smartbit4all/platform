@@ -31,20 +31,20 @@ import jakarta.validation.Valid;
 /**
  * A localisation aware string with its localised values. 
  */
+@Schema(description = "A localisation aware string with its localised values. ")
 @JsonPropertyOrder({
   LangString.DEFAULT_VALUE,
   LangString.VALUE_BY_LOCALE
 })
-@JsonTypeName("LangString")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class LangString {
   public static final String DEFAULT_VALUE = "defaultValue";
   private String defaultValue;
 
   public static final String VALUE_BY_LOCALE = "valueByLocale";
-  private Map<String, String> valueByLocale = null;
+  private Map<String, String> valueByLocale = new HashMap<>();
 
-  public LangString() { 
+  public LangString() {
   }
 
   public LangString defaultValue(String defaultValue) {
@@ -53,12 +53,13 @@ public class LangString {
     return this;
   }
 
-   /**
+  /**
    * Get defaultValue
    * @return defaultValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,7 +73,6 @@ public class LangString {
   public void setDefaultValue(String defaultValue) {
     this.defaultValue = defaultValue;
   }
-
 
   public LangString valueByLocale(Map<String, String> valueByLocale) {
     
@@ -88,12 +88,13 @@ public class LangString {
     return this;
   }
 
-   /**
+  /**
    * Get valueByLocale
    * @return valueByLocale
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_BY_LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +108,6 @@ public class LangString {
   public void setValueByLocale(Map<String, String> valueByLocale) {
     this.valueByLocale = valueByLocale;
   }
-
 
   @Override
   public boolean equals(Object o) {

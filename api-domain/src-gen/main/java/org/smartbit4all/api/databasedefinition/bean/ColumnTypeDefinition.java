@@ -29,13 +29,13 @@ import jakarta.validation.Valid;
 /**
  * The descriptor of a databse column type. 
  */
+@Schema(description = "The descriptor of a databse column type. ")
 @JsonPropertyOrder({
   ColumnTypeDefinition.BASE_TYPE,
   ColumnTypeDefinition.LENGTH,
   ColumnTypeDefinition.PRECISION,
   ColumnTypeDefinition.SCALE
 })
-@JsonTypeName("ColumnTypeDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ColumnTypeDefinition {
   /**
@@ -97,7 +97,7 @@ public class ColumnTypeDefinition {
   public static final String SCALE = "scale";
   private Integer scale;
 
-  public ColumnTypeDefinition() { 
+  public ColumnTypeDefinition() {
   }
 
   public ColumnTypeDefinition baseType(BaseTypeEnum baseType) {
@@ -106,12 +106,13 @@ public class ColumnTypeDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get baseType
    * @return baseType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BASE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -126,19 +127,19 @@ public class ColumnTypeDefinition {
     this.baseType = baseType;
   }
 
-
   public ColumnTypeDefinition length(Integer length) {
     
     this.length = length;
     return this;
   }
 
-   /**
+  /**
    * Get length
    * @return length
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LENGTH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,19 +154,19 @@ public class ColumnTypeDefinition {
     this.length = length;
   }
 
-
   public ColumnTypeDefinition precision(Integer precision) {
     
     this.precision = precision;
     return this;
   }
 
-   /**
+  /**
    * Get precision
    * @return precision
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PRECISION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +181,19 @@ public class ColumnTypeDefinition {
     this.precision = precision;
   }
 
-
   public ColumnTypeDefinition scale(Integer scale) {
     
     this.scale = scale;
     return this;
   }
 
-   /**
+  /**
    * Get scale
    * @return scale
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +207,6 @@ public class ColumnTypeDefinition {
   public void setScale(Integer scale) {
     this.scale = scale;
   }
-
 
   @Override
   public boolean equals(Object o) {

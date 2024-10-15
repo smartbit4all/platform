@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type. 
  */
+@Schema(description = "The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type. ")
 @JsonPropertyOrder({
   FilterExpressionOperandData.IS_DATA_NAME,
   FilterExpressionOperandData.VALUE_AS_STRING,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   FilterExpressionOperandData.SELECTED_OBJECTS,
   FilterExpressionOperandData.TYPE
 })
-@JsonTypeName("FilterExpressionOperandData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionOperandData {
   public static final String IS_DATA_NAME = "isDataName";
@@ -53,12 +53,12 @@ public class FilterExpressionOperandData {
   private List<String> selectedValues = new ArrayList<>();
 
   public static final String SELECTED_OBJECTS = "selectedObjects";
-  private List<Object> selectedObjects = null;
+  private List<Object> selectedObjects = new ArrayList<>();
 
   public static final String TYPE = "type";
   private FilterExpressionDataType type;
 
-  public FilterExpressionOperandData() { 
+  public FilterExpressionOperandData() {
   }
 
   public FilterExpressionOperandData isDataName(Boolean isDataName) {
@@ -67,12 +67,13 @@ public class FilterExpressionOperandData {
     return this;
   }
 
-   /**
+  /**
    * True if the given operand refers to property at the moment. The value as string is a property name.
    * @return isDataName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "True if the given operand refers to property at the moment. The value as string is a property name.")
   @JsonProperty(IS_DATA_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,19 +88,19 @@ public class FilterExpressionOperandData {
     this.isDataName = isDataName;
   }
 
-
   public FilterExpressionOperandData valueAsString(String valueAsString) {
     
     this.valueAsString = valueAsString;
     return this;
   }
 
-   /**
+  /**
    * Get valueAsString
    * @return valueAsString
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_AS_STRING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,7 +115,6 @@ public class FilterExpressionOperandData {
     this.valueAsString = valueAsString;
   }
 
-
   public FilterExpressionOperandData selectedValues(List<String> selectedValues) {
     
     this.selectedValues = selectedValues;
@@ -122,17 +122,21 @@ public class FilterExpressionOperandData {
   }
 
   public FilterExpressionOperandData addSelectedValuesItem(String selectedValuesItem) {
+    if (this.selectedValues == null) {
+      this.selectedValues = new ArrayList<>();
+    }
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectedValues
    * @return selectedValues
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -146,7 +150,6 @@ public class FilterExpressionOperandData {
   public void setSelectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
   }
-
 
   public FilterExpressionOperandData selectedObjects(List<Object> selectedObjects) {
     
@@ -162,12 +165,13 @@ public class FilterExpressionOperandData {
     return this;
   }
 
-   /**
+  /**
    * Get selectedObjects
    * @return selectedObjects
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,20 +186,20 @@ public class FilterExpressionOperandData {
     this.selectedObjects = selectedObjects;
   }
 
-
   public FilterExpressionOperandData type(FilterExpressionDataType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -209,7 +213,6 @@ public class FilterExpressionOperandData {
   public void setType(FilterExpressionDataType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

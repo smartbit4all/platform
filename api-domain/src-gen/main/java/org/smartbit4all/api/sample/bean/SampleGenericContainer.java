@@ -30,11 +30,11 @@ import jakarta.validation.Valid;
 /**
  * An example object which refers to another of unknown type. 
  */
+@Schema(description = "An example object which refers to another of unknown type. ")
 @JsonPropertyOrder({
   SampleGenericContainer.URI,
   SampleGenericContainer.CONTENT
 })
-@JsonTypeName("SampleGenericContainer")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleGenericContainer {
   public static final String URI = "uri";
@@ -43,7 +43,7 @@ public class SampleGenericContainer {
   public static final String CONTENT = "content";
   private URI content;
 
-  public SampleGenericContainer() { 
+  public SampleGenericContainer() {
   }
 
   public SampleGenericContainer uri(URI uri) {
@@ -52,13 +52,14 @@ public class SampleGenericContainer {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,20 +74,20 @@ public class SampleGenericContainer {
     this.uri = uri;
   }
 
-
   public SampleGenericContainer content(URI content) {
     
     this.content = content;
     return this;
   }
 
-   /**
+  /**
    * Reference to PersistableObject (generic unknown type).
    * @return content
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Reference to PersistableObject (generic unknown type).")
   @JsonProperty(CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +101,6 @@ public class SampleGenericContainer {
   public void setContent(URI content) {
     this.content = content;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -47,7 +47,6 @@ import jakarta.validation.Valid;
   SmartTreeNode.NODE_TYPE,
   SmartTreeNode.ACTIONS
 })
-@JsonTypeName("SmartTreeNode")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartTreeNode {
   public static final String IDENTIFIER = "identifier";
@@ -86,7 +85,7 @@ public class SmartTreeNode {
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
 
-  public SmartTreeNode() { 
+  public SmartTreeNode() {
   }
 
   public SmartTreeNode identifier(String identifier) {
@@ -95,12 +94,13 @@ public class SmartTreeNode {
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,19 +115,19 @@ public class SmartTreeNode {
     this.identifier = identifier;
   }
 
-
   public SmartTreeNode icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,19 +142,19 @@ public class SmartTreeNode {
     this.icon = icon;
   }
 
-
   public SmartTreeNode caption(String caption) {
     
     this.caption = caption;
     return this;
   }
 
-   /**
+  /**
    * Get caption
    * @return caption
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -169,7 +169,6 @@ public class SmartTreeNode {
     this.caption = caption;
   }
 
-
   public SmartTreeNode classes(List<String> classes) {
     
     this.classes = classes;
@@ -177,17 +176,21 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addClassesItem(String classesItem) {
+    if (this.classes == null) {
+      this.classes = new ArrayList<>();
+    }
     this.classes.add(classesItem);
     return this;
   }
 
-   /**
+  /**
    * Get classes
    * @return classes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLASSES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -202,19 +205,19 @@ public class SmartTreeNode {
     this.classes = classes;
   }
 
-
   public SmartTreeNode hasChildren(Boolean hasChildren) {
     
     this.hasChildren = hasChildren;
     return this;
   }
 
-   /**
+  /**
    * Get hasChildren
    * @return hasChildren
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HAS_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -229,7 +232,6 @@ public class SmartTreeNode {
     this.hasChildren = hasChildren;
   }
 
-
   public SmartTreeNode childrenNodes(List<@Valid SmartTreeNode> childrenNodes) {
     
     this.childrenNodes = childrenNodes;
@@ -237,18 +239,22 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addChildrenNodesItem(SmartTreeNode childrenNodesItem) {
+    if (this.childrenNodes == null) {
+      this.childrenNodes = new ArrayList<>();
+    }
     this.childrenNodes.add(childrenNodesItem);
     return this;
   }
 
-   /**
+  /**
    * Get childrenNodes
    * @return childrenNodes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CHILDREN_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -263,19 +269,19 @@ public class SmartTreeNode {
     this.childrenNodes = childrenNodes;
   }
 
-
   public SmartTreeNode expanded(Boolean expanded) {
     
     this.expanded = expanded;
     return this;
   }
 
-   /**
+  /**
    * Get expanded
    * @return expanded
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPANDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -290,19 +296,19 @@ public class SmartTreeNode {
     this.expanded = expanded;
   }
 
-
   public SmartTreeNode selected(Boolean selected) {
     
     this.selected = selected;
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,19 +323,19 @@ public class SmartTreeNode {
     this.selected = selected;
   }
 
-
   public SmartTreeNode level(Integer level) {
     
     this.level = level;
     return this;
   }
 
-   /**
+  /**
    * Get level
    * @return level
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -344,19 +350,19 @@ public class SmartTreeNode {
     this.level = level;
   }
 
-
   public SmartTreeNode shortDescription(String shortDescription) {
     
     this.shortDescription = shortDescription;
     return this;
   }
 
-   /**
+  /**
    * Get shortDescription
    * @return shortDescription
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SHORT_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,19 +377,19 @@ public class SmartTreeNode {
     this.shortDescription = shortDescription;
   }
 
-
   public SmartTreeNode nodeType(String nodeType) {
     
     this.nodeType = nodeType;
     return this;
   }
 
-   /**
+  /**
    * Get nodeType
    * @return nodeType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NODE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -398,7 +404,6 @@ public class SmartTreeNode {
     this.nodeType = nodeType;
   }
 
-
   public SmartTreeNode actions(List<UiAction> actions) {
     
     this.actions = actions;
@@ -406,18 +411,22 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -431,7 +440,6 @@ public class SmartTreeNode {
   public void setActions(List<UiAction> actions) {
     this.actions = actions;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * The changes between two object structure. The change is based on the property names and computed by the value map of the object. 
  */
+@Schema(description = "The changes between two object structure. The change is based on the property names and computed by the value map of the object. ")
 @JsonPropertyOrder({
   ObjectChangeData.TYPE_CLASS,
   ObjectChangeData.PROPERTIES,
   ObjectChangeData.REFERENCES
 })
-@JsonTypeName("ObjectChangeData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectChangeData {
   public static final String TYPE_CLASS = "typeClass";
@@ -51,7 +51,7 @@ public class ObjectChangeData {
   public static final String REFERENCES = "references";
   private List<@Valid ReferenceChangeData> references = new ArrayList<>();
 
-  public ObjectChangeData() { 
+  public ObjectChangeData() {
   }
 
   public ObjectChangeData typeClass(String typeClass) {
@@ -60,12 +60,13 @@ public class ObjectChangeData {
     return this;
   }
 
-   /**
+  /**
    * The name of the type class if exists.
    * @return typeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the type class if exists.")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,7 +81,6 @@ public class ObjectChangeData {
     this.typeClass = typeClass;
   }
 
-
   public ObjectChangeData properties(List<@Valid PropertyChangeData> properties) {
     
     this.properties = properties;
@@ -88,18 +88,22 @@ public class ObjectChangeData {
   }
 
   public ObjectChangeData addPropertiesItem(PropertyChangeData propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new ArrayList<>();
+    }
     this.properties.add(propertiesItem);
     return this;
   }
 
-   /**
+  /**
    * Get properties
    * @return properties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +118,6 @@ public class ObjectChangeData {
     this.properties = properties;
   }
 
-
   public ObjectChangeData references(List<@Valid ReferenceChangeData> references) {
     
     this.references = references;
@@ -122,18 +125,22 @@ public class ObjectChangeData {
   }
 
   public ObjectChangeData addReferencesItem(ReferenceChangeData referencesItem) {
+    if (this.references == null) {
+      this.references = new ArrayList<>();
+    }
     this.references.add(referencesItem);
     return this;
   }
 
-   /**
+  /**
    * Get references
    * @return references
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -147,7 +154,6 @@ public class ObjectChangeData {
   public void setReferences(List<@Valid ReferenceChangeData> references) {
     this.references = references;
   }
-
 
   @Override
   public boolean equals(Object o) {

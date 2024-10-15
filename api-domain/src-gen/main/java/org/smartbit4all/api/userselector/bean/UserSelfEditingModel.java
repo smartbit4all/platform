@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
   UserSelfEditingModel.NEW_PASSWORD1,
   UserSelfEditingModel.NEW_PASSWORD2
 })
-@JsonTypeName("UserSelfEditingModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserSelfEditingModel {
   public static final String NAME = "name";
@@ -58,7 +57,7 @@ public class UserSelfEditingModel {
   public static final String NEW_PASSWORD2 = "newPassword2";
   private String newPassword2;
 
-  public UserSelfEditingModel() { 
+  public UserSelfEditingModel() {
   }
 
   public UserSelfEditingModel name(String name) {
@@ -67,12 +66,13 @@ public class UserSelfEditingModel {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,19 +87,19 @@ public class UserSelfEditingModel {
     this.name = name;
   }
 
-
   public UserSelfEditingModel username(String username) {
     
     this.username = username;
     return this;
   }
 
-   /**
+  /**
    * Get username
    * @return username
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,19 +114,19 @@ public class UserSelfEditingModel {
     this.username = username;
   }
 
-
   public UserSelfEditingModel email(String email) {
     
     this.email = email;
     return this;
   }
 
-   /**
+  /**
    * Get email
    * @return email
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EMAIL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,19 +141,19 @@ public class UserSelfEditingModel {
     this.email = email;
   }
 
-
   public UserSelfEditingModel oldPassword(String oldPassword) {
     
     this.oldPassword = oldPassword;
     return this;
   }
 
-   /**
+  /**
    * Get oldPassword
    * @return oldPassword
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OLD_PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,19 +168,19 @@ public class UserSelfEditingModel {
     this.oldPassword = oldPassword;
   }
 
-
   public UserSelfEditingModel newPassword1(String newPassword1) {
     
     this.newPassword1 = newPassword1;
     return this;
   }
 
-   /**
+  /**
    * Get newPassword1
    * @return newPassword1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NEW_PASSWORD1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,19 +195,19 @@ public class UserSelfEditingModel {
     this.newPassword1 = newPassword1;
   }
 
-
   public UserSelfEditingModel newPassword2(String newPassword2) {
     
     this.newPassword2 = newPassword2;
     return this;
   }
 
-   /**
+  /**
    * Get newPassword2
    * @return newPassword2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NEW_PASSWORD2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,7 +221,6 @@ public class UserSelfEditingModel {
   public void setNewPassword2(String newPassword2) {
     this.newPassword2 = newPassword2;
   }
-
 
   @Override
   public boolean equals(Object o) {

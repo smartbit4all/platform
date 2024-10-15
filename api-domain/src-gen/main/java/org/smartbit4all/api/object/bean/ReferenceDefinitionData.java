@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 /**
  * The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. 
  */
+@Schema(description = "The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. ")
 @JsonPropertyOrder({
   ReferenceDefinitionData.URI,
   ReferenceDefinitionData.BACK_REFERENCE,
@@ -42,7 +43,6 @@ import jakarta.validation.Valid;
   ReferenceDefinitionData.AGGREGATION,
   ReferenceDefinitionData.PROPERTY_KIND
 })
-@JsonTypeName("ReferenceDefinitionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ReferenceDefinitionData {
   public static final String URI = "uri";
@@ -69,7 +69,7 @@ public class ReferenceDefinitionData {
   public static final String PROPERTY_KIND = "propertyKind";
   private ReferencePropertyKind propertyKind;
 
-  public ReferenceDefinitionData() { 
+  public ReferenceDefinitionData() {
   }
 
   public ReferenceDefinitionData uri(URI uri) {
@@ -78,14 +78,15 @@ public class ReferenceDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By default it could be a good idea to name the reference by the name of the property that contains the reference value. 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By default it could be a good idea to name the reference by the name of the property that contains the reference value. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,20 +101,20 @@ public class ReferenceDefinitionData {
     this.uri = uri;
   }
 
-
   public ReferenceDefinitionData backReference(URI backReference) {
     
     this.backReference = backReference;
     return this;
   }
 
-   /**
+  /**
    * If an association between two object is navigable into both direction then this uri refers to the opposite reference.
    * @return backReference
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If an association between two object is navigable into both direction then this uri refers to the opposite reference.")
   @JsonProperty(BACK_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,20 +129,20 @@ public class ReferenceDefinitionData {
     this.backReference = backReference;
   }
 
-
   public ReferenceDefinitionData sourceObjectName(String sourceObjectName) {
     
     this.sourceObjectName = sourceObjectName;
     return this;
   }
 
-   /**
+  /**
    * The qualified name of the source object.
    * @return sourceObjectName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The qualified name of the source object.")
   @JsonProperty(SOURCE_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -156,20 +157,20 @@ public class ReferenceDefinitionData {
     this.sourceObjectName = sourceObjectName;
   }
 
-
   public ReferenceDefinitionData propertyPath(String propertyPath) {
     
     this.propertyPath = propertyPath;
     return this;
   }
 
-   /**
+  /**
    * The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to identify the property in the object or in its contained objects. The path can be \&quot;parent\&quot; if the parent property is directly a property inside the object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to  access the object directly by its value. If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values. 
    * @return propertyPath
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to identify the property in the object or in its contained objects. The path can be \"parent\" if the parent property is directly a property inside the object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to  access the object directly by its value. If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values. ")
   @JsonProperty(PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -184,19 +185,19 @@ public class ReferenceDefinitionData {
     this.propertyPath = propertyPath;
   }
 
-
   public ReferenceDefinitionData targetObjectName(String targetObjectName) {
     
     this.targetObjectName = targetObjectName;
     return this;
   }
 
-   /**
+  /**
    * The name of the target object.
    * @return targetObjectName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the target object.")
   @JsonProperty(TARGET_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,20 +212,20 @@ public class ReferenceDefinitionData {
     this.targetObjectName = targetObjectName;
   }
 
-
   public ReferenceDefinitionData targetValueSet(URI targetValueSet) {
     
     this.targetValueSet = targetValueSet;
     return this;
   }
 
-   /**
+  /**
    * If the given reference points to a value set then this uri contains the reference.
    * @return targetValueSet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the given reference points to a value set then this uri contains the reference.")
   @JsonProperty(TARGET_VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -239,21 +240,21 @@ public class ReferenceDefinitionData {
     this.targetValueSet = targetValueSet;
   }
 
-
   public ReferenceDefinitionData aggregation(AggregationKind aggregation) {
     
     this.aggregation = aggregation;
     return this;
   }
 
-   /**
+  /**
    * Get aggregation
    * @return aggregation
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(AGGREGATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -268,20 +269,20 @@ public class ReferenceDefinitionData {
     this.aggregation = aggregation;
   }
 
-
   public ReferenceDefinitionData propertyKind(ReferencePropertyKind propertyKind) {
     
     this.propertyKind = propertyKind;
     return this;
   }
 
-   /**
+  /**
    * Get propertyKind
    * @return propertyKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PROPERTY_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -295,7 +296,6 @@ public class ReferenceDefinitionData {
   public void setPropertyKind(ReferencePropertyKind propertyKind) {
     this.propertyKind = propertyKind;
   }
-
 
   @Override
   public boolean equals(Object o) {

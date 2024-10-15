@@ -38,11 +38,10 @@ import jakarta.validation.Valid;
   FilterConfig.DEFAULT_FILTER_STYLE,
   FilterConfig.DEFAULT_FILTER_GROUP_STYLE
 })
-@JsonTypeName("FilterConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterConfig {
   public static final String FILTER_GROUP_METAS = "filterGroupMetas";
-  private List<@Valid FilterGroupMeta> filterGroupMetas = null;
+  private List<@Valid FilterGroupMeta> filterGroupMetas = new ArrayList<>();
 
   public static final String DEFAULT_FILTER_STYLE = "defaultFilterStyle";
   private String defaultFilterStyle;
@@ -50,7 +49,7 @@ public class FilterConfig {
   public static final String DEFAULT_FILTER_GROUP_STYLE = "defaultFilterGroupStyle";
   private String defaultFilterGroupStyle;
 
-  public FilterConfig() { 
+  public FilterConfig() {
   }
 
   public FilterConfig filterGroupMetas(List<@Valid FilterGroupMeta> filterGroupMetas) {
@@ -67,13 +66,14 @@ public class FilterConfig {
     return this;
   }
 
-   /**
+  /**
    * Get filterGroupMetas
    * @return filterGroupMetas
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_GROUP_METAS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,19 +88,19 @@ public class FilterConfig {
     this.filterGroupMetas = filterGroupMetas;
   }
 
-
   public FilterConfig defaultFilterStyle(String defaultFilterStyle) {
     
     this.defaultFilterStyle = defaultFilterStyle;
     return this;
   }
 
-   /**
+  /**
    * Get defaultFilterStyle
    * @return defaultFilterStyle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_FILTER_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,19 +115,19 @@ public class FilterConfig {
     this.defaultFilterStyle = defaultFilterStyle;
   }
 
-
   public FilterConfig defaultFilterGroupStyle(String defaultFilterGroupStyle) {
     
     this.defaultFilterGroupStyle = defaultFilterGroupStyle;
     return this;
   }
 
-   /**
+  /**
    * Get defaultFilterGroupStyle
    * @return defaultFilterGroupStyle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_FILTER_GROUP_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +141,6 @@ public class FilterConfig {
   public void setDefaultFilterGroupStyle(String defaultFilterGroupStyle) {
     this.defaultFilterGroupStyle = defaultFilterGroupStyle;
   }
-
 
   @Override
   public boolean equals(Object o) {

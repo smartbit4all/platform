@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.
  */
+@Schema(description = "API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.")
 @JsonPropertyOrder({
   NavigationEntryMeta.URI,
   NavigationEntryMeta.NAME,
   NavigationEntryMeta.ASSOCIATIONS
 })
-@JsonTypeName("NavigationEntryMeta")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationEntryMeta {
   public static final String URI = "uri";
@@ -49,9 +49,9 @@ public class NavigationEntryMeta {
   private String name;
 
   public static final String ASSOCIATIONS = "associations";
-  private List<@Valid NavigationAssociationMeta> associations = null;
+  private List<@Valid NavigationAssociationMeta> associations = new ArrayList<>();
 
-  public NavigationEntryMeta() { 
+  public NavigationEntryMeta() {
   }
 
   public NavigationEntryMeta uri(URI uri) {
@@ -60,14 +60,15 @@ public class NavigationEntryMeta {
     return this;
   }
 
-   /**
+  /**
    * The uri of the resource that uniquely identifies the given entry inside the navigation api.
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the resource that uniquely identifies the given entry inside the navigation api.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +83,20 @@ public class NavigationEntryMeta {
     this.uri = uri;
   }
 
-
   public NavigationEntryMeta name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The well-formed name of the association.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The well-formed name of the association.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +110,6 @@ public class NavigationEntryMeta {
   public void setName(String name) {
     this.name = name;
   }
-
 
   public NavigationEntryMeta associations(List<@Valid NavigationAssociationMeta> associations) {
     
@@ -125,13 +125,14 @@ public class NavigationEntryMeta {
     return this;
   }
 
-   /**
+  /**
    * Get associations
    * @return associations
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +146,6 @@ public class NavigationEntryMeta {
   public void setAssociations(List<@Valid NavigationAssociationMeta> associations) {
     this.associations = associations;
   }
-
 
   @Override
   public boolean equals(Object o) {

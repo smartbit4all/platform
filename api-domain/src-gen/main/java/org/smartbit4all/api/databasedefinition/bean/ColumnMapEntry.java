@@ -29,11 +29,11 @@ import jakarta.validation.Valid;
 /**
  * A tuple to save the referring and the referred column name in one object. 
  */
+@Schema(description = "A tuple to save the referring and the referred column name in one object. ")
 @JsonPropertyOrder({
   ColumnMapEntry.SOURCE,
   ColumnMapEntry.TARGET
 })
-@JsonTypeName("ColumnMapEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ColumnMapEntry {
   public static final String SOURCE = "source";
@@ -42,7 +42,7 @@ public class ColumnMapEntry {
   public static final String TARGET = "target";
   private String target;
 
-  public ColumnMapEntry() { 
+  public ColumnMapEntry() {
   }
 
   public ColumnMapEntry source(String source) {
@@ -51,12 +51,13 @@ public class ColumnMapEntry {
     return this;
   }
 
-   /**
+  /**
    * Get source
    * @return source
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +72,19 @@ public class ColumnMapEntry {
     this.source = source;
   }
 
-
   public ColumnMapEntry target(String target) {
     
     this.target = target;
     return this;
   }
 
-   /**
+  /**
    * Get target
    * @return target
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +98,6 @@ public class ColumnMapEntry {
   public void setTarget(String target) {
     this.target = target;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   NavigableViewDescriptor.TITLE,
   NavigableViewDescriptor.ICON
 })
-@JsonTypeName("NavigableViewDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigableViewDescriptor {
   public static final String VIEW_NAME = "viewName";
@@ -50,7 +49,7 @@ public class NavigableViewDescriptor {
   public static final String ICON = "icon";
   private String icon;
 
-  public NavigableViewDescriptor() { 
+  public NavigableViewDescriptor() {
   }
 
   public NavigableViewDescriptor viewName(String viewName) {
@@ -59,12 +58,13 @@ public class NavigableViewDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get viewName
    * @return viewName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,19 +79,19 @@ public class NavigableViewDescriptor {
     this.viewName = viewName;
   }
 
-
   public NavigableViewDescriptor viewClassName(String viewClassName) {
     
     this.viewClassName = viewClassName;
     return this;
   }
 
-   /**
+  /**
    * Get viewClassName
    * @return viewClassName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_CLASS_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,19 +106,19 @@ public class NavigableViewDescriptor {
     this.viewClassName = viewClassName;
   }
 
-
   public NavigableViewDescriptor title(String title) {
     
     this.title = title;
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,19 +133,19 @@ public class NavigableViewDescriptor {
     this.title = title;
   }
 
-
   public NavigableViewDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -159,7 +159,6 @@ public class NavigableViewDescriptor {
   public void setIcon(String icon) {
     this.icon = icon;
   }
-
 
   @Override
   public boolean equals(Object o) {

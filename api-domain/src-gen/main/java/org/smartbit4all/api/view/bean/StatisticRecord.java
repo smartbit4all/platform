@@ -29,6 +29,7 @@ import jakarta.validation.Valid;
 /**
  * The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. 
  */
+@Schema(description = "The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. ")
 @JsonPropertyOrder({
   StatisticRecord.MIN,
   StatisticRecord.AVG,
@@ -36,7 +37,6 @@ import jakarta.validation.Valid;
   StatisticRecord.COUNTER,
   StatisticRecord.SUM
 })
-@JsonTypeName("StatisticRecord")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StatisticRecord {
   public static final String MIN = "min";
@@ -54,7 +54,7 @@ public class StatisticRecord {
   public static final String SUM = "sum";
   private Long sum = 0l;
 
-  public StatisticRecord() { 
+  public StatisticRecord() {
   }
 
   public StatisticRecord min(Long min) {
@@ -63,12 +63,13 @@ public class StatisticRecord {
     return this;
   }
 
-   /**
+  /**
    * The minimum execution time of the given action in millisec.
    * @return min
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The minimum execution time of the given action in millisec.")
   @JsonProperty(MIN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +84,19 @@ public class StatisticRecord {
     this.min = min;
   }
 
-
   public StatisticRecord avg(Long avg) {
     
     this.avg = avg;
     return this;
   }
 
-   /**
+  /**
    * The average execution time of the given action in millisec.
    * @return avg
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The average execution time of the given action in millisec.")
   @JsonProperty(AVG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,19 +111,19 @@ public class StatisticRecord {
     this.avg = avg;
   }
 
-
   public StatisticRecord max(Long max) {
     
     this.max = max;
     return this;
   }
 
-   /**
+  /**
    * The average execution time of the given action in millisec.
    * @return max
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The average execution time of the given action in millisec.")
   @JsonProperty(MAX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,19 +138,19 @@ public class StatisticRecord {
     this.max = max;
   }
 
-
   public StatisticRecord counter(Long counter) {
     
     this.counter = counter;
     return this;
   }
 
-   /**
+  /**
    * The number of executed requests.
    * @return counter
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The number of executed requests.")
   @JsonProperty(COUNTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,19 +165,19 @@ public class StatisticRecord {
     this.counter = counter;
   }
 
-
   public StatisticRecord sum(Long sum) {
     
     this.sum = sum;
     return this;
   }
 
-   /**
+  /**
    * The summarized execution time of the request.
    * @return sum
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The summarized execution time of the request.")
   @JsonProperty(SUM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,7 +191,6 @@ public class StatisticRecord {
   public void setSum(Long sum) {
     this.sum = sum;
   }
-
 
   @Override
   public boolean equals(Object o) {

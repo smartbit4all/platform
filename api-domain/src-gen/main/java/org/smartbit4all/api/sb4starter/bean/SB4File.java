@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   SB4File.ID,
   SB4File.FILENAME
 })
-@JsonTypeName("SB4File")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4File {
   public static final String ID = "id";
@@ -43,7 +42,7 @@ public class SB4File {
   public static final String FILENAME = "filename";
   private String filename;
 
-  public SB4File() { 
+  public SB4File() {
   }
 
   public SB4File id(UUID id) {
@@ -52,14 +51,15 @@ public class SB4File {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -74,20 +74,20 @@ public class SB4File {
     this.id = id;
   }
 
-
   public SB4File filename(String filename) {
     
     this.filename = filename;
     return this;
   }
 
-   /**
+  /**
    * Get filename
    * @return filename
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -101,7 +101,6 @@ public class SB4File {
   public void setFilename(String filename) {
     this.filename = filename;
   }
-
 
   @Override
   public boolean equals(Object o) {

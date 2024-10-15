@@ -32,11 +32,11 @@ import jakarta.validation.Valid;
 /**
  * For every runtime it is the list of all the channels managed by the given runtime. The channels are managed by runtime refreshment implemented in the InvocationRegisterApi. 
  */
+@Schema(description = "For every runtime it is the list of all the channels managed by the given runtime. The channels are managed by runtime refreshment implemented in the InvocationRegisterApi. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannelList.RUNTIME_URI,
   RuntimeAsyncChannelList.CHANNELS
 })
-@JsonTypeName("RuntimeAsyncChannelList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RuntimeAsyncChannelList {
   public static final String RUNTIME_URI = "runtimeUri";
@@ -45,7 +45,7 @@ public class RuntimeAsyncChannelList {
   public static final String CHANNELS = "channels";
   private Map<String, URI> channels = new HashMap<>();
 
-  public RuntimeAsyncChannelList() { 
+  public RuntimeAsyncChannelList() {
   }
 
   public RuntimeAsyncChannelList runtimeUri(URI runtimeUri) {
@@ -54,13 +54,14 @@ public class RuntimeAsyncChannelList {
     return this;
   }
 
-   /**
+  /**
    * The URI of the appliocation runtime that is currently responsible for the givan invocation.
    * @return runtimeUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the appliocation runtime that is currently responsible for the givan invocation.")
   @JsonProperty(RUNTIME_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,7 +76,6 @@ public class RuntimeAsyncChannelList {
     this.runtimeUri = runtimeUri;
   }
 
-
   public RuntimeAsyncChannelList channels(Map<String, URI> channels) {
     
     this.channels = channels;
@@ -87,14 +87,15 @@ public class RuntimeAsyncChannelList {
     return this;
   }
 
-   /**
+  /**
    * The list of the channel object uris managed by the given runtime.
    * @return channels
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The list of the channel object uris managed by the given runtime.")
   @JsonProperty(CHANNELS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +109,6 @@ public class RuntimeAsyncChannelList {
   public void setChannels(Map<String, URI> channels) {
     this.channels = channels;
   }
-
 
   @Override
   public boolean equals(Object o) {

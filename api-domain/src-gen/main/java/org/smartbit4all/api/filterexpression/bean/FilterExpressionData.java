@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The expression data is the decriptor of an expression stands for an equal, like etc. and also can be a bracket where  we have embedded expressions. 
  */
+@Schema(description = "The expression data is the decriptor of an expression stands for an equal, like etc. and also can be a bracket where  we have embedded expressions. ")
 @JsonPropertyOrder({
   FilterExpressionData.OPERAND1,
   FilterExpressionData.OPERAND2,
@@ -42,7 +43,6 @@ import jakarta.validation.Valid;
   FilterExpressionData.BOOL_OPERATOR,
   FilterExpressionData.SUB_EXPRESSION
 })
-@JsonTypeName("FilterExpressionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionData {
   public static final String OPERAND1 = "operand1";
@@ -66,7 +66,7 @@ public class FilterExpressionData {
   public static final String SUB_EXPRESSION = "subExpression";
   private FilterExpressionList subExpression;
 
-  public FilterExpressionData() { 
+  public FilterExpressionData() {
   }
 
   public FilterExpressionData operand1(FilterExpressionOperandData operand1) {
@@ -75,13 +75,14 @@ public class FilterExpressionData {
     return this;
   }
 
-   /**
+  /**
    * Get operand1
    * @return operand1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERAND1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,20 +97,20 @@ public class FilterExpressionData {
     this.operand1 = operand1;
   }
 
-
   public FilterExpressionData operand2(FilterExpressionOperandData operand2) {
     
     this.operand2 = operand2;
     return this;
   }
 
-   /**
+  /**
    * Get operand2
    * @return operand2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERAND2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,20 +125,20 @@ public class FilterExpressionData {
     this.operand2 = operand2;
   }
 
-
   public FilterExpressionData operand3(FilterExpressionOperandData operand3) {
     
     this.operand3 = operand3;
     return this;
   }
 
-   /**
+  /**
    * Get operand3
    * @return operand3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERAND3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,20 +153,20 @@ public class FilterExpressionData {
     this.operand3 = operand3;
   }
 
-
   public FilterExpressionData currentOperation(FilterExpressionOperation currentOperation) {
     
     this.currentOperation = currentOperation;
     return this;
   }
 
-   /**
+  /**
    * Get currentOperation
    * @return currentOperation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CURRENT_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +181,19 @@ public class FilterExpressionData {
     this.currentOperation = currentOperation;
   }
 
-
   public FilterExpressionData modifier(String modifier) {
     
     this.modifier = modifier;
     return this;
   }
 
-   /**
+  /**
    * Get modifier
    * @return modifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,20 +208,20 @@ public class FilterExpressionData {
     this.modifier = modifier;
   }
 
-
   public FilterExpressionData boolOperator(FilterExpressionBoolOperator boolOperator) {
     
     this.boolOperator = boolOperator;
     return this;
   }
 
-   /**
+  /**
    * Get boolOperator
    * @return boolOperator
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BOOL_OPERATOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,20 +236,20 @@ public class FilterExpressionData {
     this.boolOperator = boolOperator;
   }
 
-
   public FilterExpressionData subExpression(FilterExpressionList subExpression) {
     
     this.subExpression = subExpression;
     return this;
   }
 
-   /**
+  /**
    * Get subExpression
    * @return subExpression
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUB_EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +263,6 @@ public class FilterExpressionData {
   public void setSubExpression(FilterExpressionList subExpression) {
     this.subExpression = subExpression;
   }
-
 
   @Override
   public boolean equals(Object o) {

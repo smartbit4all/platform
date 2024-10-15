@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 /**
  * This object is a grid row containening the identifier and actions releted with the row. 
  */
+@Schema(description = "This object is a grid row containening the identifier and actions releted with the row. ")
 @JsonPropertyOrder({
   GridRow.ID,
   GridRow.ACTIONS,
@@ -48,7 +49,6 @@ import jakarta.validation.Valid;
   GridRow.CHILDREN,
   GridRow.STYLE
 })
-@JsonTypeName("GridRow")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridRow {
   public static final String ID = "id";
@@ -73,12 +73,12 @@ public class GridRow {
   private String parent;
 
   public static final String CHILDREN = "children";
-  private List<String> children = null;
+  private List<String> children = new ArrayList<>();
 
   public static final String STYLE = "style";
   private Style style = null;
 
-  public GridRow() { 
+  public GridRow() {
   }
 
   public GridRow id(String id) {
@@ -87,12 +87,13 @@ public class GridRow {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,7 +108,6 @@ public class GridRow {
     this.id = id;
   }
 
-
   public GridRow actions(List<UiAction> actions) {
     
     this.actions = actions;
@@ -115,18 +115,22 @@ public class GridRow {
   }
 
   public GridRow addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,19 +145,19 @@ public class GridRow {
     this.actions = actions;
   }
 
-
   public GridRow data(Object data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,19 +172,19 @@ public class GridRow {
     this.data = data;
   }
 
-
   public GridRow selectable(Boolean selectable) {
     
     this.selectable = selectable;
     return this;
   }
 
-   /**
+  /**
    * Get selectable
    * @return selectable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,19 +199,19 @@ public class GridRow {
     this.selectable = selectable;
   }
 
-
   public GridRow selected(Boolean selected) {
     
     this.selected = selected;
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -222,7 +226,6 @@ public class GridRow {
     this.selected = selected;
   }
 
-
   public GridRow icons(Map<String, List<ImageResource>> icons) {
     
     this.icons = icons;
@@ -234,14 +237,15 @@ public class GridRow {
     return this;
   }
 
-   /**
+  /**
    * Get icons
    * @return icons
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ICONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -256,19 +260,19 @@ public class GridRow {
     this.icons = icons;
   }
 
-
   public GridRow parent(String parent) {
     
     this.parent = parent;
     return this;
   }
 
-   /**
+  /**
    * If the grid can be hierarchical then the parent contains the identifiers of the parent row. 
    * @return parent
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the grid can be hierarchical then the parent contains the identifiers of the parent row. ")
   @JsonProperty(PARENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -282,7 +286,6 @@ public class GridRow {
   public void setParent(String parent) {
     this.parent = parent;
   }
-
 
   public GridRow children(List<String> children) {
     
@@ -298,12 +301,13 @@ public class GridRow {
     return this;
   }
 
-   /**
+  /**
    * If the grid can be hierarchical then the children list contains the identifiers of the children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not required to see if it is empty or not set. 
    * @return children
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the grid can be hierarchical then the children list contains the identifiers of the children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not required to see if it is empty or not set. ")
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -318,20 +322,20 @@ public class GridRow {
     this.children = children;
   }
 
-
   public GridRow style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * If present, this Style will be applied to the row. 
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If present, this Style will be applied to the row. ")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -345,7 +349,6 @@ public class GridRow {
   public void setStyle(Style style) {
     this.style = style;
   }
-
 
   @Override
   public boolean equals(Object o) {

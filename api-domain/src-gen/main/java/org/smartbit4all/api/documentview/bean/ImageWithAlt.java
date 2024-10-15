@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   ImageWithAlt.ALT,
   ImageWithAlt.FILE_NAME
 })
-@JsonTypeName("ImageWithAlt")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ImageWithAlt {
   public static final String IMAGE = "image";
@@ -47,7 +46,7 @@ public class ImageWithAlt {
   public static final String FILE_NAME = "fileName";
   private String fileName;
 
-  public ImageWithAlt() { 
+  public ImageWithAlt() {
   }
 
   public ImageWithAlt image(BinaryData image) {
@@ -56,13 +55,14 @@ public class ImageWithAlt {
     return this;
   }
 
-   /**
+  /**
    * Get image
    * @return image
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +77,19 @@ public class ImageWithAlt {
     this.image = image;
   }
 
-
   public ImageWithAlt alt(String alt) {
     
     this.alt = alt;
     return this;
   }
 
-   /**
+  /**
    * Get alt
    * @return alt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ALT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +104,19 @@ public class ImageWithAlt {
     this.alt = alt;
   }
 
-
   public ImageWithAlt fileName(String fileName) {
     
     this.fileName = fileName;
     return this;
   }
 
-   /**
+  /**
    * Get fileName
    * @return fileName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILE_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +130,6 @@ public class ImageWithAlt {
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
-
 
   @Override
   public boolean equals(Object o) {

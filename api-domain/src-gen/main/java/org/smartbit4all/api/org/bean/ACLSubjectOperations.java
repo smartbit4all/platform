@@ -35,12 +35,12 @@ import jakarta.validation.Valid;
 /**
  * This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. 
  */
+@Schema(description = "This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. ")
 @JsonPropertyOrder({
   ACLSubjectOperations.URI,
   ACLSubjectOperations.SUBJECT,
   ACLSubjectOperations.OPERATIONS
 })
-@JsonTypeName("ACLSubjectOperations")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectOperations {
   public static final String URI = "uri";
@@ -52,7 +52,7 @@ public class ACLSubjectOperations {
   public static final String OPERATIONS = "operations";
   private List<@Valid ACLOperationReference> operations = new ArrayList<>();
 
-  public ACLSubjectOperations() { 
+  public ACLSubjectOperations() {
   }
 
   public ACLSubjectOperations uri(URI uri) {
@@ -61,13 +61,14 @@ public class ACLSubjectOperations {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,21 +83,21 @@ public class ACLSubjectOperations {
     this.uri = uri;
   }
 
-
   public ACLSubjectOperations subject(Subject subject) {
     
     this.subject = subject;
     return this;
   }
 
-   /**
+  /**
    * Get subject
    * @return subject
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +112,6 @@ public class ACLSubjectOperations {
     this.subject = subject;
   }
 
-
   public ACLSubjectOperations operations(List<@Valid ACLOperationReference> operations) {
     
     this.operations = operations;
@@ -119,18 +119,22 @@ public class ACLSubjectOperations {
   }
 
   public ACLSubjectOperations addOperationsItem(ACLOperationReference operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
     this.operations.add(operationsItem);
     return this;
   }
 
-   /**
+  /**
    * The operation object of the given subject. 
    * @return operations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The operation object of the given subject. ")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -144,7 +148,6 @@ public class ACLSubjectOperations {
   public void setOperations(List<@Valid ACLOperationReference> operations) {
     this.operations = operations;
   }
-
 
   @Override
   public boolean equals(Object o) {

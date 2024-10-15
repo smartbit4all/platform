@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * Specifies an abstract expression with a collection of expression part.
  */
+@Schema(description = "Specifies an abstract expression with a collection of expression part.")
 @JsonPropertyOrder({
   FilterExpression.FILTER_EXPRESSION_PARTS
 })
-@JsonTypeName("FilterExpression")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpression {
   public static final String FILTER_EXPRESSION_PARTS = "filterExpressionParts";
-  private List<@Valid FilterExpressionPart> filterExpressionParts = null;
+  private List<@Valid FilterExpressionPart> filterExpressionParts = new ArrayList<>();
 
-  public FilterExpression() { 
+  public FilterExpression() {
   }
 
   public FilterExpression filterExpressionParts(List<@Valid FilterExpressionPart> filterExpressionParts) {
@@ -59,13 +59,14 @@ public class FilterExpression {
     return this;
   }
 
-   /**
+  /**
    * Get filterExpressionParts
    * @return filterExpressionParts
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_EXPRESSION_PARTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,7 +80,6 @@ public class FilterExpression {
   public void setFilterExpressionParts(List<@Valid FilterExpressionPart> filterExpressionParts) {
     this.filterExpressionParts = filterExpressionParts;
   }
-
 
   @Override
   public boolean equals(Object o) {

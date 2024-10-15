@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the 
  */
+@Schema(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the ")
 @JsonPropertyOrder({
   ACLObject.URI,
   ACLObject.MAP
 })
-@JsonTypeName("ACLObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLObject {
   public static final String URI = "uri";
@@ -46,7 +46,7 @@ public class ACLObject {
   public static final String MAP = "map";
   private Map<String, ACL> map = new HashMap<>();
 
-  public ACLObject() { 
+  public ACLObject() {
   }
 
   public ACLObject uri(URI uri) {
@@ -55,13 +55,14 @@ public class ACLObject {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,7 +77,6 @@ public class ACLObject {
     this.uri = uri;
   }
 
-
   public ACLObject map(Map<String, ACL> map) {
     
     this.map = map;
@@ -88,14 +88,15 @@ public class ACLObject {
     return this;
   }
 
-   /**
+  /**
    * The named acls. 
    * @return map
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The named acls. ")
   @JsonProperty(MAP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +110,6 @@ public class ACLObject {
   public void setMap(Map<String, ACL> map) {
     this.map = map;
   }
-
 
   @Override
   public boolean equals(Object o) {

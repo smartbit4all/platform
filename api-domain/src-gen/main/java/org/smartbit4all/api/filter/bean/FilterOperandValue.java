@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   FilterOperandValue.TYPE,
   FilterOperandValue.VALUE
 })
-@JsonTypeName("FilterOperandValue")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterOperandValue {
   public static final String TYPE = "type";
@@ -42,7 +41,7 @@ public class FilterOperandValue {
   public static final String VALUE = "value";
   private String value;
 
-  public FilterOperandValue() { 
+  public FilterOperandValue() {
   }
 
   public FilterOperandValue type(String type) {
@@ -51,12 +50,13 @@ public class FilterOperandValue {
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +71,19 @@ public class FilterOperandValue {
     this.type = type;
   }
 
-
   public FilterOperandValue value(String value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +97,6 @@ public class FilterOperandValue {
   public void setValue(String value) {
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object o) {

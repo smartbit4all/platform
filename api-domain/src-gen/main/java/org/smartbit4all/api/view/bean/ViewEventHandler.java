@@ -33,16 +33,16 @@ import jakarta.validation.Valid;
 /**
  * An event handler is a special callback function to call when the given event is occurred. So the event handler can be an action as is or can be fired on a before or after event 
  */
+@Schema(description = "An event handler is a special callback function to call when the given event is occurred. So the event handler can be an action as is or can be fired on a before or after event ")
 @JsonPropertyOrder({
   ViewEventHandler.PATH,
   ViewEventHandler.VIEW_EVENT_TYPE,
   ViewEventHandler.INVOCATION_REQUEST
 })
-@JsonTypeName("ViewEventHandler")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewEventHandler {
   public static final String PATH = "path";
-  private List<String> path = null;
+  private List<String> path = new ArrayList<>();
 
   /**
    * Gets or Sets viewEventType
@@ -87,7 +87,7 @@ public class ViewEventHandler {
   public static final String INVOCATION_REQUEST = "invocationRequest";
   private InvocationRequest invocationRequest = null;
 
-  public ViewEventHandler() { 
+  public ViewEventHandler() {
   }
 
   public ViewEventHandler path(List<String> path) {
@@ -104,12 +104,13 @@ public class ViewEventHandler {
     return this;
   }
 
-   /**
+  /**
    * The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself. 
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself. ")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,19 +125,19 @@ public class ViewEventHandler {
     this.path = path;
   }
 
-
   public ViewEventHandler viewEventType(ViewEventTypeEnum viewEventType) {
     
     this.viewEventType = viewEventType;
     return this;
   }
 
-   /**
+  /**
    * Get viewEventType
    * @return viewEventType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_EVENT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -151,20 +152,20 @@ public class ViewEventHandler {
     this.viewEventType = viewEventType;
   }
 
-
   public ViewEventHandler invocationRequest(InvocationRequest invocationRequest) {
     
     this.invocationRequest = invocationRequest;
     return this;
   }
 
-   /**
+  /**
    * This is the method to call when the event occurs. It&#39;s signature is the same as the event which it specifies, like ActionHandler or WidgetActionHandler. 
    * @return invocationRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This is the method to call when the event occurs. It's signature is the same as the event which it specifies, like ActionHandler or WidgetActionHandler. ")
   @JsonProperty(INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,7 +179,6 @@ public class ViewEventHandler {
   public void setInvocationRequest(InvocationRequest invocationRequest) {
     this.invocationRequest = invocationRequest;
   }
-
 
   @Override
   public boolean equals(Object o) {

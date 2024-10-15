@@ -50,7 +50,6 @@ import jakarta.validation.Valid;
   FilterGroupModel.FILTERS,
   FilterGroupModel.ENABLED
 })
-@JsonTypeName("FilterGroupModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupModel {
   public static final String ID = "id";
@@ -92,7 +91,7 @@ public class FilterGroupModel {
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
 
-  public FilterGroupModel() { 
+  public FilterGroupModel() {
   }
 
   public FilterGroupModel id(String id) {
@@ -101,13 +100,14 @@ public class FilterGroupModel {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -122,20 +122,20 @@ public class FilterGroupModel {
     this.id = id;
   }
 
-
   public FilterGroupModel groupType(FilterGroupType groupType) {
     
     this.groupType = groupType;
     return this;
   }
 
-   /**
+  /**
    * Get groupType
    * @return groupType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,20 +150,20 @@ public class FilterGroupModel {
     this.groupType = groupType;
   }
 
-
   public FilterGroupModel label(FilterGroupLabel label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,19 +178,19 @@ public class FilterGroupModel {
     this.label = label;
   }
 
-
   public FilterGroupModel closeable(Boolean closeable) {
     
     this.closeable = closeable;
     return this;
   }
 
-   /**
+  /**
    * Get closeable
    * @return closeable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -205,19 +205,19 @@ public class FilterGroupModel {
     this.closeable = closeable;
   }
 
-
   public FilterGroupModel root(Boolean root) {
     
     this.root = root;
     return this;
   }
 
-   /**
+  /**
    * Get root
    * @return root
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROOT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,19 +232,19 @@ public class FilterGroupModel {
     this.root = root;
   }
 
-
   public FilterGroupModel visible(Boolean visible) {
     
     this.visible = visible;
     return this;
   }
 
-   /**
+  /**
    * Get visible
    * @return visible
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,19 +259,19 @@ public class FilterGroupModel {
     this.visible = visible;
   }
 
-
   public FilterGroupModel active(Boolean active) {
     
     this.active = active;
     return this;
   }
 
-   /**
+  /**
    * Get active
    * @return active
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACTIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -286,19 +286,19 @@ public class FilterGroupModel {
     this.active = active;
   }
 
-
   public FilterGroupModel childGroupAllowed(Boolean childGroupAllowed) {
     
     this.childGroupAllowed = childGroupAllowed;
     return this;
   }
 
-   /**
+  /**
    * Get childGroupAllowed
    * @return childGroupAllowed
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CHILD_GROUP_ALLOWED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -313,19 +313,19 @@ public class FilterGroupModel {
     this.childGroupAllowed = childGroupAllowed;
   }
 
-
   public FilterGroupModel groupTypeChangeEnabled(Boolean groupTypeChangeEnabled) {
     
     this.groupTypeChangeEnabled = groupTypeChangeEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get groupTypeChangeEnabled
    * @return groupTypeChangeEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP_TYPE_CHANGE_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -340,19 +340,19 @@ public class FilterGroupModel {
     this.groupTypeChangeEnabled = groupTypeChangeEnabled;
   }
 
-
   public FilterGroupModel negated(Boolean negated) {
     
     this.negated = negated;
     return this;
   }
 
-   /**
+  /**
    * Get negated
    * @return negated
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NEGATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -367,7 +367,6 @@ public class FilterGroupModel {
     this.negated = negated;
   }
 
-
   public FilterGroupModel groups(List<@Valid FilterGroupModel> groups) {
     
     this.groups = groups;
@@ -375,18 +374,22 @@ public class FilterGroupModel {
   }
 
   public FilterGroupModel addGroupsItem(FilterGroupModel groupsItem) {
+    if (this.groups == null) {
+      this.groups = new ArrayList<>();
+    }
     this.groups.add(groupsItem);
     return this;
   }
 
-   /**
+  /**
    * Get groups
    * @return groups
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -401,7 +404,6 @@ public class FilterGroupModel {
     this.groups = groups;
   }
 
-
   public FilterGroupModel filters(List<@Valid FilterFieldModel> filters) {
     
     this.filters = filters;
@@ -409,18 +411,22 @@ public class FilterGroupModel {
   }
 
   public FilterGroupModel addFiltersItem(FilterFieldModel filtersItem) {
+    if (this.filters == null) {
+      this.filters = new ArrayList<>();
+    }
     this.filters.add(filtersItem);
     return this;
   }
 
-   /**
+  /**
    * Get filters
    * @return filters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -435,19 +441,19 @@ public class FilterGroupModel {
     this.filters = filters;
   }
 
-
   public FilterGroupModel enabled(Boolean enabled) {
     
     this.enabled = enabled;
     return this;
   }
 
-   /**
+  /**
    * Get enabled
    * @return enabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -461,7 +467,6 @@ public class FilterGroupModel {
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

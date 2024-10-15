@@ -63,7 +63,6 @@ import jakarta.validation.Valid;
   OAuthClientProperties.ROLE_ATTRIBUTES,
   OAuthClientProperties.ROLE_MAPPING
 })
-@JsonTypeName("OAuthClientProperties")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OAuthClientProperties {
   public static final String URI = "uri";
@@ -130,7 +129,7 @@ public class OAuthClientProperties {
   private String logo;
 
   public static final String USER_PARAMETER_MAPPING = "userParameterMapping";
-  private Map<String, String> userParameterMapping = null;
+  private Map<String, String> userParameterMapping = new HashMap<>();
 
   public static final String IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN = "isUserWithoutGroupAllowedToLogIn";
   private Boolean isUserWithoutGroupAllowedToLogIn = false;
@@ -139,12 +138,12 @@ public class OAuthClientProperties {
   private String defaultGroupName;
 
   public static final String ROLE_ATTRIBUTES = "roleAttributes";
-  private List<String> roleAttributes = null;
+  private List<String> roleAttributes = new ArrayList<>();
 
   public static final String ROLE_MAPPING = "roleMapping";
-  private Map<String, String> roleMapping = null;
+  private Map<String, String> roleMapping = new HashMap<>();
 
-  public OAuthClientProperties() { 
+  public OAuthClientProperties() {
   }
 
   public OAuthClientProperties uri(URI uri) {
@@ -153,13 +152,14 @@ public class OAuthClientProperties {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -174,20 +174,20 @@ public class OAuthClientProperties {
     this.uri = uri;
   }
 
-
   public OAuthClientProperties registrationId(String registrationId) {
     
     this.registrationId = registrationId;
     return this;
   }
 
-   /**
+  /**
    * The registration identifier that app uses to identify the client registration
    * @return registrationId
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The registration identifier that app uses to identify the client registration")
   @JsonProperty(REGISTRATION_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -202,20 +202,20 @@ public class OAuthClientProperties {
     this.registrationId = registrationId;
   }
 
-
   public OAuthClientProperties clientId(String clientId) {
     
     this.clientId = clientId;
     return this;
   }
 
-   /**
+  /**
    * The client ID of the OAuth client used by the IDM
    * @return clientId
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The client ID of the OAuth client used by the IDM")
   @JsonProperty(CLIENT_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -230,20 +230,20 @@ public class OAuthClientProperties {
     this.clientId = clientId;
   }
 
-
   public OAuthClientProperties clientSecret(String clientSecret) {
     
     this.clientSecret = clientSecret;
     return this;
   }
 
-   /**
+  /**
    * The client secret of the OAuth client provided by the IDM
    * @return clientSecret
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The client secret of the OAuth client provided by the IDM")
   @JsonProperty(CLIENT_SECRET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -258,19 +258,19 @@ public class OAuthClientProperties {
     this.clientSecret = clientSecret;
   }
 
-
   public OAuthClientProperties clientName(String clientName) {
     
     this.clientName = clientName;
     return this;
   }
 
-   /**
+  /**
    * Sets the logical name of the client or registration. Can be null
    * @return clientName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Sets the logical name of the client or registration. Can be null")
   @JsonProperty(CLIENT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -285,19 +285,19 @@ public class OAuthClientProperties {
     this.clientName = clientName;
   }
 
-
   public OAuthClientProperties authorizationUri(String authorizationUri) {
     
     this.authorizationUri = authorizationUri;
     return this;
   }
 
-   /**
+  /**
    * The authorization URI of the OAuth provider
    * @return authorizationUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The authorization URI of the OAuth provider")
   @JsonProperty(AUTHORIZATION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -312,19 +312,19 @@ public class OAuthClientProperties {
     this.authorizationUri = authorizationUri;
   }
 
-
   public OAuthClientProperties tokenUri(String tokenUri) {
     
     this.tokenUri = tokenUri;
     return this;
   }
 
-   /**
+  /**
    * The token URI of the OAuth provider
    * @return tokenUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The token URI of the OAuth provider")
   @JsonProperty(TOKEN_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -339,19 +339,19 @@ public class OAuthClientProperties {
     this.tokenUri = tokenUri;
   }
 
-
   public OAuthClientProperties userInfoUri(String userInfoUri) {
     
     this.userInfoUri = userInfoUri;
     return this;
   }
 
-   /**
+  /**
    * The user info URI of the OAuth provider
    * @return userInfoUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The user info URI of the OAuth provider")
   @JsonProperty(USER_INFO_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -366,19 +366,19 @@ public class OAuthClientProperties {
     this.userInfoUri = userInfoUri;
   }
 
-
   public OAuthClientProperties jwkSetUri(String jwkSetUri) {
     
     this.jwkSetUri = jwkSetUri;
     return this;
   }
 
-   /**
+  /**
    * The jwk set URI of the OAuth provider
    * @return jwkSetUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The jwk set URI of the OAuth provider")
   @JsonProperty(JWK_SET_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -393,19 +393,19 @@ public class OAuthClientProperties {
     this.jwkSetUri = jwkSetUri;
   }
 
-
   public OAuthClientProperties issuerUri(String issuerUri) {
     
     this.issuerUri = issuerUri;
     return this;
   }
 
-   /**
+  /**
    * \&quot;URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0  Authorization Server Metadata endpoint defined by RFC 8414.\&quot; 
    * @return issuerUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0  Authorization Server Metadata endpoint defined by RFC 8414.\" ")
   @JsonProperty(ISSUER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -420,19 +420,19 @@ public class OAuthClientProperties {
     this.issuerUri = issuerUri;
   }
 
-
   public OAuthClientProperties redirectUri(String redirectUri) {
     
     this.redirectUri = redirectUri;
     return this;
   }
 
-   /**
+  /**
    * The redirect URI for the OAuth client
    * @return redirectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The redirect URI for the OAuth client")
   @JsonProperty(REDIRECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -447,19 +447,19 @@ public class OAuthClientProperties {
     this.redirectUri = redirectUri;
   }
 
-
   public OAuthClientProperties scope(String scope) {
     
     this.scope = scope;
     return this;
   }
 
-   /**
+  /**
    * The scope of the OAuth client, comma-separated
    * @return scope
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(example = "openid, profile, email, roles", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The scope of the OAuth client, comma-separated")
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -474,19 +474,19 @@ public class OAuthClientProperties {
     this.scope = scope;
   }
 
-
   public OAuthClientProperties authorizationGrantType(String authorizationGrantType) {
     
     this.authorizationGrantType = authorizationGrantType;
     return this;
   }
 
-   /**
+  /**
    * The authorization grant type of the OAuth client
    * @return authorizationGrantType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(example = "authorization_code", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The authorization grant type of the OAuth client")
   @JsonProperty(AUTHORIZATION_GRANT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -501,20 +501,20 @@ public class OAuthClientProperties {
     this.authorizationGrantType = authorizationGrantType;
   }
 
-
   public OAuthClientProperties userNameAttribute(String userNameAttribute) {
     
     this.userNameAttribute = userNameAttribute;
     return this;
   }
 
-   /**
+  /**
    * The attribute of the user that can be used to identify the username
    * @return userNameAttribute
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(example = "preferred_username", requiredMode = Schema.RequiredMode.REQUIRED, description = "The attribute of the user that can be used to identify the username")
   @JsonProperty(USER_NAME_ATTRIBUTE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -529,19 +529,19 @@ public class OAuthClientProperties {
     this.userNameAttribute = userNameAttribute;
   }
 
-
   public OAuthClientProperties userInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
     
     this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
     return this;
   }
 
-   /**
+  /**
    * \&quot;The authentication method used when sending bearer access tokens in resource requests   to resource servers. Possible values: header/form/query.\&quot; 
    * @return userInfoAuthenticationMethod
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(example = "header", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"The authentication method used when sending bearer access tokens in resource requests   to resource servers. Possible values: header/form/query.\" ")
   @JsonProperty(USER_INFO_AUTHENTICATION_METHOD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -556,19 +556,19 @@ public class OAuthClientProperties {
     this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
   }
 
-
   public OAuthClientProperties commonProvider(String commonProvider) {
     
     this.commonProvider = commonProvider;
     return this;
   }
 
-   /**
+  /**
    * \&quot;It is possible to set this attribute to use one of the common providers without setting  all config fields. Possible common providers: facebook, google, github, okta.\&quot; 
    * @return commonProvider
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"It is possible to set this attribute to use one of the common providers without setting  all config fields. Possible common providers: facebook, google, github, okta.\" ")
   @JsonProperty(COMMON_PROVIDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -583,19 +583,19 @@ public class OAuthClientProperties {
     this.commonProvider = commonProvider;
   }
 
-
   public OAuthClientProperties logoutOidcEnabled(Boolean logoutOidcEnabled) {
     
     this.logoutOidcEnabled = logoutOidcEnabled;
     return this;
   }
 
-   /**
+  /**
    * With this field the oidc logout can be enabled.
    * @return logoutOidcEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "With this field the oidc logout can be enabled.")
   @JsonProperty(LOGOUT_OIDC_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -610,19 +610,19 @@ public class OAuthClientProperties {
     this.logoutOidcEnabled = logoutOidcEnabled;
   }
 
-
   public OAuthClientProperties logoutEndSessionEndpoint(String logoutEndSessionEndpoint) {
     
     this.logoutEndSessionEndpoint = logoutEndSessionEndpoint;
     return this;
   }
 
-   /**
+  /**
    * \&quot;When auto discovery of oidc endoints is not active (issuerUri is not set),  then this field can be used to explicitly configure the logout url\&quot; 
    * @return logoutEndSessionEndpoint
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"When auto discovery of oidc endoints is not active (issuerUri is not set),  then this field can be used to explicitly configure the logout url\" ")
   @JsonProperty(LOGOUT_END_SESSION_ENDPOINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -637,19 +637,19 @@ public class OAuthClientProperties {
     this.logoutEndSessionEndpoint = logoutEndSessionEndpoint;
   }
 
-
   public OAuthClientProperties logoutRedirectPath(String logoutRedirectPath) {
     
     this.logoutRedirectPath = logoutRedirectPath;
     return this;
   }
 
-   /**
+  /**
    * \&quot;The redirect path that the IDM can redirect to after logout. {baseUrl} can be used.\&quot; 
    * @return logoutRedirectPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"The redirect path that the IDM can redirect to after logout. {baseUrl} can be used.\" ")
   @JsonProperty(LOGOUT_REDIRECT_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -664,20 +664,20 @@ public class OAuthClientProperties {
     this.logoutRedirectPath = logoutRedirectPath;
   }
 
-
   public OAuthClientProperties label(String label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * The text that can be used on ui
    * @return label
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The text that can be used on ui")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -692,19 +692,19 @@ public class OAuthClientProperties {
     this.label = label;
   }
 
-
   public OAuthClientProperties logo(String logo) {
     
     this.logo = logo;
     return this;
   }
 
-   /**
+  /**
    * The logo that can be used on ui. TBD
    * @return logo
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The logo that can be used on ui. TBD")
   @JsonProperty(LOGO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -718,7 +718,6 @@ public class OAuthClientProperties {
   public void setLogo(String logo) {
     this.logo = logo;
   }
-
 
   public OAuthClientProperties userParameterMapping(Map<String, String> userParameterMapping) {
     
@@ -734,12 +733,13 @@ public class OAuthClientProperties {
     return this;
   }
 
-   /**
+  /**
    * \&quot;This mapping contains the user attribute names stored in the application and the  corresponding attributes stored in the oauth realm. The key is the application, the  value is the realm attribute name.\&quot; 
    * @return userParameterMapping
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"This mapping contains the user attribute names stored in the application and the  corresponding attributes stored in the oauth realm. The key is the application, the  value is the realm attribute name.\" ")
   @JsonProperty(USER_PARAMETER_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -754,19 +754,19 @@ public class OAuthClientProperties {
     this.userParameterMapping = userParameterMapping;
   }
 
-
   public OAuthClientProperties isUserWithoutGroupAllowedToLogIn(Boolean isUserWithoutGroupAllowedToLogIn) {
     
     this.isUserWithoutGroupAllowedToLogIn = isUserWithoutGroupAllowedToLogIn;
     return this;
   }
 
-   /**
+  /**
    * \&quot;When true, users without groups can not log in into the application.\&quot; 
    * @return isUserWithoutGroupAllowedToLogIn
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"When true, users without groups can not log in into the application.\" ")
   @JsonProperty(IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -781,19 +781,19 @@ public class OAuthClientProperties {
     this.isUserWithoutGroupAllowedToLogIn = isUserWithoutGroupAllowedToLogIn;
   }
 
-
   public OAuthClientProperties defaultGroupName(String defaultGroupName) {
     
     this.defaultGroupName = defaultGroupName;
     return this;
   }
 
-   /**
+  /**
    * \&quot;The name of the SecurityGroup that the logged in user is added to as default.\&quot; 
    * @return defaultGroupName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"The name of the SecurityGroup that the logged in user is added to as default.\" ")
   @JsonProperty(DEFAULT_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -807,7 +807,6 @@ public class OAuthClientProperties {
   public void setDefaultGroupName(String defaultGroupName) {
     this.defaultGroupName = defaultGroupName;
   }
-
 
   public OAuthClientProperties roleAttributes(List<String> roleAttributes) {
     
@@ -823,12 +822,13 @@ public class OAuthClientProperties {
     return this;
   }
 
-   /**
+  /**
    * \&quot;The attributes sent by the identity provider holding the lists of the role names.\&quot; 
    * @return roleAttributes
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"The attributes sent by the identity provider holding the lists of the role names.\" ")
   @JsonProperty(ROLE_ATTRIBUTES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -842,7 +842,6 @@ public class OAuthClientProperties {
   public void setRoleAttributes(List<String> roleAttributes) {
     this.roleAttributes = roleAttributes;
   }
-
 
   public OAuthClientProperties roleMapping(Map<String, String> roleMapping) {
     
@@ -858,12 +857,13 @@ public class OAuthClientProperties {
     return this;
   }
 
-   /**
+  /**
    * \&quot;This mapping contains the users&#39; role names stored in the oauth realm and the  corresponding group names stored in the application . The key is the realm role name,  the value is the application group name.\&quot; 
    * @return roleMapping
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"This mapping contains the users' role names stored in the oauth realm and the  corresponding group names stored in the application . The key is the realm role name,  the value is the application group name.\" ")
   @JsonProperty(ROLE_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -877,7 +877,6 @@ public class OAuthClientProperties {
   public void setRoleMapping(Map<String, String> roleMapping) {
     this.roleMapping = roleMapping;
   }
-
 
   @Override
   public boolean equals(Object o) {

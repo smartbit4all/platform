@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. 
  */
+@Schema(description = "The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderModel.LABEL,
   FilterExpressionBuilderModel.GROUPS,
@@ -42,14 +43,13 @@ import jakarta.validation.Valid;
   FilterExpressionBuilderModel.WORKPLACE_LIST,
   FilterExpressionBuilderModel.DEFAULT_FILTERS
 })
-@JsonTypeName("FilterExpressionBuilderModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderModel {
   public static final String LABEL = "label";
   private String label;
 
   public static final String GROUPS = "groups";
-  private List<@Valid FilterExpressionBuilderGroup> groups = null;
+  private List<@Valid FilterExpressionBuilderGroup> groups = new ArrayList<>();
 
   public static final String EXCEPTIONAL_GROUP = "exceptionalGroup";
   private FilterExpressionBuilderGroup exceptionalGroup;
@@ -60,7 +60,7 @@ public class FilterExpressionBuilderModel {
   public static final String DEFAULT_FILTERS = "defaultFilters";
   private FilterExpressionList defaultFilters;
 
-  public FilterExpressionBuilderModel() { 
+  public FilterExpressionBuilderModel() {
   }
 
   public FilterExpressionBuilderModel label(String label) {
@@ -69,12 +69,13 @@ public class FilterExpressionBuilderModel {
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,7 +89,6 @@ public class FilterExpressionBuilderModel {
   public void setLabel(String label) {
     this.label = label;
   }
-
 
   public FilterExpressionBuilderModel groups(List<@Valid FilterExpressionBuilderGroup> groups) {
     
@@ -104,13 +104,14 @@ public class FilterExpressionBuilderModel {
     return this;
   }
 
-   /**
+  /**
    * This is the group of filter expressions that can be involved to the workplace. This is a tree structure.
    * @return groups
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This is the group of filter expressions that can be involved to the workplace. This is a tree structure.")
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,20 +126,20 @@ public class FilterExpressionBuilderModel {
     this.groups = groups;
   }
 
-
   public FilterExpressionBuilderModel exceptionalGroup(FilterExpressionBuilderGroup exceptionalGroup) {
     
     this.exceptionalGroup = exceptionalGroup;
     return this;
   }
 
-   /**
+  /**
    * Get exceptionalGroup
    * @return exceptionalGroup
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXCEPTIONAL_GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,20 +154,20 @@ public class FilterExpressionBuilderModel {
     this.exceptionalGroup = exceptionalGroup;
   }
 
-
   public FilterExpressionBuilderModel workplaceList(FilterExpressionFieldList workplaceList) {
     
     this.workplaceList = workplaceList;
     return this;
   }
 
-   /**
+  /**
    * Get workplaceList
    * @return workplaceList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WORKPLACE_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,20 +182,20 @@ public class FilterExpressionBuilderModel {
     this.workplaceList = workplaceList;
   }
 
-
   public FilterExpressionBuilderModel defaultFilters(FilterExpressionList defaultFilters) {
     
     this.defaultFilters = defaultFilters;
     return this;
   }
 
-   /**
+  /**
    * Get defaultFilters
    * @return defaultFilters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DEFAULT_FILTERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +209,6 @@ public class FilterExpressionBuilderModel {
   public void setDefaultFilters(FilterExpressionList defaultFilters) {
     this.defaultFilters = defaultFilters;
   }
-
 
   @Override
   public boolean equals(Object o) {

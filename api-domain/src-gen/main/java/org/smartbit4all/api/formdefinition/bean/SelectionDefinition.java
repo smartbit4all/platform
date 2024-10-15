@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The definition of an arbitrary selection.
  */
+@Schema(description = "The definition of an arbitrary selection.")
 @JsonPropertyOrder({
   SelectionDefinition.VALUE_SET_NAME,
   SelectionDefinition.TYPE,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   SelectionDefinition.MAPPING,
   SelectionDefinition.EMPTY_LABEL
 })
-@JsonTypeName("SelectionDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SelectionDefinition {
   public static final String VALUE_SET_NAME = "valueSetName";
@@ -93,7 +93,7 @@ public class SelectionDefinition {
   public static final String EMPTY_LABEL = "emptyLabel";
   private String emptyLabel;
 
-  public SelectionDefinition() { 
+  public SelectionDefinition() {
   }
 
   public SelectionDefinition valueSetName(String valueSetName) {
@@ -102,13 +102,14 @@ public class SelectionDefinition {
     return this;
   }
 
-   /**
+  /**
    * Name of the ValueSet used for this selection.
    * @return valueSetName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Name of the ValueSet used for this selection.")
   @JsonProperty(VALUE_SET_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -123,20 +124,20 @@ public class SelectionDefinition {
     this.valueSetName = valueSetName;
   }
 
-
   public SelectionDefinition type(TypeEnum type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Defines how the selection should work: for properties or the whole selected Object. 
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Defines how the selection should work: for properties or the whole selected Object. ")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -151,19 +152,19 @@ public class SelectionDefinition {
     this.type = type;
   }
 
-
   public SelectionDefinition displayProperty(String displayProperty) {
     
     this.displayProperty = displayProperty;
     return this;
   }
 
-   /**
+  /**
    * Specifies which property from ValueSetData.values as Object should be used in  selection widget. 
    * @return displayProperty
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Specifies which property from ValueSetData.values as Object should be used in  selection widget. ")
   @JsonProperty(DISPLAY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,7 +179,6 @@ public class SelectionDefinition {
     this.displayProperty = displayProperty;
   }
 
-
   public SelectionDefinition mapping(List<@Valid PropertyMapping> mapping) {
     
     this.mapping = mapping;
@@ -186,18 +186,22 @@ public class SelectionDefinition {
   }
 
   public SelectionDefinition addMappingItem(PropertyMapping mappingItem) {
+    if (this.mapping == null) {
+      this.mapping = new ArrayList<>();
+    }
     this.mapping.add(mappingItem);
     return this;
   }
 
-   /**
+  /**
    * Mapping between data and selection model. It may be possible to omit mapping, in this case the default mapping is: data &#x3D; widget.key, selection &#x3D; valueSetData.keyProperty 
    * @return mapping
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Mapping between data and selection model. It may be possible to omit mapping, in this case the default mapping is: data = widget.key, selection = valueSetData.keyProperty ")
   @JsonProperty(MAPPING)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -212,19 +216,19 @@ public class SelectionDefinition {
     this.mapping = mapping;
   }
 
-
   public SelectionDefinition emptyLabel(String emptyLabel) {
     
     this.emptyLabel = emptyLabel;
     return this;
   }
 
-   /**
+  /**
    * Optional value, used for empty valueList entry, this will be the label.
    * @return emptyLabel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional value, used for empty valueList entry, this will be the label.")
   @JsonProperty(EMPTY_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,7 +242,6 @@ public class SelectionDefinition {
   public void setEmptyLabel(String emptyLabel) {
     this.emptyLabel = emptyLabel;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -40,7 +40,6 @@ import jakarta.validation.Valid;
   DynamicFilterModel.SELECTORS,
   DynamicFilterModel.ROOT
 })
-@JsonTypeName("DynamicFilterModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DynamicFilterModel {
   public static final String FILTER_CONFIG_MODE = "filterConfigMode";
@@ -52,7 +51,7 @@ public class DynamicFilterModel {
   public static final String ROOT = "root";
   private FilterGroupModel root;
 
-  public DynamicFilterModel() { 
+  public DynamicFilterModel() {
   }
 
   public DynamicFilterModel filterConfigMode(FilterConfigMode filterConfigMode) {
@@ -61,13 +60,14 @@ public class DynamicFilterModel {
     return this;
   }
 
-   /**
+  /**
    * Get filterConfigMode
    * @return filterConfigMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_CONFIG_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,7 +82,6 @@ public class DynamicFilterModel {
     this.filterConfigMode = filterConfigMode;
   }
 
-
   public DynamicFilterModel selectors(List<@Valid FilterGroupSelectorModel> selectors) {
     
     this.selectors = selectors;
@@ -90,18 +89,22 @@ public class DynamicFilterModel {
   }
 
   public DynamicFilterModel addSelectorsItem(FilterGroupSelectorModel selectorsItem) {
+    if (this.selectors == null) {
+      this.selectors = new ArrayList<>();
+    }
     this.selectors.add(selectorsItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectors
    * @return selectors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,20 +119,20 @@ public class DynamicFilterModel {
     this.selectors = selectors;
   }
 
-
   public DynamicFilterModel root(FilterGroupModel root) {
     
     this.root = root;
     return this;
   }
 
-   /**
+  /**
    * Get root
    * @return root
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROOT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,7 +146,6 @@ public class DynamicFilterModel {
   public void setRoot(FilterGroupModel root) {
     this.root = root;
   }
-
 
   @Override
   public boolean equals(Object o) {

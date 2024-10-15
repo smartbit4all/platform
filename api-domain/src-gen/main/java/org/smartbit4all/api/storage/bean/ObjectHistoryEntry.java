@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. 
  */
+@Schema(description = "When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. ")
 @JsonPropertyOrder({
   ObjectHistoryEntry.SUMMARY,
   ObjectHistoryEntry.CHANGES,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   ObjectHistoryEntry.OBJECT_TYPE,
   ObjectHistoryEntry.VERSION
 })
-@JsonTypeName("ObjectHistoryEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryEntry {
   public static final String SUMMARY = "summary";
@@ -56,7 +56,7 @@ public class ObjectHistoryEntry {
   public static final String VERSION = "version";
   private ObjectVersion version;
 
-  public ObjectHistoryEntry() { 
+  public ObjectHistoryEntry() {
   }
 
   public ObjectHistoryEntry summary(String summary) {
@@ -65,12 +65,13 @@ public class ObjectHistoryEntry {
     return this;
   }
 
-   /**
+  /**
    * The summary of the history record constructed from the natural identifiers of the object. 
    * @return summary
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The summary of the history record constructed from the natural identifiers of the object. ")
   @JsonProperty(SUMMARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,19 +86,19 @@ public class ObjectHistoryEntry {
     this.summary = summary;
   }
 
-
   public ObjectHistoryEntry changes(String changes) {
     
     this.changes = changes;
     return this;
   }
 
-   /**
+  /**
    * The changes rendered into a readable format. Every version produces some changes in the detal. This field contains these  in a summerized readable format. 
    * @return changes
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The changes rendered into a readable format. Every version produces some changes in the detal. This field contains these  in a summerized readable format. ")
   @JsonProperty(CHANGES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,21 +113,21 @@ public class ObjectHistoryEntry {
     this.changes = changes;
   }
 
-
   public ObjectHistoryEntry versionUri(URI versionUri) {
     
     this.versionUri = versionUri;
     return this;
   }
 
-   /**
+  /**
    * The uri of the object version that can be used to read the given version. 
    * @return versionUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object version that can be used to read the given version. ")
   @JsonProperty(VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,19 +142,19 @@ public class ObjectHistoryEntry {
     this.versionUri = versionUri;
   }
 
-
   public ObjectHistoryEntry objectType(String objectType) {
     
     this.objectType = objectType;
     return this;
   }
 
-   /**
+  /**
    * The object type of the history entry. A list of history entry can contain multiple types if their versions are involved. 
    * @return objectType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The object type of the history entry. A list of history entry can contain multiple types if their versions are involved. ")
   @JsonProperty(OBJECT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,20 +169,20 @@ public class ObjectHistoryEntry {
     this.objectType = objectType;
   }
 
-
   public ObjectHistoryEntry version(ObjectVersion version) {
     
     this.version = version;
     return this;
   }
 
-   /**
+  /**
    * Get version
    * @return version
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,7 +196,6 @@ public class ObjectHistoryEntry {
   public void setVersion(ObjectVersion version) {
     this.version = version;
   }
-
 
   @Override
   public boolean equals(Object o) {

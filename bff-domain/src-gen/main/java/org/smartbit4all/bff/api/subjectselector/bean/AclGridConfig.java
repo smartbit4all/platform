@@ -52,7 +52,6 @@ import jakarta.validation.Valid;
   AclGridConfig.ADD_ENABLED,
   AclGridConfig.DELETE_ENABLED
 })
-@JsonTypeName("AclGridConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AclGridConfig {
   public static final String GRID_ID = "gridId";
@@ -135,7 +134,7 @@ public class AclGridConfig {
   public static final String DELETE_ENABLED = "deleteEnabled";
   private Boolean deleteEnabled = true;
 
-  public AclGridConfig() { 
+  public AclGridConfig() {
   }
 
   public AclGridConfig gridId(String gridId) {
@@ -144,12 +143,13 @@ public class AclGridConfig {
     return this;
   }
 
-   /**
+  /**
    * If necessary, we can specify explicit gridId, otherwise aclName will be used.
    * @return gridId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If necessary, we can specify explicit gridId, otherwise aclName will be used.")
   @JsonProperty(GRID_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,19 +164,19 @@ public class AclGridConfig {
     this.gridId = gridId;
   }
 
-
   public AclGridConfig aclModel(String aclModel) {
     
     this.aclModel = aclModel;
     return this;
   }
 
-   /**
+  /**
    * Get aclModel
    * @return aclModel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACL_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,19 +191,19 @@ public class AclGridConfig {
     this.aclModel = aclModel;
   }
 
-
   public AclGridConfig aclName(String aclName) {
     
     this.aclName = aclName;
     return this;
   }
 
-   /**
+  /**
    * Get aclName
    * @return aclName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACL_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,19 +218,19 @@ public class AclGridConfig {
     this.aclName = aclName;
   }
 
-
   public AclGridConfig operation(String operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,20 +245,20 @@ public class AclGridConfig {
     this.operation = operation;
   }
 
-
   public AclGridConfig selectionMode(GridSelectionMode selectionMode) {
     
     this.selectionMode = selectionMode;
     return this;
   }
 
-   /**
+  /**
    * Get selectionMode
    * @return selectionMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -273,19 +273,19 @@ public class AclGridConfig {
     this.selectionMode = selectionMode;
   }
 
-
   public AclGridConfig mandatory(Boolean mandatory) {
     
     this.mandatory = mandatory;
     return this;
   }
 
-   /**
+  /**
    * Get mandatory
    * @return mandatory
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MANDATORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -300,7 +300,6 @@ public class AclGridConfig {
     this.mandatory = mandatory;
   }
 
-
   public AclGridConfig subjectTypes(List<String> subjectTypes) {
     
     this.subjectTypes = subjectTypes;
@@ -308,17 +307,21 @@ public class AclGridConfig {
   }
 
   public AclGridConfig addSubjectTypesItem(String subjectTypesItem) {
+    if (this.subjectTypes == null) {
+      this.subjectTypes = new ArrayList<>();
+    }
     this.subjectTypes.add(subjectTypesItem);
     return this;
   }
 
-   /**
+  /**
    * Get subjectTypes
    * @return subjectTypes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUBJECT_TYPES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -333,20 +336,20 @@ public class AclGridConfig {
     this.subjectTypes = subjectTypes;
   }
 
-
   public AclGridConfig searchPageConfig(SearchPageConfig searchPageConfig) {
     
     this.searchPageConfig = searchPageConfig;
     return this;
   }
 
-   /**
+  /**
    * Get searchPageConfig
    * @return searchPageConfig
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEARCH_PAGE_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -361,19 +364,19 @@ public class AclGridConfig {
     this.searchPageConfig = searchPageConfig;
   }
 
-
   public AclGridConfig selectionType(SelectionTypeEnum selectionType) {
     
     this.selectionType = selectionType;
     return this;
   }
 
-   /**
+  /**
    * Get selectionType
    * @return selectionType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -388,7 +391,6 @@ public class AclGridConfig {
     this.selectionType = selectionType;
   }
 
-
   public AclGridConfig subjectValues(List<Subject> subjectValues) {
     
     this.subjectValues = subjectValues;
@@ -396,18 +398,22 @@ public class AclGridConfig {
   }
 
   public AclGridConfig addSubjectValuesItem(Subject subjectValuesItem) {
+    if (this.subjectValues == null) {
+      this.subjectValues = new ArrayList<>();
+    }
     this.subjectValues.add(subjectValuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get subjectValues
    * @return subjectValues
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SUBJECT_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -422,19 +428,19 @@ public class AclGridConfig {
     this.subjectValues = subjectValues;
   }
 
-
   public AclGridConfig minNoOfRows(Long minNoOfRows) {
     
     this.minNoOfRows = minNoOfRows;
     return this;
   }
 
-   /**
+  /**
    * Get minNoOfRows
    * @return minNoOfRows
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MIN_NO_OF_ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -449,19 +455,19 @@ public class AclGridConfig {
     this.minNoOfRows = minNoOfRows;
   }
 
-
   public AclGridConfig maxNoOfRows(Long maxNoOfRows) {
     
     this.maxNoOfRows = maxNoOfRows;
     return this;
   }
 
-   /**
+  /**
    * Get maxNoOfRows
    * @return maxNoOfRows
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MAX_NO_OF_ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -476,19 +482,19 @@ public class AclGridConfig {
     this.maxNoOfRows = maxNoOfRows;
   }
 
-
   public AclGridConfig hasComment(Boolean hasComment) {
     
     this.hasComment = hasComment;
     return this;
   }
 
-   /**
+  /**
    * Get hasComment
    * @return hasComment
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HAS_COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -503,19 +509,19 @@ public class AclGridConfig {
     this.hasComment = hasComment;
   }
 
-
   public AclGridConfig addEnabled(Boolean addEnabled) {
     
     this.addEnabled = addEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get addEnabled
    * @return addEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ADD_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -530,19 +536,19 @@ public class AclGridConfig {
     this.addEnabled = addEnabled;
   }
 
-
   public AclGridConfig deleteEnabled(Boolean deleteEnabled) {
     
     this.deleteEnabled = deleteEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get deleteEnabled
    * @return deleteEnabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DELETE_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -556,7 +562,6 @@ public class AclGridConfig {
   public void setDeleteEnabled(Boolean deleteEnabled) {
     this.deleteEnabled = deleteEnabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

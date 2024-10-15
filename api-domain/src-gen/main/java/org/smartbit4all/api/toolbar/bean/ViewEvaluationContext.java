@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   ViewEvaluationContext.REFRESH_WIDGETS_REQUIRED,
   ViewEvaluationContext.ACTION_REEVALUATION_REQUIRED
 })
-@JsonTypeName("ViewEvaluationContext")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewEvaluationContext {
   public static final String VIEW = "view";
@@ -56,7 +55,7 @@ public class ViewEvaluationContext {
   public static final String ACTION_REEVALUATION_REQUIRED = "actionReevaluationRequired";
   private Boolean actionReevaluationRequired = false;
 
-  public ViewEvaluationContext() { 
+  public ViewEvaluationContext() {
   }
 
   public ViewEvaluationContext view(View view) {
@@ -65,13 +64,14 @@ public class ViewEvaluationContext {
     return this;
   }
 
-   /**
+  /**
    * Get view
    * @return view
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -86,20 +86,20 @@ public class ViewEvaluationContext {
     this.view = view;
   }
 
-
   public ViewEvaluationContext user(URI user) {
     
     this.user = user;
     return this;
   }
 
-   /**
+  /**
    * Get user
    * @return user
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,19 +114,19 @@ public class ViewEvaluationContext {
     this.user = user;
   }
 
-
   public ViewEvaluationContext model(Object model) {
     
     this.model = model;
     return this;
   }
 
-   /**
+  /**
    * Get model
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,19 +141,19 @@ public class ViewEvaluationContext {
     this.model = model;
   }
 
-
   public ViewEvaluationContext refreshWidgetsRequired(Boolean refreshWidgetsRequired) {
     
     this.refreshWidgetsRequired = refreshWidgetsRequired;
     return this;
   }
 
-   /**
+  /**
    * Get refreshWidgetsRequired
    * @return refreshWidgetsRequired
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFRESH_WIDGETS_REQUIRED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,19 +168,19 @@ public class ViewEvaluationContext {
     this.refreshWidgetsRequired = refreshWidgetsRequired;
   }
 
-
   public ViewEvaluationContext actionReevaluationRequired(Boolean actionReevaluationRequired) {
     
     this.actionReevaluationRequired = actionReevaluationRequired;
     return this;
   }
 
-   /**
+  /**
    * Get actionReevaluationRequired
    * @return actionReevaluationRequired
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACTION_REEVALUATION_REQUIRED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,7 +194,6 @@ public class ViewEvaluationContext {
   public void setActionReevaluationRequired(Boolean actionReevaluationRequired) {
     this.actionReevaluationRequired = actionReevaluationRequired;
   }
-
 
   @Override
   public boolean equals(Object o) {

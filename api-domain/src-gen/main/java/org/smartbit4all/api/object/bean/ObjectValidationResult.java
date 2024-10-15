@@ -34,11 +34,11 @@ import jakarta.validation.Valid;
 /**
  * This object is produced by the validate oparetions. It can be used directly in services and can be save as part of the object or even as aspect together with the object. 
  */
+@Schema(description = "This object is produced by the validate oparetions. It can be used directly in services and can be save as part of the object or even as aspect together with the object. ")
 @JsonPropertyOrder({
   ObjectValidationResult.SEVERITY,
   ObjectValidationResult.ITEMS
 })
-@JsonTypeName("ObjectValidationResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationResult {
   public static final String SEVERITY = "severity";
@@ -47,7 +47,7 @@ public class ObjectValidationResult {
   public static final String ITEMS = "items";
   private List<@Valid ObjectValidationItem> items = new ArrayList<>();
 
-  public ObjectValidationResult() { 
+  public ObjectValidationResult() {
   }
 
   public ObjectValidationResult severity(ObjectValidationSeverity severity) {
@@ -56,14 +56,15 @@ public class ObjectValidationResult {
     return this;
   }
 
-   /**
+  /**
    * Get severity
    * @return severity
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +79,6 @@ public class ObjectValidationResult {
     this.severity = severity;
   }
 
-
   public ObjectValidationResult items(List<@Valid ObjectValidationItem> items) {
     
     this.items = items;
@@ -86,18 +86,22 @@ public class ObjectValidationResult {
   }
 
   public ObjectValidationResult addItemsItem(ObjectValidationItem itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
     this.items.add(itemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get items
    * @return items
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +115,6 @@ public class ObjectValidationResult {
   public void setItems(List<@Valid ObjectValidationItem> items) {
     this.items = items;
   }
-
 
   @Override
   public boolean equals(Object o) {

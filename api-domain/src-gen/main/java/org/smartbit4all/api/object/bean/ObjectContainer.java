@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   ObjectContainer.URI,
   ObjectContainer.DATA
 })
-@JsonTypeName("ObjectContainer")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectContainer {
   public static final String URI = "uri";
@@ -43,7 +42,7 @@ public class ObjectContainer {
   public static final String DATA = "data";
   private Object data;
 
-  public ObjectContainer() { 
+  public ObjectContainer() {
   }
 
   public ObjectContainer uri(URI uri) {
@@ -52,14 +51,15 @@ public class ObjectContainer {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -74,19 +74,19 @@ public class ObjectContainer {
     this.uri = uri;
   }
 
-
   public ObjectContainer data(Object data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +100,6 @@ public class ObjectContainer {
   public void setData(Object data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

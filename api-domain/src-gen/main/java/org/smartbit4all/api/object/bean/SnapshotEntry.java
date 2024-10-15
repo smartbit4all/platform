@@ -31,13 +31,13 @@ import jakarta.validation.Valid;
 /**
  * A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or an objectUri/branchUri pair. SnapshotData only contains versioned URIs  and references (also contains objectUri). ObjectUri/branchUri is similar, but doesn&#39;t contain tha data. Since these versions don&#39;t change, a snapshot can always be reloaded exactly as it was before. 
  */
+@Schema(description = "A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or an objectUri/branchUri pair. SnapshotData only contains versioned URIs  and references (also contains objectUri). ObjectUri/branchUri is similar, but doesn't contain tha data. Since these versions don't change, a snapshot can always be reloaded exactly as it was before. ")
 @JsonPropertyOrder({
   SnapshotEntry.URI,
   SnapshotEntry.DATA,
   SnapshotEntry.OBJECT_URI,
   SnapshotEntry.BRANCH_URI
 })
-@JsonTypeName("SnapshotEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SnapshotEntry {
   public static final String URI = "uri";
@@ -52,7 +52,7 @@ public class SnapshotEntry {
   public static final String BRANCH_URI = "branchUri";
   private URI branchUri;
 
-  public SnapshotEntry() { 
+  public SnapshotEntry() {
   }
 
   public SnapshotEntry uri(URI uri) {
@@ -61,13 +61,14 @@ public class SnapshotEntry {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,20 +83,20 @@ public class SnapshotEntry {
     this.uri = uri;
   }
 
-
   public SnapshotEntry data(SnapshotData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +111,20 @@ public class SnapshotEntry {
     this.data = data;
   }
 
-
   public SnapshotEntry objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +139,20 @@ public class SnapshotEntry {
     this.objectUri = objectUri;
   }
 
-
   public SnapshotEntry branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
   }
 
-   /**
+  /**
    * Get branchUri
    * @return branchUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +166,6 @@ public class SnapshotEntry {
   public void setBranchUri(URI branchUri) {
     this.branchUri = branchUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -32,20 +32,20 @@ import jakarta.validation.Valid;
 /**
  * Wraps an object URI defining a qualified association between two domain objects.  It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may reference a link object, which is a standalone persisted object, describing the qualities and participant of a multi-directional binding between aggregate roots. If such link object is present, all objects bound together by it are expected to hold an instance of this class referencing the shared link object. 
  */
+@Schema(description = "Wraps an object URI defining a qualified association between two domain objects.  It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may reference a link object, which is a standalone persisted object, describing the qualities and participant of a multi-directional binding between aggregate roots. If such link object is present, all objects bound together by it are expected to hold an instance of this class referencing the shared link object. ")
 @JsonPropertyOrder({
   RefObject.PLACEHOLDER,
   RefObject.DATA,
   RefObject.LINK,
   RefObject.REF
 })
-@JsonTypeName("RefObject")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RefObject {
   public static final String PLACEHOLDER = "placeholder";
   private String placeholder;
 
   public static final String DATA = "data";
-  private Map<String, Object> data = null;
+  private Map<String, Object> data = new HashMap<>();
 
   public static final String LINK = "link";
   private URI link;
@@ -53,7 +53,7 @@ public class RefObject {
   public static final String REF = "ref";
   private URI ref;
 
-  public RefObject() { 
+  public RefObject() {
   }
 
   public RefObject placeholder(String placeholder) {
@@ -62,12 +62,13 @@ public class RefObject {
     return this;
   }
 
-   /**
+  /**
    * The textual representation of this association if the referenced domain object is missing, but the fact of the association existing is known. 
    * @return placeholder
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The textual representation of this association if the referenced domain object is missing, but the fact of the association existing is known. ")
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,7 +82,6 @@ public class RefObject {
   public void setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
   }
-
 
   public RefObject data(Map<String, Object> data) {
     
@@ -97,12 +97,13 @@ public class RefObject {
     return this;
   }
 
-   /**
+  /**
    * Arbitrary data qualifying this association from the perspective of the owner object, such as constraints and other metadata. 
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Arbitrary data qualifying this association from the perspective of the owner object, such as constraints and other metadata. ")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,20 +118,20 @@ public class RefObject {
     this.data = data;
   }
 
-
   public RefObject link(URI link) {
     
     this.link = link;
     return this;
   }
 
-   /**
+  /**
    * Reference to the persisted binder object in case of a multi-directional association between multiple domain objects. If null, the association is unidirectional. 
    * @return link
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Reference to the persisted binder object in case of a multi-directional association between multiple domain objects. If null, the association is unidirectional. ")
   @JsonProperty(LINK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,20 +146,20 @@ public class RefObject {
     this.link = link;
   }
 
-
   public RefObject ref(URI ref) {
     
     this.ref = ref;
     return this;
   }
 
-   /**
+  /**
    * The unique persistence identifier of the associated object. 
    * @return ref
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique persistence identifier of the associated object. ")
   @JsonProperty(REF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -172,7 +173,6 @@ public class RefObject {
   public void setRef(URI ref) {
     this.ref = ref;
   }
-
 
   @Override
   public boolean equals(Object o) {

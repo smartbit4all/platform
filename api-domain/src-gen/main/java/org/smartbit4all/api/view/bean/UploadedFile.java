@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * Information about uploaded file. 
  */
+@Schema(description = "Information about uploaded file. ")
 @JsonPropertyOrder({
   UploadedFile.FILENAME,
   UploadedFile.SIZE,
   UploadedFile.DATA
 })
-@JsonTypeName("UploadedFile")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UploadedFile {
   public static final String FILENAME = "filename";
@@ -47,7 +47,7 @@ public class UploadedFile {
   public static final String DATA = "data";
   private BinaryData data = null;
 
-  public UploadedFile() { 
+  public UploadedFile() {
   }
 
   public UploadedFile filename(String filename) {
@@ -56,12 +56,13 @@ public class UploadedFile {
     return this;
   }
 
-   /**
+  /**
    * Get filename
    * @return filename
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,19 +77,19 @@ public class UploadedFile {
     this.filename = filename;
   }
 
-
   public UploadedFile size(Long size) {
     
     this.size = size;
     return this;
   }
 
-   /**
+  /**
    * Get size
    * @return size
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,20 +104,20 @@ public class UploadedFile {
     this.size = size;
   }
 
-
   public UploadedFile data(BinaryData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class UploadedFile {
   public void setData(BinaryData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

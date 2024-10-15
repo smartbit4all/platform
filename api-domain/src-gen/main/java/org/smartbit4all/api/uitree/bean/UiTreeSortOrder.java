@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   UiTreeSortOrder.ORDER,
   UiTreeSortOrder.PROPERTY
 })
-@JsonTypeName("UiTreeSortOrder")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeSortOrder {
   /**
@@ -114,7 +113,7 @@ public class UiTreeSortOrder {
   public static final String PROPERTY = "property";
   private PropertyEnum property = PropertyEnum.NATURAL;
 
-  public UiTreeSortOrder() { 
+  public UiTreeSortOrder() {
   }
 
   public UiTreeSortOrder order(OrderEnum order) {
@@ -123,12 +122,13 @@ public class UiTreeSortOrder {
     return this;
   }
 
-   /**
+  /**
    * Get order
    * @return order
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,19 +143,19 @@ public class UiTreeSortOrder {
     this.order = order;
   }
 
-
   public UiTreeSortOrder property(PropertyEnum property) {
     
     this.property = property;
     return this;
   }
 
-   /**
+  /**
    * Get property
    * @return property
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -169,7 +169,6 @@ public class UiTreeSortOrder {
   public void setProperty(PropertyEnum property) {
     this.property = property;
   }
-
 
   @Override
   public boolean equals(Object o) {

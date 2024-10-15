@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The binary content data represent a file with file name and other properties like size, mimetype and hash also. This can be used as contained inline object to have reference to a file (the dataUri) at a given location managed by the location handler api. 
  */
+@Schema(description = "The binary content data represent a file with file name and other properties like size, mimetype and hash also. This can be used as contained inline object to have reference to a file (the dataUri) at a given location managed by the location handler api. ")
 @JsonPropertyOrder({
   BinaryContentData.LOCATION,
   BinaryContentData.DATA_URI,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   BinaryContentData.CONTENT_HASH,
   BinaryContentData.FOLDER_URI
 })
-@JsonTypeName("BinaryContentData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BinaryContentData {
   public static final String LOCATION = "location";
@@ -76,7 +76,7 @@ public class BinaryContentData {
   public static final String FOLDER_URI = "folderUri";
   private URI folderUri;
 
-  public BinaryContentData() { 
+  public BinaryContentData() {
   }
 
   public BinaryContentData location(String location) {
@@ -85,12 +85,13 @@ public class BinaryContentData {
     return this;
   }
 
-   /**
+  /**
    * The location is a type that can be managed by different APIs to access the given content.
    * @return location
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The location is a type that can be managed by different APIs to access the given content.")
   @JsonProperty(LOCATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,21 +106,21 @@ public class BinaryContentData {
     this.location = location;
   }
 
-
   public BinaryContentData dataUri(URI dataUri) {
     
     this.dataUri = dataUri;
     return this;
   }
 
-   /**
+  /**
    * Get dataUri
    * @return dataUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -134,20 +135,20 @@ public class BinaryContentData {
     this.dataUri = dataUri;
   }
 
-
   public BinaryContentData fileName(String fileName) {
     
     this.fileName = fileName;
     return this;
   }
 
-   /**
+  /**
    * Get fileName
    * @return fileName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -162,20 +163,20 @@ public class BinaryContentData {
     this.fileName = fileName;
   }
 
-
   public BinaryContentData created(UserActivityLog created) {
     
     this.created = created;
     return this;
   }
 
-   /**
+  /**
    * Get created
    * @return created
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,20 +191,20 @@ public class BinaryContentData {
     this.created = created;
   }
 
-
   public BinaryContentData updated(UserActivityLog updated) {
     
     this.updated = updated;
     return this;
   }
 
-   /**
+  /**
    * Get updated
    * @return updated
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPDATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,19 +219,19 @@ public class BinaryContentData {
     this.updated = updated;
   }
 
-
   public BinaryContentData mimeType(String mimeType) {
     
     this.mimeType = mimeType;
     return this;
   }
 
-   /**
+  /**
    * Get mimeType
    * @return mimeType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MIME_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,19 +246,19 @@ public class BinaryContentData {
     this.mimeType = mimeType;
   }
 
-
   public BinaryContentData extension(String extension) {
     
     this.extension = extension;
     return this;
   }
 
-   /**
+  /**
    * Get extension
    * @return extension
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXTENSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,19 +273,19 @@ public class BinaryContentData {
     this.extension = extension;
   }
 
-
   public BinaryContentData size(Long size) {
     
     this.size = size;
     return this;
   }
 
-   /**
+  /**
    * Get size
    * @return size
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -299,19 +300,19 @@ public class BinaryContentData {
     this.size = size;
   }
 
-
   public BinaryContentData contentHash(String contentHash) {
     
     this.contentHash = contentHash;
     return this;
   }
 
-   /**
+  /**
    * Get contentHash
    * @return contentHash
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTENT_HASH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -326,20 +327,20 @@ public class BinaryContentData {
     this.contentHash = contentHash;
   }
 
-
   public BinaryContentData folderUri(URI folderUri) {
     
     this.folderUri = folderUri;
     return this;
   }
 
-   /**
+  /**
    * Get folderUri
    * @return folderUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FOLDER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -353,7 +354,6 @@ public class BinaryContentData {
   public void setFolderUri(URI folderUri) {
     this.folderUri = folderUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it&#39;s size reasonable. 
  */
+@Schema(description = "This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it's size reasonable. ")
 @JsonPropertyOrder({
   ViewPlaceholder.UUID,
   ViewPlaceholder.CLOSED_CHILDREN_VIEWS
 })
-@JsonTypeName("ViewPlaceholder")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewPlaceholder {
   public static final String UUID = "uuid";
@@ -46,7 +46,7 @@ public class ViewPlaceholder {
   public static final String CLOSED_CHILDREN_VIEWS = "closedChildrenViews";
   private List<@Valid ViewPlaceholder> closedChildrenViews = new ArrayList<>();
 
-  public ViewPlaceholder() { 
+  public ViewPlaceholder() {
   }
 
   public ViewPlaceholder uuid(UUID uuid) {
@@ -55,13 +55,14 @@ public class ViewPlaceholder {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of the View.
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Unique identifier of the View.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,7 +77,6 @@ public class ViewPlaceholder {
     this.uuid = uuid;
   }
 
-
   public ViewPlaceholder closedChildrenViews(List<@Valid ViewPlaceholder> closedChildrenViews) {
     
     this.closedChildrenViews = closedChildrenViews;
@@ -84,18 +84,22 @@ public class ViewPlaceholder {
   }
 
   public ViewPlaceholder addClosedChildrenViewsItem(ViewPlaceholder closedChildrenViewsItem) {
+    if (this.closedChildrenViews == null) {
+      this.closedChildrenViews = new ArrayList<>();
+    }
     this.closedChildrenViews.add(closedChildrenViewsItem);
     return this;
   }
 
-   /**
+  /**
    * Get closedChildrenViews
    * @return closedChildrenViews
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +113,6 @@ public class ViewPlaceholder {
   public void setClosedChildrenViews(List<@Valid ViewPlaceholder> closedChildrenViews) {
     this.closedChildrenViews = closedChildrenViews;
   }
-
 
   @Override
   public boolean equals(Object o) {

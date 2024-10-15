@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
   ValueSetExpression.IGNORE_VERSION,
   ValueSetExpression.OPERANDS
 })
-@JsonTypeName("ValueSetExpression")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetExpression {
   public static final String OPERATION = "operation";
@@ -51,7 +50,7 @@ public class ValueSetExpression {
   public static final String OPERANDS = "operands";
   private List<@Valid ValueSetOperand> operands = new ArrayList<>();
 
-  public ValueSetExpression() { 
+  public ValueSetExpression() {
   }
 
   public ValueSetExpression operation(ValueSetOperation operation) {
@@ -60,14 +59,15 @@ public class ValueSetExpression {
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +82,20 @@ public class ValueSetExpression {
     this.operation = operation;
   }
 
-
   public ValueSetExpression ignoreVersion(Boolean ignoreVersion) {
     
     this.ignoreVersion = ignoreVersion;
     return this;
   }
 
-   /**
+  /**
    * Get ignoreVersion
    * @return ignoreVersion
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(IGNORE_VERSION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +110,6 @@ public class ValueSetExpression {
     this.ignoreVersion = ignoreVersion;
   }
 
-
   public ValueSetExpression operands(List<@Valid ValueSetOperand> operands) {
     
     this.operands = operands;
@@ -118,18 +117,22 @@ public class ValueSetExpression {
   }
 
   public ValueSetExpression addOperandsItem(ValueSetOperand operandsItem) {
+    if (this.operands == null) {
+      this.operands = new ArrayList<>();
+    }
     this.operands.add(operandsItem);
     return this;
   }
 
-   /**
+  /**
    * Get operands
    * @return operands
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,7 +146,6 @@ public class ValueSetExpression {
   public void setOperands(List<@Valid ValueSetOperand> operands) {
     this.operands = operands;
   }
-
 
   @Override
   public boolean equals(Object o) {

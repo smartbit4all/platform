@@ -32,13 +32,13 @@ import jakarta.validation.Valid;
 /**
  * This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. 
  */
+@Schema(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
   MDMTableColumnDescriptor.NAME,
   MDMTableColumnDescriptor.ASPECT_NAME,
   MDMTableColumnDescriptor.TYPE_CLASS,
   MDMTableColumnDescriptor.PATH
 })
-@JsonTypeName("MDMTableColumnDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMTableColumnDescriptor {
   public static final String NAME = "name";
@@ -51,9 +51,9 @@ public class MDMTableColumnDescriptor {
   private String typeClass;
 
   public static final String PATH = "path";
-  private List<String> path = null;
+  private List<String> path = new ArrayList<>();
 
-  public MDMTableColumnDescriptor() { 
+  public MDMTableColumnDescriptor() {
   }
 
   public MDMTableColumnDescriptor name(String name) {
@@ -62,13 +62,14 @@ public class MDMTableColumnDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The name of the given column.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the given column.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -83,19 +84,19 @@ public class MDMTableColumnDescriptor {
     this.name = name;
   }
 
-
   public MDMTableColumnDescriptor aspectName(String aspectName) {
     
     this.aspectName = aspectName;
     return this;
   }
 
-   /**
+  /**
    * The name of the aspect object to extract.
    * @return aspectName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the aspect object to extract.")
   @JsonProperty(ASPECT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,19 +111,19 @@ public class MDMTableColumnDescriptor {
     this.aspectName = aspectName;
   }
 
-
   public MDMTableColumnDescriptor typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
   }
 
-   /**
+  /**
    * The given column&#39;s type&#39;s class name.
    * @return typeClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The given column's type's class name.")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,7 +137,6 @@ public class MDMTableColumnDescriptor {
   public void setTypeClass(String typeClass) {
     this.typeClass = typeClass;
   }
-
 
   public MDMTableColumnDescriptor path(List<String> path) {
     
@@ -152,12 +152,13 @@ public class MDMTableColumnDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The path to access the object property of the column.
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The path to access the object property of the column.")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,7 +172,6 @@ public class MDMTableColumnDescriptor {
   public void setPath(List<String> path) {
     this.path = path;
   }
-
 
   @Override
   public boolean equals(Object o) {

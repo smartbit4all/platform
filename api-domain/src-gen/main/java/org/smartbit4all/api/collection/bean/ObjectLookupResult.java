@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * The result an Object lookup. 
  */
+@Schema(description = "The result an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupResult.NUMBER_OF_RELEVANT,
   ObjectLookupResult.ITEMS
 })
-@JsonTypeName("ObjectLookupResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupResult {
   public static final String NUMBER_OF_RELEVANT = "numberOfRelevant";
@@ -46,7 +46,7 @@ public class ObjectLookupResult {
   public static final String ITEMS = "items";
   private List<@Valid ObjectLookupResultItem> items = new ArrayList<>();
 
-  public ObjectLookupResult() { 
+  public ObjectLookupResult() {
   }
 
   public ObjectLookupResult numberOfRelevant(Integer numberOfRelevant) {
@@ -55,12 +55,13 @@ public class ObjectLookupResult {
     return this;
   }
 
-   /**
+  /**
    * The number of relevant items that are more or less on the same level of relevance. The lookup can accept a percentage  as value to calculate which items are relevant. If one item should be selected then the most relevant will be selected but it is important to know if there are any more relevant or the selected one is obviously the one we are looking for. 
    * @return numberOfRelevant
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The number of relevant items that are more or less on the same level of relevance. The lookup can accept a percentage  as value to calculate which items are relevant. If one item should be selected then the most relevant will be selected but it is important to know if there are any more relevant or the selected one is obviously the one we are looking for. ")
   @JsonProperty(NUMBER_OF_RELEVANT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,7 +76,6 @@ public class ObjectLookupResult {
     this.numberOfRelevant = numberOfRelevant;
   }
 
-
   public ObjectLookupResult items(List<@Valid ObjectLookupResultItem> items) {
     
     this.items = items;
@@ -83,18 +83,22 @@ public class ObjectLookupResult {
   }
 
   public ObjectLookupResult addItemsItem(ObjectLookupResultItem itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
     this.items.add(itemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get items
    * @return items
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +112,6 @@ public class ObjectLookupResult {
   public void setItems(List<@Valid ObjectLookupResultItem> items) {
     this.items = items;
   }
-
 
   @Override
   public boolean equals(Object o) {

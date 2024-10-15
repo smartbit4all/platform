@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   UserSelector.URI,
   UserSelector.DISPLAY_NAME
 })
-@JsonTypeName("UserSelector")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserSelector {
   /**
@@ -82,7 +81,7 @@ public class UserSelector {
   public static final String DISPLAY_NAME = "displayName";
   private String displayName;
 
-  public UserSelector() { 
+  public UserSelector() {
   }
 
   public UserSelector kind(KindEnum kind) {
@@ -91,12 +90,13 @@ public class UserSelector {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,20 +111,20 @@ public class UserSelector {
     this.kind = kind;
   }
 
-
   public UserSelector uri(URI uri) {
     
     this.uri = uri;
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,19 +139,19 @@ public class UserSelector {
     this.uri = uri;
   }
 
-
   public UserSelector displayName(String displayName) {
     
     this.displayName = displayName;
     return this;
   }
 
-   /**
+  /**
    * Get displayName
    * @return displayName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DISPLAY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +165,6 @@ public class UserSelector {
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
-
 
   @Override
   public boolean equals(Object o) {

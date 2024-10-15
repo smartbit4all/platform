@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * The reference for a given version of the storage object. It contains all the properties about the version like time, user uri,  api operation that created the version. 
  */
+@Schema(description = "The reference for a given version of the storage object. It contains all the properties about the version like time, user uri,  api operation that created the version. ")
 @JsonPropertyOrder({
   ObjectVersion.SERIAL_NO_DATA,
   ObjectVersion.SERIAL_NO_RELATION,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   ObjectVersion.MERGED_WITH_URI,
   ObjectVersion.ASPECTS
 })
-@JsonTypeName("ObjectVersion")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectVersion {
   public static final String SERIAL_NO_DATA = "serialNoData";
@@ -81,9 +81,9 @@ public class ObjectVersion {
   private URI mergedWithUri;
 
   public static final String ASPECTS = "aspects";
-  private Map<String, ObjectAspect> aspects = null;
+  private Map<String, ObjectAspect> aspects = new HashMap<>();
 
-  public ObjectVersion() { 
+  public ObjectVersion() {
   }
 
   public ObjectVersion serialNoData(Long serialNoData) {
@@ -92,12 +92,13 @@ public class ObjectVersion {
     return this;
   }
 
-   /**
+  /**
    * If it is set then there is an attached version data.
    * @return serialNoData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If it is set then there is an attached version data.")
   @JsonProperty(SERIAL_NO_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,19 +113,19 @@ public class ObjectVersion {
     this.serialNoData = serialNoData;
   }
 
-
   public ObjectVersion serialNoRelation(Long serialNoRelation) {
     
     this.serialNoRelation = serialNoRelation;
     return this;
   }
 
-   /**
+  /**
    * If it is set then there is an attached version relation set.
    * @return serialNoRelation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If it is set then there is an attached version relation set.")
   @JsonProperty(SERIAL_NO_RELATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,19 +140,19 @@ public class ObjectVersion {
     this.serialNoRelation = serialNoRelation;
   }
 
-
   public ObjectVersion transactionId(String transactionId) {
     
     this.transactionId = transactionId;
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the transaction that constructed this version from the object. It could be used to double check if a given transaction was successful. 
    * @return transactionId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the transaction that constructed this version from the object. It could be used to double check if a given transaction was successful. ")
   @JsonProperty(TRANSACTION_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,21 +167,21 @@ public class ObjectVersion {
     this.transactionId = transactionId;
   }
 
-
   public ObjectVersion createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * The exact date time when the given version was created at.
    * @return createdAt
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The exact date time when the given version was created at.")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -195,21 +196,21 @@ public class ObjectVersion {
     this.createdAt = createdAt;
   }
 
-
   public ObjectVersion createdByUri(URI createdByUri) {
     
     this.createdByUri = createdByUri;
     return this;
   }
 
-   /**
+  /**
    * The reference of the user or any other participant who created the given version.
    * @return createdByUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The reference of the user or any other participant who created the given version.")
   @JsonProperty(CREATED_BY_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -224,19 +225,19 @@ public class ObjectVersion {
     this.createdByUri = createdByUri;
   }
 
-
   public ObjectVersion createdBy(String createdBy) {
     
     this.createdBy = createdBy;
     return this;
   }
 
-   /**
+  /**
    * The display name of the user or any other participant who created the given version.
    * @return createdBy
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The display name of the user or any other participant who created the given version.")
   @JsonProperty(CREATED_BY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -251,19 +252,19 @@ public class ObjectVersion {
     this.createdBy = createdBy;
   }
 
-
   public ObjectVersion operation(String operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * The Api and the operation that was created the given version of the object.
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The Api and the operation that was created the given version of the object.")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -278,20 +279,20 @@ public class ObjectVersion {
     this.operation = operation;
   }
 
-
   public ObjectVersion rebasedFromUri(URI rebasedFromUri) {
     
     this.rebasedFromUri = rebasedFromUri;
     return this;
   }
 
-   /**
+  /**
    * The reference of the object version the version is based on. In case of branching this is the URI of the source  object version if it is a new object on the branch. 
    * @return rebasedFromUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version if it is a new object on the branch. ")
   @JsonProperty(REBASED_FROM_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -306,20 +307,20 @@ public class ObjectVersion {
     this.rebasedFromUri = rebasedFromUri;
   }
 
-
   public ObjectVersion commonAncestorUri(URI commonAncestorUri) {
     
     this.commonAncestorUri = commonAncestorUri;
     return this;
   }
 
-   /**
+  /**
    * The reference of the object version the version is based on. In the result of a merge operation it is the URI of the common ancestor. 
    * @return commonAncestorUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference of the object version the version is based on. In the result of a merge operation it is the URI of the common ancestor. ")
   @JsonProperty(COMMON_ANCESTOR_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -334,20 +335,20 @@ public class ObjectVersion {
     this.commonAncestorUri = commonAncestorUri;
   }
 
-
   public ObjectVersion mergedWithUri(URI mergedWithUri) {
     
     this.mergedWithUri = mergedWithUri;
     return this;
   }
 
-   /**
+  /**
    * The reference of the object version the version is based on. In case of branching this is the URI of the source  object version. 
    * @return mergedWithUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version. ")
   @JsonProperty(MERGED_WITH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -361,7 +362,6 @@ public class ObjectVersion {
   public void setMergedWithUri(URI mergedWithUri) {
     this.mergedWithUri = mergedWithUri;
   }
-
 
   public ObjectVersion aspects(Map<String, ObjectAspect> aspects) {
     
@@ -377,13 +377,14 @@ public class ObjectVersion {
     return this;
   }
 
-   /**
+  /**
    * The aspects are named objects attached to the given object version. 
    * @return aspects
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The aspects are named objects attached to the given object version. ")
   @JsonProperty(ASPECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -397,7 +398,6 @@ public class ObjectVersion {
   public void setAspects(Map<String, ObjectAspect> aspects) {
     this.aspects = aspects;
   }
-
 
   @Override
   public boolean equals(Object o) {

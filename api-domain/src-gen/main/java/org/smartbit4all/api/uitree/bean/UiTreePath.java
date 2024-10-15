@@ -36,13 +36,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   UiTreePath.PARTS
 })
-@JsonTypeName("UiTreePath")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreePath {
   public static final String PARTS = "parts";
   private List<@Valid UiTreePathPart> parts = new ArrayList<>();
 
-  public UiTreePath() { 
+  public UiTreePath() {
   }
 
   public UiTreePath parts(List<@Valid UiTreePathPart> parts) {
@@ -52,18 +51,22 @@ public class UiTreePath {
   }
 
   public UiTreePath addPartsItem(UiTreePathPart partsItem) {
+    if (this.parts == null) {
+      this.parts = new ArrayList<>();
+    }
     this.parts.add(partsItem);
     return this;
   }
 
-   /**
+  /**
    * Get parts
    * @return parts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +80,6 @@ public class UiTreePath {
   public void setParts(List<@Valid UiTreePathPart> parts) {
     this.parts = parts;
   }
-
 
   @Override
   public boolean equals(Object o) {

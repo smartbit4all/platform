@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
  */
+@Schema(description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 @JsonPropertyOrder({
   FilterFieldMeta.ID,
   FilterFieldMeta.LABEL_CODE,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   FilterFieldMeta.STYLE,
   FilterFieldMeta.OPERATIONS
 })
-@JsonTypeName("FilterFieldMeta")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldMeta {
   public static final String ID = "id";
@@ -56,9 +56,9 @@ public class FilterFieldMeta {
   private String style;
 
   public static final String OPERATIONS = "operations";
-  private List<@Valid FilterOperation> operations = null;
+  private List<@Valid FilterOperation> operations = new ArrayList<>();
 
-  public FilterFieldMeta() { 
+  public FilterFieldMeta() {
   }
 
   public FilterFieldMeta id(String id) {
@@ -67,12 +67,13 @@ public class FilterFieldMeta {
     return this;
   }
 
-   /**
+  /**
    * Identifier of the filter field metadata. Not mandatory, specify only if in use.
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of the filter field metadata. Not mandatory, specify only if in use.")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,19 +88,19 @@ public class FilterFieldMeta {
     this.id = id;
   }
 
-
   public FilterFieldMeta labelCode(String labelCode) {
     
     this.labelCode = labelCode;
     return this;
   }
 
-   /**
+  /**
    * Code of label to display for this filter field selector.
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Code of label to display for this filter field selector.")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,19 +115,19 @@ public class FilterFieldMeta {
     this.labelCode = labelCode;
   }
 
-
   public FilterFieldMeta iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Code of icon to display for this filter field selector.
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Code of icon to display for this filter field selector.")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,19 +142,19 @@ public class FilterFieldMeta {
     this.iconCode = iconCode;
   }
 
-
   public FilterFieldMeta style(String style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +168,6 @@ public class FilterFieldMeta {
   public void setStyle(String style) {
     this.style = style;
   }
-
 
   public FilterFieldMeta operations(List<@Valid FilterOperation> operations) {
     
@@ -183,13 +183,14 @@ public class FilterFieldMeta {
     return this;
   }
 
-   /**
+  /**
    * Get operations
    * @return operations
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +204,6 @@ public class FilterFieldMeta {
   public void setOperations(List<@Valid FilterOperation> operations) {
     this.operations = operations;
   }
-
 
   @Override
   public boolean equals(Object o) {

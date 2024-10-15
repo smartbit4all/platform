@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   SampleAttachement.NAME,
   SampleAttachement.CONTENT
 })
-@JsonTypeName("SampleAttachement")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleAttachement {
   public static final String URI = "uri";
@@ -47,7 +46,7 @@ public class SampleAttachement {
   public static final String CONTENT = "content";
   private URI content;
 
-  public SampleAttachement() { 
+  public SampleAttachement() {
   }
 
   public SampleAttachement uri(URI uri) {
@@ -56,13 +55,14 @@ public class SampleAttachement {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +77,19 @@ public class SampleAttachement {
     this.uri = uri;
   }
 
-
   public SampleAttachement name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,20 +104,20 @@ public class SampleAttachement {
     this.name = name;
   }
 
-
   public SampleAttachement content(URI content) {
     
     this.content = content;
     return this;
   }
 
-   /**
+  /**
    * The content URI that is the uri of a BinaryContent. It is not contained but referred.
    * @return content
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The content URI that is the uri of a BinaryContent. It is not contained but referred.")
   @JsonProperty(CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,7 +131,6 @@ public class SampleAttachement {
   public void setContent(URI content) {
     this.content = content;
   }
-
 
   @Override
   public boolean equals(Object o) {

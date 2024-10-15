@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The meta of an index in a database table. 
  */
+@Schema(description = "The meta of an index in a database table. ")
 @JsonPropertyOrder({
   IndexDefinition.SCHEMA,
   IndexDefinition.NAME,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   IndexDefinition.COLUMN_NAMES,
   IndexDefinition.OPERATION
 })
-@JsonTypeName("IndexDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class IndexDefinition {
   public static final String SCHEMA = "schema";
@@ -58,7 +58,7 @@ public class IndexDefinition {
   public static final String OPERATION = "operation";
   private AlterOperation operation;
 
-  public IndexDefinition() { 
+  public IndexDefinition() {
   }
 
   public IndexDefinition schema(String schema) {
@@ -67,12 +67,13 @@ public class IndexDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get schema
    * @return schema
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -87,19 +88,19 @@ public class IndexDefinition {
     this.schema = schema;
   }
 
-
   public IndexDefinition name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -114,19 +115,19 @@ public class IndexDefinition {
     this.name = name;
   }
 
-
   public IndexDefinition unique(Boolean unique) {
     
     this.unique = unique;
     return this;
   }
 
-   /**
+  /**
    * Get unique
    * @return unique
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UNIQUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +142,6 @@ public class IndexDefinition {
     this.unique = unique;
   }
 
-
   public IndexDefinition columnNames(List<String> columnNames) {
     
     this.columnNames = columnNames;
@@ -149,17 +149,21 @@ public class IndexDefinition {
   }
 
   public IndexDefinition addColumnNamesItem(String columnNamesItem) {
+    if (this.columnNames == null) {
+      this.columnNames = new ArrayList<>();
+    }
     this.columnNames.add(columnNamesItem);
     return this;
   }
 
-   /**
+  /**
    * Get columnNames
    * @return columnNames
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLUMN_NAMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -174,20 +178,20 @@ public class IndexDefinition {
     this.columnNames = columnNames;
   }
 
-
   public IndexDefinition operation(AlterOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -201,7 +205,6 @@ public class IndexDefinition {
   public void setOperation(AlterOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

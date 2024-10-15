@@ -43,7 +43,6 @@ import jakarta.validation.Valid;
   FilterGroupMeta.STYLE,
   FilterGroupMeta.TYPE
 })
-@JsonTypeName("FilterGroupMeta")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupMeta {
   public static final String ID = "id";
@@ -67,7 +66,7 @@ public class FilterGroupMeta {
   public static final String TYPE = "type";
   private FilterGroupType type;
 
-  public FilterGroupMeta() { 
+  public FilterGroupMeta() {
   }
 
   public FilterGroupMeta id(String id) {
@@ -76,12 +75,13 @@ public class FilterGroupMeta {
     return this;
   }
 
-   /**
+  /**
    * Identifier of the filter group metadata. Not mandatory, specify only if in use.
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of the filter group metadata. Not mandatory, specify only if in use.")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +96,6 @@ public class FilterGroupMeta {
     this.id = id;
   }
 
-
   public FilterGroupMeta filterGroupMetas(List<@Valid FilterGroupMeta> filterGroupMetas) {
     
     this.filterGroupMetas = filterGroupMetas;
@@ -104,18 +103,22 @@ public class FilterGroupMeta {
   }
 
   public FilterGroupMeta addFilterGroupMetasItem(FilterGroupMeta filterGroupMetasItem) {
+    if (this.filterGroupMetas == null) {
+      this.filterGroupMetas = new ArrayList<>();
+    }
     this.filterGroupMetas.add(filterGroupMetasItem);
     return this;
   }
 
-   /**
+  /**
    * Get filterGroupMetas
    * @return filterGroupMetas
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTER_GROUP_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -130,7 +133,6 @@ public class FilterGroupMeta {
     this.filterGroupMetas = filterGroupMetas;
   }
 
-
   public FilterGroupMeta filterFieldMetas(List<@Valid FilterFieldMeta> filterFieldMetas) {
     
     this.filterFieldMetas = filterFieldMetas;
@@ -138,18 +140,22 @@ public class FilterGroupMeta {
   }
 
   public FilterGroupMeta addFilterFieldMetasItem(FilterFieldMeta filterFieldMetasItem) {
+    if (this.filterFieldMetas == null) {
+      this.filterFieldMetas = new ArrayList<>();
+    }
     this.filterFieldMetas.add(filterFieldMetasItem);
     return this;
   }
 
-   /**
+  /**
    * Get filterFieldMetas
    * @return filterFieldMetas
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTER_FIELD_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,19 +170,19 @@ public class FilterGroupMeta {
     this.filterFieldMetas = filterFieldMetas;
   }
 
-
   public FilterGroupMeta labelCode(String labelCode) {
     
     this.labelCode = labelCode;
     return this;
   }
 
-   /**
+  /**
    * Get labelCode
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,19 +197,19 @@ public class FilterGroupMeta {
     this.labelCode = labelCode;
   }
 
-
   public FilterGroupMeta iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Get iconCode
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,19 +224,19 @@ public class FilterGroupMeta {
     this.iconCode = iconCode;
   }
 
-
   public FilterGroupMeta style(String style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,20 +251,20 @@ public class FilterGroupMeta {
     this.style = style;
   }
 
-
   public FilterGroupMeta type(FilterGroupType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,7 +278,6 @@ public class FilterGroupMeta {
   public void setType(FilterGroupType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

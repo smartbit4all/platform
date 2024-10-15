@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   ValueSetDefinition.URI,
   ValueSetDefinition.DATA
 })
-@JsonTypeName("ValueSetDefinition")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetDefinition {
   public static final String URI = "uri";
@@ -44,7 +43,7 @@ public class ValueSetDefinition {
   public static final String DATA = "data";
   private ValueSetDefinitionData data;
 
-  public ValueSetDefinition() { 
+  public ValueSetDefinition() {
   }
 
   public ValueSetDefinition uri(URI uri) {
@@ -53,14 +52,15 @@ public class ValueSetDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -75,21 +75,21 @@ public class ValueSetDefinition {
     this.uri = uri;
   }
 
-
   public ValueSetDefinition data(ValueSetDefinitionData data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,7 +103,6 @@ public class ValueSetDefinition {
   public void setData(ValueSetDefinitionData data) {
     this.data = data;
   }
-
 
   @Override
   public boolean equals(Object o) {

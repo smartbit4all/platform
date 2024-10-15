@@ -37,16 +37,15 @@ import jakarta.validation.Valid;
   AppState.UUID,
   AppState.UIS
 })
-@JsonTypeName("AppState")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AppState {
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String UIS = "uis";
-  private Map<String, UIState> uis = null;
+  private Map<String, UIState> uis = new HashMap<>();
 
-  public AppState() { 
+  public AppState() {
   }
 
   public AppState uuid(UUID uuid) {
@@ -55,13 +54,14 @@ public class AppState {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,7 +75,6 @@ public class AppState {
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
   }
-
 
   public AppState uis(Map<String, UIState> uis) {
     
@@ -91,13 +90,14 @@ public class AppState {
     return this;
   }
 
-   /**
+  /**
    * Get uis
    * @return uis
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UIS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,7 +111,6 @@ public class AppState {
   public void setUis(Map<String, UIState> uis) {
     this.uis = uis;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -34,24 +34,24 @@ import jakarta.validation.Valid;
 /**
  * This object contains the references and the collections of the given object. This does not have identity it is bound to  the StoaregObject by the ObjectStorage implementation. 
  */
+@Schema(description = "This object contains the references and the collections of the given object. This does not have identity it is bound to  the StoaregObject by the ObjectStorage implementation. ")
 @JsonPropertyOrder({
   StorageObjectRelationData.URI,
   StorageObjectRelationData.REFERENCES,
   StorageObjectRelationData.COLLECTIONS
 })
-@JsonTypeName("StorageObjectRelationData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectRelationData {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String REFERENCES = "references";
-  private Map<String, ObjectReference> references = null;
+  private Map<String, ObjectReference> references = new HashMap<>();
 
   public static final String COLLECTIONS = "collections";
-  private Map<String, ObjectReferenceList> collections = null;
+  private Map<String, ObjectReferenceList> collections = new HashMap<>();
 
-  public StorageObjectRelationData() { 
+  public StorageObjectRelationData() {
   }
 
   public StorageObjectRelationData uri(URI uri) {
@@ -60,14 +60,15 @@ public class StorageObjectRelationData {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object represented by the storage object. 
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the object represented by the storage object. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -81,7 +82,6 @@ public class StorageObjectRelationData {
   public void setUri(URI uri) {
     this.uri = uri;
   }
-
 
   public StorageObjectRelationData references(Map<String, ObjectReference> references) {
     
@@ -97,13 +97,14 @@ public class StorageObjectRelationData {
     return this;
   }
 
-   /**
+  /**
    * Get references
    * @return references
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +118,6 @@ public class StorageObjectRelationData {
   public void setReferences(Map<String, ObjectReference> references) {
     this.references = references;
   }
-
 
   public StorageObjectRelationData collections(Map<String, ObjectReferenceList> collections) {
     
@@ -133,13 +133,14 @@ public class StorageObjectRelationData {
     return this;
   }
 
-   /**
+  /**
    * Get collections
    * @return collections
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLLECTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +154,6 @@ public class StorageObjectRelationData {
   public void setCollections(Map<String, ObjectReferenceList> collections) {
     this.collections = collections;
   }
-
 
   @Override
   public boolean equals(Object o) {

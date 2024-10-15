@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   GenericValue.ICON,
   GenericValue.INACTIVE
 })
-@JsonTypeName("GenericValue")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GenericValue {
   public static final String URI = "uri";
@@ -59,7 +58,7 @@ public class GenericValue {
   public static final String INACTIVE = "inactive";
   private Boolean inactive;
 
-  public GenericValue() { 
+  public GenericValue() {
   }
 
   public GenericValue uri(URI uri) {
@@ -68,13 +67,14 @@ public class GenericValue {
     return this;
   }
 
-   /**
+  /**
    * The uri the value.
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri the value.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -89,19 +89,19 @@ public class GenericValue {
     this.uri = uri;
   }
 
-
   public GenericValue code(String code) {
     
     this.code = code;
     return this;
   }
 
-   /**
+  /**
    * The logical code of the value.
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The logical code of the value.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,19 +116,19 @@ public class GenericValue {
     this.code = code;
   }
 
-
   public GenericValue name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The value as it is.
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The value as it is.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,19 +143,19 @@ public class GenericValue {
     this.name = name;
   }
 
-
   public GenericValue description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * The description of the value if any. It is optional but can be usefull to have some idea about the given value. 
    * @return description
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The description of the value if any. It is optional but can be usefull to have some idea about the given value. ")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,19 +170,19 @@ public class GenericValue {
     this.description = description;
   }
 
-
   public GenericValue icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * The code of icon that can be associatied with this value. It may be a uri.
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The code of icon that can be associatied with this value. It may be a uri.")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,19 +197,19 @@ public class GenericValue {
     this.icon = icon;
   }
 
-
   public GenericValue inactive(Boolean inactive) {
     
     this.inactive = inactive;
     return this;
   }
 
-   /**
+  /**
    * Indicates if this value is inactive.
    * @return inactive
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Indicates if this value is inactive.")
   @JsonProperty(INACTIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -223,7 +223,6 @@ public class GenericValue {
   public void setInactive(Boolean inactive) {
     this.inactive = inactive;
   }
-
 
   @Override
   public boolean equals(Object o) {

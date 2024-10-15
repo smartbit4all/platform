@@ -34,20 +34,20 @@ import jakarta.validation.Valid;
 /**
  * API: Describes all the entries and associations in the given navigation.
  */
+@Schema(description = "API: Describes all the entries and associations in the given navigation.")
 @JsonPropertyOrder({
   NavigationConfig.ENTRIES,
   NavigationConfig.ASSOCIATIONS
 })
-@JsonTypeName("NavigationConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationConfig {
   public static final String ENTRIES = "entries";
-  private List<@Valid NavigationEntryMeta> entries = null;
+  private List<@Valid NavigationEntryMeta> entries = new ArrayList<>();
 
   public static final String ASSOCIATIONS = "associations";
-  private List<@Valid NavigationAssociationMeta> associations = null;
+  private List<@Valid NavigationAssociationMeta> associations = new ArrayList<>();
 
-  public NavigationConfig() { 
+  public NavigationConfig() {
   }
 
   public NavigationConfig entries(List<@Valid NavigationEntryMeta> entries) {
@@ -64,13 +64,14 @@ public class NavigationConfig {
     return this;
   }
 
-   /**
+  /**
    * The available entries in the given navigation config.
    * @return entries
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The available entries in the given navigation config.")
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,7 +85,6 @@ public class NavigationConfig {
   public void setEntries(List<@Valid NavigationEntryMeta> entries) {
     this.entries = entries;
   }
-
 
   public NavigationConfig associations(List<@Valid NavigationAssociationMeta> associations) {
     
@@ -100,13 +100,14 @@ public class NavigationConfig {
     return this;
   }
 
-   /**
+  /**
    * The navigable associations in the given navigation. In case of a navigation tree these are the openable sub trees.
    * @return associations
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The navigable associations in the given navigation. In case of a navigation tree these are the openable sub trees.")
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,7 +121,6 @@ public class NavigationConfig {
   public void setAssociations(List<@Valid NavigationAssociationMeta> associations) {
     this.associations = associations;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -28,12 +28,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.
  */
+@Schema(description = "UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 @JsonPropertyOrder({
   NavigationReference.ID,
   NavigationReference.END_NODE,
   NavigationReference.ASSOCIATION_NODE
 })
-@JsonTypeName("NavigationReference")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationReference {
   public static final String ID = "id";
@@ -45,7 +45,7 @@ public class NavigationReference {
   public static final String ASSOCIATION_NODE = "associationNode";
   private NavigationNode associationNode;
 
-  public NavigationReference() { 
+  public NavigationReference() {
   }
 
   public NavigationReference id(String id) {
@@ -54,12 +54,12 @@ public class NavigationReference {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the given association - UUID
    * @return id
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the given association - UUID")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,19 +74,18 @@ public class NavigationReference {
     this.id = id;
   }
 
-
   public NavigationReference endNode(NavigationNode endNode) {
     
     this.endNode = endNode;
     return this;
   }
 
-   /**
+  /**
    * Get endNode
    * @return endNode
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(END_NODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -101,19 +100,18 @@ public class NavigationReference {
     this.endNode = endNode;
   }
 
-
   public NavigationReference associationNode(NavigationNode associationNode) {
     
     this.associationNode = associationNode;
     return this;
   }
 
-   /**
+  /**
    * Get associationNode
    * @return associationNode
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ASSOCIATION_NODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +125,6 @@ public class NavigationReference {
   public void setAssociationNode(NavigationNode associationNode) {
     this.associationNode = associationNode;
   }
-
 
   @Override
   public boolean equals(Object o) {

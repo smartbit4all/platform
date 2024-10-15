@@ -36,13 +36,12 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   ValidationResultPageModel.VALIDATION_ITEMS
 })
-@JsonTypeName("ValidationResultPageModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValidationResultPageModel {
   public static final String VALIDATION_ITEMS = "validationItems";
-  private List<@Valid ValidationItem> validationItems = null;
+  private List<@Valid ValidationItem> validationItems = new ArrayList<>();
 
-  public ValidationResultPageModel() { 
+  public ValidationResultPageModel() {
   }
 
   public ValidationResultPageModel validationItems(List<@Valid ValidationItem> validationItems) {
@@ -59,13 +58,14 @@ public class ValidationResultPageModel {
     return this;
   }
 
-   /**
+  /**
    * List of ValidationItem holds the severity | and the localized message from the origin ObjectValidationItem
    * @return validationItems
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "List of ValidationItem holds the severity | and the localized message from the origin ObjectValidationItem")
   @JsonProperty(VALIDATION_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,7 +79,6 @@ public class ValidationResultPageModel {
   public void setValidationItems(List<@Valid ValidationItem> validationItems) {
     this.validationItems = validationItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

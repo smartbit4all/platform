@@ -38,7 +38,6 @@ import jakarta.validation.Valid;
   CommandData.COMMAND_CODE,
   CommandData.PARAMS
 })
-@JsonTypeName("CommandData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class CommandData {
   public static final String MODEL = "model";
@@ -51,9 +50,9 @@ public class CommandData {
   private String commandCode;
 
   public static final String PARAMS = "params";
-  private List<@Valid Object> params = null;
+  private List<@Valid Object> params = new ArrayList<>();
 
-  public CommandData() { 
+  public CommandData() {
   }
 
   public CommandData model(Object model) {
@@ -62,12 +61,13 @@ public class CommandData {
     return this;
   }
 
-   /**
+  /**
    * Get model
    * @return model
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,19 +82,19 @@ public class CommandData {
     this.model = model;
   }
 
-
   public CommandData commandPath(String commandPath) {
     
     this.commandPath = commandPath;
     return this;
   }
 
-   /**
+  /**
    * Get commandPath
    * @return commandPath
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMMAND_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,19 +109,19 @@ public class CommandData {
     this.commandPath = commandPath;
   }
 
-
   public CommandData commandCode(String commandCode) {
     
     this.commandCode = commandCode;
     return this;
   }
 
-   /**
+  /**
    * Get commandCode
    * @return commandCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMMAND_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,7 +135,6 @@ public class CommandData {
   public void setCommandCode(String commandCode) {
     this.commandCode = commandCode;
   }
-
 
   public CommandData params(List<@Valid Object> params) {
     
@@ -151,12 +150,13 @@ public class CommandData {
     return this;
   }
 
-   /**
+  /**
    * Get params
    * @return params
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,7 +170,6 @@ public class CommandData {
   public void setParams(List<@Valid Object> params) {
     this.params = params;
   }
-
 
   @Override
   public boolean equals(Object o) {

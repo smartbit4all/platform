@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
   ImageResource.STYLE,
   ImageResource.TOOLTIP
 })
-@JsonTypeName("ImageResource")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ImageResource {
   /**
@@ -97,7 +96,7 @@ public class ImageResource {
   public static final String TOOLTIP = "tooltip";
   private UiActionTooltip tooltip;
 
-  public ImageResource() { 
+  public ImageResource() {
   }
 
   public ImageResource kind(KindEnum kind) {
@@ -106,12 +105,13 @@ public class ImageResource {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -126,19 +126,19 @@ public class ImageResource {
     this.kind = kind;
   }
 
-
   public ImageResource source(String source) {
     
     this.source = source;
     return this;
   }
 
-   /**
+  /**
    * Get source
    * @return source
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,19 +153,19 @@ public class ImageResource {
     this.source = source;
   }
 
-
   public ImageResource identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,19 +180,19 @@ public class ImageResource {
     this.identifier = identifier;
   }
 
-
   public ImageResource color(String color) {
     
     this.color = color;
     return this;
   }
 
-   /**
+  /**
    * Get color
    * @return color
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,20 +207,20 @@ public class ImageResource {
     this.color = color;
   }
 
-
   public ImageResource style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,20 +235,20 @@ public class ImageResource {
     this.style = style;
   }
 
-
   public ImageResource tooltip(UiActionTooltip tooltip) {
     
     this.tooltip = tooltip;
     return this;
   }
 
-   /**
+  /**
    * Get tooltip
    * @return tooltip
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +262,6 @@ public class ImageResource {
   public void setTooltip(UiActionTooltip tooltip) {
     this.tooltip = tooltip;
   }
-
 
   @Override
   public boolean equals(Object o) {

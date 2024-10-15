@@ -41,7 +41,6 @@ import jakarta.validation.Valid;
   ViewData.TYPE,
   ViewData.CONTAINER_UUID
 })
-@JsonTypeName("ViewData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewData {
   public static final String UUID = "uuid";
@@ -62,7 +61,7 @@ public class ViewData {
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
 
-  public ViewData() { 
+  public ViewData() {
   }
 
   public ViewData uuid(UUID uuid) {
@@ -71,14 +70,15 @@ public class ViewData {
     return this;
   }
 
-   /**
+  /**
    * Unique identifier of the View.
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of the View.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,20 +93,20 @@ public class ViewData {
     this.uuid = uuid;
   }
 
-
   public ViewData viewName(String viewName) {
     
     this.viewName = viewName;
     return this;
   }
 
-   /**
+  /**
    * Get viewName
    * @return viewName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -121,20 +121,20 @@ public class ViewData {
     this.viewName = viewName;
   }
 
-
   public ViewData message(MessageData message) {
     
     this.message = message;
     return this;
   }
 
-   /**
+  /**
    * Get message
    * @return message
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,21 +149,21 @@ public class ViewData {
     this.message = message;
   }
 
-
   public ViewData state(ViewState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -178,21 +178,21 @@ public class ViewData {
     this.state = state;
   }
 
-
   public ViewData type(ViewType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -207,20 +207,20 @@ public class ViewData {
     this.type = type;
   }
 
-
   public ViewData containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
     return this;
   }
 
-   /**
+  /**
    * Get containerUuid
    * @return containerUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,7 +234,6 @@ public class ViewData {
   public void setContainerUuid(UUID containerUuid) {
     this.containerUuid = containerUuid;
   }
-
 
   @Override
   public boolean equals(Object o) {

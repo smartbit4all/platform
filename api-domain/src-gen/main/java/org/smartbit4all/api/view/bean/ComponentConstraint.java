@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 /**
  * The component constraint is responsible for the constraints belong to a given component (textfield, combobox etc.) on the view. The UI must identify the component by the dataName that is a path of the data name separated by dot like dataSheet.field. 
  */
+@Schema(description = "The component constraint is responsible for the constraints belong to a given component (textfield, combobox etc.) on the view. The UI must identify the component by the dataName that is a path of the data name separated by dot like dataSheet.field. ")
 @JsonPropertyOrder({
   ComponentConstraint.DATA_NAME,
   ComponentConstraint.VISIBLE,
@@ -37,7 +38,6 @@ import jakarta.validation.Valid;
   ComponentConstraint.ENABLED,
   ComponentConstraint.VALUE_SET
 })
-@JsonTypeName("ComponentConstraint")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ComponentConstraint {
   public static final String DATA_NAME = "dataName";
@@ -55,7 +55,7 @@ public class ComponentConstraint {
   public static final String VALUE_SET = "valueSet";
   private ValueSetData valueSet = null;
 
-  public ComponentConstraint() { 
+  public ComponentConstraint() {
   }
 
   public ComponentConstraint dataName(String dataName) {
@@ -64,12 +64,13 @@ public class ComponentConstraint {
     return this;
   }
 
-   /**
+  /**
    * The data name to identify the related component or componenets. If it is a path the format is the following - dataSheet.field.
    * @return dataName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The data name to identify the related component or componenets. If it is a path the format is the following - dataSheet.field.")
   @JsonProperty(DATA_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,19 +85,19 @@ public class ComponentConstraint {
     this.dataName = dataName;
   }
 
-
   public ComponentConstraint visible(Boolean visible) {
     
     this.visible = visible;
     return this;
   }
 
-   /**
+  /**
    * Get visible
    * @return visible
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,19 +112,19 @@ public class ComponentConstraint {
     this.visible = visible;
   }
 
-
   public ComponentConstraint mandatory(Boolean mandatory) {
     
     this.mandatory = mandatory;
     return this;
   }
 
-   /**
+  /**
    * Get mandatory
    * @return mandatory
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MANDATORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,19 +139,19 @@ public class ComponentConstraint {
     this.mandatory = mandatory;
   }
 
-
   public ComponentConstraint enabled(Boolean enabled) {
     
     this.enabled = enabled;
     return this;
   }
 
-   /**
+  /**
    * Get enabled
    * @return enabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,20 +166,20 @@ public class ComponentConstraint {
     this.enabled = enabled;
   }
 
-
   public ComponentConstraint valueSet(ValueSetData valueSet) {
     
     this.valueSet = valueSet;
     return this;
   }
 
-   /**
+  /**
    * Get valueSet
    * @return valueSet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +193,6 @@ public class ComponentConstraint {
   public void setValueSet(ValueSetData valueSet) {
     this.valueSet = valueSet;
   }
-
 
   @Override
   public boolean equals(Object o) {

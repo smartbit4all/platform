@@ -45,7 +45,6 @@ import jakarta.validation.Valid;
   UiActionExecutionEvent.SESSION,
   UiActionExecutionEvent.TIMESTAMP
 })
-@JsonTypeName("UiActionExecutionEvent")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionExecutionEvent {
   public static final String VIEW = "view";
@@ -61,10 +60,10 @@ public class UiActionExecutionEvent {
   private String nodeId;
 
   public static final String VIEW_CONTEXT_BEFORE = "viewContextBefore";
-  private Map<String, Object> viewContextBefore = null;
+  private Map<String, Object> viewContextBefore = new HashMap<>();
 
   public static final String VIEW_CONTEXT_AFTER = "viewContextAfter";
-  private Map<String, Object> viewContextAfter = null;
+  private Map<String, Object> viewContextAfter = new HashMap<>();
 
   public static final String SESSION = "session";
   private Session session = null;
@@ -72,7 +71,7 @@ public class UiActionExecutionEvent {
   public static final String TIMESTAMP = "timestamp";
   private OffsetDateTime timestamp;
 
-  public UiActionExecutionEvent() { 
+  public UiActionExecutionEvent() {
   }
 
   public UiActionExecutionEvent view(View view) {
@@ -81,13 +80,14 @@ public class UiActionExecutionEvent {
     return this;
   }
 
-   /**
+  /**
    * Get view
    * @return view
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,20 +102,20 @@ public class UiActionExecutionEvent {
     this.view = view;
   }
 
-
   public UiActionExecutionEvent request(UiActionRequest request) {
     
     this.request = request;
     return this;
   }
 
-   /**
+  /**
    * Get request
    * @return request
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,19 +130,19 @@ public class UiActionExecutionEvent {
     this.request = request;
   }
 
-
   public UiActionExecutionEvent widgetId(String widgetId) {
     
     this.widgetId = widgetId;
     return this;
   }
 
-   /**
+  /**
    * Get widgetId
    * @return widgetId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,19 +157,19 @@ public class UiActionExecutionEvent {
     this.widgetId = widgetId;
   }
 
-
   public UiActionExecutionEvent nodeId(String nodeId) {
     
     this.nodeId = nodeId;
     return this;
   }
 
-   /**
+  /**
    * Get nodeId
    * @return nodeId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +183,6 @@ public class UiActionExecutionEvent {
   public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
-
 
   public UiActionExecutionEvent viewContextBefore(Map<String, Object> viewContextBefore) {
     
@@ -199,12 +198,13 @@ public class UiActionExecutionEvent {
     return this;
   }
 
-   /**
+  /**
    * Get viewContextBefore
    * @return viewContextBefore
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_CONTEXT_BEFORE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,7 +218,6 @@ public class UiActionExecutionEvent {
   public void setViewContextBefore(Map<String, Object> viewContextBefore) {
     this.viewContextBefore = viewContextBefore;
   }
-
 
   public UiActionExecutionEvent viewContextAfter(Map<String, Object> viewContextAfter) {
     
@@ -234,12 +233,13 @@ public class UiActionExecutionEvent {
     return this;
   }
 
-   /**
+  /**
    * Get viewContextAfter
    * @return viewContextAfter
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_CONTEXT_AFTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -254,20 +254,20 @@ public class UiActionExecutionEvent {
     this.viewContextAfter = viewContextAfter;
   }
 
-
   public UiActionExecutionEvent session(Session session) {
     
     this.session = session;
     return this;
   }
 
-   /**
+  /**
    * Get session
    * @return session
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -282,20 +282,20 @@ public class UiActionExecutionEvent {
     this.session = session;
   }
 
-
   public UiActionExecutionEvent timestamp(OffsetDateTime timestamp) {
     
     this.timestamp = timestamp;
     return this;
   }
 
-   /**
+  /**
    * Get timestamp
    * @return timestamp
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -309,7 +309,6 @@ public class UiActionExecutionEvent {
   public void setTimestamp(OffsetDateTime timestamp) {
     this.timestamp = timestamp;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * \&quot;The api scope that tha apiKey can handle\&quot; 
  */
+@Schema(description = "\"The api scope that tha apiKey can handle\" ")
 @JsonPropertyOrder({
   ApiKeyScope.URI,
   ApiKeyScope.NAME,
   ApiKeyScope.PATH_PATTERN
 })
-@JsonTypeName("ApiKeyScope")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiKeyScope {
   public static final String URI = "uri";
@@ -47,7 +47,7 @@ public class ApiKeyScope {
   public static final String PATH_PATTERN = "pathPattern";
   private String pathPattern;
 
-  public ApiKeyScope() { 
+  public ApiKeyScope() {
   }
 
   public ApiKeyScope uri(URI uri) {
@@ -56,14 +56,15 @@ public class ApiKeyScope {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the api key
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the api key")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,20 +79,20 @@ public class ApiKeyScope {
     this.uri = uri;
   }
 
-
   public ApiKeyScope name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,19 +107,19 @@ public class ApiKeyScope {
     this.name = name;
   }
 
-
   public ApiKeyScope pathPattern(String pathPattern) {
     
     this.pathPattern = pathPattern;
     return this;
   }
 
-   /**
+  /**
    * A regex pattern that will be used to validate the incoming http request uri.
    * @return pathPattern
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A regex pattern that will be used to validate the incoming http request uri.")
   @JsonProperty(PATH_PATTERN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class ApiKeyScope {
   public void setPathPattern(String pathPattern) {
     this.pathPattern = pathPattern;
   }
-
 
   @Override
   public boolean equals(Object o) {

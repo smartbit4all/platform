@@ -32,13 +32,13 @@ import jakarta.validation.Valid;
 /**
  * Represents a stored smartlink. Contains identifiers and a View, which will be opened,  when this smartlink is clicked. 
  */
+@Schema(description = "Represents a stored smartlink. Contains identifiers and a View, which will be opened,  when this smartlink is clicked. ")
 @JsonPropertyOrder({
   SmartLinkData.URI,
   SmartLinkData.UUID,
   SmartLinkData.VIEW,
   SmartLinkData.URL
 })
-@JsonTypeName("SmartLinkData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLinkData {
   public static final String URI = "uri";
@@ -53,7 +53,7 @@ public class SmartLinkData {
   public static final String URL = "url";
   private String url;
 
-  public SmartLinkData() { 
+  public SmartLinkData() {
   }
 
   public SmartLinkData uri(URI uri) {
@@ -62,13 +62,14 @@ public class SmartLinkData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,20 +84,20 @@ public class SmartLinkData {
     this.uri = uri;
   }
 
-
   public SmartLinkData uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -111,20 +112,20 @@ public class SmartLinkData {
     this.uuid = uuid;
   }
 
-
   public SmartLinkData view(View view) {
     
     this.view = view;
     return this;
   }
 
-   /**
+  /**
    * Get view
    * @return view
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,19 +140,19 @@ public class SmartLinkData {
     this.view = view;
   }
 
-
   public SmartLinkData url(String url) {
     
     this.url = url;
     return this;
   }
 
-   /**
+  /**
    * Get url
    * @return url
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +166,6 @@ public class SmartLinkData {
   public void setUrl(String url) {
     this.url = url;
   }
-
 
   @Override
   public boolean equals(Object o) {

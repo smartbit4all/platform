@@ -41,6 +41,7 @@ import jakarta.validation.Valid;
 /**
  * Model of a UI component. Contains all information in one object, which are needed  to render a fully functionin component. 
  */
+@Schema(description = "Model of a UI component. Contains all information in one object, which are needed  to render a fully functionin component. ")
 @JsonPropertyOrder({
   ComponentModel.UUID,
   ComponentModel.NAME,
@@ -54,7 +55,6 @@ import jakarta.validation.Valid;
   ComponentModel.STYLE,
   ComponentModel.PARENT_STYLE
 })
-@JsonTypeName("ComponentModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ComponentModel {
   public static final String UUID = "uuid";
@@ -73,16 +73,16 @@ public class ComponentModel {
   private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
 
   public static final String COMPONENT_LAYOUTS = "componentLayouts";
-  private Map<String, SmartComponentLayoutDefinition> componentLayouts = null;
+  private Map<String, SmartComponentLayoutDefinition> componentLayouts = new HashMap<>();
 
   public static final String ACTIONS = "actions";
   private List<@Valid UiAction> actions = new ArrayList<>();
 
   public static final String VALUE_SETS = "valueSets";
-  private Map<String, ValueSet> valueSets = null;
+  private Map<String, ValueSet> valueSets = new HashMap<>();
 
   public static final String WIDGETS = "widgets";
-  private List<String> widgets = null;
+  private List<String> widgets = new ArrayList<>();
 
   public static final String STYLE = "style";
   private Style style;
@@ -90,7 +90,7 @@ public class ComponentModel {
   public static final String PARENT_STYLE = "parentStyle";
   private Style parentStyle;
 
-  public ComponentModel() { 
+  public ComponentModel() {
   }
 
   public ComponentModel uuid(UUID uuid) {
@@ -99,14 +99,15 @@ public class ComponentModel {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -121,20 +122,20 @@ public class ComponentModel {
     this.uuid = uuid;
   }
 
-
   public ComponentModel name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -149,19 +150,19 @@ public class ComponentModel {
     this.name = name;
   }
 
-
   public ComponentModel data(Object data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,7 +177,6 @@ public class ComponentModel {
     this.data = data;
   }
 
-
   public ComponentModel constraints(List<@Valid ComponentConstraint> constraints) {
     
     this.constraints = constraints;
@@ -184,18 +184,22 @@ public class ComponentModel {
   }
 
   public ComponentModel addConstraintsItem(ComponentConstraint constraintsItem) {
+    if (this.constraints == null) {
+      this.constraints = new ArrayList<>();
+    }
     this.constraints.add(constraintsItem);
     return this;
   }
 
-   /**
+  /**
    * Get constraints
    * @return constraints
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -210,7 +214,6 @@ public class ComponentModel {
     this.constraints = constraints;
   }
 
-
   public ComponentModel layouts(Map<String, SmartLayoutDefinition> layouts) {
     
     this.layouts = layouts;
@@ -222,14 +225,15 @@ public class ComponentModel {
     return this;
   }
 
-   /**
+  /**
    * Get layouts
    * @return layouts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -243,7 +247,6 @@ public class ComponentModel {
   public void setLayouts(Map<String, SmartLayoutDefinition> layouts) {
     this.layouts = layouts;
   }
-
 
   public ComponentModel componentLayouts(Map<String, SmartComponentLayoutDefinition> componentLayouts) {
     
@@ -259,13 +262,14 @@ public class ComponentModel {
     return this;
   }
 
-   /**
+  /**
    * Get componentLayouts
    * @return componentLayouts
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COMPONENT_LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +284,6 @@ public class ComponentModel {
     this.componentLayouts = componentLayouts;
   }
 
-
   public ComponentModel actions(List<@Valid UiAction> actions) {
     
     this.actions = actions;
@@ -288,18 +291,22 @@ public class ComponentModel {
   }
 
   public ComponentModel addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -313,7 +320,6 @@ public class ComponentModel {
   public void setActions(List<@Valid UiAction> actions) {
     this.actions = actions;
   }
-
 
   public ComponentModel valueSets(Map<String, ValueSet> valueSets) {
     
@@ -329,13 +335,14 @@ public class ComponentModel {
     return this;
   }
 
-   /**
+  /**
    * Get valueSets
    * @return valueSets
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_SETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -349,7 +356,6 @@ public class ComponentModel {
   public void setValueSets(Map<String, ValueSet> valueSets) {
     this.valueSets = valueSets;
   }
-
 
   public ComponentModel widgets(List<String> widgets) {
     
@@ -365,12 +371,13 @@ public class ComponentModel {
     return this;
   }
 
-   /**
+  /**
    * List of widgets (widgetIds).
    * @return widgets
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "List of widgets (widgetIds).")
   @JsonProperty(WIDGETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -385,20 +392,20 @@ public class ComponentModel {
     this.widgets = widgets;
   }
 
-
   public ComponentModel style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -413,20 +420,20 @@ public class ComponentModel {
     this.style = style;
   }
 
-
   public ComponentModel parentStyle(Style parentStyle) {
     
     this.parentStyle = parentStyle;
     return this;
   }
 
-   /**
+  /**
    * Get parentStyle
    * @return parentStyle
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARENT_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -440,7 +447,6 @@ public class ComponentModel {
   public void setParentStyle(Style parentStyle) {
     this.parentStyle = parentStyle;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 /**
  * The server request track is an object encapsulates the UiRequest and other parameters of the perform actions. It stands for normal and widget actions also. 
  */
+@Schema(description = "The server request track is an object encapsulates the UiRequest and other parameters of the perform actions. It stands for normal and widget actions also. ")
 @JsonPropertyOrder({
   ServerRequestTrack.VIEW_NAME,
   ServerRequestTrack.VIEW_UUID,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   ServerRequestTrack.REQUEST,
   ServerRequestTrack.TYPE
 })
-@JsonTypeName("ServerRequestTrack")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServerRequestTrack {
   public static final String VIEW_NAME = "viewName";
@@ -86,7 +86,7 @@ public class ServerRequestTrack {
   public static final String TYPE = "type";
   private ServerRequestType type;
 
-  public ServerRequestTrack() { 
+  public ServerRequestTrack() {
   }
 
   public ServerRequestTrack viewName(String viewName) {
@@ -95,13 +95,14 @@ public class ServerRequestTrack {
     return this;
   }
 
-   /**
+  /**
    * The name of the view the request is performed on.
    * @return viewName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the view the request is performed on.")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,21 +117,21 @@ public class ServerRequestTrack {
     this.viewName = viewName;
   }
 
-
   public ServerRequestTrack viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
     return this;
   }
 
-   /**
+  /**
    * The UUID of the view the request is performed on.
    * @return viewUuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The UUID of the view the request is performed on.")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -145,19 +146,19 @@ public class ServerRequestTrack {
     this.viewUuid = viewUuid;
   }
 
-
   public ServerRequestTrack widgetId(String widgetId) {
     
     this.widgetId = widgetId;
     return this;
   }
 
-   /**
+  /**
    * The identifier of the widget if it is a widget action perform.
    * @return widgetId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier of the widget if it is a widget action perform.")
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -172,19 +173,19 @@ public class ServerRequestTrack {
     this.widgetId = widgetId;
   }
 
-
   public ServerRequestTrack nodeId(String nodeId) {
     
     this.nodeId = nodeId;
     return this;
   }
 
-   /**
+  /**
    * The identifier of the widget node if it is a widget action perform.
    * @return nodeId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier of the widget node if it is a widget action perform.")
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -199,21 +200,21 @@ public class ServerRequestTrack {
     this.nodeId = nodeId;
   }
 
-
   public ServerRequestTrack startTime(OffsetDateTime startTime) {
     
     this.startTime = startTime;
     return this;
   }
 
-   /**
+  /**
    * The start of the service.
    * @return startTime
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The start of the service.")
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -228,20 +229,20 @@ public class ServerRequestTrack {
     this.startTime = startTime;
   }
 
-
   public ServerRequestTrack endTime(OffsetDateTime endTime) {
     
     this.endTime = endTime;
     return this;
   }
 
-   /**
+  /**
    * The end of the service.
    * @return endTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The end of the service.")
   @JsonProperty(END_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -256,19 +257,19 @@ public class ServerRequestTrack {
     this.endTime = endTime;
   }
 
-
   public ServerRequestTrack readCount(Long readCount) {
     
     this.readCount = readCount;
     return this;
   }
 
-   /**
+  /**
    * The number of executed reads.
    * @return readCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The number of executed reads.")
   @JsonProperty(READ_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -283,19 +284,19 @@ public class ServerRequestTrack {
     this.readCount = readCount;
   }
 
-
   public ServerRequestTrack readTime(Long readTime) {
     
     this.readTime = readTime;
     return this;
   }
 
-   /**
+  /**
    * The summarized execution time of the reads.
    * @return readTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The summarized execution time of the reads.")
   @JsonProperty(READ_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -310,19 +311,19 @@ public class ServerRequestTrack {
     this.readTime = readTime;
   }
 
-
   public ServerRequestTrack writeCount(Long writeCount) {
     
     this.writeCount = writeCount;
     return this;
   }
 
-   /**
+  /**
    * The number of executed writes.
    * @return writeCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The number of executed writes.")
   @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -337,19 +338,19 @@ public class ServerRequestTrack {
     this.writeCount = writeCount;
   }
 
-
   public ServerRequestTrack writeTime(Long writeTime) {
     
     this.writeTime = writeTime;
     return this;
   }
 
-   /**
+  /**
    * The summarized execution time of the writes.
    * @return writeTime
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The summarized execution time of the writes.")
   @JsonProperty(WRITE_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -364,21 +365,21 @@ public class ServerRequestTrack {
     this.writeTime = writeTime;
   }
 
-
   public ServerRequestTrack request(UiActionRequest request) {
     
     this.request = request;
     return this;
   }
 
-   /**
+  /**
    * Get request
    * @return request
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -393,21 +394,21 @@ public class ServerRequestTrack {
     this.request = request;
   }
 
-
   public ServerRequestTrack type(ServerRequestType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -421,7 +422,6 @@ public class ServerRequestTrack {
   public void setType(ServerRequestType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

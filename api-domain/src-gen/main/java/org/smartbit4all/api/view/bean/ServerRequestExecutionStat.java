@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The server request execution statistic is an object for the actuator infrastructure. It is initiated for every view-widget-action and contains the minimum, average and maximum execution times. It collects from the server start. 
  */
+@Schema(description = "The server request execution statistic is an object for the actuator infrastructure. It is initiated for every view-widget-action and contains the minimum, average and maximum execution times. It collects from the server start. ")
 @JsonPropertyOrder({
   ServerRequestExecutionStat.ID,
   ServerRequestExecutionStat.VIEW_NAME,
@@ -43,7 +44,6 @@ import jakarta.validation.Valid;
   ServerRequestExecutionStat.READ_STAT,
   ServerRequestExecutionStat.TYPE
 })
-@JsonTypeName("ServerRequestExecutionStat")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServerRequestExecutionStat {
   public static final String ID = "id";
@@ -76,7 +76,7 @@ public class ServerRequestExecutionStat {
   public static final String TYPE = "type";
   private ServerRequestType type;
 
-  public ServerRequestExecutionStat() { 
+  public ServerRequestExecutionStat() {
   }
 
   public ServerRequestExecutionStat id(String id) {
@@ -85,12 +85,13 @@ public class ServerRequestExecutionStat {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the statistical entry. The view - widget - action format.
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier of the statistical entry. The view - widget - action format.")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,19 +106,19 @@ public class ServerRequestExecutionStat {
     this.id = id;
   }
 
-
   public ServerRequestExecutionStat viewName(String viewName) {
     
     this.viewName = viewName;
     return this;
   }
 
-   /**
+  /**
    * The name of the view the request is performed on.
    * @return viewName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the view the request is performed on.")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,19 +133,19 @@ public class ServerRequestExecutionStat {
     this.viewName = viewName;
   }
 
-
   public ServerRequestExecutionStat widgetId(String widgetId) {
     
     this.widgetId = widgetId;
     return this;
   }
 
-   /**
+  /**
    * The identifier of the widget if it is a widget action perform.
    * @return widgetId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier of the widget if it is a widget action perform.")
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -159,19 +160,19 @@ public class ServerRequestExecutionStat {
     this.widgetId = widgetId;
   }
 
-
   public ServerRequestExecutionStat actionCode(String actionCode) {
     
     this.actionCode = actionCode;
     return this;
   }
 
-   /**
+  /**
    * The identifier of the action performed.
    * @return actionCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier of the action performed.")
   @JsonProperty(ACTION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -186,20 +187,20 @@ public class ServerRequestExecutionStat {
     this.actionCode = actionCode;
   }
 
-
   public ServerRequestExecutionStat fullStat(StatisticRecord fullStat) {
     
     this.fullStat = fullStat;
     return this;
   }
 
-   /**
+  /**
    * Get fullStat
    * @return fullStat
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -214,20 +215,20 @@ public class ServerRequestExecutionStat {
     this.fullStat = fullStat;
   }
 
-
   public ServerRequestExecutionStat writeCount(StatisticRecord writeCount) {
     
     this.writeCount = writeCount;
     return this;
   }
 
-   /**
+  /**
    * Get writeCount
    * @return writeCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -242,20 +243,20 @@ public class ServerRequestExecutionStat {
     this.writeCount = writeCount;
   }
 
-
   public ServerRequestExecutionStat writeStat(StatisticRecord writeStat) {
     
     this.writeStat = writeStat;
     return this;
   }
 
-   /**
+  /**
    * Get writeStat
    * @return writeStat
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WRITE_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -270,20 +271,20 @@ public class ServerRequestExecutionStat {
     this.writeStat = writeStat;
   }
 
-
   public ServerRequestExecutionStat readCount(StatisticRecord readCount) {
     
     this.readCount = readCount;
     return this;
   }
 
-   /**
+  /**
    * Get readCount
    * @return readCount
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(READ_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -298,20 +299,20 @@ public class ServerRequestExecutionStat {
     this.readCount = readCount;
   }
 
-
   public ServerRequestExecutionStat readStat(StatisticRecord readStat) {
     
     this.readStat = readStat;
     return this;
   }
 
-   /**
+  /**
    * Get readStat
    * @return readStat
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(READ_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -326,20 +327,20 @@ public class ServerRequestExecutionStat {
     this.readStat = readStat;
   }
 
-
   public ServerRequestExecutionStat type(ServerRequestType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -353,7 +354,6 @@ public class ServerRequestExecutionStat {
   public void setType(ServerRequestType type) {
     this.type = type;
   }
-
 
   @Override
   public boolean equals(Object o) {

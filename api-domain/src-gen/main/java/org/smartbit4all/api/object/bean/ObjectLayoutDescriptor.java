@@ -37,13 +37,13 @@ import jakarta.validation.Valid;
 /**
  * Defines the desired layout for displaying a particular object and the various constraints to be enforced on it. 
  */
+@Schema(description = "Defines the desired layout for displaying a particular object and the various constraints to be enforced on it. ")
 @JsonPropertyOrder({
   ObjectLayoutDescriptor.URI,
   ObjectLayoutDescriptor.NAME,
   ObjectLayoutDescriptor.LAYOUTS,
   ObjectLayoutDescriptor.CONSTRAINTS
 })
-@JsonTypeName("ObjectLayoutDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLayoutDescriptor {
   public static final String URI = "uri";
@@ -58,7 +58,7 @@ public class ObjectLayoutDescriptor {
   public static final String CONSTRAINTS = "constraints";
   private List<@Valid ObjectConstraintDescriptor> constraints = new ArrayList<>();
 
-  public ObjectLayoutDescriptor() { 
+  public ObjectLayoutDescriptor() {
   }
 
   public ObjectLayoutDescriptor uri(URI uri) {
@@ -67,14 +67,15 @@ public class ObjectLayoutDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -89,20 +90,20 @@ public class ObjectLayoutDescriptor {
     this.uri = uri;
   }
 
-
   public ObjectLayoutDescriptor name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * A unique string name for the layout descriptor to be used as a key in mappings. 
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "A unique string name for the layout descriptor to be used as a key in mappings. ")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -117,7 +118,6 @@ public class ObjectLayoutDescriptor {
     this.name = name;
   }
 
-
   public ObjectLayoutDescriptor layouts(Map<String, SmartComponentLayoutDefinition> layouts) {
     
     this.layouts = layouts;
@@ -129,14 +129,15 @@ public class ObjectLayoutDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. 
    * @return layouts
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. ")
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -151,7 +152,6 @@ public class ObjectLayoutDescriptor {
     this.layouts = layouts;
   }
 
-
   public ObjectLayoutDescriptor constraints(List<@Valid ObjectConstraintDescriptor> constraints) {
     
     this.constraints = constraints;
@@ -159,18 +159,22 @@ public class ObjectLayoutDescriptor {
   }
 
   public ObjectLayoutDescriptor addConstraintsItem(ObjectConstraintDescriptor constraintsItem) {
+    if (this.constraints == null) {
+      this.constraints = new ArrayList<>();
+    }
     this.constraints.add(constraintsItem);
     return this;
   }
 
-   /**
+  /**
    * The constraints to be enforced for the object&#39;s layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. 
    * @return constraints
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The constraints to be enforced for the object's layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. ")
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -184,7 +188,6 @@ public class ObjectLayoutDescriptor {
   public void setConstraints(List<@Valid ObjectConstraintDescriptor> constraints) {
     this.constraints = constraints;
   }
-
 
   @Override
   public boolean equals(Object o) {

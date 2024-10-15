@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   FilterGroupLabel.LABEL_CODE,
   FilterGroupLabel.ICON_CODE
 })
-@JsonTypeName("FilterGroupLabel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupLabel {
   public static final String LABEL_CODE = "labelCode";
@@ -42,7 +41,7 @@ public class FilterGroupLabel {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
-  public FilterGroupLabel() { 
+  public FilterGroupLabel() {
   }
 
   public FilterGroupLabel labelCode(String labelCode) {
@@ -51,12 +50,13 @@ public class FilterGroupLabel {
     return this;
   }
 
-   /**
+  /**
    * Get labelCode
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +71,19 @@ public class FilterGroupLabel {
     this.labelCode = labelCode;
   }
 
-
   public FilterGroupLabel iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Get iconCode
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +97,6 @@ public class FilterGroupLabel {
   public void setIconCode(String iconCode) {
     this.iconCode = iconCode;
   }
-
 
   @Override
   public boolean equals(Object o) {

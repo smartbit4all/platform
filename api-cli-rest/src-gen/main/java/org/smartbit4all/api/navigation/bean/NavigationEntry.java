@@ -43,7 +43,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NavigationEntry.VIEWS,
   NavigationEntry.ACTIONS
 })
-@JsonTypeName("NavigationEntry")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationEntry {
   public static final String OBJECT_URI = "objectUri";
@@ -65,15 +64,15 @@ public class NavigationEntry {
   private String icon;
 
   public static final String STYLES = "styles";
-  private List<String> styles = null;
+  private List<String> styles = new ArrayList<>();
 
   public static final String VIEWS = "views";
-  private List<NavigationView> views = null;
+  private List<NavigationView> views = new ArrayList<>();
 
   public static final String ACTIONS = "actions";
-  private List<URI> actions = null;
+  private List<URI> actions = new ArrayList<>();
 
-  public NavigationEntry() { 
+  public NavigationEntry() {
   }
 
   public NavigationEntry objectUri(URI objectUri) {
@@ -82,12 +81,12 @@ public class NavigationEntry {
     return this;
   }
 
-   /**
+  /**
    * The URI identifies the so called API object.
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI identifies the so called API object.")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,19 +101,18 @@ public class NavigationEntry {
     this.objectUri = objectUri;
   }
 
-
   public NavigationEntry metaUri(URI metaUri) {
     
     this.metaUri = metaUri;
     return this;
   }
 
-   /**
+  /**
    * The URI identifies the meta object of the entry
    * @return metaUri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI identifies the meta object of the entry")
   @JsonProperty(META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,19 +127,18 @@ public class NavigationEntry {
     this.metaUri = metaUri;
   }
 
-
   public NavigationEntry parentAssocMetaUri(URI parentAssocMetaUri) {
     
     this.parentAssocMetaUri = parentAssocMetaUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the association meta that produces the actual entry.
    * @return parentAssocMetaUri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the association meta that produces the actual entry.")
   @JsonProperty(PARENT_ASSOC_META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -156,19 +153,18 @@ public class NavigationEntry {
     this.parentAssocMetaUri = parentAssocMetaUri;
   }
 
-
   public NavigationEntry parentObjectUri(URI parentObjectUri) {
     
     this.parentObjectUri = parentObjectUri;
     return this;
   }
 
-   /**
+  /**
    * The URI of the parent entry object.
    * @return parentObjectUri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The URI of the parent entry object.")
   @JsonProperty(PARENT_OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,19 +179,18 @@ public class NavigationEntry {
     this.parentObjectUri = parentObjectUri;
   }
 
-
   public NavigationEntry name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * The name of the entry
    * @return name
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the entry")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -210,19 +205,18 @@ public class NavigationEntry {
     this.name = name;
   }
 
-
   public NavigationEntry icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * The name of the icon resource
    * @return icon
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the icon resource")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -236,7 +230,6 @@ public class NavigationEntry {
   public void setIcon(String icon) {
     this.icon = icon;
   }
-
 
   public NavigationEntry styles(List<String> styles) {
     
@@ -252,12 +245,12 @@ public class NavigationEntry {
     return this;
   }
 
-   /**
+  /**
    * The string list of the abstract styles that can be applied to the given entry
    * @return styles
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The string list of the abstract styles that can be applied to the given entry")
   @JsonProperty(STYLES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -271,7 +264,6 @@ public class NavigationEntry {
   public void setStyles(List<String> styles) {
     this.styles = styles;
   }
-
 
   public NavigationEntry views(List<NavigationView> views) {
     
@@ -287,12 +279,12 @@ public class NavigationEntry {
     return this;
   }
 
-   /**
+  /**
    * The string list of the abstract views that are supported by the UI that we have. This view will get the navigation entry as parameter.
    * @return views
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The string list of the abstract views that are supported by the UI that we have. This view will get the navigation entry as parameter.")
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -306,7 +298,6 @@ public class NavigationEntry {
   public void setViews(List<NavigationView> views) {
     this.views = views;
   }
-
 
   public NavigationEntry actions(List<URI> actions) {
     
@@ -322,12 +313,12 @@ public class NavigationEntry {
     return this;
   }
 
-   /**
+  /**
    * The executable actions
    * @return actions
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The executable actions")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -341,7 +332,6 @@ public class NavigationEntry {
   public void setActions(List<URI> actions) {
     this.actions = actions;
   }
-
 
   @Override
   public boolean equals(Object o) {

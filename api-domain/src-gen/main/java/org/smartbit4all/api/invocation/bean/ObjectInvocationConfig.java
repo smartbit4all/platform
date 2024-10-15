@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * It contains and summarizes the list of objects objects interested in an api call. It can encapsulate the objects and the parameters of the call. This object can be saved into an object or can be initiated globally. This object can be used in many situation to save the objects that are interested in an event or an invocation call. It can be used directly as parameter for the InvocationApi to invoke... functions or event publishing also. 
  */
+@Schema(description = "It contains and summarizes the list of objects objects interested in an api call. It can encapsulate the objects and the parameters of the call. This object can be saved into an object or can be initiated globally. This object can be used in many situation to save the objects that are interested in an event or an invocation call. It can be used directly as parameter for the InvocationApi to invoke... functions or event publishing also. ")
 @JsonPropertyOrder({
   ObjectInvocationConfig.URI,
   ObjectInvocationConfig.OBJECT_URIS
 })
-@JsonTypeName("ObjectInvocationConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectInvocationConfig {
   public static final String URI = "uri";
@@ -46,7 +46,7 @@ public class ObjectInvocationConfig {
   public static final String OBJECT_URIS = "objectUris";
   private List<URI> objectUris = new ArrayList<>();
 
-  public ObjectInvocationConfig() { 
+  public ObjectInvocationConfig() {
   }
 
   public ObjectInvocationConfig uri(URI uri) {
@@ -55,14 +55,15 @@ public class ObjectInvocationConfig {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +78,6 @@ public class ObjectInvocationConfig {
     this.uri = uri;
   }
 
-
   public ObjectInvocationConfig objectUris(List<URI> objectUris) {
     
     this.objectUris = objectUris;
@@ -85,18 +85,22 @@ public class ObjectInvocationConfig {
   }
 
   public ObjectInvocationConfig addObjectUrisItem(URI objectUrisItem) {
+    if (this.objectUris == null) {
+      this.objectUris = new ArrayList<>();
+    }
     this.objectUris.add(objectUrisItem);
     return this;
   }
 
-   /**
+  /**
    * The event codes the subscription is looking for. All these event are going to evaluated by this subsription object. 
    * @return objectUris
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The event codes the subscription is looking for. All these event are going to evaluated by this subsription object. ")
   @JsonProperty(OBJECT_URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +114,6 @@ public class ObjectInvocationConfig {
   public void setObjectUris(List<URI> objectUris) {
     this.objectUris = objectUris;
   }
-
 
   @Override
   public boolean equals(Object o) {

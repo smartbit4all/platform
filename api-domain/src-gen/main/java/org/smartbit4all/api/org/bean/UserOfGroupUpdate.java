@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
   UserOfGroupUpdate.USER,
   UserOfGroupUpdate.OPERATION
 })
-@JsonTypeName("UserOfGroupUpdate")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserOfGroupUpdate {
   public static final String URI = "uri";
@@ -54,7 +53,7 @@ public class UserOfGroupUpdate {
   public static final String OPERATION = "operation";
   private BulkUpdateOperation operation;
 
-  public UserOfGroupUpdate() { 
+  public UserOfGroupUpdate() {
   }
 
   public UserOfGroupUpdate uri(URI uri) {
@@ -63,13 +62,14 @@ public class UserOfGroupUpdate {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,20 +84,20 @@ public class UserOfGroupUpdate {
     this.uri = uri;
   }
 
-
   public UserOfGroupUpdate group(Group group) {
     
     this.group = group;
     return this;
   }
 
-   /**
+  /**
    * Get group
    * @return group
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,20 +112,20 @@ public class UserOfGroupUpdate {
     this.group = group;
   }
 
-
   public UserOfGroupUpdate user(User user) {
     
     this.user = user;
     return this;
   }
 
-   /**
+  /**
    * Get user
    * @return user
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,20 +140,20 @@ public class UserOfGroupUpdate {
     this.user = user;
   }
 
-
   public UserOfGroupUpdate operation(BulkUpdateOperation operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * Get operation
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +167,6 @@ public class UserOfGroupUpdate {
   public void setOperation(BulkUpdateOperation operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

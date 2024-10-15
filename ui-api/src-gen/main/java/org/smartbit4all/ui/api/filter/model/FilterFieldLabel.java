@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
   FilterFieldLabel.POSITION,
   FilterFieldLabel.DUPLICATE_NUM
 })
-@JsonTypeName("FilterFieldLabel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldLabel {
   public static final String CODE = "code";
@@ -47,7 +46,7 @@ public class FilterFieldLabel {
   public static final String DUPLICATE_NUM = "duplicateNum";
   private Integer duplicateNum = 0;
 
-  public FilterFieldLabel() { 
+  public FilterFieldLabel() {
   }
 
   public FilterFieldLabel code(String code) {
@@ -56,12 +55,13 @@ public class FilterFieldLabel {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,20 +76,20 @@ public class FilterFieldLabel {
     this.code = code;
   }
 
-
   public FilterFieldLabel position(FilterLabelPosition position) {
     
     this.position = position;
     return this;
   }
 
-   /**
+  /**
    * Get position
    * @return position
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +104,19 @@ public class FilterFieldLabel {
     this.position = position;
   }
 
-
   public FilterFieldLabel duplicateNum(Integer duplicateNum) {
     
     this.duplicateNum = duplicateNum;
     return this;
   }
 
-   /**
+  /**
    * Get duplicateNum
    * @return duplicateNum
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DUPLICATE_NUM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +130,6 @@ public class FilterFieldLabel {
   public void setDuplicateNum(Integer duplicateNum) {
     this.duplicateNum = duplicateNum;
   }
-
 
   @Override
   public boolean equals(Object o) {

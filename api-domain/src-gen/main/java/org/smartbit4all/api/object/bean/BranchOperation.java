@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * The data of the operation in a branch. 
  */
+@Schema(description = "The data of the operation in a branch. ")
 @JsonPropertyOrder({
   BranchOperation.SOURCE_URI,
   BranchOperation.TARGET_URI,
@@ -38,7 +39,6 @@ import jakarta.validation.Valid;
   BranchOperation.EXECUTED_AT,
   BranchOperation.OPERATION
 })
-@JsonTypeName("BranchOperation")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchOperation {
   public static final String SOURCE_URI = "sourceUri";
@@ -95,7 +95,7 @@ public class BranchOperation {
   public static final String OPERATION = "operation";
   private String operation;
 
-  public BranchOperation() { 
+  public BranchOperation() {
   }
 
   public BranchOperation sourceUri(URI sourceUri) {
@@ -104,14 +104,15 @@ public class BranchOperation {
     return this;
   }
 
-   /**
+  /**
    * Get sourceUri
    * @return sourceUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SOURCE_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -126,21 +127,21 @@ public class BranchOperation {
     this.sourceUri = sourceUri;
   }
 
-
   public BranchOperation targetUri(URI targetUri) {
     
     this.targetUri = targetUri;
     return this;
   }
 
-   /**
+  /**
    * Get targetUri
    * @return targetUri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TARGET_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -155,20 +156,20 @@ public class BranchOperation {
     this.targetUri = targetUri;
   }
 
-
   public BranchOperation operationType(OperationTypeEnum operationType) {
     
     this.operationType = operationType;
     return this;
   }
 
-   /**
+  /**
    * Get operationType
    * @return operationType
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATION_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -183,20 +184,20 @@ public class BranchOperation {
     this.operationType = operationType;
   }
 
-
   public BranchOperation executedAt(UserActivityLog executedAt) {
     
     this.executedAt = executedAt;
     return this;
   }
 
-   /**
+  /**
    * Get executedAt
    * @return executedAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXECUTED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,19 +212,19 @@ public class BranchOperation {
     this.executedAt = executedAt;
   }
 
-
   public BranchOperation operation(String operation) {
     
     this.operation = operation;
     return this;
   }
 
-   /**
+  /**
    * The Api and the operation that was created the given version of the object.
    * @return operation
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The Api and the operation that was created the given version of the object.")
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -237,7 +238,6 @@ public class BranchOperation {
   public void setOperation(String operation) {
     this.operation = operation;
   }
-
 
   @Override
   public boolean equals(Object o) {

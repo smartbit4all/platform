@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * This object is a history object that is saved when a modification is archived from the active modification list. The archived  
  */
+@Schema(description = "This object is a history object that is saved when a modification is archived from the active modification list. The archived  ")
 @JsonPropertyOrder({
   MDMModificationArchive.URI,
   MDMModificationArchive.MODIFICATION,
   MDMModificationArchive.ARCHIVAL
 })
-@JsonTypeName("MDMModificationArchive")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMModificationArchive {
   public static final String URI = "uri";
@@ -49,7 +49,7 @@ public class MDMModificationArchive {
   public static final String ARCHIVAL = "archival";
   private UserActivityLog archival = null;
 
-  public MDMModificationArchive() { 
+  public MDMModificationArchive() {
   }
 
   public MDMModificationArchive uri(URI uri) {
@@ -58,13 +58,14 @@ public class MDMModificationArchive {
     return this;
   }
 
-   /**
+  /**
    * The uri of the object.
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the object.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +80,20 @@ public class MDMModificationArchive {
     this.uri = uri;
   }
 
-
   public MDMModificationArchive modification(MDMModification modification) {
     
     this.modification = modification;
     return this;
   }
 
-   /**
+  /**
    * Get modification
    * @return modification
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MODIFICATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +108,20 @@ public class MDMModificationArchive {
     this.modification = modification;
   }
 
-
   public MDMModificationArchive archival(UserActivityLog archival) {
     
     this.archival = archival;
     return this;
   }
 
-   /**
+  /**
    * The user and the time of the archival.
    * @return archival
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The user and the time of the archival.")
   @JsonProperty(ARCHIVAL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +135,6 @@ public class MDMModificationArchive {
   public void setArchival(UserActivityLog archival) {
     this.archival = archival;
   }
-
 
   @Override
   public boolean equals(Object o) {

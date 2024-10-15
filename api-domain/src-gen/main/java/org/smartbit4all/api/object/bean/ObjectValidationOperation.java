@@ -32,13 +32,13 @@ import jakarta.validation.Valid;
 /**
  * A named validation operation.  Instances of this type are managed by the system MD management. They bear a unique name and define a target type (on which the actual validation request definition shall be executed).  The embedded InvocationRequestDefinition may be invoked with an object of the target type as its first argument and an arbitrary number of additional arguments (specific to the  validation operation itself).  All embedded invocation request definitions are required to return with an  ObjectValidationResult. 
  */
+@Schema(description = "A named validation operation.  Instances of this type are managed by the system MD management. They bear a unique name and define a target type (on which the actual validation request definition shall be executed).  The embedded InvocationRequestDefinition may be invoked with an object of the target type as its first argument and an arbitrary number of additional arguments (specific to the  validation operation itself).  All embedded invocation request definitions are required to return with an  ObjectValidationResult. ")
 @JsonPropertyOrder({
   ObjectValidationOperation.URI,
   ObjectValidationOperation.CODE,
   ObjectValidationOperation.NAME,
   ObjectValidationOperation.VALIDATION_REQUEST
 })
-@JsonTypeName("ObjectValidationOperation")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationOperation {
   public static final String URI = "uri";
@@ -53,7 +53,7 @@ public class ObjectValidationOperation {
   public static final String VALIDATION_REQUEST = "validationRequest";
   private InvocationRequestDefinition validationRequest = null;
 
-  public ObjectValidationOperation() { 
+  public ObjectValidationOperation() {
   }
 
   public ObjectValidationOperation uri(URI uri) {
@@ -62,13 +62,14 @@ public class ObjectValidationOperation {
     return this;
   }
 
-   /**
+  /**
    * Unique persistence identifier.
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Unique persistence identifier.")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +84,19 @@ public class ObjectValidationOperation {
     this.uri = uri;
   }
 
-
   public ObjectValidationOperation code(String code) {
     
     this.code = code;
     return this;
   }
 
-   /**
+  /**
    * Unique identifier in masterdata management.
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Unique identifier in masterdata management.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,20 +111,20 @@ public class ObjectValidationOperation {
     this.code = code;
   }
 
-
   public ObjectValidationOperation name(LangString name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,20 +139,20 @@ public class ObjectValidationOperation {
     this.name = name;
   }
 
-
   public ObjectValidationOperation validationRequest(InvocationRequestDefinition validationRequest) {
     
     this.validationRequest = validationRequest;
     return this;
   }
 
-   /**
+  /**
    * Get validationRequest
    * @return validationRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALIDATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +166,6 @@ public class ObjectValidationOperation {
   public void setValidationRequest(InvocationRequestDefinition validationRequest) {
     this.validationRequest = validationRequest;
   }
-
 
   @Override
   public boolean equals(Object o) {

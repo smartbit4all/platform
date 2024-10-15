@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The resolver is responsibe for defining the data uri for a given invocation parameter.
  */
+@Schema(description = "The resolver is responsibe for defining the data uri for a given invocation parameter.")
 @JsonPropertyOrder({
   InvocationParameterResolver.NAME,
   InvocationParameterResolver.POSITION,
   InvocationParameterResolver.PROPERTY_URI
 })
-@JsonTypeName("InvocationParameterResolver")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationParameterResolver {
   public static final String NAME = "name";
@@ -47,7 +47,7 @@ public class InvocationParameterResolver {
   public static final String PROPERTY_URI = "propertyUri";
   private URI propertyUri;
 
-  public InvocationParameterResolver() { 
+  public InvocationParameterResolver() {
   }
 
   public InvocationParameterResolver name(String name) {
@@ -56,12 +56,13 @@ public class InvocationParameterResolver {
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,19 +77,19 @@ public class InvocationParameterResolver {
     this.name = name;
   }
 
-
   public InvocationParameterResolver position(Integer position) {
     
     this.position = position;
     return this;
   }
 
-   /**
+  /**
    * Get position
    * @return position
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,20 +104,20 @@ public class InvocationParameterResolver {
     this.position = position;
   }
 
-
   public InvocationParameterResolver propertyUri(URI propertyUri) {
     
     this.propertyUri = propertyUri;
     return this;
   }
 
-   /**
+  /**
    * The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. 
    * @return propertyUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(example = "state:/object/otherobject#property", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. ")
   @JsonProperty(PROPERTY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class InvocationParameterResolver {
   public void setPropertyUri(URI propertyUri) {
     this.propertyUri = propertyUri;
   }
-
 
   @Override
   public boolean equals(Object o) {

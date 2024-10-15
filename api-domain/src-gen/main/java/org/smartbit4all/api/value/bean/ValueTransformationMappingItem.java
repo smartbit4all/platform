@@ -29,11 +29,11 @@ import jakarta.validation.Valid;
 /**
  * The mapping item contains a source value and a target value object pair. Even the source and the target could be object also. In this case we save the JSON object. 
  */
+@Schema(description = "The mapping item contains a source value and a target value object pair. Even the source and the target could be object also. In this case we save the JSON object. ")
 @JsonPropertyOrder({
   ValueTransformationMappingItem.SOURCE_VALUE,
   ValueTransformationMappingItem.TARGET_VALUE
 })
-@JsonTypeName("ValueTransformationMappingItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationMappingItem {
   public static final String SOURCE_VALUE = "sourceValue";
@@ -42,7 +42,7 @@ public class ValueTransformationMappingItem {
   public static final String TARGET_VALUE = "targetValue";
   private Object targetValue;
 
-  public ValueTransformationMappingItem() { 
+  public ValueTransformationMappingItem() {
   }
 
   public ValueTransformationMappingItem sourceValue(Object sourceValue) {
@@ -51,12 +51,13 @@ public class ValueTransformationMappingItem {
     return this;
   }
 
-   /**
+  /**
    * Get sourceValue
    * @return sourceValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -71,19 +72,19 @@ public class ValueTransformationMappingItem {
     this.sourceValue = sourceValue;
   }
 
-
   public ValueTransformationMappingItem targetValue(Object targetValue) {
     
     this.targetValue = targetValue;
     return this;
   }
 
-   /**
+  /**
    * Get targetValue
    * @return targetValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TARGET_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +98,6 @@ public class ValueTransformationMappingItem {
   public void setTargetValue(Object targetValue) {
     this.targetValue = targetValue;
   }
-
 
   @Override
   public boolean equals(Object o) {

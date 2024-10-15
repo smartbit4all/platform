@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * A list of subjects belongs to a given subject model. 
  */
+@Schema(description = "A list of subjects belongs to a given subject model. ")
 @JsonPropertyOrder({
   SubjectList.MODEL,
   SubjectList.ITEMS
 })
-@JsonTypeName("SubjectList")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectList {
   public static final String MODEL = "model";
@@ -46,7 +46,7 @@ public class SubjectList {
   public static final String ITEMS = "items";
   private List<@Valid Subject> items = new ArrayList<>();
 
-  public SubjectList() { 
+  public SubjectList() {
   }
 
   public SubjectList model(String model) {
@@ -55,13 +55,14 @@ public class SubjectList {
     return this;
   }
 
-   /**
+  /**
    * The name of the subject model. 
    * @return model
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the subject model. ")
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -76,7 +77,6 @@ public class SubjectList {
     this.model = model;
   }
 
-
   public SubjectList items(List<@Valid Subject> items) {
     
     this.items = items;
@@ -84,18 +84,22 @@ public class SubjectList {
   }
 
   public SubjectList addItemsItem(Subject itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
     this.items.add(itemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get items
    * @return items
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +113,6 @@ public class SubjectList {
   public void setItems(List<@Valid Subject> items) {
     this.items = items;
   }
-
 
   @Override
   public boolean equals(Object o) {

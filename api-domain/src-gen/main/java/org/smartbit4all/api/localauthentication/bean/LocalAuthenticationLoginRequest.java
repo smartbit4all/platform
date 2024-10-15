@@ -33,7 +33,6 @@ import jakarta.validation.Valid;
   LocalAuthenticationLoginRequest.USERNAME,
   LocalAuthenticationLoginRequest.PASSWORD
 })
-@JsonTypeName("LocalAuthenticationLoginRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class LocalAuthenticationLoginRequest {
   public static final String USERNAME = "username";
@@ -42,7 +41,7 @@ public class LocalAuthenticationLoginRequest {
   public static final String PASSWORD = "password";
   private String password;
 
-  public LocalAuthenticationLoginRequest() { 
+  public LocalAuthenticationLoginRequest() {
   }
 
   public LocalAuthenticationLoginRequest username(String username) {
@@ -51,13 +50,14 @@ public class LocalAuthenticationLoginRequest {
     return this;
   }
 
-   /**
+  /**
    * Get username
    * @return username
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -72,20 +72,20 @@ public class LocalAuthenticationLoginRequest {
     this.username = username;
   }
 
-
   public LocalAuthenticationLoginRequest password(String password) {
     
     this.password = password;
     return this;
   }
 
-   /**
+  /**
    * Get password
    * @return password
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PASSWORD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -99,7 +99,6 @@ public class LocalAuthenticationLoginRequest {
   public void setPassword(String password) {
     this.password = password;
   }
-
 
   @Override
   public boolean equals(Object o) {

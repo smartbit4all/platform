@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * The branched object reference is a reference to an object. It always has an identifier that is the uri if the object is saved on its own. In case of the contained objects it can be a property of the object and if it is a value as a value then the identifier is  the value itself. 
  */
+@Schema(description = "The branched object reference is a reference to an object. It always has an identifier that is the uri if the object is saved on its own. In case of the contained objects it can be a property of the object and if it is a value as a value then the identifier is  the value itself. ")
 @JsonPropertyOrder({
   BranchedObjectReference.IDENTIFIER,
   BranchedObjectReference.REFERENCE_TYPE,
   BranchedObjectReference.OBJECT_AS_VALUE
 })
-@JsonTypeName("BranchedObjectReference")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObjectReference {
   public static final String IDENTIFIER = "identifier";
@@ -83,7 +83,7 @@ public class BranchedObjectReference {
   public static final String OBJECT_AS_VALUE = "objectAsValue";
   private Object objectAsValue;
 
-  public BranchedObjectReference() { 
+  public BranchedObjectReference() {
   }
 
   public BranchedObjectReference identifier(String identifier) {
@@ -92,13 +92,14 @@ public class BranchedObjectReference {
     return this;
   }
 
-   /**
+  /**
    * The stringified version of the identifier.
    * @return identifier
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The stringified version of the identifier.")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,19 +114,19 @@ public class BranchedObjectReference {
     this.identifier = identifier;
   }
 
-
   public BranchedObjectReference referenceType(ReferenceTypeEnum referenceType) {
     
     this.referenceType = referenceType;
     return this;
   }
 
-   /**
+  /**
    * Get referenceType
    * @return referenceType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFERENCE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,19 +141,19 @@ public class BranchedObjectReference {
     this.referenceType = referenceType;
   }
 
-
   public BranchedObjectReference objectAsValue(Object objectAsValue) {
     
     this.objectAsValue = objectAsValue;
     return this;
   }
 
-   /**
+  /**
    * If the reference is an object then we store the object as is in this value. It is necessary because the object is contained so it is the only way to access a deleted object for example. 
    * @return objectAsValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the reference is an object then we store the object as is in this value. It is necessary because the object is contained so it is the only way to access a deleted object for example. ")
   @JsonProperty(OBJECT_AS_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,7 +167,6 @@ public class BranchedObjectReference {
   public void setObjectAsValue(Object objectAsValue) {
     this.objectAsValue = objectAsValue;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -35,16 +35,15 @@ import jakarta.validation.Valid;
   AuthenticationProviderData.KIND,
   AuthenticationProviderData.PARAMETERS
 })
-@JsonTypeName("AuthenticationProviderData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AuthenticationProviderData {
   public static final String KIND = "kind";
   private String kind;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, String> parameters = null;
+  private Map<String, String> parameters = new HashMap<>();
 
-  public AuthenticationProviderData() { 
+  public AuthenticationProviderData() {
   }
 
   public AuthenticationProviderData kind(String kind) {
@@ -53,13 +52,14 @@ public class AuthenticationProviderData {
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -73,7 +73,6 @@ public class AuthenticationProviderData {
   public void setKind(String kind) {
     this.kind = kind;
   }
-
 
   public AuthenticationProviderData parameters(Map<String, String> parameters) {
     
@@ -89,12 +88,13 @@ public class AuthenticationProviderData {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +108,6 @@ public class AuthenticationProviderData {
   public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

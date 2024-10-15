@@ -31,13 +31,13 @@ import jakarta.validation.Valid;
 /**
  * A request to perform user action initiated on the client interface
  */
+@Schema(description = "A request to perform user action initiated on the client interface")
 @JsonPropertyOrder({
   UiActionRequest.CODE,
   UiActionRequest.PATH,
   UiActionRequest.IDENTIFIER,
   UiActionRequest.PARAMS
 })
-@JsonTypeName("UiActionRequest")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionRequest {
   public static final String CODE = "code";
@@ -52,7 +52,7 @@ public class UiActionRequest {
   public static final String PARAMS = "params";
   private Map<String, Object> params = new HashMap<>();
 
-  public UiActionRequest() { 
+  public UiActionRequest() {
   }
 
   public UiActionRequest code(String code) {
@@ -61,13 +61,14 @@ public class UiActionRequest {
     return this;
   }
 
-   /**
+  /**
    * Code of the executed UI action.
    * @return code
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Code of the executed UI action.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,19 +83,19 @@ public class UiActionRequest {
     this.code = code;
   }
 
-
   public UiActionRequest path(String path) {
     
     this.path = path;
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,19 +110,19 @@ public class UiActionRequest {
     this.path = path;
   }
 
-
   public UiActionRequest identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Identifier of UI element, or UI action, where action is performed (for example treeNode&#39;s /  listItem&#39;s identifier, etc.). Optional. 
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of UI element, or UI action, where action is performed (for example treeNode's /  listItem's identifier, etc.). Optional. ")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,7 +137,6 @@ public class UiActionRequest {
     this.identifier = identifier;
   }
 
-
   public UiActionRequest params(Map<String, Object> params) {
     
     this.params = params;
@@ -148,13 +148,14 @@ public class UiActionRequest {
     return this;
   }
 
-   /**
+  /**
    * Additional parameters for executing the UI action. 
    * @return params
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Additional parameters for executing the UI action. ")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -168,7 +169,6 @@ public class UiActionRequest {
   public void setParams(Map<String, Object> params) {
     this.params = params;
   }
-
 
   @Override
   public boolean equals(Object o) {

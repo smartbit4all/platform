@@ -37,13 +37,13 @@ import jakarta.validation.Valid;
 /**
  * All information regarding opening a view (and possible it&#39;s parents).
  */
+@Schema(description = "All information regarding opening a view (and possible it's parents).")
 @JsonPropertyOrder({
   OpenPendingData.VIEWS_TO_OPEN,
   OpenPendingData.VIEWS_TO_CLOSE,
   OpenPendingData.RESULTS,
   OpenPendingData.CLOSED_CHILDREN
 })
-@JsonTypeName("OpenPendingData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OpenPendingData {
   public static final String VIEWS_TO_OPEN = "viewsToOpen";
@@ -58,7 +58,7 @@ public class OpenPendingData {
   public static final String CLOSED_CHILDREN = "closedChildren";
   private Map<String, View> closedChildren = new HashMap<>();
 
-  public OpenPendingData() { 
+  public OpenPendingData() {
   }
 
   public OpenPendingData viewsToOpen(List<UUID> viewsToOpen) {
@@ -68,18 +68,22 @@ public class OpenPendingData {
   }
 
   public OpenPendingData addViewsToOpenItem(UUID viewsToOpenItem) {
+    if (this.viewsToOpen == null) {
+      this.viewsToOpen = new ArrayList<>();
+    }
     this.viewsToOpen.add(viewsToOpenItem);
     return this;
   }
 
-   /**
+  /**
    * Get viewsToOpen
    * @return viewsToOpen
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEWS_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -94,7 +98,6 @@ public class OpenPendingData {
     this.viewsToOpen = viewsToOpen;
   }
 
-
   public OpenPendingData viewsToClose(List<UUID> viewsToClose) {
     
     this.viewsToClose = viewsToClose;
@@ -102,18 +105,22 @@ public class OpenPendingData {
   }
 
   public OpenPendingData addViewsToCloseItem(UUID viewsToCloseItem) {
+    if (this.viewsToClose == null) {
+      this.viewsToClose = new ArrayList<>();
+    }
     this.viewsToClose.add(viewsToCloseItem);
     return this;
   }
 
-   /**
+  /**
    * Get viewsToClose
    * @return viewsToClose
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEWS_TO_CLOSE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -128,7 +135,6 @@ public class OpenPendingData {
     this.viewsToClose = viewsToClose;
   }
 
-
   public OpenPendingData results(Map<String, CloseResult> results) {
     
     this.results = results;
@@ -140,14 +146,15 @@ public class OpenPendingData {
     return this;
   }
 
-   /**
+  /**
    * Get results
    * @return results
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -162,7 +169,6 @@ public class OpenPendingData {
     this.results = results;
   }
 
-
   public OpenPendingData closedChildren(Map<String, View> closedChildren) {
     
     this.closedChildren = closedChildren;
@@ -174,14 +180,15 @@ public class OpenPendingData {
     return this;
   }
 
-   /**
+  /**
    * This map holds the &#39;used&#39; closed children which should be restored on reject.
    * @return closedChildren
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "This map holds the 'used' closed children which should be restored on reject.")
   @JsonProperty(CLOSED_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -195,7 +202,6 @@ public class OpenPendingData {
   public void setClosedChildren(Map<String, View> closedChildren) {
     this.closedChildren = closedChildren;
   }
-
 
   @Override
   public boolean equals(Object o) {

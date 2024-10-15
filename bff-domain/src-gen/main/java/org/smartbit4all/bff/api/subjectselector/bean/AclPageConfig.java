@@ -44,7 +44,6 @@ import jakarta.validation.Valid;
   AclPageConfig.SAVE_DIRECTLY,
   AclPageConfig.LOAD_EXACT_VERSION
 })
-@JsonTypeName("AclPageConfig")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AclPageConfig {
   public static final String ACL_OBJECT_URI_PARAM = "aclObjectUriParam";
@@ -71,7 +70,7 @@ public class AclPageConfig {
   public static final String LOAD_EXACT_VERSION = "loadExactVersion";
   private Boolean loadExactVersion = false;
 
-  public AclPageConfig() { 
+  public AclPageConfig() {
   }
 
   public AclPageConfig aclObjectUriParam(String aclObjectUriParam) {
@@ -80,12 +79,13 @@ public class AclPageConfig {
     return this;
   }
 
-   /**
+  /**
    * Get aclObjectUriParam
    * @return aclObjectUriParam
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACL_OBJECT_URI_PARAM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,19 +100,19 @@ public class AclPageConfig {
     this.aclObjectUriParam = aclObjectUriParam;
   }
 
-
   public AclPageConfig subjectModel(String subjectModel) {
     
     this.subjectModel = subjectModel;
     return this;
   }
 
-   /**
+  /**
    * Get subjectModel
    * @return subjectModel
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,19 +127,19 @@ public class AclPageConfig {
     this.subjectModel = subjectModel;
   }
 
-
   public AclPageConfig subjectSelectorViewName(String subjectSelectorViewName) {
     
     this.subjectSelectorViewName = subjectSelectorViewName;
     return this;
   }
 
-   /**
+  /**
    * Get subjectSelectorViewName
    * @return subjectSelectorViewName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,19 +154,19 @@ public class AclPageConfig {
     this.subjectSelectorViewName = subjectSelectorViewName;
   }
 
-
   public AclPageConfig userSelectorViewName(String userSelectorViewName) {
     
     this.userSelectorViewName = userSelectorViewName;
     return this;
   }
 
-   /**
+  /**
    * Get userSelectorViewName
    * @return userSelectorViewName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(USER_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,20 +181,20 @@ public class AclPageConfig {
     this.userSelectorViewName = userSelectorViewName;
   }
 
-
   public AclPageConfig selectionCallback(InvocationRequest selectionCallback) {
     
     this.selectionCallback = selectionCallback;
     return this;
   }
 
-   /**
+  /**
    * Get selectionCallback
    * @return selectionCallback
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_CALLBACK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -209,7 +209,6 @@ public class AclPageConfig {
     this.selectionCallback = selectionCallback;
   }
 
-
   public AclPageConfig gridConfigs(List<@Valid AclGridConfig> gridConfigs) {
     
     this.gridConfigs = gridConfigs;
@@ -217,18 +216,22 @@ public class AclPageConfig {
   }
 
   public AclPageConfig addGridConfigsItem(AclGridConfig gridConfigsItem) {
+    if (this.gridConfigs == null) {
+      this.gridConfigs = new ArrayList<>();
+    }
     this.gridConfigs.add(gridConfigsItem);
     return this;
   }
 
-   /**
+  /**
    * Get gridConfigs
    * @return gridConfigs
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GRID_CONFIGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -243,19 +246,19 @@ public class AclPageConfig {
     this.gridConfigs = gridConfigs;
   }
 
-
   public AclPageConfig saveDirectly(Boolean saveDirectly) {
     
     this.saveDirectly = saveDirectly;
     return this;
   }
 
-   /**
+  /**
    * If true then changes to ACLObject will be saved on user action, implicitly. If false,  original ACLObject is handled in a view variable and can be saved explicitly. 
    * @return saveDirectly
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true then changes to ACLObject will be saved on user action, implicitly. If false,  original ACLObject is handled in a view variable and can be saved explicitly. ")
   @JsonProperty(SAVE_DIRECTLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -270,19 +273,19 @@ public class AclPageConfig {
     this.saveDirectly = saveDirectly;
   }
 
-
   public AclPageConfig loadExactVersion(Boolean loadExactVersion) {
     
     this.loadExactVersion = loadExactVersion;
     return this;
   }
 
-   /**
+  /**
    * Specifies if the ACLObject should be loaded by exact version (true) or latest (false). Note that true should be used with read only pages! 
    * @return loadExactVersion
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Specifies if the ACLObject should be loaded by exact version (true) or latest (false). Note that true should be used with read only pages! ")
   @JsonProperty(LOAD_EXACT_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -296,7 +299,6 @@ public class AclPageConfig {
   public void setLoadExactVersion(Boolean loadExactVersion) {
     this.loadExactVersion = loadExactVersion;
   }
-
 
   @Override
   public boolean equals(Object o) {

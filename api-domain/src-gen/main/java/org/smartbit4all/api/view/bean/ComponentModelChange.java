@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * Change of a ComponentModel. 
  */
+@Schema(description = "Change of a ComponentModel. ")
 @JsonPropertyOrder({
   ComponentModelChange.UUID,
   ComponentModelChange.PATH,
@@ -42,7 +43,6 @@ import jakarta.validation.Valid;
   ComponentModelChange.CHANGES,
   ComponentModelChange.CHANGED_WIDGETS
 })
-@JsonTypeName("ComponentModelChange")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ComponentModelChange {
   public static final String UUID = "uuid";
@@ -58,9 +58,9 @@ public class ComponentModelChange {
   private Map<String, Object> changes = new HashMap<>();
 
   public static final String CHANGED_WIDGETS = "changedWidgets";
-  private List<String> changedWidgets = null;
+  private List<String> changedWidgets = new ArrayList<>();
 
-  public ComponentModelChange() { 
+  public ComponentModelChange() {
   }
 
   public ComponentModelChange uuid(UUID uuid) {
@@ -69,14 +69,15 @@ public class ComponentModelChange {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -91,20 +92,20 @@ public class ComponentModelChange {
     this.uuid = uuid;
   }
 
-
   public ComponentModelChange path(String path) {
     
     this.path = path;
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -119,19 +120,19 @@ public class ComponentModelChange {
     this.path = path;
   }
 
-
   public ComponentModelChange value(Object value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,7 +147,6 @@ public class ComponentModelChange {
     this.value = value;
   }
 
-
   public ComponentModelChange changes(Map<String, Object> changes) {
     
     this.changes = changes;
@@ -158,13 +158,14 @@ public class ComponentModelChange {
     return this;
   }
 
-   /**
+  /**
    * Changed values, in a key-value map. Refers to different parts of ComponentModel, for example  data changes are prefixed with &#39;data.&#39;, layout changes with &#39;layouts.&#39;, etc. 
    * @return changes
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Changed values, in a key-value map. Refers to different parts of ComponentModel, for example  data changes are prefixed with 'data.', layout changes with 'layouts.', etc. ")
   @JsonProperty(CHANGES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -178,7 +179,6 @@ public class ComponentModelChange {
   public void setChanges(Map<String, Object> changes) {
     this.changes = changes;
   }
-
 
   public ComponentModelChange changedWidgets(List<String> changedWidgets) {
     
@@ -194,12 +194,13 @@ public class ComponentModelChange {
     return this;
   }
 
-   /**
+  /**
    * List of changed widgets (widgetIds).
    * @return changedWidgets
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "List of changed widgets (widgetIds).")
   @JsonProperty(CHANGED_WIDGETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -213,7 +214,6 @@ public class ComponentModelChange {
   public void setChangedWidgets(List<String> changedWidgets) {
     this.changedWidgets = changedWidgets;
   }
-
 
   @Override
   public boolean equals(Object o) {

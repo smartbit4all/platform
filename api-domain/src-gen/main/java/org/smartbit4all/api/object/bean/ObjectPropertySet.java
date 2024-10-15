@@ -32,11 +32,11 @@ import jakarta.validation.Valid;
 /**
  * This is a mapping definition that describes the mapping between two domain object. 
  */
+@Schema(description = "This is a mapping definition that describes the mapping between two domain object. ")
 @JsonPropertyOrder({
   ObjectPropertySet.TYPE_QUALIFIED_NAME,
   ObjectPropertySet.PROPERTIES
 })
-@JsonTypeName("ObjectPropertySet")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertySet {
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
@@ -45,7 +45,7 @@ public class ObjectPropertySet {
   public static final String PROPERTIES = "properties";
   private List<List<String>> properties = new ArrayList<>();
 
-  public ObjectPropertySet() { 
+  public ObjectPropertySet() {
   }
 
   public ObjectPropertySet typeQualifiedName(String typeQualifiedName) {
@@ -54,12 +54,13 @@ public class ObjectPropertySet {
     return this;
   }
 
-   /**
+  /**
    * Get typeQualifiedName
    * @return typeQualifiedName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -74,7 +75,6 @@ public class ObjectPropertySet {
     this.typeQualifiedName = typeQualifiedName;
   }
 
-
   public ObjectPropertySet properties(List<List<String>> properties) {
     
     this.properties = properties;
@@ -82,18 +82,22 @@ public class ObjectPropertySet {
   }
 
   public ObjectPropertySet addPropertiesItem(List<String> propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new ArrayList<>();
+    }
     this.properties.add(propertiesItem);
     return this;
   }
 
-   /**
+  /**
    * Get properties
    * @return properties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -107,7 +111,6 @@ public class ObjectPropertySet {
   public void setProperties(List<List<String>> properties) {
     this.properties = properties;
   }
-
 
   @Override
   public boolean equals(Object o) {

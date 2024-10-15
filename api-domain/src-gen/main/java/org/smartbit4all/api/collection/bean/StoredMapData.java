@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * The contained storage object for the StoredMap that contains the data as a map of URI mapped by string. 
  */
+@Schema(description = "The contained storage object for the StoredMap that contains the data as a map of URI mapped by string. ")
 @JsonPropertyOrder({
   StoredMapData.URI,
   StoredMapData.NAME,
   StoredMapData.URIS
 })
-@JsonTypeName("StoredMapData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredMapData {
   public static final String URI = "uri";
@@ -49,7 +49,7 @@ public class StoredMapData {
   public static final String URIS = "uris";
   private Map<String, URI> uris = new HashMap<>();
 
-  public StoredMapData() { 
+  public StoredMapData() {
   }
 
   public StoredMapData uri(URI uri) {
@@ -58,14 +58,15 @@ public class StoredMapData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,20 +81,20 @@ public class StoredMapData {
     this.uri = uri;
   }
 
-
   public StoredMapData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +109,6 @@ public class StoredMapData {
     this.name = name;
   }
 
-
   public StoredMapData uris(Map<String, URI> uris) {
     
     this.uris = uris;
@@ -120,14 +120,15 @@ public class StoredMapData {
     return this;
   }
 
-   /**
+  /**
    * Get uris
    * @return uris
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,7 +142,6 @@ public class StoredMapData {
   public void setUris(Map<String, URI> uris) {
     this.uris = uris;
   }
-
 
   @Override
   public boolean equals(Object o) {

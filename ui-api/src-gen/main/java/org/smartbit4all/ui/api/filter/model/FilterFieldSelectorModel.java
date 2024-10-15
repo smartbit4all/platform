@@ -41,7 +41,6 @@ import jakarta.validation.Valid;
   FilterFieldSelectorModel.OPERATIONS,
   FilterFieldSelectorModel.ENABLED
 })
-@JsonTypeName("FilterFieldSelectorModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldSelectorModel {
   public static final String ID = "id";
@@ -62,7 +61,7 @@ public class FilterFieldSelectorModel {
   public static final String ENABLED = "enabled";
   private Boolean enabled;
 
-  public FilterFieldSelectorModel() { 
+  public FilterFieldSelectorModel() {
   }
 
   public FilterFieldSelectorModel id(String id) {
@@ -71,13 +70,14 @@ public class FilterFieldSelectorModel {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -92,19 +92,19 @@ public class FilterFieldSelectorModel {
     this.id = id;
   }
 
-
   public FilterFieldSelectorModel labelCode(String labelCode) {
     
     this.labelCode = labelCode;
     return this;
   }
 
-   /**
+  /**
    * Get labelCode
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -119,19 +119,19 @@ public class FilterFieldSelectorModel {
     this.labelCode = labelCode;
   }
 
-
   public FilterFieldSelectorModel iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Get iconCode
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,19 +146,19 @@ public class FilterFieldSelectorModel {
     this.iconCode = iconCode;
   }
 
-
   public FilterFieldSelectorModel style(String style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * Get style
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,7 +173,6 @@ public class FilterFieldSelectorModel {
     this.style = style;
   }
 
-
   public FilterFieldSelectorModel operations(List<FilterOperation> operations) {
     
     this.operations = operations;
@@ -181,18 +180,22 @@ public class FilterFieldSelectorModel {
   }
 
   public FilterFieldSelectorModel addOperationsItem(FilterOperation operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
+    }
     this.operations.add(operationsItem);
     return this;
   }
 
-   /**
+  /**
    * Get operations
    * @return operations
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -207,19 +210,19 @@ public class FilterFieldSelectorModel {
     this.operations = operations;
   }
 
-
   public FilterFieldSelectorModel enabled(Boolean enabled) {
     
     this.enabled = enabled;
     return this;
   }
 
-   /**
+  /**
    * Get enabled
    * @return enabled
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +236,6 @@ public class FilterFieldSelectorModel {
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
-
 
   @Override
   public boolean equals(Object o) {

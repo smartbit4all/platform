@@ -43,7 +43,6 @@ import jakarta.validation.Valid;
   FilterGroupSelectorModel.VISIBLE,
   FilterGroupSelectorModel.CURRENT_GROUP_ID
 })
-@JsonTypeName("FilterGroupSelectorModel")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupSelectorModel {
   public static final String LABEL_CODE = "labelCode";
@@ -67,7 +66,7 @@ public class FilterGroupSelectorModel {
   public static final String CURRENT_GROUP_ID = "currentGroupId";
   private String currentGroupId;
 
-  public FilterGroupSelectorModel() { 
+  public FilterGroupSelectorModel() {
   }
 
   public FilterGroupSelectorModel labelCode(String labelCode) {
@@ -76,12 +75,13 @@ public class FilterGroupSelectorModel {
     return this;
   }
 
-   /**
+  /**
    * Get labelCode
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,19 +96,19 @@ public class FilterGroupSelectorModel {
     this.labelCode = labelCode;
   }
 
-
   public FilterGroupSelectorModel iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Get iconCode
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -123,20 +123,20 @@ public class FilterGroupSelectorModel {
     this.iconCode = iconCode;
   }
 
-
   public FilterGroupSelectorModel groupType(FilterGroupType groupType) {
     
     this.groupType = groupType;
     return this;
   }
 
-   /**
+  /**
    * Get groupType
    * @return groupType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -151,7 +151,6 @@ public class FilterGroupSelectorModel {
     this.groupType = groupType;
   }
 
-
   public FilterGroupSelectorModel filters(List<@Valid FilterFieldSelectorModel> filters) {
     
     this.filters = filters;
@@ -159,18 +158,22 @@ public class FilterGroupSelectorModel {
   }
 
   public FilterGroupSelectorModel addFiltersItem(FilterFieldSelectorModel filtersItem) {
+    if (this.filters == null) {
+      this.filters = new ArrayList<>();
+    }
     this.filters.add(filtersItem);
     return this;
   }
 
-   /**
+  /**
    * Get filters
    * @return filters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -185,19 +188,19 @@ public class FilterGroupSelectorModel {
     this.filters = filters;
   }
 
-
   public FilterGroupSelectorModel closeable(Boolean closeable) {
     
     this.closeable = closeable;
     return this;
   }
 
-   /**
+  /**
    * Get closeable
    * @return closeable
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,19 +215,19 @@ public class FilterGroupSelectorModel {
     this.closeable = closeable;
   }
 
-
   public FilterGroupSelectorModel visible(Boolean visible) {
     
     this.visible = visible;
     return this;
   }
 
-   /**
+  /**
    * Get visible
    * @return visible
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -239,19 +242,19 @@ public class FilterGroupSelectorModel {
     this.visible = visible;
   }
 
-
   public FilterGroupSelectorModel currentGroupId(String currentGroupId) {
     
     this.currentGroupId = currentGroupId;
     return this;
   }
 
-   /**
+  /**
    * Get currentGroupId
    * @return currentGroupId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CURRENT_GROUP_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,7 +268,6 @@ public class FilterGroupSelectorModel {
   public void setCurrentGroupId(String currentGroupId) {
     this.currentGroupId = currentGroupId;
   }
-
 
   @Override
   public boolean equals(Object o) {

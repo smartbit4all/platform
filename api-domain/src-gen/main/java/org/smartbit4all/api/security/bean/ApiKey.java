@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * \&quot;Holds information of the user and the token it can use the scoped apis with.\&quot; 
  */
+@Schema(description = "\"Holds information of the user and the token it can use the scoped apis with.\" ")
 @JsonPropertyOrder({
   ApiKey.URI,
   ApiKey.TOKEN,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   ApiKey.CREATED,
   ApiKey.REVOKED
 })
-@JsonTypeName("ApiKey")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiKey {
   public static final String URI = "uri";
@@ -68,7 +68,7 @@ public class ApiKey {
   public static final String REVOKED = "revoked";
   private UserActivityLog revoked = null;
 
-  public ApiKey() { 
+  public ApiKey() {
   }
 
   public ApiKey uri(URI uri) {
@@ -77,14 +77,15 @@ public class ApiKey {
     return this;
   }
 
-   /**
+  /**
    * The identifier of the api key
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the api key")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -99,20 +100,20 @@ public class ApiKey {
     this.uri = uri;
   }
 
-
   public ApiKey token(String token) {
     
     this.token = token;
     return this;
   }
 
-   /**
+  /**
    * The generated token which can be used to access apis.
    * @return token
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The generated token which can be used to access apis.")
   @JsonProperty(TOKEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -127,21 +128,21 @@ public class ApiKey {
     this.token = token;
   }
 
-
   public ApiKey user(URI user) {
     
     this.user = user;
     return this;
   }
 
-   /**
+  /**
    * The URI identifier of the user the api key is created for.
    * @return user
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The URI identifier of the user the api key is created for.")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -156,7 +157,6 @@ public class ApiKey {
     this.user = user;
   }
 
-
   public ApiKey scope(List<URI> scope) {
     
     this.scope = scope;
@@ -164,18 +164,22 @@ public class ApiKey {
   }
 
   public ApiKey addScopeItem(URI scopeItem) {
+    if (this.scope == null) {
+      this.scope = new ArrayList<>();
+    }
     this.scope.add(scopeItem);
     return this;
   }
 
-   /**
+  /**
    * The apis that can be accessed with this api key.
    * @return scope
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The apis that can be accessed with this api key.")
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -190,20 +194,20 @@ public class ApiKey {
     this.scope = scope;
   }
 
-
   public ApiKey expiration(OffsetDateTime expiration) {
     
     this.expiration = expiration;
     return this;
   }
 
-   /**
+  /**
    * \&quot;The expiration date of the api key. It can be null, meaning the api key lasts forever  or until revocation.\&quot; 
    * @return expiration
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"The expiration date of the api key. It can be null, meaning the api key lasts forever  or until revocation.\" ")
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,21 +222,21 @@ public class ApiKey {
     this.expiration = expiration;
   }
 
-
   public ApiKey created(UserActivityLog created) {
     
     this.created = created;
     return this;
   }
 
-   /**
+  /**
    * Information of the creation
    * @return created
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Information of the creation")
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -247,20 +251,20 @@ public class ApiKey {
     this.created = created;
   }
 
-
   public ApiKey revoked(UserActivityLog revoked) {
     
     this.revoked = revoked;
     return this;
   }
 
-   /**
+  /**
    * \&quot;Information of the revocation. It can be null, meaning the token is not revoked.\&quot; 
    * @return revoked
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"Information of the revocation. It can be null, meaning the token is not revoked.\" ")
   @JsonProperty(REVOKED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -274,7 +278,6 @@ public class ApiKey {
   public void setRevoked(UserActivityLog revoked) {
     this.revoked = revoked;
   }
-
 
   @Override
   public boolean equals(Object o) {

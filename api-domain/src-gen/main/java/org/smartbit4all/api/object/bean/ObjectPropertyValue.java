@@ -32,12 +32,12 @@ import jakarta.validation.Valid;
 /**
  * This is a key - value pair where the key is a property path. 
  */
+@Schema(description = "This is a key - value pair where the key is a property path. ")
 @JsonPropertyOrder({
   ObjectPropertyValue.CONTEXT_OBJECT,
   ObjectPropertyValue.PATH,
   ObjectPropertyValue.VALUE
 })
-@JsonTypeName("ObjectPropertyValue")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyValue {
   public static final String CONTEXT_OBJECT = "contextObject";
@@ -49,7 +49,7 @@ public class ObjectPropertyValue {
   public static final String VALUE = "value";
   private Object value;
 
-  public ObjectPropertyValue() { 
+  public ObjectPropertyValue() {
   }
 
   public ObjectPropertyValue contextObject(String contextObject) {
@@ -58,12 +58,13 @@ public class ObjectPropertyValue {
     return this;
   }
 
-   /**
+  /**
    * The name of the object in the context. The context is typically a map of string and object. If we denote  an object and it is not an object but an URI then we load the given object automatically and resolve the value. 
    * @return contextObject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the object in the context. The context is typically a map of string and object. If we denote  an object and it is not an object but an URI then we load the given object automatically and resolve the value. ")
   @JsonProperty(CONTEXT_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,7 +79,6 @@ public class ObjectPropertyValue {
     this.contextObject = contextObject;
   }
 
-
   public ObjectPropertyValue path(List<String> path) {
     
     this.path = path;
@@ -86,17 +86,21 @@ public class ObjectPropertyValue {
   }
 
   public ObjectPropertyValue addPathItem(String pathItem) {
+    if (this.path == null) {
+      this.path = new ArrayList<>();
+    }
     this.path.add(pathItem);
     return this;
   }
 
-   /**
+  /**
    * Get path
    * @return path
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,19 +115,19 @@ public class ObjectPropertyValue {
     this.path = path;
   }
 
-
   public ObjectPropertyValue value(Object value) {
     
     this.value = value;
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +141,6 @@ public class ObjectPropertyValue {
   public void setValue(Object value) {
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object o) {

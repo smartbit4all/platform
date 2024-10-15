@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * A container object to represent complex container hierarchy. 
  */
+@Schema(description = "A container object to represent complex container hierarchy. ")
 @JsonPropertyOrder({
   SampleContainerItem.URI,
   SampleContainerItem.NAME,
@@ -47,7 +48,6 @@ import jakarta.validation.Valid;
   SampleContainerItem.MAIN_DOCUMENT,
   SampleContainerItem.ATTACHMENTS
 })
-@JsonTypeName("SampleContainerItem")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleContainerItem {
   public static final String URI = "uri";
@@ -117,9 +117,9 @@ public class SampleContainerItem {
   private URI mainDocument;
 
   public static final String ATTACHMENTS = "attachments";
-  private List<URI> attachments = null;
+  private List<URI> attachments = new ArrayList<>();
 
-  public SampleContainerItem() { 
+  public SampleContainerItem() {
   }
 
   public SampleContainerItem uri(URI uri) {
@@ -128,14 +128,15 @@ public class SampleContainerItem {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -150,20 +151,20 @@ public class SampleContainerItem {
     this.uri = uri;
   }
 
-
   public SampleContainerItem name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -178,20 +179,20 @@ public class SampleContainerItem {
     this.name = name;
   }
 
-
   public SampleContainerItem userUri(URI userUri) {
     
     this.userUri = userUri;
     return this;
   }
 
-   /**
+  /**
    * The reference that is not contained pointing to the user.
    * @return userUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference that is not contained pointing to the user.")
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,19 +207,19 @@ public class SampleContainerItem {
     this.userUri = userUri;
   }
 
-
   public SampleContainerItem itemColor(ItemColorEnum itemColor) {
     
     this.itemColor = itemColor;
     return this;
   }
 
-   /**
+  /**
    * Get itemColor
    * @return itemColor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ITEM_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,19 +234,19 @@ public class SampleContainerItem {
     this.itemColor = itemColor;
   }
 
-
   public SampleContainerItem cost(Long cost) {
     
     this.cost = cost;
     return this;
   }
 
-   /**
+  /**
    * Get cost
    * @return cost
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -260,20 +261,20 @@ public class SampleContainerItem {
     this.cost = cost;
   }
 
-
   public SampleContainerItem createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
-   /**
+  /**
    * Get createdAt
    * @return createdAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -288,20 +289,20 @@ public class SampleContainerItem {
     this.createdAt = createdAt;
   }
 
-
   public SampleContainerItem inlineObject(SampleInlineObject inlineObject) {
     
     this.inlineObject = inlineObject;
     return this;
   }
 
-   /**
+  /**
    * Get inlineObject
    * @return inlineObject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INLINE_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -316,20 +317,20 @@ public class SampleContainerItem {
     this.inlineObject = inlineObject;
   }
 
-
   public SampleContainerItem datasheet(URI datasheet) {
     
     this.datasheet = datasheet;
     return this;
   }
 
-   /**
+  /**
    * The data sheet contained. 
    * @return datasheet
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The data sheet contained. ")
   @JsonProperty(DATASHEET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -344,20 +345,20 @@ public class SampleContainerItem {
     this.datasheet = datasheet;
   }
 
-
   public SampleContainerItem mainDocument(URI mainDocument) {
     
     this.mainDocument = mainDocument;
     return this;
   }
 
-   /**
+  /**
    * The main document reference that is contained. 
    * @return mainDocument
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The main document reference that is contained. ")
   @JsonProperty(MAIN_DOCUMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,7 +372,6 @@ public class SampleContainerItem {
   public void setMainDocument(URI mainDocument) {
     this.mainDocument = mainDocument;
   }
-
 
   public SampleContainerItem attachments(List<URI> attachments) {
     
@@ -387,13 +387,14 @@ public class SampleContainerItem {
     return this;
   }
 
-   /**
+  /**
    * The attachment list with document references that are contained. 
    * @return attachments
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The attachment list with document references that are contained. ")
   @JsonProperty(ATTACHMENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -407,7 +408,6 @@ public class SampleContainerItem {
   public void setAttachments(List<URI> attachments) {
     this.attachments = attachments;
   }
-
 
   @Override
   public boolean equals(Object o) {

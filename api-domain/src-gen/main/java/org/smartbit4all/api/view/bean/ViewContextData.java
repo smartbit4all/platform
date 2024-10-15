@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 /**
  * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
+@Schema(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextData.UUID,
   ViewContextData.VIEWS,
@@ -44,7 +45,6 @@ import jakarta.validation.Valid;
   ViewContextData.DOWNLOADS,
   ViewContextData.CLIPBOARD_DATA
 })
-@JsonTypeName("ViewContextData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContextData {
   public static final String UUID = "uuid";
@@ -62,7 +62,7 @@ public class ViewContextData {
   public static final String CLIPBOARD_DATA = "clipboardData";
   private List<@Valid ClipboardData> clipboardData = new ArrayList<>();
 
-  public ViewContextData() { 
+  public ViewContextData() {
   }
 
   public ViewContextData uuid(UUID uuid) {
@@ -71,13 +71,14 @@ public class ViewContextData {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +93,6 @@ public class ViewContextData {
     this.uuid = uuid;
   }
 
-
   public ViewContextData views(List<@Valid ViewData> views) {
     
     this.views = views;
@@ -100,18 +100,22 @@ public class ViewContextData {
   }
 
   public ViewContextData addViewsItem(ViewData viewsItem) {
+    if (this.views == null) {
+      this.views = new ArrayList<>();
+    }
     this.views.add(viewsItem);
     return this;
   }
 
-   /**
+  /**
    * Get views
    * @return views
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -126,7 +130,6 @@ public class ViewContextData {
     this.views = views;
   }
 
-
   public ViewContextData links(List<@Valid Link> links) {
     
     this.links = links;
@@ -134,18 +137,22 @@ public class ViewContextData {
   }
 
   public ViewContextData addLinksItem(Link linksItem) {
+    if (this.links == null) {
+      this.links = new ArrayList<>();
+    }
     this.links.add(linksItem);
     return this;
   }
 
-   /**
+  /**
    * Get links
    * @return links
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -160,7 +167,6 @@ public class ViewContextData {
     this.links = links;
   }
 
-
   public ViewContextData downloads(List<@Valid DownloadedFile> downloads) {
     
     this.downloads = downloads;
@@ -168,18 +174,22 @@ public class ViewContextData {
   }
 
   public ViewContextData addDownloadsItem(DownloadedFile downloadsItem) {
+    if (this.downloads == null) {
+      this.downloads = new ArrayList<>();
+    }
     this.downloads.add(downloadsItem);
     return this;
   }
 
-   /**
+  /**
    * Get downloads
    * @return downloads
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DOWNLOADS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -194,7 +204,6 @@ public class ViewContextData {
     this.downloads = downloads;
   }
 
-
   public ViewContextData clipboardData(List<@Valid ClipboardData> clipboardData) {
     
     this.clipboardData = clipboardData;
@@ -202,18 +211,22 @@ public class ViewContextData {
   }
 
   public ViewContextData addClipboardDataItem(ClipboardData clipboardDataItem) {
+    if (this.clipboardData == null) {
+      this.clipboardData = new ArrayList<>();
+    }
     this.clipboardData.add(clipboardDataItem);
     return this;
   }
 
-   /**
+  /**
    * Get clipboardData
    * @return clipboardData
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CLIPBOARD_DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -227,7 +240,6 @@ public class ViewContextData {
   public void setClipboardData(List<@Valid ClipboardData> clipboardData) {
     this.clipboardData = clipboardData;
   }
-
 
   @Override
   public boolean equals(Object o) {

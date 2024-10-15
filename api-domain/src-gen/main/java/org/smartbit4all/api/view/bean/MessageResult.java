@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   MessageResult.SELECTED_OPTION,
   MessageResult.ADDITIONAL_DATA
 })
-@JsonTypeName("MessageResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MessageResult {
   public static final String SELECTED_OPTION = "selectedOption";
@@ -43,7 +42,7 @@ public class MessageResult {
   public static final String ADDITIONAL_DATA = "additionalData";
   private Object additionalData;
 
-  public MessageResult() { 
+  public MessageResult() {
   }
 
   public MessageResult selectedOption(MessageOption selectedOption) {
@@ -52,14 +51,15 @@ public class MessageResult {
     return this;
   }
 
-   /**
+  /**
    * Get selectedOption
    * @return selectedOption
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_OPTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -74,19 +74,19 @@ public class MessageResult {
     this.selectedOption = selectedOption;
   }
 
-
   public MessageResult additionalData(Object additionalData) {
     
     this.additionalData = additionalData;
     return this;
   }
 
-   /**
+  /**
    * Get additionalData
    * @return additionalData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ADDITIONAL_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +100,6 @@ public class MessageResult {
   public void setAdditionalData(Object additionalData) {
     this.additionalData = additionalData;
   }
-
 
   @Override
   public boolean equals(Object o) {

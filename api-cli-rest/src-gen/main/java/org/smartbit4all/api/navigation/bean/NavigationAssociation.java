@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The navigable associations belong to the given node.
  */
+@Schema(description = "UI: The navigable associations belong to the given node.")
 @JsonPropertyOrder({
   NavigationAssociation.ID,
   NavigationAssociation.NODE_ID,
@@ -42,7 +43,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NavigationAssociation.ICON,
   NavigationAssociation.REFERENCES
 })
-@JsonTypeName("NavigationAssociation")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationAssociation {
   public static final String ID = "id";
@@ -67,9 +67,9 @@ public class NavigationAssociation {
   private String icon;
 
   public static final String REFERENCES = "references";
-  private List<NavigationReference> references = null;
+  private List<NavigationReference> references = new ArrayList<>();
 
-  public NavigationAssociation() { 
+  public NavigationAssociation() {
   }
 
   public NavigationAssociation id(String id) {
@@ -78,12 +78,12 @@ public class NavigationAssociation {
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the given association - UUID
    * @return id
-  **/
-  @javax.annotation.Nonnull
-
+   */
+  @jakarta.annotation.Nonnull
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The unique identifier of the given association - UUID")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -98,19 +98,18 @@ public class NavigationAssociation {
     this.id = id;
   }
 
-
   public NavigationAssociation nodeId(String nodeId) {
     
     this.nodeId = nodeId;
     return this;
   }
 
-   /**
+  /**
    * The unique identifier of the parent node of the given association.
    * @return nodeId
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the parent node of the given association.")
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,19 +124,18 @@ public class NavigationAssociation {
     this.nodeId = nodeId;
   }
 
-
   public NavigationAssociation metaUri(URI metaUri) {
     
     this.metaUri = metaUri;
     return this;
   }
 
-   /**
+  /**
    * Get metaUri
    * @return metaUri
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,19 +150,18 @@ public class NavigationAssociation {
     this.metaUri = metaUri;
   }
 
-
   public NavigationAssociation lastNavigation(Integer lastNavigation) {
     
     this.lastNavigation = lastNavigation;
     return this;
   }
 
-   /**
+  /**
    * The last navigation time (in millis) when the given association was retrieved. If null then it has never been navigated.
    * @return lastNavigation
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The last navigation time (in millis) when the given association was retrieved. If null then it has never been navigated.")
   @JsonProperty(LAST_NAVIGATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,19 +176,18 @@ public class NavigationAssociation {
     this.lastNavigation = lastNavigation;
   }
 
-
   public NavigationAssociation hidden(Boolean hidden) {
     
     this.hidden = hidden;
     return this;
   }
 
-   /**
+  /**
    * The association can be hidden. If a node has only one association then it can be an option.
    * @return hidden
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The association can be hidden. If a node has only one association then it can be an option.")
   @JsonProperty(HIDDEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,19 +202,18 @@ public class NavigationAssociation {
     this.hidden = hidden;
   }
 
-
   public NavigationAssociation caption(String caption) {
     
     this.caption = caption;
     return this;
   }
 
-   /**
+  /**
    * The caption text, if the association is visible in any UI component
    * @return caption
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The caption text, if the association is visible in any UI component")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,19 +228,18 @@ public class NavigationAssociation {
     this.caption = caption;
   }
 
-
   public NavigationAssociation icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * The icon, if the association is visible in any UI component
    * @return icon
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The icon, if the association is visible in any UI component")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,7 +253,6 @@ public class NavigationAssociation {
   public void setIcon(String icon) {
     this.icon = icon;
   }
-
 
   public NavigationAssociation references(List<NavigationReference> references) {
     
@@ -275,12 +268,12 @@ public class NavigationAssociation {
     return this;
   }
 
-   /**
+  /**
    * The navigation association instances.
    * @return references
-  **/
-  @javax.annotation.Nullable
-
+   */
+  @jakarta.annotation.Nullable
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The navigation association instances.")
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -294,7 +287,6 @@ public class NavigationAssociation {
   public void setReferences(List<NavigationReference> references) {
     this.references = references;
   }
-
 
   @Override
   public boolean equals(Object o) {

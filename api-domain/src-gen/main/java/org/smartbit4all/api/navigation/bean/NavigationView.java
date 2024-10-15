@@ -35,16 +35,15 @@ import jakarta.validation.Valid;
   NavigationView.NAME,
   NavigationView.PARAMETERS
 })
-@JsonTypeName("NavigationView")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationView {
   public static final String NAME = "name";
   private String name;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, String> parameters = null;
+  private Map<String, String> parameters = new HashMap<>();
 
-  public NavigationView() { 
+  public NavigationView() {
   }
 
   public NavigationView name(String name) {
@@ -53,13 +52,14 @@ public class NavigationView {
     return this;
   }
 
-   /**
+  /**
    * The symbolic name of the view that must be supported by the given UI implementation.
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The symbolic name of the view that must be supported by the given UI implementation.")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -73,7 +73,6 @@ public class NavigationView {
   public void setName(String name) {
     this.name = name;
   }
-
 
   public NavigationView parameters(Map<String, String> parameters) {
     
@@ -89,12 +88,13 @@ public class NavigationView {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +108,6 @@ public class NavigationView {
   public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

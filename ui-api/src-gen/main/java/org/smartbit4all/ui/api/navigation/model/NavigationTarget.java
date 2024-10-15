@@ -48,7 +48,6 @@ import jakarta.validation.Valid;
   NavigationTarget.ICON,
   NavigationTarget.CONTAINER_UUID
 })
-@JsonTypeName("NavigationTarget")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationTarget {
   public static final String UUID = "uuid";
@@ -84,7 +83,7 @@ public class NavigationTarget {
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
 
-  public NavigationTarget() { 
+  public NavigationTarget() {
   }
 
   public NavigationTarget uuid(UUID uuid) {
@@ -93,14 +92,15 @@ public class NavigationTarget {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -115,20 +115,20 @@ public class NavigationTarget {
     this.uuid = uuid;
   }
 
-
   public NavigationTarget viewName(String viewName) {
     
     this.viewName = viewName;
     return this;
   }
 
-   /**
+  /**
    * Get viewName
    * @return viewName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,20 +143,20 @@ public class NavigationTarget {
     this.viewName = viewName;
   }
 
-
   public NavigationTarget objectUri(URI objectUri) {
     
     this.objectUri = objectUri;
     return this;
   }
 
-   /**
+  /**
    * Get objectUri
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,7 +171,6 @@ public class NavigationTarget {
     this.objectUri = objectUri;
   }
 
-
   public NavigationTarget parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -183,13 +182,14 @@ public class NavigationTarget {
     return this;
   }
 
-   /**
+  /**
    * Get parameters
    * @return parameters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -204,21 +204,21 @@ public class NavigationTarget {
     this.parameters = parameters;
   }
 
-
   public NavigationTarget state(NavigationTargetState state) {
     
     this.state = state;
     return this;
   }
 
-   /**
+  /**
    * Get state
    * @return state
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -233,21 +233,21 @@ public class NavigationTarget {
     this.state = state;
   }
 
-
   public NavigationTarget type(NavigationTargetType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -262,19 +262,19 @@ public class NavigationTarget {
     this.type = type;
   }
 
-
   public NavigationTarget fullSize(Boolean fullSize) {
     
     this.fullSize = fullSize;
     return this;
   }
 
-   /**
+  /**
    * Get fullSize
    * @return fullSize
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FULL_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -289,19 +289,19 @@ public class NavigationTarget {
     this.fullSize = fullSize;
   }
 
-
   public NavigationTarget hideCloseButton(Boolean hideCloseButton) {
     
     this.hideCloseButton = hideCloseButton;
     return this;
   }
 
-   /**
+  /**
    * Get hideCloseButton
    * @return hideCloseButton
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(HIDE_CLOSE_BUTTON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -316,19 +316,19 @@ public class NavigationTarget {
     this.hideCloseButton = hideCloseButton;
   }
 
-
   public NavigationTarget title(String title) {
     
     this.title = title;
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -343,19 +343,19 @@ public class NavigationTarget {
     this.title = title;
   }
 
-
   public NavigationTarget icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -370,20 +370,20 @@ public class NavigationTarget {
     this.icon = icon;
   }
 
-
   public NavigationTarget containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
     return this;
   }
 
-   /**
+  /**
    * Get containerUuid
    * @return containerUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -397,7 +397,6 @@ public class NavigationTarget {
   public void setContainerUuid(UUID containerUuid) {
     this.containerUuid = containerUuid;
   }
-
 
   @Override
   public boolean equals(Object o) {

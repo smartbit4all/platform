@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   Value.DISPLAY_VALUE,
   Value.ICON_CODE
 })
-@JsonTypeName("Value")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Value {
   public static final String OBJECT_URI = "objectUri";
@@ -51,7 +50,7 @@ public class Value {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
-  public Value() { 
+  public Value() {
   }
 
   public Value objectUri(URI objectUri) {
@@ -60,13 +59,14 @@ public class Value {
     return this;
   }
 
-   /**
+  /**
    * The uri the object of the value can be accessed.
    * @return objectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri the object of the value can be accessed.")
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,19 +81,19 @@ public class Value {
     this.objectUri = objectUri;
   }
 
-
   public Value code(String code) {
     
     this.code = code;
     return this;
   }
 
-   /**
+  /**
    * The logical code of the selectable value.
    * @return code
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The logical code of the selectable value.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,19 +108,19 @@ public class Value {
     this.code = code;
   }
 
-
   public Value displayValue(String displayValue) {
     
     this.displayValue = displayValue;
     return this;
   }
 
-   /**
+  /**
    * The string value that can be shown on ui. It might be a label code or the exact label.
    * @return displayValue
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The string value that can be shown on ui. It might be a label code or the exact label.")
   @JsonProperty(DISPLAY_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,19 +135,19 @@ public class Value {
     this.displayValue = displayValue;
   }
 
-
   public Value iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * The code of icon that can be associatied with the value. It may be a uri.
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The code of icon that can be associatied with the value. It may be a uri.")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,6 @@ public class Value {
   public void setIconCode(String iconCode) {
     this.iconCode = iconCode;
   }
-
 
   @Override
   public boolean equals(Object o) {

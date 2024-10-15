@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
 /**
  * Describes a button which is presented on the UiAction dialog. 
  */
+@Schema(description = "Describes a button which is presented on the UiAction dialog. ")
 @JsonPropertyOrder({
   UiActionButtonDescriptor.CAPTION,
   UiActionButtonDescriptor.COLOR,
@@ -40,7 +41,6 @@ import jakarta.validation.Valid;
   UiActionButtonDescriptor.TOOLTIP,
   UiActionButtonDescriptor.CSS_CLASS
 })
-@JsonTypeName("UiActionButtonDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionButtonDescriptor {
   public static final String CAPTION = "caption";
@@ -64,7 +64,7 @@ public class UiActionButtonDescriptor {
   public static final String CSS_CLASS = "cssClass";
   private String cssClass;
 
-  public UiActionButtonDescriptor() { 
+  public UiActionButtonDescriptor() {
   }
 
   public UiActionButtonDescriptor caption(String caption) {
@@ -73,13 +73,14 @@ public class UiActionButtonDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get caption
    * @return caption
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -94,20 +95,20 @@ public class UiActionButtonDescriptor {
     this.caption = caption;
   }
 
-
   public UiActionButtonDescriptor color(String color) {
     
     this.color = color;
     return this;
   }
 
-   /**
+  /**
    * Get color
    * @return color
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -122,19 +123,19 @@ public class UiActionButtonDescriptor {
     this.color = color;
   }
 
-
   public UiActionButtonDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,19 +150,19 @@ public class UiActionButtonDescriptor {
     this.icon = icon;
   }
 
-
   public UiActionButtonDescriptor iconColor(String iconColor) {
     
     this.iconColor = iconColor;
     return this;
   }
 
-   /**
+  /**
    * Get iconColor
    * @return iconColor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,20 +177,20 @@ public class UiActionButtonDescriptor {
     this.iconColor = iconColor;
   }
 
-
   public UiActionButtonDescriptor iconPosition(IconPosition iconPosition) {
     
     this.iconPosition = iconPosition;
     return this;
   }
 
-   /**
+  /**
    * Get iconPosition
    * @return iconPosition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -204,20 +205,20 @@ public class UiActionButtonDescriptor {
     this.iconPosition = iconPosition;
   }
 
-
   public UiActionButtonDescriptor tooltip(UiActionTooltip tooltip) {
     
     this.tooltip = tooltip;
     return this;
   }
 
-   /**
+  /**
    * Get tooltip
    * @return tooltip
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,19 +233,19 @@ public class UiActionButtonDescriptor {
     this.tooltip = tooltip;
   }
 
-
   public UiActionButtonDescriptor cssClass(String cssClass) {
     
     this.cssClass = cssClass;
     return this;
   }
 
-   /**
+  /**
    * Get cssClass
    * @return cssClass
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CSS_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -258,7 +259,6 @@ public class UiActionButtonDescriptor {
   public void setCssClass(String cssClass) {
     this.cssClass = cssClass;
   }
-
 
   @Override
   public boolean equals(Object o) {

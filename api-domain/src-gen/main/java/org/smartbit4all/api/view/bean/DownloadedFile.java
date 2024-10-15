@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * Information about uploaded file. 
  */
+@Schema(description = "Information about uploaded file. ")
 @JsonPropertyOrder({
   DownloadedFile.UUID,
   DownloadedFile.IDENTIFIER,
   DownloadedFile.FILENAME
 })
-@JsonTypeName("DownloadedFile")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DownloadedFile {
   public static final String UUID = "uuid";
@@ -47,7 +47,7 @@ public class DownloadedFile {
   public static final String FILENAME = "filename";
   private String filename;
 
-  public DownloadedFile() { 
+  public DownloadedFile() {
   }
 
   public DownloadedFile uuid(UUID uuid) {
@@ -56,13 +56,14 @@ public class DownloadedFile {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +78,19 @@ public class DownloadedFile {
     this.uuid = uuid;
   }
 
-
   public DownloadedFile identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +105,19 @@ public class DownloadedFile {
     this.identifier = identifier;
   }
 
-
   public DownloadedFile filename(String filename) {
     
     this.filename = filename;
     return this;
   }
 
-   /**
+  /**
    * Get filename
    * @return filename
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class DownloadedFile {
   public void setFilename(String filename) {
     this.filename = filename;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * This object contains an atomic sequence that provides globaly unique incrementing value. Can be used as the classic database sequence. 
  */
+@Schema(description = "This object contains an atomic sequence that provides globaly unique incrementing value. Can be used as the classic database sequence. ")
 @JsonPropertyOrder({
   StoredSequenceData.URI,
   StoredSequenceData.NAME,
   StoredSequenceData.CURRENT
 })
-@JsonTypeName("StoredSequenceData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredSequenceData {
   public static final String URI = "uri";
@@ -47,7 +47,7 @@ public class StoredSequenceData {
   public static final String CURRENT = "current";
   private Long current;
 
-  public StoredSequenceData() { 
+  public StoredSequenceData() {
   }
 
   public StoredSequenceData uri(URI uri) {
@@ -56,14 +56,15 @@ public class StoredSequenceData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,20 +79,20 @@ public class StoredSequenceData {
     this.uri = uri;
   }
 
-
   public StoredSequenceData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,19 +107,19 @@ public class StoredSequenceData {
     this.name = name;
   }
 
-
   public StoredSequenceData current(Long current) {
     
     this.current = current;
     return this;
   }
 
-   /**
+  /**
    * The current value of the sequence.
    * @return current
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The current value of the sequence.")
   @JsonProperty(CURRENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class StoredSequenceData {
   public void setCurrent(Long current) {
     this.current = current;
   }
-
 
   @Override
   public boolean equals(Object o) {

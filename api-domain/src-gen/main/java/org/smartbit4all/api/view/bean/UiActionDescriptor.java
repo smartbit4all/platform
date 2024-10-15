@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 /**
  * Describes the appearance (as a button) and the properties of the related dialogs of a UiAction. 
  */
+@Schema(description = "Describes the appearance (as a button) and the properties of the related dialogs of a UiAction. ")
 @JsonPropertyOrder({
   UiActionDescriptor.TITLE,
   UiActionDescriptor.TYPE,
@@ -51,7 +52,6 @@ import jakarta.validation.Valid;
   UiActionDescriptor.UPLOAD,
   UiActionDescriptor.TOOLTIP
 })
-@JsonTypeName("UiActionDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionDescriptor {
   public static final String TITLE = "title";
@@ -96,7 +96,7 @@ public class UiActionDescriptor {
   public static final String TOOLTIP = "tooltip";
   private UiActionTooltip tooltip;
 
-  public UiActionDescriptor() { 
+  public UiActionDescriptor() {
   }
 
   public UiActionDescriptor title(String title) {
@@ -105,13 +105,14 @@ public class UiActionDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get title
    * @return title
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -126,21 +127,21 @@ public class UiActionDescriptor {
     this.title = title;
   }
 
-
   public UiActionDescriptor type(UiActionButtonType type) {
     
     this.type = type;
     return this;
   }
 
-   /**
+  /**
    * Get type
    * @return type
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -155,20 +156,20 @@ public class UiActionDescriptor {
     this.type = type;
   }
 
-
   public UiActionDescriptor color(String color) {
     
     this.color = color;
     return this;
   }
 
-   /**
+  /**
    * Get color
    * @return color
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -183,19 +184,19 @@ public class UiActionDescriptor {
     this.color = color;
   }
 
-
   public UiActionDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,19 +211,19 @@ public class UiActionDescriptor {
     this.icon = icon;
   }
 
-
   public UiActionDescriptor iconColor(String iconColor) {
     
     this.iconColor = iconColor;
     return this;
   }
 
-   /**
+  /**
    * Get iconColor
    * @return iconColor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -237,20 +238,20 @@ public class UiActionDescriptor {
     this.iconColor = iconColor;
   }
 
-
   public UiActionDescriptor iconPosition(IconPosition iconPosition) {
     
     this.iconPosition = iconPosition;
     return this;
   }
 
-   /**
+  /**
    * Get iconPosition
    * @return iconPosition
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,20 +266,20 @@ public class UiActionDescriptor {
     this.iconPosition = iconPosition;
   }
 
-
   public UiActionDescriptor dialog(UiActionDialogDescriptor dialog) {
     
     this.dialog = dialog;
     return this;
   }
 
-   /**
+  /**
    * Get dialog
    * @return dialog
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -293,20 +294,20 @@ public class UiActionDescriptor {
     this.dialog = dialog;
   }
 
-
   public UiActionDescriptor confirmDialog(UiActionDialogDescriptor confirmDialog) {
     
     this.confirmDialog = confirmDialog;
     return this;
   }
 
-   /**
+  /**
    * Get confirmDialog
    * @return confirmDialog
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CONFIRM_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -321,20 +322,20 @@ public class UiActionDescriptor {
     this.confirmDialog = confirmDialog;
   }
 
-
   public UiActionDescriptor inputDialog(UiActionDialogDescriptor inputDialog) {
     
     this.inputDialog = inputDialog;
     return this;
   }
 
-   /**
+  /**
    * Get inputDialog
    * @return inputDialog
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INPUT_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -349,20 +350,20 @@ public class UiActionDescriptor {
     this.inputDialog = inputDialog;
   }
 
-
   public UiActionDescriptor input2Dialog(UiActionDialogDescriptor input2Dialog) {
     
     this.input2Dialog = input2Dialog;
     return this;
   }
 
-   /**
+  /**
    * Get input2Dialog
    * @return input2Dialog
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INPUT2_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -377,20 +378,20 @@ public class UiActionDescriptor {
     this.input2Dialog = input2Dialog;
   }
 
-
   public UiActionDescriptor feedbackType(UiActionFeedbackType feedbackType) {
     
     this.feedbackType = feedbackType;
     return this;
   }
 
-   /**
+  /**
    * Get feedbackType
    * @return feedbackType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FEEDBACK_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -405,19 +406,19 @@ public class UiActionDescriptor {
     this.feedbackType = feedbackType;
   }
 
-
   public UiActionDescriptor feedbackText(String feedbackText) {
     
     this.feedbackText = feedbackText;
     return this;
   }
 
-   /**
+  /**
    * Get feedbackText
    * @return feedbackText
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FEEDBACK_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -432,20 +433,20 @@ public class UiActionDescriptor {
     this.feedbackText = feedbackText;
   }
 
-
   public UiActionDescriptor upload(UiActionUploadDescriptor upload) {
     
     this.upload = upload;
     return this;
   }
 
-   /**
+  /**
    * Get upload
    * @return upload
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPLOAD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -460,20 +461,20 @@ public class UiActionDescriptor {
     this.upload = upload;
   }
 
-
   public UiActionDescriptor tooltip(UiActionTooltip tooltip) {
     
     this.tooltip = tooltip;
     return this;
   }
 
-   /**
+  /**
    * Get tooltip
    * @return tooltip
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -487,7 +488,6 @@ public class UiActionDescriptor {
   public void setTooltip(UiActionTooltip tooltip) {
     this.tooltip = tooltip;
   }
-
 
   @Override
   public boolean equals(Object o) {

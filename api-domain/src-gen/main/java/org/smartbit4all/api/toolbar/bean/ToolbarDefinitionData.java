@@ -34,12 +34,12 @@ import jakarta.validation.Valid;
 /**
  * This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. 
  */
+@Schema(description = "This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. ")
 @JsonPropertyOrder({
   ToolbarDefinitionData.QUALIFIED_NAME,
   ToolbarDefinitionData.ITEMS,
   ToolbarDefinitionData.ITEM_PRODUCER
 })
-@JsonTypeName("ToolbarDefinitionData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarDefinitionData {
   public static final String QUALIFIED_NAME = "qualifiedName";
@@ -51,7 +51,7 @@ public class ToolbarDefinitionData {
   public static final String ITEM_PRODUCER = "itemProducer";
   private InvocationRequest itemProducer = null;
 
-  public ToolbarDefinitionData() { 
+  public ToolbarDefinitionData() {
   }
 
   public ToolbarDefinitionData qualifiedName(String qualifiedName) {
@@ -60,13 +60,14 @@ public class ToolbarDefinitionData {
     return this;
   }
 
-   /**
+  /**
    * The namespace and the name of the toolbar. The code should be the unique name of the toolbar on the page and it is the last segment. 
    * @return qualifiedName
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The namespace and the name of the toolbar. The code should be the unique name of the toolbar on the page and it is the last segment. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -81,7 +82,6 @@ public class ToolbarDefinitionData {
     this.qualifiedName = qualifiedName;
   }
 
-
   public ToolbarDefinitionData items(List<@Valid ToolbarItem> items) {
     
     this.items = items;
@@ -89,18 +89,22 @@ public class ToolbarDefinitionData {
   }
 
   public ToolbarDefinitionData addItemsItem(ToolbarItem itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
     this.items.add(itemsItem);
     return this;
   }
 
-   /**
+  /**
    * The ites on the toolbar. 
    * @return items
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The ites on the toolbar. ")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -115,20 +119,20 @@ public class ToolbarDefinitionData {
     this.items = items;
   }
 
-
   public ToolbarDefinitionData itemProducer(InvocationRequest itemProducer) {
     
     this.itemProducer = itemProducer;
     return this;
   }
 
-   /**
+  /**
    * If we set the item producer logic then the items of the toolbar are coming from this invocation. In this case the items must be managed in the invocation call not here. It can be a workflow or a specific menu settings that can produce menu items dynamically. 
    * @return itemProducer
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If we set the item producer logic then the items of the toolbar are coming from this invocation. In this case the items must be managed in the invocation call not here. It can be a workflow or a specific menu settings that can produce menu items dynamically. ")
   @JsonProperty(ITEM_PRODUCER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +146,6 @@ public class ToolbarDefinitionData {
   public void setItemProducer(InvocationRequest itemProducer) {
     this.itemProducer = itemProducer;
   }
-
 
   @Override
   public boolean equals(Object o) {

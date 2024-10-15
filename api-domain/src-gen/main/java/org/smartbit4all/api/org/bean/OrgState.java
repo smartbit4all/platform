@@ -42,7 +42,6 @@ import jakarta.validation.Valid;
   OrgState.USERS_OF_GROUP,
   OrgState.GROUPS_OF_GROUP
 })
-@JsonTypeName("OrgState")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OrgState {
   public static final String URI = "uri";
@@ -60,7 +59,7 @@ public class OrgState {
   public static final String GROUPS_OF_GROUP = "groupsOfGroup";
   private Map<String, List<@Valid Group>> groupsOfGroup = new HashMap<>();
 
-  public OrgState() { 
+  public OrgState() {
   }
 
   public OrgState uri(URI uri) {
@@ -69,13 +68,14 @@ public class OrgState {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -90,7 +90,6 @@ public class OrgState {
     this.uri = uri;
   }
 
-
   public OrgState users(Map<String, User> users) {
     
     this.users = users;
@@ -102,14 +101,15 @@ public class OrgState {
     return this;
   }
 
-   /**
+  /**
    * Get users
    * @return users
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -124,7 +124,6 @@ public class OrgState {
     this.users = users;
   }
 
-
   public OrgState groups(Map<String, Group> groups) {
     
     this.groups = groups;
@@ -136,14 +135,15 @@ public class OrgState {
     return this;
   }
 
-   /**
+  /**
    * Get groups
    * @return groups
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -158,7 +158,6 @@ public class OrgState {
     this.groups = groups;
   }
 
-
   public OrgState usersOfGroup(Map<String, List<@Valid User>> usersOfGroup) {
     
     this.usersOfGroup = usersOfGroup;
@@ -170,14 +169,15 @@ public class OrgState {
     return this;
   }
 
-   /**
+  /**
    * Get usersOfGroup
    * @return usersOfGroup
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -192,7 +192,6 @@ public class OrgState {
     this.usersOfGroup = usersOfGroup;
   }
 
-
   public OrgState groupsOfGroup(Map<String, List<@Valid Group>> groupsOfGroup) {
     
     this.groupsOfGroup = groupsOfGroup;
@@ -204,14 +203,15 @@ public class OrgState {
     return this;
   }
 
-   /**
+  /**
    * Get groupsOfGroup
    * @return groupsOfGroup
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -225,7 +225,6 @@ public class OrgState {
   public void setGroupsOfGroup(Map<String, List<@Valid Group>> groupsOfGroup) {
     this.groupsOfGroup = groupsOfGroup;
   }
-
 
   @Override
   public boolean equals(Object o) {

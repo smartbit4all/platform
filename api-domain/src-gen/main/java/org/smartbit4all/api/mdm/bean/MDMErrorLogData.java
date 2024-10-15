@@ -29,12 +29,12 @@ import jakarta.validation.Valid;
 /**
  * Import and export operation error log data.
  */
+@Schema(description = "Import and export operation error log data.")
 @JsonPropertyOrder({
   MDMErrorLogData.ROW_NUM,
   MDMErrorLogData.COLUMN,
   MDMErrorLogData.ERROR
 })
-@JsonTypeName("MDMErrorLogData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMErrorLogData {
   public static final String ROW_NUM = "rowNum";
@@ -46,7 +46,7 @@ public class MDMErrorLogData {
   public static final String ERROR = "error";
   private String error;
 
-  public MDMErrorLogData() { 
+  public MDMErrorLogData() {
   }
 
   public MDMErrorLogData rowNum(Integer rowNum) {
@@ -55,12 +55,13 @@ public class MDMErrorLogData {
     return this;
   }
 
-   /**
+  /**
    * Get rowNum
    * @return rowNum
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ROW_NUM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -75,19 +76,19 @@ public class MDMErrorLogData {
     this.rowNum = rowNum;
   }
 
-
   public MDMErrorLogData column(String column) {
     
     this.column = column;
     return this;
   }
 
-   /**
+  /**
    * Get column
    * @return column
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,19 +103,19 @@ public class MDMErrorLogData {
     this.column = column;
   }
 
-
   public MDMErrorLogData error(String error) {
     
     this.error = error;
     return this;
   }
 
-   /**
+  /**
    * Get error
    * @return error
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +129,6 @@ public class MDMErrorLogData {
   public void setError(String error) {
     this.error = error;
   }
-
 
   @Override
   public boolean equals(Object o) {

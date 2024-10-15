@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, 
  */
+@Schema(description = "An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, ")
 @JsonPropertyOrder({
   ValueSet.VALUE_SET_NAME,
   ValueSet.VALUE_SET_DATA,
   ValueSet.TIMESTAMP
 })
-@JsonTypeName("ValueSet")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSet {
   public static final String VALUE_SET_NAME = "valueSetName";
@@ -47,7 +47,7 @@ public class ValueSet {
   public static final String TIMESTAMP = "timestamp";
   private Long timestamp;
 
-  public ValueSet() { 
+  public ValueSet() {
   }
 
   public ValueSet valueSetName(String valueSetName) {
@@ -56,12 +56,13 @@ public class ValueSet {
     return this;
   }
 
-   /**
+  /**
    * Get valueSetName
    * @return valueSetName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_SET_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,20 +77,20 @@ public class ValueSet {
     this.valueSetName = valueSetName;
   }
 
-
   public ValueSet valueSetData(ValueSetData valueSetData) {
     
     this.valueSetData = valueSetData;
     return this;
   }
 
-   /**
+  /**
    * Get valueSetData
    * @return valueSetData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE_SET_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +105,19 @@ public class ValueSet {
     this.valueSetData = valueSetData;
   }
 
-
   public ValueSet timestamp(Long timestamp) {
     
     this.timestamp = timestamp;
     return this;
   }
 
-   /**
+  /**
    * Get timestamp
    * @return timestamp
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +131,6 @@ public class ValueSet {
   public void setTimestamp(Long timestamp) {
     this.timestamp = timestamp;
   }
-
 
   @Override
   public boolean equals(Object o) {

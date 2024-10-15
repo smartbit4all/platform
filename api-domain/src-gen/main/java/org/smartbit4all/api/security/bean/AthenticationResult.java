@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
   AthenticationResult.USERNAME,
   AthenticationResult.TOKEN
 })
-@JsonTypeName("AthenticationResult")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AthenticationResult {
   public static final String FULLNAME = "fullname";
@@ -46,7 +45,7 @@ public class AthenticationResult {
   public static final String TOKEN = "token";
   private String token;
 
-  public AthenticationResult() { 
+  public AthenticationResult() {
   }
 
   public AthenticationResult fullname(String fullname) {
@@ -55,13 +54,14 @@ public class AthenticationResult {
     return this;
   }
 
-   /**
+  /**
    * Get fullname
    * @return fullname
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FULLNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -76,20 +76,20 @@ public class AthenticationResult {
     this.fullname = fullname;
   }
 
-
   public AthenticationResult username(String username) {
     
     this.username = username;
     return this;
   }
 
-   /**
+  /**
    * Get username
    * @return username
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -104,20 +104,20 @@ public class AthenticationResult {
     this.username = username;
   }
 
-
   public AthenticationResult token(String token) {
     
     this.token = token;
     return this;
   }
 
-   /**
+  /**
    * Get token
    * @return token
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TOKEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -131,7 +131,6 @@ public class AthenticationResult {
   public void setToken(String token) {
     this.token = token;
   }
-
 
   @Override
   public boolean equals(Object o) {

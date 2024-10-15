@@ -42,7 +42,6 @@ import jakarta.validation.Valid;
   UIState.MESSAGE_TO_OPEN,
   UIState.VIEWS
 })
-@JsonTypeName("UIState")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UIState {
   public static final String UUID = "uuid";
@@ -57,7 +56,7 @@ public class UIState {
   public static final String VIEWS = "views";
   private List<@Valid ViewModelData> views = new ArrayList<>();
 
-  public UIState() { 
+  public UIState() {
   }
 
   public UIState uuid(UUID uuid) {
@@ -66,14 +65,15 @@ public class UIState {
     return this;
   }
 
-   /**
+  /**
    * Get uuid
    * @return uuid
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -88,20 +88,20 @@ public class UIState {
     this.uuid = uuid;
   }
 
-
   public UIState uiToOpen(NavigationTarget uiToOpen) {
     
     this.uiToOpen = uiToOpen;
     return this;
   }
 
-   /**
+  /**
    * Get uiToOpen
    * @return uiToOpen
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UI_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,20 +116,20 @@ public class UIState {
     this.uiToOpen = uiToOpen;
   }
 
-
   public UIState messageToOpen(Message messageToOpen) {
     
     this.messageToOpen = messageToOpen;
     return this;
   }
 
-   /**
+  /**
    * Get messageToOpen
    * @return messageToOpen
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(MESSAGE_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +144,6 @@ public class UIState {
     this.messageToOpen = messageToOpen;
   }
 
-
   public UIState views(List<@Valid ViewModelData> views) {
     
     this.views = views;
@@ -152,18 +151,22 @@ public class UIState {
   }
 
   public UIState addViewsItem(ViewModelData viewsItem) {
+    if (this.views == null) {
+      this.views = new ArrayList<>();
+    }
     this.views.add(viewsItem);
     return this;
   }
 
-   /**
+  /**
    * Get views
    * @return views
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -177,7 +180,6 @@ public class UIState {
   public void setViews(List<@Valid ViewModelData> views) {
     this.views = views;
   }
-
 
   @Override
   public boolean equals(Object o) {

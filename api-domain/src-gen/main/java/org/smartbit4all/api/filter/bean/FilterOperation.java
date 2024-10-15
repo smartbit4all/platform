@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 /**
  * Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.
  */
+@Schema(description = "Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.")
 @JsonPropertyOrder({
   FilterOperation.ID,
   FilterOperation.FILTER_VIEW,
@@ -46,7 +47,6 @@ import jakarta.validation.Valid;
   FilterOperation.LABEL_CODE,
   FilterOperation.ICON_CODE
 })
-@JsonTypeName("FilterOperation")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterOperation {
   public static final String ID = "id";
@@ -68,7 +68,7 @@ public class FilterOperation {
   private URI possibleValuesUri;
 
   public static final String POSSIBLE_VALUES = "possibleValues";
-  private List<Value> possibleValues = null;
+  private List<Value> possibleValues = new ArrayList<>();
 
   public static final String OPERATION_CODE = "operationCode";
   private String operationCode;
@@ -79,7 +79,7 @@ public class FilterOperation {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
-  public FilterOperation() { 
+  public FilterOperation() {
   }
 
   public FilterOperation id(String id) {
@@ -88,12 +88,13 @@ public class FilterOperation {
     return this;
   }
 
-   /**
+  /**
    * Identifier of the filter operation within the possible filter operations list of a filter field.
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of the filter operation within the possible filter operations list of a filter field.")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,19 +109,19 @@ public class FilterOperation {
     this.id = id;
   }
 
-
   public FilterOperation filterView(String filterView) {
     
     this.filterView = filterView;
     return this;
   }
 
-   /**
+  /**
    * Declarative name of a FilterOperationUI, which will handle this operation.
    * @return filterView
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Declarative name of a FilterOperationUI, which will handle this operation.")
   @JsonProperty(FILTER_VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,20 +136,20 @@ public class FilterOperation {
     this.filterView = filterView;
   }
 
-
   public FilterOperation propertyUri1(URI propertyUri1) {
     
     this.propertyUri1 = propertyUri1;
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,20 +164,20 @@ public class FilterOperation {
     this.propertyUri1 = propertyUri1;
   }
 
-
   public FilterOperation propertyUri2(URI propertyUri2) {
     
     this.propertyUri2 = propertyUri2;
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,20 +192,20 @@ public class FilterOperation {
     this.propertyUri2 = propertyUri2;
   }
 
-
   public FilterOperation propertyUri3(URI propertyUri3) {
     
     this.propertyUri3 = propertyUri3;
     return this;
   }
 
-   /**
+  /**
    * Property identifier, specifies which property should be used in this filter.
    * @return propertyUri3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Property identifier, specifies which property should be used in this filter.")
   @JsonProperty(PROPERTY_URI3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -219,20 +220,20 @@ public class FilterOperation {
     this.propertyUri3 = propertyUri3;
   }
 
-
   public FilterOperation possibleValuesUri(URI possibleValuesUri) {
     
     this.possibleValuesUri = possibleValuesUri;
     return this;
   }
 
-   /**
+  /**
    * Value set identifer for selections. Values can be aquired by ValueAPI.
    * @return possibleValuesUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Value set identifer for selections. Values can be aquired by ValueAPI.")
   @JsonProperty(POSSIBLE_VALUES_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -246,7 +247,6 @@ public class FilterOperation {
   public void setPossibleValuesUri(URI possibleValuesUri) {
     this.possibleValuesUri = possibleValuesUri;
   }
-
 
   public FilterOperation possibleValues(List<Value> possibleValues) {
     
@@ -262,13 +262,14 @@ public class FilterOperation {
     return this;
   }
 
-   /**
+  /**
    * The selecteble values.
    * @return possibleValues
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The selecteble values.")
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -283,19 +284,19 @@ public class FilterOperation {
     this.possibleValues = possibleValues;
   }
 
-
   public FilterOperation operationCode(String operationCode) {
     
     this.operationCode = operationCode;
     return this;
   }
 
-   /**
+  /**
    * Operation code, specifies the operator of the condition.
    * @return operationCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Operation code, specifies the operator of the condition.")
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -310,19 +311,19 @@ public class FilterOperation {
     this.operationCode = operationCode;
   }
 
-
   public FilterOperation labelCode(String labelCode) {
     
     this.labelCode = labelCode;
     return this;
   }
 
-   /**
+  /**
    * Code of label to display for this operation.
    * @return labelCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Code of label to display for this operation.")
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -337,19 +338,19 @@ public class FilterOperation {
     this.labelCode = labelCode;
   }
 
-
   public FilterOperation iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
   }
 
-   /**
+  /**
    * Icon
    * @return iconCode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Icon")
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -363,7 +364,6 @@ public class FilterOperation {
   public void setIconCode(String iconCode) {
     this.iconCode = iconCode;
   }
-
 
   @Override
   public boolean equals(Object o) {

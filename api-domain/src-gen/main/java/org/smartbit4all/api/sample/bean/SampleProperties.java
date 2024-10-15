@@ -31,12 +31,12 @@ import jakarta.validation.Valid;
 /**
  * An example object containing some named inline fields and an inline string-string map. 
  */
+@Schema(description = "An example object containing some named inline fields and an inline string-string map. ")
 @JsonPropertyOrder({
   SampleProperties.PRIMARY,
   SampleProperties.SECONDARY,
   SampleProperties.ETC
 })
-@JsonTypeName("SampleProperties")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleProperties {
   public static final String PRIMARY = "primary";
@@ -46,9 +46,9 @@ public class SampleProperties {
   private String secondary;
 
   public static final String ETC = "etc";
-  private Map<String, String> etc = null;
+  private Map<String, String> etc = new HashMap<>();
 
-  public SampleProperties() { 
+  public SampleProperties() {
   }
 
   public SampleProperties primary(String primary) {
@@ -57,12 +57,13 @@ public class SampleProperties {
     return this;
   }
 
-   /**
+  /**
    * Get primary
    * @return primary
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PRIMARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,19 +78,19 @@ public class SampleProperties {
     this.primary = primary;
   }
 
-
   public SampleProperties secondary(String secondary) {
     
     this.secondary = secondary;
     return this;
   }
 
-   /**
+  /**
    * Get secondary
    * @return secondary
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SECONDARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,7 +104,6 @@ public class SampleProperties {
   public void setSecondary(String secondary) {
     this.secondary = secondary;
   }
-
 
   public SampleProperties etc(Map<String, String> etc) {
     
@@ -119,12 +119,13 @@ public class SampleProperties {
     return this;
   }
 
-   /**
+  /**
    * Get etc
    * @return etc
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ETC)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +139,6 @@ public class SampleProperties {
   public void setEtc(Map<String, String> etc) {
     this.etc = etc;
   }
-
 
   @Override
   public boolean equals(Object o) {

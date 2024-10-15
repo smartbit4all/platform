@@ -56,7 +56,6 @@ import jakarta.validation.Valid;
   FilterExpressionField.SUB_FIELD_LIST,
   FilterExpressionField.TOOLBAR_ID
 })
-@JsonTypeName("FilterExpressionField")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionField {
   public static final String LABEL = "label";
@@ -90,7 +89,7 @@ public class FilterExpressionField {
   private FilterExpressionData expressionData;
 
   public static final String POSSIBLE_OPERATIONS = "possibleOperations";
-  private List<FilterExpressionOperation> possibleOperations = null;
+  private List<FilterExpressionOperation> possibleOperations = new ArrayList<>();
 
   public static final String FILTER_FIELD_TYPE = "filterFieldType";
   private FilterExpressionDataType filterFieldType;
@@ -107,7 +106,7 @@ public class FilterExpressionField {
   public static final String TOOLBAR_ID = "toolbarId";
   private String toolbarId;
 
-  public FilterExpressionField() { 
+  public FilterExpressionField() {
   }
 
   public FilterExpressionField label(String label) {
@@ -116,12 +115,13 @@ public class FilterExpressionField {
     return this;
   }
 
-   /**
+  /**
    * The display name of the whole field. Tipically the label of the property we are filtering
    * @return label
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The display name of the whole field. Tipically the label of the property we are filtering")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,19 +136,19 @@ public class FilterExpressionField {
     this.label = label;
   }
 
-
   public FilterExpressionField id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * This identifier is unique inside the model let it be a builder model or a normal model object. 
    * @return id
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This identifier is unique inside the model let it be a builder model or a normal model object. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,20 +163,20 @@ public class FilterExpressionField {
     this.id = id;
   }
 
-
   public FilterExpressionField label1(String label1) {
     
     this.label1 = label1;
     return this;
   }
 
-   /**
+  /**
    * Get label1
    * @return label1
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LABEL1)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -191,19 +191,19 @@ public class FilterExpressionField {
     this.label1 = label1;
   }
 
-
   public FilterExpressionField label2(String label2) {
     
     this.label2 = label2;
     return this;
   }
 
-   /**
+  /**
    * Get label2
    * @return label2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,19 +218,19 @@ public class FilterExpressionField {
     this.label2 = label2;
   }
 
-
   public FilterExpressionField label3(String label3) {
     
     this.label3 = label3;
     return this;
   }
 
-   /**
+  /**
    * Get label3
    * @return label3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,19 +245,19 @@ public class FilterExpressionField {
     this.label3 = label3;
   }
 
-
   public FilterExpressionField placeholder1(String placeholder1) {
     
     this.placeholder1 = placeholder1;
     return this;
   }
 
-   /**
+  /**
    * Get placeholder1
    * @return placeholder1
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PLACEHOLDER1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -272,19 +272,19 @@ public class FilterExpressionField {
     this.placeholder1 = placeholder1;
   }
 
-
   public FilterExpressionField placeholder2(String placeholder2) {
     
     this.placeholder2 = placeholder2;
     return this;
   }
 
-   /**
+  /**
    * Get placeholder2
    * @return placeholder2
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PLACEHOLDER2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -299,19 +299,19 @@ public class FilterExpressionField {
     this.placeholder2 = placeholder2;
   }
 
-
   public FilterExpressionField placeholder3(String placeholder3) {
     
     this.placeholder3 = placeholder3;
     return this;
   }
 
-   /**
+  /**
    * Get placeholder3
    * @return placeholder3
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PLACEHOLDER3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -326,19 +326,19 @@ public class FilterExpressionField {
     this.placeholder3 = placeholder3;
   }
 
-
   public FilterExpressionField icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -353,20 +353,20 @@ public class FilterExpressionField {
     this.icon = icon;
   }
 
-
   public FilterExpressionField expressionData(FilterExpressionData expressionData) {
     
     this.expressionData = expressionData;
     return this;
   }
 
-   /**
+  /**
    * Get expressionData
    * @return expressionData
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(EXPRESSION_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -380,7 +380,6 @@ public class FilterExpressionField {
   public void setExpressionData(FilterExpressionData expressionData) {
     this.expressionData = expressionData;
   }
-
 
   public FilterExpressionField possibleOperations(List<FilterExpressionOperation> possibleOperations) {
     
@@ -396,13 +395,14 @@ public class FilterExpressionField {
     return this;
   }
 
-   /**
+  /**
    * Get possibleOperations
    * @return possibleOperations
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSSIBLE_OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -417,20 +417,20 @@ public class FilterExpressionField {
     this.possibleOperations = possibleOperations;
   }
 
-
   public FilterExpressionField filterFieldType(FilterExpressionDataType filterFieldType) {
     
     this.filterFieldType = filterFieldType;
     return this;
   }
 
-   /**
+  /**
    * Get filterFieldType
    * @return filterFieldType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_FIELD_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -445,7 +445,6 @@ public class FilterExpressionField {
     this.filterFieldType = filterFieldType;
   }
 
-
   public FilterExpressionField possibleValues(List<Value> possibleValues) {
     
     this.possibleValues = possibleValues;
@@ -453,18 +452,22 @@ public class FilterExpressionField {
   }
 
   public FilterExpressionField addPossibleValuesItem(Value possibleValuesItem) {
+    if (this.possibleValues == null) {
+      this.possibleValues = new ArrayList<>();
+    }
     this.possibleValues.add(possibleValuesItem);
     return this;
   }
 
-   /**
+  /**
    * Get possibleValues
    * @return possibleValues
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -479,20 +482,20 @@ public class FilterExpressionField {
     this.possibleValues = possibleValues;
   }
 
-
   public FilterExpressionField widgetType(FilterExpressionFieldWidgetType widgetType) {
     
     this.widgetType = widgetType;
     return this;
   }
 
-   /**
+  /**
    * Get widgetType
    * @return widgetType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(WIDGET_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -507,20 +510,20 @@ public class FilterExpressionField {
     this.widgetType = widgetType;
   }
 
-
   public FilterExpressionField subFieldList(FilterExpressionFieldList subFieldList) {
     
     this.subFieldList = subFieldList;
     return this;
   }
 
-   /**
+  /**
    * Get subFieldList
    * @return subFieldList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUB_FIELD_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -535,19 +538,19 @@ public class FilterExpressionField {
     this.subFieldList = subFieldList;
   }
 
-
   public FilterExpressionField toolbarId(String toolbarId) {
     
     this.toolbarId = toolbarId;
     return this;
   }
 
-   /**
+  /**
    * Identifier of the toolbar associated with this widget. 
    * @return toolbarId
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Identifier of the toolbar associated with this widget. ")
   @JsonProperty(TOOLBAR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -561,7 +564,6 @@ public class FilterExpressionField {
   public void setToolbarId(String toolbarId) {
     this.toolbarId = toolbarId;
   }
-
 
   @Override
   public boolean equals(Object o) {

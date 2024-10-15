@@ -30,12 +30,12 @@ import jakarta.validation.Valid;
 /**
  * The contained storage object for the StoredReference that contains an object as data. 
  */
+@Schema(description = "The contained storage object for the StoredReference that contains an object as data. ")
 @JsonPropertyOrder({
   StoredReferenceData.URI,
   StoredReferenceData.NAME,
   StoredReferenceData.REF_OBJECT
 })
-@JsonTypeName("StoredReferenceData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredReferenceData {
   public static final String URI = "uri";
@@ -47,7 +47,7 @@ public class StoredReferenceData {
   public static final String REF_OBJECT = "refObject";
   private Object refObject;
 
-  public StoredReferenceData() { 
+  public StoredReferenceData() {
   }
 
   public StoredReferenceData uri(URI uri) {
@@ -56,14 +56,15 @@ public class StoredReferenceData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,20 +79,20 @@ public class StoredReferenceData {
     this.uri = uri;
   }
 
-
   public StoredReferenceData name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,19 +107,19 @@ public class StoredReferenceData {
     this.name = name;
   }
 
-
   public StoredReferenceData refObject(Object refObject) {
     
     this.refObject = refObject;
     return this;
   }
 
-   /**
+  /**
    * Get refObject
    * @return refObject
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REF_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -132,7 +133,6 @@ public class StoredReferenceData {
   public void setRefObject(Object refObject) {
     this.refObject = refObject;
   }
-
 
   @Override
   public boolean equals(Object o) {

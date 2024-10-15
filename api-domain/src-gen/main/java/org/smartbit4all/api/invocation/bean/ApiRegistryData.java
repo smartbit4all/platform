@@ -33,11 +33,11 @@ import jakarta.validation.Valid;
 /**
  * The common registry entry for the invocation system. It has a special URI to be able to identify it globally. 
  */
+@Schema(description = "The common registry entry for the invocation system. It has a special URI to be able to identify it globally. ")
 @JsonPropertyOrder({
   ApiRegistryData.URI,
   ApiRegistryData.API_LIST
 })
-@JsonTypeName("ApiRegistryData")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiRegistryData {
   public static final String URI = "uri";
@@ -46,7 +46,7 @@ public class ApiRegistryData {
   public static final String API_LIST = "apiList";
   private List<URI> apiList = new ArrayList<>();
 
-  public ApiRegistryData() { 
+  public ApiRegistryData() {
   }
 
   public ApiRegistryData uri(URI uri) {
@@ -55,14 +55,15 @@ public class ApiRegistryData {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,7 +78,6 @@ public class ApiRegistryData {
     this.uri = uri;
   }
 
-
   public ApiRegistryData apiList(List<URI> apiList) {
     
     this.apiList = apiList;
@@ -85,18 +85,22 @@ public class ApiRegistryData {
   }
 
   public ApiRegistryData addApiListItem(URI apiListItem) {
+    if (this.apiList == null) {
+      this.apiList = new ArrayList<>();
+    }
     this.apiList.add(apiListItem);
     return this;
   }
 
-   /**
+  /**
    * The available apis of a tenant.
    * @return apiList
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The available apis of a tenant.")
   @JsonProperty(API_LIST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +114,6 @@ public class ApiRegistryData {
   public void setApiList(List<URI> apiList) {
     this.apiList = apiList;
   }
-
 
   @Override
   public boolean equals(Object o) {

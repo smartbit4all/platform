@@ -32,13 +32,13 @@ import jakarta.validation.Valid;
 /**
  * This object can be used as parameter object to name a vector collection managed by the CollectionApi. 
  */
+@Schema(description = "This object can be used as parameter object to name a vector collection managed by the CollectionApi. ")
 @JsonPropertyOrder({
   VectorCollectionDescriptor.VECTOR_COLLECTION_NAME,
   VectorCollectionDescriptor.VECTOR_D_B_CONNECTION,
   VectorCollectionDescriptor.EMBEDDING_CONNECTION,
   VectorCollectionDescriptor.RESTRICTED_PROPERTIES
 })
-@JsonTypeName("VectorCollectionDescriptor")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorCollectionDescriptor {
   public static final String VECTOR_COLLECTION_NAME = "vectorCollectionName";
@@ -53,7 +53,7 @@ public class VectorCollectionDescriptor {
   public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
   private List<String> restrictedProperties = new ArrayList<>();
 
-  public VectorCollectionDescriptor() { 
+  public VectorCollectionDescriptor() {
   }
 
   public VectorCollectionDescriptor vectorCollectionName(String vectorCollectionName) {
@@ -62,12 +62,13 @@ public class VectorCollectionDescriptor {
     return this;
   }
 
-   /**
+  /**
    * The name of the Vector collection managed by the MDM Entry. It is maintained for the published version the under construction state is not working. 
    * @return vectorCollectionName
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the Vector collection managed by the MDM Entry. It is maintained for the published version the under construction state is not working. ")
   @JsonProperty(VECTOR_COLLECTION_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,19 +83,19 @@ public class VectorCollectionDescriptor {
     this.vectorCollectionName = vectorCollectionName;
   }
 
-
   public VectorCollectionDescriptor vectorDBConnection(String vectorDBConnection) {
     
     this.vectorDBConnection = vectorDBConnection;
     return this;
   }
 
-   /**
+  /**
    * The name of the VectorDB connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. 
    * @return vectorDBConnection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the VectorDB connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. ")
   @JsonProperty(VECTOR_D_B_CONNECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -109,19 +110,19 @@ public class VectorCollectionDescriptor {
     this.vectorDBConnection = vectorDBConnection;
   }
 
-
   public VectorCollectionDescriptor embeddingConnection(String embeddingConnection) {
     
     this.embeddingConnection = embeddingConnection;
     return this;
   }
 
-   /**
+  /**
    * The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. 
    * @return embeddingConnection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
 
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. ")
   @JsonProperty(EMBEDDING_CONNECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,7 +137,6 @@ public class VectorCollectionDescriptor {
     this.embeddingConnection = embeddingConnection;
   }
 
-
   public VectorCollectionDescriptor restrictedProperties(List<String> restrictedProperties) {
     
     this.restrictedProperties = restrictedProperties;
@@ -144,17 +144,21 @@ public class VectorCollectionDescriptor {
   }
 
   public VectorCollectionDescriptor addRestrictedPropertiesItem(String restrictedPropertiesItem) {
+    if (this.restrictedProperties == null) {
+      this.restrictedProperties = new ArrayList<>();
+    }
     this.restrictedProperties.add(restrictedPropertiesItem);
     return this;
   }
 
-   /**
+  /**
    * A list of the properties that will be left out during the creaton of vector indexes 
    * @return restrictedProperties
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
 
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "A list of the properties that will be left out during the creaton of vector indexes ")
   @JsonProperty(RESTRICTED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -168,7 +172,6 @@ public class VectorCollectionDescriptor {
   public void setRestrictedProperties(List<String> restrictedProperties) {
     this.restrictedProperties = restrictedProperties;
   }
-
 
   @Override
   public boolean equals(Object o) {
