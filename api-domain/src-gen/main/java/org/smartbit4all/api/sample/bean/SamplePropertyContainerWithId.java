@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.sample.bean.SampleProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An example object containing and id and an inline SampleProperties object with some named inline fields and an inline string-string map. 
  */
-@ApiModel(description = "An example object containing and id and an inline SampleProperties object with some named inline fields and an inline string-string map. ")
 @JsonPropertyOrder({
   SamplePropertyContainerWithId.URI,
   SamplePropertyContainerWithId.ID,
   SamplePropertyContainerWithId.PROPS
 })
 @JsonTypeName("SamplePropertyContainerWithId")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SamplePropertyContainerWithId {
   public static final String URI = "uri";
   private URI uri;
@@ -65,7 +63,7 @@ public class SamplePropertyContainerWithId {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +90,7 @@ public class SamplePropertyContainerWithId {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,7 +118,7 @@ public class SamplePropertyContainerWithId {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PROPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,17 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An anchor with a href representing a hyperlink object, which the client will open.  For possible attributes see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a 
  */
-@ApiModel(description = "An anchor with a href representing a hyperlink object, which the client will open.  For possible attributes see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a ")
 @JsonPropertyOrder({
   Link.URL,
   Link.DOWNLOAD,
@@ -38,7 +36,7 @@ import javax.validation.Valid;
   Link.TARGET
 })
 @JsonTypeName("Link")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Link {
   public static final String URL = "url";
   private String url;
@@ -106,7 +104,7 @@ public class Link {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The URL that this link points to. It will be anchor's href attribute's value.")
+
   @JsonProperty(URL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -133,7 +131,7 @@ public class Link {
    * @return download
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Specifies if created anchor should contain download attribute.")
+
   @JsonProperty(DOWNLOAD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -160,7 +158,7 @@ public class Link {
    * @return filename
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Used only when download is true, it will download attribute's value")
+
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +185,7 @@ public class Link {
    * @return target
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

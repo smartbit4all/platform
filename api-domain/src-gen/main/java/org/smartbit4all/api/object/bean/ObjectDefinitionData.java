@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The object definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. 
  */
-@ApiModel(description = "The object definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. ")
 @JsonPropertyOrder({
   ObjectDefinitionData.URI,
   ObjectDefinitionData.QUALIFIED_NAME,
@@ -45,7 +44,7 @@ import javax.validation.Valid;
   ObjectDefinitionData.OUTGOING_REFERENCES
 })
 @JsonTypeName("ObjectDefinitionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectDefinitionData {
   public static final String URI = "uri";
   private URI uri;
@@ -60,10 +59,10 @@ public class ObjectDefinitionData {
   private String keyProperty;
 
   public static final String PROPERTIES = "properties";
-  private List<PropertyDefinitionData> properties = new ArrayList<>();
+  private List<@Valid PropertyDefinitionData> properties = new ArrayList<>();
 
   public static final String OUTGOING_REFERENCES = "outgoingReferences";
-  private List<ReferenceDefinitionData> outgoingReferences = new ArrayList<>();
+  private List<@Valid ReferenceDefinitionData> outgoingReferences = new ArrayList<>();
 
   public ObjectDefinitionData() { 
   }
@@ -81,7 +80,7 @@ public class ObjectDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/com/smartbit4all/mydomain/model/MyObject could be a calculated URI for a given reference. The object definition ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +108,7 @@ public class ObjectDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -136,7 +135,7 @@ public class ObjectDefinitionData {
    * @return uriProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
+
   @JsonProperty(URI_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,7 +162,7 @@ public class ObjectDefinitionData {
    * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. ")
+
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,7 +178,7 @@ public class ObjectDefinitionData {
   }
 
 
-  public ObjectDefinitionData properties(List<PropertyDefinitionData> properties) {
+  public ObjectDefinitionData properties(List<@Valid PropertyDefinitionData> properties) {
     
     this.properties = properties;
     return this;
@@ -197,23 +196,23 @@ public class ObjectDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<PropertyDefinitionData> getProperties() {
+  public List<@Valid PropertyDefinitionData> getProperties() {
     return properties;
   }
 
 
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setProperties(List<PropertyDefinitionData> properties) {
+  public void setProperties(List<@Valid PropertyDefinitionData> properties) {
     this.properties = properties;
   }
 
 
-  public ObjectDefinitionData outgoingReferences(List<ReferenceDefinitionData> outgoingReferences) {
+  public ObjectDefinitionData outgoingReferences(List<@Valid ReferenceDefinitionData> outgoingReferences) {
     
     this.outgoingReferences = outgoingReferences;
     return this;
@@ -231,18 +230,18 @@ public class ObjectDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OUTGOING_REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ReferenceDefinitionData> getOutgoingReferences() {
+  public List<@Valid ReferenceDefinitionData> getOutgoingReferences() {
     return outgoingReferences;
   }
 
 
   @JsonProperty(OUTGOING_REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOutgoingReferences(List<ReferenceDefinitionData> outgoingReferences) {
+  public void setOutgoingReferences(List<@Valid ReferenceDefinitionData> outgoingReferences) {
     this.outgoingReferences = outgoingReferences;
   }
 

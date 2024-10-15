@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.ServerRequestType;
 import org.smartbit4all.api.view.bean.StatisticRecord;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The server request execution statistic is an object for the actuator infrastructure. It is initiated for every view-widget-action and contains the minimum, average and maximum execution times. It collects from the server start. 
  */
-@ApiModel(description = "The server request execution statistic is an object for the actuator infrastructure. It is initiated for every view-widget-action and contains the minimum, average and maximum execution times. It collects from the server start. ")
 @JsonPropertyOrder({
   ServerRequestExecutionStat.ID,
   ServerRequestExecutionStat.VIEW_NAME,
@@ -46,7 +44,7 @@ import javax.validation.Valid;
   ServerRequestExecutionStat.TYPE
 })
 @JsonTypeName("ServerRequestExecutionStat")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServerRequestExecutionStat {
   public static final String ID = "id";
   private String id;
@@ -92,7 +90,7 @@ public class ServerRequestExecutionStat {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier of the statistical entry. The view - widget - action format.")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -119,7 +117,7 @@ public class ServerRequestExecutionStat {
    * @return viewName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the view the request is performed on.")
+
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,7 +144,7 @@ public class ServerRequestExecutionStat {
    * @return widgetId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier of the widget if it is a widget action perform.")
+
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,7 +171,7 @@ public class ServerRequestExecutionStat {
    * @return actionCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier of the action performed.")
+
   @JsonProperty(ACTION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -201,7 +199,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FULL_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -229,7 +227,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -257,7 +255,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WRITE_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -285,7 +283,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(READ_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -313,7 +311,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(READ_STAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -341,7 +339,7 @@ public class ServerRequestExecutionStat {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

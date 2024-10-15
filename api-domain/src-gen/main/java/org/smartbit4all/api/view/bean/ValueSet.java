@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, 
  */
-@ApiModel(description = "An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used  as a request item, without specifying valueSetData, ")
 @JsonPropertyOrder({
   ValueSet.VALUE_SET_NAME,
   ValueSet.VALUE_SET_DATA,
   ValueSet.TIMESTAMP
 })
 @JsonTypeName("ValueSet")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSet {
   public static final String VALUE_SET_NAME = "valueSetName";
   private String valueSetName;
@@ -63,7 +61,7 @@ public class ValueSet {
    * @return valueSetName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_SET_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -91,7 +89,7 @@ public class ValueSet {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_SET_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +116,7 @@ public class ValueSet {
    * @return timestamp
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ValidationItem
@@ -36,7 +35,7 @@ import javax.validation.Valid;
   ValidationItem.MESSAGE
 })
 @JsonTypeName("ValidationItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValidationItem {
   public static final String SEVERITY = "severity";
   private ObjectValidationSeverity severity = null;
@@ -59,7 +58,7 @@ public class ValidationItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -86,7 +85,7 @@ public class ValidationItem {
    * @return message
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

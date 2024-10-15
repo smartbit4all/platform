@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
@@ -30,13 +29,12 @@ import org.smartbit4all.api.view.bean.UiActionTooltip;
 import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes the appearance (as a button) and the properties of the related dialogs of a UiAction. 
  */
-@ApiModel(description = "Describes the appearance (as a button) and the properties of the related dialogs of a UiAction. ")
 @JsonPropertyOrder({
   UiActionDescriptor.TITLE,
   UiActionDescriptor.TYPE,
@@ -54,7 +52,7 @@ import javax.validation.Valid;
   UiActionDescriptor.TOOLTIP
 })
 @JsonTypeName("UiActionDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionDescriptor {
   public static final String TITLE = "title";
   private String title;
@@ -113,7 +111,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +140,7 @@ public class UiActionDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -170,7 +168,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -197,7 +195,7 @@ public class UiActionDescriptor {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -224,7 +222,7 @@ public class UiActionDescriptor {
    * @return iconColor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -252,7 +250,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +278,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -308,7 +306,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONFIRM_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -336,7 +334,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INPUT_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -364,7 +362,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INPUT2_DIALOG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -392,7 +390,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FEEDBACK_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -419,7 +417,7 @@ public class UiActionDescriptor {
    * @return feedbackText
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FEEDBACK_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -447,7 +445,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UPLOAD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -475,7 +473,7 @@ public class UiActionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

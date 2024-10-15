@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * AthenticationResult
@@ -36,7 +35,7 @@ import javax.validation.Valid;
   AthenticationResult.TOKEN
 })
 @JsonTypeName("AthenticationResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AthenticationResult {
   public static final String FULLNAME = "fullname";
   private String fullname;
@@ -62,7 +61,7 @@ public class AthenticationResult {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FULLNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +89,7 @@ public class AthenticationResult {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -118,7 +117,7 @@ public class AthenticationResult {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TOKEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

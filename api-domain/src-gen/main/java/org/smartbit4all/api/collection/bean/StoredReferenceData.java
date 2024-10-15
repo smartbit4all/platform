@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The contained storage object for the StoredReference that contains an object as data. 
  */
-@ApiModel(description = "The contained storage object for the StoredReference that contains an object as data. ")
 @JsonPropertyOrder({
   StoredReferenceData.URI,
   StoredReferenceData.NAME,
   StoredReferenceData.REF_OBJECT
 })
 @JsonTypeName("StoredReferenceData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredReferenceData {
   public static final String URI = "uri";
   private URI uri;
@@ -65,7 +63,7 @@ public class StoredReferenceData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +91,7 @@ public class StoredReferenceData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +118,7 @@ public class StoredReferenceData {
    * @return refObject
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REF_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

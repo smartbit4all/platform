@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ValueSetDefinitionData
@@ -49,7 +49,7 @@ import javax.validation.Valid;
   ValueSetDefinitionData.EXPRESSION
 })
 @JsonTypeName("ValueSetDefinitionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetDefinitionData {
   public static final String KIND = "kind";
   private ValueSetDefinitionKind kind;
@@ -100,7 +100,7 @@ public class ValueSetDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -128,7 +128,7 @@ public class ValueSetDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The logical name of the given value set. In case of an enum it is the fully qualified name of the enum class. ")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -156,7 +156,7 @@ public class ValueSetDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The object definition of the value set.")
+
   @JsonProperty(OBJECT_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +183,7 @@ public class ValueSetDefinitionData {
    * @return typeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the type class.")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,7 +210,7 @@ public class ValueSetDefinitionData {
    * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. If it is not set then the default is the URI if it exists in the given object. Or it will be the code or id in this order. ")
+
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -237,7 +237,7 @@ public class ValueSetDefinitionData {
    * @return storageSchema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the storage schema. Necessary to access the objects or the container (list or map).")
+
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -264,7 +264,7 @@ public class ValueSetDefinitionData {
    * @return containerName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.")
+
   @JsonProperty(CONTAINER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -291,7 +291,7 @@ public class ValueSetDefinitionData {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Optional icon code for the given value set.")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -326,7 +326,7 @@ public class ValueSetDefinitionData {
    * @return inlineValues
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value list that contains the value objects.")
+
   @JsonProperty(INLINE_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -361,7 +361,7 @@ public class ValueSetDefinitionData {
    * @return keys
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The list of keys. If we have this")
+
   @JsonProperty(KEYS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -389,7 +389,7 @@ public class ValueSetDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

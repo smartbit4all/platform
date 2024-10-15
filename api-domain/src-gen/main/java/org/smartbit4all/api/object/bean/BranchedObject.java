@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The object branch data is used to hold all the operations about an object on a branch. This object is constructed when the first opartion is executed with the given object. 
  */
-@ApiModel(description = "The object branch data is used to hold all the operations about an object on a branch. This object is constructed when the first opartion is executed with the given object. ")
 @JsonPropertyOrder({
   BranchedObject.SOURCE_OBJECT_LATEST_URI,
   BranchedObject.BRANCHED_OBJECT_LATEST_URI,
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   BranchedObject.OPERATIONS
 })
 @JsonTypeName("BranchedObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObject {
   public static final String SOURCE_OBJECT_LATEST_URI = "sourceObjectLatestUri";
   private URI sourceObjectLatestUri;
@@ -55,7 +54,7 @@ public class BranchedObject {
   private StoredCollectionDescriptor collectionDescriptor = null;
 
   public static final String OPERATIONS = "operations";
-  private List<BranchOperation> operations = new ArrayList<>();
+  private List<@Valid BranchOperation> operations = new ArrayList<>();
 
   public BranchedObject() { 
   }
@@ -72,7 +71,7 @@ public class BranchedObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The latest uri of the source object.")
+
   @JsonProperty(SOURCE_OBJECT_LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +99,7 @@ public class BranchedObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The latest uri of the branched object.")
+
   @JsonProperty(BRANCHED_OBJECT_LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +127,7 @@ public class BranchedObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "if the branched object is a collection api managed stored collection then we save the descriptor into the stored object for further processing. ")
+
   @JsonProperty(COLLECTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +143,7 @@ public class BranchedObject {
   }
 
 
-  public BranchedObject operations(List<BranchOperation> operations) {
+  public BranchedObject operations(List<@Valid BranchOperation> operations) {
     
     this.operations = operations;
     return this;
@@ -162,18 +161,18 @@ public class BranchedObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. ")
+
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<BranchOperation> getOperations() {
+  public List<@Valid BranchOperation> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperations(List<BranchOperation> operations) {
+  public void setOperations(List<@Valid BranchOperation> operations) {
     this.operations = operations;
   }
 

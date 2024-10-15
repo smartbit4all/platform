@@ -1,8 +1,9 @@
 package org.smartbit4all.sec.utils;
 
 import java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartbit4all.api.session.SessionApi;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -23,14 +24,15 @@ public class SecurityConfigUtils {
   private SecurityConfigUtils() {}
 
   public static void disableRedirectOnAccessDeniedForAnonymous(HttpSecurity http) throws Exception {
-    http.exceptionHandling()
-        .addObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>() {
-          @Override
-          public <O extends ExceptionTranslationFilter> O postProcess(O object) {
-            object.setAuthenticationTrustResolver(new DisabledAuthenticationTrustResolver());
-            return object;
-          }
-        });
+    http
+        .exceptionHandling(
+            it -> it.addObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>() {
+              @Override
+              public <O extends ExceptionTranslationFilter> O postProcess(O object) {
+                object.setAuthenticationTrustResolver(new DisabledAuthenticationTrustResolver());
+                return object;
+              }
+            }));
   }
 
   private static class DisabledAuthenticationTrustResolver implements AuthenticationTrustResolver {
@@ -57,7 +59,8 @@ public class SecurityConfigUtils {
       SessionApi sessionApi, ClientRegistrationRepository clientRegistrationRepository) {
 
     DefaultOAuth2AuthorizationRequestResolver resolver =
-        new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository,
+        new DefaultOAuth2AuthorizationRequestResolver(
+            clientRegistrationRepository,
             OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
     resolver.setAuthorizationRequestCustomizer(builder -> {
       String sessionUriTxt = null;
@@ -88,7 +91,8 @@ public class SecurityConfigUtils {
 
       @Override
       public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest,
-          HttpServletRequest request, HttpServletResponse response) {
+                                           HttpServletRequest request,
+                                           HttpServletResponse response) {
 
         String state = authorizationRequest.getState();
 
@@ -99,15 +103,17 @@ public class SecurityConfigUtils {
           throw new IllegalStateException("There is no current session available", e);
         }
         // FIXME get the existing map and add the new uri there if multiple oauth flow is present
-        request.getSession().setAttribute(SB4_SESSION_URI,
+        request.getSession().setAttribute(
+            SB4_SESSION_URI,
             Collections.singletonMap(state, sessionUriTxt));
 
         defaultRepo.saveAuthorizationRequest(authorizationRequest, request, response);
       }
 
       @Override
-      public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request) {
-        return defaultRepo.removeAuthorizationRequest(request);
+      public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request,
+                                                                   HttpServletResponse response) {
+        return defaultRepo.removeAuthorizationRequest(request, response);
       }
     };
   }

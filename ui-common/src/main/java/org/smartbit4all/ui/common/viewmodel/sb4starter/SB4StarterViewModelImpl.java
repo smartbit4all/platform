@@ -156,13 +156,13 @@ public class SB4StarterViewModelImpl extends ViewModelImpl<SB4StarterModel>
     URI uri = URI.create(baseUrl);
 
     SB4Command downloadCommand =
-        createaDefaultSB4Command(CommandKind.CONTENTACCESSDOWNLOAD, uri, startFile);
+        createaDefaultSB4Command(CommandKind.CONTENT_ACCESS_DOWNLOAD, uri, startFile);
 
     SB4Command wordEditCommand =
         createaDefaultSB4Command(editCommandKind, uri, startFile);
 
     SB4Command uploadCommand =
-        createaDefaultSB4Command(CommandKind.CONTENTACCESSUPLOAD, uri, resultFile);
+        createaDefaultSB4Command(CommandKind.CONTENT_ACCESS_UPLOAD, uri, resultFile);
 
     SB4Starter starter = new SB4Starter()
         .id(UUID.randomUUID())

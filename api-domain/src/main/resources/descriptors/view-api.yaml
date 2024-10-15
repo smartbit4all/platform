@@ -165,7 +165,7 @@ paths:
         content:
           application/json:
             schema:
-              type: UiActionRequest
+              $ref: '#/components/schemas/UiActionRequest'
       responses:
         '200':
           description: ''
@@ -273,7 +273,7 @@ paths:
         content:
           application/json:
             schema:
-              type: UiActionRequest
+              $ref: '#/components/schemas/UiActionRequest'
       responses:
         '200':
           description: ''
@@ -310,7 +310,7 @@ paths:
         content:
           application/json:
             schema:
-              type: UiActionRequest
+              $ref: '#/components/schemas/UiActionRequest'
       responses:
         '200':
           description: ''
@@ -439,7 +439,7 @@ paths:
     put:
       tags:
         - View
-      summary:
+      summary: Show Published View
       operationId: 'showPublishedView'
       parameters:
         - in: path
@@ -663,7 +663,6 @@ components:
       description: |
         An event handler is a special callback function to call when the given event is occurred. So the event handler
         can be an action as is or can be fired on a before or after event
-      required: []
       properties:
         path:
           type: array
@@ -914,7 +913,6 @@ components:
           type: string
           format: uuid
         state:
-          description: Updated state of View.
           $ref: '#/components/schemas/ViewState'
     ViewContextUpdate:
       description: State update of a ViewContext.
@@ -1020,7 +1018,7 @@ components:
         - multiple_files
     UiActionRequest:
       type: object
-      description:
+      description: A request to perform user action initiated on the client interface
       required: [code, params]
       properties:
         code:
@@ -1087,10 +1085,8 @@ components:
           format: int64
           default: 0
         request:
-          description: The UiRequest in the server request.
           $ref: '#/components/schemas/UiActionRequest'
         type:
-          description: The request type like a normal action or a widget action.
           $ref: '#/components/schemas/ServerRequestType'
     ServerRequestType:
       enum:
@@ -1156,22 +1152,16 @@ components:
           description: The identifier of the action performed.
           type: string
         fullStat:
-          description: The statistic of the whole execution.
           $ref: '#/components/schemas/StatisticRecord'
         writeCount:
-          description: The statistic of the writes.
           $ref: '#/components/schemas/StatisticRecord'
         writeStat:
-          description: The statistic of the writes.
           $ref: '#/components/schemas/StatisticRecord'
         readCount:
-          description: The statistic of the reads.
           $ref: '#/components/schemas/StatisticRecord'
         readStat:
-          description: The statistic of the reads.
           $ref: '#/components/schemas/StatisticRecord'
         type:
-          description: The request type like a normal action or a widget action.
           $ref: '#/components/schemas/ServerRequestType'
     SmartLinkData:
       description: |
@@ -1346,7 +1336,6 @@ components:
           format: int64
     DataChange:
       type: object
-      description:
       properties:
         kind:
           $ref: '#/components/schemas/DataChangeKind'
@@ -1359,7 +1348,6 @@ components:
           additionalProperties: true
     DataChangeEvent:
       type: object
-      description:
       properties:
         kind:
           $ref: '#/components/schemas/DataChangeKind'
@@ -1458,7 +1446,7 @@ components:
       required: [style, classesToAdd, classesToRemove]
       properties:
         style:
-          type: string
+          type: object
           additionalProperties:
             type: string
         classesToAdd:

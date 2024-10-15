@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.Message;
@@ -30,8 +30,8 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UIState
@@ -43,7 +43,7 @@ import javax.validation.Valid;
   UIState.VIEWS
 })
 @JsonTypeName("UIState")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UIState {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -55,7 +55,7 @@ public class UIState {
   private Message messageToOpen;
 
   public static final String VIEWS = "views";
-  private List<ViewModelData> views = new ArrayList<>();
+  private List<@Valid ViewModelData> views = new ArrayList<>();
 
   public UIState() { 
   }
@@ -73,7 +73,7 @@ public class UIState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -101,7 +101,7 @@ public class UIState {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UI_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +129,7 @@ public class UIState {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +145,7 @@ public class UIState {
   }
 
 
-  public UIState views(List<ViewModelData> views) {
+  public UIState views(List<@Valid ViewModelData> views) {
     
     this.views = views;
     return this;
@@ -163,18 +163,18 @@ public class UIState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewModelData> getViews() {
+  public List<@Valid ViewModelData> getViews() {
     return views;
   }
 
 
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViews(List<ViewModelData> views) {
+  public void setViews(List<@Valid ViewModelData> views) {
     this.views = views;
   }
 

@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. 
  */
-@ApiModel(description = "The ACL entry refers to one subject and defines the operations available for the given subject. If it is a set then ACL set is an oragnization unit  for other ACLEntries referring to the Subjects. An ACLSet can define the operation that can be all the set operations like: UNION, INTERSECT, DIF, SYMMETRICDIF. It is used when evaluating the ACL and calculate the operations available for a user or try to identify the set of users for an operation. ")
 @JsonPropertyOrder({
   ACLEntry.ENTRY_KIND,
   ACLEntry.SUBJECT,
@@ -45,7 +44,7 @@ import javax.validation.Valid;
   ACLEntry.ENTRIES
 })
 @JsonTypeName("ACLEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLEntry {
   /**
    * The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. 
@@ -172,10 +171,10 @@ public class ACLEntry {
   private List<String> operations = new ArrayList<>();
 
   public static final String OPERATION_OBJECTS = "operationObjects";
-  private List<ACLOperation> operationObjects = new ArrayList<>();
+  private List<@Valid ACLOperation> operationObjects = new ArrayList<>();
 
   public static final String ENTRIES = "entries";
-  private List<ACLEntry> entries = new ArrayList<>();
+  private List<@Valid ACLEntry> entries = new ArrayList<>();
 
   public ACLEntry() { 
   }
@@ -192,7 +191,7 @@ public class ACLEntry {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The entry can refer to a subject that defines a set of users. Or else it can be a set of other ACLEnries recursively. The evaluation is using the theories if mathematical sets. ")
+
   @JsonProperty(ENTRY_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -220,7 +219,7 @@ public class ACLEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,7 +246,7 @@ public class ACLEntry {
    * @return subjectCondition
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. ")
+
   @JsonProperty(SUBJECT_CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -274,7 +273,7 @@ public class ACLEntry {
    * @return setOperation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SET_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -307,7 +306,7 @@ public class ACLEntry {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique identifiers of the operations defined in the given application. This list contains all the operation names attached to this subject. For historical reason this list and the operationObjects are stored paralel. ")
+
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -323,7 +322,7 @@ public class ACLEntry {
   }
 
 
-  public ACLEntry operationObjects(List<ACLOperation> operationObjects) {
+  public ACLEntry operationObjects(List<@Valid ACLOperation> operationObjects) {
     
     this.operationObjects = operationObjects;
     return this;
@@ -341,23 +340,23 @@ public class ACLEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The list of operation objects attached to the subject of this entry. It will be the primary option for attaching operation to the subject but for historical reason the operations list is also maintained. ")
+
   @JsonProperty(OPERATION_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLOperation> getOperationObjects() {
+  public List<@Valid ACLOperation> getOperationObjects() {
     return operationObjects;
   }
 
 
   @JsonProperty(OPERATION_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperationObjects(List<ACLOperation> operationObjects) {
+  public void setOperationObjects(List<@Valid ACLOperation> operationObjects) {
     this.operationObjects = operationObjects;
   }
 
 
-  public ACLEntry entries(List<ACLEntry> entries) {
+  public ACLEntry entries(List<@Valid ACLEntry> entries) {
     
     this.entries = entries;
     return this;
@@ -375,18 +374,18 @@ public class ACLEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The list if entries in the given set if the kind is SET. ")
+
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLEntry> getEntries() {
+  public List<@Valid ACLEntry> getEntries() {
     return entries;
   }
 
 
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setEntries(List<ACLEntry> entries) {
+  public void setEntries(List<@Valid ACLEntry> entries) {
     this.entries = entries;
   }
 

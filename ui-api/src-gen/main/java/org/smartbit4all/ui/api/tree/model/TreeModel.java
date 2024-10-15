@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * TreeModel
@@ -38,10 +38,10 @@ import javax.validation.Valid;
   TreeModel.SELECTED_NODE_IDENTIFIER
 })
 @JsonTypeName("TreeModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TreeModel {
   public static final String ROOT_NODES = "rootNodes";
-  private List<TreeNode> rootNodes = new ArrayList<>();
+  private List<@Valid TreeNode> rootNodes = new ArrayList<>();
 
   public static final String SELECTED_NODE_IDENTIFIER = "selectedNodeIdentifier";
   private String selectedNodeIdentifier;
@@ -49,7 +49,7 @@ public class TreeModel {
   public TreeModel() { 
   }
 
-  public TreeModel rootNodes(List<TreeNode> rootNodes) {
+  public TreeModel rootNodes(List<@Valid TreeNode> rootNodes) {
     
     this.rootNodes = rootNodes;
     return this;
@@ -67,18 +67,18 @@ public class TreeModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ROOT_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<TreeNode> getRootNodes() {
+  public List<@Valid TreeNode> getRootNodes() {
     return rootNodes;
   }
 
 
   @JsonProperty(ROOT_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRootNodes(List<TreeNode> rootNodes) {
+  public void setRootNodes(List<@Valid TreeNode> rootNodes) {
     this.rootNodes = rootNodes;
   }
 
@@ -94,7 +94,7 @@ public class TreeModel {
    * @return selectedNodeIdentifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_NODE_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

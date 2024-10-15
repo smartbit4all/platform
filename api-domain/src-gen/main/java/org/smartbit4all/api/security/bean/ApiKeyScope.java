@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * \&quot;The api scope that tha apiKey can handle\&quot; 
  */
-@ApiModel(description = "\"The api scope that tha apiKey can handle\" ")
 @JsonPropertyOrder({
   ApiKeyScope.URI,
   ApiKeyScope.NAME,
   ApiKeyScope.PATH_PATTERN
 })
 @JsonTypeName("ApiKeyScope")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiKeyScope {
   public static final String URI = "uri";
   private URI uri;
@@ -65,7 +63,7 @@ public class ApiKeyScope {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The identifier of the api key")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +91,7 @@ public class ApiKeyScope {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +118,7 @@ public class ApiKeyScope {
    * @return pathPattern
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "A regex pattern that will be used to validate the incoming http request uri.")
+
   @JsonProperty(PATH_PATTERN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

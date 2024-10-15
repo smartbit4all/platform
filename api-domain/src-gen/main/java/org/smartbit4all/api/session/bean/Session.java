@@ -20,19 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Session
@@ -49,7 +49,7 @@ import javax.validation.Valid;
   Session.CREATED_AT
 })
 @JsonTypeName("Session")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Session {
   public static final String URI = "uri";
   private URI uri;
@@ -64,7 +64,7 @@ public class Session {
   private String locale;
 
   public static final String AUTHENTICATIONS = "authentications";
-  private List<AccountInfo> authentications = new ArrayList<>();
+  private List<@Valid AccountInfo> authentications = new ArrayList<>();
 
   public static final String USER = "user";
   private URI user;
@@ -93,7 +93,7 @@ public class Session {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +121,7 @@ public class Session {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,7 +149,7 @@ public class Session {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The expiration time of the current refresh token. If this time is over then the session is definetely invalid. ")
+
   @JsonProperty(REFRESH_EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,7 +176,7 @@ public class Session {
    * @return locale
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +192,7 @@ public class Session {
   }
 
 
-  public Session authentications(List<AccountInfo> authentications) {
+  public Session authentications(List<@Valid AccountInfo> authentications) {
     
     this.authentications = authentications;
     return this;
@@ -210,18 +210,18 @@ public class Session {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<AccountInfo> getAuthentications() {
+  public List<@Valid AccountInfo> getAuthentications() {
     return authentications;
   }
 
 
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAuthentications(List<AccountInfo> authentications) {
+  public void setAuthentications(List<@Valid AccountInfo> authentications) {
     this.authentications = authentications;
   }
 
@@ -238,7 +238,7 @@ public class Session {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -271,7 +271,7 @@ public class Session {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -305,7 +305,7 @@ public class Session {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "ViewContexts in this session, URIs by UUID.")
+
   @JsonProperty(VIEW_CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -333,7 +333,7 @@ public class Session {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

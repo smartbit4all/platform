@@ -20,34 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatterParameter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat but later on it can use different formatters if it is necessary. 
  */
-@ApiModel(description = "This object define a format string and a type of formatter to use. By default the formatter is a Java MessageFormat but later on it can use different formatters if it is necessary. ")
 @JsonPropertyOrder({
   ObjectPropertyFormatter.FORMAT_STRING,
   ObjectPropertyFormatter.PARAMETERS,
   ObjectPropertyFormatter.REQUIRED_PROPERTIES
 })
 @JsonTypeName("ObjectPropertyFormatter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyFormatter {
   public static final String FORMAT_STRING = "formatString";
   private String formatString;
 
   public static final String PARAMETERS = "parameters";
-  private List<ObjectPropertyFormatterParameter> parameters = new ArrayList<>();
+  private List<@Valid ObjectPropertyFormatterParameter> parameters = new ArrayList<>();
 
   public static final String REQUIRED_PROPERTIES = "requiredProperties";
   private List<URI> requiredProperties = new ArrayList<>();
@@ -66,7 +65,7 @@ public class ObjectPropertyFormatter {
    * @return formatString
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The format string by the syntactical rules of the formatter. ")
+
   @JsonProperty(FORMAT_STRING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,7 +81,7 @@ public class ObjectPropertyFormatter {
   }
 
 
-  public ObjectPropertyFormatter parameters(List<ObjectPropertyFormatterParameter> parameters) {
+  public ObjectPropertyFormatter parameters(List<@Valid ObjectPropertyFormatterParameter> parameters) {
     
     this.parameters = parameters;
     return this;
@@ -100,18 +99,18 @@ public class ObjectPropertyFormatter {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The properties in order bound to the given parameter. ")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectPropertyFormatterParameter> getParameters() {
+  public List<@Valid ObjectPropertyFormatterParameter> getParameters() {
     return parameters;
   }
 
 
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setParameters(List<ObjectPropertyFormatterParameter> parameters) {
+  public void setParameters(List<@Valid ObjectPropertyFormatterParameter> parameters) {
     this.parameters = parameters;
   }
 
@@ -134,7 +133,7 @@ public class ObjectPropertyFormatter {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Properties (referenced as ObjectPropertyDescriptor) which are needed to be present to run this formatter.")
+
   @JsonProperty(REQUIRED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

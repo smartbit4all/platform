@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Defines the desired layout for displaying a particular object and the various constraints to be enforced on it. 
  */
-@ApiModel(description = "Defines the desired layout for displaying a particular object and the various constraints to be enforced on it. ")
 @JsonPropertyOrder({
   ObjectLayoutDescriptor.URI,
   ObjectLayoutDescriptor.NAME,
@@ -45,7 +44,7 @@ import javax.validation.Valid;
   ObjectLayoutDescriptor.CONSTRAINTS
 })
 @JsonTypeName("ObjectLayoutDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLayoutDescriptor {
   public static final String URI = "uri";
   private URI uri;
@@ -57,7 +56,7 @@ public class ObjectLayoutDescriptor {
   private Map<String, SmartComponentLayoutDefinition> layouts = new HashMap<>();
 
   public static final String CONSTRAINTS = "constraints";
-  private List<ObjectConstraintDescriptor> constraints = new ArrayList<>();
+  private List<@Valid ObjectConstraintDescriptor> constraints = new ArrayList<>();
 
   public ObjectLayoutDescriptor() { 
   }
@@ -75,7 +74,7 @@ public class ObjectLayoutDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,7 +102,7 @@ public class ObjectLayoutDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "A unique string name for the layout descriptor to be used as a key in mappings. ")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -137,7 +136,7 @@ public class ObjectLayoutDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The layout definition for the object extension. The layouts are identified by their logical placeholder name that helps to identify the position of the given layout on the view. ")
+
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -153,7 +152,7 @@ public class ObjectLayoutDescriptor {
   }
 
 
-  public ObjectLayoutDescriptor constraints(List<ObjectConstraintDescriptor> constraints) {
+  public ObjectLayoutDescriptor constraints(List<@Valid ObjectConstraintDescriptor> constraints) {
     
     this.constraints = constraints;
     return this;
@@ -171,18 +170,18 @@ public class ObjectLayoutDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The constraints to be enforced for the object's layout. The condition for the application of a certain constraint descriptor can be customised by providing invocation request definitions to be used as predicates. ")
+
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectConstraintDescriptor> getConstraints() {
+  public List<@Valid ObjectConstraintDescriptor> getConstraints() {
     return constraints;
   }
 
 
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setConstraints(List<ObjectConstraintDescriptor> constraints) {
+  public void setConstraints(List<@Valid ObjectConstraintDescriptor> constraints) {
     this.constraints = constraints;
   }
 

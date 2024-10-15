@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. 
  */
-@ApiModel(description = "If a subject is referred by an ACLEntry and a given operation is selected for this subject then an ACLOperation object is added to the list. The operation has a unique name to identify all over the given ACL. There can be additional parameters in the object as additional properties. The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
 @JsonPropertyOrder({
   ACLOperation.NAME,
   ACLOperation.COMMENT,
   ACLOperation.TYPE
 })
 @JsonTypeName("ACLOperation")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLOperation {
   public static final String NAME = "name";
   private String name;
@@ -63,7 +61,7 @@ public class ACLOperation {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the operation that is the same as the one stored in the operations list.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +88,7 @@ public class ACLOperation {
    * @return comment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "This is a comment that can be set to specify the reason of having this operation set for  the given subject. ")
+
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +115,7 @@ public class ACLOperation {
    * @return type
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If needed, a type can specified for this ALCSubject's operation. ")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

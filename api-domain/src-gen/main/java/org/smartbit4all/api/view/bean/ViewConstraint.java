@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The view constraint object encapsulate the constraints can be applied to any view genericly. It consists of compenet constraints and many more. 
  */
-@ApiModel(description = "The view constraint object encapsulate the constraints can be applied to any view genericly. It consists of compenet constraints and many more. ")
 @JsonPropertyOrder({
   ViewConstraint.COMPONENT_CONSTRAINTS
 })
 @JsonTypeName("ViewConstraint")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewConstraint {
   public static final String COMPONENT_CONSTRAINTS = "componentConstraints";
-  private List<ComponentConstraint> componentConstraints = new ArrayList<>();
+  private List<@Valid ComponentConstraint> componentConstraints = new ArrayList<>();
 
   public ViewConstraint() { 
   }
 
-  public ViewConstraint componentConstraints(List<ComponentConstraint> componentConstraints) {
+  public ViewConstraint componentConstraints(List<@Valid ComponentConstraint> componentConstraints) {
     
     this.componentConstraints = componentConstraints;
     return this;
@@ -64,18 +63,18 @@ public class ViewConstraint {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COMPONENT_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ComponentConstraint> getComponentConstraints() {
+  public List<@Valid ComponentConstraint> getComponentConstraints() {
     return componentConstraints;
   }
 
 
   @JsonProperty(COMPONENT_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setComponentConstraints(List<ComponentConstraint> componentConstraints) {
+  public void setComponentConstraints(List<@Valid ComponentConstraint> componentConstraints) {
     this.componentConstraints = componentConstraints;
   }
 

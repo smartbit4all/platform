@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.sb4starter.bean.SB4Command;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SB4Starter
@@ -40,13 +40,13 @@ import javax.validation.Valid;
   SB4Starter.KEEP_WORKING_DIRECTORY
 })
 @JsonTypeName("SB4Starter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4Starter {
   public static final String ID = "id";
   private UUID id;
 
   public static final String COMMANDS = "commands";
-  private List<SB4Command> commands = new ArrayList<>();
+  private List<@Valid SB4Command> commands = new ArrayList<>();
 
   public static final String KEEP_WORKING_DIRECTORY = "keepWorkingDirectory";
   private Boolean keepWorkingDirectory = false;
@@ -67,7 +67,7 @@ public class SB4Starter {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -83,7 +83,7 @@ public class SB4Starter {
   }
 
 
-  public SB4Starter commands(List<SB4Command> commands) {
+  public SB4Starter commands(List<@Valid SB4Command> commands) {
     
     this.commands = commands;
     return this;
@@ -101,18 +101,18 @@ public class SB4Starter {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SB4Command> getCommands() {
+  public List<@Valid SB4Command> getCommands() {
     return commands;
   }
 
 
   @JsonProperty(COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCommands(List<SB4Command> commands) {
+  public void setCommands(List<@Valid SB4Command> commands) {
     this.commands = commands;
   }
 
@@ -128,7 +128,7 @@ public class SB4Starter {
    * @return keepWorkingDirectory
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KEEP_WORKING_DIRECTORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -32,13 +32,12 @@ import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The object property is the descriptor of a property available for a management. 
  */
-@ApiModel(description = "The object property is the descriptor of a property available for a management. ")
 @JsonPropertyOrder({
   ObjectPropertyDescriptor.URI,
   ObjectPropertyDescriptor.PROPERTY_NAME,
@@ -55,7 +54,7 @@ import javax.validation.Valid;
   ObjectPropertyDescriptor.TAGS
 })
 @JsonTypeName("ObjectPropertyDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyDescriptor {
   public static final String URI = "uri";
   private URI uri;
@@ -147,7 +146,7 @@ public class ObjectPropertyDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -175,7 +174,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The string name of the property to be used to access it on its host object. ")
+
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -203,7 +202,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Denotes whether this property is a navigable storage reference or an inline value on the host object. ")
+
   @JsonProperty(PROPERTY_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -231,7 +230,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The class of the object denoted by this property. This is the actual type used, thus for referential properties this value is likely \"java.net.URI\". ")
+
   @JsonProperty(PROPERTY_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -258,7 +257,7 @@ public class ObjectPropertyDescriptor {
    * @return referencedTypeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The class of the object referenced by the property. This shall have a value only, if this property is a REFERENCE property kind ")
+
   @JsonProperty(REFERENCED_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -286,7 +285,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(AGGREGATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -315,7 +314,7 @@ public class ObjectPropertyDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTY_STRUCTURE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -343,7 +342,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,7 +370,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The widget to use to render this property by default. If none are supplied during the construction of this instance, this property may be initialised using heuristics. ")
+
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -398,7 +397,7 @@ public class ObjectPropertyDescriptor {
    * @return defaultValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value this property should hold when an object owning this property is initialised. ")
+
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -426,7 +425,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_CONSTRAINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -453,7 +452,7 @@ public class ObjectPropertyDescriptor {
    * @return builtIn
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Marks whether this property shall be treated as a 'built-in' quality of the host object. Clients are not allowed to remove a 'built-in' property from an object descriptor. ")
+
   @JsonProperty(BUILT_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -486,7 +485,7 @@ public class ObjectPropertyDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "An unrestricted enumeration of tags used for qualifying this descriptor. Applications may use these fields freely to decide whether or not this instance is an appropriate candidate for assembling an ObjectDescriptor, or may disregard it completely. ")
+
   @JsonProperty(TAGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

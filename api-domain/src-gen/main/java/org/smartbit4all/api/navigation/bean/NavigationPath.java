@@ -20,26 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object can hold a navigation path in a navigation. The path must start with an entry object uri. This uri must be available as root or child of another node. The next path segment is an association and an entry uri again. This can be used for selection and using these path we can restore the state of a navigation. 
  */
-@ApiModel(description = "This object can hold a navigation path in a navigation. The path must start with an entry object uri. This uri must be available as root or child of another node. The next path segment is an association and an entry uri again. This can be used for selection and using these path we can restore the state of a navigation. ")
 @JsonPropertyOrder({
   NavigationPath.URI,
   NavigationPath.SEGMENTS
 })
 @JsonTypeName("NavigationPath")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationPath {
   public static final String URI = "uri";
   private URI uri;
@@ -62,7 +61,7 @@ public class NavigationPath {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The navigation can be saved using this.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class NavigationPath {
    * @return segments
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SEGMENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

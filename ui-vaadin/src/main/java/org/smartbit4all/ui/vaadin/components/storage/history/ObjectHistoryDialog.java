@@ -74,8 +74,9 @@ public class ObjectHistoryDialog extends Dialog {
     historyGrid.sort(Collections.singletonList(
         new GridSortOrder<>(createdAt, SortDirection.DESCENDING)));
 
-    VaadinBinders.bindItems(historyGrid, objectHistoryVM.objectHistory(),
-        ObjectHistory.OBJECT_HISTORY_ENTRIES);
+    // FIXME
+//    VaadinBinders.bindItems(historyGrid, objectHistoryVM.objectHistory(),
+//        ObjectHistory.OBJECT_HISTORY_ENTRIES);
 
     close = new Button("Bezárás", e -> close());
     close.setWidth("120px");

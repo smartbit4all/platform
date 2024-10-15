@@ -20,20 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The result item of an Object lookup. 
  */
-@ApiModel(description = "The result item of an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupResultItem.ID,
   ObjectLookupResultItem.SCORE_IN_PERCENT,
@@ -41,7 +38,7 @@ import javax.validation.Valid;
   ObjectLookupResultItem.OBJECT
 })
 @JsonTypeName("ObjectLookupResultItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupResultItem {
   public static final String ID = "id";
   private String id;
@@ -69,7 +66,7 @@ public class ObjectLookupResultItem {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the object found.")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +93,7 @@ public class ObjectLookupResultItem {
    * @return scoreInPercent
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The score of the found item converted to percent. 100% means that the given result is the one tat we are looking for.")
+
   @JsonProperty(SCORE_IN_PERCENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,7 +128,7 @@ public class ObjectLookupResultItem {
    * @return objectAsMap
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The object itself.")
+
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,7 +155,7 @@ public class ObjectLookupResultItem {
    * @return _object
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The object itself alternatively if it can be defined.")
+
   @JsonProperty(OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

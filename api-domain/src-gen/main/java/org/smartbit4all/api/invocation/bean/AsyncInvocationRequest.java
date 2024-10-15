@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * If the invocation is executed asynchronously we need to save te request itself and the result of the call as one object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is awaited by a logic then it can subscribe for the execution result. 
  */
-@ApiModel(description = "If the invocation is executed asynchronously we need to save te request itself and the result of the call as one object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is awaited by a logic then it can subscribe for the execution result. ")
 @JsonPropertyOrder({
   AsyncInvocationRequest.URI,
   AsyncInvocationRequest.RUNTIME_URI,
@@ -46,7 +45,7 @@ import javax.validation.Valid;
   AsyncInvocationRequest.RESULTS
 })
 @JsonTypeName("AsyncInvocationRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AsyncInvocationRequest {
   public static final String URI = "uri";
   private URI uri;
@@ -67,7 +66,7 @@ public class AsyncInvocationRequest {
   private List<URI> andThen = null;
 
   public static final String RESULTS = "results";
-  private List<InvocationResult> results = null;
+  private List<@Valid InvocationResult> results = null;
 
   public AsyncInvocationRequest() { 
   }
@@ -84,7 +83,7 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +111,7 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the appliocation runtime that is currently responsible for the givan invocation.")
+
   @JsonProperty(RUNTIME_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +138,7 @@ public class AsyncInvocationRequest {
    * @return channel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the channel handles the given invocation.")
+
   @JsonProperty(CHANNEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +166,7 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,7 +194,7 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EVALUATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -231,7 +230,7 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. ")
+
   @JsonProperty(AND_THEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,7 +246,7 @@ public class AsyncInvocationRequest {
   }
 
 
-  public AsyncInvocationRequest results(List<InvocationResult> results) {
+  public AsyncInvocationRequest results(List<@Valid InvocationResult> results) {
     
     this.results = results;
     return this;
@@ -267,18 +266,18 @@ public class AsyncInvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Contains the inline list of the results in historic order. If the invocation was executed more then one times  then we have all of them here. ")
+
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<InvocationResult> getResults() {
+  public List<@Valid InvocationResult> getResults() {
     return results;
   }
 
 
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResults(List<InvocationResult> results) {
+  public void setResults(List<@Valid InvocationResult> results) {
     this.results = results;
   }
 

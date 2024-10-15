@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * BeforeVersionData
@@ -35,7 +34,7 @@ import javax.validation.Valid;
   BeforeVersionData.VERSION
 })
 @JsonTypeName("BeforeVersionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BeforeVersionData {
   public static final String PATH = "path";
   private String path;
@@ -57,7 +56,7 @@ public class BeforeVersionData {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,7 +83,7 @@ public class BeforeVersionData {
    * @return version
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

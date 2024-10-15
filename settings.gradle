@@ -6,6 +6,8 @@ pluginManagement {
 
 rootProject.name = 'platform'
 
+includeBuild '../../develop/platform-gradle'
+
 include 'api'
 include 'api-domain'
 include 'api-cli-rest'
@@ -19,7 +21,7 @@ include 'ui-api-srv-rest'
 include 'ui-common'
 include 'ui-vaadin'
 include 'sec'
-include 'sec-ms365'
+// FIXME: include 'sec-ms365'
 include 'vaadin-sec'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'

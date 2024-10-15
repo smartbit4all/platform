@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The UiAction constraint is responsible for the constraints belong to a given action (button, menu option etc.) on the view. The UI must identify the action by the dataName that is a path of the data name separated by dot like dataSheet.field. 
  */
-@ApiModel(description = "The UiAction constraint is responsible for the constraints belong to a given action (button, menu option etc.) on the view. The UI must identify the action by the dataName that is a path of the data name separated by dot like dataSheet.field. ")
 @JsonPropertyOrder({
   UiActionConstraint.PATH,
   UiActionConstraint.VISIBLE,
   UiActionConstraint.ENABLED
 })
 @JsonTypeName("UiActionConstraint")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionConstraint {
   public static final String PATH = "path";
   private String path;
@@ -62,7 +60,7 @@ public class UiActionConstraint {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The path format is the following - dataSheet.actionCode.")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -89,7 +87,7 @@ public class UiActionConstraint {
    * @return visible
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,7 +114,7 @@ public class UiActionConstraint {
    * @return enabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

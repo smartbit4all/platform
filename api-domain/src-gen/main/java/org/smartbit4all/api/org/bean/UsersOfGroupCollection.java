@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.UsersOfGroup;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UsersOfGroupCollection
@@ -39,13 +39,13 @@ import javax.validation.Valid;
   UsersOfGroupCollection.USERS_OF_GROUP_COLLECTION
 })
 @JsonTypeName("UsersOfGroupCollection")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UsersOfGroupCollection {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String USERS_OF_GROUP_COLLECTION = "usersOfGroupCollection";
-  private List<UsersOfGroup> usersOfGroupCollection = new ArrayList<>();
+  private List<@Valid UsersOfGroup> usersOfGroupCollection = new ArrayList<>();
 
   public UsersOfGroupCollection() { 
   }
@@ -63,7 +63,7 @@ public class UsersOfGroupCollection {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -79,7 +79,7 @@ public class UsersOfGroupCollection {
   }
 
 
-  public UsersOfGroupCollection usersOfGroupCollection(List<UsersOfGroup> usersOfGroupCollection) {
+  public UsersOfGroupCollection usersOfGroupCollection(List<@Valid UsersOfGroup> usersOfGroupCollection) {
     
     this.usersOfGroupCollection = usersOfGroupCollection;
     return this;
@@ -97,18 +97,18 @@ public class UsersOfGroupCollection {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERS_OF_GROUP_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UsersOfGroup> getUsersOfGroupCollection() {
+  public List<@Valid UsersOfGroup> getUsersOfGroupCollection() {
     return usersOfGroupCollection;
   }
 
 
   @JsonProperty(USERS_OF_GROUP_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUsersOfGroupCollection(List<UsersOfGroup> usersOfGroupCollection) {
+  public void setUsersOfGroupCollection(List<@Valid UsersOfGroup> usersOfGroupCollection) {
     this.usersOfGroupCollection = usersOfGroupCollection;
   }
 

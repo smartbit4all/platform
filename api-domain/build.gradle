@@ -1,5 +1,5 @@
 plugins {
-	id "org.smartbit4all.platform.gradle.openapi"
+  id "org.smartbit4all.platform.gradle.openapi"
 
 }
 
@@ -8,52 +8,52 @@ dependencies {
 
 smartbit4all {
   openApi {
-  	modelPackagePrefix = "org.smartbit4all.api"
-  	modelPackagePostfix = "bean"
-  	importMappings = [
-  		"BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
-  		"BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
-  		"BinaryContentData": "org.smartbit4all.api.attachment.bean.BinaryContentData",
-  		"UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
-  		"User": "org.smartbit4all.api.org.bean.User",
-  		"Group": "org.smartbit4all.api.org.bean.Group",
-    	"LocalDateTime": "java.time.LocalDateTime",
-    	"LocalDate": "java.time.LocalDate",
-    	"LocalTime": "java.time.LocalTime",
-    	"UiAction": "org.smartbit4all.api.view.bean.UiAction",
-    	"UiActionDescriptor": "org.smartbit4all.api.view.bean.UiActionDescriptor",
-    	"UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
-    	"View": "org.smartbit4all.api.view.bean.View",
-    	"IconPosition": "org.smartbit4all.api.view.bean.IconPosition",
-  		"Value": "org.smartbit4all.api.value.bean.Value",
-  		"ValueSetData": "org.smartbit4all.api.value.bean.ValueSetData",
-  		"ValueSet": "org.smartbit4all.api.view.bean.ValueSet",
-  		"ValueSetDefinitionIdentifier": "org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier",
-  		"ComponentConstraint": "org.smartbit4all.api.view.bean.ComponentConstraint",
-  		"UiActionConstraint": "org.smartbit4all.api.view.bean.UiActionConstraint",
-  		"FilterExpressionFieldList": "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",
-  		"FilterExpressionOrderBy": "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
-  		"FilterExpressionBuilderModel": "org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel",
-  		"PropertyDefinitionData": "org.smartbit4all.api.object.bean.PropertyDefinitionData",
-  		"SmartComponentLayoutDefinition": "org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition",
-  		"SmartLayoutDefinition": "org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition",
-  		"SmartWidgetDefinition": "org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition",
-  		"SmartFilterType": "org.smartbit4all.api.filterexpression.bean.SmartFilterType",
-  		"InvocationRequest": "org.smartbit4all.api.invocation.bean.InvocationRequest",
-  		"InvocationRequestDefinition": "org.smartbit4all.api.invocation.bean.InvocationRequestDefinition",
-  		"BranchedObjectEntry": "org.smartbit4all.api.object.bean.BranchedObjectEntry",
-  		"SmartComponentLayoutDefinition": "org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition",
-  		"GridView": "org.smartbit4all.api.grid.bean.GridView",
-  		"StoredCollectionDescriptor": "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
-  		"ObjectAspect": "org.smartbit4all.api.storage.bean.ObjectAspect",
-  		"SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
-  		"LangString": "org.smartbit4all.api.object.bean.LangString",
-  		"VectorCollectionDescriptor": "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
-  		"ImageResource": "org.smartbit4all.api.view.bean.ImageResource",
-  		"Style": "org.smartbit4all.api.view.bean.Style",
-  		"ObjectPropertyResolverContext": "org.smartbit4all.api.object.bean.ObjectPropertyResolverContext",
-  		"SelectionDefinition": "org.smartbit4all.api.formdefinition.bean.SelectionDefinition",
-  		"Session": "org.smartbit4all.api.session.bean.Session"
-  	]
+
+    modelPackagePrefix = "org.smartbit4all.api"
+    modelPackagePostfix = "bean"
+    importMappings = [
+        "BinaryData"                    : "org.smartbit4all.api.binarydata.BinaryData",
+        "BinaryContent"                 : "org.smartbit4all.api.binarydata.BinaryContent",
+        "BinaryContentData"             : "org.smartbit4all.api.attachment.bean.BinaryContentData",
+        "UserActivityLog"               : "org.smartbit4all.api.session.bean.UserActivityLog",
+        "User"                          : "org.smartbit4all.api.org.bean.User",
+        "Group"                         : "org.smartbit4all.api.org.bean.Group",
+        "LocalDateTime"                 : "java.time.LocalDateTime",
+        "LocalDate"                     : "java.time.LocalDate",
+        "LocalTime"                     : "java.time.LocalTime",
+        "UiAction"                      : "org.smartbit4all.api.view.bean.UiAction",
+        "UiActionDescriptor"            : "org.smartbit4all.api.view.bean.UiActionDescriptor",
+        "UiActionRequest"               : "org.smartbit4all.api.view.bean.UiActionRequest",
+        "View"                          : "org.smartbit4all.api.view.bean.View",
+        "IconPosition"                  : "org.smartbit4all.api.view.bean.IconPosition",
+        "Value"                         : "org.smartbit4all.api.value.bean.Value",
+        "ValueSetData"                  : "org.smartbit4all.api.value.bean.ValueSetData",
+        "ValueSet"                      : "org.smartbit4all.api.view.bean.ValueSet",
+        "ValueSetDefinitionIdentifier"  : "org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier",
+        "ComponentConstraint"           : "org.smartbit4all.api.view.bean.ComponentConstraint",
+        "UiActionConstraint"            : "org.smartbit4all.api.view.bean.UiActionConstraint",
+        "FilterExpressionFieldList"     : "org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList",
+        "FilterExpressionOrderBy"       : "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
+        "FilterExpressionBuilderModel"  : "org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel",
+        "PropertyDefinitionData"        : "org.smartbit4all.api.object.bean.PropertyDefinitionData",
+        "SmartComponentLayoutDefinition": "org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition",
+        "SmartLayoutDefinition"         : "org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition",
+        "SmartWidgetDefinition"         : "org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition",
+        "SmartFilterType"               : "org.smartbit4all.api.filterexpression.bean.SmartFilterType",
+        "InvocationRequest"             : "org.smartbit4all.api.invocation.bean.InvocationRequest",
+        "InvocationRequestDefinition"   : "org.smartbit4all.api.invocation.bean.InvocationRequestDefinition",
+        "BranchedObjectEntry"           : "org.smartbit4all.api.object.bean.BranchedObjectEntry",
+        "GridView"                      : "org.smartbit4all.api.grid.bean.GridView",
+        "StoredCollectionDescriptor"    : "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
+        "ObjectAspect"                  : "org.smartbit4all.api.storage.bean.ObjectAspect",
+        "SearchPageConfig"              : "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
+        "LangString"                    : "org.smartbit4all.api.object.bean.LangString",
+        "VectorCollectionDescriptor"    : "org.smartbit4all.api.collection.bean.VectorCollectionDescriptor",
+        "ImageResource"                 : "org.smartbit4all.api.view.bean.ImageResource",
+        "Style"                         : "org.smartbit4all.api.view.bean.Style",
+        "ObjectPropertyResolverContext" : "org.smartbit4all.api.object.bean.ObjectPropertyResolverContext",
+        "SelectionDefinition"           : "org.smartbit4all.api.formdefinition.bean.SelectionDefinition",
+        "Session"                       : "org.smartbit4all.api.session.bean.Session"
+    ]
   }
 }

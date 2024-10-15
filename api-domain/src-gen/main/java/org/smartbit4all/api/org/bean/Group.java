@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Group
@@ -43,7 +43,7 @@ import javax.validation.Valid;
   Group.CHILDREN
 })
 @JsonTypeName("Group")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Group {
   public static final String URI = "uri";
   private URI uri;
@@ -82,7 +82,7 @@ public class Group {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the group")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +109,7 @@ public class Group {
    * @return title
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The title of the group, can be used as display name")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +137,7 @@ public class Group {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the group")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,7 +164,7 @@ public class Group {
    * @return description
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The description of the group")
+
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +191,7 @@ public class Group {
    * @return kindCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The kind code of the group. Eg.: role, organization, team etc.")
+
   @JsonProperty(KIND_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,7 +218,7 @@ public class Group {
    * @return builtIn
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Built in groups are unmodifiable")
+
   @JsonProperty(BUILT_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -252,7 +252,7 @@ public class Group {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uris of the child groups")
+
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

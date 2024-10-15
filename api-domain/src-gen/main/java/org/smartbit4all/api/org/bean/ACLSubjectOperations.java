@@ -20,29 +20,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. 
  */
-@ApiModel(description = "This object is saved to the Subjects with scoped URI to show the operations attached to the given subject. ")
 @JsonPropertyOrder({
   ACLSubjectOperations.URI,
   ACLSubjectOperations.SUBJECT,
   ACLSubjectOperations.OPERATIONS
 })
 @JsonTypeName("ACLSubjectOperations")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectOperations {
   public static final String URI = "uri";
   private URI uri;
@@ -51,7 +50,7 @@ public class ACLSubjectOperations {
   private Subject subject;
 
   public static final String OPERATIONS = "operations";
-  private List<ACLOperationReference> operations = new ArrayList<>();
+  private List<@Valid ACLOperationReference> operations = new ArrayList<>();
 
   public ACLSubjectOperations() { 
   }
@@ -68,7 +67,7 @@ public class ACLSubjectOperations {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class ACLSubjectOperations {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,7 +112,7 @@ public class ACLSubjectOperations {
   }
 
 
-  public ACLSubjectOperations operations(List<ACLOperationReference> operations) {
+  public ACLSubjectOperations operations(List<@Valid ACLOperationReference> operations) {
     
     this.operations = operations;
     return this;
@@ -131,18 +130,18 @@ public class ACLSubjectOperations {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The operation object of the given subject. ")
+
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLOperationReference> getOperations() {
+  public List<@Valid ACLOperationReference> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperations(List<ACLOperationReference> operations) {
+  public void setOperations(List<@Valid ACLOperationReference> operations) {
     this.operations = operations;
   }
 

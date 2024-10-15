@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An event handler is a special callback function to call when the given event is occurred. So the event handler can be an action as is or can be fired on a before or after event 
  */
-@ApiModel(description = "An event handler is a special callback function to call when the given event is occurred. So the event handler can be an action as is or can be fired on a before or after event ")
 @JsonPropertyOrder({
   ViewEventHandler.PATH,
   ViewEventHandler.VIEW_EVENT_TYPE,
   ViewEventHandler.INVOCATION_REQUEST
 })
 @JsonTypeName("ViewEventHandler")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewEventHandler {
   public static final String PATH = "path";
   private List<String> path = null;
@@ -110,7 +109,7 @@ public class ViewEventHandler {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The event handler path defines the location of the event. We can use regular expressions to fine tune the event definition. In this way we can add before event handler for all the actions we have. The actions will have a predefined path. The path of the normal actions is the action code itself. ")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +136,7 @@ public class ViewEventHandler {
    * @return viewEventType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW_EVENT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +164,7 @@ public class ViewEventHandler {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "This is the method to call when the event occurs. It's signature is the same as the event which it specifies, like ActionHandler or WidgetActionHandler. ")
+
   @JsonProperty(INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

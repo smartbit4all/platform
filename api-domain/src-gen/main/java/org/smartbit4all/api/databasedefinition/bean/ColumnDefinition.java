@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.databasedefinition.bean.AlterOperation;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The meta of a column in a database table. 
  */
-@ApiModel(description = "The meta of a column in a database table. ")
 @JsonPropertyOrder({
   ColumnDefinition.NAME,
   ColumnDefinition.TYPE_DEFINITION,
@@ -42,7 +40,7 @@ import javax.validation.Valid;
   ColumnDefinition.OPERATION
 })
 @JsonTypeName("ColumnDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ColumnDefinition {
   public static final String NAME = "name";
   private String name;
@@ -76,7 +74,7 @@ public class ColumnDefinition {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,7 +102,7 @@ public class ColumnDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,7 +129,7 @@ public class ColumnDefinition {
    * @return nullable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NULLABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,7 +156,7 @@ public class ColumnDefinition {
    * @return defaultValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -185,7 +183,7 @@ public class ColumnDefinition {
    * @return comment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -213,7 +211,7 @@ public class ColumnDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

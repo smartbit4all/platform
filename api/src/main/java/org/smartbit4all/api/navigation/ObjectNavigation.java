@@ -170,7 +170,7 @@ public class ObjectNavigation extends NavigationImpl {
         "icon",
         new NavigationView()
             .name(viewName)
-            .putParametersItem("EDITING", editing));
+            .putParametersItem("EDITING", String.valueOf(editing)));
   }
 
   private class NavigationAssocResult {

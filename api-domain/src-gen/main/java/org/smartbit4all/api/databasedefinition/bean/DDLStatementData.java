@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.databasedefinition.bean.DDLStatementKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A DDL statement that can be a statement on its own and a container statement also. If it is a complex stetament then it has inner statements also. In case of the database level alter script we have create tables as inner statements and in the create table we will have column definitions. 
  */
-@ApiModel(description = "A DDL statement that can be a statement on its own and a container statement also. If it is a complex stetament then it has inner statements also. In case of the database level alter script we have create tables as inner statements and in the create table we will have column definitions. ")
 @JsonPropertyOrder({
   DDLStatementData.PREFIX,
   DDLStatementData.SUFFIX,
@@ -41,7 +40,7 @@ import javax.validation.Valid;
   DDLStatementData.INNER_STATEMENTS
 })
 @JsonTypeName("DDLStatementData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DDLStatementData {
   public static final String PREFIX = "prefix";
   private String prefix;
@@ -53,7 +52,7 @@ public class DDLStatementData {
   private DDLStatementKind kind;
 
   public static final String INNER_STATEMENTS = "innerStatements";
-  private List<DDLStatementData> innerStatements = new ArrayList<>();
+  private List<@Valid DDLStatementData> innerStatements = new ArrayList<>();
 
   public DDLStatementData() { 
   }
@@ -69,7 +68,7 @@ public class DDLStatementData {
    * @return prefix
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PREFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +95,7 @@ public class DDLStatementData {
    * @return suffix
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,7 +123,7 @@ public class DDLStatementData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,7 +139,7 @@ public class DDLStatementData {
   }
 
 
-  public DDLStatementData innerStatements(List<DDLStatementData> innerStatements) {
+  public DDLStatementData innerStatements(List<@Valid DDLStatementData> innerStatements) {
     
     this.innerStatements = innerStatements;
     return this;
@@ -158,18 +157,18 @@ public class DDLStatementData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(INNER_STATEMENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<DDLStatementData> getInnerStatements() {
+  public List<@Valid DDLStatementData> getInnerStatements() {
     return innerStatements;
   }
 
 
   @JsonProperty(INNER_STATEMENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setInnerStatements(List<DDLStatementData> innerStatements) {
+  public void setInnerStatements(List<@Valid DDLStatementData> innerStatements) {
     this.innerStatements = innerStatements;
   }
 

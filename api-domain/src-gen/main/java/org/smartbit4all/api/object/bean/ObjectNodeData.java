@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -31,13 +30,12 @@ import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains  an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification. 
  */
-@ApiModel(description = "This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains  an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification. ")
 @JsonPropertyOrder({
   ObjectNodeData.OBJECT_URI,
   ObjectNodeData.QUALIFIED_NAME,
@@ -54,7 +52,7 @@ import javax.validation.Valid;
   ObjectNodeData.RESULT_URI
 })
 @JsonTypeName("ObjectNodeData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectNodeData {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -87,7 +85,7 @@ public class ObjectNodeData {
   private Map<String, ObjectNodeData> references = new HashMap<>();
 
   public static final String REFERENCE_LISTS = "referenceLists";
-  private Map<String, List<ObjectNodeData>> referenceLists = new HashMap<>();
+  private Map<String, List<@Valid ObjectNodeData>> referenceLists = new HashMap<>();
 
   public static final String REFERENCE_MAPS = "referenceMaps";
   private Map<String, Map<String, ObjectNodeData>> referenceMaps = new HashMap<>();
@@ -110,7 +108,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The object URI of the given object state. It is version URI to be able to refere to the given version of the data. ")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +136,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class. ")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -165,7 +163,7 @@ public class ObjectNodeData {
    * @return storageSchema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The logical storage scheme if it is used in the given storage implementation. ")
+
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -193,7 +191,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The version number of the given node. It is filled by the retrieve so if we create a new node then it is 0 by default. ")
+
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -221,7 +219,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The offset date time when this node version was created. ")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -248,7 +246,7 @@ public class ObjectNodeData {
    * @return lastModified
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The last modification time in long. It is filled by the retrieve so if we create a new node then it is  -1 by default. ")
+
   @JsonProperty(LAST_MODIFIED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -277,7 +275,7 @@ public class ObjectNodeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -310,7 +308,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -346,7 +344,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The aspects are named objects attached to the given object version. ")
+
   @JsonProperty(ASPECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -380,7 +378,7 @@ public class ObjectNodeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -396,13 +394,13 @@ public class ObjectNodeData {
   }
 
 
-  public ObjectNodeData referenceLists(Map<String, List<ObjectNodeData>> referenceLists) {
+  public ObjectNodeData referenceLists(Map<String, List<@Valid ObjectNodeData>> referenceLists) {
     
     this.referenceLists = referenceLists;
     return this;
   }
 
-  public ObjectNodeData putReferenceListsItem(String key, List<ObjectNodeData> referenceListsItem) {
+  public ObjectNodeData putReferenceListsItem(String key, List<@Valid ObjectNodeData> referenceListsItem) {
     this.referenceLists.put(key, referenceListsItem);
     return this;
   }
@@ -414,18 +412,18 @@ public class ObjectNodeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<ObjectNodeData>> getReferenceLists() {
+  public Map<String, List<@Valid ObjectNodeData>> getReferenceLists() {
     return referenceLists;
   }
 
 
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferenceLists(Map<String, List<ObjectNodeData>> referenceLists) {
+  public void setReferenceLists(Map<String, List<@Valid ObjectNodeData>> referenceLists) {
     this.referenceLists = referenceLists;
   }
 
@@ -448,7 +446,7 @@ public class ObjectNodeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -476,7 +474,7 @@ public class ObjectNodeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The object URI after an ObjectApi.save. It can be used to read the result Uri after save. ")
+
   @JsonProperty(RESULT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

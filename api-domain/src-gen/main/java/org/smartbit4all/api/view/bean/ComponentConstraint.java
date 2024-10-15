@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The component constraint is responsible for the constraints belong to a given component (textfield, combobox etc.) on the view. The UI must identify the component by the dataName that is a path of the data name separated by dot like dataSheet.field. 
  */
-@ApiModel(description = "The component constraint is responsible for the constraints belong to a given component (textfield, combobox etc.) on the view. The UI must identify the component by the dataName that is a path of the data name separated by dot like dataSheet.field. ")
 @JsonPropertyOrder({
   ComponentConstraint.DATA_NAME,
   ComponentConstraint.VISIBLE,
@@ -40,7 +38,7 @@ import javax.validation.Valid;
   ComponentConstraint.VALUE_SET
 })
 @JsonTypeName("ComponentConstraint")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ComponentConstraint {
   public static final String DATA_NAME = "dataName";
   private String dataName;
@@ -71,7 +69,7 @@ public class ComponentConstraint {
    * @return dataName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The data name to identify the related component or componenets. If it is a path the format is the following - dataSheet.field.")
+
   @JsonProperty(DATA_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +96,7 @@ public class ComponentConstraint {
    * @return visible
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +123,7 @@ public class ComponentConstraint {
    * @return mandatory
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MANDATORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +150,7 @@ public class ComponentConstraint {
    * @return enabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,7 +178,7 @@ public class ComponentConstraint {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

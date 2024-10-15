@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.userselector.bean.UserSelector;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UserSingleSelector
@@ -38,10 +38,10 @@ import javax.validation.Valid;
   UserSingleSelector.SELECTED
 })
 @JsonTypeName("UserSingleSelector")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserSingleSelector {
   public static final String SELECTORS = "selectors";
-  private List<UserSelector> selectors = null;
+  private List<@Valid UserSelector> selectors = null;
 
   public static final String SELECTED = "selected";
   private UserSelector selected;
@@ -49,7 +49,7 @@ public class UserSingleSelector {
   public UserSingleSelector() { 
   }
 
-  public UserSingleSelector selectors(List<UserSelector> selectors) {
+  public UserSingleSelector selectors(List<@Valid UserSelector> selectors) {
     
     this.selectors = selectors;
     return this;
@@ -69,18 +69,18 @@ public class UserSingleSelector {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<UserSelector> getSelectors() {
+  public List<@Valid UserSelector> getSelectors() {
     return selectors;
   }
 
 
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectors(List<UserSelector> selectors) {
+  public void setSelectors(List<@Valid UserSelector> selectors) {
     this.selectors = selectors;
   }
 
@@ -97,7 +97,7 @@ public class UserSingleSelector {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -11,16 +11,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link TreeApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface TreeApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -129,7 +131,7 @@ public interface TreeApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }";
+                    String exampleString = "[ { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -170,7 +172,7 @@ public interface TreeApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "\"\"";
+                    String exampleString = "[ \"\", \"\" ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -209,7 +211,7 @@ public interface TreeApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }";
+                    String exampleString = "[ { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -252,7 +254,7 @@ public interface TreeApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }";
+                    String exampleString = "[ { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -297,7 +299,7 @@ public interface TreeApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }";
+                    String exampleString = "[ { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"identifier\" : \"identifier\", \"expanded\" : true, \"level\" : 0, \"hasChildren\" : true, \"classes\" : [ \"classes\", \"classes\" ], \"icon\" : \"icon\", \"childrenNodes\" : [ null, null ], \"caption\" : \"caption\", \"shortDescription\" : \"shortDescription\", \"nodeType\" : \"nodeType\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

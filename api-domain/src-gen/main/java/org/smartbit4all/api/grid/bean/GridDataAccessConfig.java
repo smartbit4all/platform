@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the backend object to setup the grid access api. The parameterization contain all the possible parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the parameters of the View parameters as grid.identifier.config 
  */
-@ApiModel(description = "This is the backend object to setup the grid access api. The parameterization contain all the possible parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the parameters of the View parameters as grid.identifier.config ")
 @JsonPropertyOrder({
   GridDataAccessConfig.DATA_URI,
   GridDataAccessConfig.IDENTIFIER_PATH,
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   GridDataAccessConfig.KIND
 })
 @JsonTypeName("GridDataAccessConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridDataAccessConfig {
   public static final String DATA_URI = "dataUri";
   private URI dataUri;
@@ -117,7 +116,7 @@ public class GridDataAccessConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the table data that contains the data of the list.")
+
   @JsonProperty(DATA_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +151,7 @@ public class GridDataAccessConfig {
    * @return identifierPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The path to access the identifier GridRow.data")
+
   @JsonProperty(IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,7 +178,7 @@ public class GridDataAccessConfig {
    * @return idProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If presented as TREE, this property will be used as id property.")
+
   @JsonProperty(ID_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +205,7 @@ public class GridDataAccessConfig {
    * @return parentIdProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If presented as TREE, this property will be used as parentId property.")
+
   @JsonProperty(PARENT_ID_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +232,7 @@ public class GridDataAccessConfig {
    * @return apiClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(API_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -260,7 +259,7 @@ public class GridDataAccessConfig {
    * @return kind
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

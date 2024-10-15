@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.attachment.bean.PhysicalObjectIdType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values  
  */
-@ApiModel(description = "The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values  ")
 @JsonPropertyOrder({
   PhysicalObjectId.TYPE,
   PhysicalObjectId.SUB_TYPE,
@@ -40,7 +38,7 @@ import javax.validation.Valid;
   PhysicalObjectId.VALUE
 })
 @JsonTypeName("PhysicalObjectId")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PhysicalObjectId {
   public static final String TYPE = "type";
   private PhysicalObjectIdType type;
@@ -73,7 +71,7 @@ public class PhysicalObjectId {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,7 +98,7 @@ public class PhysicalObjectId {
    * @return subType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The sub type of identifier like code128 in case of the barcode. It can be used to visalize the identifier and generate it. ")
+
   @JsonProperty(SUB_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +125,7 @@ public class PhysicalObjectId {
    * @return sequenceNr
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The serial number the object id is based on.")
+
   @JsonProperty(SEQUENCE_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +152,7 @@ public class PhysicalObjectId {
    * @return uniquePart
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique part of the identifier that can be used to save the given object.")
+
   @JsonProperty(UNIQUE_PART)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,7 +180,7 @@ public class PhysicalObjectId {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The stringified value of the identifier.")
+
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

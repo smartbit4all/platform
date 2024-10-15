@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * AND / OR group of filters / groups.
  */
-@ApiModel(description = "AND / OR group of filters / groups.")
 @JsonPropertyOrder({
   FilterGroup.NAME,
   FilterGroup.TYPE,
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   FilterGroup.IS_NEGATED
 })
 @JsonTypeName("FilterGroup")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroup {
   public static final String NAME = "name";
   private String name;
@@ -52,10 +51,10 @@ public class FilterGroup {
   private FilterGroupType type;
 
   public static final String FILTER_FIELDS = "filterFields";
-  private List<FilterField> filterFields = null;
+  private List<@Valid FilterField> filterFields = null;
 
   public static final String FILTER_GROUPS = "filterGroups";
-  private List<FilterGroup> filterGroups = null;
+  private List<@Valid FilterGroup> filterGroups = null;
 
   public static final String IS_NEGATED = "isNegated";
   private Boolean isNegated;
@@ -74,7 +73,7 @@ public class FilterGroup {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Name of the group.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,7 +101,7 @@ public class FilterGroup {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +117,7 @@ public class FilterGroup {
   }
 
 
-  public FilterGroup filterFields(List<FilterField> filterFields) {
+  public FilterGroup filterFields(List<@Valid FilterField> filterFields) {
     
     this.filterFields = filterFields;
     return this;
@@ -138,23 +137,23 @@ public class FilterGroup {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterField> getFilterFields() {
+  public List<@Valid FilterField> getFilterFields() {
     return filterFields;
   }
 
 
   @JsonProperty(FILTER_FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFilterFields(List<FilterField> filterFields) {
+  public void setFilterFields(List<@Valid FilterField> filterFields) {
     this.filterFields = filterFields;
   }
 
 
-  public FilterGroup filterGroups(List<FilterGroup> filterGroups) {
+  public FilterGroup filterGroups(List<@Valid FilterGroup> filterGroups) {
     
     this.filterGroups = filterGroups;
     return this;
@@ -174,18 +173,18 @@ public class FilterGroup {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterGroup> getFilterGroups() {
+  public List<@Valid FilterGroup> getFilterGroups() {
     return filterGroups;
   }
 
 
   @JsonProperty(FILTER_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFilterGroups(List<FilterGroup> filterGroups) {
+  public void setFilterGroups(List<@Valid FilterGroup> filterGroups) {
     this.filterGroups = filterGroups;
   }
 
@@ -201,7 +200,7 @@ public class FilterGroup {
    * @return isNegated
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IS_NEGATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

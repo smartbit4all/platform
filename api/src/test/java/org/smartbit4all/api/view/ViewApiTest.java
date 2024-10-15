@@ -20,7 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {ViewApiTestConfig.class})
+@SpringBootTest(classes = {ViewApiTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 class ViewApiTest {
 
   public static final String USER_CATEGORY = "USER_CATEGORY";

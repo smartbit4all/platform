@@ -615,7 +615,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
         .viewName(defaulView.getName())
         .objectUri(navigationEntry.getObjectUri())
         .putParametersItem("icon", navigationEntry.getIcon());
-    Map<String, Object> viewParams = defaulView.getParameters();
+    Map<String, String> viewParams = defaulView.getParameters();
     if (viewParams != null) {
       target.getParameters().putAll(viewParams);
     }

@@ -20,20 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Information of the device running the current view context.
  */
-@ApiModel(description = "Information of the device running the current view context.")
 @JsonPropertyOrder({
   DeviceInfo.DEVICE_ID,
   DeviceInfo.DEVICE_TYPE,
@@ -42,7 +39,7 @@ import javax.validation.Valid;
   DeviceInfo.PARAMETERS
 })
 @JsonTypeName("DeviceInfo")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DeviceInfo {
   public static final String DEVICE_ID = "deviceId";
   private String deviceId;
@@ -74,7 +71,7 @@ public class DeviceInfo {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Unique identifier of the client's device. E.g.: android_id. ")
+
   @JsonProperty(DEVICE_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -101,7 +98,7 @@ public class DeviceInfo {
    * @return deviceType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The type of the device. E.g.: browser, android, iOS or else.  This information is not required and should be used with caution since the clients may  define their own type differently. ")
+
   @JsonProperty(DEVICE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +125,7 @@ public class DeviceInfo {
    * @return userAgent
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The user-agent information from the client.")
+
   @JsonProperty(USER_AGENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -155,7 +152,7 @@ public class DeviceInfo {
    * @return ipAddress
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "IP address of the client.")
+
   @JsonProperty(IP_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,7 +185,7 @@ public class DeviceInfo {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Any additional parameters that the client may share with the server.")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 

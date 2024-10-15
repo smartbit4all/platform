@@ -20,32 +20,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The result an Object lookup. 
  */
-@ApiModel(description = "The result an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupResult.NUMBER_OF_RELEVANT,
   ObjectLookupResult.ITEMS
 })
 @JsonTypeName("ObjectLookupResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupResult {
   public static final String NUMBER_OF_RELEVANT = "numberOfRelevant";
   private Integer numberOfRelevant;
 
   public static final String ITEMS = "items";
-  private List<ObjectLookupResultItem> items = new ArrayList<>();
+  private List<@Valid ObjectLookupResultItem> items = new ArrayList<>();
 
   public ObjectLookupResult() { 
   }
@@ -61,7 +60,7 @@ public class ObjectLookupResult {
    * @return numberOfRelevant
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The number of relevant items that are more or less on the same level of relevance. The lookup can accept a percentage  as value to calculate which items are relevant. If one item should be selected then the most relevant will be selected but it is important to know if there are any more relevant or the selected one is obviously the one we are looking for. ")
+
   @JsonProperty(NUMBER_OF_RELEVANT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,7 +76,7 @@ public class ObjectLookupResult {
   }
 
 
-  public ObjectLookupResult items(List<ObjectLookupResultItem> items) {
+  public ObjectLookupResult items(List<@Valid ObjectLookupResultItem> items) {
     
     this.items = items;
     return this;
@@ -95,18 +94,18 @@ public class ObjectLookupResult {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectLookupResultItem> getItems() {
+  public List<@Valid ObjectLookupResultItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<ObjectLookupResultItem> items) {
+  public void setItems(List<@Valid ObjectLookupResultItem> items) {
     this.items = items;
   }
 

@@ -20,32 +20,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The list of references as a container object for the Api.  
  */
-@ApiModel(description = "The list of references as a container object for the Api.  ")
 @JsonPropertyOrder({
   ObjectReferenceList.REFERENCE_TYPE_CLASS,
   ObjectReferenceList.REFERENCES
 })
 @JsonTypeName("ObjectReferenceList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectReferenceList {
   public static final String REFERENCE_TYPE_CLASS = "referenceTypeClass";
   private String referenceTypeClass;
 
   public static final String REFERENCES = "references";
-  private List<ObjectReference> references = new ArrayList<>();
+  private List<@Valid ObjectReference> references = new ArrayList<>();
 
   public ObjectReferenceList() { 
   }
@@ -62,7 +61,7 @@ public class ObjectReferenceList {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
+
   @JsonProperty(REFERENCE_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +77,7 @@ public class ObjectReferenceList {
   }
 
 
-  public ObjectReferenceList references(List<ObjectReference> references) {
+  public ObjectReferenceList references(List<@Valid ObjectReference> references) {
     
     this.references = references;
     return this;
@@ -96,18 +95,18 @@ public class ObjectReferenceList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectReference> getReferences() {
+  public List<@Valid ObjectReference> getReferences() {
     return references;
   }
 
 
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferences(List<ObjectReference> references) {
+  public void setReferences(List<@Valid ObjectReference> references) {
     this.references = references;
   }
 

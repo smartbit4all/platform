@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The instance of the ValueSetDefintion that conatins every information inline. 
  */
-@ApiModel(description = "The instance of the ValueSetDefintion that conatins every information inline. ")
 @JsonPropertyOrder({
   ValueSetData.QUALIFIED_NAME,
   ValueSetData.KEY_PROPERTY,
@@ -46,7 +45,7 @@ import javax.validation.Valid;
   ValueSetData.FILTER_MODEL
 })
 @JsonTypeName("ValueSetData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetData {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
@@ -87,7 +86,7 @@ public class ValueSetData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +113,7 @@ public class ValueSetData {
    * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. ")
+
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -148,7 +147,7 @@ public class ValueSetData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -175,7 +174,7 @@ public class ValueSetData {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Optional icon code for the given value set.")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -202,7 +201,7 @@ public class ValueSetData {
    * @return undefined
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If true then the value set is not defined and not accessible. ")
+
   @JsonProperty(UNDEFINED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -229,7 +228,7 @@ public class ValueSetData {
    * @return lazy
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If true then the values doesn't contains the the whole values set or it migth be empty and we have to ask for filtered set of values using the filter fields available. ")
+
   @JsonProperty(LAZY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +261,7 @@ public class ValueSetData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -290,7 +289,7 @@ public class ValueSetData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The filter expression model for the search from values.")
+
   @JsonProperty(FILTER_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +29,8 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * OrgState
@@ -44,7 +43,7 @@ import javax.validation.Valid;
   OrgState.GROUPS_OF_GROUP
 })
 @JsonTypeName("OrgState")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OrgState {
   public static final String URI = "uri";
   private URI uri;
@@ -56,10 +55,10 @@ public class OrgState {
   private Map<String, Group> groups = new HashMap<>();
 
   public static final String USERS_OF_GROUP = "usersOfGroup";
-  private Map<String, List<User>> usersOfGroup = new HashMap<>();
+  private Map<String, List<@Valid User>> usersOfGroup = new HashMap<>();
 
   public static final String GROUPS_OF_GROUP = "groupsOfGroup";
-  private Map<String, List<Group>> groupsOfGroup = new HashMap<>();
+  private Map<String, List<@Valid Group>> groupsOfGroup = new HashMap<>();
 
   public OrgState() { 
   }
@@ -76,7 +75,7 @@ public class OrgState {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,7 +109,7 @@ public class OrgState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -144,7 +143,7 @@ public class OrgState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -160,13 +159,13 @@ public class OrgState {
   }
 
 
-  public OrgState usersOfGroup(Map<String, List<User>> usersOfGroup) {
+  public OrgState usersOfGroup(Map<String, List<@Valid User>> usersOfGroup) {
     
     this.usersOfGroup = usersOfGroup;
     return this;
   }
 
-  public OrgState putUsersOfGroupItem(String key, List<User> usersOfGroupItem) {
+  public OrgState putUsersOfGroupItem(String key, List<@Valid User> usersOfGroupItem) {
     this.usersOfGroup.put(key, usersOfGroupItem);
     return this;
   }
@@ -178,29 +177,29 @@ public class OrgState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<User>> getUsersOfGroup() {
+  public Map<String, List<@Valid User>> getUsersOfGroup() {
     return usersOfGroup;
   }
 
 
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUsersOfGroup(Map<String, List<User>> usersOfGroup) {
+  public void setUsersOfGroup(Map<String, List<@Valid User>> usersOfGroup) {
     this.usersOfGroup = usersOfGroup;
   }
 
 
-  public OrgState groupsOfGroup(Map<String, List<Group>> groupsOfGroup) {
+  public OrgState groupsOfGroup(Map<String, List<@Valid Group>> groupsOfGroup) {
     
     this.groupsOfGroup = groupsOfGroup;
     return this;
   }
 
-  public OrgState putGroupsOfGroupItem(String key, List<Group> groupsOfGroupItem) {
+  public OrgState putGroupsOfGroupItem(String key, List<@Valid Group> groupsOfGroupItem) {
     this.groupsOfGroup.put(key, groupsOfGroupItem);
     return this;
   }
@@ -212,18 +211,18 @@ public class OrgState {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<Group>> getGroupsOfGroup() {
+  public Map<String, List<@Valid Group>> getGroupsOfGroup() {
     return groupsOfGroup;
   }
 
 
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGroupsOfGroup(Map<String, List<Group>> groupsOfGroup) {
+  public void setGroupsOfGroup(Map<String, List<@Valid Group>> groupsOfGroup) {
     this.groupsOfGroup = groupsOfGroup;
   }
 

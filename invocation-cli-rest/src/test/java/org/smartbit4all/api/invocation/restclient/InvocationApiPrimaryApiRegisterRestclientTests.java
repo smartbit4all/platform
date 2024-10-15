@@ -37,7 +37,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
-@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {})
+@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 @MockBean(SessionApi.class)
 public class InvocationApiPrimaryApiRegisterRestclientTests {
 

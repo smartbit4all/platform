@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * All information regarding opening a view (and possible it&#39;s parents).
  */
-@ApiModel(description = "All information regarding opening a view (and possible it's parents).")
 @JsonPropertyOrder({
   OpenPendingData.VIEWS_TO_OPEN,
   OpenPendingData.VIEWS_TO_CLOSE,
@@ -45,7 +44,7 @@ import javax.validation.Valid;
   OpenPendingData.CLOSED_CHILDREN
 })
 @JsonTypeName("OpenPendingData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OpenPendingData {
   public static final String VIEWS_TO_OPEN = "viewsToOpen";
   private List<UUID> viewsToOpen = new ArrayList<>();
@@ -80,7 +79,7 @@ public class OpenPendingData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEWS_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +113,7 @@ public class OpenPendingData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEWS_TO_CLOSE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -148,7 +147,7 @@ public class OpenPendingData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -182,7 +181,7 @@ public class OpenPendingData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "This map holds the 'used' closed children which should be restored on reject.")
+
   @JsonProperty(CLOSED_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

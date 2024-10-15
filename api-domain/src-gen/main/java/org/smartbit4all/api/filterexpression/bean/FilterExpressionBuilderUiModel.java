@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConfig;
@@ -33,8 +33,8 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterExpressionBuilderUiModel
@@ -57,7 +57,7 @@ import javax.validation.Valid;
   FilterExpressionBuilderUiModel.TYPE
 })
 @JsonTypeName("FilterExpressionBuilderUiModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderUiModel {
   public static final String MODEL = "model";
   private FilterExpressionBuilderModel model = null;
@@ -154,7 +154,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,7 +182,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_FIELD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,7 +210,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_FIELD_EDITOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,7 +238,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECT_UI_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -266,7 +266,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DESELECT_UI_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -302,7 +302,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(POSSIBLE_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -329,7 +329,7 @@ public class FilterExpressionBuilderUiModel {
    * @return showGroups
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHOW_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -356,7 +356,7 @@ public class FilterExpressionBuilderUiModel {
    * @return readOnly
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(READ_ONLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -383,7 +383,7 @@ public class FilterExpressionBuilderUiModel {
    * @return extarnalDatabase
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXTARNAL_DATABASE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -411,7 +411,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_GROUPS_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -439,7 +439,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(GROUP_FILTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -467,7 +467,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(GROUP_FILTER_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -495,7 +495,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -523,7 +523,7 @@ public class FilterExpressionBuilderUiModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -550,7 +550,7 @@ public class FilterExpressionBuilderUiModel {
    * @return type
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

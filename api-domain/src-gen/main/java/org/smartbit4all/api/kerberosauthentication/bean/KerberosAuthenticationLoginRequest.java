@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * KerberosAuthenticationLoginRequest
@@ -35,7 +34,7 @@ import javax.validation.Valid;
   KerberosAuthenticationLoginRequest.PASSWORD
 })
 @JsonTypeName("KerberosAuthenticationLoginRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class KerberosAuthenticationLoginRequest {
   public static final String USERNAME = "username";
   private String username;
@@ -58,7 +57,7 @@ public class KerberosAuthenticationLoginRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -86,7 +85,7 @@ public class KerberosAuthenticationLoginRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PASSWORD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

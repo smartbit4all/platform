@@ -20,25 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a mapping definition that describes the mapping between two domain object. 
  */
-@ApiModel(description = "This is a mapping definition that describes the mapping between two domain object. ")
 @JsonPropertyOrder({
   ObjectPropertySet.TYPE_QUALIFIED_NAME,
   ObjectPropertySet.PROPERTIES
 })
 @JsonTypeName("ObjectPropertySet")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertySet {
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
   private String typeQualifiedName;
@@ -60,7 +59,7 @@ public class ObjectPropertySet {
    * @return typeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +93,7 @@ public class ObjectPropertySet {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

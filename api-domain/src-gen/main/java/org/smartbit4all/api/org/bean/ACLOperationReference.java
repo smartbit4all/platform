@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is used as  
  */
-@ApiModel(description = "This object is used as  ")
 @JsonPropertyOrder({
   ACLOperationReference.OPERATION,
   ACLOperationReference.COMMENT,
@@ -39,7 +37,7 @@ import javax.validation.Valid;
   ACLOperationReference.CONFIG
 })
 @JsonTypeName("ACLOperationReference")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLOperationReference {
   public static final String OPERATION = "operation";
   private String operation;
@@ -67,7 +65,7 @@ public class ACLOperationReference {
    * @return operation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the operation that is the same as the one stored in the operations list.")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +92,7 @@ public class ACLOperationReference {
    * @return comment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The only property that is named is a comment that can be set to specify the reason of having this operation set for the given subject. ")
+
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,7 +120,7 @@ public class ACLOperationReference {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference to the context entity of the operation is attached to. ")
+
   @JsonProperty(ENTITY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,7 +147,7 @@ public class ACLOperationReference {
    * @return config
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "This code is a reference to the configuration that defines the rendering of the context for the operation. It can refer to MDM or application properties directly. ")
+
   @JsonProperty(CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

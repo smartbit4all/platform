@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * NavigationResponse
@@ -39,13 +39,13 @@ import javax.validation.Valid;
   NavigationResponse.REFERENCE_ENTRIES
 })
 @JsonTypeName("NavigationResponse")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationResponse {
   public static final String ASSOCIATION_META_URI = "associationMetaUri";
   private URI associationMetaUri;
 
   public static final String REFERENCE_ENTRIES = "referenceEntries";
-  private List<NavigationReferenceEntry> referenceEntries = null;
+  private List<@Valid NavigationReferenceEntry> referenceEntries = null;
 
   public NavigationResponse() { 
   }
@@ -62,7 +62,7 @@ public class NavigationResponse {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATION_META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -78,7 +78,7 @@ public class NavigationResponse {
   }
 
 
-  public NavigationResponse referenceEntries(List<NavigationReferenceEntry> referenceEntries) {
+  public NavigationResponse referenceEntries(List<@Valid NavigationReferenceEntry> referenceEntries) {
     
     this.referenceEntries = referenceEntries;
     return this;
@@ -98,18 +98,18 @@ public class NavigationResponse {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REFERENCE_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationReferenceEntry> getReferenceEntries() {
+  public List<@Valid NavigationReferenceEntry> getReferenceEntries() {
     return referenceEntries;
   }
 
 
   @JsonProperty(REFERENCE_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setReferenceEntries(List<NavigationReferenceEntry> referenceEntries) {
+  public void setReferenceEntries(List<@Valid NavigationReferenceEntry> referenceEntries) {
     this.referenceEntries = referenceEntries;
   }
 

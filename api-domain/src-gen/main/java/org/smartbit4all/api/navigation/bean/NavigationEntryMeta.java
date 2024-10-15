@@ -20,28 +20,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.
  */
-@ApiModel(description = "API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.")
 @JsonPropertyOrder({
   NavigationEntryMeta.URI,
   NavigationEntryMeta.NAME,
   NavigationEntryMeta.ASSOCIATIONS
 })
 @JsonTypeName("NavigationEntryMeta")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationEntryMeta {
   public static final String URI = "uri";
   private URI uri;
@@ -50,7 +49,7 @@ public class NavigationEntryMeta {
   private String name;
 
   public static final String ASSOCIATIONS = "associations";
-  private List<NavigationAssociationMeta> associations = null;
+  private List<@Valid NavigationAssociationMeta> associations = null;
 
   public NavigationEntryMeta() { 
   }
@@ -68,7 +67,7 @@ public class NavigationEntryMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the resource that uniquely identifies the given entry inside the navigation api.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -96,7 +95,7 @@ public class NavigationEntryMeta {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The well-formed name of the association.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,7 +111,7 @@ public class NavigationEntryMeta {
   }
 
 
-  public NavigationEntryMeta associations(List<NavigationAssociationMeta> associations) {
+  public NavigationEntryMeta associations(List<@Valid NavigationAssociationMeta> associations) {
     
     this.associations = associations;
     return this;
@@ -132,18 +131,18 @@ public class NavigationEntryMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationAssociationMeta> getAssociations() {
+  public List<@Valid NavigationAssociationMeta> getAssociations() {
     return associations;
   }
 
 
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAssociations(List<NavigationAssociationMeta> associations) {
+  public void setAssociations(List<@Valid NavigationAssociationMeta> associations) {
     this.associations = associations;
   }
 

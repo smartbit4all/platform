@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.fail;
         ExistTestConfig.class,
     },
     properties = {
-        "platform.sql.temptable-autocreate.enabled=true"
+        "platform.sql.temptable-autocreate.enabled=true",
+        "spring.main.allow-circular-references=true"
     })
 @Sql({"/script/exists_schema.sql", "/script/exists_data_01.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This item is returned by the tranform methods. It contains the transformed value or the error code if any. 
  */
-@ApiModel(description = "This item is returned by the tranform methods. It contains the transformed value or the error code if any. ")
 @JsonPropertyOrder({
   ValueTransformationResult.SOURCE_VALUE,
   ValueTransformationResult.TRANSFORMED_VALUE,
   ValueTransformationResult.ERROR
 })
 @JsonTypeName("ValueTransformationResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationResult {
   public static final String SOURCE_VALUE = "sourceValue";
   private Object sourceValue;
@@ -62,7 +60,7 @@ public class ValueTransformationResult {
    * @return sourceValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SOURCE_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -89,7 +87,7 @@ public class ValueTransformationResult {
    * @return transformedValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TRANSFORMED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -116,7 +114,7 @@ public class ValueTransformationResult {
    * @return error
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The error about transforming the given value.")
+
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

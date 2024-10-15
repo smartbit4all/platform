@@ -31,8 +31,8 @@ public class AllHistoryDialog extends Dialog {
     historyGrid = new Grid<>();
     historyGrid.addColumn(ObjectHistoryEntry::getSummary).setHeader("Verzió");
 
-    VaadinBinders.bindItems(historyGrid, objectHistoryVM.objectHistory(),
-        ObjectHistory.OBJECT_HISTORY_ENTRIES);
+//    VaadinBinders.bindItems(historyGrid, objectHistoryVM.objectHistory(),
+//        ObjectHistory.OBJECT_HISTORY_ENTRIES);
 
     close = new Button("Bezárás", e -> close());
     close.getStyle().set("cursor", "pointer");

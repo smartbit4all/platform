@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.uitree.bean.UiTreePath;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes the default selected node of the tree after rendering. 
  */
-@ApiModel(description = "Describes the default selected node of the tree after rendering. ")
 @JsonPropertyOrder({
   UiTreeDefaultSelection.PATH,
   UiTreeDefaultSelection.HANDLE_SELECTION,
   UiTreeDefaultSelection.ONE_TIME_ONLY
 })
 @JsonTypeName("UiTreeDefaultSelection")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeDefaultSelection {
   public static final String PATH = "path";
   private UiTreePath path;
@@ -65,7 +63,7 @@ public class UiTreeDefaultSelection {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +91,7 @@ public class UiTreeDefaultSelection {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Signals whether the tree should handle the default selected node after rendering. ")
+
   @JsonProperty(HANDLE_SELECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -121,7 +119,7 @@ public class UiTreeDefaultSelection {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Signals whether the selection should be set only during initialisation, or every time the tree is rendered. ")
+
   @JsonProperty(ONE_TIME_ONLY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

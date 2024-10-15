@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.api.filter.model.FilterFieldSelectorModel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterGroupSelectorModel
@@ -44,7 +44,7 @@ import javax.validation.Valid;
   FilterGroupSelectorModel.CURRENT_GROUP_ID
 })
 @JsonTypeName("FilterGroupSelectorModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupSelectorModel {
   public static final String LABEL_CODE = "labelCode";
   private String labelCode;
@@ -56,7 +56,7 @@ public class FilterGroupSelectorModel {
   private FilterGroupType groupType = null;
 
   public static final String FILTERS = "filters";
-  private List<FilterFieldSelectorModel> filters = new ArrayList<>();
+  private List<@Valid FilterFieldSelectorModel> filters = new ArrayList<>();
 
   public static final String CLOSEABLE = "closeable";
   private Boolean closeable;
@@ -81,7 +81,7 @@ public class FilterGroupSelectorModel {
    * @return labelCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +108,7 @@ public class FilterGroupSelectorModel {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,7 +136,7 @@ public class FilterGroupSelectorModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +152,7 @@ public class FilterGroupSelectorModel {
   }
 
 
-  public FilterGroupSelectorModel filters(List<FilterFieldSelectorModel> filters) {
+  public FilterGroupSelectorModel filters(List<@Valid FilterFieldSelectorModel> filters) {
     
     this.filters = filters;
     return this;
@@ -170,18 +170,18 @@ public class FilterGroupSelectorModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterFieldSelectorModel> getFilters() {
+  public List<@Valid FilterFieldSelectorModel> getFilters() {
     return filters;
   }
 
 
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilters(List<FilterFieldSelectorModel> filters) {
+  public void setFilters(List<@Valid FilterFieldSelectorModel> filters) {
     this.filters = filters;
   }
 
@@ -197,7 +197,7 @@ public class FilterGroupSelectorModel {
    * @return closeable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -224,7 +224,7 @@ public class FilterGroupSelectorModel {
    * @return visible
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -251,7 +251,7 @@ public class FilterGroupSelectorModel {
    * @return currentGroupId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CURRENT_GROUP_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

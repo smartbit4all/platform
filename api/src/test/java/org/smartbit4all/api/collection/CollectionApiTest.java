@@ -53,7 +53,8 @@ import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
-})
+},
+                properties = "spring.main.allow-circular-references=true")
 public class CollectionApiTest {
 
   private static final String LATE = "late";

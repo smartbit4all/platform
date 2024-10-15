@@ -51,7 +51,7 @@ public class MdmBasedClientRegistrationRepository implements ClientRegistrationR
         .clientId(properties.getClientId())
         .clientSecret(properties.getClientSecret())
         .clientName(properties.getClientName())
-        .redirectUriTemplate(properties.getRedirectUri())
+        .redirectUri(properties.getRedirectUri())
         .scope(properties.getScope().trim().split("\\s*,\\s*"))
         .authorizationGrantType(new AuthorizationGrantType(properties.getAuthorizationGrantType()))
         .userNameAttributeName(properties.getUserNameAttribute())

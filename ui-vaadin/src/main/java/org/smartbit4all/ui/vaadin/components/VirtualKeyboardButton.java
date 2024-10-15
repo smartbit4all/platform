@@ -14,13 +14,13 @@ import com.vaadin.flow.component.textfield.TextField;
 public class VirtualKeyboardButton extends Composite<Button> {
 
   private static final String CSSCLASS = "virtual-keyboard-button";
-  private HasOrderedComponents<Component> layout;
+  private HasOrderedComponents layout;
   private VirtualKeyboard virtualKeyboard;
   private Map<String, TextField> textFieldsOnLayout;
   private TextField textField;
   private Label actualLabel = new Label("");
 
-  public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents<Component> layout) {
+  public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents layout) {
     this.virtualKeyboard = virtualKeyboard;
     this.layout = layout;
     init();
@@ -69,19 +69,17 @@ public class VirtualKeyboardButton extends Composite<Button> {
     }
   }
   
-  protected Map<String, TextField> getTextFieldsOnlayout(HasOrderedComponents<Component> layout) {
+  protected Map<String, TextField> getTextFieldsOnlayout(HasOrderedComponents layout) {
     Map<String, TextField> textFieldsOnLayout = new HashMap<>();
     for (int i = 0; i < layout.getComponentCount(); i++) {
       Component component = layout.getComponentAt(i);
-      if (component instanceof TextField) {
-        TextField textField = (TextField)component;
-        textFieldsOnLayout.put(actualLabel.getText(), textField);
-      } else if (component instanceof HasOrderedComponents) {
-        textFieldsOnLayout.putAll(getTextFieldsOnlayout((HasOrderedComponents<Component>)component));
-      } else if (component instanceof Div) {
-        textFieldsOnLayout.putAll(getTextFieldsOnDiv((Div)component));
-      } else if (component instanceof Label) {
-        Label label = (Label)component;
+      if (component instanceof TextField textfield) {
+        textFieldsOnLayout.put(actualLabel.getText(), textfield);
+      } else if (component instanceof HasOrderedComponents hoc) {
+        textFieldsOnLayout.putAll(getTextFieldsOnlayout(hoc));
+      } else if (component instanceof Div div) {
+        textFieldsOnLayout.putAll(getTextFieldsOnDiv(div));
+      } else if (component instanceof Label label) {
         if (label.getClassName().equals("filter-name")) {
           actualLabel.setText(label.getText());
         } 
@@ -98,7 +96,7 @@ public class VirtualKeyboardButton extends Composite<Button> {
         textField.setLabel(actualLabel.getText());
         textFieldsOnDiv.put(actualLabel.getText(), textField);
       } else if (child instanceof HasOrderedComponents) {
-        textFieldsOnDiv.putAll(getTextFieldsOnlayout((HasOrderedComponents<Component>)child));
+        textFieldsOnDiv.putAll(getTextFieldsOnlayout((HasOrderedComponents)child));
       } else if (child instanceof Div) {
         textFieldsOnDiv.putAll(getTextFieldsOnDiv((Div)child));
       } else if (child instanceof Label) {

@@ -20,20 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * As a result of the invocation we get back this object that contains the result if the invocation was successful. This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The decision about the next step is also saved into this object. 
  */
-@ApiModel(description = "As a result of the invocation we get back this object that contains the result if the invocation was successful. This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The decision about the next step is also saved into this object. ")
 @JsonPropertyOrder({
   InvocationResult.RETURN_VALUE,
   InvocationResult.TYPE_CLASS,
@@ -44,7 +42,7 @@ import javax.validation.Valid;
   InvocationResult.ERROR
 })
 @JsonTypeName("InvocationResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationResult {
   public static final String RETURN_VALUE = "returnValue";
   private Object returnValue;
@@ -81,7 +79,7 @@ public class InvocationResult {
    * @return returnValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The return value of the call if it was successful. If the return value is void then this value is null.")
+
   @JsonProperty(RETURN_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +106,7 @@ public class InvocationResult {
    * @return typeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified type class name of the parameter.")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,7 +133,7 @@ public class InvocationResult {
    * @return innerTypeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
+
   @JsonProperty(INNER_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,7 +162,7 @@ public class InvocationResult {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -193,7 +191,7 @@ public class InvocationResult {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(END_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -221,7 +219,7 @@ public class InvocationResult {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DECISION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -249,7 +247,7 @@ public class InvocationResult {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

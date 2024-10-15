@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SmartLayoutDefinition
@@ -37,15 +37,15 @@ import javax.validation.Valid;
   SmartLayoutDefinition.WIDGETS
 })
 @JsonTypeName("SmartLayoutDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLayoutDefinition {
   public static final String WIDGETS = "widgets";
-  private List<SmartWidgetDefinition> widgets = new ArrayList<>();
+  private List<@Valid SmartWidgetDefinition> widgets = new ArrayList<>();
 
   public SmartLayoutDefinition() { 
   }
 
-  public SmartLayoutDefinition widgets(List<SmartWidgetDefinition> widgets) {
+  public SmartLayoutDefinition widgets(List<@Valid SmartWidgetDefinition> widgets) {
     
     this.widgets = widgets;
     return this;
@@ -63,18 +63,18 @@ public class SmartLayoutDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(WIDGETS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SmartWidgetDefinition> getWidgets() {
+  public List<@Valid SmartWidgetDefinition> getWidgets() {
     return widgets;
   }
 
 
   @JsonProperty(WIDGETS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setWidgets(List<SmartWidgetDefinition> widgets) {
+  public void setWidgets(List<@Valid SmartWidgetDefinition> widgets) {
     this.widgets = widgets;
   }
 

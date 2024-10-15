@@ -11,3 +11,13 @@ dependencies {
 	testImplementation testFixtures('org.smartbit4all.platform:api')
 	testImplementation testFixtures('org.smartbit4all.platform:sec')
 }
+
+tasks.named('compileTestJava') {
+	dependsOn(':api:compileTestFixturesJava')
+	dependsOn(':sec:compileTestFixturesJava')
+}
+
+tasks.named('test') {
+	dependsOn(':api:testFixturesJar')
+	dependsOn(':sec:testFixturesJar')
+}

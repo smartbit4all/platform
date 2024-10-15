@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. 
  */
-@ApiModel(description = "The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. ")
 @JsonPropertyOrder({
   BranchedObjectEntry.BRANCHING_STATE,
   BranchedObjectEntry.ORIGINAL_URI,
   BranchedObjectEntry.BRANCH_URI
 })
 @JsonTypeName("BranchedObjectEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObjectEntry {
   /**
    * Gets or Sets branchingState
@@ -102,7 +100,7 @@ public class BranchedObjectEntry {
    * @return branchingState
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BRANCHING_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +128,7 @@ public class BranchedObjectEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ORIGINAL_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,7 +156,7 @@ public class BranchedObjectEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

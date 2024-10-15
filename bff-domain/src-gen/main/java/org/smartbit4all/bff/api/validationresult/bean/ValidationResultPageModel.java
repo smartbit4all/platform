@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.bff.api.validationresult.bean.ValidationItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ValidationResultPageModel
@@ -37,15 +37,15 @@ import javax.validation.Valid;
   ValidationResultPageModel.VALIDATION_ITEMS
 })
 @JsonTypeName("ValidationResultPageModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValidationResultPageModel {
   public static final String VALIDATION_ITEMS = "validationItems";
-  private List<ValidationItem> validationItems = null;
+  private List<@Valid ValidationItem> validationItems = null;
 
   public ValidationResultPageModel() { 
   }
 
-  public ValidationResultPageModel validationItems(List<ValidationItem> validationItems) {
+  public ValidationResultPageModel validationItems(List<@Valid ValidationItem> validationItems) {
     
     this.validationItems = validationItems;
     return this;
@@ -65,18 +65,18 @@ public class ValidationResultPageModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "List of ValidationItem holds the severity | and the localized message from the origin ObjectValidationItem")
+
   @JsonProperty(VALIDATION_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ValidationItem> getValidationItems() {
+  public List<@Valid ValidationItem> getValidationItems() {
     return validationItems;
   }
 
 
   @JsonProperty(VALIDATION_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValidationItems(List<ValidationItem> validationItems) {
+  public void setValidationItems(List<@Valid ValidationItem> validationItems) {
     this.validationItems = validationItems;
   }
 

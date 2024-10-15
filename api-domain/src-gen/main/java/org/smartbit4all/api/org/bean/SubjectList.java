@@ -20,32 +20,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A list of subjects belongs to a given subject model. 
  */
-@ApiModel(description = "A list of subjects belongs to a given subject model. ")
 @JsonPropertyOrder({
   SubjectList.MODEL,
   SubjectList.ITEMS
 })
 @JsonTypeName("SubjectList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectList {
   public static final String MODEL = "model";
   private String model;
 
   public static final String ITEMS = "items";
-  private List<Subject> items = new ArrayList<>();
+  private List<@Valid Subject> items = new ArrayList<>();
 
   public SubjectList() { 
   }
@@ -62,7 +61,7 @@ public class SubjectList {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the subject model. ")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -78,7 +77,7 @@ public class SubjectList {
   }
 
 
-  public SubjectList items(List<Subject> items) {
+  public SubjectList items(List<@Valid Subject> items) {
     
     this.items = items;
     return this;
@@ -96,18 +95,18 @@ public class SubjectList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<Subject> getItems() {
+  public List<@Valid Subject> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<Subject> items) {
+  public void setItems(List<@Valid Subject> items) {
     this.items = items;
   }
 

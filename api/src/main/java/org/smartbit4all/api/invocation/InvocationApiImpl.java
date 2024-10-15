@@ -17,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
@@ -215,10 +215,10 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
-  public InvocationBatchResult invokeBatch(InvocationRequestBatch batch)
+  public InvocationBatchResult invokeBatch(InvocationBatchRequest batch)
       throws ApiNotFoundException {
     InvocationBatchResult result = new InvocationBatchResult();
-    batch.getRequests().stream().forEach(r -> {
+    batch.getRequests().forEach(r -> {
       InvocationResult invocationResult = new InvocationResult().startTime(OffsetDateTime.now());
       try {
         invocationResult.returnValue(invoke(r).getValue());
@@ -235,8 +235,8 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
-  public void invokeAsyncBatch(InvocationRequestBatch batch, String channel) {
-    batch.getRequests().stream().forEach(r -> {
+  public void invokeAsyncBatch(InvocationBatchRequest batch, String channel) {
+    batch.getRequests().forEach(r -> {
       invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel);
     });
   }

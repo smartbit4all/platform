@@ -20,27 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An example object containing some named inline fields and an inline string-string map. 
  */
-@ApiModel(description = "An example object containing some named inline fields and an inline string-string map. ")
 @JsonPropertyOrder({
   SampleProperties.PRIMARY,
   SampleProperties.SECONDARY,
   SampleProperties.ETC
 })
 @JsonTypeName("SampleProperties")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleProperties {
   public static final String PRIMARY = "primary";
   private String primary;
@@ -65,7 +62,7 @@ public class SampleProperties {
    * @return primary
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PRIMARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +89,7 @@ public class SampleProperties {
    * @return secondary
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SECONDARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +124,7 @@ public class SampleProperties {
    * @return etc
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ETC)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

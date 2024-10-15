@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UserEditingModel
@@ -41,7 +41,7 @@ import javax.validation.Valid;
   UserEditingModel.ACTUAL_GROUPS
 })
 @JsonTypeName("UserEditingModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserEditingModel {
   public static final String USER = "user";
   private User user = null;
@@ -67,7 +67,7 @@ public class UserEditingModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The copy of the user object to edit")
+
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,7 +103,7 @@ public class UserEditingModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The list of groups that exist within the current app. ")
+
   @JsonProperty(POSSIBLE_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +139,7 @@ public class UserEditingModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The list of groups directly attached to the given user. At the end of the editing the save will ensure that these groups will be associated with the user. ")
+
   @JsonProperty(ACTUAL_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterField
@@ -46,7 +46,7 @@ import javax.validation.Valid;
   FilterField.SELECTED_VALUES
 })
 @JsonTypeName("FilterField")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterField {
   public static final String PROPERTY_URI1 = "propertyUri1";
   private URI propertyUri1;
@@ -90,7 +90,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +118,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,7 +146,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -173,7 +173,7 @@ public class FilterField {
    * @return operationCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Operation code, specifies the operator of the condition.")
+
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -201,7 +201,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -229,7 +229,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -257,7 +257,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -285,7 +285,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE4)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -321,7 +321,7 @@ public class FilterField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

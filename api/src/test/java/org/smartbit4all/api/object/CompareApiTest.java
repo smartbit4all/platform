@@ -18,7 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {ApplyChangeTestConfig.class})
+@SpringBootTest(classes = {ApplyChangeTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 class CompareApiTest {
 
   public static final String SCHEME = "compare";

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
@@ -32,8 +32,8 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterExpressionField
@@ -57,7 +57,7 @@ import javax.validation.Valid;
   FilterExpressionField.TOOLBAR_ID
 })
 @JsonTypeName("FilterExpressionField")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionField {
   public static final String LABEL = "label";
   private String label;
@@ -121,7 +121,7 @@ public class FilterExpressionField {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The display name of the whole field. Tipically the label of the property we are filtering")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -148,7 +148,7 @@ public class FilterExpressionField {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "This identifier is unique inside the model let it be a builder model or a normal model object. ")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,7 +176,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LABEL1)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -203,7 +203,7 @@ public class FilterExpressionField {
    * @return label2
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +230,7 @@ public class FilterExpressionField {
    * @return label3
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -257,7 +257,7 @@ public class FilterExpressionField {
    * @return placeholder1
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PLACEHOLDER1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -284,7 +284,7 @@ public class FilterExpressionField {
    * @return placeholder2
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PLACEHOLDER2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -311,7 +311,7 @@ public class FilterExpressionField {
    * @return placeholder3
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PLACEHOLDER3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -338,7 +338,7 @@ public class FilterExpressionField {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -366,7 +366,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPRESSION_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -402,7 +402,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(POSSIBLE_OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -430,7 +430,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_FIELD_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -464,7 +464,7 @@ public class FilterExpressionField {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -492,7 +492,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WIDGET_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -520,7 +520,7 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUB_FIELD_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -547,7 +547,7 @@ public class FilterExpressionField {
    * @return toolbarId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of the toolbar associated with this widget. ")
+
   @JsonProperty(TOOLBAR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

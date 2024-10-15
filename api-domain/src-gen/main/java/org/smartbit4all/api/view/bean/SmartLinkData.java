@@ -20,20 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Represents a stored smartlink. Contains identifiers and a View, which will be opened,  when this smartlink is clicked. 
  */
-@ApiModel(description = "Represents a stored smartlink. Contains identifiers and a View, which will be opened,  when this smartlink is clicked. ")
 @JsonPropertyOrder({
   SmartLinkData.URI,
   SmartLinkData.UUID,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   SmartLinkData.URL
 })
 @JsonTypeName("SmartLinkData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLinkData {
   public static final String URI = "uri";
   private URI uri;
@@ -70,7 +68,7 @@ public class SmartLinkData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +96,7 @@ public class SmartLinkData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -126,7 +124,7 @@ public class SmartLinkData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +151,7 @@ public class SmartLinkData {
    * @return url
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,15 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.SmartFilterType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentWidgetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SmartComponentWidgetDefinition
@@ -40,7 +39,7 @@ import javax.validation.Valid;
   SmartComponentWidgetDefinition.FILTER_TYPE
 })
 @JsonTypeName("SmartComponentWidgetDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartComponentWidgetDefinition {
   public static final String TYPE = "type";
   private ComponentWidgetType type;
@@ -70,7 +69,7 @@ public class SmartComponentWidgetDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,7 +96,7 @@ public class SmartComponentWidgetDefinition {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +124,7 @@ public class SmartComponentWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_EXPRESSION_FIELD_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +152,7 @@ public class SmartComponentWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

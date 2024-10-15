@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and indirect, when the invocation itself modifies the related objects. 
  */
-@ApiModel(description = "The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and indirect, when the invocation itself modifies the related objects. ")
 @JsonPropertyOrder({
   InvocationRequestDefinition.REQUEST,
   InvocationRequestDefinition.RESOLVERS
 })
 @JsonTypeName("InvocationRequestDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequestDefinition {
   public static final String REQUEST = "request";
   private InvocationRequest request;
 
   public static final String RESOLVERS = "resolvers";
-  private List<InvocationParameterResolver> resolvers = null;
+  private List<@Valid InvocationParameterResolver> resolvers = null;
 
   public InvocationRequestDefinition() { 
   }
@@ -64,7 +63,7 @@ public class InvocationRequestDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,7 +79,7 @@ public class InvocationRequestDefinition {
   }
 
 
-  public InvocationRequestDefinition resolvers(List<InvocationParameterResolver> resolvers) {
+  public InvocationRequestDefinition resolvers(List<@Valid InvocationParameterResolver> resolvers) {
     
     this.resolvers = resolvers;
     return this;
@@ -100,18 +99,18 @@ public class InvocationRequestDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The resolvers are used to setup parameters of the newly created invocation request.")
+
   @JsonProperty(RESOLVERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<InvocationParameterResolver> getResolvers() {
+  public List<@Valid InvocationParameterResolver> getResolvers() {
     return resolvers;
   }
 
 
   @JsonProperty(RESOLVERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResolvers(List<InvocationParameterResolver> resolvers) {
+  public void setResolvers(List<@Valid InvocationParameterResolver> resolvers) {
     this.resolvers = resolvers;
   }
 

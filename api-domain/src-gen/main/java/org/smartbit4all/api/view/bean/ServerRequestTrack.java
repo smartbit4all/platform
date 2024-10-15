@@ -20,21 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ServerRequestType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The server request track is an object encapsulates the UiRequest and other parameters of the perform actions. It stands for normal and widget actions also. 
  */
-@ApiModel(description = "The server request track is an object encapsulates the UiRequest and other parameters of the perform actions. It stands for normal and widget actions also. ")
 @JsonPropertyOrder({
   ServerRequestTrack.VIEW_NAME,
   ServerRequestTrack.VIEW_UUID,
@@ -50,7 +48,7 @@ import javax.validation.Valid;
   ServerRequestTrack.TYPE
 })
 @JsonTypeName("ServerRequestTrack")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServerRequestTrack {
   public static final String VIEW_NAME = "viewName";
   private String viewName;
@@ -103,7 +101,7 @@ public class ServerRequestTrack {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the view the request is performed on.")
+
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -132,7 +130,7 @@ public class ServerRequestTrack {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The UUID of the view the request is performed on.")
+
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -159,7 +157,7 @@ public class ServerRequestTrack {
    * @return widgetId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier of the widget if it is a widget action perform.")
+
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -186,7 +184,7 @@ public class ServerRequestTrack {
    * @return nodeId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier of the widget node if it is a widget action perform.")
+
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -215,7 +213,7 @@ public class ServerRequestTrack {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The start of the service.")
+
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -243,7 +241,7 @@ public class ServerRequestTrack {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The end of the service.")
+
   @JsonProperty(END_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -270,7 +268,7 @@ public class ServerRequestTrack {
    * @return readCount
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The number of executed reads.")
+
   @JsonProperty(READ_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -297,7 +295,7 @@ public class ServerRequestTrack {
    * @return readTime
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The summarized execution time of the reads.")
+
   @JsonProperty(READ_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -324,7 +322,7 @@ public class ServerRequestTrack {
    * @return writeCount
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The number of executed writes.")
+
   @JsonProperty(WRITE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -351,7 +349,7 @@ public class ServerRequestTrack {
    * @return writeTime
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The summarized execution time of the writes.")
+
   @JsonProperty(WRITE_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -380,7 +378,7 @@ public class ServerRequestTrack {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -409,7 +407,7 @@ public class ServerRequestTrack {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

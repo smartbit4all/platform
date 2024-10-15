@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UiTreeNode
@@ -50,7 +50,7 @@ import javax.validation.Valid;
   UiTreeNode.ACTIONS
 })
 @JsonTypeName("UiTreeNode")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreeNode {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -106,7 +106,7 @@ public class UiTreeNode {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +134,7 @@ public class UiTreeNode {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,7 @@ public class UiTreeNode {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,7 +188,7 @@ public class UiTreeNode {
    * @return parentIdentifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PARENT_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -215,7 +215,7 @@ public class UiTreeNode {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -242,7 +242,7 @@ public class UiTreeNode {
    * @return caption
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -275,7 +275,7 @@ public class UiTreeNode {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLASSES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -302,7 +302,7 @@ public class UiTreeNode {
    * @return hasChildren
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HAS_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -335,7 +335,7 @@ public class UiTreeNode {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -362,7 +362,7 @@ public class UiTreeNode {
    * @return level
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -389,7 +389,7 @@ public class UiTreeNode {
    * @return shortDescription
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHORT_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -416,7 +416,7 @@ public class UiTreeNode {
    * @return nodeType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NODE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -450,7 +450,7 @@ public class UiTreeNode {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

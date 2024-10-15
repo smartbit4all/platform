@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NavigationResponse.REFERENCE_ENTRIES
 })
 @JsonTypeName("NavigationResponse")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationResponse {
   public static final String ASSOCIATION_META_URI = "associationMetaUri";
   private URI associationMetaUri;
@@ -59,7 +59,7 @@ public class NavigationResponse {
    * @return associationMetaUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATION_META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +94,7 @@ public class NavigationResponse {
    * @return referenceEntries
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REFERENCE_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

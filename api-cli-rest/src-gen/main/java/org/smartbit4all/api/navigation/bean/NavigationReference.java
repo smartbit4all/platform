@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -29,14 +28,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.
  */
-@ApiModel(description = "UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 @JsonPropertyOrder({
   NavigationReference.ID,
   NavigationReference.END_NODE,
   NavigationReference.ASSOCIATION_NODE
 })
 @JsonTypeName("NavigationReference")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationReference {
   public static final String ID = "id";
   private String id;
@@ -61,7 +59,7 @@ public class NavigationReference {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the given association - UUID")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,7 +86,7 @@ public class NavigationReference {
    * @return endNode
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(END_NODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -115,7 +113,7 @@ public class NavigationReference {
    * @return associationNode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATION_NODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

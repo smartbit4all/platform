@@ -11,16 +11,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link GridApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface GridApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -28,7 +30,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridId}/{rowId}/expand
+     * POST /grid/{uuid}/{gridId}/{rowId}/expand : 
      *
      * @param uuid  (required)
      * @param gridId  (required)
@@ -44,7 +46,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridIdentifier}/load
+     * POST /grid/{uuid}/{gridIdentifier}/load : 
      *
      * @param uuid  (required)
      * @param gridIdentifier  (required)
@@ -56,7 +58,7 @@ public interface GridApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"pageSizeOptions\" : [ 7, 7 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"pageSize\" : 2, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"defaultRowActions\" : [ \"defaultRowActions\", \"defaultRowActions\" ], \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageIndex\" : 5, \"qualifier\" : \"qualifier\", \"allRowsSelected\" : true, \"accessConfig\" : { \"idProperty\" : \"idProperty\", \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"identifierPath\" : [ \"identifierPath\", \"identifierPath\" ], \"parentIdProperty\" : \"parentIdProperty\" }, \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5, \"paginator\" : true }";
+                    String exampleString = "{ \"identifier\" : \"identifier\", \"pageSizeOptions\" : [ 7, 7 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"pageSize\" : 2, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"defaultRowActions\" : [ \"defaultRowActions\", \"defaultRowActions\" ], \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageIndex\" : 5, \"qualifier\" : \"qualifier\", \"allRowsSelected\" : true, \"accessConfig\" : { \"idProperty\" : \"idProperty\", \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"identifierPath\" : [ \"identifierPath\", \"identifierPath\" ], \"parentIdProperty\" : \"parentIdProperty\" }, \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"style\" : \"\", \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"style\" : \"\", \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5, \"paginator\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -67,7 +69,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridId}/{rowId}/select
+     * POST /grid/{uuid}/{gridId}/{rowId}/select : 
      *
      * @param uuid  (required)
      * @param gridId  (required)
@@ -85,7 +87,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridId}/select
+     * POST /grid/{uuid}/{gridId}/select : 
      *
      * @param uuid  (required)
      * @param gridId  (required)
@@ -101,7 +103,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridId}/selects
+     * POST /grid/{uuid}/{gridId}/selects : 
      *
      * @param uuid  (required)
      * @param gridId  (required)
@@ -117,7 +119,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit}
+     * POST /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit} : 
      *
      * @param uuid  (required)
      * @param gridIdentifier  (required)
@@ -135,7 +137,7 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridIdentifier}/update
+     * POST /grid/{uuid}/{gridIdentifier}/update : 
      *
      * @param uuid  (required)
      * @param gridIdentifier  (required)
@@ -149,7 +151,7 @@ public interface GridApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"identifier\" : \"identifier\", \"pageSizeOptions\" : [ 7, 7 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"pageSize\" : 2, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"defaultRowActions\" : [ \"defaultRowActions\", \"defaultRowActions\" ], \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\", \"alwaysShow\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageIndex\" : 5, \"qualifier\" : \"qualifier\", \"allRowsSelected\" : true, \"accessConfig\" : { \"idProperty\" : \"idProperty\", \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"identifierPath\" : [ \"identifierPath\", \"identifierPath\" ], \"parentIdProperty\" : \"parentIdProperty\" }, \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5, \"paginator\" : true }";
+                    String exampleString = "{ \"identifier\" : \"identifier\", \"pageSizeOptions\" : [ 7, 7 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"pageSize\" : 2, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"defaultRowActions\" : [ \"defaultRowActions\", \"defaultRowActions\" ], \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"selectionType\" : \"row\", \"kind\" : \"TABLE\", \"columns\" : [ { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false }, { \"alwaysHidden\" : false, \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"style\" : \"\", \"label\" : \"label\", \"typeFormat\" : \"typeFormat\", \"alwaysShow\" : false, \"contentType\" : \"text\", \"hideLabel\" : false } ], \"showEditColumns\" : true, \"highlightProperty\" : \"highlightProperty\", \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"highlightClass\" : \"highlightClass\", \"label\" : \"label\", \"selectionMode\" : \"none\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageIndex\" : 5, \"qualifier\" : \"qualifier\", \"allRowsSelected\" : true, \"accessConfig\" : { \"idProperty\" : \"idProperty\", \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"identifierPath\" : [ \"identifierPath\", \"identifierPath\" ], \"parentIdProperty\" : \"parentIdProperty\" }, \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"style\" : \"\", \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"parent\" : \"parent\", \"data\" : \"{}\", \"children\" : [ \"children\", \"children\" ], \"selectable\" : true, \"style\" : \"\", \"id\" : \"id\", \"icons\" : { \"key\" : [ \"\", \"\" ] }, \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5, \"paginator\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

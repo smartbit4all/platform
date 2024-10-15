@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderGroup;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. 
  */
-@ApiModel(description = "The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderModel.LABEL,
   FilterExpressionBuilderModel.GROUPS,
@@ -44,13 +43,13 @@ import javax.validation.Valid;
   FilterExpressionBuilderModel.DEFAULT_FILTERS
 })
 @JsonTypeName("FilterExpressionBuilderModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderModel {
   public static final String LABEL = "label";
   private String label;
 
   public static final String GROUPS = "groups";
-  private List<FilterExpressionBuilderGroup> groups = null;
+  private List<@Valid FilterExpressionBuilderGroup> groups = null;
 
   public static final String EXCEPTIONAL_GROUP = "exceptionalGroup";
   private FilterExpressionBuilderGroup exceptionalGroup;
@@ -75,7 +74,7 @@ public class FilterExpressionBuilderModel {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -91,7 +90,7 @@ public class FilterExpressionBuilderModel {
   }
 
 
-  public FilterExpressionBuilderModel groups(List<FilterExpressionBuilderGroup> groups) {
+  public FilterExpressionBuilderModel groups(List<@Valid FilterExpressionBuilderGroup> groups) {
     
     this.groups = groups;
     return this;
@@ -111,18 +110,18 @@ public class FilterExpressionBuilderModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "This is the group of filter expressions that can be involved to the workplace. This is a tree structure.")
+
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterExpressionBuilderGroup> getGroups() {
+  public List<@Valid FilterExpressionBuilderGroup> getGroups() {
     return groups;
   }
 
 
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroups(List<FilterExpressionBuilderGroup> groups) {
+  public void setGroups(List<@Valid FilterExpressionBuilderGroup> groups) {
     this.groups = groups;
   }
 
@@ -139,7 +138,7 @@ public class FilterExpressionBuilderModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXCEPTIONAL_GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +166,7 @@ public class FilterExpressionBuilderModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WORKPLACE_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,7 +194,7 @@ public class FilterExpressionBuilderModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_FILTERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

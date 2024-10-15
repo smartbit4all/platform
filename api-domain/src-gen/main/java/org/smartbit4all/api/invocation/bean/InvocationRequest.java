@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. 
  */
-@ApiModel(description = "The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. ")
 @JsonPropertyOrder({
   InvocationRequest.INTERFACE_CLASS,
   InvocationRequest.NAME,
@@ -45,7 +44,7 @@ import javax.validation.Valid;
   InvocationRequest.SESSION_URI
 })
 @JsonTypeName("InvocationRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequest {
   public static final String INTERFACE_CLASS = "interfaceClass";
   private String interfaceClass;
@@ -63,7 +62,7 @@ public class InvocationRequest {
   private String scriptBody;
 
   public static final String PARAMETERS = "parameters";
-  private List<InvocationParameter> parameters = new ArrayList<>();
+  private List<@Valid InvocationParameter> parameters = new ArrayList<>();
 
   public static final String SESSION_URI = "sessionUri";
   private URI sessionUri;
@@ -83,7 +82,7 @@ public class InvocationRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The fully qualified name of the interface.")
+
   @JsonProperty(INTERFACE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +109,7 @@ public class InvocationRequest {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the interface.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +137,7 @@ public class InvocationRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the method to call")
+
   @JsonProperty(METHOD_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -165,7 +164,7 @@ public class InvocationRequest {
    * @return scriptKind
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The script language managed by the ScripEngine")
+
   @JsonProperty(SCRIPT_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +191,7 @@ public class InvocationRequest {
    * @return scriptBody
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The script language managed by the ScripEngine")
+
   @JsonProperty(SCRIPT_BODY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +207,7 @@ public class InvocationRequest {
   }
 
 
-  public InvocationRequest parameters(List<InvocationParameter> parameters) {
+  public InvocationRequest parameters(List<@Valid InvocationParameter> parameters) {
     
     this.parameters = parameters;
     return this;
@@ -226,18 +225,18 @@ public class InvocationRequest {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<InvocationParameter> getParameters() {
+  public List<@Valid InvocationParameter> getParameters() {
     return parameters;
   }
 
 
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setParameters(List<InvocationParameter> parameters) {
+  public void setParameters(List<@Valid InvocationParameter> parameters) {
     this.parameters = parameters;
   }
 
@@ -254,7 +253,7 @@ public class InvocationRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the session that belongs to the request. Optional and can be used to inherit session for the asynchronous call. ")
+
   @JsonProperty(SESSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

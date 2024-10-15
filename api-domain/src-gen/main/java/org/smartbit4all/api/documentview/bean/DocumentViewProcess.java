@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * DocumentViewProcess
@@ -48,7 +48,7 @@ import javax.validation.Valid;
   DocumentViewProcess.THUMBNAILS
 })
 @JsonTypeName("DocumentViewProcess")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DocumentViewProcess {
   public static final String DISPLAY_MODE = "displayMode";
   private DisplayMode displayMode;
@@ -81,7 +81,7 @@ public class DocumentViewProcess {
   private ImageWithAlt mainImage;
 
   public static final String THUMBNAILS = "thumbnails";
-  private List<ImageWithAlt> thumbnails = null;
+  private List<@Valid ImageWithAlt> thumbnails = null;
 
   public DocumentViewProcess() { 
   }
@@ -98,7 +98,7 @@ public class DocumentViewProcess {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DISPLAY_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +125,7 @@ public class DocumentViewProcess {
    * @return pageIndex
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +152,7 @@ public class DocumentViewProcess {
    * @return pageCount
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,7 +179,7 @@ public class DocumentViewProcess {
    * @return zoomValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ZOOM_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +206,7 @@ public class DocumentViewProcess {
    * @return text
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +233,7 @@ public class DocumentViewProcess {
    * @return message
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -260,7 +260,7 @@ public class DocumentViewProcess {
    * @return leftButtonEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LEFT_BUTTON_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -287,7 +287,7 @@ public class DocumentViewProcess {
    * @return rightButtonEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(RIGHT_BUTTON_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -314,7 +314,7 @@ public class DocumentViewProcess {
    * @return loadingSpinnerDisplayed
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LOADING_SPINNER_DISPLAYED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -342,7 +342,7 @@ public class DocumentViewProcess {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MAIN_IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -358,7 +358,7 @@ public class DocumentViewProcess {
   }
 
 
-  public DocumentViewProcess thumbnails(List<ImageWithAlt> thumbnails) {
+  public DocumentViewProcess thumbnails(List<@Valid ImageWithAlt> thumbnails) {
     
     this.thumbnails = thumbnails;
     return this;
@@ -378,18 +378,18 @@ public class DocumentViewProcess {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(THUMBNAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ImageWithAlt> getThumbnails() {
+  public List<@Valid ImageWithAlt> getThumbnails() {
     return thumbnails;
   }
 
 
   @JsonProperty(THUMBNAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setThumbnails(List<ImageWithAlt> thumbnails) {
+  public void setThumbnails(List<@Valid ImageWithAlt> thumbnails) {
     this.thumbnails = thumbnails;
   }
 

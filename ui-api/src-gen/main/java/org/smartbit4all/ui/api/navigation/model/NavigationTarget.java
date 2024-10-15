@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetState;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * NavigationTarget
@@ -51,7 +49,7 @@ import javax.validation.Valid;
   NavigationTarget.CONTAINER_UUID
 })
 @JsonTypeName("NavigationTarget")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationTarget {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -102,7 +100,7 @@ public class NavigationTarget {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -130,7 +128,7 @@ public class NavigationTarget {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -158,7 +156,7 @@ public class NavigationTarget {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +189,7 @@ public class NavigationTarget {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -220,7 +218,7 @@ public class NavigationTarget {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -249,7 +247,7 @@ public class NavigationTarget {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -276,7 +274,7 @@ public class NavigationTarget {
    * @return fullSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FULL_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,7 +301,7 @@ public class NavigationTarget {
    * @return hideCloseButton
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HIDE_CLOSE_BUTTON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -330,7 +328,7 @@ public class NavigationTarget {
    * @return title
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -357,7 +355,7 @@ public class NavigationTarget {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -385,7 +383,7 @@ public class NavigationTarget {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

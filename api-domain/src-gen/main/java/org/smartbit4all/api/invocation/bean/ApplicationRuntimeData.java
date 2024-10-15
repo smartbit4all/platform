@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The application runtime can be saved into the storage in this object. 
  */
-@ApiModel(description = "The application runtime can be saved into the storage in this object. ")
 @JsonPropertyOrder({
   ApplicationRuntimeData.URI,
   ApplicationRuntimeData.UUID,
@@ -48,7 +47,7 @@ import javax.validation.Valid;
   ApplicationRuntimeData.APIS
 })
 @JsonTypeName("ApplicationRuntimeData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApplicationRuntimeData {
   public static final String URI = "uri";
   private URI uri;
@@ -96,7 +95,7 @@ public class ApplicationRuntimeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The URI of the instance.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -125,7 +124,7 @@ public class ApplicationRuntimeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The unique identifier of the runtime instance.")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -153,7 +152,7 @@ public class ApplicationRuntimeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The ip address of the runtime.")
+
   @JsonProperty(IP_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -180,7 +179,7 @@ public class ApplicationRuntimeData {
    * @return baseUrl
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The base url of the runtime.")
+
   @JsonProperty(BASE_URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,7 +206,7 @@ public class ApplicationRuntimeData {
    * @return serverPort
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The server port of the runtime.")
+
   @JsonProperty(SERVER_PORT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,7 +234,7 @@ public class ApplicationRuntimeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The startup time of the given runtime.")
+
   @JsonProperty(STARTUP_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -262,7 +261,7 @@ public class ApplicationRuntimeData {
    * @return stopTime
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The stop time of the given runtime.")
+
   @JsonProperty(STOP_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -289,7 +288,7 @@ public class ApplicationRuntimeData {
    * @return timeOffset
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The server time offset compared to the storage time.")
+
   @JsonProperty(TIME_OFFSET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -317,7 +316,7 @@ public class ApplicationRuntimeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The last time when the given runtime updated the entry in the storage.")
+
   @JsonProperty(LAST_TOUCH_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -353,7 +352,7 @@ public class ApplicationRuntimeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The available apis of the runtime.")
+
   @JsonProperty(APIS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,23 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.MethodData;
 import org.smartbit4all.api.invocation.bean.PublishedEventData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage. If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated and will be able to call the newly started node. If we have a primary api that collects the available secondary apis of an interface then the primary api local instances will be notified about the availability of the given interface instance. The remote registration is not saved here to avoid circular references. 
  */
-@ApiModel(description = "An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage. If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated and will be able to call the newly started node. If we have a primary api that collects the available secondary apis of an interface then the primary api local instances will be notified about the availability of the given interface instance. The remote registration is not saved here to avoid circular references. ")
 @JsonPropertyOrder({
   ApiData.URI,
   ApiData.INTERFACE_NAME,
@@ -46,7 +45,7 @@ import javax.validation.Valid;
   ApiData.EVENT_SUBSCRIPTIONS
 })
 @JsonTypeName("ApiData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiData {
   public static final String URI = "uri";
   private URI uri;
@@ -58,13 +57,13 @@ public class ApiData {
   private String name;
 
   public static final String METHODS = "methods";
-  private List<MethodData> methods = new ArrayList<>();
+  private List<@Valid MethodData> methods = new ArrayList<>();
 
   public static final String PUBLISHED_EVENTS = "publishedEvents";
-  private List<PublishedEventData> publishedEvents = new ArrayList<>();
+  private List<@Valid PublishedEventData> publishedEvents = new ArrayList<>();
 
   public static final String EVENT_SUBSCRIPTIONS = "eventSubscriptions";
-  private List<EventSubscriptionData> eventSubscriptions = new ArrayList<>();
+  private List<@Valid EventSubscriptionData> eventSubscriptions = new ArrayList<>();
 
   public ApiData() { 
   }
@@ -82,7 +81,7 @@ public class ApiData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +109,7 @@ public class ApiData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. ")
+
   @JsonProperty(INTERFACE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -138,7 +137,7 @@ public class ApiData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the instance that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. ")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -154,7 +153,7 @@ public class ApiData {
   }
 
 
-  public ApiData methods(List<MethodData> methods) {
+  public ApiData methods(List<@Valid MethodData> methods) {
     
     this.methods = methods;
     return this;
@@ -172,23 +171,23 @@ public class ApiData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The available methods of the given api interface. All of the methods in the interface are provided by default. If we need limited interface then we need to create this interface and publish it. ")
+
   @JsonProperty(METHODS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<MethodData> getMethods() {
+  public List<@Valid MethodData> getMethods() {
     return methods;
   }
 
 
   @JsonProperty(METHODS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMethods(List<MethodData> methods) {
+  public void setMethods(List<@Valid MethodData> methods) {
     this.methods = methods;
   }
 
 
-  public ApiData publishedEvents(List<PublishedEventData> publishedEvents) {
+  public ApiData publishedEvents(List<@Valid PublishedEventData> publishedEvents) {
     
     this.publishedEvents = publishedEvents;
     return this;
@@ -206,23 +205,23 @@ public class ApiData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The available events of the given api interface. These are only the logical names of the events that must be globaly unique to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation. ")
+
   @JsonProperty(PUBLISHED_EVENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<PublishedEventData> getPublishedEvents() {
+  public List<@Valid PublishedEventData> getPublishedEvents() {
     return publishedEvents;
   }
 
 
   @JsonProperty(PUBLISHED_EVENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPublishedEvents(List<PublishedEventData> publishedEvents) {
+  public void setPublishedEvents(List<@Valid PublishedEventData> publishedEvents) {
     this.publishedEvents = publishedEvents;
   }
 
 
-  public ApiData eventSubscriptions(List<EventSubscriptionData> eventSubscriptions) {
+  public ApiData eventSubscriptions(List<@Valid EventSubscriptionData> eventSubscriptions) {
     
     this.eventSubscriptions = eventSubscriptions;
     return this;
@@ -240,18 +239,18 @@ public class ApiData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The   ")
+
   @JsonProperty(EVENT_SUBSCRIPTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<EventSubscriptionData> getEventSubscriptions() {
+  public List<@Valid EventSubscriptionData> getEventSubscriptions() {
     return eventSubscriptions;
   }
 
 
   @JsonProperty(EVENT_SUBSCRIPTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setEventSubscriptions(List<EventSubscriptionData> eventSubscriptions) {
+  public void setEventSubscriptions(List<@Valid EventSubscriptionData> eventSubscriptions) {
     this.eventSubscriptions = eventSubscriptions;
   }
 

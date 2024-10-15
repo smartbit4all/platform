@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.grid.bean.GridRow;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object containt the page information of the content. The currently seen row range, the total row cont and other options. 
  */
-@ApiModel(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GridPage.LOWER_BOUND,
   GridPage.UPPER_BOUND,
   GridPage.ROWS
 })
 @JsonTypeName("GridPage")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridPage {
   public static final String LOWER_BOUND = "lowerBound";
   private Integer lowerBound;
@@ -49,7 +48,7 @@ public class GridPage {
   private Integer upperBound;
 
   public static final String ROWS = "rows";
-  private List<GridRow> rows = null;
+  private List<@Valid GridRow> rows = null;
 
   public GridPage() { 
   }
@@ -65,7 +64,7 @@ public class GridPage {
    * @return lowerBound
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The index of the first row in the current page. Startes from 1 and inclusive.")
+
   @JsonProperty(LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +91,7 @@ public class GridPage {
    * @return upperBound
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The index of the last row in the current page inclusive.")
+
   @JsonProperty(UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,7 +107,7 @@ public class GridPage {
   }
 
 
-  public GridPage rows(List<GridRow> rows) {
+  public GridPage rows(List<@Valid GridRow> rows) {
     
     this.rows = rows;
     return this;
@@ -128,18 +127,18 @@ public class GridPage {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<GridRow> getRows() {
+  public List<@Valid GridRow> getRows() {
     return rows;
   }
 
 
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRows(List<GridRow> rows) {
+  public void setRows(List<@Valid GridRow> rows) {
     this.rows = rows;
   }
 

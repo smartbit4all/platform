@@ -19,7 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {ObjectOperationTestConfig.class})
+@SpringBootTest(classes = {ObjectOperationTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 class ObjectDeepCopyApiTest {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectDeepCopyApiTest.class);

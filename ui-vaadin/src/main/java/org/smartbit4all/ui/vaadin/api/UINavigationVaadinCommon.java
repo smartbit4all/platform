@@ -22,7 +22,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -205,7 +204,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     // all other logic is handled in onDialogClose closeListener
   }
 
-  protected void onDialogClose(Object dialogUUID, OpenedChangeEvent<Dialog> event) {
+  protected void onDialogClose(Object dialogUUID, Dialog.OpenedChangeEvent event) {
     if (!event.getSource().isOpened()) {
       Component viewToClose = dialogViewsByUUID.get(dialogUUID);
       if (viewToClose != null) {

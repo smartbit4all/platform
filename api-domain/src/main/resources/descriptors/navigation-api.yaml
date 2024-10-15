@@ -263,15 +263,9 @@ components:
           type: string
           description: 'The symbolic name of the view that must be supported by the given UI implementation.'
         parameters:
-          type: string
+          type: object
           additionalProperties:
-            properties:
-              parameter:
-                type: string
-                description: 'The key of the parameter'
-              value:
-                type: string
-                description: 'The value of the parameter'
+            type: string
     NavigationPath:
       type: object
       description: |

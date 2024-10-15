@@ -10,16 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link SessionApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface SessionApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -40,6 +42,21 @@ public interface SessionApiDelegate {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"authenticationProviders\" : [ { \"kind\" : \"kind\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"kind\" : \"kind\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -66,6 +83,21 @@ public interface SessionApiDelegate {
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
             }
         });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -86,6 +118,16 @@ public interface SessionApiDelegate {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"duration\" : 0, \"createdAt\" : \"2000-01-23T04:56:07.000+00:00\", \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -114,6 +156,21 @@ public interface SessionApiDelegate {
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
             }
         });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -132,6 +189,11 @@ public interface SessionApiDelegate {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"duration\" : 0, \"createdAt\" : \"2000-01-23T04:56:07.000+00:00\", \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"code\" : \"code\", \"message\" : \"message\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

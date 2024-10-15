@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type. 
  */
-@ApiModel(description = "The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type. ")
 @JsonPropertyOrder({
   FilterExpressionOperandData.IS_DATA_NAME,
   FilterExpressionOperandData.VALUE_AS_STRING,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   FilterExpressionOperandData.TYPE
 })
 @JsonTypeName("FilterExpressionOperandData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionOperandData {
   public static final String IS_DATA_NAME = "isDataName";
   private Boolean isDataName = true;
@@ -73,7 +72,7 @@ public class FilterExpressionOperandData {
    * @return isDataName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "True if the given operand refers to property at the moment. The value as string is a property name.")
+
   @JsonProperty(IS_DATA_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +99,7 @@ public class FilterExpressionOperandData {
    * @return valueAsString
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_AS_STRING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +132,7 @@ public class FilterExpressionOperandData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -168,7 +167,7 @@ public class FilterExpressionOperandData {
    * @return selectedObjects
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -196,7 +195,7 @@ public class FilterExpressionOperandData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

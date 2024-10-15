@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterFieldModel
@@ -52,7 +52,7 @@ import javax.validation.Valid;
   FilterFieldModel.ENABLED
 })
 @JsonTypeName("FilterFieldModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldModel {
   public static final String SELECTOR_ID = "selectorId";
   private String selectorId;
@@ -110,7 +110,7 @@ public class FilterFieldModel {
    * @return selectorId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTOR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +138,7 @@ public class FilterFieldModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +165,7 @@ public class FilterFieldModel {
    * @return closeable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +192,7 @@ public class FilterFieldModel {
    * @return draggable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DRAGGABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -220,7 +220,7 @@ public class FilterFieldModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -254,7 +254,7 @@ public class FilterFieldModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -288,7 +288,7 @@ public class FilterFieldModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -322,7 +322,7 @@ public class FilterFieldModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -350,7 +350,7 @@ public class FilterFieldModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -377,7 +377,7 @@ public class FilterFieldModel {
    * @return value1
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -404,7 +404,7 @@ public class FilterFieldModel {
    * @return value2
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -431,7 +431,7 @@ public class FilterFieldModel {
    * @return value3
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -458,7 +458,7 @@ public class FilterFieldModel {
    * @return value4
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE4)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -485,7 +485,7 @@ public class FilterFieldModel {
    * @return enabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterGroupMeta
@@ -44,16 +44,16 @@ import javax.validation.Valid;
   FilterGroupMeta.TYPE
 })
 @JsonTypeName("FilterGroupMeta")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupMeta {
   public static final String ID = "id";
   private String id;
 
   public static final String FILTER_GROUP_METAS = "filterGroupMetas";
-  private List<FilterGroupMeta> filterGroupMetas = new ArrayList<>();
+  private List<@Valid FilterGroupMeta> filterGroupMetas = new ArrayList<>();
 
   public static final String FILTER_FIELD_METAS = "filterFieldMetas";
-  private List<FilterFieldMeta> filterFieldMetas = new ArrayList<>();
+  private List<@Valid FilterFieldMeta> filterFieldMetas = new ArrayList<>();
 
   public static final String LABEL_CODE = "labelCode";
   private String labelCode;
@@ -81,7 +81,7 @@ public class FilterGroupMeta {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of the filter group metadata. Not mandatory, specify only if in use.")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +97,7 @@ public class FilterGroupMeta {
   }
 
 
-  public FilterGroupMeta filterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
+  public FilterGroupMeta filterGroupMetas(List<@Valid FilterGroupMeta> filterGroupMetas) {
     
     this.filterGroupMetas = filterGroupMetas;
     return this;
@@ -115,23 +115,23 @@ public class FilterGroupMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILTER_GROUP_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterGroupMeta> getFilterGroupMetas() {
+  public List<@Valid FilterGroupMeta> getFilterGroupMetas() {
     return filterGroupMetas;
   }
 
 
   @JsonProperty(FILTER_GROUP_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
+  public void setFilterGroupMetas(List<@Valid FilterGroupMeta> filterGroupMetas) {
     this.filterGroupMetas = filterGroupMetas;
   }
 
 
-  public FilterGroupMeta filterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
+  public FilterGroupMeta filterFieldMetas(List<@Valid FilterFieldMeta> filterFieldMetas) {
     
     this.filterFieldMetas = filterFieldMetas;
     return this;
@@ -149,18 +149,18 @@ public class FilterGroupMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILTER_FIELD_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterFieldMeta> getFilterFieldMetas() {
+  public List<@Valid FilterFieldMeta> getFilterFieldMetas() {
     return filterFieldMetas;
   }
 
 
   @JsonProperty(FILTER_FIELD_METAS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
+  public void setFilterFieldMetas(List<@Valid FilterFieldMeta> filterFieldMetas) {
     this.filterFieldMetas = filterFieldMetas;
   }
 
@@ -176,7 +176,7 @@ public class FilterGroupMeta {
    * @return labelCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +203,7 @@ public class FilterGroupMeta {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +230,7 @@ public class FilterGroupMeta {
    * @return style
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -258,7 +258,7 @@ public class FilterGroupMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

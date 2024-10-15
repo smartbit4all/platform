@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * When a user executes an activity this entry is created based on the current session. It contains the information we know about the user and the time of the execution. The user is not necessarily user of the system so the user uri is optional and the user is a copied value from the session. 
  */
-@ApiModel(description = "When a user executes an activity this entry is created based on the current session. It contains the information we know about the user and the time of the execution. The user is not necessarily user of the system so the user uri is optional and the user is a copied value from the session. ")
 @JsonPropertyOrder({
   UserActivityLog.USER_URI,
   UserActivityLog.USER_NAME,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   UserActivityLog.TIMESTAMP
 })
 @JsonTypeName("UserActivityLog")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserActivityLog {
   public static final String USER_URI = "userUri";
   private URI userUri;
@@ -73,7 +71,7 @@ public class UserActivityLog {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri reference of the user.")
+
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +98,7 @@ public class UserActivityLog {
    * @return userName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The login name of the user.")
+
   @JsonProperty(USER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +125,7 @@ public class UserActivityLog {
    * @return role
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The role of the user.")
+
   @JsonProperty(ROLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +152,7 @@ public class UserActivityLog {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The natural name of the user.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -182,7 +180,7 @@ public class UserActivityLog {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

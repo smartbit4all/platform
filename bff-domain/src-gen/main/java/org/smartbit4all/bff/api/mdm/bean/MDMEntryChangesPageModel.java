@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.mdm.bean.MDMModificationNote;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * MDMEntryChangesPageModel
@@ -36,7 +35,7 @@ import javax.validation.Valid;
   MDMEntryChangesPageModel.APPROVER_NAME
 })
 @JsonTypeName("MDMEntryChangesPageModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryChangesPageModel {
   public static final String LATEST_MODIFICATION_NOTE = "latestModificationNote";
   private MDMModificationNote latestModificationNote = null;
@@ -59,7 +58,7 @@ public class MDMEntryChangesPageModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LATEST_MODIFICATION_NOTE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -86,7 +85,7 @@ public class MDMEntryChangesPageModel {
    * @return approverName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(APPROVER_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

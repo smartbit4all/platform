@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +28,12 @@ import java.util.Map;
 import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. 
  */
-@ApiModel(description = "The snapshot is the copy of the ObjectNode at a given time. It contains recursively all the snapshots of the referred objects that were available when the ObjetNode was loaded. Taking a snapshot can be executed on a  loaded ObjectNode. ")
 @JsonPropertyOrder({
   SnapshotData.OBJECT_URI,
   SnapshotData.QUALIFIED_NAME,
@@ -50,7 +48,7 @@ import javax.validation.Valid;
   SnapshotData.RESULT_URI
 })
 @JsonTypeName("SnapshotData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SnapshotData {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -77,7 +75,7 @@ public class SnapshotData {
   private Map<String, SnapshotDataRef> references = new HashMap<>();
 
   public static final String REFERENCE_LISTS = "referenceLists";
-  private Map<String, List<SnapshotDataRef>> referenceLists = new HashMap<>();
+  private Map<String, List<@Valid SnapshotDataRef>> referenceLists = new HashMap<>();
 
   public static final String REFERENCE_MAPS = "referenceMaps";
   private Map<String, Map<String, SnapshotDataRef>> referenceMaps = new HashMap<>();
@@ -100,7 +98,7 @@ public class SnapshotData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +125,7 @@ public class SnapshotData {
    * @return qualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +152,7 @@ public class SnapshotData {
    * @return storageSchema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,7 +179,7 @@ public class SnapshotData {
    * @return versionNr
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +206,7 @@ public class SnapshotData {
    * @return includeData
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates whether the data of the node is included in the snapshot.")
+
   @JsonProperty(INCLUDE_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -235,7 +233,7 @@ public class SnapshotData {
    * @return latestUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates whether the data of the node contains latest uri in the snapshot. It counts only if it doesn't contain the data. ")
+
   @JsonProperty(LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -270,7 +268,7 @@ public class SnapshotData {
    * @return objectAsMap
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -304,7 +302,7 @@ public class SnapshotData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -320,13 +318,13 @@ public class SnapshotData {
   }
 
 
-  public SnapshotData referenceLists(Map<String, List<SnapshotDataRef>> referenceLists) {
+  public SnapshotData referenceLists(Map<String, List<@Valid SnapshotDataRef>> referenceLists) {
     
     this.referenceLists = referenceLists;
     return this;
   }
 
-  public SnapshotData putReferenceListsItem(String key, List<SnapshotDataRef> referenceListsItem) {
+  public SnapshotData putReferenceListsItem(String key, List<@Valid SnapshotDataRef> referenceListsItem) {
     this.referenceLists.put(key, referenceListsItem);
     return this;
   }
@@ -338,18 +336,18 @@ public class SnapshotData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<SnapshotDataRef>> getReferenceLists() {
+  public Map<String, List<@Valid SnapshotDataRef>> getReferenceLists() {
     return referenceLists;
   }
 
 
   @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferenceLists(Map<String, List<SnapshotDataRef>> referenceLists) {
+  public void setReferenceLists(Map<String, List<@Valid SnapshotDataRef>> referenceLists) {
     this.referenceLists = referenceLists;
   }
 
@@ -372,7 +370,7 @@ public class SnapshotData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -400,7 +398,7 @@ public class SnapshotData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The object URI after an ObjectApi.save. It can be used to read the result Uri after save. ")
+
   @JsonProperty(RESULT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

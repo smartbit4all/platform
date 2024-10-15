@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or an objectUri/branchUri pair. SnapshotData only contains versioned URIs  and references (also contains objectUri). ObjectUri/branchUri is similar, but doesn&#39;t contain tha data. Since these versions don&#39;t change, a snapshot can always be reloaded exactly as it was before. 
  */
-@ApiModel(description = "A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData), or an objectUri/branchUri pair. SnapshotData only contains versioned URIs  and references (also contains objectUri). ObjectUri/branchUri is similar, but doesn't contain tha data. Since these versions don't change, a snapshot can always be reloaded exactly as it was before. ")
 @JsonPropertyOrder({
   SnapshotEntry.URI,
   SnapshotEntry.DATA,
@@ -40,7 +38,7 @@ import javax.validation.Valid;
   SnapshotEntry.BRANCH_URI
 })
 @JsonTypeName("SnapshotEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SnapshotEntry {
   public static final String URI = "uri";
   private URI uri;
@@ -69,7 +67,7 @@ public class SnapshotEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +95,7 @@ public class SnapshotEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +123,7 @@ public class SnapshotEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +151,7 @@ public class SnapshotEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

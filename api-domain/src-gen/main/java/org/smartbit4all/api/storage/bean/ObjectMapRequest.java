@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The request for adding and removing items from the ObjectMap. The Api accept this object as an input and executes the commands. 
  */
-@ApiModel(description = "The request for adding and removing items from the ObjectMap. The Api accept this object as an input and executes the commands. ")
 @JsonPropertyOrder({
   ObjectMapRequest.MAP_URI,
   ObjectMapRequest.MAP_NAME,
@@ -42,7 +39,7 @@ import javax.validation.Valid;
   ObjectMapRequest.URIS_TO_ADD
 })
 @JsonTypeName("ObjectMapRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectMapRequest {
   public static final String MAP_URI = "mapUri";
   private URI mapUri;
@@ -71,7 +68,7 @@ public class ObjectMapRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If we know the exact uri of the given map, then we can use this to identify the map exactly.")
+
   @JsonProperty(MAP_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +95,7 @@ public class ObjectMapRequest {
    * @return mapName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If we know the name of the given map, then we can use this to identify the map exactly in the context.")
+
   @JsonProperty(MAP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +131,7 @@ public class ObjectMapRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URIS_TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,7 +167,7 @@ public class ObjectMapRequest {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URIS_TO_ADD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +38,12 @@ import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The layout definition of the SmartTextField widget.
  */
-@ApiModel(description = "The layout definition of the SmartTextField widget.")
 @JsonPropertyOrder({
   SmartWidgetDefinition.TYPE,
   SmartWidgetDefinition.INPUT_MODE,
@@ -81,7 +80,7 @@ import javax.validation.Valid;
   SmartWidgetDefinition.ERROR_COLOR
 })
 @JsonTypeName("SmartWidgetDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartWidgetDefinition {
   public static final String TYPE = "type";
   private SmartFormWidgetType type;
@@ -138,7 +137,7 @@ public class SmartWidgetDefinition {
   private List<Value> values = null;
 
   public static final String CHILDREN_COMPONENTS = "childrenComponents";
-  private List<SmartWidgetDefinition> childrenComponents = null;
+  private List<@Valid SmartWidgetDefinition> childrenComponents = null;
 
   public static final String SELECTION = "selection";
   private SelectionDefinition selection;
@@ -198,7 +197,7 @@ public class SmartWidgetDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -226,7 +225,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INPUT_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -254,7 +253,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The path of the desired parameter in the object.")
+
   @JsonProperty(KEY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -282,7 +281,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The label of the text field")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -309,7 +308,7 @@ public class SmartWidgetDefinition {
    * @return placeholder
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The placeholder of the text field")
+
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -336,7 +335,7 @@ public class SmartWidgetDefinition {
    * @return prefix
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Text that appears as a prefix")
+
   @JsonProperty(PREFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -363,7 +362,7 @@ public class SmartWidgetDefinition {
    * @return suffix
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Text that appears as a suffix")
+
   @JsonProperty(SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -390,7 +389,7 @@ public class SmartWidgetDefinition {
    * @return mask
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "A descriptor that masks the input")
+
   @JsonProperty(MASK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -417,7 +416,7 @@ public class SmartWidgetDefinition {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "An icon which appears as a suffix")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -444,7 +443,7 @@ public class SmartWidgetDefinition {
    * @return iconColor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Material theme class of the icon")
+
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -472,7 +471,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Position of the icon (pre/post)")
+
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -499,7 +498,7 @@ public class SmartWidgetDefinition {
    * @return showLabel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Defines if the label appears above the widget or not")
+
   @JsonProperty(SHOW_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -526,7 +525,7 @@ public class SmartWidgetDefinition {
    * @return cssClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Optional css class of the widget")
+
   @JsonProperty(CSS_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -553,7 +552,7 @@ public class SmartWidgetDefinition {
    * @return cssLabelClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Optional css class of the label of the widget")
+
   @JsonProperty(CSS_LABEL_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -581,7 +580,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -609,7 +608,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -636,7 +635,7 @@ public class SmartWidgetDefinition {
    * @return isPassword
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Defines if the widget is a password input")
+
   @JsonProperty(IS_PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -672,7 +671,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -688,7 +687,7 @@ public class SmartWidgetDefinition {
   }
 
 
-  public SmartWidgetDefinition childrenComponents(List<SmartWidgetDefinition> childrenComponents) {
+  public SmartWidgetDefinition childrenComponents(List<@Valid SmartWidgetDefinition> childrenComponents) {
     
     this.childrenComponents = childrenComponents;
     return this;
@@ -708,18 +707,18 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CHILDREN_COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<SmartWidgetDefinition> getChildrenComponents() {
+  public List<@Valid SmartWidgetDefinition> getChildrenComponents() {
     return childrenComponents;
   }
 
 
   @JsonProperty(CHILDREN_COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChildrenComponents(List<SmartWidgetDefinition> childrenComponents) {
+  public void setChildrenComponents(List<@Valid SmartWidgetDefinition> childrenComponents) {
     this.childrenComponents = childrenComponents;
   }
 
@@ -736,7 +735,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -764,7 +763,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -792,7 +791,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MATRIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -820,7 +819,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -847,7 +846,7 @@ public class SmartWidgetDefinition {
    * @return widgetDescription
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WIDGET_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -874,7 +873,7 @@ public class SmartWidgetDefinition {
    * @return maxLength
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MAX_LENGTH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -902,7 +901,7 @@ public class SmartWidgetDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_CHANGE_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -929,7 +928,7 @@ public class SmartWidgetDefinition {
    * @return showCharacterLimitSuffix
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHOW_CHARACTER_LIMIT_SUFFIX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -956,7 +955,7 @@ public class SmartWidgetDefinition {
    * @return filterErrorMessage
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The default error message to show if the widget features an autocompletion filter operation, which returns no elements. ")
+
   @JsonProperty(FILTER_ERROR_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -983,7 +982,7 @@ public class SmartWidgetDefinition {
    * @return toolbarId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of the toolbar associated with this widget. ")
+
   @JsonProperty(TOOLBAR_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1018,7 +1017,7 @@ public class SmartWidgetDefinition {
    * @return properties
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Additional properties the client may use to customise the appearance or behaviour of the widget. ")
+
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1045,7 +1044,7 @@ public class SmartWidgetDefinition {
    * @return errorMessage
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The error message to show for the widget. ")
+
   @JsonProperty(ERROR_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1072,7 +1071,7 @@ public class SmartWidgetDefinition {
    * @return errorIcon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The error message to show for the widget. ")
+
   @JsonProperty(ERROR_ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -1099,7 +1098,7 @@ public class SmartWidgetDefinition {
    * @return errorColor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The error message to show for the widget. ")
+
   @JsonProperty(ERROR_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * GetAuthenticationProvidersResponse
@@ -37,15 +37,15 @@ import javax.validation.Valid;
   GetAuthenticationProvidersResponse.AUTHENTICATION_PROVIDERS
 })
 @JsonTypeName("GetAuthenticationProvidersResponse")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GetAuthenticationProvidersResponse {
   public static final String AUTHENTICATION_PROVIDERS = "authenticationProviders";
-  private List<AuthenticationProviderData> authenticationProviders = new ArrayList<>();
+  private List<@Valid AuthenticationProviderData> authenticationProviders = new ArrayList<>();
 
   public GetAuthenticationProvidersResponse() { 
   }
 
-  public GetAuthenticationProvidersResponse authenticationProviders(List<AuthenticationProviderData> authenticationProviders) {
+  public GetAuthenticationProvidersResponse authenticationProviders(List<@Valid AuthenticationProviderData> authenticationProviders) {
     
     this.authenticationProviders = authenticationProviders;
     return this;
@@ -63,18 +63,18 @@ public class GetAuthenticationProvidersResponse {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(AUTHENTICATION_PROVIDERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<AuthenticationProviderData> getAuthenticationProviders() {
+  public List<@Valid AuthenticationProviderData> getAuthenticationProviders() {
     return authenticationProviders;
   }
 
 
   @JsonProperty(AUTHENTICATION_PROVIDERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAuthenticationProviders(List<AuthenticationProviderData> authenticationProviders) {
+  public void setAuthenticationProviders(List<@Valid AuthenticationProviderData> authenticationProviders) {
     this.authenticationProviders = authenticationProviders;
   }
 

@@ -20,14 +20,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiActionTooltip;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ImageResource
@@ -41,7 +40,7 @@ import javax.validation.Valid;
   ImageResource.TOOLTIP
 })
 @JsonTypeName("ImageResource")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ImageResource {
   /**
    * Gets or Sets kind
@@ -112,7 +111,7 @@ public class ImageResource {
    * @return kind
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +138,7 @@ public class ImageResource {
    * @return source
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,7 +165,7 @@ public class ImageResource {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -193,7 +192,7 @@ public class ImageResource {
    * @return color
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,7 +220,7 @@ public class ImageResource {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -249,7 +248,7 @@ public class ImageResource {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

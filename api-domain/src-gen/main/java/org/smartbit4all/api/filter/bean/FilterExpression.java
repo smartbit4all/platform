@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterExpressionPart;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Specifies an abstract expression with a collection of expression part.
  */
-@ApiModel(description = "Specifies an abstract expression with a collection of expression part.")
 @JsonPropertyOrder({
   FilterExpression.FILTER_EXPRESSION_PARTS
 })
 @JsonTypeName("FilterExpression")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpression {
   public static final String FILTER_EXPRESSION_PARTS = "filterExpressionParts";
-  private List<FilterExpressionPart> filterExpressionParts = null;
+  private List<@Valid FilterExpressionPart> filterExpressionParts = null;
 
   public FilterExpression() { 
   }
 
-  public FilterExpression filterExpressionParts(List<FilterExpressionPart> filterExpressionParts) {
+  public FilterExpression filterExpressionParts(List<@Valid FilterExpressionPart> filterExpressionParts) {
     
     this.filterExpressionParts = filterExpressionParts;
     return this;
@@ -66,18 +65,18 @@ public class FilterExpression {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_EXPRESSION_PARTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterExpressionPart> getFilterExpressionParts() {
+  public List<@Valid FilterExpressionPart> getFilterExpressionParts() {
     return filterExpressionParts;
   }
 
 
   @JsonProperty(FILTER_EXPRESSION_PARTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFilterExpressionParts(List<FilterExpressionPart> filterExpressionParts) {
+  public void setFilterExpressionParts(List<@Valid FilterExpressionPart> filterExpressionParts) {
     this.filterExpressionParts = filterExpressionParts;
   }
 

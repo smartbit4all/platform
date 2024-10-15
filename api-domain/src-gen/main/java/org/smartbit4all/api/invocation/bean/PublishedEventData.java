@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.ParameterData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The information about an event of the publisher. It contains the consumers also by the annotation of the provider apis. 
  */
-@ApiModel(description = "The information about an event of the publisher. It contains the consumers also by the annotation of the provider apis. ")
 @JsonPropertyOrder({
   PublishedEventData.API,
   PublishedEventData.EVENT,
   PublishedEventData.PARAMETERS
 })
 @JsonTypeName("PublishedEventData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PublishedEventData {
   public static final String API = "api";
   private String api;
@@ -49,7 +48,7 @@ public class PublishedEventData {
   private String event;
 
   public static final String PARAMETERS = "parameters";
-  private List<ParameterData> parameters = null;
+  private List<@Valid ParameterData> parameters = null;
 
   public PublishedEventData() { 
   }
@@ -66,7 +65,7 @@ public class PublishedEventData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the api publishing the event.")
+
   @JsonProperty(API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -94,7 +93,7 @@ public class PublishedEventData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the publised event.")
+
   @JsonProperty(EVENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +109,7 @@ public class PublishedEventData {
   }
 
 
-  public PublishedEventData parameters(List<ParameterData> parameters) {
+  public PublishedEventData parameters(List<@Valid ParameterData> parameters) {
     
     this.parameters = parameters;
     return this;
@@ -130,18 +129,18 @@ public class PublishedEventData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The parameters of the given event. These parameteres are requiered for the subscribed methods. ")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ParameterData> getParameters() {
+  public List<@Valid ParameterData> getParameters() {
     return parameters;
   }
 
 
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParameters(List<ParameterData> parameters) {
+  public void setParameters(List<@Valid ParameterData> parameters) {
     this.parameters = parameters;
   }
 

@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiActionTooltip;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes a button which is presented on the UiAction dialog. 
  */
-@ApiModel(description = "Describes a button which is presented on the UiAction dialog. ")
 @JsonPropertyOrder({
   UiActionButtonDescriptor.CAPTION,
   UiActionButtonDescriptor.COLOR,
@@ -43,7 +41,7 @@ import javax.validation.Valid;
   UiActionButtonDescriptor.CSS_CLASS
 })
 @JsonTypeName("UiActionButtonDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionButtonDescriptor {
   public static final String CAPTION = "caption";
   private String caption;
@@ -81,7 +79,7 @@ public class UiActionButtonDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +107,7 @@ public class UiActionButtonDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -136,7 +134,7 @@ public class UiActionButtonDescriptor {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,7 +161,7 @@ public class UiActionButtonDescriptor {
    * @return iconColor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +189,7 @@ public class UiActionButtonDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -219,7 +217,7 @@ public class UiActionButtonDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -246,7 +244,7 @@ public class UiActionButtonDescriptor {
    * @return cssClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CSS_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

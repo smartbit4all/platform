@@ -9,16 +9,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link FilterApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface FilterApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -26,7 +28,7 @@ public interface FilterApiDelegate {
     }
 
     /**
-     * GET /filter/{uuid}/{filterIdentifier}/load
+     * GET /filter/{uuid}/{filterIdentifier}/load : 
      *
      * @param uuid  (required)
      * @param filterIdentifier  (required)
@@ -38,7 +40,7 @@ public interface FilterApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"groupFilter\" : \"\", \"extarnalDatabase\" : false, \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"type\" : \"SIMPLE\", \"selectedField\" : { \"possibleValues\" : [ \"\", \"\" ], \"expressionData\" : { \"operand3\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"operand1\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"operand2\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"modifier\" : \"modifier\", \"subExpression\" : { \"expressions\" : [ null, null ] } }, \"placeholder3\" : \"placeholder3\", \"icon\" : \"icon\", \"label\" : \"label\", \"label1\" : \"label1\", \"label2\" : \"label2\", \"label3\" : \"label3\", \"subFieldList\" : { \"icon\" : \"icon\", \"id\" : \"id\", \"label\" : \"label\", \"filters\" : [ null, null ] }, \"possibleOperations\" : [ null, null ], \"placeholder1\" : \"placeholder1\", \"placeholder2\" : \"placeholder2\", \"id\" : \"id\" }, \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"extarnalDatabase\" : false, \"readOnly\" : false } }";
+                    String exampleString = "{ \"groupFilter\" : \"\", \"extarnalDatabase\" : false, \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"type\" : \"SIMPLE\", \"selectedField\" : { \"toolbarId\" : \"toolbarId\", \"possibleValues\" : [ \"\", \"\" ], \"expressionData\" : { \"operand3\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"operand1\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"currentOperation\" : \"EXPRESSION\", \"operand2\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"modifier\" : \"modifier\", \"boolOperator\" : \"AND\", \"subExpression\" : { \"expressions\" : [ null, null ] } }, \"placeholder3\" : \"placeholder3\", \"icon\" : \"icon\", \"label\" : \"label\", \"label1\" : \"label1\", \"label2\" : \"label2\", \"widgetType\" : \"TEXT_FIELD\", \"label3\" : \"label3\", \"subFieldList\" : { \"icon\" : \"icon\", \"id\" : \"id\", \"label\" : \"label\", \"filters\" : [ null, null ] }, \"possibleOperations\" : [ null, null ], \"placeholder1\" : \"placeholder1\", \"placeholder2\" : \"placeholder2\", \"id\" : \"id\" }, \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"extarnalDatabase\" : false, \"readOnly\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -49,7 +51,7 @@ public interface FilterApiDelegate {
     }
 
     /**
-     * POST /filter/{uuid}/{filterIdentifier}/performWidgetAction
+     * POST /filter/{uuid}/{filterIdentifier}/performWidgetAction : 
      *
      * @param uuid  (required)
      * @param filterIdentifier  (required)
@@ -63,7 +65,7 @@ public interface FilterApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"groupFilter\" : \"\", \"extarnalDatabase\" : false, \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"type\" : \"SIMPLE\", \"selectedField\" : { \"possibleValues\" : [ \"\", \"\" ], \"expressionData\" : { \"operand3\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"operand1\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"operand2\" : { \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true }, \"modifier\" : \"modifier\", \"subExpression\" : { \"expressions\" : [ null, null ] } }, \"placeholder3\" : \"placeholder3\", \"icon\" : \"icon\", \"label\" : \"label\", \"label1\" : \"label1\", \"label2\" : \"label2\", \"label3\" : \"label3\", \"subFieldList\" : { \"icon\" : \"icon\", \"id\" : \"id\", \"label\" : \"label\", \"filters\" : [ null, null ] }, \"possibleOperations\" : [ null, null ], \"placeholder1\" : \"placeholder1\", \"placeholder2\" : \"placeholder2\", \"id\" : \"id\" }, \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"extarnalDatabase\" : false, \"readOnly\" : false } }";
+                    String exampleString = "{ \"groupFilter\" : \"\", \"extarnalDatabase\" : false, \"showGroups\" : false, \"possibleActions\" : [ \"\", \"\" ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"selectedFieldEditor\" : { \"possibleActions\" : [ \"\", \"\" ], \"layoutDef\" : \"\" }, \"selectUiAction\" : \"\", \"readOnly\" : false, \"type\" : \"SIMPLE\", \"selectedField\" : { \"toolbarId\" : \"toolbarId\", \"possibleValues\" : [ \"\", \"\" ], \"expressionData\" : { \"operand3\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"operand1\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"currentOperation\" : \"EXPRESSION\", \"operand2\" : { \"selectedObjects\" : [ \"{}\", \"{}\" ], \"selectedValues\" : [ \"selectedValues\", \"selectedValues\" ], \"valueAsString\" : \"valueAsString\", \"isDataName\" : true, \"type\" : \"STRING\" }, \"modifier\" : \"modifier\", \"boolOperator\" : \"AND\", \"subExpression\" : { \"expressions\" : [ null, null ] } }, \"placeholder3\" : \"placeholder3\", \"icon\" : \"icon\", \"label\" : \"label\", \"label1\" : \"label1\", \"label2\" : \"label2\", \"widgetType\" : \"TEXT_FIELD\", \"label3\" : \"label3\", \"subFieldList\" : { \"icon\" : \"icon\", \"id\" : \"id\", \"label\" : \"label\", \"filters\" : [ null, null ] }, \"possibleOperations\" : [ null, null ], \"placeholder1\" : \"placeholder1\", \"placeholder2\" : \"placeholder2\", \"id\" : \"id\" }, \"filterGroupsAction\" : \"\", \"model\" : \"\", \"deselectUiAction\" : \"\", \"groupFilterAction\" : \"\", \"config\" : { \"availableActions\" : [ \"availableActions\", \"availableActions\" ], \"extarnalDatabase\" : false, \"readOnly\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

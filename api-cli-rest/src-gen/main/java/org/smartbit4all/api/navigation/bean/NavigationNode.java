@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
@@ -32,14 +32,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children
  */
-@ApiModel(description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
 @JsonPropertyOrder({
   NavigationNode.ID,
   NavigationNode.ENTRY,
   NavigationNode.ASSOCIATIONS
 })
 @JsonTypeName("NavigationNode")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationNode {
   public static final String ID = "id";
   private String id;
@@ -64,7 +63,7 @@ public class NavigationNode {
    * @return id
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "The unique identifier of the given node - UUID")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -91,7 +90,7 @@ public class NavigationNode {
    * @return entry
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -126,7 +125,7 @@ public class NavigationNode {
    * @return associations
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The possible navigation directions.")
+
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

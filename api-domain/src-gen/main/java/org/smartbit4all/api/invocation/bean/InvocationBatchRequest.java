@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A list of InvocationRequest that can be used for the InvocationApi functions. 
  */
-@ApiModel(description = "A list of InvocationRequest that can be used for the InvocationApi functions. ")
 @JsonPropertyOrder({
   InvocationBatchRequest.REQUESTS
 })
 @JsonTypeName("InvocationBatchRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationBatchRequest {
   public static final String REQUESTS = "requests";
-  private List<InvocationRequest> requests = new ArrayList<>();
+  private List<@Valid InvocationRequest> requests = new ArrayList<>();
 
   public InvocationBatchRequest() { 
   }
 
-  public InvocationBatchRequest requests(List<InvocationRequest> requests) {
+  public InvocationBatchRequest requests(List<@Valid InvocationRequest> requests) {
     
     this.requests = requests;
     return this;
@@ -64,18 +63,18 @@ public class InvocationBatchRequest {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The invocation requests included in the batch.")
+
   @JsonProperty(REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<InvocationRequest> getRequests() {
+  public List<@Valid InvocationRequest> getRequests() {
     return requests;
   }
 
 
   @JsonProperty(REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRequests(List<InvocationRequest> requests) {
+  public void setRequests(List<@Valid InvocationRequest> requests) {
     this.requests = requests;
   }
 

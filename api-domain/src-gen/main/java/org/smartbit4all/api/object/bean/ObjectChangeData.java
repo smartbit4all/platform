@@ -20,37 +20,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.PropertyChangeData;
 import org.smartbit4all.api.object.bean.ReferenceChangeData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The changes between two object structure. The change is based on the property names and computed by the value map of the object. 
  */
-@ApiModel(description = "The changes between two object structure. The change is based on the property names and computed by the value map of the object. ")
 @JsonPropertyOrder({
   ObjectChangeData.TYPE_CLASS,
   ObjectChangeData.PROPERTIES,
   ObjectChangeData.REFERENCES
 })
 @JsonTypeName("ObjectChangeData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectChangeData {
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
 
   public static final String PROPERTIES = "properties";
-  private List<PropertyChangeData> properties = new ArrayList<>();
+  private List<@Valid PropertyChangeData> properties = new ArrayList<>();
 
   public static final String REFERENCES = "references";
-  private List<ReferenceChangeData> references = new ArrayList<>();
+  private List<@Valid ReferenceChangeData> references = new ArrayList<>();
 
   public ObjectChangeData() { 
   }
@@ -66,7 +65,7 @@ public class ObjectChangeData {
    * @return typeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the type class if exists.")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -82,7 +81,7 @@ public class ObjectChangeData {
   }
 
 
-  public ObjectChangeData properties(List<PropertyChangeData> properties) {
+  public ObjectChangeData properties(List<@Valid PropertyChangeData> properties) {
     
     this.properties = properties;
     return this;
@@ -100,23 +99,23 @@ public class ObjectChangeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<PropertyChangeData> getProperties() {
+  public List<@Valid PropertyChangeData> getProperties() {
     return properties;
   }
 
 
   @JsonProperty(PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setProperties(List<PropertyChangeData> properties) {
+  public void setProperties(List<@Valid PropertyChangeData> properties) {
     this.properties = properties;
   }
 
 
-  public ObjectChangeData references(List<ReferenceChangeData> references) {
+  public ObjectChangeData references(List<@Valid ReferenceChangeData> references) {
     
     this.references = references;
     return this;
@@ -134,18 +133,18 @@ public class ObjectChangeData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ReferenceChangeData> getReferences() {
+  public List<@Valid ReferenceChangeData> getReferences() {
     return references;
   }
 
 
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferences(List<ReferenceChangeData> references) {
+  public void setReferences(List<@Valid ReferenceChangeData> references) {
     this.references = references;
   }
 

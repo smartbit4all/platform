@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * UI: The navigable associations belong to the given node.
  */
-@ApiModel(description = "UI: The navigable associations belong to the given node.")
 @JsonPropertyOrder({
   NavigationAssociation.ID,
   NavigationAssociation.NODE_ID,
@@ -44,7 +43,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NavigationAssociation.REFERENCES
 })
 @JsonTypeName("NavigationAssociation")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationAssociation {
   public static final String ID = "id";
   private String id;
@@ -84,7 +83,7 @@ public class NavigationAssociation {
    * @return id
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "The unique identifier of the given association - UUID")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +110,7 @@ public class NavigationAssociation {
    * @return nodeId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the parent node of the given association.")
+
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +137,7 @@ public class NavigationAssociation {
    * @return metaUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,7 +164,7 @@ public class NavigationAssociation {
    * @return lastNavigation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The last navigation time (in millis) when the given association was retrieved. If null then it has never been navigated.")
+
   @JsonProperty(LAST_NAVIGATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +191,7 @@ public class NavigationAssociation {
    * @return hidden
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The association can be hidden. If a node has only one association then it can be an option.")
+
   @JsonProperty(HIDDEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -219,7 +218,7 @@ public class NavigationAssociation {
    * @return caption
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The caption text, if the association is visible in any UI component")
+
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -246,7 +245,7 @@ public class NavigationAssociation {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The icon, if the association is visible in any UI component")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -281,7 +280,7 @@ public class NavigationAssociation {
    * @return references
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The navigation association instances.")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

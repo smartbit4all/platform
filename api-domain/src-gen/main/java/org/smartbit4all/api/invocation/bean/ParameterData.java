@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The parameter of a given method. 
  */
-@ApiModel(description = "The parameter of a given method. ")
 @JsonPropertyOrder({
   ParameterData.NAME,
   ParameterData.TYPE_NAME,
   ParameterData.KIND
 })
 @JsonTypeName("ParameterData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ParameterData {
   public static final String NAME = "name";
   private String name;
@@ -64,7 +62,7 @@ public class ParameterData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Unique name of the parameter.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -92,7 +90,7 @@ public class ParameterData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The fully qualified name of the parameter data.")
+
   @JsonProperty(TYPE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +118,7 @@ public class ParameterData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

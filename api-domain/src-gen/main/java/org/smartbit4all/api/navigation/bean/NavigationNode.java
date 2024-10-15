@@ -20,28 +20,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children
  */
-@ApiModel(description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
 @JsonPropertyOrder({
   NavigationNode.ID,
   NavigationNode.ENTRY,
   NavigationNode.ASSOCIATIONS
 })
 @JsonTypeName("NavigationNode")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationNode {
   public static final String ID = "id";
   private String id;
@@ -50,7 +49,7 @@ public class NavigationNode {
   private NavigationEntry entry;
 
   public static final String ASSOCIATIONS = "associations";
-  private List<NavigationAssociation> associations = null;
+  private List<@Valid NavigationAssociation> associations = null;
 
   public NavigationNode() { 
   }
@@ -67,7 +66,7 @@ public class NavigationNode {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique identifier of the given node - UUID")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -96,7 +95,7 @@ public class NavigationNode {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,7 +111,7 @@ public class NavigationNode {
   }
 
 
-  public NavigationNode associations(List<NavigationAssociation> associations) {
+  public NavigationNode associations(List<@Valid NavigationAssociation> associations) {
     
     this.associations = associations;
     return this;
@@ -132,18 +131,18 @@ public class NavigationNode {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The possible navigation directions.")
+
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationAssociation> getAssociations() {
+  public List<@Valid NavigationAssociation> getAssociations() {
     return associations;
   }
 
 
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAssociations(List<NavigationAssociation> associations) {
+  public void setAssociations(List<@Valid NavigationAssociation> associations) {
     this.associations = associations;
   }
 

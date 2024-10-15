@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
     TestModel.USER
 })
 @JsonTypeName("User")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class TestModel {
   public static final String USER = "user";
   private User user;

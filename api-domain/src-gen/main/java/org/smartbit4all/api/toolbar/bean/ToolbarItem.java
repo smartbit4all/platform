@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.toolbar.bean.ToolbarDefinitionData;
 import org.smartbit4all.api.toolbar.bean.ToolbarItemKind;
@@ -29,13 +28,12 @@ import org.smartbit4all.api.toolbar.bean.ToolbarItemOperation;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is one item on the toolbar. The most tipical that it is an action referring to the action registry. 
  */
-@ApiModel(description = "This object is one item on the toolbar. The most tipical that it is an action referring to the action registry. ")
 @JsonPropertyOrder({
   ToolbarItem.KIND,
   ToolbarItem.OPERATION,
@@ -46,7 +44,7 @@ import javax.validation.Valid;
   ToolbarItem.DESCRIPTOR
 })
 @JsonTypeName("ToolbarItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarItem {
   public static final String KIND = "kind";
   private ToolbarItemKind kind;
@@ -84,7 +82,7 @@ public class ToolbarItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +110,7 @@ public class ToolbarItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +137,7 @@ public class ToolbarItem {
    * @return referredToolbar
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The qualified name fo the referenced toolbar that defines the inline items or the sub menu items. ")
+
   @JsonProperty(REFERRED_TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -167,7 +165,7 @@ public class ToolbarItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,7 +192,7 @@ public class ToolbarItem {
    * @return action
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The qualified name of the action. ")
+
   @JsonProperty(ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -222,7 +220,7 @@ public class ToolbarItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "asd ")
+
   @JsonProperty(ACTION_DEFINITION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,12 +243,12 @@ public class ToolbarItem {
   }
 
    /**
-   * Get descriptor
+   * The UiAction descriptor for the action if we would like to override it in the give toolbar. 
    * @return descriptor
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

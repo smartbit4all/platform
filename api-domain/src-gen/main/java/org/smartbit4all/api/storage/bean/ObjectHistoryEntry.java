@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. 
  */
-@ApiModel(description = "When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. ")
 @JsonPropertyOrder({
   ObjectHistoryEntry.SUMMARY,
   ObjectHistoryEntry.CHANGES,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   ObjectHistoryEntry.VERSION
 })
 @JsonTypeName("ObjectHistoryEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryEntry {
   public static final String SUMMARY = "summary";
   private String summary;
@@ -72,7 +70,7 @@ public class ObjectHistoryEntry {
    * @return summary
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The summary of the history record constructed from the natural identifiers of the object. ")
+
   @JsonProperty(SUMMARY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +97,7 @@ public class ObjectHistoryEntry {
    * @return changes
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The changes rendered into a readable format. Every version produces some changes in the detal. This field contains these  in a summerized readable format. ")
+
   @JsonProperty(CHANGES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +126,7 @@ public class ObjectHistoryEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the object version that can be used to read the given version. ")
+
   @JsonProperty(VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -155,7 +153,7 @@ public class ObjectHistoryEntry {
    * @return objectType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The object type of the history entry. A list of history entry can contain multiple types if their versions are involved. ")
+
   @JsonProperty(OBJECT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +181,7 @@ public class ObjectHistoryEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

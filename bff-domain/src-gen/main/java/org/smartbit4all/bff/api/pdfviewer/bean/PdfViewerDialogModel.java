@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * PdfViewerDialogModel
@@ -36,7 +35,7 @@ import javax.validation.Valid;
   PdfViewerDialogModel.ERROR_MSG
 })
 @JsonTypeName("PdfViewerDialogModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PdfViewerDialogModel {
   public static final String TITLE = "title";
   private String title;
@@ -61,7 +60,7 @@ public class PdfViewerDialogModel {
    * @return title
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The title to be shown by the dialog ")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -88,7 +87,7 @@ public class PdfViewerDialogModel {
    * @return hideSidebar
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Hides the sidebar showing a preview of all pages of the document. ")
+
   @JsonProperty(HIDE_SIDEBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,7 +114,7 @@ public class PdfViewerDialogModel {
    * @return errorMsg
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The error message to be shown if the PDF cannot be loaded. ")
+
   @JsonProperty(ERROR_MSG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

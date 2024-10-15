@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
@@ -31,8 +31,8 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWi
 import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SmartComponentLayoutDefinition
@@ -49,7 +49,7 @@ import javax.validation.Valid;
   SmartComponentLayoutDefinition.STYLE
 })
 @JsonTypeName("SmartComponentLayoutDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartComponentLayoutDefinition {
   public static final String IDENTIFIER = "identifier";
   private String identifier;
@@ -67,7 +67,7 @@ public class SmartComponentLayoutDefinition {
   private LayoutDirection direction;
 
   public static final String COMPONENTS = "components";
-  private List<SmartComponentLayoutDefinition> components = null;
+  private List<@Valid SmartComponentLayoutDefinition> components = null;
 
   public static final String WIDGET = "widget";
   private SmartComponentWidgetDefinition widget;
@@ -92,7 +92,7 @@ public class SmartComponentLayoutDefinition {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "An optional identifier to find this element in a layout hierarchy. ")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +121,7 @@ public class SmartComponentLayoutDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -148,7 +148,7 @@ public class SmartComponentLayoutDefinition {
    * @return expandable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPANDABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -175,7 +175,7 @@ public class SmartComponentLayoutDefinition {
    * @return expandableSectionLabel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPANDABLE_SECTION_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +203,7 @@ public class SmartComponentLayoutDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -219,7 +219,7 @@ public class SmartComponentLayoutDefinition {
   }
 
 
-  public SmartComponentLayoutDefinition components(List<SmartComponentLayoutDefinition> components) {
+  public SmartComponentLayoutDefinition components(List<@Valid SmartComponentLayoutDefinition> components) {
     
     this.components = components;
     return this;
@@ -239,18 +239,18 @@ public class SmartComponentLayoutDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<SmartComponentLayoutDefinition> getComponents() {
+  public List<@Valid SmartComponentLayoutDefinition> getComponents() {
     return components;
   }
 
 
   @JsonProperty(COMPONENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setComponents(List<SmartComponentLayoutDefinition> components) {
+  public void setComponents(List<@Valid SmartComponentLayoutDefinition> components) {
     this.components = components;
   }
 
@@ -267,7 +267,7 @@ public class SmartComponentLayoutDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,7 +303,7 @@ public class SmartComponentLayoutDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FORM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -331,7 +331,7 @@ public class SmartComponentLayoutDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

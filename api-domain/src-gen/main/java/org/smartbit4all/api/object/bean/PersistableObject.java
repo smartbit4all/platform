@@ -20,23 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Ancestor type for persistable objects.  The purpose of this class to offer a skeleton ObjectDefinition upon encountering an unknown or dynamic type during storage saves and retrievals. 
  */
-@ApiModel(description = "Ancestor type for persistable objects.  The purpose of this class to offer a skeleton ObjectDefinition upon encountering an unknown or dynamic type during storage saves and retrievals. ")
 @JsonPropertyOrder({
   PersistableObject.URI
 })
 @JsonTypeName("PersistableObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PersistableObject {
   public static final String URI = "uri";
   private URI uri;
@@ -56,7 +54,7 @@ public class PersistableObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The unique identifier of this instance in persistent storage.  Ownership of this inline property is a requirement for storage implementations to successfully save and load objects. ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

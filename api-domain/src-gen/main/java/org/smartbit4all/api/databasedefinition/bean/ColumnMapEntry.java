@@ -20,23 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A tuple to save the referring and the referred column name in one object. 
  */
-@ApiModel(description = "A tuple to save the referring and the referred column name in one object. ")
 @JsonPropertyOrder({
   ColumnMapEntry.SOURCE,
   ColumnMapEntry.TARGET
 })
 @JsonTypeName("ColumnMapEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ColumnMapEntry {
   public static final String SOURCE = "source";
   private String source;
@@ -58,7 +56,7 @@ public class ColumnMapEntry {
    * @return source
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,7 +83,7 @@ public class ColumnMapEntry {
    * @return target
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

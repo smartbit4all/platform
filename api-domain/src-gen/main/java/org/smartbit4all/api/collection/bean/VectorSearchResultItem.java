@@ -20,26 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The vector search result items. 
  */
-@ApiModel(description = "The vector search result items. ")
 @JsonPropertyOrder({
   VectorSearchResultItem.SCORE,
   VectorSearchResultItem.VALUE
 })
 @JsonTypeName("VectorSearchResultItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorSearchResultItem {
   public static final String SCORE = "score";
   private Float score;
@@ -61,7 +58,7 @@ public class VectorSearchResultItem {
    * @return score
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The score of the found item.")
+
   @JsonProperty(SCORE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +93,7 @@ public class VectorSearchResultItem {
    * @return value
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 

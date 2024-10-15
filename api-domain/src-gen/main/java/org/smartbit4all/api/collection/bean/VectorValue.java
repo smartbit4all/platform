@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture  or whatever else. It is normally constructed by a Converter that creates the result from the input object. 
  */
-@ApiModel(description = "The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture  or whatever else. It is normally constructed by a Converter that creates the result from the input object. ")
 @JsonPropertyOrder({
   VectorValue.INPUT_TYPE,
   VectorValue.INPUT_OBJECT,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   VectorValue.VECTOR
 })
 @JsonTypeName("VectorValue")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorValue {
   public static final String INPUT_TYPE = "inputType";
   private String inputType;
@@ -71,7 +70,7 @@ public class VectorValue {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The type of the input object.")
+
   @JsonProperty(INPUT_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -104,7 +103,7 @@ public class VectorValue {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The input object itself.")
+
   @JsonProperty(INPUT_OBJECT)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -131,7 +130,7 @@ public class VectorValue {
    * @return conversion
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name fo the conversion algorithm like ada2 in case of string.")
+
   @JsonProperty(CONVERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,7 +163,7 @@ public class VectorValue {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VECTOR)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

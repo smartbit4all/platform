@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
 import org.smartbit4all.api.databasedefinition.bean.TableDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The meta of a whole database. Contains all the tables defined in the database. If it is the result of a comparision then the alter operation codes are set. We can use this model to render DDL scripts or to commit the changes directly into the database. 
  */
-@ApiModel(description = "The meta of a whole database. Contains all the tables defined in the database. If it is the result of a comparision then the alter operation codes are set. We can use this model to render DDL scripts or to commit the changes directly into the database. ")
 @JsonPropertyOrder({
   DatabaseDefinition.SCHEMA,
   DatabaseDefinition.VERSION,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   DatabaseDefinition.DATABASE_KIND
 })
 @JsonTypeName("DatabaseDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DatabaseDefinition {
   public static final String SCHEMA = "schema";
   private String schema;
@@ -51,7 +50,7 @@ public class DatabaseDefinition {
   private String version;
 
   public static final String TABLES = "tables";
-  private List<TableDefinition> tables = new ArrayList<>();
+  private List<@Valid TableDefinition> tables = new ArrayList<>();
 
   public static final String DATABASE_KIND = "databaseKind";
   private DatabaseKind databaseKind;
@@ -70,7 +69,7 @@ public class DatabaseDefinition {
    * @return schema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class DatabaseDefinition {
    * @return version
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,7 +112,7 @@ public class DatabaseDefinition {
   }
 
 
-  public DatabaseDefinition tables(List<TableDefinition> tables) {
+  public DatabaseDefinition tables(List<@Valid TableDefinition> tables) {
     
     this.tables = tables;
     return this;
@@ -131,18 +130,18 @@ public class DatabaseDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TABLES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<TableDefinition> getTables() {
+  public List<@Valid TableDefinition> getTables() {
     return tables;
   }
 
 
   @JsonProperty(TABLES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTables(List<TableDefinition> tables) {
+  public void setTables(List<@Valid TableDefinition> tables) {
     this.tables = tables;
   }
 
@@ -160,7 +159,7 @@ public class DatabaseDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(DATABASE_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

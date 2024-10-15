@@ -20,16 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ViewData
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   ViewData.CONTAINER_UUID
 })
 @JsonTypeName("ViewData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewData {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -79,7 +78,7 @@ public class ViewData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Unique identifier of the View.")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -107,7 +106,7 @@ public class ViewData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -135,7 +134,7 @@ public class ViewData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,7 +163,7 @@ public class ViewData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -193,7 +192,7 @@ public class ViewData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -221,7 +220,7 @@ public class ViewData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

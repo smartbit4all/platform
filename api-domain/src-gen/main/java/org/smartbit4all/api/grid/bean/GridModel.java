@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
@@ -30,13 +30,12 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents the client model of a grid component. 
  */
-@ApiModel(description = "This object represents the client model of a grid component. ")
 @JsonPropertyOrder({
   GridModel.VIEW_UUID,
   GridModel.IDENTIFIER,
@@ -55,7 +54,7 @@ import javax.validation.Valid;
   GridModel.PAGINATOR
 })
 @JsonTypeName("GridModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridModel {
   public static final String VIEW_UUID = "viewUuid";
   private UUID viewUuid;
@@ -67,7 +66,7 @@ public class GridModel {
   private String qualifier;
 
   public static final String AVAILABLE_VIEWS = "availableViews";
-  private List<GridView> availableViews = null;
+  private List<@Valid GridView> availableViews = null;
 
   public static final String VIEW = "view";
   private GridView view;
@@ -117,7 +116,7 @@ public class GridModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +143,7 @@ public class GridModel {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,7 +170,7 @@ public class GridModel {
    * @return qualifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(QUALIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +186,7 @@ public class GridModel {
   }
 
 
-  public GridModel availableViews(List<GridView> availableViews) {
+  public GridModel availableViews(List<@Valid GridView> availableViews) {
     
     this.availableViews = availableViews;
     return this;
@@ -207,18 +206,18 @@ public class GridModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(AVAILABLE_VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<GridView> getAvailableViews() {
+  public List<@Valid GridView> getAvailableViews() {
     return availableViews;
   }
 
 
   @JsonProperty(AVAILABLE_VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAvailableViews(List<GridView> availableViews) {
+  public void setAvailableViews(List<@Valid GridView> availableViews) {
     this.availableViews = availableViews;
   }
 
@@ -235,7 +234,7 @@ public class GridModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -263,7 +262,7 @@ public class GridModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACCESS_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -292,7 +291,7 @@ public class GridModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -319,7 +318,7 @@ public class GridModel {
    * @return totalRowCount
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOTAL_ROW_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -346,7 +345,7 @@ public class GridModel {
    * @return selectedRowCount
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_ROW_COUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -373,7 +372,7 @@ public class GridModel {
    * @return allRowsSelected
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ALL_ROWS_SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -400,7 +399,7 @@ public class GridModel {
    * @return pageIndex
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -427,7 +426,7 @@ public class GridModel {
    * @return pageSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -462,7 +461,7 @@ public class GridModel {
    * @return pageSizeOptions
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_SIZE_OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -497,7 +496,7 @@ public class GridModel {
    * @return defaultRowActions
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_ROW_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -524,7 +523,7 @@ public class GridModel {
    * @return paginator
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGINATOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

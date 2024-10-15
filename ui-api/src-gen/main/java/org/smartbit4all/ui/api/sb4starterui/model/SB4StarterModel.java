@@ -20,15 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterState;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SB4StarterModel
@@ -41,7 +40,7 @@ import javax.validation.Valid;
   SB4StarterModel.EDIT_COMMAND_KIND
 })
 @JsonTypeName("SB4StarterModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4StarterModel {
   public static final String STATE = "state";
   private SB4StarterState state;
@@ -73,7 +72,7 @@ public class SB4StarterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -101,7 +100,7 @@ public class SB4StarterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(START_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +128,7 @@ public class SB4StarterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(RESULT_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -156,7 +155,7 @@ public class SB4StarterModel {
    * @return sb4StarterUrl
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SB4_STARTER_URL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -184,7 +183,7 @@ public class SB4StarterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EDIT_COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents an object version from the object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. If we create a list for iterating over the history then this object can be the model of the given page. 
  */
-@ApiModel(description = "This object represents an object version from the object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. If we create a list for iterating over the history then this object can be the model of the given page. ")
 @JsonPropertyOrder({
   ObjectHistoryIteratorData.VERSION_URI,
   ObjectHistoryIteratorData.VERSION_NR,
   ObjectHistoryIteratorData.CREATED
 })
 @JsonTypeName("ObjectHistoryIteratorData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryIteratorData {
   public static final String VERSION_URI = "versionUri";
   private URI versionUri;
@@ -65,7 +63,7 @@ public class ObjectHistoryIteratorData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri version uri of the object history entry.")
+
   @JsonProperty(VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,7 +90,7 @@ public class ObjectHistoryIteratorData {
    * @return versionNr
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The serial version number of the object history entry.")
+
   @JsonProperty(VERSION_NR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,7 +118,7 @@ public class ObjectHistoryIteratorData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The version creation information.")
+
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

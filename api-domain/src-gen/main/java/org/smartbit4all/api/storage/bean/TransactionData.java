@@ -20,20 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The transaction data for the storage transaction management. For every new transaction a new transaction data will be created to  have a common entry point for. 
  */
-@ApiModel(description = "The transaction data for the storage transaction management. For every new transaction a new transaction data will be created to  have a common entry point for. ")
 @JsonPropertyOrder({
   TransactionData.URI,
   TransactionData.USER_URI,
@@ -43,7 +41,7 @@ import javax.validation.Valid;
   TransactionData.STATE
 })
 @JsonTypeName("TransactionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TransactionData {
   public static final String URI = "uri";
   private URI uri;
@@ -79,7 +77,7 @@ public class TransactionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The unique identifier of the transaction.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -107,7 +105,7 @@ public class TransactionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the user who is inititaed the transaction.")
+
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -136,7 +134,7 @@ public class TransactionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The start time of the given transaction.")
+
   @JsonProperty(START_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -165,7 +163,7 @@ public class TransactionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "If a transaction is executing then the server is responsible for updating the transaction record with a given frequency.  This information will be used by the other servers to detect if the server is down and the transaction will never be finished. ")
+
   @JsonProperty(LAST_TOUCH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -193,7 +191,7 @@ public class TransactionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If a transaction is finished on a proper way then this time is set. ")
+
   @JsonProperty(FINISH_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -221,7 +219,7 @@ public class TransactionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

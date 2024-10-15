@@ -65,7 +65,7 @@ public class MenuItem extends Div {
     this.screen = screen;
 
     if (screen != null) {
-      RouterLink routerLink = new RouterLink(null, screen);
+      RouterLink routerLink = new RouterLink(screen);
       routerLink.add(new Span(text));
       routerLink.setClassName(CLASS_NAME + "__link");
       routerLink.setHighlightCondition(HighlightConditions.sameLocation());

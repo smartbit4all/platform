@@ -9,7 +9,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = {
     StorageSQLTestConfig.class,
-})
+},
+                properties = "spring.main.allow-circular-references=true")
 @Sql({"/storage/storage_test_schema.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)

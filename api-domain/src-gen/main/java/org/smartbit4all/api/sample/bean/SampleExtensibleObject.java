@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A recursive category holder for other categories and different items. 
  */
-@ApiModel(description = "A recursive category holder for other categories and different items. ")
 @JsonPropertyOrder({
   SampleExtensibleObject.URI,
   SampleExtensibleObject.NAME,
@@ -49,7 +48,7 @@ import javax.validation.Valid;
   SampleExtensibleObject.KEY_WORDS
 })
 @JsonTypeName("SampleExtensibleObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleExtensibleObject {
   public static final String URI = "uri";
   private URI uri;
@@ -112,7 +111,7 @@ public class SampleExtensibleObject {
   private List<URI> containerItems = new ArrayList<>();
 
   public static final String LINKS = "links";
-  private List<SampleLinkObject> links = new ArrayList<>();
+  private List<@Valid SampleLinkObject> links = new ArrayList<>();
 
   public static final String SINGLE_LINK = "singleLink";
   private SampleLinkObject singleLink;
@@ -136,7 +135,7 @@ public class SampleExtensibleObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -163,7 +162,7 @@ public class SampleExtensibleObject {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,7 +189,7 @@ public class SampleExtensibleObject {
    * @return color
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,7 +216,7 @@ public class SampleExtensibleObject {
    * @return cost
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,7 +244,7 @@ public class SampleExtensibleObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -279,7 +278,7 @@ public class SampleExtensibleObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUB_CATEGORIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -313,7 +312,7 @@ public class SampleExtensibleObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CONTAINER_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -329,7 +328,7 @@ public class SampleExtensibleObject {
   }
 
 
-  public SampleExtensibleObject links(List<SampleLinkObject> links) {
+  public SampleExtensibleObject links(List<@Valid SampleLinkObject> links) {
     
     this.links = links;
     return this;
@@ -347,18 +346,18 @@ public class SampleExtensibleObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SampleLinkObject> getLinks() {
+  public List<@Valid SampleLinkObject> getLinks() {
     return links;
   }
 
 
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLinks(List<SampleLinkObject> links) {
+  public void setLinks(List<@Valid SampleLinkObject> links) {
     this.links = links;
   }
 
@@ -375,7 +374,7 @@ public class SampleExtensibleObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SINGLE_LINK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -408,7 +407,7 @@ public class SampleExtensibleObject {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(KEY_WORDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

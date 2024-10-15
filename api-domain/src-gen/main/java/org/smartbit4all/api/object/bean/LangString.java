@@ -20,26 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A localisation aware string with its localised values. 
  */
-@ApiModel(description = "A localisation aware string with its localised values. ")
 @JsonPropertyOrder({
   LangString.DEFAULT_VALUE,
   LangString.VALUE_BY_LOCALE
 })
 @JsonTypeName("LangString")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class LangString {
   public static final String DEFAULT_VALUE = "defaultValue";
   private String defaultValue;
@@ -61,7 +58,7 @@ public class LangString {
    * @return defaultValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +93,7 @@ public class LangString {
    * @return valueByLocale
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_BY_LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

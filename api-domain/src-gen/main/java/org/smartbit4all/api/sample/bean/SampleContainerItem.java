@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A container object to represent complex container hierarchy. 
  */
-@ApiModel(description = "A container object to represent complex container hierarchy. ")
 @JsonPropertyOrder({
   SampleContainerItem.URI,
   SampleContainerItem.NAME,
@@ -49,7 +48,7 @@ import javax.validation.Valid;
   SampleContainerItem.ATTACHMENTS
 })
 @JsonTypeName("SampleContainerItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleContainerItem {
   public static final String URI = "uri";
   private URI uri;
@@ -136,7 +135,7 @@ public class SampleContainerItem {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,7 +163,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -192,7 +191,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference that is not contained pointing to the user.")
+
   @JsonProperty(USER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -219,7 +218,7 @@ public class SampleContainerItem {
    * @return itemColor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ITEM_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -246,7 +245,7 @@ public class SampleContainerItem {
    * @return cost
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -274,7 +273,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -302,7 +301,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INLINE_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -330,7 +329,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The data sheet contained. ")
+
   @JsonProperty(DATASHEET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -358,7 +357,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The main document reference that is contained. ")
+
   @JsonProperty(MAIN_DOCUMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -394,7 +393,7 @@ public class SampleContainerItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The attachment list with document references that are contained. ")
+
   @JsonProperty(ATTACHMENTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

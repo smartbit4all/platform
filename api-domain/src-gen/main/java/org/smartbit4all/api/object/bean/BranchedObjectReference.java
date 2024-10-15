@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The branched object reference is a reference to an object. It always has an identifier that is the uri if the object is saved on its own. In case of the contained objects it can be a property of the object and if it is a value as a value then the identifier is  the value itself. 
  */
-@ApiModel(description = "The branched object reference is a reference to an object. It always has an identifier that is the uri if the object is saved on its own. In case of the contained objects it can be a property of the object and if it is a value as a value then the identifier is  the value itself. ")
 @JsonPropertyOrder({
   BranchedObjectReference.IDENTIFIER,
   BranchedObjectReference.REFERENCE_TYPE,
   BranchedObjectReference.OBJECT_AS_VALUE
 })
 @JsonTypeName("BranchedObjectReference")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchedObjectReference {
   public static final String IDENTIFIER = "identifier";
   private String identifier;
@@ -100,7 +98,7 @@ public class BranchedObjectReference {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The stringified version of the identifier.")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -127,7 +125,7 @@ public class BranchedObjectReference {
    * @return referenceType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REFERENCE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +152,7 @@ public class BranchedObjectReference {
    * @return objectAsValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the reference is an object then we store the object as is in this value. It is necessary because the object is contained so it is the only way to access a deleted object for example. ")
+
   @JsonProperty(OBJECT_AS_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

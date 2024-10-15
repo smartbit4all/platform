@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The subject model consists of SubjectDescriptors that defines the available subject types. We can select from the available subjects to compile a Subject instance object that defines a set of user at the end. 
  */
-@ApiModel(description = "The subject model consists of SubjectDescriptors that defines the available subject types. We can select from the available subjects to compile a Subject instance object that defines a set of user at the end. ")
 @JsonPropertyOrder({
   SubjectModel.URI,
   SubjectModel.NAME,
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   SubjectModel.DESCRIPTORS
 })
 @JsonTypeName("SubjectModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectModel {
   public static final String URI = "uri";
   private URI uri;
@@ -55,7 +54,7 @@ public class SubjectModel {
   private LangString title = null;
 
   public static final String DESCRIPTORS = "descriptors";
-  private List<SubjectTypeDescriptor> descriptors = new ArrayList<>();
+  private List<@Valid SubjectTypeDescriptor> descriptors = new ArrayList<>();
 
   public SubjectModel() { 
   }
@@ -73,7 +72,7 @@ public class SubjectModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,7 +99,7 @@ public class SubjectModel {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the subject model that identifies it as a global identifier in an application tenant.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +127,7 @@ public class SubjectModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +143,7 @@ public class SubjectModel {
   }
 
 
-  public SubjectModel descriptors(List<SubjectTypeDescriptor> descriptors) {
+  public SubjectModel descriptors(List<@Valid SubjectTypeDescriptor> descriptors) {
     
     this.descriptors = descriptors;
     return this;
@@ -162,18 +161,18 @@ public class SubjectModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The subject descriptors identified by their unique name.")
+
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SubjectTypeDescriptor> getDescriptors() {
+  public List<@Valid SubjectTypeDescriptor> getDescriptors() {
     return descriptors;
   }
 
 
   @JsonProperty(DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDescriptors(List<SubjectTypeDescriptor> descriptors) {
+  public void setDescriptors(List<@Valid SubjectTypeDescriptor> descriptors) {
     this.descriptors = descriptors;
   }
 

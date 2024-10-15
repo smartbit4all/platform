@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * MDMEntryDescriptorPageModel
@@ -39,7 +38,7 @@ import javax.validation.Valid;
   MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES
 })
 @JsonTypeName("MDMEntryDescriptorPageModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptorPageModel {
   public static final String CODE = "code";
   private String code;
@@ -70,7 +69,7 @@ public class MDMEntryDescriptorPageModel {
    * @return code
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the entry.")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class MDMEntryDescriptorPageModel {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The display name of the entry.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +124,7 @@ public class MDMEntryDescriptorPageModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The descriptor of the VectorCollection bound to this entry.")
+
   @JsonProperty(VECTOR_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -152,7 +151,7 @@ public class MDMEntryDescriptorPageModel {
    * @return importable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IMPORTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,7 +178,7 @@ public class MDMEntryDescriptorPageModel {
    * @return restrictedProperties
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(RESTRICTED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

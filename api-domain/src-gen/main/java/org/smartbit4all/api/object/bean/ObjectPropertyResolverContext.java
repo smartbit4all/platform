@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The context objects of a property value resolution. 
  */
-@ApiModel(description = "The context objects of a property value resolution. ")
 @JsonPropertyOrder({
   ObjectPropertyResolverContext.OBJECTS
 })
 @JsonTypeName("ObjectPropertyResolverContext")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyResolverContext {
   public static final String OBJECTS = "objects";
-  private List<ObjectPropertyResolverContextObject> objects = new ArrayList<>();
+  private List<@Valid ObjectPropertyResolverContextObject> objects = new ArrayList<>();
 
   public ObjectPropertyResolverContext() { 
   }
 
-  public ObjectPropertyResolverContext objects(List<ObjectPropertyResolverContextObject> objects) {
+  public ObjectPropertyResolverContext objects(List<@Valid ObjectPropertyResolverContextObject> objects) {
     
     this.objects = objects;
     return this;
@@ -64,18 +63,18 @@ public class ObjectPropertyResolverContext {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectPropertyResolverContextObject> getObjects() {
+  public List<@Valid ObjectPropertyResolverContextObject> getObjects() {
     return objects;
   }
 
 
   @JsonProperty(OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setObjects(List<ObjectPropertyResolverContextObject> objects) {
+  public void setObjects(List<@Valid ObjectPropertyResolverContextObject> objects) {
     this.objects = objects;
   }
 

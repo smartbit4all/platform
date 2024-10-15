@@ -87,7 +87,7 @@ components:
           description: |
             This is the current version descriptor that is repeated here to have a direct reference for the latest sucessfuly
             transacted version here.
-          $ref: '#/components/shemas/ObjectVersion'
+          $ref: '#/components/schemas/ObjectVersion'
         className:
           type: string
           description: |
@@ -100,7 +100,7 @@ components:
             version. If the given object has pending version then depending on the caller there can be more result. We always check
             if we are the transaction or not. If we are the transaction then we can use the pending version. Else reading use the
             current version, locking or saving will be blocked until the finish of the transaction. 
-          $ref: '#/components/shemas/ObjectVersion'
+          $ref: '#/components/schemas/ObjectVersion'
         deleted:
           type: boolean
           default: false

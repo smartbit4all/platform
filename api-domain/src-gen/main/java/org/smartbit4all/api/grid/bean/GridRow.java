@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a grid row containening the identifier and actions releted with the row. 
  */
-@ApiModel(description = "This object is a grid row containening the identifier and actions releted with the row. ")
 @JsonPropertyOrder({
   GridRow.ID,
   GridRow.ACTIONS,
@@ -50,7 +49,7 @@ import javax.validation.Valid;
   GridRow.STYLE
 })
 @JsonTypeName("GridRow")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridRow {
   public static final String ID = "id";
   private String id;
@@ -93,7 +92,7 @@ public class GridRow {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +126,7 @@ public class GridRow {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -154,7 +153,7 @@ public class GridRow {
    * @return data
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,7 +180,7 @@ public class GridRow {
    * @return selectable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +207,7 @@ public class GridRow {
    * @return selected
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -242,7 +241,7 @@ public class GridRow {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ICONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -269,7 +268,7 @@ public class GridRow {
    * @return parent
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the grid can be hierarchical then the parent contains the identifiers of the parent row. ")
+
   @JsonProperty(PARENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -304,7 +303,7 @@ public class GridRow {
    * @return children
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the grid can be hierarchical then the children list contains the identifiers of the children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not required to see if it is empty or not set. ")
+
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -332,7 +331,7 @@ public class GridRow {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If present, this Style will be applied to the row. ")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

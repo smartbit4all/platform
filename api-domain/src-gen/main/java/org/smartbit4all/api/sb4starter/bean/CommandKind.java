@@ -17,8 +17,8 @@ import java.util.Objects;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -28,19 +28,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum CommandKind {
   
-  CONTENTACCESSDOWNLOAD("ContentAccessDownload"),
+  CONTENT_ACCESS_DOWNLOAD("ContentAccessDownload"),
   
-  WORDEDIT("WordEdit"),
+  WORD_EDIT("WordEdit"),
   
-  WORDCOMPARE("WordCompare"),
+  WORD_COMPARE("WordCompare"),
   
-  EXCELEDIT("ExcelEdit"),
+  EXCEL_EDIT("ExcelEdit"),
   
-  EXECUTECOMMAND("ExecuteCommand"),
+  EXECUTE_COMMAND("ExecuteCommand"),
   
-  CONTENTACCESSUPLOAD("ContentAccessUpload"),
+  CONTENT_ACCESS_UPLOAD("ContentAccessUpload"),
   
-  EXPANDSYSTEMVARIABLE("ExpandSystemVariable");
+  EXPAND_SYSTEM_VARIABLE("ExpandSystemVariable");
 
   private String value;
 

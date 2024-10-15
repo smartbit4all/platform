@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.GroupOfGroupUpdate;
 import org.smartbit4all.api.org.bean.GroupUpdate;
@@ -31,8 +31,8 @@ import org.smartbit4all.api.org.bean.UserOfGroupUpdate;
 import org.smartbit4all.api.org.bean.UserUpdate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * OrgBulkUpdate
@@ -45,22 +45,22 @@ import javax.validation.Valid;
   OrgBulkUpdate.USERS_OF_GROUP
 })
 @JsonTypeName("OrgBulkUpdate")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OrgBulkUpdate {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String USERS = "users";
-  private List<UserUpdate> users = new ArrayList<>();
+  private List<@Valid UserUpdate> users = new ArrayList<>();
 
   public static final String GROUPS = "groups";
-  private List<GroupUpdate> groups = new ArrayList<>();
+  private List<@Valid GroupUpdate> groups = new ArrayList<>();
 
   public static final String GROUPS_OF_GROUP = "groupsOfGroup";
-  private List<GroupOfGroupUpdate> groupsOfGroup = new ArrayList<>();
+  private List<@Valid GroupOfGroupUpdate> groupsOfGroup = new ArrayList<>();
 
   public static final String USERS_OF_GROUP = "usersOfGroup";
-  private List<UserOfGroupUpdate> usersOfGroup = new ArrayList<>();
+  private List<@Valid UserOfGroupUpdate> usersOfGroup = new ArrayList<>();
 
   public OrgBulkUpdate() { 
   }
@@ -77,7 +77,7 @@ public class OrgBulkUpdate {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -93,7 +93,7 @@ public class OrgBulkUpdate {
   }
 
 
-  public OrgBulkUpdate users(List<UserUpdate> users) {
+  public OrgBulkUpdate users(List<@Valid UserUpdate> users) {
     
     this.users = users;
     return this;
@@ -111,23 +111,23 @@ public class OrgBulkUpdate {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UserUpdate> getUsers() {
+  public List<@Valid UserUpdate> getUsers() {
     return users;
   }
 
 
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUsers(List<UserUpdate> users) {
+  public void setUsers(List<@Valid UserUpdate> users) {
     this.users = users;
   }
 
 
-  public OrgBulkUpdate groups(List<GroupUpdate> groups) {
+  public OrgBulkUpdate groups(List<@Valid GroupUpdate> groups) {
     
     this.groups = groups;
     return this;
@@ -145,23 +145,23 @@ public class OrgBulkUpdate {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GroupUpdate> getGroups() {
+  public List<@Valid GroupUpdate> getGroups() {
     return groups;
   }
 
 
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGroups(List<GroupUpdate> groups) {
+  public void setGroups(List<@Valid GroupUpdate> groups) {
     this.groups = groups;
   }
 
 
-  public OrgBulkUpdate groupsOfGroup(List<GroupOfGroupUpdate> groupsOfGroup) {
+  public OrgBulkUpdate groupsOfGroup(List<@Valid GroupOfGroupUpdate> groupsOfGroup) {
     
     this.groupsOfGroup = groupsOfGroup;
     return this;
@@ -179,23 +179,23 @@ public class OrgBulkUpdate {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GroupOfGroupUpdate> getGroupsOfGroup() {
+  public List<@Valid GroupOfGroupUpdate> getGroupsOfGroup() {
     return groupsOfGroup;
   }
 
 
   @JsonProperty(GROUPS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGroupsOfGroup(List<GroupOfGroupUpdate> groupsOfGroup) {
+  public void setGroupsOfGroup(List<@Valid GroupOfGroupUpdate> groupsOfGroup) {
     this.groupsOfGroup = groupsOfGroup;
   }
 
 
-  public OrgBulkUpdate usersOfGroup(List<UserOfGroupUpdate> usersOfGroup) {
+  public OrgBulkUpdate usersOfGroup(List<@Valid UserOfGroupUpdate> usersOfGroup) {
     
     this.usersOfGroup = usersOfGroup;
     return this;
@@ -213,18 +213,18 @@ public class OrgBulkUpdate {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UserOfGroupUpdate> getUsersOfGroup() {
+  public List<@Valid UserOfGroupUpdate> getUsersOfGroup() {
     return usersOfGroup;
   }
 
 
   @JsonProperty(USERS_OF_GROUP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUsersOfGroup(List<UserOfGroupUpdate> usersOfGroup) {
+  public void setUsersOfGroup(List<@Valid UserOfGroupUpdate> usersOfGroup) {
     this.usersOfGroup = usersOfGroup;
   }
 

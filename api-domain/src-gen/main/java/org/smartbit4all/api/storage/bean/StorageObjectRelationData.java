@@ -20,30 +20,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object contains the references and the collections of the given object. This does not have identity it is bound to  the StoaregObject by the ObjectStorage implementation. 
  */
-@ApiModel(description = "This object contains the references and the collections of the given object. This does not have identity it is bound to  the StoaregObject by the ObjectStorage implementation. ")
 @JsonPropertyOrder({
   StorageObjectRelationData.URI,
   StorageObjectRelationData.REFERENCES,
   StorageObjectRelationData.COLLECTIONS
 })
 @JsonTypeName("StorageObjectRelationData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectRelationData {
   public static final String URI = "uri";
   private URI uri;
@@ -70,7 +67,7 @@ public class StorageObjectRelationData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the object represented by the storage object. ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,7 +103,7 @@ public class StorageObjectRelationData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +139,7 @@ public class StorageObjectRelationData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COLLECTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

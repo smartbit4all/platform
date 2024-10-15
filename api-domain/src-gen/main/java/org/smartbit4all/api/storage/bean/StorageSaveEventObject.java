@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * When StorageObjects are saved the saving process may manage StorageSaveEvents which also can be stored. For this purpose this object can be used. A StorageSaveEventObject point to the next event. This way a linked list can be created of these events. 
  */
-@ApiModel(description = "When StorageObjects are saved the saving process may manage StorageSaveEvents which also can be stored. For this purpose this object can be used. A StorageSaveEventObject point to the next event. This way a linked list can be created of these events. ")
 @JsonPropertyOrder({
   StorageSaveEventObject.URI,
   StorageSaveEventObject.OLD_VERSION,
@@ -39,7 +37,7 @@ import javax.validation.Valid;
   StorageSaveEventObject.NEXT_EVENT
 })
 @JsonTypeName("StorageSaveEventObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageSaveEventObject {
   public static final String URI = "uri";
   private URI uri;
@@ -69,7 +67,7 @@ public class StorageSaveEventObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The identifier of the StorageSaveEventObject object.   ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,7 +95,7 @@ public class StorageSaveEventObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the object before the save event. It can be null if the object is a new instance. ")
+
   @JsonProperty(OLD_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +123,7 @@ public class StorageSaveEventObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the object after the save event. ")
+
   @JsonProperty(NEW_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +151,7 @@ public class StorageSaveEventObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the next save event. ")
+
   @JsonProperty(NEXT_EVENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

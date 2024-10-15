@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.object.bean.ObjectHistoryIteratorData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents the rage of an object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. The history range can be used to store our iteration while we are walking on the history to display or analyze it. If we create a list for iterating over the history then this object can be the model of the given page. 
  */
-@ApiModel(description = "This object represents the rage of an object history. The history can be a huge list where the uris of the history items computed from the original object uri and the version number. It must be easy to compute the version uri because there is no single object that contains all the histories. The history range can be used to store our iteration while we are walking on the history to display or analyze it. If we create a list for iterating over the history then this object can be the model of the given page. ")
 @JsonPropertyOrder({
   ObjectHistoryRangeData.OBJECT_URI,
   ObjectHistoryRangeData.LOWER_BOUND,
   ObjectHistoryRangeData.UPPER_BOUND
 })
 @JsonTypeName("ObjectHistoryRangeData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistoryRangeData {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -65,7 +63,7 @@ public class ObjectHistoryRangeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri (let it be latest or version) of the object. The range refers its history.")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -93,7 +91,7 @@ public class ObjectHistoryRangeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +119,7 @@ public class ObjectHistoryRangeData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

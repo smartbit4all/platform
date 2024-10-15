@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Update request for grid&#39;s current view&#39;s behaviour. 
  */
-@ApiModel(description = "Update request for grid's current view's behaviour. ")
 @JsonPropertyOrder({
   GridUpdateData.ORDERED_COLUMN_NAMES,
   GridUpdateData.ORDER_BY_LIST,
   GridUpdateData.PAGE_SIZE
 })
 @JsonTypeName("GridUpdateData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridUpdateData {
   public static final String ORDERED_COLUMN_NAMES = "orderedColumnNames";
   private List<String> orderedColumnNames = new ArrayList<>();
@@ -71,7 +70,7 @@ public class GridUpdateData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ORDERED_COLUMN_NAMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -105,7 +104,7 @@ public class GridUpdateData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ORDER_BY_LIST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -132,7 +131,7 @@ public class GridUpdateData {
    * @return pageSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

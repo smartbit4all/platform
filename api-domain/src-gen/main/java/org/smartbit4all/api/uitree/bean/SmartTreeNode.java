@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SmartTreeNode
@@ -48,7 +48,7 @@ import javax.validation.Valid;
   SmartTreeNode.ACTIONS
 })
 @JsonTypeName("SmartTreeNode")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartTreeNode {
   public static final String IDENTIFIER = "identifier";
   private String identifier;
@@ -66,7 +66,7 @@ public class SmartTreeNode {
   private Boolean hasChildren;
 
   public static final String CHILDREN_NODES = "childrenNodes";
-  private List<SmartTreeNode> childrenNodes = new ArrayList<>();
+  private List<@Valid SmartTreeNode> childrenNodes = new ArrayList<>();
 
   public static final String EXPANDED = "expanded";
   private Boolean expanded;
@@ -100,7 +100,7 @@ public class SmartTreeNode {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +127,7 @@ public class SmartTreeNode {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +154,7 @@ public class SmartTreeNode {
    * @return caption
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +187,7 @@ public class SmartTreeNode {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLASSES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -214,7 +214,7 @@ public class SmartTreeNode {
    * @return hasChildren
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HAS_CHILDREN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +230,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode childrenNodes(List<SmartTreeNode> childrenNodes) {
+  public SmartTreeNode childrenNodes(List<@Valid SmartTreeNode> childrenNodes) {
     
     this.childrenNodes = childrenNodes;
     return this;
@@ -248,18 +248,18 @@ public class SmartTreeNode {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CHILDREN_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SmartTreeNode> getChildrenNodes() {
+  public List<@Valid SmartTreeNode> getChildrenNodes() {
     return childrenNodes;
   }
 
 
   @JsonProperty(CHILDREN_NODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setChildrenNodes(List<SmartTreeNode> childrenNodes) {
+  public void setChildrenNodes(List<@Valid SmartTreeNode> childrenNodes) {
     this.childrenNodes = childrenNodes;
   }
 
@@ -275,7 +275,7 @@ public class SmartTreeNode {
    * @return expanded
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPANDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -302,7 +302,7 @@ public class SmartTreeNode {
    * @return selected
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -329,7 +329,7 @@ public class SmartTreeNode {
    * @return level
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -356,7 +356,7 @@ public class SmartTreeNode {
    * @return shortDescription
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHORT_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -383,7 +383,7 @@ public class SmartTreeNode {
    * @return nodeType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NODE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -417,7 +417,7 @@ public class SmartTreeNode {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

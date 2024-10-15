@@ -51,7 +51,7 @@ public class MenuHolder extends Div implements AfterNavigationObserver {
   protected void onAttach(AttachEvent attachEvent) {
     super.onAttach(attachEvent);
     UI ui = attachEvent.getUI();
-    ui.getPage().executeJavaScript("window.addSwipeAway($0,$1,$2,$3)", mainContent.getElement(),
+    ui.getPage().executeJs("window.addSwipeAway($0,$1,$2,$3)", mainContent.getElement(),
         this,
         "onSwipeAway", scrim.getElement());
   }
@@ -128,7 +128,7 @@ public class MenuHolder extends Div implements AfterNavigationObserver {
       railButton.setText(getTranslation("navidrawer.expand"));
       Css.setAriaLabel(getTranslation("navidrawer.expand.menu"), railButton);
       getUI().get().getPage()
-          .executeJavaScript("var originalStyle = getComputedStyle($0).pointerEvents;" //
+          .executeJs("var originalStyle = getComputedStyle($0).pointerEvents;" //
               + "$0.style.pointerEvents='none';" //
               + "setTimeout(function() {$0.style.pointerEvents=originalStyle;}, 170);",
               getElement());
@@ -157,7 +157,7 @@ public class MenuHolder extends Div implements AfterNavigationObserver {
     // It should be gone after 240ms
     // This will make sure it disappears even when the browser fails.
     getUI().get().getPage()
-        .executeJavaScript("var originalStyle = getComputedStyle($0).transitionProperty;" //
+        .executeJs("var originalStyle = getComputedStyle($0).transitionProperty;" //
             + "setTimeout(function() {$0.style.transitionProperty='padding'; requestAnimationFrame(function() {$0.style.transitionProperty=originalStyle})}, 250);",
             mainContent.getElement());
   }

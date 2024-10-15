@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * NavigationEntry
@@ -46,7 +46,7 @@ import javax.validation.Valid;
   NavigationEntry.ACTIONS
 })
 @JsonTypeName("NavigationEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationEntry {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -70,7 +70,7 @@ public class NavigationEntry {
   private List<String> styles = null;
 
   public static final String VIEWS = "views";
-  private List<NavigationView> views = null;
+  private List<@Valid NavigationView> views = null;
 
   public static final String ACTIONS = "actions";
   private List<URI> actions = null;
@@ -90,7 +90,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI identifies the so called API object.")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +118,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI identifies the meta object of the entry")
+
   @JsonProperty(META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,7 +146,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the association meta that produces the actual entry.")
+
   @JsonProperty(PARENT_ASSOC_META_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -174,7 +174,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the parent entry object.")
+
   @JsonProperty(PARENT_OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -202,7 +202,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the entry")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -229,7 +229,7 @@ public class NavigationEntry {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the icon resource")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -264,7 +264,7 @@ public class NavigationEntry {
    * @return styles
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The string list of the abstract styles that can be applied to the given entry")
+
   @JsonProperty(STYLES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +280,7 @@ public class NavigationEntry {
   }
 
 
-  public NavigationEntry views(List<NavigationView> views) {
+  public NavigationEntry views(List<@Valid NavigationView> views) {
     
     this.views = views;
     return this;
@@ -300,18 +300,18 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The string list of the abstract views that are supported by the UI that we have. This view will get the navigation entry as parameter.")
+
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationView> getViews() {
+  public List<@Valid NavigationView> getViews() {
     return views;
   }
 
 
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setViews(List<NavigationView> views) {
+  public void setViews(List<@Valid NavigationView> views) {
     this.views = views;
   }
 
@@ -336,7 +336,7 @@ public class NavigationEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The executable actions")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

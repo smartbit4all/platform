@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.userselector;
 
 
+import com.vaadin.flow.component.HasValue;
 import org.smartbit4all.api.userselector.bean.UserSelector;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;

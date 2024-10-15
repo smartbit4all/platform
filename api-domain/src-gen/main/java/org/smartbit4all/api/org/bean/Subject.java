@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. 
  */
-@ApiModel(description = "The subject is a special selector for users where we assign a subject or a filter for subjects to an object. This object is always a inline object, part of the object that describes the given situation. ")
 @JsonPropertyOrder({
   Subject.MODEL,
   Subject.TYPE,
   Subject.REF
 })
 @JsonTypeName("Subject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Subject {
   public static final String MODEL = "model";
   private String model;
@@ -63,7 +61,7 @@ public class Subject {
    * @return model
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject model is saved here it is managed by the code that uses this Subject. ")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -91,7 +89,7 @@ public class Subject {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique identifier of the type in the SubjectModel. This helps to evaluate if a given user is part of this subject. The subject type is saved here it is managed by the code that uses this Subject. ")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +118,7 @@ public class Subject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The reference to the object referred by this subject. It can be the latest uri of a user, a group or whatever subject we have. ")
+
   @JsonProperty(REF)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

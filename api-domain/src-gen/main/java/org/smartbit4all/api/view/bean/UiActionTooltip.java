@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UiActionTooltip
@@ -37,7 +36,7 @@ import javax.validation.Valid;
   UiActionTooltip.TOOLTIP_HIDE_DELAY
 })
 @JsonTypeName("UiActionTooltip")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionTooltip {
   public static final String TOOLTIP = "tooltip";
   private String tooltip;
@@ -108,7 +107,7 @@ public class UiActionTooltip {
    * @return tooltip
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -135,7 +134,7 @@ public class UiActionTooltip {
    * @return tooltipPosition
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -162,7 +161,7 @@ public class UiActionTooltip {
    * @return tooltipDelay
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP_DELAY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -189,7 +188,7 @@ public class UiActionTooltip {
    * @return tooltipHideDelay
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TOOLTIP_HIDE_DELAY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,22 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Text or media content the client should copy to its system&#39;s clipboard. 
  */
-@ApiModel(description = "Text or media content the client should copy to its system's clipboard. ")
 @JsonPropertyOrder({
   ClipboardData.TEXT
 })
 @JsonTypeName("ClipboardData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ClipboardData {
   public static final String TEXT = "text";
   private String text;
@@ -54,7 +52,7 @@ public class ClipboardData {
    * @return text
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The raw text to copy to clipboard. ")
+
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

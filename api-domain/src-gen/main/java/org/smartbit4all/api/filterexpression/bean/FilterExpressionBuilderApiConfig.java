@@ -20,14 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterExpressionBuilderApiConfig
@@ -38,7 +38,7 @@ import javax.validation.Valid;
   FilterExpressionBuilderApiConfig.AVAILABLE_ACTIONS
 })
 @JsonTypeName("FilterExpressionBuilderApiConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderApiConfig {
   public static final String READ_ONLY = "readOnly";
   private Boolean readOnly = false;
@@ -63,7 +63,7 @@ public class FilterExpressionBuilderApiConfig {
    * @return readOnly
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(READ_ONLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -90,7 +90,7 @@ public class FilterExpressionBuilderApiConfig {
    * @return extarnalDatabase
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXTARNAL_DATABASE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -123,7 +123,7 @@ public class FilterExpressionBuilderApiConfig {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(AVAILABLE_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

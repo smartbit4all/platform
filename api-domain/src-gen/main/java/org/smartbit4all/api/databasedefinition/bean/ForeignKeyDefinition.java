@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.databasedefinition.bean.AlterOperation;
 import org.smartbit4all.api.databasedefinition.bean.ColumnMapEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The meta of an index in a database table. 
  */
-@ApiModel(description = "The meta of an index in a database table. ")
 @JsonPropertyOrder({
   ForeignKeyDefinition.NAME,
   ForeignKeyDefinition.REFERRED_TABLE_NAME,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   ForeignKeyDefinition.OPERATION
 })
 @JsonTypeName("ForeignKeyDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ForeignKeyDefinition {
   public static final String NAME = "name";
   private String name;
@@ -51,7 +50,7 @@ public class ForeignKeyDefinition {
   private String referredTableName;
 
   public static final String COLUMN_MAPS = "columnMaps";
-  private List<ColumnMapEntry> columnMaps = new ArrayList<>();
+  private List<@Valid ColumnMapEntry> columnMaps = new ArrayList<>();
 
   public static final String OPERATION = "operation";
   private AlterOperation operation;
@@ -70,7 +69,7 @@ public class ForeignKeyDefinition {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class ForeignKeyDefinition {
    * @return referredTableName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REFERRED_TABLE_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,7 +112,7 @@ public class ForeignKeyDefinition {
   }
 
 
-  public ForeignKeyDefinition columnMaps(List<ColumnMapEntry> columnMaps) {
+  public ForeignKeyDefinition columnMaps(List<@Valid ColumnMapEntry> columnMaps) {
     
     this.columnMaps = columnMaps;
     return this;
@@ -131,18 +130,18 @@ public class ForeignKeyDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COLUMN_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ColumnMapEntry> getColumnMaps() {
+  public List<@Valid ColumnMapEntry> getColumnMaps() {
     return columnMaps;
   }
 
 
   @JsonProperty(COLUMN_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setColumnMaps(List<ColumnMapEntry> columnMaps) {
+  public void setColumnMaps(List<@Valid ColumnMapEntry> columnMaps) {
     this.columnMaps = columnMaps;
   }
 
@@ -159,7 +158,7 @@ public class ForeignKeyDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

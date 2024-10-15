@@ -20,23 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The mapping item contains a source value and a target value object pair. Even the source and the target could be object also. In this case we save the JSON object. 
  */
-@ApiModel(description = "The mapping item contains a source value and a target value object pair. Even the source and the target could be object also. In this case we save the JSON object. ")
 @JsonPropertyOrder({
   ValueTransformationMappingItem.SOURCE_VALUE,
   ValueTransformationMappingItem.TARGET_VALUE
 })
 @JsonTypeName("ValueTransformationMappingItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationMappingItem {
   public static final String SOURCE_VALUE = "sourceValue";
   private Object sourceValue;
@@ -58,7 +56,7 @@ public class ValueTransformationMappingItem {
    * @return sourceValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SOURCE_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,7 +83,7 @@ public class ValueTransformationMappingItem {
    * @return targetValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TARGET_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

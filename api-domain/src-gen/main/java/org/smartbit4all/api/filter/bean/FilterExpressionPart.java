@@ -20,27 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.filter.bean.FilterExpressionPartKind;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An abstract expression part.
  */
-@ApiModel(description = "An abstract expression part.")
 @JsonPropertyOrder({
   FilterExpressionPart.PART_KIND,
   FilterExpressionPart.FILTER_FIELD,
   FilterExpressionPart.FILTER_FIELD_META
 })
 @JsonTypeName("FilterExpressionPart")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionPart {
   public static final String PART_KIND = "partKind";
   private FilterExpressionPartKind partKind;
@@ -66,7 +64,7 @@ public class FilterExpressionPart {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PART_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +92,7 @@ public class FilterExpressionPart {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_FIELD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,7 +120,7 @@ public class FilterExpressionPart {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_FIELD_META)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -1,14 +1,16 @@
 package org.smartbit4all.api.view.restserver;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.Optional;
-import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+import java.util.Optional;
+import jakarta.annotation.Generated;
+
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 @Controller
-@RequestMapping("${openapi.view.base-path:/}")
+@RequestMapping("${openapi.view.base-path:}")
 public class ViewApiController implements ViewApi {
 
     private final ViewApiDelegate delegate;

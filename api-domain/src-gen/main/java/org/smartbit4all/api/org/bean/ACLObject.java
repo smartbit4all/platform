@@ -20,28 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.org.bean.ACL;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the 
  */
-@ApiModel(description = "The ACL object can be saved individually. It can be used to store more then one ACL inline. The inline ACLs should be parameterized by the application. The application code know the names of the properties that contains the ACLs. Every added ACL can be one parametereization entry for the given object and can bind the ")
 @JsonPropertyOrder({
   ACLObject.URI,
   ACLObject.MAP
 })
 @JsonTypeName("ACLObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLObject {
   public static final String URI = "uri";
   private URI uri;
@@ -64,7 +61,7 @@ public class ACLObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +95,7 @@ public class ACLObject {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The named acls. ")
+
   @JsonProperty(MAP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

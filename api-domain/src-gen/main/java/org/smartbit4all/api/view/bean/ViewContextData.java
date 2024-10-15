@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ClipboardData;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.view.bean.Link;
 import org.smartbit4all.api.view.bean.ViewData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
-@ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextData.UUID,
   ViewContextData.VIEWS,
@@ -46,22 +45,22 @@ import javax.validation.Valid;
   ViewContextData.CLIPBOARD_DATA
 })
 @JsonTypeName("ViewContextData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContextData {
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String VIEWS = "views";
-  private List<ViewData> views = new ArrayList<>();
+  private List<@Valid ViewData> views = new ArrayList<>();
 
   public static final String LINKS = "links";
-  private List<Link> links = new ArrayList<>();
+  private List<@Valid Link> links = new ArrayList<>();
 
   public static final String DOWNLOADS = "downloads";
-  private List<DownloadedFile> downloads = new ArrayList<>();
+  private List<@Valid DownloadedFile> downloads = new ArrayList<>();
 
   public static final String CLIPBOARD_DATA = "clipboardData";
-  private List<ClipboardData> clipboardData = new ArrayList<>();
+  private List<@Valid ClipboardData> clipboardData = new ArrayList<>();
 
   public ViewContextData() { 
   }
@@ -78,7 +77,7 @@ public class ViewContextData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +93,7 @@ public class ViewContextData {
   }
 
 
-  public ViewContextData views(List<ViewData> views) {
+  public ViewContextData views(List<@Valid ViewData> views) {
     
     this.views = views;
     return this;
@@ -112,23 +111,23 @@ public class ViewContextData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewData> getViews() {
+  public List<@Valid ViewData> getViews() {
     return views;
   }
 
 
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViews(List<ViewData> views) {
+  public void setViews(List<@Valid ViewData> views) {
     this.views = views;
   }
 
 
-  public ViewContextData links(List<Link> links) {
+  public ViewContextData links(List<@Valid Link> links) {
     
     this.links = links;
     return this;
@@ -146,23 +145,23 @@ public class ViewContextData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<Link> getLinks() {
+  public List<@Valid Link> getLinks() {
     return links;
   }
 
 
   @JsonProperty(LINKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLinks(List<Link> links) {
+  public void setLinks(List<@Valid Link> links) {
     this.links = links;
   }
 
 
-  public ViewContextData downloads(List<DownloadedFile> downloads) {
+  public ViewContextData downloads(List<@Valid DownloadedFile> downloads) {
     
     this.downloads = downloads;
     return this;
@@ -180,23 +179,23 @@ public class ViewContextData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(DOWNLOADS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<DownloadedFile> getDownloads() {
+  public List<@Valid DownloadedFile> getDownloads() {
     return downloads;
   }
 
 
   @JsonProperty(DOWNLOADS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDownloads(List<DownloadedFile> downloads) {
+  public void setDownloads(List<@Valid DownloadedFile> downloads) {
     this.downloads = downloads;
   }
 
 
-  public ViewContextData clipboardData(List<ClipboardData> clipboardData) {
+  public ViewContextData clipboardData(List<@Valid ClipboardData> clipboardData) {
     
     this.clipboardData = clipboardData;
     return this;
@@ -214,18 +213,18 @@ public class ViewContextData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLIPBOARD_DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ClipboardData> getClipboardData() {
+  public List<@Valid ClipboardData> getClipboardData() {
     return clipboardData;
   }
 
 
   @JsonProperty(CLIPBOARD_DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setClipboardData(List<ClipboardData> clipboardData) {
+  public void setClipboardData(List<@Valid ClipboardData> clipboardData) {
     this.clipboardData = clipboardData;
   }
 

@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Wraps an object URI defining a qualified association between two domain objects.  It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may reference a link object, which is a standalone persisted object, describing the qualities and participant of a multi-directional binding between aggregate roots. If such link object is present, all objects bound together by it are expected to hold an instance of this class referencing the shared link object. 
  */
-@ApiModel(description = "Wraps an object URI defining a qualified association between two domain objects.  It is meant to be stored inline in an object denoting a unidirectional qualified reference. The association may reference a link object, which is a standalone persisted object, describing the qualities and participant of a multi-directional binding between aggregate roots. If such link object is present, all objects bound together by it are expected to hold an instance of this class referencing the shared link object. ")
 @JsonPropertyOrder({
   RefObject.PLACEHOLDER,
   RefObject.DATA,
@@ -42,7 +39,7 @@ import javax.validation.Valid;
   RefObject.REF
 })
 @JsonTypeName("RefObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RefObject {
   public static final String PLACEHOLDER = "placeholder";
   private String placeholder;
@@ -70,7 +67,7 @@ public class RefObject {
    * @return placeholder
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The textual representation of this association if the referenced domain object is missing, but the fact of the association existing is known. ")
+
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -105,7 +102,7 @@ public class RefObject {
    * @return data
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Arbitrary data qualifying this association from the perspective of the owner object, such as constraints and other metadata. ")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +130,7 @@ public class RefObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Reference to the persisted binder object in case of a multi-directional association between multiple domain objects. If null, the association is unidirectional. ")
+
   @JsonProperty(LINK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +158,7 @@ public class RefObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The unique persistence identifier of the associated object. ")
+
   @JsonProperty(REF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

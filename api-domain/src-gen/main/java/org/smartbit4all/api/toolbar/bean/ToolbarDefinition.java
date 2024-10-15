@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.toolbar.bean.ToolbarDefinitionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. 
  */
-@ApiModel(description = "This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. ")
 @JsonPropertyOrder({
   ToolbarDefinition.URI,
   ToolbarDefinition.PRECEDENCE_ORDER,
   ToolbarDefinition.DATA
 })
 @JsonTypeName("ToolbarDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarDefinition {
   public static final String URI = "uri";
   private URI uri;
@@ -66,7 +64,7 @@ public class ToolbarDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +91,7 @@ public class ToolbarDefinition {
    * @return precedenceOrder
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. ")
+
   @JsonProperty(PRECEDENCE_ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +119,7 @@ public class ToolbarDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

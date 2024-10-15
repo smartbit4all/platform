@@ -20,14 +20,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.grid.bean.GridColumnContentType;
 import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * GridColumnMeta
@@ -44,7 +43,7 @@ import javax.validation.Valid;
   GridColumnMeta.STYLE
 })
 @JsonTypeName("GridColumnMeta")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridColumnMeta {
   public static final String LABEL = "label";
   private String label;
@@ -88,7 +87,7 @@ public class GridColumnMeta {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -116,7 +115,7 @@ public class GridColumnMeta {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,7 +142,7 @@ public class GridColumnMeta {
    * @return typeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,7 +169,7 @@ public class GridColumnMeta {
    * @return typeFormat
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The format instruction for the column. This format string must be JavaScript format stringh for Angular.")
+
   @JsonProperty(TYPE_FORMAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,7 +196,7 @@ public class GridColumnMeta {
    * @return alwaysHidden
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ALWAYS_HIDDEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -224,7 +223,7 @@ public class GridColumnMeta {
    * @return alwaysShow
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ALWAYS_SHOW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -251,7 +250,7 @@ public class GridColumnMeta {
    * @return hideLabel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Hide column header label.")
+
   @JsonProperty(HIDE_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -279,7 +278,7 @@ public class GridColumnMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTENT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -307,7 +306,7 @@ public class GridColumnMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If present, this Style will be applied to the column. ")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

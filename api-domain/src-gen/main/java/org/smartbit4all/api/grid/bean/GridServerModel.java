@@ -20,28 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents the server model of a grid component. 
  */
-@ApiModel(description = "This object represents the server model of a grid component. ")
 @JsonPropertyOrder({
   GridServerModel.SELECTED_ROWS,
   GridServerModel.DEFAULT_GRID_DATA
 })
 @JsonTypeName("GridServerModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridServerModel {
   public static final String SELECTED_ROWS = "selectedRows";
   private Map<String, GridRow> selectedRows = new HashMap<>();
@@ -70,7 +67,7 @@ public class GridServerModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SELECTED_ROWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -98,7 +95,7 @@ public class GridServerModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_GRID_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

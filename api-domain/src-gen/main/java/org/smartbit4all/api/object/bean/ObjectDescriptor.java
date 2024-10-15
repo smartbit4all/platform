@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. 
  */
-@ApiModel(description = "The extension descriptor defines the data layout of an object. The properties can be any DocumentProperty available as built in or extension properties. These properties are organized into layouts. The layouts are named to be able to identify the placeholder on the page. The extension contains the constraint and rule definitions for the given object let it be document or folder. ")
 @JsonPropertyOrder({
   ObjectDescriptor.URI,
   ObjectDescriptor.NAME,
@@ -44,7 +41,7 @@ import javax.validation.Valid;
   ObjectDescriptor.OBJECT_DEFINITION
 })
 @JsonTypeName("ObjectDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectDescriptor {
   public static final String URI = "uri";
   private URI uri;
@@ -80,7 +77,7 @@ public class ObjectDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +105,7 @@ public class ObjectDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The extension name is a unique and unmodifiable identifier of the given extension. It is used to construct dynamic object definitions so it must match with the requirements of the an object name (ANSI characters with no white spaces) ")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +139,7 @@ public class ObjectDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The properties extracted from the relevant ObjectDefinition. ")
+
   @JsonProperty(DEFINITION_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -176,7 +173,7 @@ public class ObjectDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The properties configured by extending the base ObjectDefinition ")
+
   @JsonProperty(EXTENSION_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -204,7 +201,7 @@ public class ObjectDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LAYOUT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,7 +229,7 @@ public class ObjectDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

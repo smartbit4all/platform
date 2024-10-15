@@ -20,15 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ContentAccessEventData
@@ -39,7 +38,7 @@ import javax.validation.Valid;
   ContentAccessEventData.DIRECTION
 })
 @JsonTypeName("ContentAccessEventData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ContentAccessEventData {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -65,7 +64,7 @@ public class ContentAccessEventData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -93,7 +92,7 @@ public class ContentAccessEventData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BINARY_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +120,7 @@ public class ContentAccessEventData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DIRECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,34 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.toolbar.bean.ToolbarItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. 
  */
-@ApiModel(description = "This is the registry entry of the toolbars in the MDM Entry of the registry. This object defines a menu / toolbar in the application. It has a naming that can be referred from the source code of the page. The result is that the ToolbarManagementApi produces the UiActions on a Page with the proper settings. The toolbars can be hierarchical for hierarchical menus. ")
 @JsonPropertyOrder({
   ToolbarDefinitionData.QUALIFIED_NAME,
   ToolbarDefinitionData.ITEMS,
   ToolbarDefinitionData.ITEM_PRODUCER
 })
 @JsonTypeName("ToolbarDefinitionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ToolbarDefinitionData {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
   public static final String ITEMS = "items";
-  private List<ToolbarItem> items = new ArrayList<>();
+  private List<@Valid ToolbarItem> items = new ArrayList<>();
 
   public static final String ITEM_PRODUCER = "itemProducer";
   private InvocationRequest itemProducer = null;
@@ -67,7 +66,7 @@ public class ToolbarDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The namespace and the name of the toolbar. The code should be the unique name of the toolbar on the page and it is the last segment. ")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -83,7 +82,7 @@ public class ToolbarDefinitionData {
   }
 
 
-  public ToolbarDefinitionData items(List<ToolbarItem> items) {
+  public ToolbarDefinitionData items(List<@Valid ToolbarItem> items) {
     
     this.items = items;
     return this;
@@ -101,18 +100,18 @@ public class ToolbarDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The ites on the toolbar. ")
+
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ToolbarItem> getItems() {
+  public List<@Valid ToolbarItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<ToolbarItem> items) {
+  public void setItems(List<@Valid ToolbarItem> items) {
     this.items = items;
   }
 
@@ -129,7 +128,7 @@ public class ToolbarDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If we set the item producer logic then the items of the toolbar are coming from this invocation. In this case the items must be managed in the invocation call not here. It can be a workflow or a specific menu settings that can produce menu items dynamically. ")
+
   @JsonProperty(ITEM_PRODUCER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

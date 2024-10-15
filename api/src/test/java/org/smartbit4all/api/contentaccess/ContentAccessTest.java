@@ -17,7 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {ContentAccessTestConfig.class})
+@SpringBootTest(classes = {ContentAccessTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 public class ContentAccessTest {
 
   @Autowired

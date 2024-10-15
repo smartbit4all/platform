@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.bff.api.subjectselector.bean.AclGridConfig;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * AclPageConfig
@@ -45,7 +45,7 @@ import javax.validation.Valid;
   AclPageConfig.LOAD_EXACT_VERSION
 })
 @JsonTypeName("AclPageConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AclPageConfig {
   public static final String ACL_OBJECT_URI_PARAM = "aclObjectUriParam";
   private String aclObjectUriParam;
@@ -63,7 +63,7 @@ public class AclPageConfig {
   private InvocationRequest selectionCallback = null;
 
   public static final String GRID_CONFIGS = "gridConfigs";
-  private List<AclGridConfig> gridConfigs = new ArrayList<>();
+  private List<@Valid AclGridConfig> gridConfigs = new ArrayList<>();
 
   public static final String SAVE_DIRECTLY = "saveDirectly";
   private Boolean saveDirectly = true;
@@ -85,7 +85,7 @@ public class AclPageConfig {
    * @return aclObjectUriParam
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACL_OBJECT_URI_PARAM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -112,7 +112,7 @@ public class AclPageConfig {
    * @return subjectModel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUBJECT_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -139,7 +139,7 @@ public class AclPageConfig {
    * @return subjectSelectorViewName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUBJECT_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -166,7 +166,7 @@ public class AclPageConfig {
    * @return userSelectorViewName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(USER_SELECTOR_VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -194,7 +194,7 @@ public class AclPageConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION_CALLBACK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,7 +210,7 @@ public class AclPageConfig {
   }
 
 
-  public AclPageConfig gridConfigs(List<AclGridConfig> gridConfigs) {
+  public AclPageConfig gridConfigs(List<@Valid AclGridConfig> gridConfigs) {
     
     this.gridConfigs = gridConfigs;
     return this;
@@ -228,18 +228,18 @@ public class AclPageConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GRID_CONFIGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<AclGridConfig> getGridConfigs() {
+  public List<@Valid AclGridConfig> getGridConfigs() {
     return gridConfigs;
   }
 
 
   @JsonProperty(GRID_CONFIGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGridConfigs(List<AclGridConfig> gridConfigs) {
+  public void setGridConfigs(List<@Valid AclGridConfig> gridConfigs) {
     this.gridConfigs = gridConfigs;
   }
 
@@ -255,7 +255,7 @@ public class AclPageConfig {
    * @return saveDirectly
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If true then changes to ACLObject will be saved on user action, implicitly. If false,  original ACLObject is handled in a view variable and can be saved explicitly. ")
+
   @JsonProperty(SAVE_DIRECTLY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -282,7 +282,7 @@ public class AclPageConfig {
    * @return loadExactVersion
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Specifies if the ACLObject should be loaded by exact version (true) or latest (false). Note that true should be used with read only pages! ")
+
   @JsonProperty(LOAD_EXACT_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

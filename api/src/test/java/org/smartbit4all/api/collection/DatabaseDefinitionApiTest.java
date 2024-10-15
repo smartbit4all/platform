@@ -17,7 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
-})
+},
+                properties = "spring.main.allow-circular-references=true")
 @TestInstance(Lifecycle.PER_CLASS)
 class DatabaseDefinitionApiTest {
 

@@ -20,20 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. 
  */
-@ApiModel(description = "The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. ")
 @JsonPropertyOrder({
   ReferenceDefinitionData.URI,
   ReferenceDefinitionData.BACK_REFERENCE,
@@ -45,7 +43,7 @@ import javax.validation.Valid;
   ReferenceDefinitionData.PROPERTY_KIND
 })
 @JsonTypeName("ReferenceDefinitionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ReferenceDefinitionData {
   public static final String URI = "uri";
   private URI uri;
@@ -87,7 +85,7 @@ public class ReferenceDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By default it could be a good idea to name the reference by the name of the property that contains the reference value. ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -115,7 +113,7 @@ public class ReferenceDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If an association between two object is navigable into both direction then this uri refers to the opposite reference.")
+
   @JsonProperty(BACK_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,7 +141,7 @@ public class ReferenceDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The qualified name of the source object.")
+
   @JsonProperty(SOURCE_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -171,7 +169,7 @@ public class ReferenceDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to identify the property in the object or in its contained objects. The path can be \"parent\" if the parent property is directly a property inside the object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to  access the object directly by its value. If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values. ")
+
   @JsonProperty(PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -198,7 +196,7 @@ public class ReferenceDefinitionData {
    * @return targetObjectName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the target object.")
+
   @JsonProperty(TARGET_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -226,7 +224,7 @@ public class ReferenceDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If the given reference points to a value set then this uri contains the reference.")
+
   @JsonProperty(TARGET_VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -255,7 +253,7 @@ public class ReferenceDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(AGGREGATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -283,7 +281,7 @@ public class ReferenceDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PROPERTY_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.value.bean.ValueSetOperand;
 import org.smartbit4all.api.value.bean.ValueSetOperation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ValueSetExpression
@@ -40,7 +40,7 @@ import javax.validation.Valid;
   ValueSetExpression.OPERANDS
 })
 @JsonTypeName("ValueSetExpression")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetExpression {
   public static final String OPERATION = "operation";
   private ValueSetOperation operation;
@@ -49,7 +49,7 @@ public class ValueSetExpression {
   private Boolean ignoreVersion = false;
 
   public static final String OPERANDS = "operands";
-  private List<ValueSetOperand> operands = new ArrayList<>();
+  private List<@Valid ValueSetOperand> operands = new ArrayList<>();
 
   public ValueSetExpression() { 
   }
@@ -67,7 +67,7 @@ public class ValueSetExpression {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -95,7 +95,7 @@ public class ValueSetExpression {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(IGNORE_VERSION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -111,7 +111,7 @@ public class ValueSetExpression {
   }
 
 
-  public ValueSetExpression operands(List<ValueSetOperand> operands) {
+  public ValueSetExpression operands(List<@Valid ValueSetOperand> operands) {
     
     this.operands = operands;
     return this;
@@ -129,18 +129,18 @@ public class ValueSetExpression {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OPERANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ValueSetOperand> getOperands() {
+  public List<@Valid ValueSetOperand> getOperands() {
     return operands;
   }
 
 
   @JsonProperty(OPERANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperands(List<ValueSetOperand> operands) {
+  public void setOperands(List<@Valid ValueSetOperand> operands) {
     this.operands = operands;
   }
 

@@ -20,19 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object can be used as parameter object to name a vector collection managed by the CollectionApi. 
  */
-@ApiModel(description = "This object can be used as parameter object to name a vector collection managed by the CollectionApi. ")
 @JsonPropertyOrder({
   VectorCollectionDescriptor.VECTOR_COLLECTION_NAME,
   VectorCollectionDescriptor.VECTOR_D_B_CONNECTION,
@@ -40,7 +39,7 @@ import javax.validation.Valid;
   VectorCollectionDescriptor.RESTRICTED_PROPERTIES
 })
 @JsonTypeName("VectorCollectionDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorCollectionDescriptor {
   public static final String VECTOR_COLLECTION_NAME = "vectorCollectionName";
   private String vectorCollectionName;
@@ -68,7 +67,7 @@ public class VectorCollectionDescriptor {
    * @return vectorCollectionName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the Vector collection managed by the MDM Entry. It is maintained for the published version the under construction state is not working. ")
+
   @JsonProperty(VECTOR_COLLECTION_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -95,7 +94,7 @@ public class VectorCollectionDescriptor {
    * @return vectorDBConnection
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the VectorDB connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. ")
+
   @JsonProperty(VECTOR_D_B_CONNECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,7 +121,7 @@ public class VectorCollectionDescriptor {
    * @return embeddingConnection
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition. ")
+
   @JsonProperty(EMBEDDING_CONNECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -155,7 +154,7 @@ public class VectorCollectionDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "A list of the properties that will be left out during the creaton of vector indexes ")
+
   @JsonProperty(RESTRICTED_PROPERTIES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

@@ -1,6 +1,7 @@
 package org.smartbit4all.api.navigation.restclientgen;
 
 import org.smartbit4all.api.navigation.service.util.ApiClient;
+import org.smartbit4all.api.navigation.service.util.BaseApi;
 
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationResponse;
@@ -27,26 +28,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-@Component("org.smartbit4all.api.navigation.restclientgen.NavigationApi")
-public class NavigationApi {
-    private ApiClient apiClient;
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
+public class NavigationApi extends BaseApi {
 
     public NavigationApi() {
-        this(new ApiClient());
+        super(new ApiClient());
     }
 
-    @Autowired
     public NavigationApi(ApiClient apiClient) {
-        this.apiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return apiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.apiClient = apiClient;
+        super(apiClient);
     }
 
     /**
@@ -72,7 +62,7 @@ public class NavigationApi {
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
     public ResponseEntity<NavigationEntry> getEntryWithHttpInfo(URI entryMetaUri, URI objectUri) throws RestClientException {
-        Object postBody = null;
+        Object localVarPostBody = null;
         
         // verify the required parameter 'entryMetaUri' is set
         if (entryMetaUri == null) {
@@ -85,29 +75,29 @@ public class NavigationApi {
         }
         
 
-        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
-        final HttpHeaders headerParams = new HttpHeaders();
-        final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
-        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         if (entryMetaUri != null)
-            formParams.add("entryMetaUri", entryMetaUri);
+            localVarFormParams.add("entryMetaUri", entryMetaUri);
         if (objectUri != null)
-            formParams.add("objectUri", objectUri);
+            localVarFormParams.add("objectUri", objectUri);
 
         final String[] localVarAccepts = { 
             "application/json"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] contentTypes = { 
+        final String[] localVarContentTypes = { 
             "application/x-www-form-urlencoded"
          };
-        final MediaType localVarContentType = apiClient.selectHeaderContentType(contentTypes);
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] authNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {  };
 
-        ParameterizedTypeReference<NavigationEntry> returnType = new ParameterizedTypeReference<NavigationEntry>() {};
-        return apiClient.invokeAPI("/entry", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+        ParameterizedTypeReference<NavigationEntry> localReturnType = new ParameterizedTypeReference<NavigationEntry>() {};
+        return apiClient.invokeAPI("/entry", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
     }
     /**
      * Queries all data sources to populate the associations starting from the given entry.
@@ -132,7 +122,7 @@ public class NavigationApi {
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
     public ResponseEntity<List<NavigationResponse>> navigateWithHttpInfo(URI objectUri, List<URI> associationMetaUris) throws RestClientException {
-        Object postBody = null;
+        Object localVarPostBody = null;
         
         // verify the required parameter 'objectUri' is set
         if (objectUri == null) {
@@ -140,28 +130,53 @@ public class NavigationApi {
         }
         
 
-        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
-        final HttpHeaders headerParams = new HttpHeaders();
-        final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
-        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         if (objectUri != null)
-            formParams.add("objectUri", objectUri);
+            localVarFormParams.add("objectUri", objectUri);
         if (associationMetaUris != null)
-            formParams.addAll("associationMetaUris", associationMetaUris);
+            localVarFormParams.addAll("associationMetaUris", associationMetaUris);
 
         final String[] localVarAccepts = { 
             "application/json"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] contentTypes = { 
+        final String[] localVarContentTypes = { 
             "application/x-www-form-urlencoded"
          };
-        final MediaType localVarContentType = apiClient.selectHeaderContentType(contentTypes);
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] authNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {  };
 
-        ParameterizedTypeReference<List<NavigationResponse>> returnType = new ParameterizedTypeReference<List<NavigationResponse>>() {};
-        return apiClient.invokeAPI("/navigate", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+        ParameterizedTypeReference<List<NavigationResponse>> localReturnType = new ParameterizedTypeReference<List<NavigationResponse>>() {};
+        return apiClient.invokeAPI("/navigate", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
+    }
+
+    @Override
+    public <T> ResponseEntity<T> invokeAPI(String url, HttpMethod method, Object request, ParameterizedTypeReference<T> returnType) throws RestClientException {
+        String localVarPath = url.replace(apiClient.getBasePath(), "");
+        Object localVarPostBody = request;
+
+        final Map<String, Object> uriVariables = new HashMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
+
+        final String[] localVarAccepts = { 
+            "application/json"
+         };
+        final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        final String[] localVarContentTypes = { 
+            "application/x-www-form-urlencoded"
+         };
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] {  };
+
+        return apiClient.invokeAPI(localVarPath, method, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, returnType);
     }
 }

@@ -3,7 +3,7 @@ package org.smartbit4all.sec.apikey;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
 

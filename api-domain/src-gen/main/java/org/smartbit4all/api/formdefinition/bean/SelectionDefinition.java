@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.PropertyMapping;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The definition of an arbitrary selection.
  */
-@ApiModel(description = "The definition of an arbitrary selection.")
 @JsonPropertyOrder({
   SelectionDefinition.VALUE_SET_NAME,
   SelectionDefinition.TYPE,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   SelectionDefinition.EMPTY_LABEL
 })
 @JsonTypeName("SelectionDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SelectionDefinition {
   public static final String VALUE_SET_NAME = "valueSetName";
   private String valueSetName;
@@ -89,7 +88,7 @@ public class SelectionDefinition {
   private String displayProperty;
 
   public static final String MAPPING = "mapping";
-  private List<PropertyMapping> mapping = new ArrayList<>();
+  private List<@Valid PropertyMapping> mapping = new ArrayList<>();
 
   public static final String EMPTY_LABEL = "emptyLabel";
   private String emptyLabel;
@@ -109,7 +108,7 @@ public class SelectionDefinition {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Name of the ValueSet used for this selection.")
+
   @JsonProperty(VALUE_SET_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -137,7 +136,7 @@ public class SelectionDefinition {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Defines how the selection should work: for properties or the whole selected Object. ")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,7 +163,7 @@ public class SelectionDefinition {
    * @return displayProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Specifies which property from ValueSetData.values as Object should be used in  selection widget. ")
+
   @JsonProperty(DISPLAY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -180,7 +179,7 @@ public class SelectionDefinition {
   }
 
 
-  public SelectionDefinition mapping(List<PropertyMapping> mapping) {
+  public SelectionDefinition mapping(List<@Valid PropertyMapping> mapping) {
     
     this.mapping = mapping;
     return this;
@@ -198,18 +197,18 @@ public class SelectionDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Mapping between data and selection model. It may be possible to omit mapping, in this case the default mapping is: data = widget.key, selection = valueSetData.keyProperty ")
+
   @JsonProperty(MAPPING)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<PropertyMapping> getMapping() {
+  public List<@Valid PropertyMapping> getMapping() {
     return mapping;
   }
 
 
   @JsonProperty(MAPPING)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMapping(List<PropertyMapping> mapping) {
+  public void setMapping(List<@Valid PropertyMapping> mapping) {
     this.mapping = mapping;
   }
 
@@ -225,7 +224,7 @@ public class SelectionDefinition {
    * @return emptyLabel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Optional value, used for empty valueList entry, this will be the label.")
+
   @JsonProperty(EMPTY_LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

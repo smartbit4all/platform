@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
  */
-@ApiModel(description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 @JsonPropertyOrder({
   FilterFieldMeta.ID,
   FilterFieldMeta.LABEL_CODE,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   FilterFieldMeta.OPERATIONS
 })
 @JsonTypeName("FilterFieldMeta")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterFieldMeta {
   public static final String ID = "id";
   private String id;
@@ -57,7 +56,7 @@ public class FilterFieldMeta {
   private String style;
 
   public static final String OPERATIONS = "operations";
-  private List<FilterOperation> operations = null;
+  private List<@Valid FilterOperation> operations = null;
 
   public FilterFieldMeta() { 
   }
@@ -73,7 +72,7 @@ public class FilterFieldMeta {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of the filter field metadata. Not mandatory, specify only if in use.")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +99,7 @@ public class FilterFieldMeta {
    * @return labelCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Code of label to display for this filter field selector.")
+
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +126,7 @@ public class FilterFieldMeta {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Code of icon to display for this filter field selector.")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +153,7 @@ public class FilterFieldMeta {
    * @return style
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -170,7 +169,7 @@ public class FilterFieldMeta {
   }
 
 
-  public FilterFieldMeta operations(List<FilterOperation> operations) {
+  public FilterFieldMeta operations(List<@Valid FilterOperation> operations) {
     
     this.operations = operations;
     return this;
@@ -190,18 +189,18 @@ public class FilterFieldMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterOperation> getOperations() {
+  public List<@Valid FilterOperation> getOperations() {
     return operations;
   }
 
 
   @JsonProperty(OPERATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperations(List<FilterOperation> operations) {
+  public void setOperations(List<@Valid FilterOperation> operations) {
     this.operations = operations;
   }
 

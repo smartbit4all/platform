@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
+@SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 class LocaleSettingApiOptionTest {
 
   private static Locale hu;

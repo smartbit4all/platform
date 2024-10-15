@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.grid.bean.GridSelectionType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. 
  */
-@ApiModel(description = "The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. ")
 @JsonPropertyOrder({
   GridViewDescriptor.LABEL,
   GridViewDescriptor.ICON,
@@ -49,7 +48,7 @@ import javax.validation.Valid;
   GridViewDescriptor.HIGHLIGHT_CLASS
 })
 @JsonTypeName("GridViewDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridViewDescriptor {
   public static final String LABEL = "label";
   private String label;
@@ -98,7 +97,7 @@ public class GridViewDescriptor {
   private KindEnum kind;
 
   public static final String COLUMNS = "columns";
-  private List<GridColumnMeta> columns = new ArrayList<>();
+  private List<@Valid GridColumnMeta> columns = new ArrayList<>();
 
   public static final String SELECTION_MODE = "selectionMode";
   private GridSelectionMode selectionMode;
@@ -132,7 +131,7 @@ public class GridViewDescriptor {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -159,7 +158,7 @@ public class GridViewDescriptor {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -186,7 +185,7 @@ public class GridViewDescriptor {
    * @return kind
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -202,7 +201,7 @@ public class GridViewDescriptor {
   }
 
 
-  public GridViewDescriptor columns(List<GridColumnMeta> columns) {
+  public GridViewDescriptor columns(List<@Valid GridColumnMeta> columns) {
     
     this.columns = columns;
     return this;
@@ -220,18 +219,18 @@ public class GridViewDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "In the table the columns are the columns of the table. In the tree the columns can be used to append the title of a tree node. ")
+
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GridColumnMeta> getColumns() {
+  public List<@Valid GridColumnMeta> getColumns() {
     return columns;
   }
 
 
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setColumns(List<GridColumnMeta> columns) {
+  public void setColumns(List<@Valid GridColumnMeta> columns) {
     this.columns = columns;
   }
 
@@ -248,7 +247,7 @@ public class GridViewDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -276,7 +275,7 @@ public class GridViewDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,7 +302,7 @@ public class GridViewDescriptor {
    * @return preserveSelectionOnPageChange
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PRESERVE_SELECTION_ON_PAGE_CHANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -330,7 +329,7 @@ public class GridViewDescriptor {
    * @return showEditColumns
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHOW_EDIT_COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -357,7 +356,7 @@ public class GridViewDescriptor {
    * @return highlightProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HIGHLIGHT_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -384,7 +383,7 @@ public class GridViewDescriptor {
    * @return highlightClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HIGHLIGHT_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

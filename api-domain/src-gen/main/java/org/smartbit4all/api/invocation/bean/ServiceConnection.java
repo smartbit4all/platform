@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary parameters. It can be managed as MDM entry for different purposes. 
  */
-@ApiModel(description = "This is a generic Service connection parameter object. It can be used genericly to identify a service with all the necessary parameters. It can be managed as MDM entry for different purposes. ")
 @JsonPropertyOrder({
   ServiceConnection.URI,
   ServiceConnection.NAME,
@@ -47,7 +44,7 @@ import javax.validation.Valid;
   ServiceConnection.PARAMETERS
 })
 @JsonTypeName("ServiceConnection")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ServiceConnection {
   public static final String URI = "uri";
   private URI uri;
@@ -91,7 +88,7 @@ public class ServiceConnection {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +115,7 @@ public class ServiceConnection {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier name of the AI service.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +142,7 @@ public class ServiceConnection {
    * @return apiName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the local api to access the given endpoint. Usually it is the name of a contribution api. ")
+
   @JsonProperty(API_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -172,7 +169,7 @@ public class ServiceConnection {
    * @return authToken
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "As a crucial parameter for the access the authentication token (bearer token or similar). ")
+
   @JsonProperty(AUTH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -199,7 +196,7 @@ public class ServiceConnection {
    * @return username
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -226,7 +223,7 @@ public class ServiceConnection {
    * @return password
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PASSWORD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -253,7 +250,7 @@ public class ServiceConnection {
    * @return apiVersion
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The optional version parameter of the api endpoint. ")
+
   @JsonProperty(API_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +277,7 @@ public class ServiceConnection {
    * @return endpoint
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The endpoint URL typically. ")
+
   @JsonProperty(ENDPOINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -313,7 +310,7 @@ public class ServiceConnection {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 

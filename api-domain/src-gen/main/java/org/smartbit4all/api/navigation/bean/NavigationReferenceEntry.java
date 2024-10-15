@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * API: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.
  */
-@ApiModel(description = "API: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 @JsonPropertyOrder({
   NavigationReferenceEntry.ID,
   NavigationReferenceEntry.START_ENTRY_URI,
@@ -40,7 +38,7 @@ import javax.validation.Valid;
   NavigationReferenceEntry.ASSOCIATION_ENTRY
 })
 @JsonTypeName("NavigationReferenceEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationReferenceEntry {
   public static final String ID = "id";
   private String id;
@@ -69,7 +67,7 @@ public class NavigationReferenceEntry {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The identifier of the reference that is constructed as startEntry.uri + [ \"-\" assocEntry.uri + ] \"-\" + endEntry.uri")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,7 +95,7 @@ public class NavigationReferenceEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the start entry")
+
   @JsonProperty(START_ENTRY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +123,7 @@ public class NavigationReferenceEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(END_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +151,7 @@ public class NavigationReferenceEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATION_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

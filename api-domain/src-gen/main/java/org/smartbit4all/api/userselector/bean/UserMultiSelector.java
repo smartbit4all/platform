@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.userselector.bean.UserSelector;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UserMultiSelector
@@ -39,13 +39,13 @@ import javax.validation.Valid;
   UserMultiSelector.IS_SAVING
 })
 @JsonTypeName("UserMultiSelector")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserMultiSelector {
   public static final String SELECTORS = "selectors";
-  private List<UserSelector> selectors = null;
+  private List<@Valid UserSelector> selectors = null;
 
   public static final String SELECTED = "selected";
-  private List<UserSelector> selected = null;
+  private List<@Valid UserSelector> selected = null;
 
   public static final String IS_SAVING = "isSaving";
   private Boolean isSaving;
@@ -53,7 +53,7 @@ public class UserMultiSelector {
   public UserMultiSelector() { 
   }
 
-  public UserMultiSelector selectors(List<UserSelector> selectors) {
+  public UserMultiSelector selectors(List<@Valid UserSelector> selectors) {
     
     this.selectors = selectors;
     return this;
@@ -73,23 +73,23 @@ public class UserMultiSelector {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<UserSelector> getSelectors() {
+  public List<@Valid UserSelector> getSelectors() {
     return selectors;
   }
 
 
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectors(List<UserSelector> selectors) {
+  public void setSelectors(List<@Valid UserSelector> selectors) {
     this.selectors = selectors;
   }
 
 
-  public UserMultiSelector selected(List<UserSelector> selected) {
+  public UserMultiSelector selected(List<@Valid UserSelector> selected) {
     
     this.selected = selected;
     return this;
@@ -109,18 +109,18 @@ public class UserMultiSelector {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<UserSelector> getSelected() {
+  public List<@Valid UserSelector> getSelected() {
     return selected;
   }
 
 
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelected(List<UserSelector> selected) {
+  public void setSelected(List<@Valid UserSelector> selected) {
     this.selected = selected;
   }
 
@@ -136,7 +136,7 @@ public class UserMultiSelector {
    * @return isSaving
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IS_SAVING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

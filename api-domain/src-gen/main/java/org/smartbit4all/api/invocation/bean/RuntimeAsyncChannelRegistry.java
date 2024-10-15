@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. 
  */
-@ApiModel(description = "This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannelRegistry.RUNTIMES
 })
 @JsonTypeName("RuntimeAsyncChannelRegistry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RuntimeAsyncChannelRegistry {
   public static final String RUNTIMES = "runtimes";
-  private List<RuntimeAsyncChannelList> runtimes = new ArrayList<>();
+  private List<@Valid RuntimeAsyncChannelList> runtimes = new ArrayList<>();
 
   public RuntimeAsyncChannelRegistry() { 
   }
 
-  public RuntimeAsyncChannelRegistry runtimes(List<RuntimeAsyncChannelList> runtimes) {
+  public RuntimeAsyncChannelRegistry runtimes(List<@Valid RuntimeAsyncChannelList> runtimes) {
     
     this.runtimes = runtimes;
     return this;
@@ -64,18 +63,18 @@ public class RuntimeAsyncChannelRegistry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The list of runtimes managing channels.")
+
   @JsonProperty(RUNTIMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<RuntimeAsyncChannelList> getRuntimes() {
+  public List<@Valid RuntimeAsyncChannelList> getRuntimes() {
     return runtimes;
   }
 
 
   @JsonProperty(RUNTIMES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRuntimes(List<RuntimeAsyncChannelList> runtimes) {
+  public void setRuntimes(List<@Valid RuntimeAsyncChannelList> runtimes) {
     this.runtimes = runtimes;
   }
 

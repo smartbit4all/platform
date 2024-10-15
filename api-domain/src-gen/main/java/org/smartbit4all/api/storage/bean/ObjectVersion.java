@@ -20,23 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The reference for a given version of the storage object. It contains all the properties about the version like time, user uri,  api operation that created the version. 
  */
-@ApiModel(description = "The reference for a given version of the storage object. It contains all the properties about the version like time, user uri,  api operation that created the version. ")
 @JsonPropertyOrder({
   ObjectVersion.SERIAL_NO_DATA,
   ObjectVersion.SERIAL_NO_RELATION,
@@ -51,7 +48,7 @@ import javax.validation.Valid;
   ObjectVersion.ASPECTS
 })
 @JsonTypeName("ObjectVersion")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectVersion {
   public static final String SERIAL_NO_DATA = "serialNoData";
   private Long serialNoData;
@@ -100,7 +97,7 @@ public class ObjectVersion {
    * @return serialNoData
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If it is set then there is an attached version data.")
+
   @JsonProperty(SERIAL_NO_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +124,7 @@ public class ObjectVersion {
    * @return serialNoRelation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If it is set then there is an attached version relation set.")
+
   @JsonProperty(SERIAL_NO_RELATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +151,7 @@ public class ObjectVersion {
    * @return transactionId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the transaction that constructed this version from the object. It could be used to double check if a given transaction was successful. ")
+
   @JsonProperty(TRANSACTION_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +180,7 @@ public class ObjectVersion {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The exact date time when the given version was created at.")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -212,7 +209,7 @@ public class ObjectVersion {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The reference of the user or any other participant who created the given version.")
+
   @JsonProperty(CREATED_BY_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -239,7 +236,7 @@ public class ObjectVersion {
    * @return createdBy
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The display name of the user or any other participant who created the given version.")
+
   @JsonProperty(CREATED_BY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -266,7 +263,7 @@ public class ObjectVersion {
    * @return operation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The Api and the operation that was created the given version of the object.")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -294,7 +291,7 @@ public class ObjectVersion {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version if it is a new object on the branch. ")
+
   @JsonProperty(REBASED_FROM_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -322,7 +319,7 @@ public class ObjectVersion {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference of the object version the version is based on. In the result of a merge operation it is the URI of the common ancestor. ")
+
   @JsonProperty(COMMON_ANCESTOR_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -350,7 +347,7 @@ public class ObjectVersion {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version. ")
+
   @JsonProperty(MERGED_WITH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -386,7 +383,7 @@ public class ObjectVersion {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The aspects are named objects attached to the given object version. ")
+
   @JsonProperty(ASPECTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

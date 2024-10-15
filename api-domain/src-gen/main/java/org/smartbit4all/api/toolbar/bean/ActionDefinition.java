@@ -20,23 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the registry entry of the UiActions in the MDM Entry of the registry. 
  */
-@ApiModel(description = "This is the registry entry of the UiActions in the MDM Entry of the registry. ")
 @JsonPropertyOrder({
   ActionDefinition.URI,
   ActionDefinition.PRECEDENCE_ORDER,
@@ -47,7 +46,7 @@ import javax.validation.Valid;
   ActionDefinition.CONTEXT_CHECKS
 })
 @JsonTypeName("ActionDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ActionDefinition {
   public static final String URI = "uri";
   private URI uri;
@@ -86,7 +85,7 @@ public class ActionDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,7 +112,7 @@ public class ActionDefinition {
    * @return precedenceOrder
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "A numerical value and that defines the precedence in a increasing order. It defines that we get the smallest precedence  first and override it with the next one and so on. ")
+
   @JsonProperty(PRECEDENCE_ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +140,7 @@ public class ActionDefinition {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The namespace and the code of the given action. The action must be unique inside a namespace. It could be important to have the same action in different namespaces. The namespace can be the name of an object or even a special page. The last  segment is the code itself. ")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,12 +163,12 @@ public class ActionDefinition {
   }
 
    /**
-   * Get action
+   * The action itself with the well know parameters.
    * @return action
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +202,7 @@ public class ActionDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Invocations of the invocation chain behind the action. This invocations are executed when the given action is performed. ")
+
   @JsonProperty(INVOCATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -226,12 +225,12 @@ public class ActionDefinition {
   }
 
    /**
-   * Get descriptor
+   * The UiAction descriptor for the action. If it is set then the it overrides the action.descriptor. 
    * @return descriptor
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -267,7 +266,7 @@ public class ActionDefinition {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Invocation requests that check the context objects of the action and produce constraints for them if necessary. In this check we can remove the given action or disable. ")
+
   @JsonProperty(CONTEXT_CHECKS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

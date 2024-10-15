@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {ContentAccessSrvRestTestConfig.class})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+                classes = {ContentAccessSrvRestTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 public class ContentAccessSrvRestTest {
 	
 	@Autowired

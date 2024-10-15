@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -29,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -50,8 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
     classes = {
         ViewModelApiTestConfig.class
     },
-    properties = {
-    },
+    properties = "spring.main.allow-circular-references=true",
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
@@ -259,7 +260,8 @@ public class ViewModelApiTest {
     MessageResult fakeResult = new MessageResult()
         .type(MessageResultType.CONFIRM)
         .code("igaz");
-    HttpClientErrorException ex = assertThrows(HttpClientErrorException.class,
+    HttpClientErrorException ex = assertThrows(
+        HttpClientErrorException.class,
         () -> restTemplate.postForObject(messageUrl, fakeResult, CommandResult.class));
     assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
 
@@ -287,7 +289,8 @@ public class ViewModelApiTest {
     restTemplate
         .postForObject(getUrl("close", viewModelUUID), null, Void.class);
 
-    HttpClientErrorException ex = assertThrows(HttpClientErrorException.class,
+    HttpClientErrorException ex = assertThrows(
+        HttpClientErrorException.class,
         () -> getTestModel());
     assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
 

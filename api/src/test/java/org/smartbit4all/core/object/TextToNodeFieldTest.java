@@ -20,7 +20,8 @@ import org.smartbit4all.core.object.utility.TextToNodeFieldProcessor.TextProcess
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {PlatformApiConfig.class, TestFSConfig.class})
+@SpringBootTest(classes = {PlatformApiConfig.class, TestFSConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 @TestInstance(Lifecycle.PER_CLASS)
 class TextToNodeFieldTest {
 

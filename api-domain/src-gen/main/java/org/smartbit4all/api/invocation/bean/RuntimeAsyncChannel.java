@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * If a runtime starts managing a given channel then this object hold all the invocation requests currently managed by the runtime. If the given runtime is stopped then the other runtimes will enqueue these lost invocation requests. 
  */
-@ApiModel(description = "If a runtime starts managing a given channel then this object hold all the invocation requests currently managed by the runtime. If the given runtime is stopped then the other runtimes will enqueue these lost invocation requests. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannel.URI,
   RuntimeAsyncChannel.RUNTIME_URI,
   RuntimeAsyncChannel.INVOCATION_REQUESTS
 })
 @JsonTypeName("RuntimeAsyncChannel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class RuntimeAsyncChannel {
   public static final String URI = "uri";
   private URI uri;
@@ -66,7 +65,7 @@ public class RuntimeAsyncChannel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the channel.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +93,7 @@ public class RuntimeAsyncChannel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The URI of the appliocation runtime that is currently responsible for the givan invocation.")
+
   @JsonProperty(RUNTIME_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +127,7 @@ public class RuntimeAsyncChannel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.")
+
   @JsonProperty(INVOCATION_REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

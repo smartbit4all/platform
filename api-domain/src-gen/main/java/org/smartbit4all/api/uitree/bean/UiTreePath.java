@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.uitree.bean.UiTreePathPart;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UiTreePath
@@ -37,15 +37,15 @@ import javax.validation.Valid;
   UiTreePath.PARTS
 })
 @JsonTypeName("UiTreePath")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiTreePath {
   public static final String PARTS = "parts";
-  private List<UiTreePathPart> parts = new ArrayList<>();
+  private List<@Valid UiTreePathPart> parts = new ArrayList<>();
 
   public UiTreePath() { 
   }
 
-  public UiTreePath parts(List<UiTreePathPart> parts) {
+  public UiTreePath parts(List<@Valid UiTreePathPart> parts) {
     
     this.parts = parts;
     return this;
@@ -63,18 +63,18 @@ public class UiTreePath {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PARTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UiTreePathPart> getParts() {
+  public List<@Valid UiTreePathPart> getParts() {
     return parts;
   }
 
 
   @JsonProperty(PARTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setParts(List<UiTreePathPart> parts) {
+  public void setParts(List<@Valid UiTreePathPart> parts) {
     this.parts = parts;
   }
 

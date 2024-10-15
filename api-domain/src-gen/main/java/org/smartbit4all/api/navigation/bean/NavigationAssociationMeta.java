@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * API: The association meta describes a possible navigation between entry metas. It is part of the configuration.
  */
-@ApiModel(description = "API: The association meta describes a possible navigation between entry metas. It is part of the configuration.")
 @JsonPropertyOrder({
   NavigationAssociationMeta.URI,
   NavigationAssociationMeta.NAME,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   NavigationAssociationMeta.ASSOCIATION_ENTRY
 })
 @JsonTypeName("NavigationAssociationMeta")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationAssociationMeta {
   public static final String URI = "uri";
   private URI uri;
@@ -74,7 +72,7 @@ public class NavigationAssociationMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the resource that uniquely identifies the given navigation inside the navigation api.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -102,7 +100,7 @@ public class NavigationAssociationMeta {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The well-formed name of the association.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -131,7 +129,7 @@ public class NavigationAssociationMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(START_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -160,7 +158,7 @@ public class NavigationAssociationMeta {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(END_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -188,7 +186,7 @@ public class NavigationAssociationMeta {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ASSOCIATION_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -16,9 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.Invocations.ListWrapper;
 import org.smartbit4all.api.invocation.Invocations.MapWrapper;
+import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.BeanMeta;
@@ -74,8 +74,8 @@ public class InvocationBuilder<T> implements InvocationHandler {
    * @param objects The object configuration for the api calls.
    * @return The invocation request batch that can be executed by the InvocationApi.
    */
-  public InvocationRequestBatch build(Consumer<T> apiCall, ObjectInvocationConfig objects) {
-    InvocationRequestBatch result = new InvocationRequestBatch();
+  public InvocationBatchRequest build(Consumer<T> apiCall, ObjectInvocationConfig objects) {
+    InvocationBatchRequest result = new InvocationBatchRequest();
     if (objects == null || objects.getObjectUris() == null
         || objects.getObjectUris().isEmpty()) {
       // Return an empty batch with no included request.

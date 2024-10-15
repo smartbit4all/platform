@@ -20,23 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and  saved without any operation. If the original object is saved on this branch then the operation is registered into  this object and executed directly. 
  */
-@ApiModel(description = "The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and  saved without any operation. If the original object is saved on this branch then the operation is registered into  this object and executed directly. ")
 @JsonPropertyOrder({
   BranchEntry.URI,
   BranchEntry.CAPTION,
@@ -46,7 +43,7 @@ import javax.validation.Valid;
   BranchEntry.NEW_OBJECTS
 })
 @JsonTypeName("BranchEntry")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BranchEntry {
   public static final String URI = "uri";
   private URI uri;
@@ -82,7 +79,7 @@ public class BranchEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the object.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +106,7 @@ public class BranchEntry {
    * @return caption
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The branch could be used as business domain object. If we collect the versions of an object then useng the caption we can identify the intent of the modification. ")
+
   @JsonProperty(CAPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +135,7 @@ public class BranchEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -166,7 +163,7 @@ public class BranchEntry {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LOCKED_BY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -200,7 +197,7 @@ public class BranchEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The branched objects are identified by the latest URI of the source object. These are the objects that are modified on the branch. It is important to know them because during the merge their uri references should be replaced with the merged uri of the source branch. ")
+
   @JsonProperty(BRANCHED_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -234,7 +231,7 @@ public class BranchEntry {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The branched objects are identified by the latest URI of the new branch object.")
+
   @JsonProperty(NEW_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

@@ -20,28 +20,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * One item in the validation result. 
  */
-@ApiModel(description = "One item in the validation result. ")
 @JsonPropertyOrder({
   ObjectValidationItem.SEVERITY,
   ObjectValidationItem.MESSAGE,
   ObjectValidationItem.PROPERTY_PATH
 })
 @JsonTypeName("ObjectValidationItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationItem {
   public static final String SEVERITY = "severity";
   private ObjectValidationSeverity severity;
@@ -67,7 +66,7 @@ public class ObjectValidationItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -95,7 +94,7 @@ public class ObjectValidationItem {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +127,7 @@ public class ObjectValidationItem {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

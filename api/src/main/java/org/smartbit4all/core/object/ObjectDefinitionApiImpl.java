@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -134,7 +134,6 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   private StorageApi storageApi;
 
-  @Autowired
   private ObjectDefinitionApi self;
 
   private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -163,6 +162,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    self = this;
     initSerializers();
     initSummarySuppliers();
     defaultSerializer = serializersByName.get(defaultSerializerName);

@@ -98,10 +98,10 @@ public class PropertyBasedComponentLocalizer implements ComponentLocalizer {
       return;
     }
     i18n.setCancel(p.cancel);
-    i18n.setClear(p.clear);
+    //i18n.setClear(p.clear);
     i18n.setFirstDayOfWeek(p.firstDayOfWeek);
     i18n.setToday(p.today);
-    i18n.setWeek(p.week);
+    //i18n.setWeek(p.week);
     i18n.setMonthNames(p.months);
     i18n.setWeekdays(p.weekdays);
     i18n.setWeekdaysShort(p.weekdaysShort);

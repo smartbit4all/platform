@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.value.bean.ValueTransformationConfigData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. It has a data inline object that contains configuration itself. 
  */
-@ApiModel(description = "This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. It has a data inline object that contains configuration itself. ")
 @JsonPropertyOrder({
   ValueTransformationConfig.URI,
   ValueTransformationConfig.DATA
 })
 @JsonTypeName("ValueTransformationConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationConfig {
   public static final String URI = "uri";
   private URI uri;
@@ -62,7 +60,7 @@ public class ValueTransformationConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +88,7 @@ public class ValueTransformationConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.binarydata.BinaryData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ImageWithAlt
@@ -37,7 +36,7 @@ import javax.validation.Valid;
   ImageWithAlt.FILE_NAME
 })
 @JsonTypeName("ImageWithAlt")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ImageWithAlt {
   public static final String IMAGE = "image";
   private BinaryData image = null;
@@ -63,7 +62,7 @@ public class ImageWithAlt {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -90,7 +89,7 @@ public class ImageWithAlt {
    * @return alt
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ALT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +116,7 @@ public class ImageWithAlt {
    * @return fileName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILE_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

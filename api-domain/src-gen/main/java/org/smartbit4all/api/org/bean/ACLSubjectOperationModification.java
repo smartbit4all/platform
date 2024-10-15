@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a modification object to add, remove or modify the operations of the ACLSubjectOperations. 
  */
-@ApiModel(description = "This object is a modification object to add, remove or modify the operations of the ACLSubjectOperations. ")
 @JsonPropertyOrder({
   ACLSubjectOperationModification.SUBJECT,
   ACLSubjectOperationModification.TO_ADD,
@@ -42,16 +41,16 @@ import javax.validation.Valid;
   ACLSubjectOperationModification.TO_REMOVE
 })
 @JsonTypeName("ACLSubjectOperationModification")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectOperationModification {
   public static final String SUBJECT = "subject";
   private Subject subject;
 
   public static final String TO_ADD = "toAdd";
-  private List<ACLOperationReference> toAdd = new ArrayList<>();
+  private List<@Valid ACLOperationReference> toAdd = new ArrayList<>();
 
   public static final String TO_UPDATE = "toUpdate";
-  private List<ACLOperationReference> toUpdate = new ArrayList<>();
+  private List<@Valid ACLOperationReference> toUpdate = new ArrayList<>();
 
   public static final String TO_REMOVE = "toRemove";
   private List<String> toRemove = new ArrayList<>();
@@ -72,7 +71,7 @@ public class ACLSubjectOperationModification {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -88,7 +87,7 @@ public class ACLSubjectOperationModification {
   }
 
 
-  public ACLSubjectOperationModification toAdd(List<ACLOperationReference> toAdd) {
+  public ACLSubjectOperationModification toAdd(List<@Valid ACLOperationReference> toAdd) {
     
     this.toAdd = toAdd;
     return this;
@@ -106,23 +105,23 @@ public class ACLSubjectOperationModification {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The operations to add. ")
+
   @JsonProperty(TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLOperationReference> getToAdd() {
+  public List<@Valid ACLOperationReference> getToAdd() {
     return toAdd;
   }
 
 
   @JsonProperty(TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setToAdd(List<ACLOperationReference> toAdd) {
+  public void setToAdd(List<@Valid ACLOperationReference> toAdd) {
     this.toAdd = toAdd;
   }
 
 
-  public ACLSubjectOperationModification toUpdate(List<ACLOperationReference> toUpdate) {
+  public ACLSubjectOperationModification toUpdate(List<@Valid ACLOperationReference> toUpdate) {
     
     this.toUpdate = toUpdate;
     return this;
@@ -140,18 +139,18 @@ public class ACLSubjectOperationModification {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The operations to update. ")
+
   @JsonProperty(TO_UPDATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ACLOperationReference> getToUpdate() {
+  public List<@Valid ACLOperationReference> getToUpdate() {
     return toUpdate;
   }
 
 
   @JsonProperty(TO_UPDATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setToUpdate(List<ACLOperationReference> toUpdate) {
+  public void setToUpdate(List<@Valid ACLOperationReference> toUpdate) {
     this.toUpdate = toUpdate;
   }
 
@@ -173,7 +172,7 @@ public class ACLSubjectOperationModification {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The operations to remove from the subject. This is the unique identifier of the given operation. ")
+
   @JsonProperty(TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

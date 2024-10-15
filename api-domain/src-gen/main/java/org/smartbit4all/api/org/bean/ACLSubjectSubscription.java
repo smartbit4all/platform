@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. 
  */
-@ApiModel(description = "This object is a virtual record to list the subscriptions of the subjects. An object contains the subject itself and the ACLObjectReference belongs to each other. ")
 @JsonPropertyOrder({
   ACLSubjectSubscription.SUBJECT,
   ACLSubjectSubscription.OPERATION_REFERENCE
 })
 @JsonTypeName("ACLSubjectSubscription")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACLSubjectSubscription {
   public static final String SUBJECT = "subject";
   private Subject subject;
@@ -62,7 +60,7 @@ public class ACLSubjectSubscription {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUBJECT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +88,7 @@ public class ACLSubjectSubscription {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATION_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

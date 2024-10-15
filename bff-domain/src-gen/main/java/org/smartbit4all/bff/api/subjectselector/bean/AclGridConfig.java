@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.org.bean.Subject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * AclGridConfig
@@ -53,7 +53,7 @@ import javax.validation.Valid;
   AclGridConfig.DELETE_ENABLED
 })
 @JsonTypeName("AclGridConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AclGridConfig {
   public static final String GRID_ID = "gridId";
   private String gridId;
@@ -149,7 +149,7 @@ public class AclGridConfig {
    * @return gridId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If necessary, we can specify explicit gridId, otherwise aclName will be used.")
+
   @JsonProperty(GRID_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,7 +176,7 @@ public class AclGridConfig {
    * @return aclModel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACL_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +203,7 @@ public class AclGridConfig {
    * @return aclName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACL_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +230,7 @@ public class AclGridConfig {
    * @return operation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -258,7 +258,7 @@ public class AclGridConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -285,7 +285,7 @@ public class AclGridConfig {
    * @return mandatory
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MANDATORY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -318,7 +318,7 @@ public class AclGridConfig {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUBJECT_TYPES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -346,7 +346,7 @@ public class AclGridConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SEARCH_PAGE_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -373,7 +373,7 @@ public class AclGridConfig {
    * @return selectionType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -407,7 +407,7 @@ public class AclGridConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUBJECT_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -434,7 +434,7 @@ public class AclGridConfig {
    * @return minNoOfRows
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MIN_NO_OF_ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -461,7 +461,7 @@ public class AclGridConfig {
    * @return maxNoOfRows
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MAX_NO_OF_ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -488,7 +488,7 @@ public class AclGridConfig {
    * @return hasComment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HAS_COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -515,7 +515,7 @@ public class AclGridConfig {
    * @return addEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ADD_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -542,7 +542,7 @@ public class AclGridConfig {
    * @return deleteEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DELETE_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

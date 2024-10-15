@@ -20,38 +20,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * API: Describes all the entries and associations in the given navigation.
  */
-@ApiModel(description = "API: Describes all the entries and associations in the given navigation.")
 @JsonPropertyOrder({
   NavigationConfig.ENTRIES,
   NavigationConfig.ASSOCIATIONS
 })
 @JsonTypeName("NavigationConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationConfig {
   public static final String ENTRIES = "entries";
-  private List<NavigationEntryMeta> entries = null;
+  private List<@Valid NavigationEntryMeta> entries = null;
 
   public static final String ASSOCIATIONS = "associations";
-  private List<NavigationAssociationMeta> associations = null;
+  private List<@Valid NavigationAssociationMeta> associations = null;
 
   public NavigationConfig() { 
   }
 
-  public NavigationConfig entries(List<NavigationEntryMeta> entries) {
+  public NavigationConfig entries(List<@Valid NavigationEntryMeta> entries) {
     
     this.entries = entries;
     return this;
@@ -71,23 +70,23 @@ public class NavigationConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The available entries in the given navigation config.")
+
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationEntryMeta> getEntries() {
+  public List<@Valid NavigationEntryMeta> getEntries() {
     return entries;
   }
 
 
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEntries(List<NavigationEntryMeta> entries) {
+  public void setEntries(List<@Valid NavigationEntryMeta> entries) {
     this.entries = entries;
   }
 
 
-  public NavigationConfig associations(List<NavigationAssociationMeta> associations) {
+  public NavigationConfig associations(List<@Valid NavigationAssociationMeta> associations) {
     
     this.associations = associations;
     return this;
@@ -107,18 +106,18 @@ public class NavigationConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The navigable associations in the given navigation. In case of a navigation tree these are the openable sub trees.")
+
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<NavigationAssociationMeta> getAssociations() {
+  public List<@Valid NavigationAssociationMeta> getAssociations() {
     return associations;
   }
 
 
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAssociations(List<NavigationAssociationMeta> associations) {
+  public void setAssociations(List<@Valid NavigationAssociationMeta> associations) {
     this.associations = associations;
   }
 

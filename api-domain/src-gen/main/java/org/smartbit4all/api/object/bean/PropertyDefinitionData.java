@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The property definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. This definition is responsible for the properties. 
  */
-@ApiModel(description = "The property definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all the properties and contained object definitions also. This definition is responsible for the properties. ")
 @JsonPropertyOrder({
   PropertyDefinitionData.URI,
   PropertyDefinitionData.NAME,
@@ -44,7 +42,7 @@ import javax.validation.Valid;
   PropertyDefinitionData.VALUE_SET
 })
 @JsonTypeName("PropertyDefinitionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PropertyDefinitionData {
   public static final String URI = "uri";
   private URI uri;
@@ -86,7 +84,7 @@ public class PropertyDefinitionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The storage identifier of the given definition. It is calculated by the qualified name of the object. For example  object:/org/smartbit4all/mydomain/model/MyObject/firstProperty could be a calculated URI for a given reference. If the property is defined dynamically then the URI is a standard URI. ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +112,7 @@ public class PropertyDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The property name.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +140,7 @@ public class PropertyDefinitionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well. ")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -169,7 +167,7 @@ public class PropertyDefinitionData {
    * @return referredType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred type. ")
+
   @JsonProperty(REFERRED_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -196,7 +194,7 @@ public class PropertyDefinitionData {
    * @return referredPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the ")
+
   @JsonProperty(REFERRED_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -223,7 +221,7 @@ public class PropertyDefinitionData {
    * @return defaultValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The default value that must be the same type as the property itself.")
+
   @JsonProperty(DEFAULT_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -251,7 +249,7 @@ public class PropertyDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The default widget definition for the given property. It can be empty but in this case we must have another option to setup the widget for a layout. ")
+
   @JsonProperty(WIDGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -279,7 +277,7 @@ public class PropertyDefinitionData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
+
   @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

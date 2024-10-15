@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.LangString;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object. The values can be used to identify the situation when the given constraint must be applied. 
  */
-@ApiModel(description = "There can be different kind of constraints and they can be bound to events / related values. The event must be managed by the page or api logic of the given object. The values can be used to identify the situation when the given constraint must be applied. ")
 @JsonPropertyOrder({
   ObjectConstraintDescriptor.NAME,
   ObjectConstraintDescriptor.WHEN,
@@ -50,7 +49,7 @@ import javax.validation.Valid;
   ObjectConstraintDescriptor.DISPLAY_NAME
 })
 @JsonTypeName("ObjectConstraintDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectConstraintDescriptor {
   public static final String NAME = "name";
   private String name;
@@ -129,7 +128,7 @@ public class ObjectConstraintDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -156,7 +155,7 @@ public class ObjectConstraintDescriptor {
    * @return when
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WHEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +182,7 @@ public class ObjectConstraintDescriptor {
    * @return condition
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object. ")
+
   @JsonProperty(CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,7 +210,7 @@ public class ObjectConstraintDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -245,7 +244,7 @@ public class ObjectConstraintDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PREDICATES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -279,7 +278,7 @@ public class ObjectConstraintDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The component constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
+
   @JsonProperty(COMPONENT_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -313,7 +312,7 @@ public class ObjectConstraintDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The action constraints in precedence order. They are evaluated in this order so a later constraint can overwrite the previous constraint.")
+
   @JsonProperty(ACTION_CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -346,7 +345,7 @@ public class ObjectConstraintDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The validation rules must be checked before an editing is finalized. The validation result is part of the view.")
+
   @JsonProperty(VALIDATION_RULES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -374,7 +373,7 @@ public class ObjectConstraintDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DISPLAY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

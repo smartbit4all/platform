@@ -20,23 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The order by object.. 
  */
-@ApiModel(description = "The order by object.. ")
 @JsonPropertyOrder({
   FilterExpressionOrderBy.PROPERTY_NAME,
   FilterExpressionOrderBy.ORDER
 })
 @JsonTypeName("FilterExpressionOrderBy")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionOrderBy {
   public static final String PROPERTY_NAME = "propertyName";
   private String propertyName;
@@ -93,7 +91,7 @@ public class FilterExpressionOrderBy {
    * @return propertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The property name of the order by column.")
+
   @JsonProperty(PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,7 +118,7 @@ public class FilterExpressionOrderBy {
    * @return order
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ORDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

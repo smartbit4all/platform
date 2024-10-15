@@ -8,7 +8,8 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {StorageFSTestConfigNoCache.class})
+@SpringBootTest(classes = {StorageFSTestConfigNoCache.class},
+                properties = "spring.main.allow-circular-references=true")
 @TestInstance(Lifecycle.PER_CLASS)
 public class StorageTestFSNoCache extends StorageTest {
 

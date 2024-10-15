@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +40,8 @@ import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * View
@@ -73,7 +73,7 @@ import javax.validation.Valid;
   View.PARENT_STYLE
 })
 @JsonTypeName("View")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class View {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -109,16 +109,16 @@ public class View {
   private ViewConstraint constraint;
 
   public static final String CLOSED_CHILDREN_VIEWS = "closedChildrenViews";
-  private List<ViewPlaceholder> closedChildrenViews = new ArrayList<>();
+  private List<@Valid ViewPlaceholder> closedChildrenViews = new ArrayList<>();
 
   public static final String DOWNLOADABLE_ITEMS = "downloadableItems";
   private Map<String, URI> downloadableItems = new HashMap<>();
 
   public static final String ACTIONS = "actions";
-  private List<UiAction> actions = new ArrayList<>();
+  private List<@Valid UiAction> actions = new ArrayList<>();
 
   public static final String EVENT_HANDLERS = "eventHandlers";
-  private List<ViewEventHandler> eventHandlers = new ArrayList<>();
+  private List<@Valid ViewEventHandler> eventHandlers = new ArrayList<>();
 
   public static final String WIDGET_MODELS = "widgetModels";
   private Map<String, Object> widgetModels = new HashMap<>();
@@ -163,7 +163,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Unique identifier of the View.")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -191,7 +191,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEW_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -219,7 +219,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,7 +247,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BRANCH_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -280,7 +280,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -313,7 +313,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The variable to store while the page is opened. It will be cleared if we open it again.")
+
   @JsonProperty(VARIABLES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -342,7 +342,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -371,7 +371,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -399,7 +399,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTAINER_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -426,7 +426,7 @@ public class View {
    * @return model
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -454,7 +454,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONSTRAINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -470,7 +470,7 @@ public class View {
   }
 
 
-  public View closedChildrenViews(List<ViewPlaceholder> closedChildrenViews) {
+  public View closedChildrenViews(List<@Valid ViewPlaceholder> closedChildrenViews) {
     
     this.closedChildrenViews = closedChildrenViews;
     return this;
@@ -488,18 +488,18 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewPlaceholder> getClosedChildrenViews() {
+  public List<@Valid ViewPlaceholder> getClosedChildrenViews() {
     return closedChildrenViews;
   }
 
 
   @JsonProperty(CLOSED_CHILDREN_VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setClosedChildrenViews(List<ViewPlaceholder> closedChildrenViews) {
+  public void setClosedChildrenViews(List<@Valid ViewPlaceholder> closedChildrenViews) {
     this.closedChildrenViews = closedChildrenViews;
   }
 
@@ -522,7 +522,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(DOWNLOADABLE_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -538,7 +538,7 @@ public class View {
   }
 
 
-  public View actions(List<UiAction> actions) {
+  public View actions(List<@Valid UiAction> actions) {
     
     this.actions = actions;
     return this;
@@ -556,23 +556,23 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UiAction> getActions() {
+  public List<@Valid UiAction> getActions() {
     return actions;
   }
 
 
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setActions(List<UiAction> actions) {
+  public void setActions(List<@Valid UiAction> actions) {
     this.actions = actions;
   }
 
 
-  public View eventHandlers(List<ViewEventHandler> eventHandlers) {
+  public View eventHandlers(List<@Valid ViewEventHandler> eventHandlers) {
     
     this.eventHandlers = eventHandlers;
     return this;
@@ -590,18 +590,18 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(EVENT_HANDLERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewEventHandler> getEventHandlers() {
+  public List<@Valid ViewEventHandler> getEventHandlers() {
     return eventHandlers;
   }
 
 
   @JsonProperty(EVENT_HANDLERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setEventHandlers(List<ViewEventHandler> eventHandlers) {
+  public void setEventHandlers(List<@Valid ViewEventHandler> eventHandlers) {
     this.eventHandlers = eventHandlers;
   }
 
@@ -623,7 +623,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(WIDGET_MODELS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -656,7 +656,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(WIDGET_SERVER_MODELS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -690,7 +690,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VALUE_SETS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -717,7 +717,7 @@ public class View {
    * @return keepModelOnImplicitClose
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KEEP_MODEL_ON_IMPLICIT_CLOSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -750,7 +750,7 @@ public class View {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CALLBACKS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -784,7 +784,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The layouts defined in the view. This named layouts can be used by the UI to render")
+
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -818,7 +818,7 @@ public class View {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The components layouts defined in the view. This named layouts can be used by the UI to render")
+
   @JsonProperty(COMPONENT_LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -846,7 +846,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -874,7 +874,7 @@ public class View {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PARENT_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

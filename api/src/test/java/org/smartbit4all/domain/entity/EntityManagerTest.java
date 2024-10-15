@@ -43,7 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-@SpringBootTest(classes = {EntityManagerTestConfig.class})
+@SpringBootTest(classes = {EntityManagerTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 class EntityManagerTest {
 
   private static final String EXPECTED_USERACCDEF_URI =

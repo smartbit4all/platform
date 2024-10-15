@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * GenericValue
@@ -40,7 +39,7 @@ import javax.validation.Valid;
   GenericValue.INACTIVE
 })
 @JsonTypeName("GenericValue")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GenericValue {
   public static final String URI = "uri";
   private URI uri;
@@ -75,7 +74,7 @@ public class GenericValue {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri the value.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,7 +101,7 @@ public class GenericValue {
    * @return code
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The logical code of the value.")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +128,7 @@ public class GenericValue {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value as it is.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -156,7 +155,7 @@ public class GenericValue {
    * @return description
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The description of the value if any. It is optional but can be usefull to have some idea about the given value. ")
+
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -183,7 +182,7 @@ public class GenericValue {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The code of icon that can be associatied with this value. It may be a uri.")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -210,7 +209,7 @@ public class GenericValue {
    * @return inactive
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates if this value is inactive.")
+
   @JsonProperty(INACTIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * OAuthClientProperties
@@ -64,7 +64,7 @@ import javax.validation.Valid;
   OAuthClientProperties.ROLE_MAPPING
 })
 @JsonTypeName("OAuthClientProperties")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OAuthClientProperties {
   public static final String URI = "uri";
   private URI uri;
@@ -159,7 +159,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +187,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The registration identifier that app uses to identify the client registration")
+
   @JsonProperty(REGISTRATION_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -215,7 +215,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The client ID of the OAuth client used by the IDM")
+
   @JsonProperty(CLIENT_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -243,7 +243,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The client secret of the OAuth client provided by the IDM")
+
   @JsonProperty(CLIENT_SECRET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -270,7 +270,7 @@ public class OAuthClientProperties {
    * @return clientName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Sets the logical name of the client or registration. Can be null")
+
   @JsonProperty(CLIENT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -297,7 +297,7 @@ public class OAuthClientProperties {
    * @return authorizationUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The authorization URI of the OAuth provider")
+
   @JsonProperty(AUTHORIZATION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -324,7 +324,7 @@ public class OAuthClientProperties {
    * @return tokenUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The token URI of the OAuth provider")
+
   @JsonProperty(TOKEN_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -351,7 +351,7 @@ public class OAuthClientProperties {
    * @return userInfoUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The user info URI of the OAuth provider")
+
   @JsonProperty(USER_INFO_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -378,7 +378,7 @@ public class OAuthClientProperties {
    * @return jwkSetUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The jwk set URI of the OAuth provider")
+
   @JsonProperty(JWK_SET_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -405,7 +405,7 @@ public class OAuthClientProperties {
    * @return issuerUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0  Authorization Server Metadata endpoint defined by RFC 8414.\" ")
+
   @JsonProperty(ISSUER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -432,7 +432,7 @@ public class OAuthClientProperties {
    * @return redirectUri
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The redirect URI for the OAuth client")
+
   @JsonProperty(REDIRECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -459,7 +459,7 @@ public class OAuthClientProperties {
    * @return scope
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(example = "openid, profile, email, roles", value = "The scope of the OAuth client, comma-separated")
+
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -486,7 +486,7 @@ public class OAuthClientProperties {
    * @return authorizationGrantType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(example = "authorization_code", value = "The authorization grant type of the OAuth client")
+
   @JsonProperty(AUTHORIZATION_GRANT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -514,7 +514,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(example = "preferred_username", required = true, value = "The attribute of the user that can be used to identify the username")
+
   @JsonProperty(USER_NAME_ATTRIBUTE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -541,7 +541,7 @@ public class OAuthClientProperties {
    * @return userInfoAuthenticationMethod
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(example = "header", value = "\"The authentication method used when sending bearer access tokens in resource requests   to resource servers. Possible values: header/form/query.\" ")
+
   @JsonProperty(USER_INFO_AUTHENTICATION_METHOD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -568,7 +568,7 @@ public class OAuthClientProperties {
    * @return commonProvider
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"It is possible to set this attribute to use one of the common providers without setting  all config fields. Possible common providers: facebook, google, github, okta.\" ")
+
   @JsonProperty(COMMON_PROVIDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -595,7 +595,7 @@ public class OAuthClientProperties {
    * @return logoutOidcEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "With this field the oidc logout can be enabled.")
+
   @JsonProperty(LOGOUT_OIDC_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -622,7 +622,7 @@ public class OAuthClientProperties {
    * @return logoutEndSessionEndpoint
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"When auto discovery of oidc endoints is not active (issuerUri is not set),  then this field can be used to explicitly configure the logout url\" ")
+
   @JsonProperty(LOGOUT_END_SESSION_ENDPOINT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -649,7 +649,7 @@ public class OAuthClientProperties {
    * @return logoutRedirectPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"The redirect path that the IDM can redirect to after logout. {baseUrl} can be used.\" ")
+
   @JsonProperty(LOGOUT_REDIRECT_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -677,7 +677,7 @@ public class OAuthClientProperties {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The text that can be used on ui")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -704,7 +704,7 @@ public class OAuthClientProperties {
    * @return logo
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The logo that can be used on ui. TBD")
+
   @JsonProperty(LOGO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -739,7 +739,7 @@ public class OAuthClientProperties {
    * @return userParameterMapping
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"This mapping contains the user attribute names stored in the application and the  corresponding attributes stored in the oauth realm. The key is the application, the  value is the realm attribute name.\" ")
+
   @JsonProperty(USER_PARAMETER_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -766,7 +766,7 @@ public class OAuthClientProperties {
    * @return isUserWithoutGroupAllowedToLogIn
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"When true, users without groups can not log in into the application.\" ")
+
   @JsonProperty(IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -793,7 +793,7 @@ public class OAuthClientProperties {
    * @return defaultGroupName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"The name of the SecurityGroup that the logged in user is added to as default.\" ")
+
   @JsonProperty(DEFAULT_GROUP_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -828,7 +828,7 @@ public class OAuthClientProperties {
    * @return roleAttributes
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"The attributes sent by the identity provider holding the lists of the role names.\" ")
+
   @JsonProperty(ROLE_ATTRIBUTES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -863,7 +863,7 @@ public class OAuthClientProperties {
    * @return roleMapping
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "\"This mapping contains the users' role names stored in the oauth realm and the  corresponding group names stored in the application . The key is the realm role name,  the value is the application group name.\" ")
+
   @JsonProperty(ROLE_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

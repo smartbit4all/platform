@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Message
@@ -45,7 +45,7 @@ import javax.validation.Valid;
   Message.SELECT_RESULT
 })
 @JsonTypeName("Message")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Message {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -63,7 +63,7 @@ public class Message {
   private String text;
 
   public static final String POSSIBLE_RESULTS = "possibleResults";
-  private List<MessageResult> possibleResults = new ArrayList<>();
+  private List<@Valid MessageResult> possibleResults = new ArrayList<>();
 
   public static final String SELECT_RESULT = "selectResult";
   private MessageResult selectResult;
@@ -84,7 +84,7 @@ public class Message {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Unique identifier of message. Will be generated if left empty.")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,7 +112,7 @@ public class Message {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Identifier of viewModel to refresh after message is answered.")
+
   @JsonProperty(VIEW_MODEL_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +141,7 @@ public class Message {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -168,7 +168,7 @@ public class Message {
    * @return header
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HEADER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -195,7 +195,7 @@ public class Message {
    * @return text
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,7 +211,7 @@ public class Message {
   }
 
 
-  public Message possibleResults(List<MessageResult> possibleResults) {
+  public Message possibleResults(List<@Valid MessageResult> possibleResults) {
     
     this.possibleResults = possibleResults;
     return this;
@@ -229,18 +229,18 @@ public class Message {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(POSSIBLE_RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<MessageResult> getPossibleResults() {
+  public List<@Valid MessageResult> getPossibleResults() {
     return possibleResults;
   }
 
 
   @JsonProperty(POSSIBLE_RESULTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPossibleResults(List<MessageResult> possibleResults) {
+  public void setPossibleResults(List<@Valid MessageResult> possibleResults) {
     this.possibleResults = possibleResults;
   }
 
@@ -257,7 +257,7 @@ public class Message {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECT_RESULT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

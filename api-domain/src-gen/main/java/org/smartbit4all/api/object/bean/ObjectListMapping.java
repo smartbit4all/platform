@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a mapping definition that denotes the two property. 
  */
-@ApiModel(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
   ObjectListMapping.UNIQUE_PROPERTY_MAPPING,
   ObjectListMapping.FROM_PRIMITIVE_PATH,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   ObjectListMapping.OBJECT_MAPPING
 })
 @JsonTypeName("ObjectListMapping")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectListMapping {
   public static final String UNIQUE_PROPERTY_MAPPING = "uniquePropertyMapping";
   private ObjectPropertyMapping uniquePropertyMapping;
@@ -71,7 +70,7 @@ public class ObjectListMapping {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UNIQUE_PROPERTY_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,7 +105,7 @@ public class ObjectListMapping {
    * @return fromPrimitivePath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If it is set then we have to add this property as a primitive value to the list.")
+
   @JsonProperty(FROM_PRIMITIVE_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -141,7 +140,7 @@ public class ObjectListMapping {
    * @return toListPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TO_LIST_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -169,7 +168,7 @@ public class ObjectListMapping {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

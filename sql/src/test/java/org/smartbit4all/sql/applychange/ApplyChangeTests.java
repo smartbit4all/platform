@@ -43,7 +43,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = {
     ApplyChangeTestConfig.class,
-})
+},
+                properties = "spring.main.allow-circular-references=true"
+)
 @Sql({"/script/applychanges/applychanges_schema.sql",
     "/script/applychanges/applychanges_refentities_schema.sql",
     "/script/applychanges/applychanges_data_01.sql"

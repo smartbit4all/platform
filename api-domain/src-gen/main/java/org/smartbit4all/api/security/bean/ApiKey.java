@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * \&quot;Holds information of the user and the token it can use the scoped apis with.\&quot; 
  */
-@ApiModel(description = "\"Holds information of the user and the token it can use the scoped apis with.\" ")
 @JsonPropertyOrder({
   ApiKey.URI,
   ApiKey.TOKEN,
@@ -46,7 +45,7 @@ import javax.validation.Valid;
   ApiKey.REVOKED
 })
 @JsonTypeName("ApiKey")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ApiKey {
   public static final String URI = "uri";
   private URI uri;
@@ -85,7 +84,7 @@ public class ApiKey {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The identifier of the api key")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,7 +112,7 @@ public class ApiKey {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The generated token which can be used to access apis.")
+
   @JsonProperty(TOKEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -142,7 +141,7 @@ public class ApiKey {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The URI identifier of the user the api key is created for.")
+
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -176,7 +175,7 @@ public class ApiKey {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The apis that can be accessed with this api key.")
+
   @JsonProperty(SCOPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -204,7 +203,7 @@ public class ApiKey {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "\"The expiration date of the api key. It can be null, meaning the api key lasts forever  or until revocation.\" ")
+
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +232,7 @@ public class ApiKey {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Information of the creation")
+
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -261,7 +260,7 @@ public class ApiKey {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "\"Information of the revocation. It can be null, meaning the token is not revoked.\" ")
+
   @JsonProperty(REVOKED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

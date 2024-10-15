@@ -17,8 +17,8 @@ import java.util.Objects;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -28,13 +28,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ToolbarItemOperation {
   
-  ADDBEFORE("addBefore"),
+  ADD_BEFORE("addBefore"),
   
-  ADDAFTER("addAfter"),
+  ADD_AFTER("addAfter"),
   
-  ADDFIRST("addFirst"),
+  ADD_FIRST("addFirst"),
   
-  ADDLAST("addLast"),
+  ADD_LAST("addLast"),
   
   REMOVE("remove");
 

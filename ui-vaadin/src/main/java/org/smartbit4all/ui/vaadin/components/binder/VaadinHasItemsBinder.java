@@ -12,7 +12,6 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
-import com.vaadin.flow.component.ironlist.IronList;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -87,20 +86,20 @@ public class VaadinHasItemsBinder<T> extends CollectionBinder<T> {
     } else if (list instanceof CheckboxGroup) {
       CheckboxGroup<T> checkboxGroup = (CheckboxGroup<T>) list;
       Set<T> value = checkboxGroup.getValue();
-      checkboxGroup.getDataProvider().refreshAll();
+      checkboxGroup.getGenericDataView().refreshAll();
       checkboxGroup.setValue(value);
-    } else if (list instanceof IronList) {
+    } /* else if (list instanceof IronList) {
       ((IronList<T>) list).getDataProvider().refreshAll();
-    } else if (list instanceof ListBox) {
-      ((ListBox<T>) list).getDataProvider().refreshAll();
+    } */ else if (list instanceof ListBox) {
+      ((ListBox<T>) list).getListDataView().refreshAll();
     } else if (list instanceof MultiSelectListBox) {
-      ((MultiSelectListBox<T>) list).getDataProvider().refreshAll();
+      ((MultiSelectListBox<T>) list).getGenericDataView().refreshAll();
     } else if (list instanceof MultiSelectPopUp) {
       ((MultiSelectPopUp<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof MultiSelectPopUpList) {
       ((MultiSelectPopUpList<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof RadioButtonGroup) {
-      ((RadioButtonGroup<T>) list).getDataProvider().refreshAll();
+      ((RadioButtonGroup<T>) list).getGenericDataView().refreshAll();
     } else if (list instanceof Select) {
       ((Select<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof TreeGrid) {

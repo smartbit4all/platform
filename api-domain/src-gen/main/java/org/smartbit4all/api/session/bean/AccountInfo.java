@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * AccountInfo
@@ -44,7 +44,7 @@ import javax.validation.Valid;
   AccountInfo.PARAMETERS
 })
 @JsonTypeName("AccountInfo")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AccountInfo {
   public static final String KIND = "kind";
   private String kind;
@@ -82,7 +82,7 @@ public class AccountInfo {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,7 +110,7 @@ public class AccountInfo {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(USER_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -138,7 +138,7 @@ public class AccountInfo {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(DISPLAY_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -165,7 +165,7 @@ public class AccountInfo {
    * @return imageContent
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IMAGE_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,7 +192,7 @@ public class AccountInfo {
    * @return imageFormat
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IMAGE_FORMAT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -227,7 +227,7 @@ public class AccountInfo {
    * @return roles
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ROLES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -262,7 +262,7 @@ public class AccountInfo {
    * @return parameters
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -2,7 +2,7 @@ package org.smartbit4all.sec.token;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.smartbit4all.sec.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;

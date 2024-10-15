@@ -19,7 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = {
     QueryToFileTestConfig.class,
-})
+},
+                properties = "spring.main.allow-circular-references=true")
 @Sql({"/script/exists_schema.sql", "/script/exists_data_01.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)

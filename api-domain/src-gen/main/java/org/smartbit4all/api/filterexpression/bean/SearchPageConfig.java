@@ -20,23 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.grid.bean.GridView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. 
  */
-@ApiModel(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
 @JsonPropertyOrder({
   SearchPageConfig.URI,
   SearchPageConfig.PAGE_TITLE,
@@ -56,7 +55,7 @@ import javax.validation.Valid;
   SearchPageConfig.DEFAULT_ROW_ACTIONS
 })
 @JsonTypeName("SearchPageConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchPageConfig {
   public static final String URI = "uri";
   private URI uri;
@@ -121,7 +120,7 @@ public class SearchPageConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -148,7 +147,7 @@ public class SearchPageConfig {
    * @return pageTitle
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The page title that can be set induvidually. If it is empty then the FilterExpressionBuilderModel label property will be the page title and we skip set the label of the component itself. So we can skip this value. ")
+
   @JsonProperty(PAGE_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,7 +175,7 @@ public class SearchPageConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -203,7 +202,7 @@ public class SearchPageConfig {
    * @return searchIndexSchema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The schema name of the search index.")
+
   @JsonProperty(SEARCH_INDEX_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -230,7 +229,7 @@ public class SearchPageConfig {
    * @return searchIndexName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the search index.")
+
   @JsonProperty(SEARCH_INDEX_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -258,7 +257,7 @@ public class SearchPageConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The conteiner to run the query against.")
+
   @JsonProperty(CONTAINER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -286,7 +285,7 @@ public class SearchPageConfig {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If we set this property then the given search page is iterating through the version of this object.")
+
   @JsonProperty(HISTORY_OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -313,7 +312,7 @@ public class SearchPageConfig {
    * @return historyLowerBound
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If we set this property then the page is loading the given version as the oldest one.")
+
   @JsonProperty(HISTORY_LOWER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -340,7 +339,7 @@ public class SearchPageConfig {
    * @return historyUpperBound
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If we set this property then the page is loading the given version as the newest one.")
+
   @JsonProperty(HISTORY_UPPER_BOUND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -367,7 +366,7 @@ public class SearchPageConfig {
    * @return historyLoadAllLimit
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The nummber is history elements are well-known. The last version number show how many version we have. Under this limit we load all the versions and like a normal list of object. ")
+
   @JsonProperty(HISTORY_LOAD_ALL_LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -394,7 +393,7 @@ public class SearchPageConfig {
    * @return historyPageSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If we set this property and skip any or all of the lower or upper bound then we load this this number of versions after the lower bound or before the upper bound or before the latest version. It will be the initial size of the pageing while iteration through the history entries. ")
+
   @JsonProperty(HISTORY_PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -421,7 +420,7 @@ public class SearchPageConfig {
    * @return pageSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If we set this property then the result grid will have this page size. ")
+
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -448,7 +447,7 @@ public class SearchPageConfig {
    * @return skipInitialQuery
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Execute query right after the page is opened or not.")
+
   @JsonProperty(SKIP_INITIAL_QUERY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -475,7 +474,7 @@ public class SearchPageConfig {
    * @return noResultText
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If there is no result for the search, then show this text instead of the empty table.")
+
   @JsonProperty(NO_RESULT_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -509,7 +508,7 @@ public class SearchPageConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear. If we pass more than one then the user can select with an option selector. ")
+
   @JsonProperty(GRID_VIEW_OPTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -544,7 +543,7 @@ public class SearchPageConfig {
    * @return defaultRowActions
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DEFAULT_ROW_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

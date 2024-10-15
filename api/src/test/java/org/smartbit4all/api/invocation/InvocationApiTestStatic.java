@@ -18,11 +18,11 @@ import javax.script.SimpleBindings;
 import org.junit.jupiter.api.Assertions;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
+import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
@@ -228,7 +228,7 @@ public class InvocationApiTestStatic {
         new SampleCategory().name("Category 4").cost(12l).color(ColorEnum.GREEN)));
 
 
-    InvocationRequestBatch batch = invocationApi.builder(TestApi.class)
+    InvocationBatchRequest batch = invocationApi.builder(TestApi.class)
         .build(a -> a.applyParentNamChangeForCategory(null, "common"), config);
 
     InvocationBatchResult invokeBatch = invocationApi.invokeBatch(batch);

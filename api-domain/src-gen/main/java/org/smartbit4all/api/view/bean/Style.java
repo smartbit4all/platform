@@ -20,28 +20,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Style data holder for client
  */
-@ApiModel(description = "Style data holder for client")
 @JsonPropertyOrder({
   Style.STYLE,
   Style.CLASSES_TO_ADD,
   Style.CLASSES_TO_REMOVE
 })
 @JsonTypeName("Style")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Style {
   public static final String STYLE = "style";
   private Map<String, String> style = new HashMap<>();
@@ -72,7 +71,7 @@ public class Style {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -105,7 +104,7 @@ public class Style {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLASSES_TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -138,7 +137,7 @@ public class Style {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CLASSES_TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

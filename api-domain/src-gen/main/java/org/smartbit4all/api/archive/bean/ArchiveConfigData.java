@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.archive.bean.BeforeVersionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ArchiveConfigData
@@ -39,7 +39,7 @@ import javax.validation.Valid;
   ArchiveConfigData.DELETE_BEFORE_VERSION
 })
 @JsonTypeName("ArchiveConfigData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ArchiveConfigData {
   public static final String ROOT_DIR = "rootDir";
   private String rootDir;
@@ -48,7 +48,7 @@ public class ArchiveConfigData {
   private List<String> deleteAll = null;
 
   public static final String DELETE_BEFORE_VERSION = "deleteBeforeVersion";
-  private List<BeforeVersionData> deleteBeforeVersion = null;
+  private List<@Valid BeforeVersionData> deleteBeforeVersion = null;
 
   public ArchiveConfigData() { 
   }
@@ -64,7 +64,7 @@ public class ArchiveConfigData {
    * @return rootDir
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ROOT_DIR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +99,7 @@ public class ArchiveConfigData {
    * @return deleteAll
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DELETE_ALL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,7 +115,7 @@ public class ArchiveConfigData {
   }
 
 
-  public ArchiveConfigData deleteBeforeVersion(List<BeforeVersionData> deleteBeforeVersion) {
+  public ArchiveConfigData deleteBeforeVersion(List<@Valid BeforeVersionData> deleteBeforeVersion) {
     
     this.deleteBeforeVersion = deleteBeforeVersion;
     return this;
@@ -135,18 +135,18 @@ public class ArchiveConfigData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DELETE_BEFORE_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<BeforeVersionData> getDeleteBeforeVersion() {
+  public List<@Valid BeforeVersionData> getDeleteBeforeVersion() {
     return deleteBeforeVersion;
   }
 
 
   @JsonProperty(DELETE_BEFORE_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDeleteBeforeVersion(List<BeforeVersionData> deleteBeforeVersion) {
+  public void setDeleteBeforeVersion(List<@Valid BeforeVersionData> deleteBeforeVersion) {
     this.deleteBeforeVersion = deleteBeforeVersion;
   }
 

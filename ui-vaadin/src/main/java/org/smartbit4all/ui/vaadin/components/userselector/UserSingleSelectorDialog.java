@@ -16,8 +16,8 @@ public class UserSingleSelectorDialog extends UserSelectorDialog {
   protected void createAndBindUI(SelectionMode selectionMode) {
     super.createAndBindUI(selectionMode);
 
-    VaadinBinders.bindItems(grid, userSelectorVM.singleSelector(),
-        UserSingleSelector.SELECTORS);
+//    VaadinBinders.bindItems(grid, userSelectorVM.singleSelector(),
+//        UserSingleSelector.SELECTORS);
     VaadinBinders.bindSelection(grid.asSingleSelect(), userSelectorVM.singleSelector(), null,
         UserSingleSelector.SELECTED);
   }

@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The evaluation can make a decision on the result of the invocation. Can ask reschedule, continue can finish the call. 
  */
-@ApiModel(description = "The evaluation can make a decision on the result of the invocation. Can ask reschedule, continue can finish the call. ")
 @JsonPropertyOrder({
   InvocationResultDecision.HANDLER,
   InvocationResultDecision.DECISION,
   InvocationResultDecision.SCHEDULED_AT
 })
 @JsonTypeName("InvocationResultDecision")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationResultDecision {
   public static final String HANDLER = "handler";
   private String handler;
@@ -100,7 +98,7 @@ public class InvocationResultDecision {
    * @return handler
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the evaluator api that was the decision maker.")
+
   @JsonProperty(HANDLER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +125,7 @@ public class InvocationResultDecision {
    * @return decision
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DECISION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -155,7 +153,7 @@ public class InvocationResultDecision {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If the error handler decided to reschedule the given invocation or continue with the andThen calls then we can see  the next invocation time in this field. ")
+
   @JsonProperty(SCHEDULED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

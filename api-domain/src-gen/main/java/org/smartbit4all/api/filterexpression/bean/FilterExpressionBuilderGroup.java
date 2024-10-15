@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The group is just a UI structure to define a tree structure for the available filter fields. In a group there is an ordered list of filter fields. The group can imply a parenthesis in the xpression or an exist node. Theoreticaly the groups are hierarchical but the pratcticaly it is not. The kind of the group defines what operation is available for the filter fields in the group.  DISPLAY: means thet we can choose an available filter field from the group and place it into the field list related with the current group or in any sub list except under an exist. BRACKET: The given groups defines a bracket. If we choose any of the fiels to add to a filter list then this imlicitely create a bracket node. It can not be added under an exist node. EXIST: The same as the BRACKET but with an exist node. 
  */
-@ApiModel(description = "The group is just a UI structure to define a tree structure for the available filter fields. In a group there is an ordered list of filter fields. The group can imply a parenthesis in the xpression or an exist node. Theoreticaly the groups are hierarchical but the pratcticaly it is not. The kind of the group defines what operation is available for the filter fields in the group.  DISPLAY: means thet we can choose an available filter field from the group and place it into the field list related with the current group or in any sub list except under an exist. BRACKET: The given groups defines a bracket. If we choose any of the fiels to add to a filter list then this imlicitely create a bracket node. It can not be added under an exist node. EXIST: The same as the BRACKET but with an exist node. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderGroup.LABEL,
   FilterExpressionBuilderGroup.BUILDER_GROUP_KIND,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   FilterExpressionBuilderGroup.SUB_GROUPS
 })
 @JsonTypeName("FilterExpressionBuilderGroup")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderGroup {
   public static final String LABEL = "label";
   private String label;
@@ -88,13 +87,13 @@ public class FilterExpressionBuilderGroup {
   private BuilderGroupKindEnum builderGroupKind;
 
   public static final String FIELDS = "fields";
-  private List<FilterExpressionBuilderField> fields = null;
+  private List<@Valid FilterExpressionBuilderField> fields = null;
 
   public static final String ROOT_LIST_ID = "rootListId";
   private String rootListId;
 
   public static final String SUB_GROUPS = "subGroups";
-  private List<FilterExpressionBuilderGroup> subGroups = null;
+  private List<@Valid FilterExpressionBuilderGroup> subGroups = null;
 
   public FilterExpressionBuilderGroup() { 
   }
@@ -110,7 +109,7 @@ public class FilterExpressionBuilderGroup {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The visual display name fo the group.")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +136,7 @@ public class FilterExpressionBuilderGroup {
    * @return builderGroupKind
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Defines if the given groups is just a visual sugar to group somehow the available filter fields or it is definetely a bracket or exists. ")
+
   @JsonProperty(BUILDER_GROUP_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +152,7 @@ public class FilterExpressionBuilderGroup {
   }
 
 
-  public FilterExpressionBuilderGroup fields(List<FilterExpressionBuilderField> fields) {
+  public FilterExpressionBuilderGroup fields(List<@Valid FilterExpressionBuilderField> fields) {
     
     this.fields = fields;
     return this;
@@ -173,18 +172,18 @@ public class FilterExpressionBuilderGroup {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterExpressionBuilderField> getFields() {
+  public List<@Valid FilterExpressionBuilderField> getFields() {
     return fields;
   }
 
 
   @JsonProperty(FIELDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFields(List<FilterExpressionBuilderField> fields) {
+  public void setFields(List<@Valid FilterExpressionBuilderField> fields) {
     this.fields = fields;
   }
 
@@ -200,7 +199,7 @@ public class FilterExpressionBuilderGroup {
    * @return rootListId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the root list in the workplace.")
+
   @JsonProperty(ROOT_LIST_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -216,7 +215,7 @@ public class FilterExpressionBuilderGroup {
   }
 
 
-  public FilterExpressionBuilderGroup subGroups(List<FilterExpressionBuilderGroup> subGroups) {
+  public FilterExpressionBuilderGroup subGroups(List<@Valid FilterExpressionBuilderGroup> subGroups) {
     
     this.subGroups = subGroups;
     return this;
@@ -236,18 +235,18 @@ public class FilterExpressionBuilderGroup {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SUB_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<FilterExpressionBuilderGroup> getSubGroups() {
+  public List<@Valid FilterExpressionBuilderGroup> getSubGroups() {
     return subGroups;
   }
 
 
   @JsonProperty(SUB_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubGroups(List<FilterExpressionBuilderGroup> subGroups) {
+  public void setSubGroups(List<@Valid FilterExpressionBuilderGroup> subGroups) {
     this.subGroups = subGroups;
   }
 

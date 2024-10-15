@@ -20,15 +20,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * NavigationView
@@ -38,13 +36,13 @@ import javax.validation.Valid;
   NavigationView.PARAMETERS
 })
 @JsonTypeName("NavigationView")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationView {
   public static final String NAME = "name";
   private String name;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, Object> parameters = null;
+  private Map<String, String> parameters = null;
 
   public NavigationView() { 
   }
@@ -61,7 +59,7 @@ public class NavigationView {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The symbolic name of the view that must be supported by the given UI implementation.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -77,13 +75,13 @@ public class NavigationView {
   }
 
 
-  public NavigationView parameters(Map<String, Object> parameters) {
+  public NavigationView parameters(Map<String, String> parameters) {
     
     this.parameters = parameters;
     return this;
   }
 
-  public NavigationView putParametersItem(String key, Object parametersItem) {
+  public NavigationView putParametersItem(String key, String parametersItem) {
     if (this.parameters == null) {
       this.parameters = new HashMap<>();
     }
@@ -96,18 +94,18 @@ public class NavigationView {
    * @return parameters
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, Object> getParameters() {
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getParameters() {
     return parameters;
   }
 
 
   @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParameters(Map<String, Object> parameters) {
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
   }
 

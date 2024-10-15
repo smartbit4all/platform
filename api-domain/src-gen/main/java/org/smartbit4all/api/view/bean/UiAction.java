@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +30,8 @@ import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UiAction
@@ -52,7 +52,7 @@ import javax.validation.Valid;
   UiAction.DISABLED
 })
 @JsonTypeName("UiAction")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiAction {
   public static final String CODE = "code";
   private String code;
@@ -85,7 +85,7 @@ public class UiAction {
   private UiActionDescriptor descriptor;
 
   public static final String SUB_ACTIONS = "subActions";
-  private List<UiAction> subActions = null;
+  private List<@Valid UiAction> subActions = null;
 
   public static final String TOOLBAR = "toolbar";
   private String toolbar;
@@ -107,7 +107,7 @@ public class UiAction {
    * @return code
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +134,7 @@ public class UiAction {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -161,7 +161,7 @@ public class UiAction {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -189,7 +189,7 @@ public class UiAction {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INPUT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,7 +217,7 @@ public class UiAction {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(INPUT2_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,7 +244,7 @@ public class UiAction {
    * @return submit
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If true, UiAction will submit the form (causing validation) and sends model in UiActionRequest.")
+
   @JsonProperty(SUBMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -271,7 +271,7 @@ public class UiAction {
    * @return model
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If true, UiAction will NOT submit the form and sends model WITHOUT VALIDATION in UiActionRequest.")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -298,7 +298,7 @@ public class UiAction {
    * @return confirm
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONFIRM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -333,7 +333,7 @@ public class UiAction {
    * @return params
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Additional parameters for executing the UI action. ")
+
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -361,7 +361,7 @@ public class UiAction {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -377,7 +377,7 @@ public class UiAction {
   }
 
 
-  public UiAction subActions(List<UiAction> subActions) {
+  public UiAction subActions(List<@Valid UiAction> subActions) {
     
     this.subActions = subActions;
     return this;
@@ -397,18 +397,18 @@ public class UiAction {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The sub action are set if and only if this action is a sub menu. The sub actions can be null.")
+
   @JsonProperty(SUB_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<UiAction> getSubActions() {
+  public List<@Valid UiAction> getSubActions() {
     return subActions;
   }
 
 
   @JsonProperty(SUB_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubActions(List<UiAction> subActions) {
+  public void setSubActions(List<@Valid UiAction> subActions) {
     this.subActions = subActions;
   }
 
@@ -424,7 +424,7 @@ public class UiAction {
    * @return toolbar
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The id of toolbar which this UiAction should be placed on.")
+
   @JsonProperty(TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -451,7 +451,7 @@ public class UiAction {
    * @return disabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Whether this action should appear disabled or not.")
+
   @JsonProperty(DISABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

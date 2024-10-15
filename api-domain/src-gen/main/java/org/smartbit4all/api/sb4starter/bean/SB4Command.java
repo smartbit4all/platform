@@ -20,18 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.api.sb4starter.bean.SB4File;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SB4Command
@@ -46,7 +46,7 @@ import javax.validation.Valid;
   SB4Command.ON_ERROR_COMMANDS
 })
 @JsonTypeName("SB4Command")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SB4Command {
   public static final String ID = "id";
   private UUID id;
@@ -58,7 +58,7 @@ public class SB4Command {
   private URI restUrl;
 
   public static final String SB4_FILES = "sb4Files";
-  private List<SB4File> sb4Files = new ArrayList<>();
+  private List<@Valid SB4File> sb4Files;
 
   public static final String COMMAND = "command";
   private String command;
@@ -67,7 +67,7 @@ public class SB4Command {
   private List<Integer> successfulExitCodes = new ArrayList<>();
 
   public static final String ON_ERROR_COMMANDS = "onErrorCommands";
-  private List<SB4Command> onErrorCommands = new ArrayList<>();
+  private List<@Valid SB4Command> onErrorCommands = new ArrayList<>();
 
   public SB4Command() { 
   }
@@ -85,7 +85,7 @@ public class SB4Command {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -114,7 +114,7 @@ public class SB4Command {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COMMAND_KIND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -143,7 +143,7 @@ public class SB4Command {
   @javax.annotation.Nullable
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(REST_URL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -159,7 +159,7 @@ public class SB4Command {
   }
 
 
-  public SB4Command sb4Files(List<SB4File> sb4Files) {
+  public SB4Command sb4Files(List<@Valid SB4File> sb4Files) {
     
     this.sb4Files = sb4Files;
     return this;
@@ -177,18 +177,18 @@ public class SB4Command {
   @javax.annotation.Nullable
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SB4_FILES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SB4File> getSb4Files() {
+  public List<@Valid SB4File> getSb4Files() {
     return sb4Files;
   }
 
 
   @JsonProperty(SB4_FILES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSb4Files(List<SB4File> sb4Files) {
+  public void setSb4Files(List<@Valid SB4File> sb4Files) {
     this.sb4Files = sb4Files;
   }
 
@@ -205,7 +205,7 @@ public class SB4Command {
   **/
   @javax.annotation.Nullable
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COMMAND)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -238,7 +238,7 @@ public class SB4Command {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SUCCESSFUL_EXIT_CODES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -254,7 +254,7 @@ public class SB4Command {
   }
 
 
-  public SB4Command onErrorCommands(List<SB4Command> onErrorCommands) {
+  public SB4Command onErrorCommands(List<@Valid SB4Command> onErrorCommands) {
     
     this.onErrorCommands = onErrorCommands;
     return this;
@@ -272,18 +272,18 @@ public class SB4Command {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ON_ERROR_COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SB4Command> getOnErrorCommands() {
+  public List<@Valid SB4Command> getOnErrorCommands() {
     return onErrorCommands;
   }
 
 
   @JsonProperty(ON_ERROR_COMMANDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOnErrorCommands(List<SB4Command> onErrorCommands) {
+  public void setOnErrorCommands(List<@Valid SB4Command> onErrorCommands) {
     this.onErrorCommands = onErrorCommands;
   }
 

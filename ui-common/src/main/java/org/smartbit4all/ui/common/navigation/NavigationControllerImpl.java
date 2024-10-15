@@ -336,7 +336,7 @@ public class NavigationControllerImpl implements NavigationController {
         .viewName(defaulView.getName())
         .objectUri(navigationEntry.getObjectUri())
         .putParametersItem("icon", navigationEntry.getIcon());
-    Map<String, Object> viewParams = defaulView.getParameters();
+    Map<String, String> viewParams = defaulView.getParameters();
     if (viewParams != null) {
       viewCommand.getParameters().putAll(viewParams);
     }

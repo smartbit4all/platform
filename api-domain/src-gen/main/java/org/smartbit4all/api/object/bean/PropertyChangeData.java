@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The change of a property with the path as an identifier. The old value and the new value is also available as Object but we need to handle it as String after a serialization and deserialization. 
  */
-@ApiModel(description = "The change of a property with the path as an identifier. The old value and the new value is also available as Object but we need to handle it as String after a serialization and deserialization. ")
 @JsonPropertyOrder({
   PropertyChangeData.PATH,
   PropertyChangeData.OLD_VALUE,
   PropertyChangeData.NEW_VALUE
 })
 @JsonTypeName("PropertyChangeData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class PropertyChangeData {
   public static final String PATH = "path";
   private String path;
@@ -63,7 +61,7 @@ public class PropertyChangeData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The path identify the given property inside the object.")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +88,7 @@ public class PropertyChangeData {
    * @return oldValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OLD_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +115,7 @@ public class PropertyChangeData {
    * @return newValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NEW_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

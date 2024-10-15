@@ -20,22 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Represent a viewmodel&#39;s data.
  */
-@ApiModel(description = "Represent a viewmodel's data.")
 @JsonPropertyOrder({
   ViewModelDataSimple.UUID,
   ViewModelDataSimple.PATH,
@@ -43,7 +40,7 @@ import javax.validation.Valid;
   ViewModelDataSimple.CHILDREN
 })
 @JsonTypeName("ViewModelDataSimple")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewModelDataSimple {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -73,7 +70,7 @@ public class ViewModelDataSimple {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,7 +97,7 @@ public class ViewModelDataSimple {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +125,7 @@ public class ViewModelDataSimple {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAVIGATION_TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -162,7 +159,7 @@ public class ViewModelDataSimple {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * UiActionExecutionEvent
@@ -48,7 +46,7 @@ import javax.validation.Valid;
   UiActionExecutionEvent.TIMESTAMP
 })
 @JsonTypeName("UiActionExecutionEvent")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionExecutionEvent {
   public static final String VIEW = "view";
   private View view = null;
@@ -89,7 +87,7 @@ public class UiActionExecutionEvent {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -117,7 +115,7 @@ public class UiActionExecutionEvent {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -144,7 +142,7 @@ public class UiActionExecutionEvent {
    * @return widgetId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,7 +169,7 @@ public class UiActionExecutionEvent {
    * @return nodeId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NODE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -206,7 +204,7 @@ public class UiActionExecutionEvent {
    * @return viewContextBefore
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW_CONTEXT_BEFORE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -241,7 +239,7 @@ public class UiActionExecutionEvent {
    * @return viewContextAfter
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW_CONTEXT_AFTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -269,7 +267,7 @@ public class UiActionExecutionEvent {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -297,7 +295,7 @@ public class UiActionExecutionEvent {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

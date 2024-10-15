@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectValidationItem;
 import org.smartbit4all.api.object.bean.ObjectValidationSeverity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is produced by the validate oparetions. It can be used directly in services and can be save as part of the object or even as aspect together with the object. 
  */
-@ApiModel(description = "This object is produced by the validate oparetions. It can be used directly in services and can be save as part of the object or even as aspect together with the object. ")
 @JsonPropertyOrder({
   ObjectValidationResult.SEVERITY,
   ObjectValidationResult.ITEMS
 })
 @JsonTypeName("ObjectValidationResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationResult {
   public static final String SEVERITY = "severity";
   private ObjectValidationSeverity severity;
 
   public static final String ITEMS = "items";
-  private List<ObjectValidationItem> items = new ArrayList<>();
+  private List<@Valid ObjectValidationItem> items = new ArrayList<>();
 
   public ObjectValidationResult() { 
   }
@@ -64,7 +63,7 @@ public class ObjectValidationResult {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SEVERITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,7 +79,7 @@ public class ObjectValidationResult {
   }
 
 
-  public ObjectValidationResult items(List<ObjectValidationItem> items) {
+  public ObjectValidationResult items(List<@Valid ObjectValidationItem> items) {
     
     this.items = items;
     return this;
@@ -98,18 +97,18 @@ public class ObjectValidationResult {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectValidationItem> getItems() {
+  public List<@Valid ObjectValidationItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<ObjectValidationItem> items) {
+  public void setItems(List<@Valid ObjectValidationItem> items) {
     this.items = items;
   }
 

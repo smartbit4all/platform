@@ -20,20 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.LangString;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A named validation operation.  Instances of this type are managed by the system MD management. They bear a unique name and define a target type (on which the actual validation request definition shall be executed).  The embedded InvocationRequestDefinition may be invoked with an object of the target type as its first argument and an arbitrary number of additional arguments (specific to the  validation operation itself).  All embedded invocation request definitions are required to return with an  ObjectValidationResult. 
  */
-@ApiModel(description = "A named validation operation.  Instances of this type are managed by the system MD management. They bear a unique name and define a target type (on which the actual validation request definition shall be executed).  The embedded InvocationRequestDefinition may be invoked with an object of the target type as its first argument and an arbitrary number of additional arguments (specific to the  validation operation itself).  All embedded invocation request definitions are required to return with an  ObjectValidationResult. ")
 @JsonPropertyOrder({
   ObjectValidationOperation.URI,
   ObjectValidationOperation.CODE,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   ObjectValidationOperation.VALIDATION_REQUEST
 })
 @JsonTypeName("ObjectValidationOperation")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationOperation {
   public static final String URI = "uri";
   private URI uri;
@@ -70,7 +68,7 @@ public class ObjectValidationOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Unique persistence identifier.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +95,7 @@ public class ObjectValidationOperation {
    * @return code
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Unique identifier in masterdata management.")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -125,7 +123,7 @@ public class ObjectValidationOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -153,7 +151,7 @@ public class ObjectValidationOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALIDATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A list of attached contents belongs to and an object. 
  */
-@ApiModel(description = "A list of attached contents belongs to and an object. ")
 @JsonPropertyOrder({
   AttachmentList.URI,
   AttachmentList.CONTENTS
 })
 @JsonTypeName("AttachmentList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentList {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String CONTENTS = "contents";
-  private List<BinaryContentData> contents = new ArrayList<>();
+  private List<@Valid BinaryContentData> contents = new ArrayList<>();
 
   public AttachmentList() { 
   }
@@ -64,7 +63,7 @@ public class AttachmentList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -80,7 +79,7 @@ public class AttachmentList {
   }
 
 
-  public AttachmentList contents(List<BinaryContentData> contents) {
+  public AttachmentList contents(List<@Valid BinaryContentData> contents) {
     
     this.contents = contents;
     return this;
@@ -98,18 +97,18 @@ public class AttachmentList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The inline list of the BinaryContentData (it is the the classic attachment).")
+
   @JsonProperty(CONTENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<BinaryContentData> getContents() {
+  public List<@Valid BinaryContentData> getContents() {
     return contents;
   }
 
 
   @JsonProperty(CONTENTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setContents(List<BinaryContentData> contents) {
+  public void setContents(List<@Valid BinaryContentData> contents) {
     this.contents = contents;
   }
 

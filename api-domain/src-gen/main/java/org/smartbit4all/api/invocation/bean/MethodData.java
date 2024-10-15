@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.AnnotationData;
 import org.smartbit4all.api.invocation.bean.ParameterData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The method of an api that can be called. 
  */
-@ApiModel(description = "The method of an api that can be called. ")
 @JsonPropertyOrder({
   MethodData.ID,
   MethodData.NAME,
@@ -43,7 +42,7 @@ import javax.validation.Valid;
   MethodData.ANNOTATIONS
 })
 @JsonTypeName("MethodData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodData {
   public static final String ID = "id";
   private String id;
@@ -55,10 +54,10 @@ public class MethodData {
   private String returnType;
 
   public static final String PARAMETERS = "parameters";
-  private List<ParameterData> parameters = new ArrayList<>();
+  private List<@Valid ParameterData> parameters = new ArrayList<>();
 
   public static final String ANNOTATIONS = "annotations";
-  private List<AnnotationData> annotations = null;
+  private List<@Valid AnnotationData> annotations = null;
 
   public MethodData() { 
   }
@@ -74,7 +73,7 @@ public class MethodData {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifier of the given method inside its api. It consists of the name and the names of the parameter types. It must be unique by definition even for the runtime envorinment to be able to invoke the proper method. ")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -102,7 +101,7 @@ public class MethodData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -129,7 +128,7 @@ public class MethodData {
    * @return returnType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The qualified name of the type / class or structure. Migth be empty if there is no return value at all.")
+
   @JsonProperty(RETURN_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +144,7 @@ public class MethodData {
   }
 
 
-  public MethodData parameters(List<ParameterData> parameters) {
+  public MethodData parameters(List<@Valid ParameterData> parameters) {
     
     this.parameters = parameters;
     return this;
@@ -163,23 +162,23 @@ public class MethodData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The parameters of the given method.")
+
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ParameterData> getParameters() {
+  public List<@Valid ParameterData> getParameters() {
     return parameters;
   }
 
 
   @JsonProperty(PARAMETERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setParameters(List<ParameterData> parameters) {
+  public void setParameters(List<@Valid ParameterData> parameters) {
     this.parameters = parameters;
   }
 
 
-  public MethodData annotations(List<AnnotationData> annotations) {
+  public MethodData annotations(List<@Valid AnnotationData> annotations) {
     
     this.annotations = annotations;
     return this;
@@ -199,18 +198,18 @@ public class MethodData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The annotations of the given method.")
+
   @JsonProperty(ANNOTATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<AnnotationData> getAnnotations() {
+  public List<@Valid AnnotationData> getAnnotations() {
     return annotations;
   }
 
 
   @JsonProperty(ANNOTATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAnnotations(List<AnnotationData> annotations) {
+  public void setAnnotations(List<@Valid AnnotationData> annotations) {
     this.annotations = annotations;
   }
 

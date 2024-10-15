@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Value
@@ -38,7 +37,7 @@ import javax.validation.Valid;
   Value.ICON_CODE
 })
 @JsonTypeName("Value")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class Value {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
@@ -67,7 +66,7 @@ public class Value {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri the object of the value can be accessed.")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +93,7 @@ public class Value {
    * @return code
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The logical code of the selectable value.")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +120,7 @@ public class Value {
    * @return displayValue
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The string value that can be shown on ui. It might be a label code or the exact label.")
+
   @JsonProperty(DISPLAY_VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -148,7 +147,7 @@ public class Value {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The code of icon that can be associatied with the value. It may be a uri.")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

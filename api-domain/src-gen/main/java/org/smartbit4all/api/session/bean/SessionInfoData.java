@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SessionInfoData
@@ -44,7 +44,7 @@ import javax.validation.Valid;
   SessionInfoData.CREATED_AT
 })
 @JsonTypeName("SessionInfoData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SessionInfoData {
   public static final String SID = "sid";
   private String sid;
@@ -62,7 +62,7 @@ public class SessionInfoData {
   private String locale;
 
   public static final String AUTHENTICATIONS = "authentications";
-  private List<AccountInfo> authentications = null;
+  private List<@Valid AccountInfo> authentications = null;
 
   public static final String CREATED_AT = "createdAt";
   private OffsetDateTime createdAt;
@@ -82,7 +82,7 @@ public class SessionInfoData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -109,7 +109,7 @@ public class SessionInfoData {
    * @return refreshToken
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The current refresh token.")
+
   @JsonProperty(REFRESH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +137,7 @@ public class SessionInfoData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXPIRATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,7 +164,7 @@ public class SessionInfoData {
    * @return duration
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The lifetime of the refresh token in seconds. ")
+
   @JsonProperty(DURATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -191,7 +191,7 @@ public class SessionInfoData {
    * @return locale
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LOCALE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,7 +207,7 @@ public class SessionInfoData {
   }
 
 
-  public SessionInfoData authentications(List<AccountInfo> authentications) {
+  public SessionInfoData authentications(List<@Valid AccountInfo> authentications) {
     
     this.authentications = authentications;
     return this;
@@ -227,18 +227,18 @@ public class SessionInfoData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<AccountInfo> getAuthentications() {
+  public List<@Valid AccountInfo> getAuthentications() {
     return authentications;
   }
 
 
   @JsonProperty(AUTHENTICATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAuthentications(List<AccountInfo> authentications) {
+  public void setAuthentications(List<@Valid AccountInfo> authentications) {
     this.authentications = authentications;
   }
 
@@ -255,7 +255,7 @@ public class SessionInfoData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

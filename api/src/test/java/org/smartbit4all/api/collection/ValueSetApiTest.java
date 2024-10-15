@@ -41,7 +41,8 @@ import static java.util.stream.Collectors.toSet;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
-})
+},
+                properties = "spring.main.allow-circular-references=true")
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ValueSetApiTest {

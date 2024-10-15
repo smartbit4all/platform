@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object can be used as parameter object to name a stored object managed by the CollectionApi. 
  */
-@ApiModel(description = "This object can be used as parameter object to name a stored object managed by the CollectionApi. ")
 @JsonPropertyOrder({
   StoredCollectionDescriptor.NAME,
   StoredCollectionDescriptor.SCHEMA,
@@ -39,7 +37,7 @@ import javax.validation.Valid;
   StoredCollectionDescriptor.COLLECTION_TYPE
 })
 @JsonTypeName("StoredCollectionDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredCollectionDescriptor {
   public static final String NAME = "name";
   private String name;
@@ -105,7 +103,7 @@ public class StoredCollectionDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -132,7 +130,7 @@ public class StoredCollectionDescriptor {
    * @return schema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -160,7 +158,7 @@ public class StoredCollectionDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SCOPE_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +185,7 @@ public class StoredCollectionDescriptor {
    * @return collectionType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COLLECTION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

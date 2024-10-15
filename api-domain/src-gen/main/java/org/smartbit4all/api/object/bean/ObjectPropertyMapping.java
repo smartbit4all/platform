@@ -20,25 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a mapping definition that denotes the two property. 
  */
-@ApiModel(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
   ObjectPropertyMapping.FROM_PATH,
   ObjectPropertyMapping.TO_PATH
 })
 @JsonTypeName("ObjectPropertyMapping")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyMapping {
   public static final String FROM_PATH = "fromPath";
   private List<String> fromPath = null;
@@ -68,7 +67,7 @@ public class ObjectPropertyMapping {
    * @return fromPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FROM_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,7 +102,7 @@ public class ObjectPropertyMapping {
    * @return toPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TO_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

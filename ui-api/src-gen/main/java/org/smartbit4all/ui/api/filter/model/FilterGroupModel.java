@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterGroupModel
@@ -51,7 +51,7 @@ import javax.validation.Valid;
   FilterGroupModel.ENABLED
 })
 @JsonTypeName("FilterGroupModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterGroupModel {
   public static final String ID = "id";
   private String id;
@@ -84,10 +84,10 @@ public class FilterGroupModel {
   private Boolean negated = false;
 
   public static final String GROUPS = "groups";
-  private List<FilterGroupModel> groups = new ArrayList<>();
+  private List<@Valid FilterGroupModel> groups = new ArrayList<>();
 
   public static final String FILTERS = "filters";
-  private List<FilterFieldModel> filters = new ArrayList<>();
+  private List<@Valid FilterFieldModel> filters = new ArrayList<>();
 
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
@@ -107,7 +107,7 @@ public class FilterGroupModel {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -135,7 +135,7 @@ public class FilterGroupModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(GROUP_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,7 +163,7 @@ public class FilterGroupModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,7 +190,7 @@ public class FilterGroupModel {
    * @return closeable
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CLOSEABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -217,7 +217,7 @@ public class FilterGroupModel {
    * @return root
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ROOT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -244,7 +244,7 @@ public class FilterGroupModel {
    * @return visible
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VISIBLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -271,7 +271,7 @@ public class FilterGroupModel {
    * @return active
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ACTIVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -298,7 +298,7 @@ public class FilterGroupModel {
    * @return childGroupAllowed
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CHILD_GROUP_ALLOWED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -325,7 +325,7 @@ public class FilterGroupModel {
    * @return groupTypeChangeEnabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(GROUP_TYPE_CHANGE_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -352,7 +352,7 @@ public class FilterGroupModel {
    * @return negated
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NEGATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -368,7 +368,7 @@ public class FilterGroupModel {
   }
 
 
-  public FilterGroupModel groups(List<FilterGroupModel> groups) {
+  public FilterGroupModel groups(List<@Valid FilterGroupModel> groups) {
     
     this.groups = groups;
     return this;
@@ -386,23 +386,23 @@ public class FilterGroupModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterGroupModel> getGroups() {
+  public List<@Valid FilterGroupModel> getGroups() {
     return groups;
   }
 
 
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGroups(List<FilterGroupModel> groups) {
+  public void setGroups(List<@Valid FilterGroupModel> groups) {
     this.groups = groups;
   }
 
 
-  public FilterGroupModel filters(List<FilterFieldModel> filters) {
+  public FilterGroupModel filters(List<@Valid FilterFieldModel> filters) {
     
     this.filters = filters;
     return this;
@@ -420,18 +420,18 @@ public class FilterGroupModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterFieldModel> getFilters() {
+  public List<@Valid FilterFieldModel> getFilters() {
     return filters;
   }
 
 
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilters(List<FilterFieldModel> filters) {
+  public void setFilters(List<@Valid FilterFieldModel> filters) {
     this.filters = filters;
   }
 
@@ -447,7 +447,7 @@ public class FilterGroupModel {
    * @return enabled
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

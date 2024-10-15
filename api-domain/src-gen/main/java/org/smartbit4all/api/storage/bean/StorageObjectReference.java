@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is the generic reference to another storage object. This object has no data but the object URI itself. So there is no need to have history at all. This object is used only by the storage itself to form a special link to an object. It is included into the storage set container and can be used to iterate through the referred objects. Of course this results a two phase read but this is the trade off for the flexibility. 
  */
-@ApiModel(description = "This is the generic reference to another storage object. This object has no data but the object URI itself. So there is no need to have history at all. This object is used only by the storage itself to form a special link to an object. It is included into the storage set container and can be used to iterate through the referred objects. Of course this results a two phase read but this is the trade off for the flexibility. ")
 @JsonPropertyOrder({
   StorageObjectReference.URI,
   StorageObjectReference.OBJECT_URI
 })
 @JsonTypeName("StorageObjectReference")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectReference {
   public static final String URI = "uri";
   private URI uri;
@@ -61,7 +59,7 @@ public class StorageObjectReference {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The identifier of the StorageObjectReference object.   ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -90,7 +88,7 @@ public class StorageObjectReference {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the original object refrred by the reference object.   ")
+
   @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

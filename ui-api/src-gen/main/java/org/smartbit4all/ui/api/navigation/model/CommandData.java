@@ -20,14 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * CommandData
@@ -39,7 +39,7 @@ import javax.validation.Valid;
   CommandData.PARAMS
 })
 @JsonTypeName("CommandData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class CommandData {
   public static final String MODEL = "model";
   private Object model;
@@ -51,7 +51,7 @@ public class CommandData {
   private String commandCode;
 
   public static final String PARAMS = "params";
-  private List<Object> params = null;
+  private List<@Valid Object> params = null;
 
   public CommandData() { 
   }
@@ -67,7 +67,7 @@ public class CommandData {
    * @return model
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MODEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +94,7 @@ public class CommandData {
    * @return commandPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMMAND_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +121,7 @@ public class CommandData {
    * @return commandCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMMAND_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,7 +137,7 @@ public class CommandData {
   }
 
 
-  public CommandData params(List<Object> params) {
+  public CommandData params(List<@Valid Object> params) {
     
     this.params = params;
     return this;
@@ -156,18 +156,18 @@ public class CommandData {
    * @return params
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<Object> getParams() {
+  public List<@Valid Object> getParams() {
     return params;
   }
 
 
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParams(List<Object> params) {
+  public void setParams(List<@Valid Object> params) {
     this.params = params;
   }
 

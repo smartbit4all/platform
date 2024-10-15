@@ -20,20 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The parameters of an Object lookup. 
  */
-@ApiModel(description = "The parameters of an Object lookup. ")
 @JsonPropertyOrder({
   ObjectLookupParameter.LIMIT,
   ObjectLookupParameter.RELEVANCE_LIMIT_PERCENT,
@@ -42,7 +39,7 @@ import javax.validation.Valid;
   ObjectLookupParameter.VALUES_FOR_CREATION
 })
 @JsonTypeName("ObjectLookupParameter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupParameter {
   public static final String LIMIT = "limit";
   private Integer limit;
@@ -73,7 +70,7 @@ public class ObjectLookupParameter {
    * @return limit
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The limit of items in the result. ")
+
   @JsonProperty(LIMIT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +97,7 @@ public class ObjectLookupParameter {
    * @return relevanceLimitPercent
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The limit of relevance in percent. If the relevance doesn't reach this level then it won't appear in the result. ")
+
   @JsonProperty(RELEVANCE_LIMIT_PERCENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +124,7 @@ public class ObjectLookupParameter {
    * @return relevanceLimitRange
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The limit of relevance range in percent. The most relevant result are closer to the first one then this limit. If we set this properly then we can see the most relevant as the numberOfRelevant in the result will set to 1. ")
+
   @JsonProperty(RELEVANCE_LIMIT_RANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -162,7 +159,7 @@ public class ObjectLookupParameter {
    * @return valuesForUpdate
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The values to set in an object that was found by the lookup. These values are copied into the given object after the result values from the lookup was copied into. It contains some default values. ")
+
   @JsonProperty(VALUES_FOR_UPDATE)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,7 +194,7 @@ public class ObjectLookupParameter {
    * @return valuesForCreation
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The values to set in an object that was not found by the lookup so it will be created as new later on. These values are copied  into the given object after the result values from the lookup was copied into. It contains some default values. ")
+
   @JsonProperty(VALUES_FOR_CREATION)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 

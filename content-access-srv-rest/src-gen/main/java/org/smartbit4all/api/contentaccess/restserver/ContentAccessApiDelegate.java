@@ -7,16 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link ContentAccessApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface ContentAccessApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -24,7 +26,7 @@ public interface ContentAccessApiDelegate {
     }
 
     /**
-     * GET /download/{uuid}
+     * GET /download/{uuid} : 
      *
      * @param uuid  (required)
      * @return File with the given uuid. (status code 200)
@@ -36,7 +38,7 @@ public interface ContentAccessApiDelegate {
     }
 
     /**
-     * POST /upload
+     * POST /upload : 
      *
      * @param uuid  (optional)
      * @param file  (optional)

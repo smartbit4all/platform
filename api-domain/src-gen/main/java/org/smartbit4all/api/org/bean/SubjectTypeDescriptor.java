@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.object.bean.LangString;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex to be able to select the given object. This type defines how get the unique identifier. 
  */
-@ApiModel(description = "The ACL subject type is all the subject types that are available in th application. Every subject type must provide SearchIndex to be able to select the given object. This type defines how get the unique identifier. ")
 @JsonPropertyOrder({
   SubjectTypeDescriptor.NAME,
   SubjectTypeDescriptor.TITLE,
@@ -42,7 +40,7 @@ import javax.validation.Valid;
   SubjectTypeDescriptor.API_NAME
 })
 @JsonTypeName("SubjectTypeDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectTypeDescriptor {
   public static final String NAME = "name";
   private String name;
@@ -77,7 +75,7 @@ public class SubjectTypeDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the subject type.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -105,7 +103,7 @@ public class SubjectTypeDescriptor {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +132,7 @@ public class SubjectTypeDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The parameters to open the SearchIndexResultPage for the selection. It defines the name of the search index and also the columns of the grid and the filter model. ")
+
   @JsonProperty(SELECTION_CONFIG)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -161,7 +159,7 @@ public class SubjectTypeDescriptor {
    * @return parentPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The property name of the parent property. If it is set then the selector page can show hierarchical view. ")
+
   @JsonProperty(PARENT_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -188,7 +186,7 @@ public class SubjectTypeDescriptor {
    * @return parentIdentifierPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The property name of the unique identifier property. If it is set then the selector page can show hierarchical view. ")
+
   @JsonProperty(PARENT_IDENTIFIER_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -215,7 +213,7 @@ public class SubjectTypeDescriptor {
    * @return apiName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add  ")
+
   @JsonProperty(API_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

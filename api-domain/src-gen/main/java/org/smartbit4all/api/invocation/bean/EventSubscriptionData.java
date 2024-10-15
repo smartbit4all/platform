@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.invocation.bean.EventSubscriptionType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The information about an event of consumer method and the way how to invoke the given api with the event. 
  */
-@ApiModel(description = "The information about an event of consumer method and the way how to invoke the given api with the event. ")
 @JsonPropertyOrder({
   EventSubscriptionData.API,
   EventSubscriptionData.EVENT,
@@ -42,7 +40,7 @@ import javax.validation.Valid;
   EventSubscriptionData.TYPE
 })
 @JsonTypeName("EventSubscriptionData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class EventSubscriptionData {
   public static final String API = "api";
   private String api;
@@ -80,7 +78,7 @@ public class EventSubscriptionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the api publishing the event.")
+
   @JsonProperty(API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,7 +106,7 @@ public class EventSubscriptionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the publised event.")
+
   @JsonProperty(EVENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -136,7 +134,7 @@ public class EventSubscriptionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The api to call when the event published.")
+
   @JsonProperty(SUBSCRIBED_API)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,7 +162,7 @@ public class EventSubscriptionData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the method to call in the subscribed api.")
+
   @JsonProperty(SUBSCRIBED_METHOD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -191,7 +189,7 @@ public class EventSubscriptionData {
    * @return asynchronous
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "True if the event is accepted in asynchronous way. This is an instruction for the publisher.")
+
   @JsonProperty(ASYNCHRONOUS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -218,7 +216,7 @@ public class EventSubscriptionData {
    * @return channel
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Defines the asynchronous channel to use for processing the invocation.")
+
   @JsonProperty(CHANNEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -247,7 +245,7 @@ public class EventSubscriptionData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

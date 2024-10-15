@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.ScheduledInvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * For every asynchronous channel it is a central registry for the invocations to execute later. These invocations are  not owned by any of the runtimes, they are awaiting for picking up for execution. An active AsynInvocationRequest reside in this resigtry or in the RuntimeAsyncChannel object of the given runtime. 
  */
-@ApiModel(description = "For every asynchronous channel it is a central registry for the invocations to execute later. These invocations are  not owned by any of the runtimes, they are awaiting for picking up for execution. An active AsynInvocationRequest reside in this resigtry or in the RuntimeAsyncChannel object of the given runtime. ")
 @JsonPropertyOrder({
   AsyncChannelScheduledInvocationList.INVOCATION_REQUESTS
 })
 @JsonTypeName("AsyncChannelScheduledInvocationList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AsyncChannelScheduledInvocationList {
   public static final String INVOCATION_REQUESTS = "invocationRequests";
-  private List<ScheduledInvocationRequest> invocationRequests = new ArrayList<>();
+  private List<@Valid ScheduledInvocationRequest> invocationRequests = new ArrayList<>();
 
   public AsyncChannelScheduledInvocationList() { 
   }
 
-  public AsyncChannelScheduledInvocationList invocationRequests(List<ScheduledInvocationRequest> invocationRequests) {
+  public AsyncChannelScheduledInvocationList invocationRequests(List<@Valid ScheduledInvocationRequest> invocationRequests) {
     
     this.invocationRequests = invocationRequests;
     return this;
@@ -64,18 +63,18 @@ public class AsyncChannelScheduledInvocationList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.")
+
   @JsonProperty(INVOCATION_REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ScheduledInvocationRequest> getInvocationRequests() {
+  public List<@Valid ScheduledInvocationRequest> getInvocationRequests() {
     return invocationRequests;
   }
 
 
   @JsonProperty(INVOCATION_REQUESTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setInvocationRequests(List<ScheduledInvocationRequest> invocationRequests) {
+  public void setInvocationRequests(List<@Valid ScheduledInvocationRequest> invocationRequests) {
     this.invocationRequests = invocationRequests;
   }
 

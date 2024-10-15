@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +35,12 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Model of a UI component. Contains all information in one object, which are needed  to render a fully functionin component. 
  */
-@ApiModel(description = "Model of a UI component. Contains all information in one object, which are needed  to render a fully functionin component. ")
 @JsonPropertyOrder({
   ComponentModel.UUID,
   ComponentModel.NAME,
@@ -56,7 +55,7 @@ import javax.validation.Valid;
   ComponentModel.PARENT_STYLE
 })
 @JsonTypeName("ComponentModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ComponentModel {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -68,7 +67,7 @@ public class ComponentModel {
   private Object data;
 
   public static final String CONSTRAINTS = "constraints";
-  private List<ComponentConstraint> constraints = new ArrayList<>();
+  private List<@Valid ComponentConstraint> constraints = new ArrayList<>();
 
   public static final String LAYOUTS = "layouts";
   private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
@@ -77,7 +76,7 @@ public class ComponentModel {
   private Map<String, SmartComponentLayoutDefinition> componentLayouts = null;
 
   public static final String ACTIONS = "actions";
-  private List<UiAction> actions = new ArrayList<>();
+  private List<@Valid UiAction> actions = new ArrayList<>();
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = null;
@@ -107,7 +106,7 @@ public class ComponentModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -135,7 +134,7 @@ public class ComponentModel {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -162,7 +161,7 @@ public class ComponentModel {
    * @return data
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,7 +177,7 @@ public class ComponentModel {
   }
 
 
-  public ComponentModel constraints(List<ComponentConstraint> constraints) {
+  public ComponentModel constraints(List<@Valid ComponentConstraint> constraints) {
     
     this.constraints = constraints;
     return this;
@@ -196,18 +195,18 @@ public class ComponentModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ComponentConstraint> getConstraints() {
+  public List<@Valid ComponentConstraint> getConstraints() {
     return constraints;
   }
 
 
   @JsonProperty(CONSTRAINTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setConstraints(List<ComponentConstraint> constraints) {
+  public void setConstraints(List<@Valid ComponentConstraint> constraints) {
     this.constraints = constraints;
   }
 
@@ -230,7 +229,7 @@ public class ComponentModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -266,7 +265,7 @@ public class ComponentModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMPONENT_LAYOUTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -282,7 +281,7 @@ public class ComponentModel {
   }
 
 
-  public ComponentModel actions(List<UiAction> actions) {
+  public ComponentModel actions(List<@Valid UiAction> actions) {
     
     this.actions = actions;
     return this;
@@ -300,18 +299,18 @@ public class ComponentModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<UiAction> getActions() {
+  public List<@Valid UiAction> getActions() {
     return actions;
   }
 
 
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setActions(List<UiAction> actions) {
+  public void setActions(List<@Valid UiAction> actions) {
     this.actions = actions;
   }
 
@@ -336,7 +335,7 @@ public class ComponentModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE_SETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -371,7 +370,7 @@ public class ComponentModel {
    * @return widgets
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "List of widgets (widgetIds).")
+
   @JsonProperty(WIDGETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -399,7 +398,7 @@ public class ComponentModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -427,7 +426,7 @@ public class ComponentModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PARENT_STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

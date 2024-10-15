@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The binary content data represent a file with file name and other properties like size, mimetype and hash also. This can be used as contained inline object to have reference to a file (the dataUri) at a given location managed by the location handler api. 
  */
-@ApiModel(description = "The binary content data represent a file with file name and other properties like size, mimetype and hash also. This can be used as contained inline object to have reference to a file (the dataUri) at a given location managed by the location handler api. ")
 @JsonPropertyOrder({
   BinaryContentData.LOCATION,
   BinaryContentData.DATA_URI,
@@ -46,7 +44,7 @@ import javax.validation.Valid;
   BinaryContentData.FOLDER_URI
 })
 @JsonTypeName("BinaryContentData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BinaryContentData {
   public static final String LOCATION = "location";
   private String location;
@@ -92,7 +90,7 @@ public class BinaryContentData {
    * @return location
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The location is a type that can be managed by different APIs to access the given content.")
+
   @JsonProperty(LOCATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +119,7 @@ public class BinaryContentData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(DATA_URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -149,7 +147,7 @@ public class BinaryContentData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILE_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -177,7 +175,7 @@ public class BinaryContentData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CREATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -205,7 +203,7 @@ public class BinaryContentData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UPDATED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,7 +230,7 @@ public class BinaryContentData {
    * @return mimeType
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MIME_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,7 +257,7 @@ public class BinaryContentData {
    * @return extension
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(EXTENSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -286,7 +284,7 @@ public class BinaryContentData {
    * @return size
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -313,7 +311,7 @@ public class BinaryContentData {
    * @return contentHash
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(CONTENT_HASH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -341,7 +339,7 @@ public class BinaryContentData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FOLDER_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

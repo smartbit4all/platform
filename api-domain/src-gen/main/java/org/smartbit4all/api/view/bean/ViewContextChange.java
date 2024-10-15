@@ -20,34 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.view.bean.ComponentModelChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
-@ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
   ViewContextChange.VIEW_CONTEXT,
   ViewContextChange.CHANGES,
   ViewContextChange.RESULT
 })
 @JsonTypeName("ViewContextChange")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContextChange {
   public static final String VIEW_CONTEXT = "viewContext";
   private ViewContextData viewContext;
 
   public static final String CHANGES = "changes";
-  private List<ComponentModelChange> changes = new ArrayList<>();
+  private List<@Valid ComponentModelChange> changes = new ArrayList<>();
 
   public static final String RESULT = "result";
   private Object result;
@@ -68,7 +67,7 @@ public class ViewContextChange {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(VIEW_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -84,7 +83,7 @@ public class ViewContextChange {
   }
 
 
-  public ViewContextChange changes(List<ComponentModelChange> changes) {
+  public ViewContextChange changes(List<@Valid ComponentModelChange> changes) {
     
     this.changes = changes;
     return this;
@@ -102,18 +101,18 @@ public class ViewContextChange {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CHANGES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ComponentModelChange> getChanges() {
+  public List<@Valid ComponentModelChange> getChanges() {
     return changes;
   }
 
 
   @JsonProperty(CHANGES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setChanges(List<ComponentModelChange> changes) {
+  public void setChanges(List<@Valid ComponentModelChange> changes) {
     this.changes = changes;
   }
 
@@ -129,7 +128,7 @@ public class ViewContextChange {
    * @return result
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the server call is wrapped inside this ViewContextChange, then this field will contain the result of the original call. ")
+
   @JsonProperty(RESULT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

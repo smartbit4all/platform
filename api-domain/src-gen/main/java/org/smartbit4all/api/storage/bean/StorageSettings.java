@@ -20,24 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a privilegized object for saving the settings information about a Storage as a logical unit of the global storage. The named references and collections attached to this settings can be access by name. 
  */
-@ApiModel(description = "This is a privilegized object for saving the settings information about a Storage as a logical unit of the global storage. The named references and collections attached to this settings can be access by name. ")
 @JsonPropertyOrder({
   StorageSettings.URI,
   StorageSettings.SCHEME_NAME
 })
 @JsonTypeName("StorageSettings")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageSettings {
   public static final String URI = "uri";
   private URI uri;
@@ -61,7 +59,7 @@ public class StorageSettings {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -88,7 +86,7 @@ public class StorageSettings {
    * @return schemeName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SCHEME_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

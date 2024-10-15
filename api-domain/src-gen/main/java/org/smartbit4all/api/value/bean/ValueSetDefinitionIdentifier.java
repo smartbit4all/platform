@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ValueSetDefinitionIdentifier
@@ -35,7 +34,7 @@ import javax.validation.Valid;
   ValueSetDefinitionIdentifier.QUALIFIED_NAME
 })
 @JsonTypeName("ValueSetDefinitionIdentifier")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueSetDefinitionIdentifier {
   public static final String NAMESPACE = "namespace";
   private String namespace;
@@ -57,7 +56,7 @@ public class ValueSetDefinitionIdentifier {
    * @return namespace
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The namespace containing an arbitrary number of value sets. If it's null, the identifier refers to the global namespace. ")
+
   @JsonProperty(NAMESPACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,7 +84,7 @@ public class ValueSetDefinitionIdentifier {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique name of the value set within its namespace. ")
+
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

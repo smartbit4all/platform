@@ -20,20 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The available filter fields contains the pre setup filter field as a template. It can be easily copied and added to the filter field list. 
  */
-@ApiModel(description = "The available filter fields contains the pre setup filter field as a template. It can be easily copied and added to the filter field list. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderField.LABEL,
   FilterExpressionBuilderField.FIELD_TEMPLATE,
@@ -41,7 +40,7 @@ import javax.validation.Valid;
   FilterExpressionBuilderField.INSTANCE_IDS
 })
 @JsonTypeName("FilterExpressionBuilderField")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionBuilderField {
   public static final String LABEL = "label";
   private String label;
@@ -69,7 +68,7 @@ public class FilterExpressionBuilderField {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class FilterExpressionBuilderField {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FIELD_TEMPLATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,7 +123,7 @@ public class FilterExpressionBuilderField {
    * @return limitOfUsage
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If less or equal zero then there is no limit how many time we can use the given filter. Else it is the limit where the typical value is 1 becase we can use the given filter field only once. ")
+
   @JsonProperty(LIMIT_OF_USAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -159,7 +158,7 @@ public class FilterExpressionBuilderField {
    * @return instanceIds
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique identifiers of fields initiated from this builder field in the workplace.")
+
   @JsonProperty(INSTANCE_IDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

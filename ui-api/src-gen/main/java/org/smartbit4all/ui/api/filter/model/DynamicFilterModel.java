@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * DynamicFilterModel
@@ -41,13 +41,13 @@ import javax.validation.Valid;
   DynamicFilterModel.ROOT
 })
 @JsonTypeName("DynamicFilterModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DynamicFilterModel {
   public static final String FILTER_CONFIG_MODE = "filterConfigMode";
   private FilterConfigMode filterConfigMode = null;
 
   public static final String SELECTORS = "selectors";
-  private List<FilterGroupSelectorModel> selectors = new ArrayList<>();
+  private List<@Valid FilterGroupSelectorModel> selectors = new ArrayList<>();
 
   public static final String ROOT = "root";
   private FilterGroupModel root;
@@ -67,7 +67,7 @@ public class DynamicFilterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTER_CONFIG_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,7 +83,7 @@ public class DynamicFilterModel {
   }
 
 
-  public DynamicFilterModel selectors(List<FilterGroupSelectorModel> selectors) {
+  public DynamicFilterModel selectors(List<@Valid FilterGroupSelectorModel> selectors) {
     
     this.selectors = selectors;
     return this;
@@ -101,18 +101,18 @@ public class DynamicFilterModel {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterGroupSelectorModel> getSelectors() {
+  public List<@Valid FilterGroupSelectorModel> getSelectors() {
     return selectors;
   }
 
 
   @JsonProperty(SELECTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectors(List<FilterGroupSelectorModel> selectors) {
+  public void setSelectors(List<@Valid FilterGroupSelectorModel> selectors) {
     this.selectors = selectors;
   }
 
@@ -129,7 +129,7 @@ public class DynamicFilterModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ROOT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

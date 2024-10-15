@@ -98,7 +98,8 @@ import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {MDMApiTestConfig.class})
+@SpringBootTest(classes = {MDMApiTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {

@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ObjectValidationOperationDescriptor
@@ -35,7 +34,7 @@ import javax.validation.Valid;
   ObjectValidationOperationDescriptor.OPERATION_CODE
 })
 @JsonTypeName("ObjectValidationOperationDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectValidationOperationDescriptor {
   public static final String TARGET = "target";
   private String target;
@@ -57,7 +56,7 @@ public class ObjectValidationOperationDescriptor {
    * @return target
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the ObjectValidationOperation's context, to be interpreted by the specific runtime. Describes on what object and when to perform the referenced validation operation. ")
+
   @JsonProperty(TARGET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -84,7 +83,7 @@ public class ObjectValidationOperationDescriptor {
    * @return operationCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The unique code of the ObjectValidationOperation to be performed (this is managed by the system integration MDM of the current runtime). ")
+
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

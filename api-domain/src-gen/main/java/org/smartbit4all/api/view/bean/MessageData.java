@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.MessageOption;
@@ -30,8 +30,8 @@ import org.smartbit4all.api.view.bean.MessageTextType;
 import org.smartbit4all.api.view.bean.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * MessageData
@@ -46,7 +46,7 @@ import javax.validation.Valid;
   MessageData.OPTIONS
 })
 @JsonTypeName("MessageData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MessageData {
   public static final String UUID = "uuid";
   private UUID uuid;
@@ -67,7 +67,7 @@ public class MessageData {
   private MessageTextType textType;
 
   public static final String OPTIONS = "options";
-  private List<MessageOption> options = null;
+  private List<@Valid MessageOption> options = null;
 
   public MessageData() { 
   }
@@ -85,7 +85,7 @@ public class MessageData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "Unique identifier of the Message.")
+
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -113,7 +113,7 @@ public class MessageData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "UUID of the View, showing this message. May be null.")
+
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -142,7 +142,7 @@ public class MessageData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -169,7 +169,7 @@ public class MessageData {
    * @return header
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HEADER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -196,7 +196,7 @@ public class MessageData {
    * @return text
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -224,7 +224,7 @@ public class MessageData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -240,7 +240,7 @@ public class MessageData {
   }
 
 
-  public MessageData options(List<MessageOption> options) {
+  public MessageData options(List<@Valid MessageOption> options) {
     
     this.options = options;
     return this;
@@ -260,18 +260,18 @@ public class MessageData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<MessageOption> getOptions() {
+  public List<@Valid MessageOption> getOptions() {
     return options;
   }
 
 
   @JsonProperty(OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOptions(List<MessageOption> options) {
+  public void setOptions(List<@Valid MessageOption> options) {
     this.options = options;
   }
 

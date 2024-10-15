@@ -20,23 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. 
  */
-@ApiModel(description = "The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. ")
 @JsonPropertyOrder({
   ACL.ROOT_ENTRY
 })
 @JsonTypeName("ACL")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACL {
   public static final String ROOT_ENTRY = "rootEntry";
   private ACLEntry rootEntry;
@@ -57,7 +55,7 @@ public class ACL {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ROOT_ENTRY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

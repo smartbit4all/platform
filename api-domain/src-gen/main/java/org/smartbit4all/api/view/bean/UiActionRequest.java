@@ -20,20 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
- * null
+ * A request to perform user action initiated on the client interface
  */
-@ApiModel(description = "null")
 @JsonPropertyOrder({
   UiActionRequest.CODE,
   UiActionRequest.PATH,
@@ -41,7 +38,7 @@ import javax.validation.Valid;
   UiActionRequest.PARAMS
 })
 @JsonTypeName("UiActionRequest")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionRequest {
   public static final String CODE = "code";
   private String code;
@@ -70,7 +67,7 @@ public class UiActionRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Code of the executed UI action.")
+
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,7 +94,7 @@ public class UiActionRequest {
    * @return path
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,7 +121,7 @@ public class UiActionRequest {
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of UI element, or UI action, where action is performed (for example treeNode's /  listItem's identifier, etc.). Optional. ")
+
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,7 +154,7 @@ public class UiActionRequest {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Additional parameters for executing the UI action. ")
+
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 

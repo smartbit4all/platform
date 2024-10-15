@@ -7,10 +7,10 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 import javax.script.ScriptException;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.object.ObjectNode;
@@ -74,7 +74,7 @@ public interface InvocationApi {
    * @param batch The invocation batch with a list of request to invoke.
    * @throws ApiNotFoundException
    */
-  InvocationBatchResult invokeBatch(InvocationRequestBatch batch) throws ApiNotFoundException;
+  InvocationBatchResult invokeBatch(InvocationBatchRequest batch) throws ApiNotFoundException;
 
   void invoke(ObjectNode asyncInvocationNode);
 
@@ -114,7 +114,7 @@ public interface InvocationApi {
    * @param channel The channel that is configured for the execution. If we don't give any parameter
    *        then it will be created with default parameters.
    */
-  void invokeAsyncBatch(InvocationRequestBatch batch, String channel);
+  void invokeAsyncBatch(InvocationBatchRequest batch, String channel);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the

@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * FilterExpressionFieldList
@@ -40,7 +40,7 @@ import javax.validation.Valid;
   FilterExpressionFieldList.FILTERS
 })
 @JsonTypeName("FilterExpressionFieldList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionFieldList {
   public static final String ID = "id";
   private String id;
@@ -52,7 +52,7 @@ public class FilterExpressionFieldList {
   private String icon;
 
   public static final String FILTERS = "filters";
-  private List<FilterExpressionField> filters = new ArrayList<>();
+  private List<@Valid FilterExpressionField> filters = new ArrayList<>();
 
   public FilterExpressionFieldList() { 
   }
@@ -68,7 +68,7 @@ public class FilterExpressionFieldList {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the field list is included into builder model then this identifier is unique inside the model. ")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -95,7 +95,7 @@ public class FilterExpressionFieldList {
    * @return label
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,7 +122,7 @@ public class FilterExpressionFieldList {
    * @return icon
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -138,7 +138,7 @@ public class FilterExpressionFieldList {
   }
 
 
-  public FilterExpressionFieldList filters(List<FilterExpressionField> filters) {
+  public FilterExpressionFieldList filters(List<@Valid FilterExpressionField> filters) {
     
     this.filters = filters;
     return this;
@@ -156,18 +156,18 @@ public class FilterExpressionFieldList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterExpressionField> getFilters() {
+  public List<@Valid FilterExpressionField> getFilters() {
     return filters;
   }
 
 
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilters(List<FilterExpressionField> filters) {
+  public void setFilters(List<@Valid FilterExpressionField> filters) {
     this.filters = filters;
   }
 

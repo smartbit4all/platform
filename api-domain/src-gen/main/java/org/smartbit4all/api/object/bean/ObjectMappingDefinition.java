@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a mapping definition that describes the mapping between two domain object. 
  */
-@ApiModel(description = "This is a mapping definition that describes the mapping between two domain object. ")
 @JsonPropertyOrder({
   ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,
@@ -42,7 +41,7 @@ import javax.validation.Valid;
   ObjectMappingDefinition.LIST_MAPPINGS
 })
 @JsonTypeName("ObjectMappingDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectMappingDefinition {
   public static final String FROM_TYPE_QUALIFIED_NAME = "fromTypeQualifiedName";
   private String fromTypeQualifiedName;
@@ -51,10 +50,10 @@ public class ObjectMappingDefinition {
   private String toTypeQualifiedName;
 
   public static final String MAPPINGS = "mappings";
-  private List<ObjectPropertyMapping> mappings = new ArrayList<>();
+  private List<@Valid ObjectPropertyMapping> mappings = new ArrayList<>();
 
   public static final String LIST_MAPPINGS = "listMappings";
-  private List<ObjectListMapping> listMappings = new ArrayList<>();
+  private List<@Valid ObjectListMapping> listMappings = new ArrayList<>();
 
   public ObjectMappingDefinition() { 
   }
@@ -70,7 +69,7 @@ public class ObjectMappingDefinition {
    * @return fromTypeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FROM_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class ObjectMappingDefinition {
    * @return toTypeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TO_TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,7 +112,7 @@ public class ObjectMappingDefinition {
   }
 
 
-  public ObjectMappingDefinition mappings(List<ObjectPropertyMapping> mappings) {
+  public ObjectMappingDefinition mappings(List<@Valid ObjectPropertyMapping> mappings) {
     
     this.mappings = mappings;
     return this;
@@ -131,23 +130,23 @@ public class ObjectMappingDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectPropertyMapping> getMappings() {
+  public List<@Valid ObjectPropertyMapping> getMappings() {
     return mappings;
   }
 
 
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMappings(List<ObjectPropertyMapping> mappings) {
+  public void setMappings(List<@Valid ObjectPropertyMapping> mappings) {
     this.mappings = mappings;
   }
 
 
-  public ObjectMappingDefinition listMappings(List<ObjectListMapping> listMappings) {
+  public ObjectMappingDefinition listMappings(List<@Valid ObjectListMapping> listMappings) {
     
     this.listMappings = listMappings;
     return this;
@@ -165,18 +164,18 @@ public class ObjectMappingDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(LIST_MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectListMapping> getListMappings() {
+  public List<@Valid ObjectListMapping> getListMappings() {
     return listMappings;
   }
 
 
   @JsonProperty(LIST_MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setListMappings(List<ObjectListMapping> listMappings) {
+  public void setListMappings(List<@Valid ObjectListMapping> listMappings) {
     this.listMappings = listMappings;
   }
 

@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object contains an atomic sequence that provides globaly unique incrementing value. Can be used as the classic database sequence. 
  */
-@ApiModel(description = "This object contains an atomic sequence that provides globaly unique incrementing value. Can be used as the classic database sequence. ")
 @JsonPropertyOrder({
   StoredSequenceData.URI,
   StoredSequenceData.NAME,
   StoredSequenceData.CURRENT
 })
 @JsonTypeName("StoredSequenceData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredSequenceData {
   public static final String URI = "uri";
   private URI uri;
@@ -65,7 +63,7 @@ public class StoredSequenceData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +91,7 @@ public class StoredSequenceData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -120,7 +118,7 @@ public class StoredSequenceData {
    * @return current
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The current value of the sequence.")
+
   @JsonProperty(CURRENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

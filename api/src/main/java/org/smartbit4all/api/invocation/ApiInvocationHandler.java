@@ -3,7 +3,7 @@ package org.smartbit4all.api.invocation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 

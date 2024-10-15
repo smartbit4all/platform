@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ObjectHistory
@@ -39,10 +39,10 @@ import javax.validation.Valid;
   ObjectHistory.SELECTED_VERSION_URI
 })
 @JsonTypeName("ObjectHistory")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectHistory {
   public static final String OBJECT_HISTORY_ENTRIES = "objectHistoryEntries";
-  private List<ObjectHistoryEntry> objectHistoryEntries = null;
+  private List<@Valid ObjectHistoryEntry> objectHistoryEntries = null;
 
   public static final String SELECTED_VERSION_URI = "selectedVersionUri";
   private URI selectedVersionUri;
@@ -50,7 +50,7 @@ public class ObjectHistory {
   public ObjectHistory() { 
   }
 
-  public ObjectHistory objectHistoryEntries(List<ObjectHistoryEntry> objectHistoryEntries) {
+  public ObjectHistory objectHistoryEntries(List<@Valid ObjectHistoryEntry> objectHistoryEntries) {
     
     this.objectHistoryEntries = objectHistoryEntries;
     return this;
@@ -70,18 +70,18 @@ public class ObjectHistory {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_HISTORY_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ObjectHistoryEntry> getObjectHistoryEntries() {
+  public List<@Valid ObjectHistoryEntry> getObjectHistoryEntries() {
     return objectHistoryEntries;
   }
 
 
   @JsonProperty(OBJECT_HISTORY_ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setObjectHistoryEntries(List<ObjectHistoryEntry> objectHistoryEntries) {
+  public void setObjectHistoryEntries(List<@Valid ObjectHistoryEntry> objectHistoryEntries) {
     this.objectHistoryEntries = objectHistoryEntries;
   }
 
@@ -98,7 +98,7 @@ public class ObjectHistory {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SELECTED_VERSION_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

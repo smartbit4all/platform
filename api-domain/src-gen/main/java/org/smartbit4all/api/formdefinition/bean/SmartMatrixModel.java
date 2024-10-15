@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SmartMatrixModel
@@ -42,7 +42,7 @@ import javax.validation.Valid;
   SmartMatrixModel.MULTI_SELECT
 })
 @JsonTypeName("SmartMatrixModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartMatrixModel {
   public static final String ROWS = "rows";
   private List<Value> rows = null;
@@ -79,7 +79,7 @@ public class SmartMatrixModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The keys")
+
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -115,7 +115,7 @@ public class SmartMatrixModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The possible values")
+
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,7 +150,7 @@ public class SmartMatrixModel {
    * @return data
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "A map for key - values")
+
   @JsonProperty(DATA)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -177,7 +177,7 @@ public class SmartMatrixModel {
    * @return multiSelect
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MULTI_SELECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

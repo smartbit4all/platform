@@ -20,21 +20,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.
  */
-@ApiModel(description = "Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.")
 @JsonPropertyOrder({
   FilterOperation.ID,
   FilterOperation.FILTER_VIEW,
@@ -48,7 +47,7 @@ import javax.validation.Valid;
   FilterOperation.ICON_CODE
 })
 @JsonTypeName("FilterOperation")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterOperation {
   public static final String ID = "id";
   private String id;
@@ -94,7 +93,7 @@ public class FilterOperation {
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Identifier of the filter operation within the possible filter operations list of a filter field.")
+
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +120,7 @@ public class FilterOperation {
    * @return filterView
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Declarative name of a FilterOperationUI, which will handle this operation.")
+
   @JsonProperty(FILTER_VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,7 +148,7 @@ public class FilterOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -177,7 +176,7 @@ public class FilterOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI2)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -205,7 +204,7 @@ public class FilterOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @JsonProperty(PROPERTY_URI3)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -233,7 +232,7 @@ public class FilterOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "Value set identifer for selections. Values can be aquired by ValueAPI.")
+
   @JsonProperty(POSSIBLE_VALUES_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -269,7 +268,7 @@ public class FilterOperation {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The selecteble values.")
+
   @JsonProperty(POSSIBLE_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -296,7 +295,7 @@ public class FilterOperation {
    * @return operationCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Operation code, specifies the operator of the condition.")
+
   @JsonProperty(OPERATION_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -323,7 +322,7 @@ public class FilterOperation {
    * @return labelCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Code of label to display for this operation.")
+
   @JsonProperty(LABEL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -350,7 +349,7 @@ public class FilterOperation {
    * @return iconCode
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Icon")
+
   @JsonProperty(ICON_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

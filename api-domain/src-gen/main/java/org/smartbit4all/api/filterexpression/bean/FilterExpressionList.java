@@ -20,33 +20,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The filter expressions can be gathered into a list. In case of a plain filter expression this is the root object of the expression list. 
  */
-@ApiModel(description = "The filter expressions can be gathered into a list. In case of a plain filter expression this is the root object of the expression list. ")
 @JsonPropertyOrder({
   FilterExpressionList.EXPRESSIONS
 })
 @JsonTypeName("FilterExpressionList")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FilterExpressionList {
   public static final String EXPRESSIONS = "expressions";
-  private List<FilterExpressionData> expressions = new ArrayList<>();
+  private List<@Valid FilterExpressionData> expressions = new ArrayList<>();
 
   public FilterExpressionList() { 
   }
 
-  public FilterExpressionList expressions(List<FilterExpressionData> expressions) {
+  public FilterExpressionList expressions(List<@Valid FilterExpressionData> expressions) {
     
     this.expressions = expressions;
     return this;
@@ -64,18 +63,18 @@ public class FilterExpressionList {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(EXPRESSIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<FilterExpressionData> getExpressions() {
+  public List<@Valid FilterExpressionData> getExpressions() {
     return expressions;
   }
 
 
   @JsonProperty(EXPRESSIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setExpressions(List<FilterExpressionData> expressions) {
+  public void setExpressions(List<@Valid FilterExpressionData> expressions) {
     this.expressions = expressions;
   }
 

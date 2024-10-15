@@ -20,15 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * CommandResult
@@ -39,7 +38,7 @@ import javax.validation.Valid;
   CommandResult.VIEW
 })
 @JsonTypeName("CommandResult")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class CommandResult {
   public static final String UI_TO_OPEN = "uiToOpen";
   private NavigationTarget uiToOpen;
@@ -65,7 +64,7 @@ public class CommandResult {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UI_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -93,7 +92,7 @@ public class CommandResult {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MESSAGE_TO_OPEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +120,7 @@ public class CommandResult {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VIEW)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

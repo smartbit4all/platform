@@ -20,17 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes the look of an upload component that is related to a specific UiAction. 
  */
-@ApiModel(description = "Describes the look of an upload component that is related to a specific UiAction. ")
 @JsonPropertyOrder({
   UiActionUploadDescriptor.TITLE,
   UiActionUploadDescriptor.DESCRIPTION,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   UiActionUploadDescriptor.TEXT_COLOUR
 })
 @JsonTypeName("UiActionUploadDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionUploadDescriptor {
   public static final String TITLE = "title";
   private String title;
@@ -79,7 +77,7 @@ public class UiActionUploadDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -106,7 +104,7 @@ public class UiActionUploadDescriptor {
    * @return description
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +131,7 @@ public class UiActionUploadDescriptor {
    * @return maxSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MAX_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -160,7 +158,7 @@ public class UiActionUploadDescriptor {
    * @return formats
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FORMATS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -187,7 +185,7 @@ public class UiActionUploadDescriptor {
    * @return uploadButtonTitle
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(UPLOAD_BUTTON_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -214,7 +212,7 @@ public class UiActionUploadDescriptor {
    * @return backgroundColour
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(BACKGROUND_COLOUR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -241,7 +239,7 @@ public class UiActionUploadDescriptor {
    * @return textColour
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT_COLOUR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

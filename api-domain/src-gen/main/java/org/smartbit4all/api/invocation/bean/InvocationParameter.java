@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * InvocationParameter
@@ -37,7 +36,7 @@ import javax.validation.Valid;
   InvocationParameter.INNER_TYPE_CLASS
 })
 @JsonTypeName("InvocationParameter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationParameter {
   public static final String NAME = "name";
   private String name;
@@ -66,7 +65,7 @@ public class InvocationParameter {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The symbolic name of the parameter. Must be set and unique inside an invocation request template.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -93,7 +92,7 @@ public class InvocationParameter {
    * @return value
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value of the object.")
+
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -121,7 +120,7 @@ public class InvocationParameter {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The fully qualified type class name of the parameter.")
+
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -148,7 +147,7 @@ public class InvocationParameter {
    * @return innerTypeClass
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
+
   @JsonProperty(INNER_TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

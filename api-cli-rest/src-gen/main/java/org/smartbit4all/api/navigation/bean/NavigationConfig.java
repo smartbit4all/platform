@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
@@ -32,13 +32,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * API: Describes all the entries and associations in the given navigation.
  */
-@ApiModel(description = "API: Describes all the entries and associations in the given navigation.")
 @JsonPropertyOrder({
   NavigationConfig.ENTRIES,
   NavigationConfig.ASSOCIATIONS
 })
 @JsonTypeName("NavigationConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class NavigationConfig {
   public static final String ENTRIES = "entries";
   private List<NavigationEntryMeta> entries = null;
@@ -68,7 +67,7 @@ public class NavigationConfig {
    * @return entries
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The available entries in the given navigation config.")
+
   @JsonProperty(ENTRIES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -103,7 +102,7 @@ public class NavigationConfig {
    * @return associations
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The navigable associations in the given navigation. In case of a navigation tree these are the openable sub trees.")
+
   @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

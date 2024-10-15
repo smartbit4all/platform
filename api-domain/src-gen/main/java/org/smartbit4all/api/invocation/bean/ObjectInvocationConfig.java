@@ -20,26 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * It contains and summarizes the list of objects objects interested in an api call. It can encapsulate the objects and the parameters of the call. This object can be saved into an object or can be initiated globally. This object can be used in many situation to save the objects that are interested in an event or an invocation call. It can be used directly as parameter for the InvocationApi to invoke... functions or event publishing also. 
  */
-@ApiModel(description = "It contains and summarizes the list of objects objects interested in an api call. It can encapsulate the objects and the parameters of the call. This object can be saved into an object or can be initiated globally. This object can be used in many situation to save the objects that are interested in an event or an invocation call. It can be used directly as parameter for the InvocationApi to invoke... functions or event publishing also. ")
 @JsonPropertyOrder({
   ObjectInvocationConfig.URI,
   ObjectInvocationConfig.OBJECT_URIS
 })
 @JsonTypeName("ObjectInvocationConfig")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectInvocationConfig {
   public static final String URI = "uri";
   private URI uri;
@@ -63,7 +62,7 @@ public class ObjectInvocationConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -97,7 +96,7 @@ public class ObjectInvocationConfig {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The event codes the subscription is looking for. All these event are going to evaluated by this subsription object. ")
+
   @JsonProperty(OBJECT_URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

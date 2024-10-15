@@ -24,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {ApplyChangeTestConfig.class})
+@SpringBootTest(classes = {ApplyChangeTestConfig.class},
+                properties = "spring.main.allow-circular-references=true")
 public class SnapshotTest {
 
   private static final String MY_SCHEME = "myScheme";

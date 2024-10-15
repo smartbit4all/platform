@@ -20,22 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.value.bean.ValueTransformationKind;
 import org.smartbit4all.api.value.bean.ValueTransformationMappingItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. If manage it by MDM then we enapsulate this object into a ValueTransformationConfig. 
  */
-@ApiModel(description = "This object is a configuration to define the transformation from an input value set to an output value set. The transformation could be value mapping when the list of the values from the input are mapped one by one to the output values. This object is managed as a MDM entry in the platform. The ValueTransformationApi is using this MDM entry by default. If manage it by MDM then we enapsulate this object into a ValueTransformationConfig. ")
 @JsonPropertyOrder({
   ValueTransformationConfigData.NAME,
   ValueTransformationConfigData.KIND,
@@ -46,7 +45,7 @@ import javax.validation.Valid;
   ValueTransformationConfigData.TRANSFORMATION
 })
 @JsonTypeName("ValueTransformationConfigData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValueTransformationConfigData {
   public static final String NAME = "name";
   private String name;
@@ -55,7 +54,7 @@ public class ValueTransformationConfigData {
   private ValueTransformationKind kind;
 
   public static final String MAPPINGS = "mappings";
-  private List<ValueTransformationMappingItem> mappings = new ArrayList<>();
+  private List<@Valid ValueTransformationMappingItem> mappings = new ArrayList<>();
 
   public static final String MDM_DEFINITION = "mdmDefinition";
   private String mdmDefinition;
@@ -84,7 +83,7 @@ public class ValueTransformationConfigData {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The unique name of the transformation configuration. It matters only if it is managed by MDM.")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,7 +111,7 @@ public class ValueTransformationConfigData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -128,7 +127,7 @@ public class ValueTransformationConfigData {
   }
 
 
-  public ValueTransformationConfigData mappings(List<ValueTransformationMappingItem> mappings) {
+  public ValueTransformationConfigData mappings(List<@Valid ValueTransformationMappingItem> mappings) {
     
     this.mappings = mappings;
     return this;
@@ -146,18 +145,18 @@ public class ValueTransformationConfigData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ValueTransformationMappingItem> getMappings() {
+  public List<@Valid ValueTransformationMappingItem> getMappings() {
     return mappings;
   }
 
 
   @JsonProperty(MAPPINGS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMappings(List<ValueTransformationMappingItem> mappings) {
+  public void setMappings(List<@Valid ValueTransformationMappingItem> mappings) {
     this.mappings = mappings;
   }
 
@@ -173,7 +172,7 @@ public class ValueTransformationConfigData {
    * @return mdmDefinition
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the kind is a resolution by MDM entry then this is the name of MDM definition.")
+
   @JsonProperty(MDM_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -200,7 +199,7 @@ public class ValueTransformationConfigData {
    * @return mdmEntry
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.")
+
   @JsonProperty(MDM_ENTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -227,7 +226,7 @@ public class ValueTransformationConfigData {
    * @return mdmPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the kind is a resolution by MDM entry then this is the name of MDM entry inside the definition.")
+
   @JsonProperty(MDM_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -255,7 +254,7 @@ public class ValueTransformationConfigData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If the transformation is too complex then a transformation InvocationRequest can be defined let it be script or api call. ")
+
   @JsonProperty(TRANSFORMATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

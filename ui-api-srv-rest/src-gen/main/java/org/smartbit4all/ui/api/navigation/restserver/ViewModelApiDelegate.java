@@ -12,16 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link ViewModelApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.8.0")
 public interface ViewModelApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
@@ -29,7 +31,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * POST /close/{uuid}
+     * POST /close/{uuid} : 
      *
      * @param uuid ViewModel UUID which has closed. (required)
      * @return OK (status code 200)
@@ -41,7 +43,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * POST /createViewModel
+     * POST /createViewModel : 
      *
      * @param navigationTarget  (required)
      * @return  (status code 201)
@@ -51,7 +53,7 @@ public interface ViewModelApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
+                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"model\" : \"{}\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -62,7 +64,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * GET /download/{vmUuid}/{dataIdentifier}
+     * GET /download/{vmUuid}/{dataIdentifier} : 
      *
      * @param vmUuid  (required)
      * @param dataIdentifier  (required)
@@ -76,7 +78,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * POST /executeCommand/{uuid}
+     * POST /executeCommand/{uuid} : 
      *
      * @param uuid  (required)
      * @param commandData  (required)
@@ -88,7 +90,7 @@ public interface ViewModelApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"model\" : \"{}\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"type\" : \"info\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -99,7 +101,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * GET /getModel/{uuid}
+     * GET /getModel/{uuid} : 
      *
      * @param uuid  (required)
      * @return  (status code 200)
@@ -109,7 +111,7 @@ public interface ViewModelApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
+                    String exampleString = "{ \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"model\" : \"{}\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -120,7 +122,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * POST /message/{uuid}
+     * POST /message/{uuid} : 
      *
      * @param uuid Message UUID. (required)
      * @param messageResult  (required)
@@ -132,7 +134,7 @@ public interface ViewModelApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"model\" : \"{}\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"type\" : \"info\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -143,7 +145,7 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * POST /setModel/{uuid}
+     * POST /setModel/{uuid} : 
      *
      * @param uuid  (required)
      * @param body  (required)
@@ -171,7 +173,7 @@ public interface ViewModelApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" }, \"hideCloseButton\" : false } }";
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"model\" : \"{}\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\", \"type\" : \"confirm\" }, \"viewModelUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"header\" : \"header\", \"text\" : \"text\", \"type\" : \"info\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uiToOpen\" : { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"state\" : \"to_open\", \"type\" : \"normal\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"\" }, \"hideCloseButton\" : false } }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

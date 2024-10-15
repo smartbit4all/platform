@@ -20,17 +20,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. 
  */
-@ApiModel(description = "The generic execution statistic is an object for the actuator infrastructure. It could be initiated for many purposes and contains the count, the minimum, average and maximum execution times. ")
 @JsonPropertyOrder({
   StatisticRecord.MIN,
   StatisticRecord.AVG,
@@ -39,7 +37,7 @@ import javax.validation.Valid;
   StatisticRecord.SUM
 })
 @JsonTypeName("StatisticRecord")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StatisticRecord {
   public static final String MIN = "min";
   private Long min;
@@ -70,7 +68,7 @@ public class StatisticRecord {
    * @return min
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The minimum execution time of the given action in millisec.")
+
   @JsonProperty(MIN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +95,7 @@ public class StatisticRecord {
    * @return avg
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The average execution time of the given action in millisec.")
+
   @JsonProperty(AVG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,7 +122,7 @@ public class StatisticRecord {
    * @return max
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The average execution time of the given action in millisec.")
+
   @JsonProperty(MAX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -151,7 +149,7 @@ public class StatisticRecord {
    * @return counter
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The number of executed requests.")
+
   @JsonProperty(COUNTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,7 +176,7 @@ public class StatisticRecord {
    * @return sum
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The summarized execution time of the request.")
+
   @JsonProperty(SUM)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

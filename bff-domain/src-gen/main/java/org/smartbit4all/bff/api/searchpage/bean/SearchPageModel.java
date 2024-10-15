@@ -20,14 +20,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.object.bean.ObjectHistoryRangeData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SearchPageModel
@@ -40,7 +39,7 @@ import javax.validation.Valid;
   SearchPageModel.NO_RESULT_TEXT
 })
 @JsonTypeName("SearchPageModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchPageModel {
   public static final String PAGE_TITLE = "pageTitle";
   private String pageTitle;
@@ -71,7 +70,7 @@ public class SearchPageModel {
    * @return pageTitle
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Title of this page.")
+
   @JsonProperty(PAGE_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -99,7 +98,7 @@ public class SearchPageModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -127,7 +126,7 @@ public class SearchPageModel {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HISTORY_RANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -154,7 +153,7 @@ public class SearchPageModel {
    * @return historyPageSize
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(HISTORY_PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -181,7 +180,7 @@ public class SearchPageModel {
    * @return noResultText
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If there is no result for the search, then show this text instead of the empty table.")
+
   @JsonProperty(NO_RESULT_TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

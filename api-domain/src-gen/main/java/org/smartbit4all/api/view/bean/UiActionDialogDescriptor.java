@@ -20,18 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.UiActionButtonDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes the look of a dialog that is related to a specific UiAction. 
  */
-@ApiModel(description = "Describes the look of a dialog that is related to a specific UiAction. ")
 @JsonPropertyOrder({
   UiActionDialogDescriptor.TITLE,
   UiActionDialogDescriptor.PLACEHOLDER,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   UiActionDialogDescriptor.CANCEL_BUTTON
 })
 @JsonTypeName("UiActionDialogDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionDialogDescriptor {
   public static final String TITLE = "title";
   private String title;
@@ -76,7 +74,7 @@ public class UiActionDialogDescriptor {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(TITLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,7 +101,7 @@ public class UiActionDialogDescriptor {
    * @return placeholder
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PLACEHOLDER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -130,7 +128,7 @@ public class UiActionDialogDescriptor {
    * @return text
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(TEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -157,7 +155,7 @@ public class UiActionDialogDescriptor {
    * @return mask
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(MASK)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -186,7 +184,7 @@ public class UiActionDialogDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(ACTION_BUTTON)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -215,7 +213,7 @@ public class UiActionDialogDescriptor {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CANCEL_BUTTON)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

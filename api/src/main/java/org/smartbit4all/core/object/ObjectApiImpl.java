@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
+
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
@@ -42,6 +44,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.context.annotation.Lazy;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -53,7 +56,6 @@ public class ObjectApiImpl implements ObjectApi {
   @Autowired
   private RetrievalApi retrievalApi;
 
-  @Autowired
   private ObjectApi self;
 
   @Autowired
@@ -61,6 +63,11 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Autowired
   private StorageApi storageApi;
+
+  @PostConstruct
+  void postConstruct() {
+    self = this;
+  }
 
   /**
    * The already initialized {@link ObjectCacheEntry}s in the application.

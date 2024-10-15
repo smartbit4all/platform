@@ -35,7 +35,7 @@ components:
           type: string
         action:
           description: The action itself with the well know parameters.
-          $ref: '#/components/schemas/UiAction'
+          type: UiAction
         invocations:
           description: |
             Invocations of the invocation chain behind the action. This invocations are executed when the given
@@ -46,7 +46,7 @@ components:
         descriptor:
           description: |
             The UiAction descriptor for the action. If it is set then the it overrides the action.descriptor.
-          $ref: '#/components/schemas/UiActionDescriptor'
+          type: UiActionDescriptor
         contextChecks:
           description: |
             Invocation requests that check the context objects of the action and produce constraints for them if necessary.
@@ -133,7 +133,7 @@ components:
         descriptor:
           description: |
             The UiAction descriptor for the action if we would like to override it in the give toolbar.
-          $ref: '#/components/schemas/UiActionDescriptor'
+          type: UiActionDescriptor
     ToolbarItemKind:
       enum: [action, inline, submenu]
     ToolbarItemOperation:
@@ -143,7 +143,7 @@ components:
       type: object
       properties:
         view:
-          $ref: '#/components/schemas/View'
+          type: View
         user: # not needed if clients run in the same security context as the related request
           type: string
           format: uri

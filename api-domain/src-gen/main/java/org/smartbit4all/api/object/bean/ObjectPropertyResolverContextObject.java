@@ -20,28 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The context object of a property value resolution with the name of the object in the given context and the uri of this. 
  */
-@ApiModel(description = "The context object of a property value resolution with the name of the object in the given context and the uri of this. ")
 @JsonPropertyOrder({
   ObjectPropertyResolverContextObject.NAME,
   ObjectPropertyResolverContextObject.URI,
   ObjectPropertyResolverContextObject.OBJECT_AS_MAP
 })
 @JsonTypeName("ObjectPropertyResolverContextObject")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyResolverContextObject {
   public static final String NAME = "name";
   private String name;
@@ -66,7 +63,7 @@ public class ObjectPropertyResolverContextObject {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -94,7 +91,7 @@ public class ObjectPropertyResolverContextObject {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the storage object to use for resolve.")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,7 +126,7 @@ public class ObjectPropertyResolverContextObject {
    * @return objectAsMap
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The inline object as value to use for resolve.")
+
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -20,26 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The instance of an aspect with the fully qualified name of the type. It can help to read the object of the aspect with type information.  
  */
-@ApiModel(description = "The instance of an aspect with the fully qualified name of the type. It can help to read the object of the aspect with type information.  ")
 @JsonPropertyOrder({
   ObjectAspect.TYPE_QUALIFIED_NAME,
   ObjectAspect.OBJECT_AS_MAP
 })
 @JsonTypeName("ObjectAspect")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectAspect {
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
   private String typeQualifiedName;
@@ -61,7 +58,7 @@ public class ObjectAspect {
    * @return typeQualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the given object saved into this aspect.")
+
   @JsonProperty(TYPE_QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -96,7 +93,7 @@ public class ObjectAspect {
    * @return objectAsMap
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(OBJECT_AS_MAP)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 

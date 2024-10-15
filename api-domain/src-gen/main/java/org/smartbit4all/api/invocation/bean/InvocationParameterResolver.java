@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The resolver is responsibe for defining the data uri for a given invocation parameter.
  */
-@ApiModel(description = "The resolver is responsibe for defining the data uri for a given invocation parameter.")
 @JsonPropertyOrder({
   InvocationParameterResolver.NAME,
   InvocationParameterResolver.POSITION,
   InvocationParameterResolver.PROPERTY_URI
 })
 @JsonTypeName("InvocationParameterResolver")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationParameterResolver {
   public static final String NAME = "name";
   private String name;
@@ -63,7 +61,7 @@ public class InvocationParameterResolver {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -90,7 +88,7 @@ public class InvocationParameterResolver {
    * @return position
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,7 +116,7 @@ public class InvocationParameterResolver {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(example = "state:/object/otherobject#property", value = "The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. ")
+
   @JsonProperty(PROPERTY_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

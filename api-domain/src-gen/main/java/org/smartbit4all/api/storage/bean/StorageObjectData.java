@@ -20,19 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The basic data object of the storages. This holds the version history and refers the current version. Also has named references  and collections. 
  */
-@ApiModel(description = "The basic data object of the storages. This holds the version history and refers the current version. Also has named references  and collections. ")
 @JsonPropertyOrder({
   StorageObjectData.URI,
   StorageObjectData.CURRENT_VERSION,
@@ -41,7 +39,7 @@ import javax.validation.Valid;
   StorageObjectData.DELETED
 })
 @JsonTypeName("StorageObjectData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectData {
   public static final String URI = "uri";
   private URI uri;
@@ -74,7 +72,7 @@ public class StorageObjectData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the object represented by the storage object. ")
+
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -103,7 +101,7 @@ public class StorageObjectData {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(CURRENT_VERSION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -130,7 +128,7 @@ public class StorageObjectData {
    * @return className
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI. ")
+
   @JsonProperty(CLASS_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,7 +156,7 @@ public class StorageObjectData {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(PENDING_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -185,7 +183,7 @@ public class StorageObjectData {
    * @return deleted
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object exists but we also know that it is already inactivated. ")
+
   @JsonProperty(DELETED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

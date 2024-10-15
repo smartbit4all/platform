@@ -20,26 +20,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a key - value pair where the key is a property path. 
  */
-@ApiModel(description = "This is a key - value pair where the key is a property path. ")
 @JsonPropertyOrder({
   ObjectPropertyValue.CONTEXT_OBJECT,
   ObjectPropertyValue.PATH,
   ObjectPropertyValue.VALUE
 })
 @JsonTypeName("ObjectPropertyValue")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyValue {
   public static final String CONTEXT_OBJECT = "contextObject";
   private String contextObject;
@@ -64,7 +63,7 @@ public class ObjectPropertyValue {
    * @return contextObject
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the object in the context. The context is typically a map of string and object. If we denote  an object and it is not an object but an URI then we load the given object automatically and resolve the value. ")
+
   @JsonProperty(CONTEXT_OBJECT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,7 +96,7 @@ public class ObjectPropertyValue {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -124,7 +123,7 @@ public class ObjectPropertyValue {
    * @return value
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

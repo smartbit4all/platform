@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.view.bean.DataChangeKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
- * null
+ * DataChangeEvent
  */
-@ApiModel(description = "null")
 @JsonPropertyOrder({
   DataChangeEvent.KIND,
   DataChangeEvent.SOURCE,
@@ -42,7 +39,7 @@ import javax.validation.Valid;
   DataChangeEvent.NEW_VALUES
 })
 @JsonTypeName("DataChangeEvent")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DataChangeEvent {
   public static final String KIND = "kind";
   private DataChangeKind kind;
@@ -71,7 +68,7 @@ public class DataChangeEvent {
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +95,7 @@ public class DataChangeEvent {
    * @return source
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Source of the event, typically the key of the widget.")
+
   @JsonProperty(SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +130,7 @@ public class DataChangeEvent {
    * @return oldValues
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Values before changed, in a key-value map.")
+
   @JsonProperty(OLD_VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -168,7 +165,7 @@ public class DataChangeEvent {
    * @return newValues
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Values before changed, in a key-value map.")
+
   @JsonProperty(NEW_VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 

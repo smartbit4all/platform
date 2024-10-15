@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.databasedefinition.bean.AlterOperation;
 import org.smartbit4all.api.databasedefinition.bean.ColumnDefinition;
@@ -31,13 +31,12 @@ import org.smartbit4all.api.databasedefinition.bean.IndexDefinition;
 import org.smartbit4all.api.databasedefinition.bean.PrimaryKeyDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The meta of a database table. As a result of the comparision it can have operationCode that defines if it is a tabel to  create, alter or delete. 
  */
-@ApiModel(description = "The meta of a database table. As a result of the comparision it can have operationCode that defines if it is a tabel to  create, alter or delete. ")
 @JsonPropertyOrder({
   TableDefinition.SCHEMA,
   TableDefinition.NAME,
@@ -50,7 +49,7 @@ import javax.validation.Valid;
   TableDefinition.OPERATION
 })
 @JsonTypeName("TableDefinition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class TableDefinition {
   public static final String SCHEMA = "schema";
   private String schema;
@@ -65,13 +64,13 @@ public class TableDefinition {
   private String comment;
 
   public static final String COLUMNS = "columns";
-  private List<ColumnDefinition> columns = new ArrayList<>();
+  private List<@Valid ColumnDefinition> columns = new ArrayList<>();
 
   public static final String INDEXES = "indexes";
-  private List<IndexDefinition> indexes = new ArrayList<>();
+  private List<@Valid IndexDefinition> indexes = new ArrayList<>();
 
   public static final String FOREIGN_KEYS = "foreignKeys";
-  private List<ForeignKeyDefinition> foreignKeys = new ArrayList<>();
+  private List<@Valid ForeignKeyDefinition> foreignKeys = new ArrayList<>();
 
   public static final String PRIMARY_KEY = "primaryKey";
   private PrimaryKeyDefinition primaryKey;
@@ -93,7 +92,7 @@ public class TableDefinition {
    * @return schema
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -120,7 +119,7 @@ public class TableDefinition {
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -147,7 +146,7 @@ public class TableDefinition {
    * @return shortName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(SHORT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -174,7 +173,7 @@ public class TableDefinition {
    * @return comment
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+
   @JsonProperty(COMMENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -190,7 +189,7 @@ public class TableDefinition {
   }
 
 
-  public TableDefinition columns(List<ColumnDefinition> columns) {
+  public TableDefinition columns(List<@Valid ColumnDefinition> columns) {
     
     this.columns = columns;
     return this;
@@ -208,23 +207,23 @@ public class TableDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ColumnDefinition> getColumns() {
+  public List<@Valid ColumnDefinition> getColumns() {
     return columns;
   }
 
 
   @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setColumns(List<ColumnDefinition> columns) {
+  public void setColumns(List<@Valid ColumnDefinition> columns) {
     this.columns = columns;
   }
 
 
-  public TableDefinition indexes(List<IndexDefinition> indexes) {
+  public TableDefinition indexes(List<@Valid IndexDefinition> indexes) {
     
     this.indexes = indexes;
     return this;
@@ -242,23 +241,23 @@ public class TableDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(INDEXES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<IndexDefinition> getIndexes() {
+  public List<@Valid IndexDefinition> getIndexes() {
     return indexes;
   }
 
 
   @JsonProperty(INDEXES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIndexes(List<IndexDefinition> indexes) {
+  public void setIndexes(List<@Valid IndexDefinition> indexes) {
     this.indexes = indexes;
   }
 
 
-  public TableDefinition foreignKeys(List<ForeignKeyDefinition> foreignKeys) {
+  public TableDefinition foreignKeys(List<@Valid ForeignKeyDefinition> foreignKeys) {
     
     this.foreignKeys = foreignKeys;
     return this;
@@ -276,18 +275,18 @@ public class TableDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(FOREIGN_KEYS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ForeignKeyDefinition> getForeignKeys() {
+  public List<@Valid ForeignKeyDefinition> getForeignKeys() {
     return foreignKeys;
   }
 
 
   @JsonProperty(FOREIGN_KEYS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setForeignKeys(List<ForeignKeyDefinition> foreignKeys) {
+  public void setForeignKeys(List<@Valid ForeignKeyDefinition> foreignKeys) {
     this.foreignKeys = foreignKeys;
   }
 
@@ -305,7 +304,7 @@ public class TableDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(PRIMARY_KEY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -334,7 +333,7 @@ public class TableDefinition {
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
   @JsonProperty(OPERATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
