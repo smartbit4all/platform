@@ -6,7 +6,7 @@ dependencies {
 	api project(':api-domain')
 	api project(':api')
 
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
 	api 'org.springframework.security:spring-security-oauth2-jose'
 	api 'org.springframework.security:spring-security-oauth2-client'

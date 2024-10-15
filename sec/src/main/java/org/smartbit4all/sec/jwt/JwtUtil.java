@@ -1,10 +1,13 @@
 package org.smartbit4all.sec.jwt;
 
+import java.security.Key;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
+
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -15,6 +18,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import javax.crypto.SecretKey;
 
 /**
  * This class is responsible for handling the JwtToken.
@@ -45,9 +50,16 @@ public class JwtUtil {
     return claims != null ? claimsResolver.apply(claims) : null;
   }
 
+  private SecretKey key;
+  private SecretKey getSecretKey() {
+    if (key == null) {
+      key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+    return key;
+  }
   private Claims extractAllClaims(String token) {
     try {
-      return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+      return Jwts.parser().verifyWith(getSecretKey()).build().parseClaimsJws(token).getBody();
     } catch (ExpiredJwtException e) {
       log.debug("The JWT token has expired!", e);
     } catch (Exception e) {
@@ -91,7 +103,7 @@ public class JwtUtil {
         .setExpiration(OffsetDateTime.MAX.equals(expiration) ? new Date(Long.MAX_VALUE)
             : new Date(expiration.toInstant().toEpochMilli()))
         .setHeaderParam("uuid", UUID.randomUUID()) // make every created token identical
-        .signWith(SignatureAlgorithm.HS256, secretKey)
+        .signWith(getSecretKey())
         .compact();
   }
 
