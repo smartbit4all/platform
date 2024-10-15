@@ -17,6 +17,8 @@ class SearchIndexMappingProperty extends SearchIndexMapping {
 
   Function<ObjectNode, Object> complexProcessor;
 
+  Function<SearchIndexContext, Object> contextProcessor;
+
   Comparator<Object> comparator;
 
   Class<?> type;
@@ -29,7 +31,8 @@ class SearchIndexMappingProperty extends SearchIndexMapping {
   SearchIndexMappingProperty(String name, String[] path, Class<?> type, int length,
       Comparator<Object> comparator,
       UnaryOperator<Object> processor,
-      Function<ObjectNode, Object> complexProcessor) {
+      Function<ObjectNode, Object> complexProcessor,
+      Function<SearchIndexContext, Object> contextProcessor) {
     super();
     this.name = name;
     this.path = path;
@@ -38,6 +41,7 @@ class SearchIndexMappingProperty extends SearchIndexMapping {
     this.comparator = comparator;
     this.processor = processor;
     this.complexProcessor = complexProcessor;
+    this.contextProcessor = contextProcessor;
   }
 
 }

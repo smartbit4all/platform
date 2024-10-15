@@ -16,6 +16,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -79,6 +80,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    */
   private Storage storageCluster;
 
+  @Autowired
+  private MasterDataManagementApi masterDataManagementApi;
+
   /**
    * Auto wires the port number that we are serving currently. Need to have alternatives if it's not
    * available.
@@ -127,6 +131,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRuntime() {
+    long startTime = System.currentTimeMillis();
     if (storageCluster == null) {
       return;
     }
@@ -144,6 +149,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
     }
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
+    log.info("initRuntime execution time: {} ms", duration);
   }
 
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
@@ -167,6 +177,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
         });
       }
       self.get().getData().setLastTouchTime(currentTimeMillis);
+    } else {
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
@@ -201,6 +212,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       storageCluster = storageApi.get(CLUSTER);
       storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     } catch (Exception e) {
+      log.error("Couldn't create Storage", e);
       return;
     }
   }

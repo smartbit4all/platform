@@ -25,7 +25,7 @@ public class TimedOutParallelExecutor {
   private TimedOutParallelExecutor() {}
 
   public static <T> void doTaskParallel(Collection<T> input, Consumer<T> task, int threadCount,
-      long timeoutInMillis, String threadName) {
+      long timeoutInMillis, String threadName, boolean abortOnTaskError) {
 
     ExecutorService executor =
         Executors.newFixedThreadPool(threadCount, new CustomThreadFactory(threadName));
@@ -44,8 +44,13 @@ public class TimedOutParallelExecutor {
           future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
           future.cancel(true);
+          log.error("Prallel task execution has timed out. Timeout millis: [{}]", timeoutInMillis,
+              e);
         } catch (InterruptedException | ExecutionException e) {
-          throw new RuntimeException("Task execution failed", e);
+          log.error("Error occured during parallel task execution.", e);
+          if (abortOnTaskError) {
+            throw new RuntimeException("Task execution failed", e);
+          }
         }
       }
 

@@ -148,7 +148,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
       return result;
     }
 
-    protected AclGridConfig findGridConfig(String name) {
+    public AclGridConfig findGridConfig(String name) {
       Objects.requireNonNull(name, "GridConfig name cannot be null");
       return getConfig().getGridConfigs().stream()
           .filter(c -> name.equals(getGridId(c)))
@@ -404,10 +404,14 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
               .descriptor(new UiActionDescriptor()
                   .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
         }
+
+        addRowAction(ctx, row, viewUuid, gridId);
       }
     });
     return page;
   }
+
+  protected void addRowAction(PageContext ctx, GridRow row, UUID viewUuid, String gridId) {}
 
   protected boolean isEnableAdd(PageContext ctx, String gridId) {
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);

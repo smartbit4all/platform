@@ -1,8 +1,12 @@
 package org.smartbit4all.domain.data.storage;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 
@@ -93,6 +97,25 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   @Override
   public boolean exists(URI uri) {
     return objectsByURI.containsKey(uri);
+  }
+
+  @Override
+  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+      Function<URI, O> reader) {
+    // TODO Auto-generated method stub
+    return Collections.emptyList();
+  }
+
+  @Override
+  protected void saveSingleVersionObject(StorageObject<?> object) throws IOException {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  protected URI saveVersionedObject(StorageObject<?> object) throws IOException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

@@ -25,6 +25,7 @@ import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -35,6 +36,7 @@ import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -237,12 +239,19 @@ public class BranchApiImpl implements BranchApi {
     // referrer and the key inside the map is the referred uri. Both of them are branched. And the
     // values at the end is a list of relevant ObjectNodeReference. All of them must be set with the
     // uri of the newly saved version uri from the source.
-    for (BranchedObject branchedObject : branchEntry.getBranchedObjects().values()) {
+    for (BranchedObject branchedObject : Stream
+        .concat(branchEntry.getBranchedObjects().values().stream(),
+            branchEntry.getNewObjects().values().stream())
+        .collect(toList())) {
       if (branchedObject.getCollectionDescriptor() == null) {
         ObjectNode objectNode = objectApi.load(branchedObject.getBranchedObjectLatestUri());
-        objectNode.overwriteObject(branchedObject.getSourceObjectLatestUri());
         BranchedObjectProcessingEntry processingEntry =
             new BranchedObjectProcessingEntry(branchedObject, objectNode);
+        if (branchedObject.getSourceObjectLatestUri() != null) {
+          objectNode.overwriteObject(branchedObject.getSourceObjectLatestUri());
+        } else {
+          processingEntry.newUri = objectNode.getObjectUri();
+        }
         orderedList.add(processingEntry);
         processingEntry.references =
             discoverAllInlineReference(objectNode)
@@ -258,8 +267,14 @@ public class BranchApiImpl implements BranchApi {
 
     for (int i = 0; i < orderedList.size(); i++) {
       BranchedObjectProcessingEntry currentEntry = orderedList.get(i);
-      currentEntry.newUri = objectApi.save(currentEntry.objectNode);
-      // We examine the rest of the entries if they have reference to the newly saved uri the we set
+      if (currentEntry.newUri == null
+          || currentEntry.objectNode.getReferences().values().stream()
+              .filter(refNode -> !ObjectUtils.isEmpty(refNode.get()))
+              .anyMatch(refNode -> refNode.getState() == ObjectNodeState.MODIFIED)) {
+        currentEntry.newUri = objectApi.save(currentEntry.objectNode);
+      }
+      // We examine the rest of the entries if they have reference to the newly saved uri then we
+      // set
       // the new uri instead of the branched one.
       for (int j = i + 1; j < orderedList.size(); j++) {
         BranchedObjectProcessingEntry examinedEntry = orderedList.get(j);
@@ -350,7 +365,9 @@ public class BranchApiImpl implements BranchApi {
     return on.getDefinition().getOutgoingReferences().values().stream().flatMap(rd -> {
       if (rd.getSourceKind() == ReferencePropertyKind.REFERENCE) {
         if (rd.getAggregation() == AggregationKind.INLINE) {
-          return discoverAllInlineReference(on.ref(rd.getSourcePropertyPath()).get());
+          if (on.ref(rd.getSourcePropertyPath()).isPresent()) {
+            return discoverAllInlineReference(on.ref(rd.getSourcePropertyPath()).get());
+          }
         }
         return Stream.of(on.ref(rd.getSourcePropertyPath()));
       } else if (rd.getSourceKind() == ReferencePropertyKind.LIST) {

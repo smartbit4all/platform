@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -766,7 +765,6 @@ class ObjectApiTest {
 
   @Test
   @DisplayName("Updating nested value on a path already carrying a typesafe modification succeeds.")
-  @Disabled
   void updatingNodeOnPathWithTypeSafeObject_thenSettingValueOnFurtherNestedPath_succeeds() {
     final ObjectNode node = objectApi.create("foo", new SampleStandaloneObject());
     node.setValue(new SamplePropertyContainer().name("Incorrect Name"),

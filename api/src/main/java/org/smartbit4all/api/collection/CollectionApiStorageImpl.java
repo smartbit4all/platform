@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -111,6 +114,31 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public StoredList list(StoredCollectionDescriptor descriptor) {
     return descriptor.getScopeUri() == null ? list(descriptor.getSchema(), descriptor.getName())
         : list(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
+  }
+
+  @Override
+  public List<Lock> lockAll(List<StoredCollectionDescriptor> collections) {
+    Objects.requireNonNull(collections);
+    List<URI> uris = collections.stream()
+        .map(c -> {
+          return c.getScopeUri() == null
+              ? constructGlobalUri(c.getSchema(), c.getName(), kindOf(c), c.getSingleVersion())
+              : constructScopedUri(c.getSchema(), c.getName(), c.getScopeUri(),
+                  kindOf(c), c.getSingleVersion());
+        }).collect(toList());
+    return objectApi.lockAll(uris);
+  }
+
+  private final String kindOf(StoredCollectionDescriptor c) {
+    if (c.getCollectionType() == CollectionTypeEnum.LIST) {
+      return STOREDLIST;
+    } else if (c.getCollectionType() == CollectionTypeEnum.MAP) {
+      return STOREDMAP;
+    } else if (c.getCollectionType() == CollectionTypeEnum.REFERENCE) {
+      return STOREDREF;
+    } else {
+      return null;
+    }
   }
 
   @Override

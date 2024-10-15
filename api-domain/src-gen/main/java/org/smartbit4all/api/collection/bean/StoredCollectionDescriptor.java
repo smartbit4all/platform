@@ -35,7 +35,8 @@ import jakarta.validation.Valid;
   StoredCollectionDescriptor.NAME,
   StoredCollectionDescriptor.SCHEMA,
   StoredCollectionDescriptor.SCOPE_URI,
-  StoredCollectionDescriptor.COLLECTION_TYPE
+  StoredCollectionDescriptor.COLLECTION_TYPE,
+  StoredCollectionDescriptor.SINGLE_VERSION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StoredCollectionDescriptor {
@@ -87,6 +88,9 @@ public class StoredCollectionDescriptor {
 
   public static final String COLLECTION_TYPE = "collectionType";
   private CollectionTypeEnum collectionType;
+
+  public static final String SINGLE_VERSION = "singleVersion";
+  private Boolean singleVersion = true;
 
   public StoredCollectionDescriptor() {
   }
@@ -201,6 +205,33 @@ public class StoredCollectionDescriptor {
     this.collectionType = collectionType;
   }
 
+  public StoredCollectionDescriptor singleVersion(Boolean singleVersion) {
+    
+    this.singleVersion = singleVersion;
+    return this;
+  }
+
+   /**
+   * Get singleVersion
+   * @return singleVersion
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SINGLE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSingleVersion() {
+    return singleVersion;
+  }
+
+
+  @JsonProperty(SINGLE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSingleVersion(Boolean singleVersion) {
+    this.singleVersion = singleVersion;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -213,12 +244,13 @@ public class StoredCollectionDescriptor {
     return Objects.equals(this.name, storedCollectionDescriptor.name) &&
         Objects.equals(this.schema, storedCollectionDescriptor.schema) &&
         Objects.equals(this.scopeUri, storedCollectionDescriptor.scopeUri) &&
-        Objects.equals(this.collectionType, storedCollectionDescriptor.collectionType);
+        Objects.equals(this.collectionType, storedCollectionDescriptor.collectionType) &&
+        Objects.equals(this.singleVersion, storedCollectionDescriptor.singleVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, schema, scopeUri, collectionType);
+    return Objects.hash(name, schema, scopeUri, collectionType, singleVersion);
   }
 
   @Override
@@ -229,6 +261,7 @@ public class StoredCollectionDescriptor {
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
     sb.append("    scopeUri: ").append(toIndentedString(scopeUri)).append("\n");
     sb.append("    collectionType: ").append(toIndentedString(collectionType)).append("\n");
+    sb.append("    singleVersion: ").append(toIndentedString(singleVersion)).append("\n");
     sb.append("}");
     return sb.toString();
   }

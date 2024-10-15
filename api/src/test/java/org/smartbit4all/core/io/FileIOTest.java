@@ -1,25 +1,28 @@
 package org.smartbit4all.core.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FileIOTest {
 
@@ -191,6 +194,70 @@ public class FileIOTest {
     assertEquals(false, FileIO.checkfileName(invalidFilename1));
     assertEquals(false, FileIO.checkfileName(invalidFilename2));
 
+
+  }
+
+  private Random rnd = new Random();
+
+  @Test
+  @Disabled
+  void randomAcccessTest() throws IOException {
+    String versionFileName = "testio/version00";
+    File versionFile = new File(versionFileName);
+    int indexSize = 12;
+    {
+      versionFile.createNewFile();
+      RandomAccessFile raf = new RandomAccessFile(versionFile, "rws");
+      for (long i = 0; i < 1024; i++) {
+        org.assertj.core.api.Assertions.assertThat(raf.getFilePointer()).isEqualTo(i * indexSize);
+        raf.writeLong(-1);
+        raf.writeInt(-1);
+      }
+      raf.getFD().sync();
+      raf.close();
+
+    }
+    List<byte[]> contents = new ArrayList<>();
+    for (int i = 0; i < 6; i++) {
+      byte[] b = new byte[rnd.nextInt(100)];
+      rnd.nextBytes(b);
+      contents.add(b);
+    }
+
+    int i = 0;
+    for (byte[] bs : contents) {
+      RandomAccessFile raf = new RandomAccessFile(versionFile, "rws");
+      long dataPosition;
+      if (i == 0) {
+        dataPosition = 1024;
+      } else {
+        // Seak to the prevoius entry and read the position of the previous one and add the length.
+        raf.seek((i - 1) * indexSize);
+        dataPosition = raf.readLong() + raf.readInt();
+      }
+      // Write the next entry data position and length to the index table.
+      raf.writeLong(dataPosition);
+      raf.writeInt(bs.length);
+      raf.seek(dataPosition);
+      raf.write(bs);
+      raf.getFD().sync();
+      raf.close();
+      i++;
+    }
+
+    // Read all the data
+    List<byte[]> contentsRead = new ArrayList<>();
+    for (long j = 0; j < 6; j++) {
+      RandomAccessFile raf = new RandomAccessFile(versionFile, "rws");
+      raf.seek(j * indexSize);
+      long dataPosition = raf.readLong();
+      int length = raf.readInt();
+      byte[] bytes = new byte[length];
+      raf.read(bytes);
+      contentsRead.add(bytes);
+    }
+
+    org.assertj.core.api.Assertions.assertThat(contentsRead).containsExactlyElementsOf(contents);
 
   }
 

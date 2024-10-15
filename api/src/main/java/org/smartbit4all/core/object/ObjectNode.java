@@ -410,8 +410,13 @@ public class ObjectNode {
         reference.setNewObject(value);
       }
     } else {
-      throw new IllegalArgumentException("Invalid object on path, unable to set: " +
-          String.join(".", paths));
+      // typed object on path
+      ObjectDefinition<?> targetDefinition = objectApi.definition(targetObject.getClass());
+      Map<String, Object> targetObjectAsMap = targetDefinition.toMap(targetObject);
+      // set value in typed object (as map)
+      setValueInMap(targetObjectAsMap, value, valuePath);
+      // set typed object (as map) in this objectNode
+      setValue(targetObjectAsMap, targetPath);
     }
     setModified();
     return this;

@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -37,7 +36,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
-import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessApi;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
@@ -45,7 +43,6 @@ import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.OperationMode;
@@ -58,10 +55,7 @@ import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionalStorage;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import com.fasterxml.jackson.core.JsonParseException;
 
 /**
@@ -77,11 +71,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  *
  * @author Peter Boros
  */
-public class StorageFS extends ObjectStorageImpl implements ApplicationContextAware {
-
-  private static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
-
-  private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+public class StorageFS extends ObjectStorageImpl {
 
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
 
@@ -112,23 +102,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   private static final String SO_TRANSACTIONFILEEXTENSION = ".t";
 
   /**
-   * The backup file of the .o file to store the last known good state of the original data.
-   */
-  private static final String SO_BACKUPFILEEXTENSION = ".b";
-
-  /**
-   * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
-   * {@link StorageApi}.
-   */
-  private ObjectDefinition<StorageObjectData> storageObjectDataDef;
-
-  /**
-   * The {@link ObjectDefinition} of the {@link StorageObjectRelationData} that is basic api object
-   * of the {@link StorageApi}.
-   */
-  private ObjectDefinition<StorageObjectRelationData> storageObjectRelationDataDef;
-
-  /**
    * The transaction manager (there must be only one in one application) that is configured. Used to
    * identify if there is an active transaction initiated on the current {@link Thread}. The lock of
    * the objects are collected in the {@link #transactionManager} and at the end of the transaction
@@ -142,63 +115,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   private BlobObjectStorageAccessApi storageAccessApi;
 
   /**
-   * The runtime api is responsible for registering the objects.
-   */
-  private ApplicationRuntimeApi myRuntimeApi;
-
-  /**
-   * False if we hasn't try to get the {@link ApplicationRuntimeApi} bean and set the
-   * {@link #myRuntimeApi}.
-   */
-  boolean runtimeWasSet = false;
-
-  private ApplicationContext applicationContext;
-
-  private static Random rnd = new Random();
-
-  public static final StoragePerformanceRecord performanceRecord = new StoragePerformanceRecord();
-
-  /**
-   * The performance record for the monitoring of the storage. It is related to the actual thread.
-   */
-  private static final ThreadLocal<StoragePerformanceRecord> currentPerformanceRecord =
-      new ThreadLocal<>();
-
-  public static void startRequest() {
-    currentPerformanceRecord.set(new StoragePerformanceRecord());
-  }
-
-  public static StoragePerformanceRecord finishRequest() {
-    StoragePerformanceRecord record = currentPerformanceRecord.get();
-    currentPerformanceRecord.remove();
-    return record;
-  }
-
-  static void addRead(long time) {
-    performanceRecord.addRead(time);
-    StoragePerformanceRecord record = currentPerformanceRecord.get();
-    if (record != null) {
-      record.addRead(time);
-    }
-  }
-
-  static void addWrite(long time) {
-    performanceRecord.addWrite(time);
-    StoragePerformanceRecord record = currentPerformanceRecord.get();
-    if (record != null) {
-      record.addWrite(time);
-    }
-  }
-
-  /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
   public StorageFS(File rootFolder, ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
     this.rootFolder = rootFolder;
-    this.storageObjectDataDef = objectDefinitionApi.definition(StorageObjectData.class);
-    this.storageObjectRelationDataDef =
-        objectDefinitionApi.definition(StorageObjectRelationData.class);
   }
 
   /**
@@ -255,18 +176,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    */
   private File getObjectLockFile(URI objectUri) {
     return getDataFileByUri(objectUri, SO_LOCKFILEEXTENSION);
-  }
-
-  /**
-   * The lock file for the object uri.
-   *
-   * @param originalFile The original file with a .character extension.
-   * @return The backup file that is the same like the object file itself but with
-   *         {@link #SO_BACKUPFILEEXTENSION}.
-   */
-  private File getBackupFile(File originalFile) {
-    String path = originalFile.getPath();
-    return new File(path.substring(0, path.length() - 2) + SO_BACKUPFILEEXTENSION);
   }
 
   /**
@@ -353,36 +262,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     };
   }
 
-  @Override
-  public StorageObject<?> save(StorageObject<?> object) {
-    StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
-
-    if (storageObjectLock != null) {
-      storageObjectLock.lock();
-    }
-    try {
-
-      long startTime = System.currentTimeMillis();
-
-      if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
-        saveSingleVersionObject(object);
-      } else {
-        saveVersionedObject(object);
-      }
-
-      long endTime = System.currentTimeMillis();
-      performanceRecord.addWrite(endTime - startTime);
-
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
-    } finally {
-      if (storageObjectLock != null) {
-        storageObjectLock.unlock();
-      }
-    }
-    return object;
-  }
-
   /**
    * This save the object as a single object. It's is faster but we don't have the previous
    * versions. We save the descriptor, the serialized form of the {@link StorageObjectData}, the
@@ -395,7 +274,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
    *         locking in the {@link #save(StorageObject)}.
    */
-  final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
+  @Override
+  protected final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
     File objectDataFile = getObjectDataFile(object.getUri());
     StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
         .className(object.definition().getClazz().getName());
@@ -410,7 +290,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
    *         locking in the {@link #save(StorageObject)}.
    */
-  private final URI saveVersionedObject(StorageObject<?> object) throws IOException {
+  @Override
+  protected final URI saveVersionedObject(StorageObject<?> object) throws IOException {
     // Load the StorageObjectData that is the api object of the storage itself.
     File objectDataFile = getObjectDataFile(object.getUri());
     File objectVersionBasePath = getObjectVersionBasePath(object.getUri());
@@ -533,7 +414,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     ObjectVersion oldVersion = currentVersion;
     updateStorageObjectWithVersion(object, newVersion);
     URI newVersionUri = object.getVersionUri();
-    invokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
+    addInvokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
         objectVersionBasePath);
     return newVersionUri;
   }
@@ -548,7 +429,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * @param newVersionUri
    * @param objectVersionBasePath
    */
-  void invokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
+  void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
       URI oldVersionUri, URI newVersionUri, File objectVersionBasePath) {
     StorageSaveEvent event = new StorageSaveEvent(
         () -> {
@@ -559,11 +440,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         },
         () -> {
           if (oldVersion != null) {
-            Object o = object.definition()
+            return object.definition()
                 .fromMap(loadObjectVersion(object.definition(), objectVersionBasePath,
                     oldVersion.getSerialNoData(), oldVersionUri).getObjectAsMap());
-
-            return o;
           }
           return null;
         },
@@ -577,10 +456,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
   }
 
-  @Override
-  protected void invokeOnSucceedFunctions(StorageObject<?> object,
+  void invokeOnSucceedFunctionsFS(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
-    super.invokeOnSucceedFunctions(object, storageSaveEvent);
+    invokeOnSucceedFunctions(object, storageSaveEvent);
   }
 
   private final void saveObjectData(StorageObject<?> object, File objectDataFile,
@@ -733,17 +611,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> u, URI.class);
-  }
-
-  @Override
-  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> read(storage, u, clazz), clazz);
-  }
-
-  public <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
-      Function<URI, O> reader, Class<O> readClass) {
+  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+      Function<URI, O> reader) {
     // Check if the given directory exists or not.
     ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
 
@@ -825,23 +694,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     return Collections.emptyList();
   }
 
-  /**
-   * TODO Should be async by definition! We need to use an FS storage management api for this
-   * purpose.
-   *
-   * @param emptyDirOrderedList
-   */
-  private final void cleanupEmptyDirs(List<Path> emptyDirOrderedList) {
-    for (Path path : emptyDirOrderedList) {
-      try {
-        Files.deleteIfExists(path);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-  }
-
   @Override
   public boolean move(URI uri, URI targetUri) {
     // TODO For the first time we implement only the single version.
@@ -852,18 +704,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       return true;
     } catch (InterruptedException e) {
       log.warn("Unable to move {} --> {}", sourceObjectFile, targetObjectFile);
-    }
-    return false;
-  }
-
-  @Override
-  public boolean delete(URI uri) {
-    File sourceObjectFile = getObjectDataFile(uri);
-    try {
-      FileIO.delete(sourceObjectFile);
-      return true;
-    } catch (InterruptedException e) {
-      log.warn("Unable to delete {}", sourceObjectFile);
     }
     return false;
   }
@@ -972,7 +812,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       // If no options specified the default behavior is to return the with the requested uri
       // This can ensure that the uri will be the exact uri used for the load.
       object.put("uri", uri);
-      // definition.setUri(object, uri);
     } else {
       Long uriVersion = getUriVersion(uri);
       boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
@@ -989,7 +828,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         uriToSet = uri;
       }
       object.put("uri", uriToSet);
-      // definition.setUri(object, uriToSet);
     }
   }
 
@@ -1150,36 +988,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     };
   }
 
-  public String getStoredObjectFileExtension() {
-    return SO_FILEEXTENSION;
-  }
-
   public final File getRootFolder() {
     return rootFolder;
-  }
-
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.applicationContext = applicationContext;
-  }
-
-  /**
-   * The runtime api is an optional Api responsible for registering the actual
-   *
-   * @return
-   */
-  ApplicationRuntimeApi runtimeApi() {
-    if (!runtimeWasSet) {
-      try {
-        myRuntimeApi =
-            applicationContext != null ? applicationContext.getBean(ApplicationRuntimeApi.class)
-                : null;
-      } catch (BeansException e) {
-        log.debug("The application doesn't have ApplicationRuntimeApi registered.");
-      }
-      runtimeWasSet = true;
-    }
-    return myRuntimeApi;
   }
 
 }

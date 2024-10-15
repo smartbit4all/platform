@@ -1,6 +1,8 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
@@ -68,6 +70,14 @@ public interface CollectionApi {
    * @return The StoredList.
    */
   StoredList list(StoredCollectionDescriptor descriptor);
+
+  /**
+   * Lock all collections to lock at once.
+   * 
+   * @param collections The list of collections can not be null.
+   * @return If all the lock for all the collections can be retrieved or null if there is no list.
+   */
+  List<Lock> lockAll(List<StoredCollectionDescriptor> collections);
 
   /**
    * This function will return a {@link StoredReference} that can contains one object.

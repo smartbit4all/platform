@@ -149,14 +149,6 @@ public interface ObjectStorage {
   boolean move(URI uri, URI targetUri);
 
   /**
-   * Delete given object inside the object storage finally.
-   * 
-   * @param uri The uri of the object.
-   * @return true if the delete was successful.
-   */
-  boolean delete(URI uri);
-
-  /**
    * @return Return true if the given {@link ObjectStorage} is the default one by the configuration.
    *         If there is more then one default then the application won't start!
    */

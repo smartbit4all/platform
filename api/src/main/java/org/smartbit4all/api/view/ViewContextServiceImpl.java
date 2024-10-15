@@ -230,7 +230,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private void checkIfViewContextAvailable() {
     if (currentViewContext.get() == null) {
-      throw new IllegalStateException(
+      throw new MissinCurrentViewContextException(
           "currentViewContext is not set, please use ViewContextService.execute() to use ViewContext");
     }
   }
@@ -1358,5 +1358,10 @@ public class ViewContextServiceImpl implements ViewContextService {
             .flatMap(v -> getViewsIncludingClosedChildren(v.getClosedChildrenViews())));
   }
 
+  public static class MissinCurrentViewContextException extends IllegalStateException {
+    public MissinCurrentViewContextException(String msg) {
+      super(msg);
+    }
+  }
 
 }

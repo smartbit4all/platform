@@ -73,6 +73,7 @@ public class GridModels {
     hideColumns(gridView, Arrays.asList(columns));
   }
 
+
   public static void hideColumns(GridView gridView, List<String> columns) {
     List<String> orderedColumns = gridView.getOrderedColumnNames().stream()
         .filter(col -> !columns.contains(col))
@@ -82,6 +83,23 @@ public class GridModels {
     gridView.getDescriptor().getColumns().stream()
         .filter(col -> columns.contains(col.getPropertyName()))
         .forEach(col -> col.setAlwaysHidden(true));
+  }
+
+  public static void setAlwaysHiddenColumns(GridModel grid, boolean alwaysHidden,
+      List<String> columns) {
+    setAlwaysHiddenColumns(grid.getView(), columns, alwaysHidden);
+  }
+
+  public static void setAlwaysHiddenColumns(GridView gridView, boolean alwaysHidden,
+      String... columns) {
+    setAlwaysHiddenColumns(gridView, Arrays.asList(columns), alwaysHidden);
+  }
+
+  public static void setAlwaysHiddenColumns(GridView gridView, List<String> columns,
+      boolean alwaysHidden) {
+    gridView.getDescriptor().getColumns().stream()
+        .filter(col -> columns.contains(col.getPropertyName()))
+        .forEach(col -> col.setAlwaysHidden(alwaysHidden));
   }
 
   public static void hideColumnsLabel(GridModel grid, String... columns) {

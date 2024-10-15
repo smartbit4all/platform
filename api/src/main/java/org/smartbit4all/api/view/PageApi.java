@@ -38,11 +38,21 @@ public interface PageApi<M> {
   /**
    * Default view close uiAction handler.<br/>
    * Used ui action code: {@link #DEFAULT_CLOSE}
-   * 
+   *
    * @param viewUuid
    * @param request
    */
   @ActionHandler(DEFAULT_CLOSE)
   void defaultClose(UUID viewUuid, UiActionRequest request);
+
+  /**
+   * Returns true if the View's model (specified by viewUuid) differs from it's
+   * {@link ViewContexts#INITIAL_MODEL}.
+   *
+   * @param viewUuid
+   * @param includeChildComponents
+   * @return
+   */
+  boolean hasModelChanged(UUID viewUuid, boolean includeChildComponents);
 
 }

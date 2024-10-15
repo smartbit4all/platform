@@ -69,7 +69,8 @@ import jakarta.validation.Valid;
   MDMEntryDescriptor.FILTER_MODEL,
   MDMEntryDescriptor.FILTER_MODEL_ADMIN,
   MDMEntryDescriptor.IMPORTABLE,
-  MDMEntryDescriptor.HIDDEN
+  MDMEntryDescriptor.HIDDEN,
+  MDMEntryDescriptor.DISPLAY_NAME_PROPERTY_PATH
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptor {
@@ -150,6 +151,9 @@ public class MDMEntryDescriptor {
 
   public static final String HIDDEN = "hidden";
   private Boolean hidden = false;
+
+  public static final String DISPLAY_NAME_PROPERTY_PATH = "displayNamePropertyPath";
+  private List<String> displayNamePropertyPath = null;
 
   public MDMEntryDescriptor() {
   }
@@ -920,6 +924,41 @@ public class MDMEntryDescriptor {
     this.hidden = hidden;
   }
 
+  public MDMEntryDescriptor displayNamePropertyPath(List<String> displayNamePropertyPath) {
+    
+    this.displayNamePropertyPath = displayNamePropertyPath;
+    return this;
+  }
+
+  public MDMEntryDescriptor addDisplayNamePropertyPathItem(String displayNamePropertyPathItem) {
+    if (this.displayNamePropertyPath == null) {
+      this.displayNamePropertyPath = new ArrayList<>();
+    }
+    this.displayNamePropertyPath.add(displayNamePropertyPathItem);
+    return this;
+  }
+
+   /**
+   * Get displayNamePropertyPath
+   * @return displayNamePropertyPath
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(DISPLAY_NAME_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getDisplayNamePropertyPath() {
+    return displayNamePropertyPath;
+  }
+
+
+  @JsonProperty(DISPLAY_NAME_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisplayNamePropertyPath(List<String> displayNamePropertyPath) {
+    this.displayNamePropertyPath = displayNamePropertyPath;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -954,12 +993,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.filterModel, mdMEntryDescriptor.filterModel) &&
         Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin) &&
         Objects.equals(this.importable, mdMEntryDescriptor.importable) &&
-        Objects.equals(this.hidden, mdMEntryDescriptor.hidden);
+        Objects.equals(this.hidden, mdMEntryDescriptor.hidden) &&
+        Objects.equals(this.displayNamePropertyPath, mdMEntryDescriptor.displayNamePropertyPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden, displayNamePropertyPath);
   }
 
   @Override
@@ -992,6 +1032,7 @@ public class MDMEntryDescriptor {
     sb.append("    filterModelAdmin: ").append(toIndentedString(filterModelAdmin)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
+    sb.append("    displayNamePropertyPath: ").append(toIndentedString(displayNamePropertyPath)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Form layout definition
   description: Contains form layout definition objects.
-  termsOfService: ''
+  termsOfService: ""
   contact:
     email: info@it4all.hu
   version: 1.0.0
@@ -13,7 +13,7 @@ paths:
     post:
       summary: Placeholder for generation
       responses:
-        '200':
+        "200":
           description: nope
 components:
   schemas:
@@ -27,19 +27,19 @@ components:
           description: |
             An optional identifier to find this element in a layout hierarchy.
         type:
-          $ref: '#/components/schemas/ComponentType'
+          $ref: "#/components/schemas/ComponentType"
         expandable:
           type: boolean
         expandableSectionLabel:
           type: string
         direction:
-          $ref: '#/components/schemas/LayoutDirection'
+          $ref: "#/components/schemas/LayoutDirection"
         components:
           type: array
           items:
-            $ref: '#/components/schemas/SmartComponentLayoutDefinition'
+            $ref: "#/components/schemas/SmartComponentLayoutDefinition"
         widget:
-          $ref: '#/components/schemas/SmartComponentWidgetDefinition'
+          $ref: "#/components/schemas/SmartComponentWidgetDefinition"
         form:
           type: array
           items:
@@ -52,7 +52,7 @@ components:
         - type
       properties:
         type:
-          $ref: '#/components/schemas/ComponentWidgetType'
+          $ref: "#/components/schemas/ComponentWidgetType"
         identifier:
           type: string
         filterExpressionFieldList:
@@ -77,3 +77,15 @@ components:
         - filter
         - tree
         - toolbar
+    LayoutDefinitionDescriptor:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        layout:
+          $ref: "#/components/schemas/SmartComponentLayoutDefinition"
+        constraint:
+          type: ViewConstraint

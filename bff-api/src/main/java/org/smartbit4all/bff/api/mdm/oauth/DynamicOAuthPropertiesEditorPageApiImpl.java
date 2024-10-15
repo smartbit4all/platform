@@ -40,7 +40,6 @@ import org.smartbit4all.bff.api.mdm.util.MDMPropertyValueConverterUtil;
 import org.smartbit4all.bff.api.utils.BffUtilsApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
-import org.smartbit4all.sec.apikey.ApiKeyInnerApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
@@ -57,8 +56,6 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
 
   @Autowired
   protected LocaleSettingApi localeSettingApi;
-  @Autowired
-  protected ApiKeyInnerApi apiKeyInnerApi;
   @Autowired
   protected ValueSetApi valueSetApi;
   @Autowired

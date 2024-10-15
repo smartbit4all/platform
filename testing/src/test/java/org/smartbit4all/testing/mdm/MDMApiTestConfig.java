@@ -21,6 +21,7 @@ import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.ViewApi;
@@ -78,9 +79,13 @@ public class MDMApiTestConfig extends TestFSCleaner {
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
             .path(Arrays.asList(SampleCategory.NAME))))
         .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(SampleGenericContainer.class)
+        .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(SampleContainerItem.class)
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
             .path(Arrays.asList(SampleContainerItem.NAME))))
+        .editorViewName(MDM_EDITING_PAGE);
+    result.addDefaultDescriptor(SampleLinkObject.class)
         .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(GenericValue.class)
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
@@ -102,10 +107,6 @@ public class MDMApiTestConfig extends TestFSCleaner {
             .path(Arrays.asList(SampleCategoryType.CODE))))
         .editorViewName(MDM_EDITING_PAGE)
         .setInactiveMgmt(true);
-    result.addDefaultDescriptor(SampleCategory.class)
-        .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
-            .path(Arrays.asList(SampleCategory.NAME))))
-        .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(SampleContainerItem.class)
         .constraints(Arrays.asList(new MDMEntryConstraint().kind(KindEnum.UNIQUE)
             .path(Arrays.asList(SampleContainerItem.NAME))))
@@ -197,6 +198,10 @@ public class MDMApiTestConfig extends TestFSCleaner {
             SampleLinkObject.class,
             ReferencePropertyKind.LIST,
             AggregationKind.INLINE)
+        .ref(SampleGenericContainer.class,
+            SampleGenericContainer.CONTENT,
+            SampleCategory.class,
+            ReferencePropertyKind.REFERENCE)
         .ref(SampleLinkObject.class,
             SampleLinkObject.CATEGORY,
             SampleCategory.class,

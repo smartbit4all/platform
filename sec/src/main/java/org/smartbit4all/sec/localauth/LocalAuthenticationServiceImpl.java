@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.localauth;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.ViewContextServiceImpl.MissinCurrentViewContextException;
 import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +29,9 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
 
   @Autowired
   private AuthenticationManager authenticationManager;
+
+  @Autowired(required = false)
+  private ViewContextService viewContextService;
 
   @Autowired(required = false)
   private SessionPublisherApi sessionPublisherApi;
@@ -74,6 +80,20 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
     sessionApi.getAuthentications().forEach(a -> {
       logoutFromAuth(sessionUri, a);
     });
+    clearViewCtx();
+  }
+
+  private void clearViewCtx() {
+    if (viewContextService == null) {
+      return;
+    }
+    try {
+      viewContextService.updateCurrentViewContext(viewContext -> viewContext
+          .openPendingData(null)
+          .views(new ArrayList<>()));
+    } catch (MissinCurrentViewContextException e) {
+      // nop: without viewctx no need to clear.
+    }
   }
 
   public void onLogout(Consumer<AccountInfo> onLogout) {

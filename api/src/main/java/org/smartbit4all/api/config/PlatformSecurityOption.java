@@ -65,6 +65,16 @@ public class PlatformSecurityOption implements SecurityOption {
           .description("Plaform level oAuth property editor")
           .subgroup(admin)
           .builtIn(true);
+  public static final SecurityGroup methodTemplateEditor =
+      SecurityGroup.of().title("Platform method template editor")
+          .description("Platform method template editor")
+          .subgroup(admin)
+          .builtIn(true);
+  public static final SecurityGroup layoutDescriptorEditor =
+      SecurityGroup.of().title("Platform layout descriptor editor")
+          .description("Platform layout descriptor editor")
+          .subgroup(admin)
+          .builtIn(true);
 
 
 }
