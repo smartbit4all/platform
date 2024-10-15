@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
@@ -61,20 +62,20 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   /**
    * Run the query and update the content of the grid.
    */
-  static final String ACTION_DO_QUERY = "DO_QUERY";
+  static final String ACTION_DO_QUERY = MDMActions.ACTION_DO_QUERY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action toggle between the normal and the inactive list.
    */
-  static final String ACTION_TOGGLE_INACTIVES = "TOGGLE_INACTIVES";
+  static final String ACTION_TOGGLE_INACTIVES = MDMActions.ACTION_TOGGLE_INACTIVES;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action construct a new entry. Initiate the currently editing branch if it doesn't exist. The
    * new object is going to be registered into the branch as new object.
    */
-  static final String ACTION_NEW_ENTRY = "NEW_ENTRY";
+  static final String ACTION_NEW_ENTRY = MDMActions.ACTION_NEW_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -82,25 +83,25 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * branch if it doesn't exist. The edited object is going to be registered into the branch as it
    * is saved.
    */
-  static final String ACTION_EDIT_ENTRY = "EDIT_ENTRY";
+  static final String ACTION_EDIT_ENTRY = MDMActions.ACTION_EDIT_ENTRY;
 
-  static final String ACTION_VIEW_ENTRY = "VIEW_ENTRY";
+  static final String ACTION_VIEW_ENTRY = MDMActions.ACTION_VIEW_ENTRY;
 
-  static final String ACTION_VIEW_ORIGINAL_ENTRY = "VIEW_ORIGINAL_ENTRY";
+  static final String ACTION_VIEW_ORIGINAL_ENTRY = MDMActions.ACTION_VIEW_ORIGINAL_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The edited object is going to be
    * deleted from the list that contains the currently edited versions of the objects.
    */
-  static final String ACTION_DELETE_ENTRY = "DELETE_ENTRY";
+  static final String ACTION_DELETE_ENTRY = MDMActions.ACTION_DELETE_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * inactivate is an action that places the given item into the inactive list and remove it from
    * the normal list.
    */
-  static final String ACTION_INACTIVATE_ENTRY = "INACTIVATE_ENTRY";
+  static final String ACTION_INACTIVATE_ENTRY = MDMActions.ACTION_INACTIVATE_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -108,28 +109,29 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * to be canceled from the list that contains the currently edited versions of the objects. It
    * will be restored to the original object.
    */
-  static final String ACTION_CANCEL_DRAFT_ENTRY = "CANCEL_DRAFT_ENTRY";
+  static final String ACTION_CANCEL_DRAFT_ENTRY = MDMActions.ACTION_CANCEL_DRAFT_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The inactive object is going to be
    * restored and appears in the active list again.
    */
-  static final String ACTION_RESTORE_ENTRY = "RESTORE_ENTRY";
+  static final String ACTION_RESTORE_ENTRY = MDMActions.ACTION_RESTORE_ENTRY;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action opens a dialog, where you can edit the entry descriptor.
    */
-  static final String ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE = "SHOW_ENTRY_DESCRIPTOR_PAGE";
+  static final String ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE =
+      MDMActions.ACTION_SHOW_ENTRY_DESCRIPTOR_PAGE;
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action recreates the vector database connected to the given list of entries.
    */
-  static final String ACTION_RECREATE_INDEX = "ACTION_RECREATE_INDEX";
+  static final String ACTION_RECREATE_INDEX = MDMActions.ACTION_RECREATE_INDEX;
 
-  static final String ACTION_IMPORT_ENTRIES = "IMPORT_ENTRIES";
+  static final String ACTION_IMPORT_ENTRIES = MDMActions.ACTION_IMPORT_ENTRIES;
 
   /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
