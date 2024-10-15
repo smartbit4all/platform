@@ -331,7 +331,7 @@ class ObjectApiTest {
         objectApi.saveAsNew(OrgApiStorageImpl.ORG_SCHEME, new Group().name("everybody")));
     {
       ObjectNode rootNode = objectApi.load(rootUri);
-      org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNull();
+      org.assertj.core.api.Assertions.assertThat(rootNode.aspects().get()).isNullOrEmpty();
       rootNode.aspects().modify(AccessControlInternalApi.ACL_ASPECT, ACL.class,
           acl -> new ACL().rootEntry(
               new ACLEntry().addEntriesItem(new ACLEntry().subject(new Subject().ref(everybodyUri))

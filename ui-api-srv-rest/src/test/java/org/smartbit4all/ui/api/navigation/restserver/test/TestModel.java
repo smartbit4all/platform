@@ -11,14 +11,15 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.util.Objects;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.org.bean.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * User
@@ -45,7 +46,7 @@ public class TestModel {
    **/
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the user")
+  @Schema(description = "The uri of the user")
   @JsonProperty(USER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

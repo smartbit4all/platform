@@ -2,14 +2,15 @@ package org.smartbit4all.api.binarydata;
 
 import java.net.URI;
 import java.util.Objects;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({
     BinaryContent.URI,
@@ -79,9 +80,9 @@ public class BinaryContent {
    * 
    * @return uri
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getUri() {
@@ -105,9 +106,9 @@ public class BinaryContent {
    * 
    * @return dataUri
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(DATAURI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getDataUri() {
@@ -131,9 +132,9 @@ public class BinaryContent {
    * 
    * @return fileName
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(FILENAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFileName() {
@@ -157,9 +158,9 @@ public class BinaryContent {
    * 
    * @return mimeType
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(MIMETYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMimeType() {
@@ -183,9 +184,9 @@ public class BinaryContent {
    * 
    * @return extension
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(EXTENSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExtension() {
@@ -209,9 +210,9 @@ public class BinaryContent {
    * 
    * @return size
    **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   @JsonProperty(SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
