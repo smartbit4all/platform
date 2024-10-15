@@ -65,6 +65,7 @@ import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
+import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -197,6 +198,9 @@ class MDMApiTest {
 
     MDMEntryApi typeApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         SampleCategoryType.class.getSimpleName());
+
+    MDMEntryApi containerApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
+        SampleGenericContainer.class.getSimpleName());
 
     MDMDefinition mdmDefinition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
@@ -389,6 +393,34 @@ class MDMApiTest {
 
     // Drop the changes we made because constraint check.
     masterDataManagementApi.dropGlobal(MDMApiTestConfig.TEST);
+
+
+    masterDataManagementApi.initiateGlobalBranch(MDMApiTestConfig.TEST, "Editing session 1");
+    List<BranchedObjectEntry> typeList = typeApi.getBranchingList();
+
+    BranchedObjectEntry firstTypeItem = typeList.get(0);
+
+    URI firstTypeBranchUri =
+        typeApi.save(objectApi.load(firstTypeItem.getOriginalUri()))
+            .get(0);
+
+    ObjectNode containerNode =
+        objectApi.create(SCHEMA, new SampleGenericContainer());
+    containerNode.ref(SampleGenericContainer.CONTENT).set(firstTypeBranchUri);
+    containerApi.save(containerNode);
+    masterDataManagementApi.mergeGlobal(MDMApiTestConfig.TEST);
+
+    List<BranchedObjectEntry> updatedTypeList = typeApi.getBranchingList();
+    BranchedObjectEntry updatedTypeItem = updatedTypeList.get(0);
+
+    List<BranchedObjectEntry> containerList = containerApi.getBranchingList();
+    BranchedObjectEntry firstContainerItem = containerList.get(0);
+
+    ObjectNode firstContainerItemNode =
+        objectApi.loadLatest(firstContainerItem.getOriginalUri());
+
+    assertTrue(objectApi.equalsIgnoreVersion(updatedTypeItem.getOriginalUri(),
+        firstContainerItemNode.ref(SampleGenericContainer.CONTENT).getObjectUri()));
   }
 
   @Test
