@@ -53,6 +53,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    */
   public static final String versionPostfix = ".v";
 
+  protected static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
+
+  protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
    * OverlappingFileLockException caused by locking the same file in the same JVM. The file locks

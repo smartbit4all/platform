@@ -73,10 +73,6 @@ import com.fasterxml.jackson.core.JsonParseException;
  */
 public class StorageFS extends ObjectStorageImpl {
 
-  private static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
-
-  private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
 
   private File rootFolder;
