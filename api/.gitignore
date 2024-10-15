@@ -7,3 +7,5 @@ bin
 /test.l
 /test.o
 /test.txt
+testio
+test-fs
