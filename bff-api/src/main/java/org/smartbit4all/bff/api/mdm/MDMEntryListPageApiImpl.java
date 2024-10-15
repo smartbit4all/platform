@@ -63,6 +63,7 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
+import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -151,6 +152,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired(required = false)
   private MDMApprovalApi mdmApprovalApi;
+
+  @Autowired
+  private ViewPublisherApi viewPublisherApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -574,10 +578,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void performEditEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     // We need to pass the override of the save action.
-    performActionOnGridRow(getContextByViewUUID(viewUuid), gridId, rowId, (r, ctx) -> {
+    PageContext context = getContextByViewUUID(viewUuid);
+    performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
       BranchedObjectEntry branchedObjectEntry =
           objectApi.asType(BranchedObjectEntry.class, r.getData());
       showEditorView(viewUuid, ctx, branchedObjectEntry, request.getCode());
+      fireActionPerformed(getValueFromGridRow(branchedObjectUriGetter, r), request, context);
     });
   }
 
@@ -657,8 +663,29 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     performActionOnEntry(context, gridId, rowId, branchedObjectUriGetter,
         (u, ctx) -> {
           ctx.getEntryApi().remove(u);
+          fireActionPerformed(u, request, context);
         });
     refreshGrid(context);
+  }
+
+  private void fireActionPerformed(URI entryUri, UiActionRequest request, PageContext ctx) {
+    fireActionPerformed(entryUri, request, ctx, null, null);
+  }
+
+  private void fireActionPerformed(URI entryUri, UiActionRequest request, PageContext ctx,
+      Object prevModel, Object nextModel) {
+    List<String> displayNamePropertyPath = ctx.getEntryDescriptor().getDisplayNamePropertyPath();
+    String entryName = "unknown";
+    if (displayNamePropertyPath != null && !displayNamePropertyPath.isEmpty()) {
+      entryName = objectApi.load(entryUri).getValueAsString(
+          displayNamePropertyPath.toArray(new String[displayNamePropertyPath.size()]));
+    }
+
+    viewPublisherApi.fireActionPerformed(ctx.view, request,
+        ctx.modificationApi.getModification().getId(),
+        entryName,
+        prevModel,
+        nextModel);
   }
 
   @Override
@@ -666,7 +693,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId, row -> BranchedObjectEntry.BRANCH_URI,
-        (u, ctx) -> cancelDraftEntryInner(u, ctx));
+        (u, ctx) -> {
+          cancelDraftEntryInner(u, ctx);
+          fireActionPerformed(u, request, context);
+        });
     refreshGrid(context);
   }
 
@@ -679,7 +709,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     performActionOnEntry(context, gridId, rowId, branchedObjectUriGetter,
-        (u, ctx) -> ctx.getEntryApi().restore(u));
+        (u, ctx) -> {
+          ctx.getEntryApi().restore(u);
+          fireActionPerformed(u, request, context);
+        });
     refreshGrid(context);
   }
 
@@ -794,15 +827,18 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   protected final void performActionOnEntry(PageContext context, String gridId, String rowId,
       Function<GridRow, String> uriPropertyGetter, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
-      Object valueFromGridRow =
-          GridModels.getValueFromGridRow(r, uriPropertyGetter.apply(r));
-      URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
-          : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
-
+      URI objectUri = getValueFromGridRow(uriPropertyGetter, r);
       if (objectUri != null) {
         action.accept(objectUri, context);
       }
     });
+  }
+
+  private URI getValueFromGridRow(Function<GridRow, String> uriPropertyGetter, GridRow r) {
+    Object valueFromGridRow =
+        GridModels.getValueFromGridRow(r, uriPropertyGetter.apply(r));
+    return valueFromGridRow instanceof URI ? (URI) valueFromGridRow
+        : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
   }
 
   public final MDMEntryListPageApi defaultEditorViewName(String defaultEditorViewName) {
@@ -844,28 +880,43 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
         boolean canEdit = canEdit(isAdmin, ctx.isUnderApproval(), ctx.isCurrentApprover());
-        uiActions.addIf(ACTION_RESTORE_ENTRY, canEdit, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+        uiActions
+            .addIf(createUiActionWithDescriptor(ACTION_RESTORE_ENTRY), canEdit, entryEditingEnabled,
+                ctx.inactives)
+            .addIf(createUiActionWithDescriptor(ACTION_EDIT_ENTRY), canEdit, entryEditingEnabled,
+                !ctx.inactives,
                 !deletedOnBranch)
-            .addIf(ACTION_DELETE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives, newOnBranch)
-            .addIf(ACTION_INACTIVATE_ENTRY, canEdit, entryEditingEnabled, !ctx.inactives,
+            .addIf(createUiActionWithDescriptor(ACTION_DELETE_ENTRY), canEdit, entryEditingEnabled,
+                !ctx.inactives, newOnBranch)
+            .addIf(createUiActionWithDescriptor(ACTION_INACTIVATE_ENTRY), canEdit,
+                entryEditingEnabled, !ctx.inactives,
                 !newOnBranch, !deletedOnBranch)
-            .addIf(ACTION_CANCEL_DRAFT_ENTRY, canEdit, entryEditingEnabled, branchingEnabled,
+            .addIf(createUiActionWithDescriptor(ACTION_CANCEL_DRAFT_ENTRY), canEdit,
+                entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch, !isNewEntry)
-            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, (isAdmin || ctx.isCurrentApprover()),
+            .addIf(createUiActionWithDescriptor(ACTION_VIEW_ORIGINAL_ENTRY),
+                (isAdmin || ctx.isCurrentApprover()),
                 entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
-            .addIf(ACTION_VIEW_ENTRY, (isAdmin || ctx.isCurrentApprover()));
+            .addIf(createUiActionWithDescriptor(ACTION_VIEW_ENTRY),
+                (isAdmin || ctx.isCurrentApprover()));
       } else {
-        uiActions.addIf(ACTION_RESTORE_ENTRY, isAdmin, entryEditingEnabled, ctx.inactives)
-            .addIf(ACTION_EDIT_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+        uiActions
+            .addIf(createUiActionWithDescriptor(ACTION_RESTORE_ENTRY), isAdmin, entryEditingEnabled,
+                ctx.inactives)
+            .addIf(createUiActionWithDescriptor(ACTION_EDIT_ENTRY), isAdmin, entryEditingEnabled,
+                !ctx.inactives,
                 !deletedOnBranch)
-            .addIf(ACTION_DELETE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives, newOnBranch)
-            .addIf(ACTION_INACTIVATE_ENTRY, isAdmin, entryEditingEnabled, !ctx.inactives,
+            .addIf(createUiActionWithDescriptor(ACTION_DELETE_ENTRY), isAdmin, entryEditingEnabled,
+                !ctx.inactives, newOnBranch)
+            .addIf(createUiActionWithDescriptor(ACTION_INACTIVATE_ENTRY), isAdmin,
+                entryEditingEnabled, !ctx.inactives,
                 !newOnBranch, !deletedOnBranch)
-            .addIf(ACTION_VIEW_ORIGINAL_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+            .addIf(createUiActionWithDescriptor(ACTION_VIEW_ORIGINAL_ENTRY), isAdmin,
+                entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch && isOnOriginal)
-            .addIf(ACTION_CANCEL_DRAFT_ENTRY, isAdmin, entryEditingEnabled, branchingEnabled,
+            .addIf(createUiActionWithDescriptor(ACTION_CANCEL_DRAFT_ENTRY), isAdmin,
+                entryEditingEnabled, branchingEnabled,
                 !ctx.inactives, isOnBranch, !isNewEntry);
       }
       row.setActions(uiActions.build());
@@ -914,6 +965,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       }
     });
     return page;
+  }
+
+  private UiAction createUiActionWithDescriptor(String actionCode) {
+    return new UiAction().code(actionCode).descriptor(
+        new UiActionDescriptor()
+            .title(localeSettingApi.get(MDMEntryListPageApi.class.getSimpleName(), actionCode)));
   }
 
   protected boolean canEdit(boolean isAdmin, boolean underApproval, boolean isApprover) {

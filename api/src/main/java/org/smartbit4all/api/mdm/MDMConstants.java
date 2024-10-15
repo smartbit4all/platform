@@ -11,10 +11,10 @@ public abstract class MDMConstants {
   public static final String MDM_SESSIONS = "MDMSessions";
   public static final String MDM_ENTRY_DESCRIPTOR = "MDMEntryDescriptor";
 
-
-
   public static final String PROPERTY_URI = "uri";
   public static final String MDM_ADMIN_APPROVER = "mdmAdminApprover";
+
+  public static final String PARAM_ENTRY_DESCRIPTOR = "ENTRY_DESCRIPTOR";
 
   private MDMConstants() {}
 }

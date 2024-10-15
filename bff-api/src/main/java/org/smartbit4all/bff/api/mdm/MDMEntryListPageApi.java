@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.view.PageApi;
@@ -24,7 +25,7 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   /**
    * The identifier of of the {@link MDMEntryDescriptor} object parameter.
    */
-  static final String PARAM_ENTRY_DESCRIPTOR = "ENTRY_DESCRIPTOR";
+  static final String PARAM_ENTRY_DESCRIPTOR = MDMConstants.PARAM_ENTRY_DESCRIPTOR;
 
   /**
    * The identifier of of the {@link MDMDefinition} object parameter.
