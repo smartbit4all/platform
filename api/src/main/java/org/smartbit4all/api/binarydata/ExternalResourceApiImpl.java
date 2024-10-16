@@ -12,7 +12,7 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Autowired
@@ -22,6 +22,8 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
   public BinaryContentData downloadFile(String schema, URI url) {
     return new BinaryContentData().fileName("temp");
   }
+
+
 
   // @Override
   // public BinaryContentData downloadFile(String schema, URI uri) {
@@ -50,7 +52,7 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
   // }
   // }
   //
-  // byte[] allBytes = connection.getInputStream().readAllBytes();
+  // byte[] allBytes = readInputStreamToByteArray(connection.getInputStream());
   //
   // UserActivityLog created = sessionApi.createActivityLog();
   // BinaryData binaryData = new BinaryData(allBytes);
@@ -76,6 +78,19 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
   // connection.disconnect();
   // }
   // }
+  // }
+  //
+  // private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
+  // ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+  // byte[] data = new byte[1024];
+  // int bytesRead;
+  //
+  // while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+  // buffer.write(data, 0, bytesRead);
+  // }
+  // inputStream.close();
+  //
+  // return buffer.toByteArray();
   // }
 
   // @Override
