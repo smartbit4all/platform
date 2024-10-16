@@ -63,6 +63,7 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
+import org.smartbit4all.api.view.ViewContexts;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.MessageData;
@@ -674,18 +675,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   private void fireActionPerformed(URI entryUri, UiActionRequest request, PageContext ctx,
       Object prevModel, Object nextModel) {
-    List<String> displayNamePropertyPath = ctx.getEntryDescriptor().getDisplayNamePropertyPath();
-    String entryName = "unknown";
-    if (displayNamePropertyPath != null && !displayNamePropertyPath.isEmpty()) {
-      entryName = objectApi.load(entryUri).getValueAsString(
-          displayNamePropertyPath.toArray(new String[displayNamePropertyPath.size()]));
-    }
-
+    String entryName = getEntryName(ctx, objectApi.load(entryUri));
     viewPublisherApi.fireActionPerformed(ctx.view, request,
         ctx.modificationApi.getModification().getId(),
         entryName,
         prevModel,
         nextModel);
+  }
+
+  private String getEntryName(PageContext ctx, ObjectNode entryNode) {
+    List<String> displayNamePropertyPath = ctx.getEntryDescriptor().getDisplayNamePropertyPath();
+    String entryName = "unknown";
+    if (displayNamePropertyPath != null && !displayNamePropertyPath.isEmpty()) {
+      entryName = entryNode.getValueAsString(
+          displayNamePropertyPath.toArray(new String[displayNamePropertyPath.size()]));
+    }
+    return entryName;
   }
 
   @Override
@@ -789,7 +794,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   @Override
-  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject) {
+  public void saveObject(UUID viewUuid, URI objectUri, Object editingObject, View editorView,
+      UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getEntryApi().getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
@@ -803,16 +809,42 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       objectNode = objectApi.load(objectUri);
       objectNode.setValues(editingObjectAsMap);
     }
-    saveObjectInternal(context, objectNode);
+    saveObjectInternal(context, objectNode, editorView, request);
   }
 
   @Override
-  public void saveObject(UUID viewUuid, ObjectNode objectNode) {
-    saveObjectInternal(getContextByViewUUID(viewUuid), objectNode);
+  public void saveObject(UUID viewUuid, ObjectNode objectNode, View editorView,
+      UiActionRequest request) {
+    saveObjectInternal(getContextByViewUUID(viewUuid), objectNode, editorView, request);
   }
 
-  protected void saveObjectInternal(PageContext context, ObjectNode objectNode) {
+  protected void saveObjectInternal(PageContext context, ObjectNode objectNode, View editorView,
+      UiActionRequest request) {
     context.getEntryApi().save(objectNode);
+    if (editorView == null || request == null) {
+      log.warn("cannot fire action performed on save [{}] type entry",
+          context.getEntryApi().getName());
+    } else {
+      String entryName = getEntryName(context, objectNode);
+      Object initialEditorModel = editorView.getParameters().get(ViewContexts.INITIAL_MODEL);
+      Map<String, Object> initalEditorModelAsMap = initialEditorModel instanceof Map
+          ? (Map<String, Object>) initialEditorModel
+          : objectApi.getDefaultSerializer().toMap(initialEditorModel);
+      Map<String, Object> editorModelAsMap = editorView.getModel() instanceof Map
+          ? (Map<String, Object>) editorView.getModel()
+          : objectApi.getDefaultSerializer().toMap(editorView.getModel());
+
+      editorModelAsMap.put(MDMEntryApi.Props.CREATED,
+          initalEditorModelAsMap.get(MDMEntryApi.Props.CREATED));
+      editorModelAsMap.put(MDMEntryApi.Props.UPDATED,
+          initalEditorModelAsMap.get(MDMEntryApi.Props.UPDATED));
+      editorView.setModel(editorModelAsMap);
+
+      viewPublisherApi.fireActionPerformed(editorView, request,
+          context.modificationApi.getModification().getId(),
+          entryName);
+    }
+
     refreshGrid(context);
   }
 
