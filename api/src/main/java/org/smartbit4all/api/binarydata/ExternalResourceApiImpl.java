@@ -1,10 +1,19 @@
 package org.smartbit4all.api.binarydata;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ExternalResourceApiImpl implements ExternalResourceApi {
@@ -18,80 +27,74 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
   @Autowired
   private MimeTypeApi mimeTypeApi;
 
+
   @Override
-  public BinaryContentData downloadFile(String schema, URI url) {
-    return new BinaryContentData().fileName("temp");
+  public BinaryContentData downloadFile(String schema, URI uri) {
+    HttpURLConnection connection = null;
+
+    try {
+      URL url = uri.toURL();
+      connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+
+      int responseCode = connection.getResponseCode();
+
+      if (responseCode == HttpURLConnection.HTTP_OK) {
+        String filename = StringConstant.EMPTY;
+        String fileExtension = StringConstant.EMPTY;
+        String mimeType = StringConstant.EMPTY;
+
+        String contentDisposition = connection.getHeaderField("Content-Disposition");
+        if (contentDisposition != null && contentDisposition.contains("filename=")) {
+          Pattern pattern = Pattern.compile("filename=\"?([^\";]*)\"?");
+          Matcher matcher = pattern.matcher(contentDisposition);
+          if (matcher.find()) {
+            filename = matcher.group(1);
+            fileExtension = mimeTypeApi.getExtensionFromFileName(filename);
+            mimeType = mimeTypeApi.getMimeType(filename);
+          }
+        }
+
+        byte[] allBytes = readInputStreamToByteArray(connection.getInputStream());
+
+        UserActivityLog created = sessionApi.createActivityLog();
+        BinaryData binaryData = new BinaryData(allBytes);
+
+        return new BinaryContentData()
+            .fileName(filename)
+            .mimeType(mimeType)
+            .size(Integer.toUnsignedLong(allBytes.length))
+            .created(created)
+            .updated(created)
+            .extension(fileExtension)
+            .mimeType(mimeType)
+            .contentHash(binaryData.hashIfPresent())
+            .dataUri(objectApi.saveAsNew(schema, new BinaryDataObject(binaryData)));
+      } else {
+        throw new IllegalStateException(
+            "Downloading file is unsuccessful, response is: " + responseCode);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Downloading file is unsuccessful", e);
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
+    }
   }
 
+  private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    byte[] data = new byte[1024];
+    int bytesRead;
 
+    while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+      buffer.write(data, 0, bytesRead);
+    }
+    inputStream.close();
 
-  // @Override
-  // public BinaryContentData downloadFile(String schema, URI uri) {
-  // HttpURLConnection connection = null;
-  //
-  // try {
-  // URL url = uri.toURL();
-  // connection = (HttpURLConnection) url.openConnection();
-  // connection.setRequestMethod("GET");
-  //
-  // int responseCode = connection.getResponseCode();
-  //
-  // if (responseCode == HttpURLConnection.HTTP_OK) {
-  // String filename = StringConstant.EMPTY;
-  // String fileExtension = StringConstant.EMPTY;
-  // String mimeType = StringConstant.EMPTY;
-  //
-  // String contentDisposition = connection.getHeaderField("Content-Disposition");
-  // if (contentDisposition != null && contentDisposition.contains("filename=")) {
-  // Pattern pattern = Pattern.compile("filename=\"?([^\";]*)\"?");
-  // Matcher matcher = pattern.matcher(contentDisposition);
-  // if (matcher.find()) {
-  // filename = matcher.group(1);
-  // fileExtension = mimeTypeApi.getExtensionFromFileName(filename);
-  // mimeType = mimeTypeApi.getMimeType(filename);
-  // }
-  // }
-  //
-  // byte[] allBytes = readInputStreamToByteArray(connection.getInputStream());
-  //
-  // UserActivityLog created = sessionApi.createActivityLog();
-  // BinaryData binaryData = new BinaryData(allBytes);
-  //
-  // return new BinaryContentData()
-  // .fileName(filename)
-  // .mimeType(mimeType)
-  // .size(Integer.toUnsignedLong(allBytes.length))
-  // .created(created)
-  // .updated(created)
-  // .extension(fileExtension)
-  // .mimeType(mimeType)
-  // .contentHash(binaryData.hashIfPresent())
-  // .dataUri(objectApi.saveAsNew(schema, new BinaryDataObject(binaryData)));
-  // } else {
-  // throw new IllegalStateException(
-  // "Downloading file is unsuccessful, response is: " + responseCode);
-  // }
-  // } catch (IOException e) {
-  // throw new IllegalStateException("Downloading file is unsuccessful", e);
-  // } finally {
-  // if (connection != null) {
-  // connection.disconnect();
-  // }
-  // }
-  // }
-  //
-  // private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
-  // ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-  // byte[] data = new byte[1024];
-  // int bytesRead;
-  //
-  // while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
-  // buffer.write(data, 0, bytesRead);
-  // }
-  // inputStream.close();
-  //
-  // return buffer.toByteArray();
-  // }
+    return buffer.toByteArray();
+  }
 
   // @Override
   // public BinaryContentData downloadFile(String schema, URI url) {
