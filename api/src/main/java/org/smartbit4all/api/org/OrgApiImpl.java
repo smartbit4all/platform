@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
@@ -46,9 +48,6 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   @Autowired
   private StorageApi storageApi;
 
-  @Autowired
-  private OrgApi self;
-
   @Autowired(required = false)
   private UserSessionApi userSessionApi;
 
@@ -82,6 +81,11 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
     }
   }
 
+//  @PostConstruct
+//  private void postConstruct() {
+//    self = this;
+//  }
+
   /**
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
    * API for them to enable locale specific behavior for them.
@@ -101,7 +105,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
 
             securityGroup.setSecurityPredicate(
-                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), null, sg,
+                (sg, uri) -> OrgUtils.securityPredicate(this, getCurrentUserProvider(), null, sg,
                     uri));
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);

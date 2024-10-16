@@ -24,6 +24,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.context.annotation.Lazy;
+
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -57,6 +59,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   private VectorDBApi vectorDBApi;
 
   @Autowired
+  @Lazy
   private EmbeddingApi embeddingApi;
 
   /**

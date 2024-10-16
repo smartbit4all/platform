@@ -80,9 +80,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    */
   private Storage storageCluster;
 
-  @Autowired
-  private MasterDataManagementApi masterDataManagementApi;
-
   /**
    * Auto wires the port number that we are serving currently. Need to have alternatives if it's not
    * available.

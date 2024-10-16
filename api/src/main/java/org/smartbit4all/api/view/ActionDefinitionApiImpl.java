@@ -20,6 +20,7 @@ import org.smartbit4all.api.toolbar.bean.ActionDefinition;
 import org.smartbit4all.api.toolbar.bean.ViewEvaluationContext;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class ActionDefinitionApiImpl implements ActionDefinitionApi {
 
@@ -32,6 +33,7 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
   @Autowired(required = false)
   private List<ActionProviderApi> providers;
   @Autowired
+  @Lazy
   private MasterDataManagementApi masterDataManagementApi;
   @Autowired
   private ObjectApi objectApi;
@@ -60,6 +62,7 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
   }
 
   @Override
+  // refactor this so MasterDataManagementApi actually passes itself to setupEntries!
   public void setupEntries(Map<String, MDMEntryApi> entries) {
     if (providers != null) {
       // Iterate on every provider to get the available actions and save them into the MDM for

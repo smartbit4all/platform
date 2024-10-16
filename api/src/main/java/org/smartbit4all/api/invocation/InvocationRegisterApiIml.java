@@ -56,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
@@ -108,7 +109,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
   private InvocationRegisterApi self;
 
   /**
@@ -154,6 +154,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * All the api providers that are provided by the given application.
    */
   @Autowired(required = false)
+  @Lazy
   private List<ProviderApiInvocationHandler<?>> providedApis;
 
   /**
@@ -165,6 +166,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * All the asynchronous channels we have in the current configuration.
    */
   @Autowired(required = false)
+  @Lazy
   private List<AsyncInvocationChannel> channels;
 
   /**
@@ -209,6 +211,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRegistry() {
+    self = this;
     long startTime = System.currentTimeMillis();
 
     if (storage.get() == null) {

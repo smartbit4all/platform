@@ -16,6 +16,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -130,7 +132,6 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Autowired(required = false)
   private OrgApi orgApi;
 
-  @Autowired
   private MasterDataManagementApi self;
 
   @Autowired
@@ -144,6 +145,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   MDMSearchIndexApi mdmSearchIndexApi;
+
+  @PostConstruct
+  private void postConstruct() {
+    self = this;
+  }
 
   @Override
   public MDMEntryApi getApi(String definition, String name, URI branch) {

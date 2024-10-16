@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.gateway.SecurityGateways;
@@ -53,6 +55,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Objects;
@@ -94,16 +97,21 @@ public class OrgApiStorageImpl implements OrgApi {
     }
   };
 
-  @Autowired
   private OrgApi self;
 
   @Autowired(required = false)
   private UserSessionApi userSessionApi;
 
   @Autowired(required = false)
+  @Lazy
   private SessionApi sessionApi;
 
   public OrgApiStorageImpl() {}
+
+  @PostConstruct
+  private void postConstruct() {
+    self = this;
+  }
 
   public OrgApiStorageImpl(StorageApi storageApi, List<SecurityOption> securityOptions)
       throws Exception {

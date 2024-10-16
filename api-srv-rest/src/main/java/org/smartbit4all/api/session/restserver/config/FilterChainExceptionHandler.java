@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.exception.SessionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -20,6 +21,7 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
 
   @Autowired
   @Qualifier("handlerExceptionResolver")
+  @Lazy
   private HandlerExceptionResolver resolver;
 
   @Override

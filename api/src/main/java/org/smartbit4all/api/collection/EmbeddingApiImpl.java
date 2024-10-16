@@ -12,6 +12,7 @@ import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * The default implementation of the {@link EmbeddingApi}.
@@ -26,6 +27,7 @@ public final class EmbeddingApiImpl extends PrimaryApiImpl<EmbeddingContribution
   @Autowired
   ObjectApi objectApi;
   @Autowired
+  @Lazy
   MasterDataManagementApi masterDataManagementApi;
 
   public EmbeddingApiImpl() {

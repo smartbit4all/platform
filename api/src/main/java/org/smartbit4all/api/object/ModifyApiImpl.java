@@ -6,6 +6,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class ModifyApiImpl extends PrimaryApiImpl<ModifyContributionApi>
     implements ModifyApi {
@@ -14,6 +15,7 @@ public class ModifyApiImpl extends PrimaryApiImpl<ModifyContributionApi>
   private ModifyContributionApiStorageImpl contributionApiImplStorage;
 
   @Autowired
+  @Lazy
   ObjectApi objectApi;
 
   public ModifyApiImpl() {

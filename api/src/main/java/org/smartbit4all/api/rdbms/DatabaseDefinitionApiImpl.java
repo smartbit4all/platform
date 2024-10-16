@@ -3,6 +3,8 @@ package org.smartbit4all.api.rdbms;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.function.BiFunction;
+
+import jakarta.annotation.PostConstruct;
 import org.smartbit4all.api.databasedefinition.bean.AlterOperation;
 import org.smartbit4all.api.databasedefinition.bean.ColumnDefinition;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
@@ -20,8 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DatabaseDefinitionApiImpl implements DatabaseDefinitionApi {
 
-  @Autowired
   private DatabaseDefinitionApi databaseDefinitionApi;
+
+  @PostConstruct
+  private void postConstruct() {
+    databaseDefinitionApi = this;
+  }
 
   @Override
   public DatabaseRendition render(DatabaseDefinition dbDefinition) {

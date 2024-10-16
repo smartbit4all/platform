@@ -19,6 +19,7 @@ import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

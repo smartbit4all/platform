@@ -13,6 +13,8 @@ import java.util.UUID;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApiData;
@@ -67,8 +69,12 @@ public final class InvocationApiImpl implements InvocationApi {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
   private InvocationApi self;
+
+  @PostConstruct
+  private void postConstruct() {
+    self = this;
+  }
 
   @Override
   public InvocationParameter invoke(InvocationRequest request, Object... args)

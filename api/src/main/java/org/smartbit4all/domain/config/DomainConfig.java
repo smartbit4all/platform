@@ -21,6 +21,7 @@ import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * The configuration for the platform domain. It's not a business domain it's the platform basic
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Import;
 public class DomainConfig {
 
   @Bean
+  @Lazy
   DomainAPI domainAPI() {
     return new DomainAPIImpl();
   }
