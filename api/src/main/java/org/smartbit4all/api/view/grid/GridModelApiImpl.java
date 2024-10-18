@@ -772,6 +772,16 @@ public class GridModelApiImpl implements GridModelApi {
     }
     Map<String, GridRow> selectedRows = serverModel == null ? Collections.emptyMap()
         : serverModel.getSelectedRows();
+
+    if (preserveSelection && page != null) {
+      page.getRows().stream().forEach(row -> {
+        if (row.getSelectable() != Boolean.FALSE && row.getSelected() == Boolean.TRUE
+            && !selectedRows.containsKey(row.getId())) {
+          selectedRows.put(row.getId(), row);
+        }
+      });
+    }
+
     if (refreshSelectedRows) {
       refreshSelectedRows(viewUuid, gridId, page, selectedRows);
     }
