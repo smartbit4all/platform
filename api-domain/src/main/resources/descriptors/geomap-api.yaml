@@ -1,0 +1,366 @@
+openapi: 3.0.1
+info:
+  title: GeoMap api
+  description: |
+    The geomap api is resposible for the geomap components that shows a list of item.
+  termsOfService: None
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: GeoMap
+    description: geomap
+paths:
+  /geomap/{uuid}/{identifier}/load:
+    post:
+      tags:
+        - GeoMap
+      summary: ''
+      operationId: 'load'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: identifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoMapModel'
+  /goemap/{uuid}/{identifier}/move:
+    post:
+      tags:
+        - GeoMap
+      summary: ''
+      operationId: 'move'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: identifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoMapViewport'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoMapChange'
+  /geomap/{uuid}/{identifier}/update:
+    post:
+      tags:
+        - GeoMap
+      summary: ''
+      operationId: 'update'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: identifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoMapViewState'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoMapChange'
+components:
+  schemas:
+    GPSPosition:
+      type: object
+      description: |
+        The position defined by the gps coordinates.
+      required: [ latitude, longitude ]
+      properties:
+        latitude:
+          type: number
+          format: float
+          description: The latitude of the GPS position
+          example: 40.7128
+        longitude:
+          type: number
+          format: float
+          description: The longitude of the GPS position
+          example: -74.0060
+        referenceSea:
+          type: string
+          description: The reference Sea that gives the zero height level. It is just an information not necessary to set.
+          example: Baltic, Adriatic
+        height:
+          type: number
+          format: float
+          description: The height above reference sea level.
+          example: 174.6
+    GeoMapModel:
+      type: object
+      description: |
+        This object represents the client model of a geomap component.
+      required: [ viewOptions, page ]
+      properties:
+        viewUuid:
+          type: string
+          format: uuid
+        identifier:
+          type: string
+        qualifier:
+          type: string
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapLayer'
+        viewState:
+          $ref: '#/components/schemas/GeoMapViewState'
+        viewport:
+          $ref: '#/components/schemas/GeoMapViewport'
+        defaultItemActions:
+          type: array
+          items:
+            type: string
+    GeoMapServerModel:
+      type: object
+      description: |
+        This object represents the server model of a geomap component.
+      required: [ selectedRows ]
+      properties:
+        selectedItems:
+          type: string
+          additionalProperties:
+            $ref: '#/components/schemas/GeoMapItem'
+        selectedLayers:
+          type: array
+          items:
+            type: string
+    GeoMapLayer:
+      type: object
+      description: |
+        This object containt the page information of the content. The currently seen row range, the total row cont and other options.
+      required: [ columns ]
+      properties:
+        code:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapItem'
+    GeoMapItem:
+      type: object
+      description: |
+        This object is a geomap row containening the identifier and actions releted with the row.
+      required: [ actions, icons ]
+      properties:
+        id:
+          type: string
+        kind:
+          $ref: '#/components/schemas/GeoMapItemKind'
+        actions:
+          type: array
+          items:
+            type: UiAction
+        data:
+          type: object
+        selectable:
+          type: boolean
+        selected:
+          type: boolean
+        label:
+          type: string
+        description:
+          type: string
+        icons:
+          type: string
+          additionalProperties:
+            type: array
+            items:
+              type: ImageResource
+        style:
+          description: |
+            If present, this Style will be applied to the row.
+          type: Style
+        position:
+          $ref: '#/components/schemas/GPSPosition'
+        bounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/GPSPosition'
+    GeoMapItemKind:
+      enum: [ MARKER, PLYGON, LINE ]
+    GeoMapViewState:
+      type: object
+      description:
+      required: [ columns ]
+      properties:
+        label:
+          type: string
+        layerDescriptors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapLayerDescriptor'
+        selectedLayers:
+          type: array
+          items:
+            type: string
+    GeoMapLayerDescriptor:
+      type: object
+      description:
+      required: [ columns ]
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        selectionMode:
+          $ref: '#/components/schemas/GeoMapSelectionMode'
+        preserveSelection:
+          description: Reserves the selected items even if they are invisible.
+          type: boolean
+    GeoMapSelectionMode:
+      type: string
+      enum:
+        - none
+        - single
+        - multiple
+    GeoMapViewport:
+      type: object
+      description:
+      required: [ columns ]
+      properties:
+        center:
+          $ref: '#/components/schemas/GPSPosition'
+        zoomLevel:
+          type: number
+          format: float
+        bounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/GPSPosition'
+    GeoMapTextType:
+      enum: [ TEXT, HTML ]
+    GeoMapChange:
+      type: object
+      description: |
+        This object containt the page information of the content. The currently seen row range, the total row cont and other options.
+      required: [ columns ]
+      properties:
+        code:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapLayerChange'
+    GeoMapLayerChange:
+      type: object
+      description: |
+        This object containt the page information of the content. The currently seen row range, the total row cont and other options.
+      required: [ columns ]
+      properties:
+        code:
+          type: string
+        toAdd:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapItem'
+        toRemove:
+          type: array
+          items:
+            type: string
+
+    GeoMapDataSourceType:
+      enum: [ STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST ]
+    GeoMapDataSourceDescriptor:
+      type: object
+      properties:
+        # shared stuff
+        id:
+          type: string
+          description: |
+            Uniquely identifies the the data source for a given map. May be retrieved from GeoMapApi
+            if the data source needs to be modified after map creation.
+        targetLayer:
+          type: string
+        sourceType:
+          $ref: '#/components/schemas/GeoMapDataSourceType'
+        itemKind:
+          $ref: '#/components/schemas/GeoMapItemKind'
+        # Stored Collection stuff
+        sourceCollection:
+          type: StoredCollectionDescriptor
+        pathToPosition:
+          type: array
+          items:
+            type: string
+        pathToBounds:
+          description: Define what kind of item to create
+          type: array
+          items:
+            type: string
+        pathToTitle:
+          type: array
+          items:
+            type: string
+        pathToDescription:
+          type: array
+          items:
+            type: string
+        includeIf:
+          type: array
+          items:
+            type: string
+        inclusionPredicate:
+          type: InvocationRequest
+        # SearchIndex stuff
+        searchIndexSchema:
+          type: string
+        searchIndexName:
+          type: string
+        titleColumn:
+          type: string
+        descriptionColumn:
+          type: string
+        positionColumn:
+          type: string
+        # InvocationRequest stuff
+        invocationRequest:
+          description: |
+            GeoMapViewport -> List<GeoMapItem>
+          type: InvocationRequest

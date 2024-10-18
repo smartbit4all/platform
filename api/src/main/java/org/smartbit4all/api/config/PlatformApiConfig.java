@@ -120,6 +120,8 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverter;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverterImpl;
+import org.smartbit4all.api.view.geomap.GeoMapApi;
+import org.smartbit4all.api.view.geomap.GeoMapApiImpl;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModelApiImpl;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
@@ -220,6 +222,11 @@ public class PlatformApiConfig {
   @Bean
   public GridModelApi gridApi() {
     return new GridModelApiImpl();
+  }
+
+  @Bean
+  public GeoMapApi geoMapApi() {
+    return new GeoMapApiImpl();
   }
 
   @Bean
