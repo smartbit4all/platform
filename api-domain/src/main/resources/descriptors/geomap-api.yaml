@@ -167,6 +167,10 @@ components:
           type: array
           items:
             type: string
+        dataSources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GeoMapDataSourceDescriptor'
     GeoMapLayer:
       type: object
       description: |
@@ -220,7 +224,7 @@ components:
           items:
             $ref: '#/components/schemas/GPSPosition'
     GeoMapItemKind:
-      enum: [ MARKER, PLYGON, LINE ]
+      enum: [ MARKER, POLYGON, LINE ]
     GeoMapViewState:
       type: object
       description:

@@ -30,7 +30,7 @@ public enum GeoMapItemKind {
   
   MARKER("MARKER"),
   
-  PLYGON("PLYGON"),
+  POLYGON("POLYGON"),
   
   LINE("LINE");
 

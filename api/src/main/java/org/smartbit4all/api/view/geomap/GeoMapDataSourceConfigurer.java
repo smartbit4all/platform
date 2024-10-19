@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.geomap;
 
+import com.google.common.base.Strings;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
@@ -77,7 +78,7 @@ public abstract class GeoMapDataSourceConfigurer {
       InvocationRequest invocationRequest) {
     return ofInvocationRequest(id, GeoMapApi.LAYER_DEFAULT, invocationRequest);
   }
-  
+
   public static GeoMapDataSourceDescriptor ofInvocationRequest(
       String id,
       String targetLayer,
@@ -92,7 +93,7 @@ public abstract class GeoMapDataSourceConfigurer {
         .sourceType(GeoMapDataSourceType.INVOCATION_REQUEST)
         .invocationRequest(invocationRequest);
   }
-  
+
   protected final GeoMapDataSourceDescriptor descriptor;
 
   protected GeoMapDataSourceConfigurer(GeoMapDataSourceDescriptor descriptor) {
@@ -175,7 +176,7 @@ public abstract class GeoMapDataSourceConfigurer {
         descriptor.includeIf(Arrays.asList(pathToSentinelValue));
         return descriptor;
       }
-      
+
       public GeoMapDataSourceDescriptor includeIfMatches(InvocationRequest predicate) {
         Objects.requireNonNull(predicate, "predicate cannot be null!");
 
@@ -197,6 +198,67 @@ public abstract class GeoMapDataSourceConfigurer {
     private SearchIndexBasedGeoMapDataSourceConfigurer(GeoMapDataSourceDescriptor descriptor) {
       super(descriptor);
     }
+
+    public MetadataColumnConfigurationStep withPosition(String positionCol) {
+      if (Strings.isNullOrEmpty(positionCol)) {
+        throw new IllegalArgumentException("positionCol cannot be null or empty!");
+      }
+
+      descriptor.setPositionColumn(positionCol);
+      return new MetadataColumnConfigurationStep();
+    }
+
+
+    public final class MetadataColumnConfigurationStep {
+
+      public GeoMapDataSourceDescriptor withMetadata(
+          MetadataColumnConfigurer metadataColumnConfigurer) {
+        Objects.requireNonNull(
+            metadataColumnConfigurer,
+            "metadataColumnConfigurer cannot be null!");
+
+        final MetadataColumnConfiguration config = new MetadataColumnConfiguration();
+        metadataColumnConfigurer.accept(config);
+        if (config.titleCol != null) {
+          descriptor.setTitleColumn(config.titleCol);
+        }
+
+        if (config.descriptionCol != null) {
+          descriptor.setDescriptionColumn(config.descriptionCol);
+        }
+
+        return descriptor;
+      }
+    }
+
+    public static final class MetadataColumnConfiguration {
+      private String titleCol;
+      private String descriptionCol;
+
+      public MetadataColumnConfiguration titleCol(String titleCol) {
+        if (Strings.isNullOrEmpty(titleCol)) {
+          throw new IllegalArgumentException("titleCol cannot be null or empty!");
+        }
+
+        this.titleCol = titleCol;
+        return this;
+      }
+
+      public MetadataColumnConfiguration descriptionCol(String descriptionCol) {
+        if (Strings.isNullOrEmpty(descriptionCol)) {
+          throw new IllegalArgumentException("descriptionCol cannot be null or empty!");
+        }
+
+        this.descriptionCol = descriptionCol;
+        return this;
+      }
+
+    }
+
+    public interface MetadataColumnConfigurer extends Consumer<MetadataColumnConfiguration> {
+      MetadataColumnConfigurer NONE = it -> {};
+    }
+
 
   }
 

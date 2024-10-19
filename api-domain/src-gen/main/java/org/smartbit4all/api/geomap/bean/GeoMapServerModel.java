@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,7 +39,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object represents the server model of a geomap component. ")
 @JsonPropertyOrder({
   GeoMapServerModel.SELECTED_ITEMS,
-  GeoMapServerModel.SELECTED_LAYERS
+  GeoMapServerModel.SELECTED_LAYERS,
+  GeoMapServerModel.DATA_SOURCES
 })
 @JsonTypeName("GeoMapServerModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +50,9 @@ public class GeoMapServerModel {
 
   public static final String SELECTED_LAYERS = "selectedLayers";
   private List<String> selectedLayers = null;
+
+  public static final String DATA_SOURCES = "dataSources";
+  private Map<String, GeoMapDataSourceDescriptor> dataSources = null;
 
   public GeoMapServerModel() { 
   }
@@ -123,6 +128,42 @@ public class GeoMapServerModel {
   }
 
 
+  public GeoMapServerModel dataSources(Map<String, GeoMapDataSourceDescriptor> dataSources) {
+    
+    this.dataSources = dataSources;
+    return this;
+  }
+
+  public GeoMapServerModel putDataSourcesItem(String key, GeoMapDataSourceDescriptor dataSourcesItem) {
+    if (this.dataSources == null) {
+      this.dataSources = new HashMap<>();
+    }
+    this.dataSources.put(key, dataSourcesItem);
+    return this;
+  }
+
+   /**
+   * Get dataSources
+   * @return dataSources
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DATA_SOURCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, GeoMapDataSourceDescriptor> getDataSources() {
+    return dataSources;
+  }
+
+
+  @JsonProperty(DATA_SOURCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDataSources(Map<String, GeoMapDataSourceDescriptor> dataSources) {
+    this.dataSources = dataSources;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -133,12 +174,13 @@ public class GeoMapServerModel {
     }
     GeoMapServerModel geoMapServerModel = (GeoMapServerModel) o;
     return Objects.equals(this.selectedItems, geoMapServerModel.selectedItems) &&
-        Objects.equals(this.selectedLayers, geoMapServerModel.selectedLayers);
+        Objects.equals(this.selectedLayers, geoMapServerModel.selectedLayers) &&
+        Objects.equals(this.dataSources, geoMapServerModel.dataSources);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectedItems, selectedLayers);
+    return Objects.hash(selectedItems, selectedLayers, dataSources);
   }
 
   @Override
@@ -147,6 +189,7 @@ public class GeoMapServerModel {
     sb.append("class GeoMapServerModel {\n");
     sb.append("    selectedItems: ").append(toIndentedString(selectedItems)).append("\n");
     sb.append("    selectedLayers: ").append(toIndentedString(selectedLayers)).append("\n");
+    sb.append("    dataSources: ").append(toIndentedString(dataSources)).append("\n");
     sb.append("}");
     return sb.toString();
   }
