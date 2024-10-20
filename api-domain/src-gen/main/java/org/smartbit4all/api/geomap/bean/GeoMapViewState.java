@@ -31,13 +31,15 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * null
+ * What to show and how...
  */
-@ApiModel(description = "null")
+@ApiModel(description = "What to show and how...")
 @JsonPropertyOrder({
   GeoMapViewState.LABEL,
   GeoMapViewState.LAYER_DESCRIPTORS,
-  GeoMapViewState.SELECTED_LAYERS
+  GeoMapViewState.SELECTED_LAYERS,
+  GeoMapViewState.FIT_TO_INITIAL_ITEMS,
+  GeoMapViewState.CENTER_ON_ITEM_CLICK
 })
 @JsonTypeName("GeoMapViewState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,10 +48,16 @@ public class GeoMapViewState {
   private String label;
 
   public static final String LAYER_DESCRIPTORS = "layerDescriptors";
-  private List<GeoMapLayerDescriptor> layerDescriptors = null;
+  private List<GeoMapLayerDescriptor> layerDescriptors = new ArrayList<>();
 
   public static final String SELECTED_LAYERS = "selectedLayers";
   private List<String> selectedLayers = null;
+
+  public static final String FIT_TO_INITIAL_ITEMS = "fitToInitialItems";
+  private Boolean fitToInitialItems = false;
+
+  public static final String CENTER_ON_ITEM_CLICK = "centerOnItemClick";
+  private Boolean centerOnItemClick = false;
 
   public GeoMapViewState() { 
   }
@@ -88,9 +96,6 @@ public class GeoMapViewState {
   }
 
   public GeoMapViewState addLayerDescriptorsItem(GeoMapLayerDescriptor layerDescriptorsItem) {
-    if (this.layerDescriptors == null) {
-      this.layerDescriptors = new ArrayList<>();
-    }
     this.layerDescriptors.add(layerDescriptorsItem);
     return this;
   }
@@ -99,11 +104,12 @@ public class GeoMapViewState {
    * Get layerDescriptors
    * @return layerDescriptors
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(LAYER_DESCRIPTORS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GeoMapLayerDescriptor> getLayerDescriptors() {
     return layerDescriptors;
@@ -111,7 +117,7 @@ public class GeoMapViewState {
 
 
   @JsonProperty(LAYER_DESCRIPTORS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLayerDescriptors(List<GeoMapLayerDescriptor> layerDescriptors) {
     this.layerDescriptors = layerDescriptors;
   }
@@ -152,6 +158,62 @@ public class GeoMapViewState {
   }
 
 
+  public GeoMapViewState fitToInitialItems(Boolean fitToInitialItems) {
+    
+    this.fitToInitialItems = fitToInitialItems;
+    return this;
+  }
+
+   /**
+   * Get fitToInitialItems
+   * @return fitToInitialItems
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(FIT_TO_INITIAL_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getFitToInitialItems() {
+    return fitToInitialItems;
+  }
+
+
+  @JsonProperty(FIT_TO_INITIAL_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setFitToInitialItems(Boolean fitToInitialItems) {
+    this.fitToInitialItems = fitToInitialItems;
+  }
+
+
+  public GeoMapViewState centerOnItemClick(Boolean centerOnItemClick) {
+    
+    this.centerOnItemClick = centerOnItemClick;
+    return this;
+  }
+
+   /**
+   * Get centerOnItemClick
+   * @return centerOnItemClick
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(CENTER_ON_ITEM_CLICK)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getCenterOnItemClick() {
+    return centerOnItemClick;
+  }
+
+
+  @JsonProperty(CENTER_ON_ITEM_CLICK)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setCenterOnItemClick(Boolean centerOnItemClick) {
+    this.centerOnItemClick = centerOnItemClick;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -163,12 +225,14 @@ public class GeoMapViewState {
     GeoMapViewState geoMapViewState = (GeoMapViewState) o;
     return Objects.equals(this.label, geoMapViewState.label) &&
         Objects.equals(this.layerDescriptors, geoMapViewState.layerDescriptors) &&
-        Objects.equals(this.selectedLayers, geoMapViewState.selectedLayers);
+        Objects.equals(this.selectedLayers, geoMapViewState.selectedLayers) &&
+        Objects.equals(this.fitToInitialItems, geoMapViewState.fitToInitialItems) &&
+        Objects.equals(this.centerOnItemClick, geoMapViewState.centerOnItemClick);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, layerDescriptors, selectedLayers);
+    return Objects.hash(label, layerDescriptors, selectedLayers, fitToInitialItems, centerOnItemClick);
   }
 
   @Override
@@ -178,6 +242,8 @@ public class GeoMapViewState {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    layerDescriptors: ").append(toIndentedString(layerDescriptors)).append("\n");
     sb.append("    selectedLayers: ").append(toIndentedString(selectedLayers)).append("\n");
+    sb.append("    fitToInitialItems: ").append(toIndentedString(fitToInitialItems)).append("\n");
+    sb.append("    centerOnItemClick: ").append(toIndentedString(centerOnItemClick)).append("\n");
     sb.append("}");
     return sb.toString();
   }

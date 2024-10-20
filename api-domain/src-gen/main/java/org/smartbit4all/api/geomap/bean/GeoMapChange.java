@@ -45,7 +45,7 @@ public class GeoMapChange {
   private String code;
 
   public static final String ITEMS = "items";
-  private List<GeoMapLayerChange> items = null;
+  private List<GeoMapLayerChange> items = new ArrayList<>();
 
   public GeoMapChange() { 
   }
@@ -84,9 +84,6 @@ public class GeoMapChange {
   }
 
   public GeoMapChange addItemsItem(GeoMapLayerChange itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
     this.items.add(itemsItem);
     return this;
   }
@@ -95,11 +92,12 @@ public class GeoMapChange {
    * Get items
    * @return items
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GeoMapLayerChange> getItems() {
     return items;
@@ -107,7 +105,7 @@ public class GeoMapChange {
 
 
   @JsonProperty(ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setItems(List<GeoMapLayerChange> items) {
     this.items = items;
   }

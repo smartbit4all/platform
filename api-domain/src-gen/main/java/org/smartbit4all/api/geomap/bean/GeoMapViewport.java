@@ -31,9 +31,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * null
+ * The viewport...
  */
-@ApiModel(description = "null")
+@ApiModel(description = "The viewport...")
 @JsonPropertyOrder({
   GeoMapViewport.CENTER,
   GeoMapViewport.ZOOM_LEVEL,
@@ -46,10 +46,10 @@ public class GeoMapViewport {
   private GPSPosition center;
 
   public static final String ZOOM_LEVEL = "zoomLevel";
-  private Float zoomLevel;
+  private Integer zoomLevel;
 
   public static final String BOUNDS = "bounds";
-  private List<GPSPosition> bounds = null;
+  private List<GPSPosition> bounds = new ArrayList<>();
 
   public GeoMapViewport() { 
   }
@@ -82,7 +82,7 @@ public class GeoMapViewport {
   }
 
 
-  public GeoMapViewport zoomLevel(Float zoomLevel) {
+  public GeoMapViewport zoomLevel(Integer zoomLevel) {
     
     this.zoomLevel = zoomLevel;
     return this;
@@ -97,14 +97,14 @@ public class GeoMapViewport {
   @JsonProperty(ZOOM_LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Float getZoomLevel() {
+  public Integer getZoomLevel() {
     return zoomLevel;
   }
 
 
   @JsonProperty(ZOOM_LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setZoomLevel(Float zoomLevel) {
+  public void setZoomLevel(Integer zoomLevel) {
     this.zoomLevel = zoomLevel;
   }
 
@@ -116,9 +116,6 @@ public class GeoMapViewport {
   }
 
   public GeoMapViewport addBoundsItem(GPSPosition boundsItem) {
-    if (this.bounds == null) {
-      this.bounds = new ArrayList<>();
-    }
     this.bounds.add(boundsItem);
     return this;
   }
@@ -127,11 +124,12 @@ public class GeoMapViewport {
    * Get bounds
    * @return bounds
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GPSPosition> getBounds() {
     return bounds;
@@ -139,7 +137,7 @@ public class GeoMapViewport {
 
 
   @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBounds(List<GPSPosition> bounds) {
     this.bounds = bounds;
   }

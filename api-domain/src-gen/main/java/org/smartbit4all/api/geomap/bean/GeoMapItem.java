@@ -91,7 +91,7 @@ public class GeoMapItem {
   private GPSPosition position;
 
   public static final String BOUNDS = "bounds";
-  private List<GPSPosition> bounds = null;
+  private List<GPSPosition> bounds = new ArrayList<>();
 
   public GeoMapItem() { 
   }
@@ -417,9 +417,6 @@ public class GeoMapItem {
   }
 
   public GeoMapItem addBoundsItem(GPSPosition boundsItem) {
-    if (this.bounds == null) {
-      this.bounds = new ArrayList<>();
-    }
     this.bounds.add(boundsItem);
     return this;
   }
@@ -428,11 +425,12 @@ public class GeoMapItem {
    * Get bounds
    * @return bounds
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GPSPosition> getBounds() {
     return bounds;
@@ -440,7 +438,7 @@ public class GeoMapItem {
 
 
   @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBounds(List<GPSPosition> bounds) {
     this.bounds = bounds;
   }

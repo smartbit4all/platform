@@ -132,7 +132,7 @@ components:
       type: object
       description: |
         This object represents the client model of a geomap component.
-      required: [ viewOptions, page ]
+      required: [ layers, defaultItemActions ]
       properties:
         viewUuid:
           type: string
@@ -157,7 +157,7 @@ components:
       type: object
       description: |
         This object represents the server model of a geomap component.
-      required: [ selectedRows ]
+      required: [ selectedItems, selectedLayers, dataSources ]
       properties:
         selectedItems:
           type: string
@@ -175,7 +175,7 @@ components:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ columns ]
+      required: [ items ]
       properties:
         code:
           type: string
@@ -187,7 +187,7 @@ components:
       type: object
       description: |
         This object is a geomap row containening the identifier and actions releted with the row.
-      required: [ actions, icons ]
+      required: [ actions, icons, bounds ]
       properties:
         id:
           type: string
@@ -227,8 +227,8 @@ components:
       enum: [ MARKER, POLYGON, LINE ]
     GeoMapViewState:
       type: object
-      description:
-      required: [ columns ]
+      description: What to show and how...
+      required: [ columns, fitToInitialItems, centerOnItemClick, layerDescriptors ]
       properties:
         label:
           type: string
@@ -240,10 +240,16 @@ components:
           type: array
           items:
             type: string
+        fitToInitialItems:
+          type: boolean
+          default: false
+        centerOnItemClick:
+          type: boolean
+          default: false
     GeoMapLayerDescriptor:
       type: object
       description:
-      required: [ columns ]
+      required: [ preserveSelection ]
       properties:
         code:
           type: string
@@ -258,6 +264,7 @@ components:
         preserveSelection:
           description: Reserves the selected items even if they are invisible.
           type: boolean
+          default: false
     GeoMapSelectionMode:
       type: string
       enum:
@@ -266,14 +273,14 @@ components:
         - multiple
     GeoMapViewport:
       type: object
-      description:
-      required: [ columns ]
+      description: The viewport...
+      required: [ bounds ]
       properties:
         center:
           $ref: '#/components/schemas/GPSPosition'
         zoomLevel:
-          type: number
-          format: float
+          type: integer
+          format: int32
         bounds:
           type: array
           items:
@@ -284,7 +291,7 @@ components:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ columns ]
+      required: [ items ]
       properties:
         code:
           type: string
@@ -296,7 +303,7 @@ components:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ columns ]
+      required: [ toAdd, toRemove ]
       properties:
         code:
           type: string
@@ -311,6 +318,8 @@ components:
 
     GeoMapDataSourceType:
       enum: [ STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST ]
+    GeoMapDataLoadingMode:
+      enum: [ ON_INTERACTION, ON_CREATION ]
     GeoMapDataSourceDescriptor:
       type: object
       properties:
@@ -326,9 +335,15 @@ components:
           $ref: '#/components/schemas/GeoMapDataSourceType'
         itemKind:
           $ref: '#/components/schemas/GeoMapItemKind'
+        loadingMode:
+          $ref: '#/components/schemas/GeoMapDataLoadingMode'
         # Stored Collection stuff
         sourceCollection:
           type: StoredCollectionDescriptor
+        pathToId:
+          type: array
+          items:
+            type: string
         pathToPosition:
           type: array
           items:
@@ -357,12 +372,18 @@ components:
           type: string
         searchIndexName:
           type: string
+        idColumn:
+          type: string
         titleColumn:
           type: string
         descriptionColumn:
           type: string
-        positionColumn:
+        latitudeColumn:
           type: string
+        longitudeColumn:
+          type: string
+        filterExpressionList:
+          type: FilterExpressionList
         # InvocationRequest stuff
         invocationRequest:
           description: |

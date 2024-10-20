@@ -46,10 +46,10 @@ public class GeoMapLayerChange {
   private String code;
 
   public static final String TO_ADD = "toAdd";
-  private List<GeoMapItem> toAdd = null;
+  private List<GeoMapItem> toAdd = new ArrayList<>();
 
   public static final String TO_REMOVE = "toRemove";
-  private List<String> toRemove = null;
+  private List<String> toRemove = new ArrayList<>();
 
   public GeoMapLayerChange() { 
   }
@@ -88,9 +88,6 @@ public class GeoMapLayerChange {
   }
 
   public GeoMapLayerChange addToAddItem(GeoMapItem toAddItem) {
-    if (this.toAdd == null) {
-      this.toAdd = new ArrayList<>();
-    }
     this.toAdd.add(toAddItem);
     return this;
   }
@@ -99,11 +96,12 @@ public class GeoMapLayerChange {
    * Get toAdd
    * @return toAdd
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(TO_ADD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GeoMapItem> getToAdd() {
     return toAdd;
@@ -111,7 +109,7 @@ public class GeoMapLayerChange {
 
 
   @JsonProperty(TO_ADD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setToAdd(List<GeoMapItem> toAdd) {
     this.toAdd = toAdd;
   }
@@ -124,9 +122,6 @@ public class GeoMapLayerChange {
   }
 
   public GeoMapLayerChange addToRemoveItem(String toRemoveItem) {
-    if (this.toRemove == null) {
-      this.toRemove = new ArrayList<>();
-    }
     this.toRemove.add(toRemoveItem);
     return this;
   }
@@ -135,10 +130,11 @@ public class GeoMapLayerChange {
    * Get toRemove
    * @return toRemove
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(TO_REMOVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getToRemove() {
     return toRemove;
@@ -146,7 +142,7 @@ public class GeoMapLayerChange {
 
 
   @JsonProperty(TO_REMOVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setToRemove(List<String> toRemove) {
     this.toRemove = toRemove;
   }

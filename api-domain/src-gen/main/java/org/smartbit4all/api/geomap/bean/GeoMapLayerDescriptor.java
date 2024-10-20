@@ -59,7 +59,7 @@ public class GeoMapLayerDescriptor {
   private GeoMapSelectionMode selectionMode;
 
   public static final String PRESERVE_SELECTION = "preserveSelection";
-  private Boolean preserveSelection;
+  private Boolean preserveSelection = false;
 
   public GeoMapLayerDescriptor() { 
   }
@@ -210,10 +210,11 @@ public class GeoMapLayerDescriptor {
    * Reserves the selected items even if they are invisible.
    * @return preserveSelection
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Reserves the selected items even if they are invisible.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "Reserves the selected items even if they are invisible.")
   @JsonProperty(PRESERVE_SELECTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Boolean getPreserveSelection() {
     return preserveSelection;
@@ -221,7 +222,7 @@ public class GeoMapLayerDescriptor {
 
 
   @JsonProperty(PRESERVE_SELECTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPreserveSelection(Boolean preserveSelection) {
     this.preserveSelection = preserveSelection;
   }

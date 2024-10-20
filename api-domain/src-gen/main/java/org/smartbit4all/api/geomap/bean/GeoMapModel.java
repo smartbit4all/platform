@@ -59,7 +59,7 @@ public class GeoMapModel {
   private String qualifier;
 
   public static final String LAYERS = "layers";
-  private List<GeoMapLayer> layers = null;
+  private List<GeoMapLayer> layers = new ArrayList<>();
 
   public static final String VIEW_STATE = "viewState";
   private GeoMapViewState viewState;
@@ -68,7 +68,7 @@ public class GeoMapModel {
   private GeoMapViewport viewport;
 
   public static final String DEFAULT_ITEM_ACTIONS = "defaultItemActions";
-  private List<String> defaultItemActions = null;
+  private List<String> defaultItemActions = new ArrayList<>();
 
   public GeoMapModel() { 
   }
@@ -162,9 +162,6 @@ public class GeoMapModel {
   }
 
   public GeoMapModel addLayersItem(GeoMapLayer layersItem) {
-    if (this.layers == null) {
-      this.layers = new ArrayList<>();
-    }
     this.layers.add(layersItem);
     return this;
   }
@@ -173,11 +170,12 @@ public class GeoMapModel {
    * Get layers
    * @return layers
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<GeoMapLayer> getLayers() {
     return layers;
@@ -185,7 +183,7 @@ public class GeoMapModel {
 
 
   @JsonProperty(LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLayers(List<GeoMapLayer> layers) {
     this.layers = layers;
   }
@@ -254,9 +252,6 @@ public class GeoMapModel {
   }
 
   public GeoMapModel addDefaultItemActionsItem(String defaultItemActionsItem) {
-    if (this.defaultItemActions == null) {
-      this.defaultItemActions = new ArrayList<>();
-    }
     this.defaultItemActions.add(defaultItemActionsItem);
     return this;
   }
@@ -265,10 +260,11 @@ public class GeoMapModel {
    * Get defaultItemActions
    * @return defaultItemActions
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(DEFAULT_ITEM_ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getDefaultItemActions() {
     return defaultItemActions;
@@ -276,7 +272,7 @@ public class GeoMapModel {
 
 
   @JsonProperty(DEFAULT_ITEM_ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDefaultItemActions(List<String> defaultItemActions) {
     this.defaultItemActions = defaultItemActions;
   }

@@ -46,13 +46,13 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GeoMapServerModel {
   public static final String SELECTED_ITEMS = "selectedItems";
-  private Map<String, GeoMapItem> selectedItems = null;
+  private Map<String, GeoMapItem> selectedItems = new HashMap<>();
 
   public static final String SELECTED_LAYERS = "selectedLayers";
-  private List<String> selectedLayers = null;
+  private List<String> selectedLayers = new ArrayList<>();
 
   public static final String DATA_SOURCES = "dataSources";
-  private Map<String, GeoMapDataSourceDescriptor> dataSources = null;
+  private Map<String, GeoMapDataSourceDescriptor> dataSources = new HashMap<>();
 
   public GeoMapServerModel() { 
   }
@@ -64,9 +64,6 @@ public class GeoMapServerModel {
   }
 
   public GeoMapServerModel putSelectedItemsItem(String key, GeoMapItem selectedItemsItem) {
-    if (this.selectedItems == null) {
-      this.selectedItems = new HashMap<>();
-    }
     this.selectedItems.put(key, selectedItemsItem);
     return this;
   }
@@ -75,11 +72,12 @@ public class GeoMapServerModel {
    * Get selectedItems
    * @return selectedItems
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, GeoMapItem> getSelectedItems() {
     return selectedItems;
@@ -87,7 +85,7 @@ public class GeoMapServerModel {
 
 
   @JsonProperty(SELECTED_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSelectedItems(Map<String, GeoMapItem> selectedItems) {
     this.selectedItems = selectedItems;
   }
@@ -100,9 +98,6 @@ public class GeoMapServerModel {
   }
 
   public GeoMapServerModel addSelectedLayersItem(String selectedLayersItem) {
-    if (this.selectedLayers == null) {
-      this.selectedLayers = new ArrayList<>();
-    }
     this.selectedLayers.add(selectedLayersItem);
     return this;
   }
@@ -111,10 +106,11 @@ public class GeoMapServerModel {
    * Get selectedLayers
    * @return selectedLayers
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getSelectedLayers() {
     return selectedLayers;
@@ -122,7 +118,7 @@ public class GeoMapServerModel {
 
 
   @JsonProperty(SELECTED_LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSelectedLayers(List<String> selectedLayers) {
     this.selectedLayers = selectedLayers;
   }
@@ -135,9 +131,6 @@ public class GeoMapServerModel {
   }
 
   public GeoMapServerModel putDataSourcesItem(String key, GeoMapDataSourceDescriptor dataSourcesItem) {
-    if (this.dataSources == null) {
-      this.dataSources = new HashMap<>();
-    }
     this.dataSources.put(key, dataSourcesItem);
     return this;
   }
@@ -146,11 +139,12 @@ public class GeoMapServerModel {
    * Get dataSources
    * @return dataSources
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(DATA_SOURCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, GeoMapDataSourceDescriptor> getDataSources() {
     return dataSources;
@@ -158,7 +152,7 @@ public class GeoMapServerModel {
 
 
   @JsonProperty(DATA_SOURCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDataSources(Map<String, GeoMapDataSourceDescriptor> dataSources) {
     this.dataSources = dataSources;
   }

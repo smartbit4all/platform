@@ -25,6 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.geomap.bean.GeoMapDataLoadingMode;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceType;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -41,7 +43,9 @@ import javax.validation.Valid;
   GeoMapDataSourceDescriptor.TARGET_LAYER,
   GeoMapDataSourceDescriptor.SOURCE_TYPE,
   GeoMapDataSourceDescriptor.ITEM_KIND,
+  GeoMapDataSourceDescriptor.LOADING_MODE,
   GeoMapDataSourceDescriptor.SOURCE_COLLECTION,
+  GeoMapDataSourceDescriptor.PATH_TO_ID,
   GeoMapDataSourceDescriptor.PATH_TO_POSITION,
   GeoMapDataSourceDescriptor.PATH_TO_BOUNDS,
   GeoMapDataSourceDescriptor.PATH_TO_TITLE,
@@ -50,9 +54,12 @@ import javax.validation.Valid;
   GeoMapDataSourceDescriptor.INCLUSION_PREDICATE,
   GeoMapDataSourceDescriptor.SEARCH_INDEX_SCHEMA,
   GeoMapDataSourceDescriptor.SEARCH_INDEX_NAME,
+  GeoMapDataSourceDescriptor.ID_COLUMN,
   GeoMapDataSourceDescriptor.TITLE_COLUMN,
   GeoMapDataSourceDescriptor.DESCRIPTION_COLUMN,
-  GeoMapDataSourceDescriptor.POSITION_COLUMN,
+  GeoMapDataSourceDescriptor.LATITUDE_COLUMN,
+  GeoMapDataSourceDescriptor.LONGITUDE_COLUMN,
+  GeoMapDataSourceDescriptor.FILTER_EXPRESSION_LIST,
   GeoMapDataSourceDescriptor.INVOCATION_REQUEST
 })
 @JsonTypeName("GeoMapDataSourceDescriptor")
@@ -70,8 +77,14 @@ public class GeoMapDataSourceDescriptor {
   public static final String ITEM_KIND = "itemKind";
   private GeoMapItemKind itemKind;
 
+  public static final String LOADING_MODE = "loadingMode";
+  private GeoMapDataLoadingMode loadingMode;
+
   public static final String SOURCE_COLLECTION = "sourceCollection";
   private StoredCollectionDescriptor sourceCollection = null;
+
+  public static final String PATH_TO_ID = "pathToId";
+  private List<String> pathToId = null;
 
   public static final String PATH_TO_POSITION = "pathToPosition";
   private List<String> pathToPosition = null;
@@ -97,14 +110,23 @@ public class GeoMapDataSourceDescriptor {
   public static final String SEARCH_INDEX_NAME = "searchIndexName";
   private String searchIndexName;
 
+  public static final String ID_COLUMN = "idColumn";
+  private String idColumn;
+
   public static final String TITLE_COLUMN = "titleColumn";
   private String titleColumn;
 
   public static final String DESCRIPTION_COLUMN = "descriptionColumn";
   private String descriptionColumn;
 
-  public static final String POSITION_COLUMN = "positionColumn";
-  private String positionColumn;
+  public static final String LATITUDE_COLUMN = "latitudeColumn";
+  private String latitudeColumn;
+
+  public static final String LONGITUDE_COLUMN = "longitudeColumn";
+  private String longitudeColumn;
+
+  public static final String FILTER_EXPRESSION_LIST = "filterExpressionList";
+  private FilterExpressionList filterExpressionList = null;
 
   public static final String INVOCATION_REQUEST = "invocationRequest";
   private InvocationRequest invocationRequest = null;
@@ -222,6 +244,34 @@ public class GeoMapDataSourceDescriptor {
   }
 
 
+  public GeoMapDataSourceDescriptor loadingMode(GeoMapDataLoadingMode loadingMode) {
+    
+    this.loadingMode = loadingMode;
+    return this;
+  }
+
+   /**
+   * Get loadingMode
+   * @return loadingMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(LOADING_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapDataLoadingMode getLoadingMode() {
+    return loadingMode;
+  }
+
+
+  @JsonProperty(LOADING_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLoadingMode(GeoMapDataLoadingMode loadingMode) {
+    this.loadingMode = loadingMode;
+  }
+
+
   public GeoMapDataSourceDescriptor sourceCollection(StoredCollectionDescriptor sourceCollection) {
     
     this.sourceCollection = sourceCollection;
@@ -247,6 +297,41 @@ public class GeoMapDataSourceDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSourceCollection(StoredCollectionDescriptor sourceCollection) {
     this.sourceCollection = sourceCollection;
+  }
+
+
+  public GeoMapDataSourceDescriptor pathToId(List<String> pathToId) {
+    
+    this.pathToId = pathToId;
+    return this;
+  }
+
+  public GeoMapDataSourceDescriptor addPathToIdItem(String pathToIdItem) {
+    if (this.pathToId == null) {
+      this.pathToId = new ArrayList<>();
+    }
+    this.pathToId.add(pathToIdItem);
+    return this;
+  }
+
+   /**
+   * Get pathToId
+   * @return pathToId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PATH_TO_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getPathToId() {
+    return pathToId;
+  }
+
+
+  @JsonProperty(PATH_TO_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPathToId(List<String> pathToId) {
+    this.pathToId = pathToId;
   }
 
 
@@ -507,6 +592,33 @@ public class GeoMapDataSourceDescriptor {
   }
 
 
+  public GeoMapDataSourceDescriptor idColumn(String idColumn) {
+    
+    this.idColumn = idColumn;
+    return this;
+  }
+
+   /**
+   * Get idColumn
+   * @return idColumn
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ID_COLUMN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdColumn() {
+    return idColumn;
+  }
+
+
+  @JsonProperty(ID_COLUMN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdColumn(String idColumn) {
+    this.idColumn = idColumn;
+  }
+
+
   public GeoMapDataSourceDescriptor titleColumn(String titleColumn) {
     
     this.titleColumn = titleColumn;
@@ -561,30 +673,85 @@ public class GeoMapDataSourceDescriptor {
   }
 
 
-  public GeoMapDataSourceDescriptor positionColumn(String positionColumn) {
+  public GeoMapDataSourceDescriptor latitudeColumn(String latitudeColumn) {
     
-    this.positionColumn = positionColumn;
+    this.latitudeColumn = latitudeColumn;
     return this;
   }
 
    /**
-   * Get positionColumn
-   * @return positionColumn
+   * Get latitudeColumn
+   * @return latitudeColumn
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(POSITION_COLUMN)
+  @JsonProperty(LATITUDE_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getPositionColumn() {
-    return positionColumn;
+  public String getLatitudeColumn() {
+    return latitudeColumn;
   }
 
 
-  @JsonProperty(POSITION_COLUMN)
+  @JsonProperty(LATITUDE_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPositionColumn(String positionColumn) {
-    this.positionColumn = positionColumn;
+  public void setLatitudeColumn(String latitudeColumn) {
+    this.latitudeColumn = latitudeColumn;
+  }
+
+
+  public GeoMapDataSourceDescriptor longitudeColumn(String longitudeColumn) {
+    
+    this.longitudeColumn = longitudeColumn;
+    return this;
+  }
+
+   /**
+   * Get longitudeColumn
+   * @return longitudeColumn
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(LONGITUDE_COLUMN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getLongitudeColumn() {
+    return longitudeColumn;
+  }
+
+
+  @JsonProperty(LONGITUDE_COLUMN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLongitudeColumn(String longitudeColumn) {
+    this.longitudeColumn = longitudeColumn;
+  }
+
+
+  public GeoMapDataSourceDescriptor filterExpressionList(FilterExpressionList filterExpressionList) {
+    
+    this.filterExpressionList = filterExpressionList;
+    return this;
+  }
+
+   /**
+   * Get filterExpressionList
+   * @return filterExpressionList
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FILTER_EXPRESSION_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionList getFilterExpressionList() {
+    return filterExpressionList;
+  }
+
+
+  @JsonProperty(FILTER_EXPRESSION_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterExpressionList(FilterExpressionList filterExpressionList) {
+    this.filterExpressionList = filterExpressionList;
   }
 
 
@@ -629,7 +796,9 @@ public class GeoMapDataSourceDescriptor {
         Objects.equals(this.targetLayer, geoMapDataSourceDescriptor.targetLayer) &&
         Objects.equals(this.sourceType, geoMapDataSourceDescriptor.sourceType) &&
         Objects.equals(this.itemKind, geoMapDataSourceDescriptor.itemKind) &&
+        Objects.equals(this.loadingMode, geoMapDataSourceDescriptor.loadingMode) &&
         Objects.equals(this.sourceCollection, geoMapDataSourceDescriptor.sourceCollection) &&
+        Objects.equals(this.pathToId, geoMapDataSourceDescriptor.pathToId) &&
         Objects.equals(this.pathToPosition, geoMapDataSourceDescriptor.pathToPosition) &&
         Objects.equals(this.pathToBounds, geoMapDataSourceDescriptor.pathToBounds) &&
         Objects.equals(this.pathToTitle, geoMapDataSourceDescriptor.pathToTitle) &&
@@ -638,15 +807,18 @@ public class GeoMapDataSourceDescriptor {
         Objects.equals(this.inclusionPredicate, geoMapDataSourceDescriptor.inclusionPredicate) &&
         Objects.equals(this.searchIndexSchema, geoMapDataSourceDescriptor.searchIndexSchema) &&
         Objects.equals(this.searchIndexName, geoMapDataSourceDescriptor.searchIndexName) &&
+        Objects.equals(this.idColumn, geoMapDataSourceDescriptor.idColumn) &&
         Objects.equals(this.titleColumn, geoMapDataSourceDescriptor.titleColumn) &&
         Objects.equals(this.descriptionColumn, geoMapDataSourceDescriptor.descriptionColumn) &&
-        Objects.equals(this.positionColumn, geoMapDataSourceDescriptor.positionColumn) &&
+        Objects.equals(this.latitudeColumn, geoMapDataSourceDescriptor.latitudeColumn) &&
+        Objects.equals(this.longitudeColumn, geoMapDataSourceDescriptor.longitudeColumn) &&
+        Objects.equals(this.filterExpressionList, geoMapDataSourceDescriptor.filterExpressionList) &&
         Objects.equals(this.invocationRequest, geoMapDataSourceDescriptor.invocationRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, targetLayer, sourceType, itemKind, sourceCollection, pathToPosition, pathToBounds, pathToTitle, pathToDescription, includeIf, inclusionPredicate, searchIndexSchema, searchIndexName, titleColumn, descriptionColumn, positionColumn, invocationRequest);
+    return Objects.hash(id, targetLayer, sourceType, itemKind, loadingMode, sourceCollection, pathToId, pathToPosition, pathToBounds, pathToTitle, pathToDescription, includeIf, inclusionPredicate, searchIndexSchema, searchIndexName, idColumn, titleColumn, descriptionColumn, latitudeColumn, longitudeColumn, filterExpressionList, invocationRequest);
   }
 
   @Override
@@ -657,7 +829,9 @@ public class GeoMapDataSourceDescriptor {
     sb.append("    targetLayer: ").append(toIndentedString(targetLayer)).append("\n");
     sb.append("    sourceType: ").append(toIndentedString(sourceType)).append("\n");
     sb.append("    itemKind: ").append(toIndentedString(itemKind)).append("\n");
+    sb.append("    loadingMode: ").append(toIndentedString(loadingMode)).append("\n");
     sb.append("    sourceCollection: ").append(toIndentedString(sourceCollection)).append("\n");
+    sb.append("    pathToId: ").append(toIndentedString(pathToId)).append("\n");
     sb.append("    pathToPosition: ").append(toIndentedString(pathToPosition)).append("\n");
     sb.append("    pathToBounds: ").append(toIndentedString(pathToBounds)).append("\n");
     sb.append("    pathToTitle: ").append(toIndentedString(pathToTitle)).append("\n");
@@ -666,9 +840,12 @@ public class GeoMapDataSourceDescriptor {
     sb.append("    inclusionPredicate: ").append(toIndentedString(inclusionPredicate)).append("\n");
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
     sb.append("    searchIndexName: ").append(toIndentedString(searchIndexName)).append("\n");
+    sb.append("    idColumn: ").append(toIndentedString(idColumn)).append("\n");
     sb.append("    titleColumn: ").append(toIndentedString(titleColumn)).append("\n");
     sb.append("    descriptionColumn: ").append(toIndentedString(descriptionColumn)).append("\n");
-    sb.append("    positionColumn: ").append(toIndentedString(positionColumn)).append("\n");
+    sb.append("    latitudeColumn: ").append(toIndentedString(latitudeColumn)).append("\n");
+    sb.append("    longitudeColumn: ").append(toIndentedString(longitudeColumn)).append("\n");
+    sb.append("    filterExpressionList: ").append(toIndentedString(filterExpressionList)).append("\n");
     sb.append("    invocationRequest: ").append(toIndentedString(invocationRequest)).append("\n");
     sb.append("}");
     return sb.toString();
