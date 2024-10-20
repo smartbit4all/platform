@@ -122,6 +122,8 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConvert
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverterImpl;
 import org.smartbit4all.api.view.geomap.GeoMapApi;
 import org.smartbit4all.api.view.geomap.GeoMapApiImpl;
+import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactory;
+import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactoryImpl;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModelApiImpl;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
@@ -227,6 +229,11 @@ public class PlatformApiConfig {
   @Bean
   public GeoMapApi geoMapApi() {
     return new GeoMapApiImpl();
+  }
+
+  @Bean
+  public GeoMapDataLoadingStrategyFactory geoMapDataLoadingStrategyFactory() {
+    return new GeoMapDataLoadingStrategyFactoryImpl();
   }
 
   @Bean

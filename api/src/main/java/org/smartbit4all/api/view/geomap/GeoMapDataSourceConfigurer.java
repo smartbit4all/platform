@@ -3,9 +3,13 @@ package org.smartbit4all.api.view.geomap;
 import com.google.common.base.Strings;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.geomap.bean.GeoMapDataLoadingMode;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceType;
+import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.domain.annotation.property.Id;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -75,21 +79,25 @@ public abstract class GeoMapDataSourceConfigurer {
 
   public static GeoMapDataSourceDescriptor ofInvocationRequest(
       String id,
-      InvocationRequest invocationRequest) {
-    return ofInvocationRequest(id, GeoMapApi.LAYER_DEFAULT, invocationRequest);
+      InvocationRequest invocationRequest,
+      GeoMapDataLoadingMode loadingMode) {
+    return ofInvocationRequest(id, GeoMapApi.LAYER_DEFAULT, invocationRequest, loadingMode);
   }
 
   public static GeoMapDataSourceDescriptor ofInvocationRequest(
       String id,
       String targetLayer,
-      InvocationRequest invocationRequest) {
+      InvocationRequest invocationRequest,
+      GeoMapDataLoadingMode loadingMode) {
     Objects.requireNonNull(id, "GeoMap DataSource id cannot be null!");
     Objects.requireNonNull(targetLayer, "GeoMap DataSource cannot target null layer!");
     Objects.requireNonNull(invocationRequest, "invocationRequest cannot be null!");
+    Objects.requireNonNull(loadingMode, "loadingMode cannot be null!");
 
     return new GeoMapDataSourceDescriptor()
         .id(id)
         .targetLayer(targetLayer)
+        .loadingMode(loadingMode)
         .sourceType(GeoMapDataSourceType.INVOCATION_REQUEST)
         .invocationRequest(invocationRequest);
   }
@@ -100,6 +108,17 @@ public abstract class GeoMapDataSourceConfigurer {
     this.descriptor = descriptor;
   }
 
+  public final class LoadingModeConfigurationStep {
+
+    public GeoMapDataSourceDescriptor withLoadingMode(GeoMapDataLoadingMode loadingMode) {
+      if (loadingMode == null) {
+        throw new IllegalArgumentException("loadingMode cannot be null!");
+      }
+
+      return descriptor.loadingMode(loadingMode);
+    }
+  }
+
   public static final class StoredCollectionBasedGeoMapDataSourceConfigurer
       extends GeoMapDataSourceConfigurer {
 
@@ -108,13 +127,47 @@ public abstract class GeoMapDataSourceConfigurer {
       super(descriptor);
     }
 
-    public MetadataConfigurationStep withMarkers(String... pathToPosition) {
+    public IdConfigurationStep withMarkers(String... pathToPosition) {
       if (pathToPosition == null || pathToPosition.length == 0) {
         throw new IllegalArgumentException("pathToPosition cannot be null or empty!");
       }
 
-      descriptor.setPathToDescription(Arrays.asList(pathToPosition));
-      return new MetadataConfigurationStep();
+      descriptor.setItemKind(GeoMapItemKind.MARKER);
+      descriptor.setPathToPosition(Arrays.asList(pathToPosition));
+      return new IdConfigurationStep();
+    }
+
+    public IdConfigurationStep withPolygons(String... pathToBounds) {
+      return withBoundedShapes(GeoMapItemKind.POLYGON, pathToBounds);
+    }
+
+    public IdConfigurationStep withLines(String... pathToBounds) {
+      return withBoundedShapes(GeoMapItemKind.LINE, pathToBounds);
+    }
+
+    private IdConfigurationStep withBoundedShapes(GeoMapItemKind kind, String... pathToBounds) {
+      if (pathToBounds == null || pathToBounds.length == 0) {
+        throw new IllegalArgumentException("pathToBounds cannot be null or empty!");
+      }
+
+      descriptor.setItemKind(kind);
+      descriptor.setPathToBounds(Arrays.asList(pathToBounds));
+      return new IdConfigurationStep();
+    }
+
+    public final class IdConfigurationStep {
+      public MetadataConfigurationStep withId(String... pathToId) {
+        if (pathToId == null || pathToId.length == 0) {
+          throw new IllegalArgumentException("pathToId cannot be null or empty!");
+        }
+
+        descriptor.setPathToId(Arrays.asList(pathToId));
+        return new MetadataConfigurationStep();
+      }
+
+      public MetadataConfigurationStep withUriAsId() {
+        return new MetadataConfigurationStep();
+      }
     }
 
     public final class MetadataConfigurationStep {
@@ -167,25 +220,25 @@ public abstract class GeoMapDataSourceConfigurer {
 
     public final class InclusionConfigurationStep {
 
-      public GeoMapDataSourceDescriptor includeIfTruthy(String... pathToSentinelValue) {
+      public LoadingModeConfigurationStep includeIfTruthy(String... pathToSentinelValue) {
         if (pathToSentinelValue == null || pathToSentinelValue.length == 0) {
           throw new IllegalArgumentException(
               "pathToSentinelValue cannot be null or empty if specified!");
         }
 
         descriptor.includeIf(Arrays.asList(pathToSentinelValue));
-        return descriptor;
+        return new LoadingModeConfigurationStep();
       }
 
-      public GeoMapDataSourceDescriptor includeIfMatches(InvocationRequest predicate) {
+      public LoadingModeConfigurationStep includeIfMatches(InvocationRequest predicate) {
         Objects.requireNonNull(predicate, "predicate cannot be null!");
 
         descriptor.inclusionPredicate(predicate);
-        return descriptor;
+        return new LoadingModeConfigurationStep();
       }
 
-      public GeoMapDataSourceDescriptor includeAlways() {
-        return descriptor;
+      public LoadingModeConfigurationStep includeAlways() {
+        return new LoadingModeConfigurationStep();
       }
 
     }
@@ -199,13 +252,36 @@ public abstract class GeoMapDataSourceConfigurer {
       super(descriptor);
     }
 
-    public MetadataColumnConfigurationStep withPosition(String positionCol) {
-      if (Strings.isNullOrEmpty(positionCol)) {
-        throw new IllegalArgumentException("positionCol cannot be null or empty!");
+    public IdColumnConfigurationStep withPosition(String latitudeCol, String longitudeCol) {
+      if (Strings.isNullOrEmpty(latitudeCol)) {
+        throw new IllegalArgumentException("latitudeCol cannot be null or empty!");
       }
 
-      descriptor.setPositionColumn(positionCol);
-      return new MetadataColumnConfigurationStep();
+      if (Strings.isNullOrEmpty(longitudeCol)) {
+        throw new IllegalArgumentException("longitudeCol cannot be null or empty!");
+      }
+
+      descriptor.setLatitudeColumn(latitudeCol);
+      descriptor.setLongitudeColumn(longitudeCol);
+
+      return new IdColumnConfigurationStep();
+    }
+
+    public final class IdColumnConfigurationStep {
+
+      public MetadataColumnConfigurationStep withId(String idCol) {
+        if (Strings.isNullOrEmpty(idCol)) {
+          throw new IllegalArgumentException("idCol cannot be null or empty!");
+        }
+
+        descriptor.setIdColumn(idCol);
+        return new MetadataColumnConfigurationStep();
+      }
+
+      public MetadataColumnConfigurationStep withUriAsId() {
+        return withId("uri");
+      }
+
     }
 
 
