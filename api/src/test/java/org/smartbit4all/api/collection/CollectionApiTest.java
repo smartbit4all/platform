@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +34,11 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseRendition;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCompany;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleDepartment;
+import org.smartbit4all.api.sample.bean.SampleEmployee;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -47,9 +53,6 @@ import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -68,6 +71,11 @@ public class CollectionApiTest {
   public static final String MY_SEARCH = "mySearch";
   public static final String MY_SEARCHDETAILVALUES = "mySearchDetailValues";
   public static final String SAMPLE_CATEGORY = "sampleCategory";
+  public static final String SAMPLE_EMPLOYEE = "sampleEmployee";
+  public static final String SAMPLE_DEPARTMENT = "sampleDepartment";
+  public static final String SAMPLE_DEPARTMENT_REF = "department";
+  public static final String SAMPLE_COMPANY = "sampleCompany";
+  public static final String SAMPLE_COMPANY_REF = "company";
 
   @Autowired
   private CollectionApi collectionApi;
@@ -810,6 +818,83 @@ public class CollectionApiTest {
 
     assertEquals(0, sequence2.current());
 
+  }
+
+  @Test
+  void testSearchIndexReference() {
+    initEmployeeValues();
+
+
+    SearchIndex<SampleCompany> companySearchIndex =
+        collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_COMPANY, SampleCompany.class);
+    SearchIndex<SampleDepartment> departmentSearchIndex = collectionApi.searchIndex(SCHEMA,
+        CollectionApiTest.SAMPLE_DEPARTMENT, SampleDepartment.class);
+    SearchIndex<SampleEmployee> employeeSearchIndex =
+        collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_EMPLOYEE, SampleEmployee.class);
+
+    FilterExpressionList filter = new FilterExpressionList()
+        .addExpressionsItem(
+            new FilterExpressionData()
+                .currentOperation(FilterExpressionOperation.EQUAL)
+                .operand1(new FilterExpressionOperandData()
+                    .isDataName(true)
+                    .valueAsString(SampleEmployee.ID))
+                .operand2(new FilterExpressionOperandData()
+                    .isDataName(false)
+                    .valueAsString("1"))
+                .boolOperator(FilterExpressionBoolOperator.OR));
+    TableData<?> result =
+        employeeSearchIndex.executeSearch(filter, null, Arrays.asList(SampleEmployee.NAME));
+  }
+
+
+  void initEmployeeValues() {
+    // Company
+    SampleCompany company1 =
+        new SampleCompany().name("TeszCompany1").id("0");
+    URI company1Uri = objectApi.saveAsNew(SCHEMA, company1);
+    SampleCompany company2 =
+        new SampleCompany().name("TeszCompany2").id("1");
+    URI company2Uri = objectApi.saveAsNew(SCHEMA, company2);
+
+    // Department
+    SampleDepartment department1 =
+        new SampleDepartment().name("TeszDepartment1").id("0").company(company1Uri);
+    URI department1Uri = objectApi.saveAsNew(SCHEMA, department1);
+    SampleDepartment department2 =
+        new SampleDepartment().name("TeszDepartment2").id("1").company(company1Uri);
+    URI department2Uri = objectApi.saveAsNew(SCHEMA, department2);
+    SampleDepartment department3 =
+        new SampleDepartment().name("TeszDepartment3").id("2").company(company2Uri);
+    URI department3Uri = objectApi.saveAsNew(SCHEMA, department3);
+
+    SampleEmployee employee1 =
+        new SampleEmployee().name("Teszt Jakab").id("0").department(department1Uri);
+    URI employee1Uri = objectApi.saveAsNew(SCHEMA, employee1);
+    SampleEmployee employee2 =
+        new SampleEmployee().name("Teszt Géza").id("1").department(department1Uri);
+    URI employee2Uri = objectApi.saveAsNew(SCHEMA, employee2);
+    SampleEmployee employee3 =
+        new SampleEmployee().name("Teszt Emese").id("2").department(department2Uri);
+    URI employee3Uri = objectApi.saveAsNew(SCHEMA, employee3);
+    SampleEmployee employee4 =
+        new SampleEmployee().name("Teszt Helga").id("3").department(department3Uri);
+    URI employee4Uri = objectApi.saveAsNew(SCHEMA, employee4);
+
+
+    SearchIndex<SampleCompany> companySearchIndex =
+        collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_COMPANY, SampleCompany.class);
+    companySearchIndex
+        .updateIndex(Arrays.asList(company1Uri, company2Uri));
+    SearchIndex<SampleDepartment> departmentSearchIndex = collectionApi.searchIndex(SCHEMA,
+        CollectionApiTest.SAMPLE_DEPARTMENT, SampleDepartment.class);
+    departmentSearchIndex
+        .updateIndex(Arrays.asList(department1Uri, department2Uri, department3Uri));
+
+    SearchIndex<SampleEmployee> employeeSearchIndex =
+        collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_EMPLOYEE, SampleEmployee.class);
+    employeeSearchIndex
+        .updateIndex(Arrays.asList(employee1Uri, employee2Uri, employee3Uri, employee4Uri));
   }
 
 }

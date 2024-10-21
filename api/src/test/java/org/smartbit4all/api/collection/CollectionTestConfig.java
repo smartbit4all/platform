@@ -10,14 +10,16 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleAttachement;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCompany;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleDepartment;
+import org.smartbit4all.api.sample.bean.SampleEmployee;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -97,7 +99,7 @@ public class CollectionTestConfig {
               // Java 8 is incapable to infer types of lambda parameters even if explicit type
               // notation is used, we must explicitly cast to let the compiler pass, or upgrade to
               // JDK 9+!
-              for (FilterExpressionData expression : ((FilterExpressionList) filters).getExpressions()) {
+              for (FilterExpressionData expression : filters.getExpressions()) {
                 if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
                     && "process".equals(expression.getOperand2().getValueAsString())) {
                   expression.getOperand2().setValueAsString("odd");
@@ -203,6 +205,52 @@ public class CollectionTestConfig {
               .exists(detailDefinition.masterJoin, existsExpression)
               .name(SampleCategory.KEY_WORDS);
         });
+    return index;
+  }
+
+  @Bean
+  public SearchIndex<SampleEmployee> sampleEmployee() {
+    SearchIndexImpl<SampleEmployee> index = new SearchIndexImpl<>(
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_EMPLOYEE, CollectionApiTest.SCHEMA, SampleEmployee.class)
+            .map(SampleEmployee.NAME, String.class, SampleEmployee.NAME)
+            .map(SampleEmployee.ID, String.class, SampleEmployee.ID)
+            .map(SampleEmployee.DEPARTMENT, URI.class, SampleEmployee.DEPARTMENT)
+            .map(SampleEmployee.URI, SampleEmployee.URI);
+    index.reference(CollectionApiTest.SAMPLE_DEPARTMENT_REF,
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_DEPARTMENT,
+        SampleEmployee.DEPARTMENT,
+        SampleDepartment.URI);
+
+    return index;
+  }
+
+  @Bean
+  public SearchIndex<SampleDepartment> sampleDepartment() {
+    SearchIndexImpl<SampleDepartment> index = new SearchIndexImpl<>(
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_DEPARTMENT, CollectionApiTest.SCHEMA, SampleDepartment.class)
+            .map(SampleDepartment.NAME, String.class, SampleDepartment.NAME)
+            .map(SampleDepartment.ID, String.class, SampleDepartment.ID)
+            .map(SampleDepartment.COMPANY, URI.class, SampleDepartment.COMPANY)
+            .map(SampleDepartment.URI, SampleDepartment.URI);
+    index.reference(CollectionApiTest.SAMPLE_COMPANY_REF,
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_COMPANY,
+        SampleDepartment.COMPANY,
+        SampleCompany.URI);
+    return index;
+  }
+
+  @Bean
+  public SearchIndex<SampleCompany> sampleCompany() {
+    SearchIndexImpl<SampleCompany> index = new SearchIndexImpl<>(
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_COMPANY, CollectionApiTest.SCHEMA, SampleCompany.class)
+            .map(SampleCompany.NAME, String.class, SampleCompany.NAME)
+            .map(SampleCompany.ID, String.class, SampleCompany.ID)
+            .map(SampleCompany.URI, SampleCompany.URI);
     return index;
   }
 

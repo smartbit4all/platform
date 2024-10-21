@@ -562,7 +562,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
         filterExpressionApi, comparatorProvider);
     try {
-      result.afterPropertiesSet();
+      result.initDefinition();
     } catch (Exception e) {
       log.error("Unable to initialize the search index for the {} - {}", defName,
           entryDescriptor);
@@ -578,7 +578,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
         filterExpressionApi, comparatorProvider);
     try {
-      result.afterPropertiesSet();
+      result.initDefinition();
     } catch (Exception e) {
       log.error("Unable to initialize the search index for the {} - {}", def.getName(),
           entryDescriptor);
