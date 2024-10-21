@@ -677,7 +677,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       Object prevModel, Object nextModel) {
     String entryName = getEntryName(ctx, objectApi.load(entryUri));
     viewPublisherApi.fireActionPerformed(ctx.view, request,
-        ctx.modificationApi.getModification().getId(),
+        ctx.modificationApi != null ? ctx.modificationApi.getModification().getId() : "",
         entryName,
         prevModel,
         nextModel);
@@ -841,7 +841,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       editorView.setModel(editorModelAsMap);
 
       viewPublisherApi.fireActionPerformed(editorView, request,
-          context.modificationApi.getModification().getId(),
+          context.modificationApi != null ? context.modificationApi.getModification().getId() : "",
           entryName);
     }
 
