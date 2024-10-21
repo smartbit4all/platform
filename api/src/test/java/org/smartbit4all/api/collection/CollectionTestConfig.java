@@ -10,6 +10,7 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -99,7 +100,8 @@ public class CollectionTestConfig {
               // Java 8 is incapable to infer types of lambda parameters even if explicit type
               // notation is used, we must explicitly cast to let the compiler pass, or upgrade to
               // JDK 9+!
-              for (FilterExpressionData expression : filters.getExpressions()) {
+              for (FilterExpressionData expression : ((FilterExpressionList) filters)
+                  .getExpressions()) {
                 if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
                     && "process".equals(expression.getOperand2().getValueAsString())) {
                   expression.getOperand2().setValueAsString("odd");
