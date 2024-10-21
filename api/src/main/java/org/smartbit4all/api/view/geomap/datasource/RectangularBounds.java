@@ -1,9 +1,8 @@
 package org.smartbit4all.api.view.geomap.datasource;
 
+import java.util.List;
 import org.smartbit4all.api.geomap.bean.GPSPosition;
 import org.smartbit4all.api.geomap.bean.GeoMapViewport;
-
-import java.util.List;
 
 public final class RectangularBounds {
 
@@ -23,9 +22,9 @@ public final class RectangularBounds {
         bounds.latMin = lat;
       }
 
-      cmp = Double.compare(bounds.latMax, lng);
+      cmp = Double.compare(bounds.latMax, lat);
       if (cmp < 0) {
-        bounds.latMax = lng;
+        bounds.latMax = lat;
       }
 
       cmp = Double.compare(bounds.lngMin, lng);
@@ -35,7 +34,7 @@ public final class RectangularBounds {
 
       cmp = Double.compare(bounds.lngMax, lng);
       if (cmp < 0) {
-        bounds.lngMax = lat;
+        bounds.lngMax = lng;
       }
     }
 

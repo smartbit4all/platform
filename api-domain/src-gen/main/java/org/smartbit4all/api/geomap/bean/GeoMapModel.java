@@ -44,7 +44,8 @@ import javax.validation.Valid;
   GeoMapModel.LAYERS,
   GeoMapModel.VIEW_STATE,
   GeoMapModel.VIEWPORT,
-  GeoMapModel.DEFAULT_ITEM_ACTIONS
+  GeoMapModel.DEFAULT_ITEM_ACTIONS,
+  GeoMapModel.PENDING_ITEMS
 })
 @JsonTypeName("GeoMapModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -69,6 +70,9 @@ public class GeoMapModel {
 
   public static final String DEFAULT_ITEM_ACTIONS = "defaultItemActions";
   private List<String> defaultItemActions = new ArrayList<>();
+
+  public static final String PENDING_ITEMS = "pendingItems";
+  private List<String> pendingItems = new ArrayList<>();
 
   public GeoMapModel() { 
   }
@@ -278,6 +282,39 @@ public class GeoMapModel {
   }
 
 
+  public GeoMapModel pendingItems(List<String> pendingItems) {
+    
+    this.pendingItems = pendingItems;
+    return this;
+  }
+
+  public GeoMapModel addPendingItemsItem(String pendingItemsItem) {
+    this.pendingItems.add(pendingItemsItem);
+    return this;
+  }
+
+   /**
+   * Get pendingItems
+   * @return pendingItems
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(PENDING_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getPendingItems() {
+    return pendingItems;
+  }
+
+
+  @JsonProperty(PENDING_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPendingItems(List<String> pendingItems) {
+    this.pendingItems = pendingItems;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -293,12 +330,13 @@ public class GeoMapModel {
         Objects.equals(this.layers, geoMapModel.layers) &&
         Objects.equals(this.viewState, geoMapModel.viewState) &&
         Objects.equals(this.viewport, geoMapModel.viewport) &&
-        Objects.equals(this.defaultItemActions, geoMapModel.defaultItemActions);
+        Objects.equals(this.defaultItemActions, geoMapModel.defaultItemActions) &&
+        Objects.equals(this.pendingItems, geoMapModel.pendingItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, identifier, qualifier, layers, viewState, viewport, defaultItemActions);
+    return Objects.hash(viewUuid, identifier, qualifier, layers, viewState, viewport, defaultItemActions, pendingItems);
   }
 
   @Override
@@ -312,6 +350,7 @@ public class GeoMapModel {
     sb.append("    viewState: ").append(toIndentedString(viewState)).append("\n");
     sb.append("    viewport: ").append(toIndentedString(viewport)).append("\n");
     sb.append("    defaultItemActions: ").append(toIndentedString(defaultItemActions)).append("\n");
+    sb.append("    pendingItems: ").append(toIndentedString(pendingItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -109,6 +109,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.WidgetCallbackApi;
+import org.smartbit4all.api.view.WidgetCallbackApiImpl;
 import org.smartbit4all.api.view.action.LookupApi;
 import org.smartbit4all.api.view.action.LookupApiImpl;
 import org.smartbit4all.api.view.action.ToolbarManagementApi;
@@ -219,6 +221,11 @@ public class PlatformApiConfig {
   public ProviderApiInvocationHandler<TreeApi> treeApiProvider(
       TreeApi api) {
     return Invocations.asProvider(TreeApi.class, api);
+  }
+
+  @Bean
+  public WidgetCallbackApi widgetCallbackApi() {
+    return new WidgetCallbackApiImpl();
   }
 
   @Bean

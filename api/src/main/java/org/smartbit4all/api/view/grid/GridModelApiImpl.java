@@ -36,13 +36,12 @@ import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
-import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.WidgetCallbackApi;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
@@ -102,14 +101,15 @@ public class GridModelApiImpl implements GridModelApi {
   @Autowired
   private LocaleSettingApi localeSettingApi;
 
-  @Autowired
-  private InvocationApi invocationApi;
 
   @Autowired
   private CollectionApi collectionApi;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired
+  private WidgetCallbackApi widgetCallbackApi;
 
   @Override
   public GridView createGridView(Class<?> clazz, List<String> columns, String... columnPrefix) {
@@ -702,7 +702,8 @@ public class GridModelApiImpl implements GridModelApi {
         new GridPage()
             .rows(new ArrayList<>());
     DataColumn<?> idColumn = getIdColumnFromTableData(viewUuid, gridId, tableData);
-    List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
+    List<InvocationRequest> gridRowCallbacks =
+        widgetCallbackApi.getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
     // Collect the rows by id to be able to fill the children list at the end.
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow dataRow = tableData.rows().get(i);
@@ -717,12 +718,13 @@ public class GridModelApiImpl implements GridModelApi {
             .data(tableData.columns().stream()
                 .filter(c -> tableData.get(c, dataRow) != null)
                 .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
-        gridRow = (GridRow) executeObjectCallbacks(gridRowCallbacks, gridRow);
+        gridRow = (GridRow) widgetCallbackApi.executeObjectCallbacks(gridRowCallbacks, gridRow);
         page.addRowsItem(gridRow);
       }
     }
-    List<InvocationRequest> gridPageCallbacks = getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
-    page = (GridPage) executeObjectCallbacks(gridPageCallbacks, page);
+    List<InvocationRequest> gridPageCallbacks =
+        widgetCallbackApi.getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
+    page = (GridPage) widgetCallbackApi.executeObjectCallbacks(gridPageCallbacks, page);
 
     // Here we have all the rows in the page and their setup is ready. We can construt the tree if
     // any.
@@ -880,17 +882,17 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void setExpandCallback(UUID viewUuid, String gridId, InvocationRequest request) {
-    setCallback(viewUuid, gridId, request, EXPAND_POSTFIX);
+    widgetCallbackApi.setCallback(viewUuid, gridId, request, EXPAND_POSTFIX);
   }
 
   @Override
   public void addGridRowCallback(UUID viewUuid, String gridId, InvocationRequest request) {
-    addCallback(viewUuid, gridId, request, GRIDROW_POSTFIX);
+    widgetCallbackApi.addCallback(viewUuid, gridId, request, GRIDROW_POSTFIX);
   }
 
   @Override
   public void addGridPageCallback(UUID viewUuid, String gridId, InvocationRequest request) {
-    addCallback(viewUuid, gridId, request, GRIDPAGE_POSTFIX);
+    widgetCallbackApi.addCallback(viewUuid, gridId, request, GRIDPAGE_POSTFIX);
   }
 
   @Override
@@ -905,94 +907,13 @@ public class GridModelApiImpl implements GridModelApi {
         log.error("Row not found by id: {}, {}", gridId, rowId);
         return null;
       }
-      InvocationRequest request = getCallback(grid.getViewUuid(), gridId, EXPAND_POSTFIX);
+      InvocationRequest request =
+          widgetCallbackApi.getCallback(grid.getViewUuid(), gridId, EXPAND_POSTFIX);
       if (request == null) {
         log.warn("Expand handler not found for grid {}", gridId);
       }
-      return executeObjectCallback(request, row);
+      return widgetCallbackApi.executeObjectCallback(request, row);
     });
-  }
-
-  private void setCallback(UUID viewUuid, String gridId, InvocationRequest request,
-      String postfix) {
-    viewApi.setCallback(viewUuid, gridId + postfix, request);
-  }
-
-  private void addCallback(UUID viewUuid, String gridId, InvocationRequest request,
-      String postfix) {
-    viewApi.addCallback(viewUuid, gridId + postfix, request);
-  }
-
-  private InvocationRequest getCallback(UUID viewUuid, String gridId, String postfix) {
-    if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
-      return null;
-    }
-    return viewApi.getCallback(viewUuid, gridId + postfix);
-  }
-
-  private List<InvocationRequest> getCallbacks(UUID viewUuid, String gridId, String postfix) {
-    if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
-      return Collections.emptyList();
-    }
-    return viewApi.getCallbacks(viewUuid, gridId + postfix);
-  }
-
-  private Object executeObjectCallback(InvocationRequest request, Object parameter) {
-    if (request == null) {
-      return parameter;
-    }
-    try {
-      request.getParameters().get(0).setValue(parameter);
-      InvocationParameter result = invocationApi.invoke(request);
-      if (result == null || result.getValue() == null) {
-        throw new IllegalArgumentException("Action returned nothing");
-      }
-      return result.getValue();
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Action throw an error", e);
-    } finally {
-      if (request.getParameters() != null && !request.getParameters().isEmpty()) {
-        request.getParameters().get(0).setValue(null);
-      }
-    }
-  }
-
-  private Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter) {
-    for (InvocationRequest request : requests) {
-      parameter = executeObjectCallback(request, parameter);
-    }
-    return parameter;
-  }
-
-  private void executeVoidCallback(InvocationRequest request, Object... parameters) {
-    if (request == null) {
-      return;
-    }
-    try {
-      if (parameters != null && parameters.length > 0) {
-        for (int i = 0; i < parameters.length; i++) {
-          request.getParameters().get(i).setValue(parameters[i]);
-        }
-      }
-      invocationApi.invoke(request);
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Action throw an error", e);
-    } finally {
-      if (request.getParameters() != null
-          && parameters != null && parameters.length > 0) {
-        for (int i = 0; i < parameters.length; i++) {
-          if (request.getParameters().size() > i) {
-            request.getParameters().get(i).setValue(null);
-          }
-        }
-      }
-    }
-  }
-
-  private void executeVoidCallbacks(List<InvocationRequest> requests, Object... parameters) {
-    for (InvocationRequest request : requests) {
-      executeVoidCallback(request, parameters);
-    }
   }
 
   @Override
@@ -1060,7 +981,8 @@ public class GridModelApiImpl implements GridModelApi {
       row.selected(row.getSelectable() != Boolean.FALSE && selectedRows.containsKey(row.getId()));
     }
     // TODO copy actual rows to serverModel.selection would be nice
-    executeVoidCallbacks(getCallbacks(viewUuid, gridId, SELECTION_CHANGE_POSTFIX),
+    widgetCallbackApi.executeVoidCallbacks(
+        widgetCallbackApi.getCallbacks(viewUuid, gridId, SELECTION_CHANGE_POSTFIX),
         viewUuid, gridId);
   }
 
@@ -1099,7 +1021,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void addSelectionChangeListener(UUID viewUuid, String gridId, InvocationRequest request) {
-    addCallback(viewUuid, gridId, request, SELECTION_CHANGE_POSTFIX);
+    widgetCallbackApi.addCallback(viewUuid, gridId, request, SELECTION_CHANGE_POSTFIX);
   }
 
   @Override

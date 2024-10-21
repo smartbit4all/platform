@@ -1,11 +1,12 @@
 package org.smartbit4all.api.view.geomap.datasource;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
-import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.geomap.bean.GPSPosition;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
@@ -17,17 +18,11 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.query.QueryInput;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
 
 final class SearchIndexBasedGeoMapDataLoadingStrategy extends GeoMapDataLoadingStrategy {
-  private final ObjectApi           objectApi;
-  private final CollectionApi       collectionApi;
+  private final ObjectApi objectApi;
+  private final CollectionApi collectionApi;
   private final FilterExpressionApi filterExpressionApi;
 
   SearchIndexBasedGeoMapDataLoadingStrategy(

@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class GeoMapDataLoadingStrategyFactoryImpl implements GeoMapDataLoadingStrategyFactory {
 
   @Autowired
-  private ObjectApi           objectApi;
+  private ObjectApi objectApi;
   @Autowired
-  private CollectionApi       collectionApi;
+  private CollectionApi collectionApi;
   @Autowired
   private FilterExpressionApi filterExpressionApi;
   @Autowired
-  private InvocationApi       invocationApi;
+  private InvocationApi invocationApi;
 
   @Override
   public GeoMapDataLoadingStrategy create(GeoMapDataSourceDescriptor dataSourceDescriptor) {

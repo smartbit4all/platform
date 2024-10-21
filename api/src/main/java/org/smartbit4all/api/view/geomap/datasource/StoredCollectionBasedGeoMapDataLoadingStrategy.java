@@ -1,5 +1,12 @@
 package org.smartbit4all.api.view.geomap.datasource;
 
+import static java.util.stream.Collectors.toList;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -16,15 +23,6 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
-
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import static java.util.stream.Collectors.toList;
 
 final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoadingStrategy {
 
@@ -56,9 +54,9 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
       case MAP:
         final StoredMap map = (scope != null)
             ? collectionApi.map(
-            scope,
-            collectionDescriptor.getSchema(),
-            collectionDescriptor.getName())
+                scope,
+                collectionDescriptor.getSchema(),
+                collectionDescriptor.getName())
             : collectionApi.map(
                 collectionDescriptor.getSchema(),
                 collectionDescriptor.getName());
@@ -69,9 +67,9 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
       case LIST:
         final StoredList list = (scope != null)
             ? collectionApi.list(
-            scope,
-            collectionDescriptor.getSchema(),
-            collectionDescriptor.getName())
+                scope,
+                collectionDescriptor.getSchema(),
+                collectionDescriptor.getName())
             : collectionApi.list(
                 collectionDescriptor.getSchema(),
                 collectionDescriptor.getName());
@@ -93,13 +91,14 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
     final String[] titlePath =
         (dataSourceDescriptor.getPathToTitle() == null || dataSourceDescriptor.getPathToTitle()
             .isEmpty())
-            ? null
-            : dataSourceDescriptor.getPathToTitle().toArray(new String[0]);
+                ? null
+                : dataSourceDescriptor.getPathToTitle().toArray(new String[0]);
     final String[] descPath =
-        (dataSourceDescriptor.getPathToDescription() == null || dataSourceDescriptor.getPathToDescription()
-            .isEmpty())
-            ? null
-            : dataSourceDescriptor.getPathToDescription().toArray(new String[0]);
+        (dataSourceDescriptor.getPathToDescription() == null
+            || dataSourceDescriptor.getPathToDescription()
+                .isEmpty())
+                    ? null
+                    : dataSourceDescriptor.getPathToDescription().toArray(new String[0]);
     final GeoMapItemKind itemKind = dataSourceDescriptor.getItemKind();
     final String[] posPath;
     final String[] boundsPath;
@@ -142,9 +141,9 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
         final double lat = position.getLatitude();
         final double lng = position.getLongitude();
         return lat >= bounds.latMin
-               && lat <= bounds.latMax
-               && lng >= bounds.lngMin
-               && lng <= bounds.lngMax;
+            && lat <= bounds.latMax
+            && lng >= bounds.lngMin
+            && lng <= bounds.lngMax;
       case POLYGON:
         // TODO: Implement intersection-check!
         // FALL-THROUGH for now...
@@ -178,15 +177,6 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
         return false;
       }
     };
-  }
-
-  private GeoMapItem toGeoMapItem(
-      final ObjectNode node) {
-
-    return new GeoMapItem()
-        .id(node.getObjectUri().toString())
-        .kind(GeoMapItemKind.MARKER)
-        .position(node.getValue(GPSPosition.class, "data", "location")); // FIXME
   }
 
 }

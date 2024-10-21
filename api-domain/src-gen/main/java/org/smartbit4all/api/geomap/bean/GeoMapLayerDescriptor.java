@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import org.smartbit4all.api.geomap.bean.GeoMapSelectionMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -29,16 +30,17 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * null
+ * How the layer behaves.
  */
-@ApiModel(description = "null")
+@ApiModel(description = "How the layer behaves.")
 @JsonPropertyOrder({
   GeoMapLayerDescriptor.CODE,
   GeoMapLayerDescriptor.LABEL,
   GeoMapLayerDescriptor.DESCRIPTION,
   GeoMapLayerDescriptor.ICON,
   GeoMapLayerDescriptor.SELECTION_MODE,
-  GeoMapLayerDescriptor.PRESERVE_SELECTION
+  GeoMapLayerDescriptor.PRESERVE_SELECTION,
+  GeoMapLayerDescriptor.OPERATION_MODE
 })
 @JsonTypeName("GeoMapLayerDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -60,6 +62,9 @@ public class GeoMapLayerDescriptor {
 
   public static final String PRESERVE_SELECTION = "preserveSelection";
   private Boolean preserveSelection = false;
+
+  public static final String OPERATION_MODE = "operationMode";
+  private GeoMapOperationMode operationMode;
 
   public GeoMapLayerDescriptor() { 
   }
@@ -228,6 +233,34 @@ public class GeoMapLayerDescriptor {
   }
 
 
+  public GeoMapLayerDescriptor operationMode(GeoMapOperationMode operationMode) {
+    
+    this.operationMode = operationMode;
+    return this;
+  }
+
+   /**
+   * Get operationMode
+   * @return operationMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OPERATION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapOperationMode getOperationMode() {
+    return operationMode;
+  }
+
+
+  @JsonProperty(OPERATION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOperationMode(GeoMapOperationMode operationMode) {
+    this.operationMode = operationMode;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -242,12 +275,13 @@ public class GeoMapLayerDescriptor {
         Objects.equals(this.description, geoMapLayerDescriptor.description) &&
         Objects.equals(this.icon, geoMapLayerDescriptor.icon) &&
         Objects.equals(this.selectionMode, geoMapLayerDescriptor.selectionMode) &&
-        Objects.equals(this.preserveSelection, geoMapLayerDescriptor.preserveSelection);
+        Objects.equals(this.preserveSelection, geoMapLayerDescriptor.preserveSelection) &&
+        Objects.equals(this.operationMode, geoMapLayerDescriptor.operationMode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, label, description, icon, selectionMode, preserveSelection);
+    return Objects.hash(code, label, description, icon, selectionMode, preserveSelection, operationMode);
   }
 
   @Override
@@ -260,6 +294,7 @@ public class GeoMapLayerDescriptor {
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    selectionMode: ").append(toIndentedString(selectionMode)).append("\n");
     sb.append("    preserveSelection: ").append(toIndentedString(preserveSelection)).append("\n");
+    sb.append("    operationMode: ").append(toIndentedString(operationMode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

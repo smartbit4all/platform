@@ -6,10 +6,12 @@
 package org.smartbit4all.api.geomap.restserver;
 
 import org.smartbit4all.api.geomap.bean.GeoMapChange;
+import org.smartbit4all.api.geomap.bean.GeoMapInteraction;
 import org.smartbit4all.api.geomap.bean.GeoMapModel;
 import org.smartbit4all.api.geomap.bean.GeoMapViewState;
 import org.smartbit4all.api.geomap.bean.GeoMapViewport;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +32,39 @@ public interface GeoMapApi {
     default GeoMapApiDelegate getDelegate() {
         return new GeoMapApiDelegate() {};
     }
+
+    /**
+     * POST /geomap/{uuid}/{identifier}/interact
+     *
+     * @param uuid  (required)
+     * @param identifier  (required)
+     * @param geoMapInteraction  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "GeoMap" },
+        value = "",
+        nickname = "interact",
+        notes = "",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/geomap/{uuid}/{identifier}/interact",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> interact(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("identifier") String identifier,
+        @ApiParam(value = "", required = true) @Valid @RequestBody GeoMapInteraction geoMapInteraction
+    ) throws Exception {
+        return getDelegate().interact(uuid, identifier, geoMapInteraction);
+    }
+
 
     /**
      * POST /geomap/{uuid}/{identifier}/load

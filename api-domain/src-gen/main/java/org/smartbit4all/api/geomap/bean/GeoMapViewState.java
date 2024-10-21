@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.geomap.bean.GeoMapLayerDescriptor;
+import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,9 +38,11 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   GeoMapViewState.LABEL,
   GeoMapViewState.LAYER_DESCRIPTORS,
-  GeoMapViewState.SELECTED_LAYERS,
+  GeoMapViewState.VISIBLE_LAYERS,
   GeoMapViewState.FIT_TO_INITIAL_ITEMS,
-  GeoMapViewState.CENTER_ON_ITEM_CLICK
+  GeoMapViewState.CENTER_ON_ITEM_CLICK,
+  GeoMapViewState.OPERATION_MODE,
+  GeoMapViewState.SELECTED_ITEMS
 })
 @JsonTypeName("GeoMapViewState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,14 +53,20 @@ public class GeoMapViewState {
   public static final String LAYER_DESCRIPTORS = "layerDescriptors";
   private List<GeoMapLayerDescriptor> layerDescriptors = new ArrayList<>();
 
-  public static final String SELECTED_LAYERS = "selectedLayers";
-  private List<String> selectedLayers = null;
+  public static final String VISIBLE_LAYERS = "visibleLayers";
+  private List<String> visibleLayers = new ArrayList<>();
 
   public static final String FIT_TO_INITIAL_ITEMS = "fitToInitialItems";
   private Boolean fitToInitialItems = false;
 
   public static final String CENTER_ON_ITEM_CLICK = "centerOnItemClick";
   private Boolean centerOnItemClick = false;
+
+  public static final String OPERATION_MODE = "operationMode";
+  private GeoMapOperationMode operationMode;
+
+  public static final String SELECTED_ITEMS = "selectedItems";
+  private List<String> selectedItems = new ArrayList<>();
 
   public GeoMapViewState() { 
   }
@@ -123,38 +132,36 @@ public class GeoMapViewState {
   }
 
 
-  public GeoMapViewState selectedLayers(List<String> selectedLayers) {
+  public GeoMapViewState visibleLayers(List<String> visibleLayers) {
     
-    this.selectedLayers = selectedLayers;
+    this.visibleLayers = visibleLayers;
     return this;
   }
 
-  public GeoMapViewState addSelectedLayersItem(String selectedLayersItem) {
-    if (this.selectedLayers == null) {
-      this.selectedLayers = new ArrayList<>();
-    }
-    this.selectedLayers.add(selectedLayersItem);
+  public GeoMapViewState addVisibleLayersItem(String visibleLayersItem) {
+    this.visibleLayers.add(visibleLayersItem);
     return this;
   }
 
    /**
-   * Get selectedLayers
-   * @return selectedLayers
+   * Get visibleLayers
+   * @return visibleLayers
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(SELECTED_LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(VISIBLE_LAYERS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<String> getSelectedLayers() {
-    return selectedLayers;
+  public List<String> getVisibleLayers() {
+    return visibleLayers;
   }
 
 
-  @JsonProperty(SELECTED_LAYERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedLayers(List<String> selectedLayers) {
-    this.selectedLayers = selectedLayers;
+  @JsonProperty(VISIBLE_LAYERS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVisibleLayers(List<String> visibleLayers) {
+    this.visibleLayers = visibleLayers;
   }
 
 
@@ -214,6 +221,67 @@ public class GeoMapViewState {
   }
 
 
+  public GeoMapViewState operationMode(GeoMapOperationMode operationMode) {
+    
+    this.operationMode = operationMode;
+    return this;
+  }
+
+   /**
+   * Get operationMode
+   * @return operationMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OPERATION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapOperationMode getOperationMode() {
+    return operationMode;
+  }
+
+
+  @JsonProperty(OPERATION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOperationMode(GeoMapOperationMode operationMode) {
+    this.operationMode = operationMode;
+  }
+
+
+  public GeoMapViewState selectedItems(List<String> selectedItems) {
+    
+    this.selectedItems = selectedItems;
+    return this;
+  }
+
+  public GeoMapViewState addSelectedItemsItem(String selectedItemsItem) {
+    this.selectedItems.add(selectedItemsItem);
+    return this;
+  }
+
+   /**
+   * Get selectedItems
+   * @return selectedItems
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(SELECTED_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getSelectedItems() {
+    return selectedItems;
+  }
+
+
+  @JsonProperty(SELECTED_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSelectedItems(List<String> selectedItems) {
+    this.selectedItems = selectedItems;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -225,14 +293,16 @@ public class GeoMapViewState {
     GeoMapViewState geoMapViewState = (GeoMapViewState) o;
     return Objects.equals(this.label, geoMapViewState.label) &&
         Objects.equals(this.layerDescriptors, geoMapViewState.layerDescriptors) &&
-        Objects.equals(this.selectedLayers, geoMapViewState.selectedLayers) &&
+        Objects.equals(this.visibleLayers, geoMapViewState.visibleLayers) &&
         Objects.equals(this.fitToInitialItems, geoMapViewState.fitToInitialItems) &&
-        Objects.equals(this.centerOnItemClick, geoMapViewState.centerOnItemClick);
+        Objects.equals(this.centerOnItemClick, geoMapViewState.centerOnItemClick) &&
+        Objects.equals(this.operationMode, geoMapViewState.operationMode) &&
+        Objects.equals(this.selectedItems, geoMapViewState.selectedItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, layerDescriptors, selectedLayers, fitToInitialItems, centerOnItemClick);
+    return Objects.hash(label, layerDescriptors, visibleLayers, fitToInitialItems, centerOnItemClick, operationMode, selectedItems);
   }
 
   @Override
@@ -241,9 +311,11 @@ public class GeoMapViewState {
     sb.append("class GeoMapViewState {\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    layerDescriptors: ").append(toIndentedString(layerDescriptors)).append("\n");
-    sb.append("    selectedLayers: ").append(toIndentedString(selectedLayers)).append("\n");
+    sb.append("    visibleLayers: ").append(toIndentedString(visibleLayers)).append("\n");
     sb.append("    fitToInitialItems: ").append(toIndentedString(fitToInitialItems)).append("\n");
     sb.append("    centerOnItemClick: ").append(toIndentedString(centerOnItemClick)).append("\n");
+    sb.append("    operationMode: ").append(toIndentedString(operationMode)).append("\n");
+    sb.append("    selectedItems: ").append(toIndentedString(selectedItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

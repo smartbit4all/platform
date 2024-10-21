@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view.geomap.datasource;
 
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
@@ -9,9 +11,6 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
-
-import java.util.Collections;
-import java.util.List;
 
 final class InvocationRequestBasedGeoMapDataLoadingStrategy extends GeoMapDataLoadingStrategy {
 

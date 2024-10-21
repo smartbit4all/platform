@@ -24,19 +24,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets GeoMapSelectionMode
+ * Gets or Sets GeoMapOperationMode
  */
-public enum GeoMapSelectionMode {
+public enum GeoMapOperationMode {
   
-  NONE("NONE"),
+  ACTION("ACTION"),
   
-  SINGLE("SINGLE"),
+  SELECTION("SELECTION"),
   
-  MULTIPLE("MULTIPLE");
+  PLACEMENT("PLACEMENT");
 
   private String value;
 
-  GeoMapSelectionMode(String value) {
+  GeoMapOperationMode(String value) {
     this.value = value;
   }
 
@@ -51,8 +51,8 @@ public enum GeoMapSelectionMode {
   }
 
   @JsonCreator
-  public static GeoMapSelectionMode fromValue(String value) {
-    for (GeoMapSelectionMode b : GeoMapSelectionMode.values()) {
+  public static GeoMapOperationMode fromValue(String value) {
+    for (GeoMapOperationMode b : GeoMapOperationMode.values()) {
       if (b.value.equals(value)) {
         return b;
       }

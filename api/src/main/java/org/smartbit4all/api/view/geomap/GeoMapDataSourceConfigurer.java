@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view.geomap;
 
-import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Consumer;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataLoadingMode;
@@ -8,12 +10,7 @@ import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceType;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.domain.annotation.property.Id;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Consumer;
+import com.google.common.base.Strings;
 
 public abstract class GeoMapDataSourceConfigurer {
 
@@ -215,7 +212,8 @@ public abstract class GeoMapDataSourceConfigurer {
     }
 
     public interface MetadataConfigurer extends Consumer<MetadataConfiguration> {
-      MetadataConfigurer NONE = it -> {};
+      MetadataConfigurer NONE = it -> {
+      };
     }
 
     public final class InclusionConfigurationStep {
@@ -332,7 +330,8 @@ public abstract class GeoMapDataSourceConfigurer {
     }
 
     public interface MetadataColumnConfigurer extends Consumer<MetadataColumnConfiguration> {
-      MetadataColumnConfigurer NONE = it -> {};
+      MetadataColumnConfigurer NONE = it -> {
+      };
     }
 
 

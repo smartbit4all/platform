@@ -101,13 +101,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GeoMapChange'
+  /geomap/{uuid}/{identifier}/interact:
+    post:
+      tags:
+        - GeoMap
+      summary: ''
+      operationId: 'interact'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: identifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoMapInteraction'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
+
 components:
   schemas:
     GPSPosition:
       type: object
       description: |
         The position defined by the gps coordinates.
-      required: [ latitude, longitude ]
+      required: [latitude, longitude]
       properties:
         latitude:
           type: number
@@ -132,7 +165,7 @@ components:
       type: object
       description: |
         This object represents the client model of a geomap component.
-      required: [ layers, defaultItemActions ]
+      required: [layers, defaultItemActions, pendingItems]
       properties:
         viewUuid:
           type: string
@@ -153,11 +186,15 @@ components:
           type: array
           items:
             type: string
+        pendingItems:
+          type: array
+          items:
+            type: string
     GeoMapServerModel:
       type: object
       description: |
         This object represents the server model of a geomap component.
-      required: [ selectedItems, selectedLayers, dataSources ]
+      required: [selectedItems, selectedLayers, dataSources, pendingItems]
       properties:
         selectedItems:
           type: string
@@ -171,11 +208,17 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/GeoMapDataSourceDescriptor'
+        pendingItems:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/GeoMapItem'
     GeoMapLayer:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ items ]
+      required: [items]
       properties:
         code:
           type: string
@@ -187,7 +230,7 @@ components:
       type: object
       description: |
         This object is a geomap row containening the identifier and actions releted with the row.
-      required: [ actions, icons, bounds ]
+      required: [actions, icons, bounds]
       properties:
         id:
           type: string
@@ -224,11 +267,19 @@ components:
           items:
             $ref: '#/components/schemas/GPSPosition'
     GeoMapItemKind:
-      enum: [ MARKER, POLYGON, LINE ]
+      enum: [MARKER, POLYGON, LINE]
     GeoMapViewState:
       type: object
       description: What to show and how...
-      required: [ columns, fitToInitialItems, centerOnItemClick, layerDescriptors ]
+      required:
+        [
+          columns,
+          fitToInitialItems,
+          centerOnItemClick,
+          layerDescriptors,
+          visibleLayers,
+          selectedItems,
+        ]
       properties:
         label:
           type: string
@@ -236,7 +287,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GeoMapLayerDescriptor'
-        selectedLayers:
+        visibleLayers:
           type: array
           items:
             type: string
@@ -246,10 +297,18 @@ components:
         centerOnItemClick:
           type: boolean
           default: false
+        operationMode:
+          $ref: '#/components/schemas/GeoMapOperationMode'
+        selectedItems:
+          type: array
+          items:
+            type: string
+    GeoMapOperationMode:
+      enum: [ACTION, SELECTION, PLACEMENT]
     GeoMapLayerDescriptor:
       type: object
-      description:
-      required: [ preserveSelection ]
+      description: How the layer behaves.
+      required: [preserveSelection]
       properties:
         code:
           type: string
@@ -265,16 +324,15 @@ components:
           description: Reserves the selected items even if they are invisible.
           type: boolean
           default: false
+        operationMode:
+          $ref: '#/components/schemas/GeoMapOperationMode'
     GeoMapSelectionMode:
       type: string
-      enum:
-        - none
-        - single
-        - multiple
+      enum: [NONE, SINGLE, MULTIPLE]
     GeoMapViewport:
       type: object
       description: The viewport...
-      required: [ bounds ]
+      required: [bounds]
       properties:
         center:
           $ref: '#/components/schemas/GPSPosition'
@@ -286,12 +344,12 @@ components:
           items:
             $ref: '#/components/schemas/GPSPosition'
     GeoMapTextType:
-      enum: [ TEXT, HTML ]
+      enum: [TEXT, HTML]
     GeoMapChange:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ items ]
+      required: [items]
       properties:
         code:
           type: string
@@ -303,7 +361,7 @@ components:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-      required: [ toAdd, toRemove ]
+      required: [toAdd, toRemove]
       properties:
         code:
           type: string
@@ -317,9 +375,9 @@ components:
             type: string
 
     GeoMapDataSourceType:
-      enum: [ STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST ]
+      enum: [STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST]
     GeoMapDataLoadingMode:
-      enum: [ ON_INTERACTION, ON_CREATION ]
+      enum: [ON_INTERACTION, ON_CREATION]
     GeoMapDataSourceDescriptor:
       type: object
       properties:
@@ -389,3 +447,17 @@ components:
           description: |
             GeoMapViewport -> List<GeoMapItem>
           type: InvocationRequest
+    GeoMapInteraction:
+      type: object
+      properties:
+        operationMode:
+          $ref: '#/components/schemas/GeoMapOperationMode'
+        targetLayer:
+          type: string
+        targetItem:
+          $ref: '#/components/schemas/GeoMapItem'
+        inverse:
+          type: boolean
+          default: false
+          description: Marks inverse operations (unselect, remove pending placement)
+      required: [operationMode, targetLayer, targetItem, inverse]
