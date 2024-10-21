@@ -92,6 +92,7 @@ public class ExpressionEvaluationBasicFunctionality {
 
     // Creating the TableData
     tableData = new TableData<>(userAccountDef);
+    tableData.useRefTables(true);
     tableData.addColumns(userAccountDef.PRIMARYKEYDEF());
     DataColumn<Long> idColumn = tableData.getColumn(userAccountDef.id());
     DataColumn<String> firstNameColumn = tableData.addColumn(userAccountDef.firstname());

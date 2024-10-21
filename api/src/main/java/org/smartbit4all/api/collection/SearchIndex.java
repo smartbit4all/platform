@@ -60,6 +60,17 @@ public interface SearchIndex<O> {
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.
    *
    * @param filterExpressions The expression list for the query.
+   * @param orderByList desired order of result
+   * @param fields desired fields to return
+   * @return The result table data of the search.
+   */
+  TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields);
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param filterExpressions The expression list for the query.
    * @return The result table data of the search.
    */
   default TableData<?> executeSearch(FilterExpressionList filterExpressions) {
@@ -156,5 +167,4 @@ public interface SearchIndex<O> {
   void updateIndexWithData(List<SearchIndexObject> changeList);
 
   SearchIndexMappingObject getSearchIndexMappingObject();
-
 }

@@ -3,10 +3,12 @@ package org.smartbit4all.api.collection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import org.smartbit4all.core.object.BeanMetaUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.core.object.PathProcessor;
 import org.smartbit4all.core.object.PropertyMeta;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
@@ -46,6 +49,7 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyObject;
+import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
@@ -109,6 +113,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   List<String[]> masterJoin = new ArrayList<>();
 
   /**
+   * Mapping for references
+   */
+  Map<String, SearchIndexReferenceMapping> references = new HashMap<>();
+
+
+  Map<String, SearchIndex<?>> referenceSearchIndices = new HashMap<>();
+
+  /**
    * The name of the master reference.
    */
   String masterReferenceName;
@@ -135,6 +147,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   private ObjectApi objectApi;
 
+  private EntityDefinitionBuilder builder;
+
   public Set<String> getCurrentlyMappedProperties() {
     return mappingsByPropertyName.keySet();
   }
@@ -144,7 +158,36 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   public SearchIndexMapping getProperty(String name) {
-    return mappingsByPropertyName.get(name);
+    SearchIndexMapping searchIndexMapping = mappingsByPropertyName.get(name);
+    if (searchIndexMapping != null) {
+      return searchIndexMapping;
+    }
+    PathProcessor path = PathProcessor.of(name);
+    if (path.multiLevel()) {
+      String root = path.firstElement();
+
+      SearchIndexImpl<?> referenceSearchIndex =
+          (SearchIndexImpl<?>) referenceSearchIndices.get(root);
+
+      return referenceSearchIndex.getMapping().getProperty(path.ending());
+    }
+
+    return searchIndexMapping;
+  }
+
+
+  public SearchIndexMappingCalculatedProperty getCalculatedPropertyMapping(String propertyName) {
+    SearchIndexMapping propertyMapping = getProperty(propertyName);
+    if (propertyMapping instanceof SearchIndexMappingCalculatedProperty) {
+      return (SearchIndexMappingCalculatedProperty) propertyMapping;
+    }
+    return null;
+  }
+
+  public boolean isCalculatedProperty(String propertyName) {
+    SearchIndexMappingCalculatedProperty propertyMapping =
+        getCalculatedPropertyMapping(propertyName);
+    return propertyMapping != null;
   }
 
   private final Class<?> getType(String propertyName) {
@@ -227,6 +270,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return this;
   }
 
+  public SearchIndexMappingObject mapCalculated(String propertyName,
+      List<String> dependsOnProperties, Class<?> dataType,
+      Function<SearchIndexDataRowWrapper, Object> complexProcessor) {
+    Objects.requireNonNull(complexProcessor);
+    mappingsByPropertyName.put(propertyName,
+        new SearchIndexMappingCalculatedProperty(propertyName, dependsOnProperties, dataType,
+            complexProcessor));
+    return this;
+  }
+
   /**
    * Set the {@link #primaryKey} property.
    *
@@ -237,6 +290,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     this.primaryKey = primaryKey;
     return this;
   }
+
 
   public SearchIndexMappingObject detail(String propertyName, String uniqueIdName) {
     String masterReferenceQualified = propertyName + "parent";
@@ -252,12 +306,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return detail;
   }
 
-  public synchronized SearchEntityDefinition getDefinition() {
+  public SearchEntityDefinition getDefinition() {
     if ((extensionStrategy != null && extensionStrategy.extend(this)) || entityDefinition == null) {
-      entityDefinition = constructDefinition(ctx, null);
-      allDefinitions(entityDefinition).forEach(e -> entityManager.registerEntityDef(e));
+      initDefinition();
     }
     return entityDefinition;
+  }
+
+  protected synchronized void initDefinition() {
+    entityDefinition = constructDefinition(ctx, null);
+    allDefinitions(entityDefinition).forEach(e -> entityManager.registerEntityDef(e));
   }
 
   public EntityDefinition getEntityDefinition() {
@@ -277,14 +335,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   SearchEntityDefinition constructDefinition(ApplicationContext ctx,
       EntityDefinitionBuilder masterBuilder) {
-    EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
-        .name(getName())
-        .tableName(getName())
-        .domain(getLogicalSchema());
-
     if (entityDefinition != null) {
       return entityDefinition;
     }
+
+    builder = EntityDefinitionBuilder.of(ctx)
+        .name(getName())
+        .tableName(getName())
+        .domain(getLogicalSchema());
 
     SearchEntityDefinition result = new SearchEntityDefinition();
 
@@ -305,6 +363,15 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
               property.comparator != null ? property.comparator
                   : defComparator,
               isPrimaryKey(property.name));
+        } else if (entry.getValue() instanceof SearchIndexMappingCalculatedProperty) {
+          SearchIndexMappingCalculatedProperty property =
+              (SearchIndexMappingCalculatedProperty) entry.getValue();
+          Comparator<Object> defComparator = null;
+          if (comparatorsByClass != null) {
+            defComparator = comparatorsByClass.get(property.type.getName());
+          }
+          builder.addOwnedProperty(property.name, property.type, -1, defComparator,
+              false);
         }
       }
     }
@@ -368,39 +435,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       context.rowNode(n);
       context.getRowVariables().clear();
       DataRow row = tableData.addRow();
+      Map<String, ObjectNode> referenceObjects = new HashMap<>();
       for (DataColumn<?> col : tableData.columns()) {
-        Object value = null;
-        Object defaultValue = defaultValues.get(col.getProperty().getName());
-        Object forcedValue = o.getValues().get(col.getName());
-        SearchIndexMappingProperty mapping = property(col.getProperty().getName());
-        if (forcedValue != null) {
-          value = forcedValue;
-        } else if (defaultValue != null) {
-          value = defaultValue;
-        } else {
-          if (mapping.path != null && mapping.processor == null
-              && mapping.complexProcessor == null) {
-            value = n.getValue(mapping.path);
-            if (value instanceof ObjectNodeReference) {
-              value = ((ObjectNodeReference) value).getObjectUri();
-            } else if (value != null && !col.getProperty().type().equals(value.getClass())) {
-              value = objectApi.asType(col.getProperty().type(), value);
-            }
-          } else if (mapping.path != null && mapping.processor != null) {
-            value = mapping.processor.apply(n.getValue(mapping.path));
-          } else if (mapping.complexProcessor != null) {
-            value = mapping.complexProcessor.apply(n);
-          } else if (mapping.contextProcessor != null) {
-            value = mapping.contextProcessor.apply(context);
-          }
+
+        if (!isCalculatedProperty(col.getName())) {
+          Object value =
+              readValue(context, o, col.getProperty(), referenceObjects, defaultValues, useLength);
+          tableData.setObject(col, row, value);
         }
-        if (value != null && !col.getProperty().type().isInstance(value)) {
-          value = objectApi.asType(col.getProperty().type(), value);
-        }
-        if (useLength && mapping.length > 0 && value instanceof String) {
-          value = truncateString((String) value, mapping.length);
-        }
-        tableData.setObject(col, row, value);
       }
       // Read all the details also.
       for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
@@ -435,7 +477,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
               masterIdValues.entrySet().stream().forEach(e -> {
                 tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
               });
-              tableData.setObject(valueColumn, detailRow, valueObject);
+              tableDataDetail.setObject(valueColumn, detailRow, valueObject);
             }
           }
         } else {
@@ -452,6 +494,96 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       }
     });
 
+  }
+
+  Object readValue(SearchIndexContext context, Map<String, ObjectNode> referenceObjects,
+      ObjectNode n, String columName,
+      Map<String, Object> defaultValues, boolean useLength) {
+    Property<?> property = entityDefinition.getDefinition().getProperty(columName);
+    return readValue(context, new SearchIndexObject()
+        .objectNode(n),
+        property,
+        referenceObjects,
+        defaultValues,
+        useLength);
+  }
+
+  protected Object readValue(SearchIndexContext context, SearchIndexObject object,
+      Property<?> property,
+      Map<String, ObjectNode> referenceObjects, Map<String, Object> defaultValues,
+      boolean useLength) {
+    Object value = null;
+    String name = property.getName();
+    Object defaultValue = defaultValues.get(name);
+    Object forcedValue = object.getValues().get(name);
+    ObjectNode objectNode = object.getObjectNode();
+    if (property instanceof PropertyRef) {
+      PathProcessor propertyPath = PathProcessor.of(property.getName());
+      String referenceName = propertyPath.firstElement();
+      ObjectNode referenceObjectNode =
+          getReferenceObject(context, object, referenceName, referenceObjects, defaultValues,
+              useLength);
+
+      ObjectNode currentRowNode = context.getRowNode();
+      Map<String, Object> currentRowVariables = context.getRowVariables();
+      context.setRowNode(referenceObjectNode);
+      context.setRowVariables(new HashMap<>());
+      SearchIndexImpl<?> referenceSearchIndex =
+          (SearchIndexImpl<?>) referenceSearchIndices.get(referenceName);
+      value = referenceSearchIndex.readValue(context, referenceObjects, referenceObjectNode,
+          propertyPath.ending(), defaultValues, useLength);
+      context.setRowNode(currentRowNode);
+      context.setRowVariables(currentRowVariables);
+      return value;
+    } else {
+      SearchIndexMappingProperty mapping = property(name);
+      if (forcedValue != null) {
+        value = forcedValue;
+      } else if (defaultValue != null) {
+        value = defaultValue;
+      } else {
+        if (mapping.path != null && mapping.processor == null
+            && mapping.complexProcessor == null) {
+          value = objectNode.getValue(mapping.path);
+          if (value instanceof ObjectNodeReference) {
+            value = ((ObjectNodeReference) value).getObjectUri();
+          } else if (value != null && !property.type().equals(value.getClass())) {
+            value = objectApi.asType(property.type(), value);
+          }
+        } else if (mapping.path != null && mapping.processor != null) {
+          value = mapping.processor.apply(objectNode.getValue(mapping.path));
+        } else if (mapping.complexProcessor != null) {
+          value = mapping.complexProcessor.apply(objectNode);
+        } else if (mapping.contextProcessor != null) {
+          value = mapping.contextProcessor.apply(context);
+        }
+      }
+      if (value != null && !property.type().isInstance(value)) {
+        value = objectApi.asType(property.type(), value);
+      }
+      if (useLength && mapping.length > 0 && value instanceof String) {
+        value = truncateString((String) value, mapping.length);
+      }
+      return value;
+    }
+  }
+
+  private ObjectNode getReferenceObject(SearchIndexContext context, SearchIndexObject object,
+      String referenceName,
+      Map<String, ObjectNode> referenceObjects, Map<String, Object> defaultValues,
+      boolean useLength) {
+    ObjectNode referenceObjectNode = referenceObjects.get(referenceName);
+    if (referenceObjectNode == null) {
+      SearchIndexReferenceMapping referenceMapping = references.get(referenceName);
+      URI referenceUri = (URI) readValue(context, object,
+          entityDefinition.getDefinition().getProperty(referenceMapping.sourceProperty),
+          referenceObjects, defaultValues, useLength);
+      String referenceObjectName = this.name + StringConstant.DOT_REGEX + referenceName;
+      // TODO use ObjectNodeReference.get
+      referenceObjectNode = objectApi.load(referenceUri);
+      referenceObjects.put(referenceObjectName, referenceObjectNode);
+    }
+    return referenceObjectNode;
   }
 
   public final String truncateString(String str, int maxSize) {
@@ -579,6 +711,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       if (!deleteRows.isEmpty()) {
         TableData<?> tdDelete = TableDatas.copyRows(oldDetailRecords, deleteRows);
         Crud.delete(tdDelete);
+        log.info("Deleted detail:" + tdDelete);
+        log.info("", new Exception());
       }
       if (!insertRows.isEmpty()) {
         TableData<?> tdInsert = TableDatas.copyRows(updateResult.result, insertRows);
@@ -747,5 +881,31 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    */
   public void setName(String name) {
     this.name = name;
+  }
+
+  public SearchIndexMappingObject reference(String referenceName,
+      String targetSearchIndexSchema,
+      String targetSearchIndexName,
+      String sourcePropertyName,
+      String targetPropertyName) {
+    references.put(referenceName,
+        new SearchIndexReferenceMapping(referenceName, sourcePropertyName, targetSearchIndexSchema,
+            targetSearchIndexName, targetPropertyName));
+    return this;
+  }
+
+  public void initReferences() {
+    CollectionApi collectionApi = ctx.getBean(CollectionApi.class);
+    for (SearchIndexReferenceMapping referenceMapping : references.values()) {
+      SearchIndex<?> searchIndex = collectionApi.searchIndex(
+          referenceMapping.targetSearchIndexSchema, referenceMapping.targetSearchIndexName);
+      List<String[]> referenceJoins = new ArrayList<>();
+      referenceJoins
+          .add(new String[] {referenceMapping.sourceProperty, referenceMapping.targetProperty});
+      builder.reference(referenceMapping.referenceName,
+          searchIndex.getDefinition().getDefinition(), referenceJoins);
+      referenceSearchIndices.put(referenceMapping.referenceName, searchIndex);
+    }
+
   }
 }
