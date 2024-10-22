@@ -49,7 +49,7 @@ public class GeoMapApiImpl implements GeoMapApi {
   private static final String POSTFIX_SELECTION = "_mapSelectionChangedCallback";
   private static final String POSTFIX_PLACEMENT = "_mapPlacementChangedCallback";
 
-  @Autowired
+  @Autowired(required = false) // FIXME (viewApi is not present everywhere)
   private ViewApi viewApi;
   @Autowired
   private WidgetCallbackApi widgetCallbackApi;

@@ -37,6 +37,7 @@ import javax.validation.Valid;
   SampleEmployee.ID,
   SampleEmployee.FIRST_NAME,
   SampleEmployee.LAST_NAME,
+  SampleEmployee.NAME,
   SampleEmployee.DEPARTMENT
 })
 @JsonTypeName("SampleEmployee")
@@ -53,6 +54,9 @@ public class SampleEmployee {
 
   public static final String LAST_NAME = "lastName";
   private String lastName;
+
+  public static final String NAME = "name";
+  private String name;
 
   public static final String DEPARTMENT = "department";
   private URI department;
@@ -169,6 +173,33 @@ public class SampleEmployee {
   }
 
 
+  public SampleEmployee name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Get name
+   * @return name
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
   public SampleEmployee department(URI department) {
     
     this.department = department;
@@ -210,12 +241,13 @@ public class SampleEmployee {
         Objects.equals(this.id, sampleEmployee.id) &&
         Objects.equals(this.firstName, sampleEmployee.firstName) &&
         Objects.equals(this.lastName, sampleEmployee.lastName) &&
+        Objects.equals(this.name, sampleEmployee.name) &&
         Objects.equals(this.department, sampleEmployee.department);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, firstName, lastName, department);
+    return Objects.hash(uri, id, firstName, lastName, name, department);
   }
 
   @Override
@@ -226,6 +258,7 @@ public class SampleEmployee {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    department: ").append(toIndentedString(department)).append("\n");
     sb.append("}");
     return sb.toString();

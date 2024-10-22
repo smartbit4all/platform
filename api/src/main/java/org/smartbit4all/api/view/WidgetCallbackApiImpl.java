@@ -11,7 +11,7 @@ import com.google.common.base.Strings;
 
 public class WidgetCallbackApiImpl implements WidgetCallbackApi {
 
-  @Autowired
+  @Autowired(required = false) // FIXME: This is bad and ConditionalOnBean cannot work!
   private ViewApi viewApi;
   @Autowired
   private InvocationApi invocationApi;
