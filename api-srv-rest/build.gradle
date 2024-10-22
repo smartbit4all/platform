@@ -1,48 +1,49 @@
 plugins {
-	id 'org.smartbit4all.platform.gradle.openapi'
+  id 'org.smartbit4all.platform.gradle.openapi'
 }
 
 dependencies {
-	api project(':api')
-	api project(':api-domain')
-	api project(':sec')
-	
-	api 'org.springframework.boot:spring-boot-autoconfigure'
+  api project(':api')
+  api project(':api-domain')
+  api project(':sec')
 
-	api 'org.springframework:spring-webmvc'
-	api 'javax.servlet:javax.servlet-api:4.0.1'
-	
-	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	
-	testImplementation 'org.springframework.boot:spring-boot-starter-web'
+  api 'org.springframework.boot:spring-boot-autoconfigure'
+
+  api 'org.springframework:spring-webmvc'
+  api 'javax.servlet:javax.servlet-api:4.0.1'
+
+  implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+  implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+  testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 smartbit4all {
-    openApi {
-        apiDescriptorMapping = [
-        	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation",
-        	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
-        	"${rootDir}/api-domain/src/main/resources/descriptors/view-api.yaml" : "view",
-        	"${rootDir}/api-domain/src/main/resources/descriptors/uitree-api.yaml" : "uitree",
-        	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
-        	"${rootDir}/api-domain/src/main/resources/descriptors/kerberosauthentication-api.yaml" : "kerberosauthentication",
-            "${rootDir}/api-domain/src/main/resources/descriptors/grid-api.yaml" : "grid",
-            "${rootDir}/api-domain/src/main/resources/descriptors/filterexpression-api.yaml" : "filterexpression",
-            "${rootDir}/api-domain/src/main/resources/descriptors/wellknown-api.yaml" : "wellknown"
-        ]
-        apiPackagePrefix = "org.smartbit4all.api"
-        apiPackagePostfix = "restserver"
-        invokerPackagePrefix = "org.smartbit4all.api"
-        invokerPackagePostfix = "restserver.util"
-        modelPackagePrefix = "org.smartbit4all.api"
-        modelPackagePostfix = "bean"
-		genApiRestServer = true
-		importMappings = [
-            "UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
-            "UiAction": "org.smartbit4all.api.view.bean.UiAction",
-            "FilterExpressionOrderBy" : "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
-            "ViewContextChange" : "org.smartbit4all.api.view.bean.ViewContextChange"
-      ]
-    }
+  openApi {
+    apiDescriptorMapping = [
+        "${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml"            : "navigation",
+        "${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml"               : "session",
+        "${rootDir}/api-domain/src/main/resources/descriptors/view-api.yaml"                  : "view",
+        "${rootDir}/api-domain/src/main/resources/descriptors/uitree-api.yaml"                : "uitree",
+        "${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml"   : "localauthentication",
+        "${rootDir}/api-domain/src/main/resources/descriptors/kerberosauthentication-api.yaml": "kerberosauthentication",
+        "${rootDir}/api-domain/src/main/resources/descriptors/grid-api.yaml"                  : "grid",
+        "${rootDir}/api-domain/src/main/resources/descriptors/filterexpression-api.yaml"      : "filterexpression",
+        "${rootDir}/api-domain/src/main/resources/descriptors/wellknown-api.yaml"             : "wellknown",
+        "${rootDir}/api-domain/src/main/resources/descriptors/geomap-api.yaml"             : "geomap"
+    ]
+    apiPackagePrefix = "org.smartbit4all.api"
+    apiPackagePostfix = "restserver"
+    invokerPackagePrefix = "org.smartbit4all.api"
+    invokerPackagePostfix = "restserver.util"
+    modelPackagePrefix = "org.smartbit4all.api"
+    modelPackagePostfix = "bean"
+    genApiRestServer = true
+    importMappings = [
+        "UiActionRequest"        : "org.smartbit4all.api.view.bean.UiActionRequest",
+        "UiAction"               : "org.smartbit4all.api.view.bean.UiAction",
+        "FilterExpressionOrderBy": "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
+        "ViewContextChange"      : "org.smartbit4all.api.view.bean.ViewContextChange"
+    ]
+  }
 }
