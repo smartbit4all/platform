@@ -15,7 +15,7 @@
 package org.smartbit4all.sql.storage;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
@@ -78,10 +78,10 @@ public interface ObjectEntryDef extends EntityDefinition {
   Property<String> className();
 
   @OwnProperty(name = CREATED_AT, columnName = CREATED_AT_COL, mandatory = true)
-  Property<LocalDateTime> createdAt();
+  Property<OffsetDateTime> createdAt();
 
   @OwnProperty(name = MODIFIED_AT, columnName = MODIFIED_AT_COL, mandatory = true)
-  Property<LocalDateTime> modifiedAt();
+  Property<OffsetDateTime> modifiedAt();
 
   @OwnProperty(name = UUID, columnName = UUID_COL, mandatory = true)
   Property<String> uuid();
