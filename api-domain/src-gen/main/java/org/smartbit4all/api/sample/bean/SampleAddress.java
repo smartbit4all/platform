@@ -29,38 +29,34 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * An example Employee object containing and id, a name and a reference to a department. 
+ * An example Company object containing and id and a name. 
  */
-@ApiModel(description = "An example Employee object containing and id, a name and a reference to a department. ")
+@ApiModel(description = "An example Company object containing and id and a name. ")
 @JsonPropertyOrder({
-  SampleEmployee.URI,
-  SampleEmployee.ID,
-  SampleEmployee.FIRST_NAME,
-  SampleEmployee.LAST_NAME,
-  SampleEmployee.DEPARTMENT
+  SampleAddress.URI,
+  SampleAddress.ID,
+  SampleAddress.NAME,
+  SampleAddress.ADDRESS
 })
-@JsonTypeName("SampleEmployee")
+@JsonTypeName("SampleAddress")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SampleEmployee {
+public class SampleAddress {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String ID = "id";
   private String id;
 
-  public static final String FIRST_NAME = "firstName";
-  private String firstName;
+  public static final String NAME = "name";
+  private String name;
 
-  public static final String LAST_NAME = "lastName";
-  private String lastName;
+  public static final String ADDRESS = "address";
+  private URI address;
 
-  public static final String DEPARTMENT = "department";
-  private URI department;
-
-  public SampleEmployee() { 
+  public SampleAddress() { 
   }
 
-  public SampleEmployee uri(URI uri) {
+  public SampleAddress uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -88,7 +84,7 @@ public class SampleEmployee {
   }
 
 
-  public SampleEmployee id(String id) {
+  public SampleAddress id(String id) {
     
     this.id = id;
     return this;
@@ -115,85 +111,58 @@ public class SampleEmployee {
   }
 
 
-  public SampleEmployee firstName(String firstName) {
+  public SampleAddress name(String name) {
     
-    this.firstName = firstName;
+    this.name = name;
     return this;
   }
 
    /**
-   * Get firstName
-   * @return firstName
+   * Get name
+   * @return name
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(FIRST_NAME)
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getFirstName() {
-    return firstName;
+  public String getName() {
+    return name;
   }
 
 
-  @JsonProperty(FIRST_NAME)
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
+  public void setName(String name) {
+    this.name = name;
   }
 
 
-  public SampleEmployee lastName(String lastName) {
+  public SampleAddress address(URI address) {
     
-    this.lastName = lastName;
+    this.address = address;
     return this;
   }
 
    /**
-   * Get lastName
-   * @return lastName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(LAST_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getLastName() {
-    return lastName;
-  }
-
-
-  @JsonProperty(LAST_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-
-  public SampleEmployee department(URI department) {
-    
-    this.department = department;
-    return this;
-  }
-
-   /**
-   * Get department
-   * @return department
+   * Get address
+   * @return address
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(DEPARTMENT)
+  @JsonProperty(ADDRESS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getDepartment() {
-    return department;
+  public URI getAddress() {
+    return address;
   }
 
 
-  @JsonProperty(DEPARTMENT)
+  @JsonProperty(ADDRESS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDepartment(URI department) {
-    this.department = department;
+  public void setAddress(URI address) {
+    this.address = address;
   }
 
 
@@ -205,28 +174,26 @@ public class SampleEmployee {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SampleEmployee sampleEmployee = (SampleEmployee) o;
-    return Objects.equals(this.uri, sampleEmployee.uri) &&
-        Objects.equals(this.id, sampleEmployee.id) &&
-        Objects.equals(this.firstName, sampleEmployee.firstName) &&
-        Objects.equals(this.lastName, sampleEmployee.lastName) &&
-        Objects.equals(this.department, sampleEmployee.department);
+    SampleAddress sampleAddress = (SampleAddress) o;
+    return Objects.equals(this.uri, sampleAddress.uri) &&
+        Objects.equals(this.id, sampleAddress.id) &&
+        Objects.equals(this.name, sampleAddress.name) &&
+        Objects.equals(this.address, sampleAddress.address);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, firstName, lastName, department);
+    return Objects.hash(uri, id, name, address);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SampleEmployee {\n");
+    sb.append("class SampleAddress {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
-    sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
-    sb.append("    department: ").append(toIndentedString(department)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("}");
     return sb.toString();
   }

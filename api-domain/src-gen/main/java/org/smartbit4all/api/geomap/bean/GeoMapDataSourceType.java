@@ -32,7 +32,9 @@ public enum GeoMapDataSourceType {
   
   SEARCH_INDEX("SEARCH_INDEX"),
   
-  INVOCATION_REQUEST("INVOCATION_REQUEST");
+  INVOCATION_REQUEST("INVOCATION_REQUEST"),
+  
+  INLINE("INLINE");
 
   private String value;
 

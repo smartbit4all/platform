@@ -28,6 +28,7 @@ import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.geomap.bean.GeoMapDataLoadingMode;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceType;
+import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -60,7 +61,8 @@ import javax.validation.Valid;
   GeoMapDataSourceDescriptor.LATITUDE_COLUMN,
   GeoMapDataSourceDescriptor.LONGITUDE_COLUMN,
   GeoMapDataSourceDescriptor.FILTER_EXPRESSION_LIST,
-  GeoMapDataSourceDescriptor.INVOCATION_REQUEST
+  GeoMapDataSourceDescriptor.INVOCATION_REQUEST,
+  GeoMapDataSourceDescriptor.INLINE_ITEMS
 })
 @JsonTypeName("GeoMapDataSourceDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -130,6 +132,9 @@ public class GeoMapDataSourceDescriptor {
 
   public static final String INVOCATION_REQUEST = "invocationRequest";
   private InvocationRequest invocationRequest = null;
+
+  public static final String INLINE_ITEMS = "inlineItems";
+  private List<GeoMapItem> inlineItems = null;
 
   public GeoMapDataSourceDescriptor() { 
   }
@@ -783,6 +788,42 @@ public class GeoMapDataSourceDescriptor {
   }
 
 
+  public GeoMapDataSourceDescriptor inlineItems(List<GeoMapItem> inlineItems) {
+    
+    this.inlineItems = inlineItems;
+    return this;
+  }
+
+  public GeoMapDataSourceDescriptor addInlineItemsItem(GeoMapItem inlineItemsItem) {
+    if (this.inlineItems == null) {
+      this.inlineItems = new ArrayList<>();
+    }
+    this.inlineItems.add(inlineItemsItem);
+    return this;
+  }
+
+   /**
+   * Get inlineItems
+   * @return inlineItems
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(INLINE_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<GeoMapItem> getInlineItems() {
+    return inlineItems;
+  }
+
+
+  @JsonProperty(INLINE_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInlineItems(List<GeoMapItem> inlineItems) {
+    this.inlineItems = inlineItems;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -813,12 +854,13 @@ public class GeoMapDataSourceDescriptor {
         Objects.equals(this.latitudeColumn, geoMapDataSourceDescriptor.latitudeColumn) &&
         Objects.equals(this.longitudeColumn, geoMapDataSourceDescriptor.longitudeColumn) &&
         Objects.equals(this.filterExpressionList, geoMapDataSourceDescriptor.filterExpressionList) &&
-        Objects.equals(this.invocationRequest, geoMapDataSourceDescriptor.invocationRequest);
+        Objects.equals(this.invocationRequest, geoMapDataSourceDescriptor.invocationRequest) &&
+        Objects.equals(this.inlineItems, geoMapDataSourceDescriptor.inlineItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, targetLayer, sourceType, itemKind, loadingMode, sourceCollection, pathToId, pathToPosition, pathToBounds, pathToTitle, pathToDescription, includeIf, inclusionPredicate, searchIndexSchema, searchIndexName, idColumn, titleColumn, descriptionColumn, latitudeColumn, longitudeColumn, filterExpressionList, invocationRequest);
+    return Objects.hash(id, targetLayer, sourceType, itemKind, loadingMode, sourceCollection, pathToId, pathToPosition, pathToBounds, pathToTitle, pathToDescription, includeIf, inclusionPredicate, searchIndexSchema, searchIndexName, idColumn, titleColumn, descriptionColumn, latitudeColumn, longitudeColumn, filterExpressionList, invocationRequest, inlineItems);
   }
 
   @Override
@@ -847,6 +889,7 @@ public class GeoMapDataSourceDescriptor {
     sb.append("    longitudeColumn: ").append(toIndentedString(longitudeColumn)).append("\n");
     sb.append("    filterExpressionList: ").append(toIndentedString(filterExpressionList)).append("\n");
     sb.append("    invocationRequest: ").append(toIndentedString(invocationRequest)).append("\n");
+    sb.append("    inlineItems: ").append(toIndentedString(inlineItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

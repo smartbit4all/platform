@@ -43,6 +43,8 @@ public class GeoMapDataLoadingStrategyFactoryImpl implements GeoMapDataLoadingSt
             dataSourceDescriptor,
             objectApi,
             invocationApi);
+      case INLINE:
+        return new InlineItemBasedGeoMapDataLoadingStrategy(dataSourceDescriptor);
       default:
         throw new AssertionError("Unknown data source type:" + dataSourceDescriptor);
     }

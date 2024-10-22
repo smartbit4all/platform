@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view.geomap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
@@ -8,6 +10,7 @@ import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataLoadingMode;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceType;
+import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.google.common.base.Strings;
@@ -97,6 +100,28 @@ public abstract class GeoMapDataSourceConfigurer {
         .loadingMode(loadingMode)
         .sourceType(GeoMapDataSourceType.INVOCATION_REQUEST)
         .invocationRequest(invocationRequest);
+  }
+
+  public static GeoMapDataSourceDescriptor ofInlineItems(
+      String id,
+      List<GeoMapItem> geoMapItems) {
+    return ofInlineItems(id, GeoMapApi.LAYER_DEFAULT, geoMapItems);
+  }
+
+  public static GeoMapDataSourceDescriptor ofInlineItems(
+      String id,
+      String targetLayer,
+      List<GeoMapItem> geoMapItems) {
+    Objects.requireNonNull(id, "GeoMap DataSource id cannot be null!");
+    Objects.requireNonNull(targetLayer, "GeoMap DataSource cannot target null layer!");
+    Objects.requireNonNull(geoMapItems, "geoMapItems cannot be null!");
+
+    return new GeoMapDataSourceDescriptor()
+        .id(id)
+        .targetLayer(targetLayer)
+        .loadingMode(GeoMapDataLoadingMode.CREATION)
+        .sourceType(GeoMapDataSourceType.INLINE)
+        .inlineItems(new ArrayList<>(geoMapItems));
   }
 
   protected final GeoMapDataSourceDescriptor descriptor;

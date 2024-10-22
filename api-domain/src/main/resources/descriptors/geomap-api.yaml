@@ -375,7 +375,7 @@ components:
             type: string
 
     GeoMapDataSourceType:
-      enum: [STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST]
+      enum: [STORED_COLLECTION, SEARCH_INDEX, INVOCATION_REQUEST, INLINE]
     GeoMapDataLoadingMode:
       enum: [ON_INTERACTION, ON_CREATION]
     GeoMapDataSourceDescriptor:
@@ -447,6 +447,11 @@ components:
           description: |
             GeoMapViewport -> List<GeoMapItem>
           type: InvocationRequest
+        # inline stuff
+        inlineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoMapItem'
     GeoMapInteraction:
       type: object
       properties:

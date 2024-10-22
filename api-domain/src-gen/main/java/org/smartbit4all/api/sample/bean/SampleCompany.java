@@ -35,7 +35,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SampleCompany.URI,
   SampleCompany.ID,
-  SampleCompany.NAME
+  SampleCompany.NAME,
+  SampleCompany.ADDRESS
 })
 @JsonTypeName("SampleCompany")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +49,9 @@ public class SampleCompany {
 
   public static final String NAME = "name";
   private String name;
+
+  public static final String ADDRESS = "address";
+  private URI address;
 
   public SampleCompany() { 
   }
@@ -134,6 +138,34 @@ public class SampleCompany {
   }
 
 
+  public SampleCompany address(URI address) {
+    
+    this.address = address;
+    return this;
+  }
+
+   /**
+   * Get address
+   * @return address
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getAddress() {
+    return address;
+  }
+
+
+  @JsonProperty(ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAddress(URI address) {
+    this.address = address;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -145,12 +177,13 @@ public class SampleCompany {
     SampleCompany sampleCompany = (SampleCompany) o;
     return Objects.equals(this.uri, sampleCompany.uri) &&
         Objects.equals(this.id, sampleCompany.id) &&
-        Objects.equals(this.name, sampleCompany.name);
+        Objects.equals(this.name, sampleCompany.name) &&
+        Objects.equals(this.address, sampleCompany.address);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, name);
+    return Objects.hash(uri, id, name, address);
   }
 
   @Override
@@ -160,6 +193,7 @@ public class SampleCompany {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("}");
     return sb.toString();
   }
