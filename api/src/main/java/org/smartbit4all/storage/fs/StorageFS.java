@@ -45,7 +45,6 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageObject.OperationMode;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
@@ -389,9 +388,7 @@ public class StorageFS extends ObjectStorageImpl {
         // Write the data version file
         storageAccessApi.writeVersion(objectVersionFile, object.getUri(),
             binaryDataVersion,
-            object.definition()
-                .serialize(object.getMode() == OperationMode.AS_MAP ? object.getObjectAsMap()
-                    : object.getObject()));
+            object.serializeMapAware());
         // FileIO.writeMultipart(objectVersionFile,
         // binaryDataVersion,
         // object.definition()
@@ -487,7 +484,7 @@ public class StorageFS extends ObjectStorageImpl {
       binaryData = new BinaryData(EMPTY_BYTE_ARRAY);
     }
     FileIO.writeMultipart(objectDataFileTemp, binaryData,
-        object.serialize(SINGLEVERSION_MEMORYLIMIT));
+        object.serializeMapAware());
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
     try {

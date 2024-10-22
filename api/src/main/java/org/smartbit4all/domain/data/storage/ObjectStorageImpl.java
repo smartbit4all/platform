@@ -27,7 +27,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
-import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -236,7 +235,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
       long startTime = System.currentTimeMillis();
 
-      if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
+      if (object.isSingleVersion()) {
         saveSingleVersionObject(object);
       } else {
         saveVersionedObject(object);

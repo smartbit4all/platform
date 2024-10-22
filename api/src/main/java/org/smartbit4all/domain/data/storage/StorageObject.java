@@ -528,12 +528,27 @@ public final class StorageObject<T> {
         .serialize(getObject(), definition.getClazz(), memorylimit);
   }
 
+  /**
+   * @return The serialized form of the object by the {@link ObjectDefinition} defined.
+   */
+  public final BinaryData serializeMapAware() {
+    return definition.serialize(getMode() == OperationMode.AS_MAP ? getObjectAsMap()
+        : getObject());
+  }
+
   public final boolean isSkipLock() {
     return skipLock;
   }
 
   final void setSkipLock(boolean skipLock) {
     this.skipLock = skipLock;
+  }
+
+  /**
+   * @return true if single version else false
+   */
+  public final boolean isSingleVersion() {
+    return getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION;
   }
 
   /**

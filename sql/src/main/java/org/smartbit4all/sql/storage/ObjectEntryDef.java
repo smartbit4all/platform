@@ -87,7 +87,7 @@ public interface ObjectEntryDef extends EntityDefinition {
   Property<String> uuid();
 
   @OwnProperty(name = VERSION, columnName = VERSION_COL, mandatory = true)
-  Property<String> version();
+  Property<Long> version();
 
   @OwnProperty(name = SINGLEVERSION, columnName = SINGLEVERSION_COL, mandatory = true)
   Property<Boolean> singleVersion();
