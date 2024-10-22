@@ -136,7 +136,7 @@ public class StorageSQL extends ObjectStorageImpl {
       // It is an already existing object so it is an update
       if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
         // If it is a single version then we update the one and only one version of the object.
-        saveSingleVersionObject(object);
+        Crud.update(null);
       } else {
         saveVersionedObject(object);
       }
