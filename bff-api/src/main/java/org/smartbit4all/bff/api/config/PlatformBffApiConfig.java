@@ -27,6 +27,10 @@ import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApi;
 import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApiImpl;
+import org.smartbit4all.bff.api.object.ObjectDescriptorEditorPageApi;
+import org.smartbit4all.bff.api.object.ObjectDescriptorEditorPageApiImpl;
+import org.smartbit4all.bff.api.object.ObjectPropertyDescriptorPageApi;
+import org.smartbit4all.bff.api.object.ObjectPropertyDescriptorPageApiImpl;
 import org.smartbit4all.bff.api.search.GenericSearchPageApi;
 import org.smartbit4all.bff.api.search.GenericSearchPageApiImpl;
 import org.smartbit4all.bff.api.serviceconnection.ServiceConnectionEditorPageApi;
@@ -207,4 +211,24 @@ public class PlatformBffApiConfig {
       MDMValueTransformationEditorPageApi api) {
     return Invocations.asProvider(MDMValueTransformationEditorPageApi.class, api);
   }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  ObjectDescriptorEditorPageApi objectDescriptorEditorPageApi() {
+    return new ObjectDescriptorEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(ObjectDescriptorEditorPageApi.class)
+  public ProviderApiInvocationHandler<ObjectDescriptorEditorPageApi> objectDescriptorEditorPageApiProvider(
+      ObjectDescriptorEditorPageApi api) {
+    return Invocations.asProvider(ObjectDescriptorEditorPageApi.class, api);
+  }
+
+  @Bean
+  @ConditionalOnBean(ObjectDescriptorEditorPageApi.class)
+  ObjectPropertyDescriptorPageApi objectPropertyDescriptorPageApi() {
+    return new ObjectPropertyDescriptorPageApiImpl();
+  }
+
 }
