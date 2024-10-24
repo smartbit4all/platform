@@ -1,18 +1,9 @@
 package org.smartbit4all.sql.storage;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +19,13 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
-import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
-import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessApi;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -54,9 +43,9 @@ import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
-import org.smartbit4all.storage.fs.StorageSetFSVisitor;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.core.JsonParseException;
+import static java.util.stream.Collectors.toList;
 
 public class StorageSQL extends ObjectStorageImpl {
 
@@ -77,9 +66,6 @@ public class StorageSQL extends ObjectStorageImpl {
 
   @Autowired
   ObjectVersionDef objectVersionDef;
-
-  @Autowired
-  private BlobObjectStorageAccessApi storageAccessApi;
 
   @Autowired
   public IdentifierService identifierService;
@@ -245,7 +231,16 @@ public class StorageSQL extends ObjectStorageImpl {
     // return object.getVersionUri();
 
     URI uriWithoutVersion = getUriWithoutVersion(object.getUri());
-    StorageObjectData storageObjectData = readObjectData(uriWithoutVersion);
+
+    Optional<DataRow> optObjectRow = queryObjectEntry(uriWithoutVersion, true);
+    if (optObjectRow.isEmpty()) {
+      return null;
+    }
+    DataRow objectRow = optObjectRow.get();
+    StorageObjectData storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
+        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
+            objectRow.get(objectEntryDef.version())));
+
     ObjectVersion newVersion;
     ObjectVersion currentVersion = null;
     if (storageObjectData != null) {
@@ -305,7 +300,8 @@ public class StorageSQL extends ObjectStorageImpl {
     ObjectVersion oldVersion = currentVersion;
     updateStorageObjectWithVersion(object, newVersion);
     URI newVersionUri = object.getVersionUri();
-    addInvokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri);
+    addInvokeOnSucceedFunctions(object, objectRow.get(objectEntryDef.id()), oldVersion,
+        oldVersionUri, newVersionUri);
     return newVersionUri;
   }
 
@@ -318,7 +314,7 @@ public class StorageSQL extends ObjectStorageImpl {
    * @param oldVersionUri
    * @param newVersionUri
    */
-  void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
+  void addInvokeOnSucceedFunctions(StorageObject<?> object, Long entryId, ObjectVersion oldVersion,
       URI oldVersionUri, URI newVersionUri) {
     StorageSaveEvent event = new StorageSaveEvent(
         () -> {
@@ -330,7 +326,7 @@ public class StorageSQL extends ObjectStorageImpl {
         () -> {
           if (oldVersion != null) {
             return object.definition()
-                .fromMap(loadObjectVersion(object.definition(), objectVersionBasePath,
+                .fromMap(loadObjectVersion(object.definition(), entryId,
                     oldVersion.getSerialNoData(), oldVersionUri).getObjectAsMap());
           }
           return null;
@@ -396,12 +392,11 @@ public class StorageSQL extends ObjectStorageImpl {
     Long version = getUriVersion(uri);
 
     // First we read the object entry
-    DataRow objectEntryRow = Crud.read(objectEntryDef).select(objectEntryDef.allProperties())
-        .where(objectEntryDef.uri().eq(uriWithoutVersion)).onlyOne().orElse(null);
+    Optional<DataRow> optObjectEntryRow = queryObjectEntry(uriWithoutVersion, false);
 
-    if (objectEntryRow == null) {
-      throw new ObjectNotFoundException(uri, clazz, "Object not found.");
-    }
+    DataRow objectEntryRow = optObjectEntryRow
+        .orElseThrow(() -> new ObjectNotFoundException(uri, clazz, "Object not found."));
+
     if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
         && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
       throw new IllegalArgumentException("Unable to load single version object with .");
@@ -417,12 +412,14 @@ public class StorageSQL extends ObjectStorageImpl {
       version = objectEntryRow.get(objectEntryDef.version());
     }
 
-    DataRow objectVersionRow = Crud.read(objectVersionDef).select(objectVersionDef.allProperties())
-        .where(objectVersionDef.entryId().eq(objectEntryRow.get(objectEntryDef.id()))
-            .AND(objectVersionDef.version().eq(version)))
-        .onlyOne().orElse(null);
+    Optional<DataRow> optObjectVersionRow =
+        queryObjectVersion(objectEntryRow.get(objectEntryDef.id()), version, true);
+    DataRow objectVersionRow = optObjectVersionRow
+        .orElseThrow(() -> new ObjectNotFoundException(uri, clazz, "Object version not found."));
 
-    StorageObjectData storageObjectData = readObjectData(storageObjectDataFile);
+    StorageObjectData storageObjectData = readObjectDataFromRow(uri, objectEntryRow)
+        .currentVersion(readObjectVersionFromRow(version, objectVersionRow));
+
     @SuppressWarnings("unchecked")
     ObjectDefinition<T> definition =
         (ObjectDefinition<T>) getObjectDefinition(uri, storageObjectData, clazz);
@@ -430,11 +427,10 @@ public class StorageSQL extends ObjectStorageImpl {
     ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
     Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);
     boolean skipData = StorageLoadOption.checkSkipData(options);
-    File storageObjectVersionBasePath = getObjectVersionBasePath(uriWithoutVersion);
     if (versionDataSerialNo != null && !skipData) {
 
       StorageObjectHistoryEntry loadObjectVersion =
-          loadObjectVersion(definition, storageObjectVersionBasePath,
+          loadObjectVersion(definition, objectEntryRow.get(objectEntryDef.id()),
               versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo));
 
       // if (loadObjectVersion != null) {
@@ -451,12 +447,6 @@ public class StorageSQL extends ObjectStorageImpl {
       storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
     }
 
-    if (objectVersion != null && objectVersion.getSerialNoRelation() != null) {
-      loadStorageObjectReferences(storageObject,
-          loadRelationData(getObjectRelationVersionFile(storageObjectVersionBasePath,
-              objectVersion.getSerialNoRelation())));
-    }
-
     if (skipData) {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
@@ -464,7 +454,8 @@ public class StorageSQL extends ObjectStorageImpl {
     long endTime = System.currentTimeMillis();
     addRead(endTime - startTime);
 
-    return storageObject.lastModified(lastModified);
+    return storageObject
+        .lastModified(objectEntryRow.get(objectEntryDef.modifiedAt()).toEpochSecond());
   }
 
   @Override
@@ -478,207 +469,94 @@ public class StorageSQL extends ObjectStorageImpl {
         + (Strings.isBlank(setName) ? StringConstant.EMPTY
             : StringConstant.SLASH
                 + setName);
-    File setFolder =
-        new File(rootFolder,
-            storageScheme + setPath);
-    Path setFolderPath = setFolder.toPath();
 
-    if (setFolder.exists()) {
-      // The depth of the walk is defined by the depth of the uri path. It's about 6-7 so we use 8
-      // as maximum depth.
-      List<O> objects = new ArrayList<>();
-      // TODO Cleanup the empty directories.
-      Deque<DirFileCounter> stack = new ArrayDeque<>();
-      List<Path> emptyDirOrderedList = new ArrayList<>();
-      try {
-        Files.walkFileTree(setFolderPath, Collections.emptySet(), 8,
-            new StorageSetFSVisitor() {
-
-              @SuppressWarnings("unchecked")
-              @Override
-              public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                  throws IOException {
-                String fileName = file.getFileName().toString();
-                if (fileName.endsWith(SO_FILEEXTENSION)) {
-                  // We read the object with the standard operation by creating a valid URI from the
-                  // path.
-                  String path = setPath + StringConstant.SLASH
-                      + setFolderPath.relativize(file.getParent()).toString().replace('\\', '/')
-                      + StringConstant.SLASH
-                      + fileName.substring(0,
-                          fileName.length() - SO_FILEEXTENSION.length());
-                  URI uri = UriUtils.createUri(storageScheme, null,
-                      path,
-                      null);
-                  objects.add(reader.apply(uri));
-                  stack.peek().fileCount++;
-                }
-                return FileVisitResult.CONTINUE;
-              }
-
-              @Override
-              public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                  throws IOException {
-                // Add a new node to the stack before we enter the directory.
-                stack.push(new DirFileCounter(dir));
-                return super.preVisitDirectory(dir, attrs);
-              }
-
-              @Override
-              public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-                  throws IOException {
-                DirFileCounter dirFileCounter = stack.pop();
-                if (dirFileCounter.fileCount == 0) {
-                  // It was empty let's add this to the empty list
-                  emptyDirOrderedList.add(dir);
-                } else {
-                  // Increase the number of the file count in the parent.
-                  if (stack.peek() != null) {
-                    stack.peek().fileCount += dirFileCounter.fileCount;
-                  }
-                }
-                return super.postVisitDirectory(dir, exc);
-              }
-
-            });
-      } catch (IOException e) {
-        log.debug("Unable to read all the objects from the set.", e);
-      }
-      // cleanupEmptyDirs(emptyDirOrderedList);
-      return objects;
+    TableData<ObjectEntryDef> objectList;
+    try {
+      objectList = Crud.read(objectEntryDef)
+          .select(objectEntryDef.allProperties())
+          .where(
+              objectEntryDef.scheme().eq(storageScheme).AND(objectEntryDef.className().eq(setPath)))
+          .listData();
+      return objectList.rows().stream().map(r -> reader.apply(r.get(objectEntryDef.uri())))
+          .collect(toList());
+    } catch (Exception e) {
+      log.debug("Unable to read all the objects from the set.", e);
+      return Collections.emptyList();
     }
-
-    return Collections.emptyList();
   }
 
   @Override
   public boolean move(URI uri, URI targetUri) {
     // It is a simple update...
-    File sourceObjectFile = getObjectDataFile(uri);
-    File targetObjectFile = getObjectDataFile(targetUri);
-    try {
-      FileIO.move(sourceObjectFile, targetObjectFile);
+    Optional<DataRow> optObjectEntryRow = queryObjectEntry(uri, true);
+    if (optObjectEntryRow.isPresent()) {
+      DataRow objectEntryRow = optObjectEntryRow.get();
+      objectEntryRow.set(objectEntryDef.uri(), targetUri);
+      Crud.update(objectEntryRow.tableData());
       return true;
-    } catch (InterruptedException e) {
-      log.warn("Unable to move {} --> {}", sourceObjectFile, targetObjectFile);
     }
     return false;
   }
 
-  private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
-      File storageObjectDataFile) {
-    if (log.isTraceEnabled()) {
-      log.trace("Reading single version: {}", storageObjectDataFile.getAbsolutePath());
-    }
-    long waitTime = 10;
-    while (true) {
-      if (storageObjectDataFile == null || !storageObjectDataFile.exists()
-          || !storageObjectDataFile.isFile()) {
-        throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
-      }
-      try {
-        List<BinaryData> dataParts = FileIO.readMultipart(storageObjectDataFile);
-        StorageObjectData dataObject;
-        if (dataParts.get(0).length() != 0) {
-          Optional<StorageObjectData> optObject =
-              storageObjectDataDef.deserialize(dataParts.get(0));
-          if (!optObject.isPresent()) {
-            throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
-          }
-          dataObject = optObject.get();
-        } else {
-          dataObject = null;
-        }
-        @SuppressWarnings("unchecked")
-        ObjectDefinition<T> definition =
-            (ObjectDefinition<T>) getObjectDefinition(uri, dataObject, clazz);
-
-        Map<String, Object> obj = null;
-        if (dataParts.get(1).length() != 0) {
-          try {
-            obj = definition.deserializeAsMap(dataParts.get(1));
-          } catch (JsonParseException e) {
-            log.error("Unable to deserialize " + storageObjectDataFile.toString(), e);
-            obj = new HashMap<>();
-            obj.put("uri", uri);
-          }
-          if (obj != null && BinaryDataObject.class.equals(definition.getClazz())) {
-            obj.put("uri", uri);
-          }
-        }
-        return instanceOf(storage, definition, obj,
-            dataObject == null ? null : dataObject.getCurrentVersion());
-      } catch (IOException e) {
-        // We must try again.
-        log.debug("Unable to read {}", storageObjectDataFile);
-        log.debug("Read error, waiting " + waitTime, e);
-        waitTime = FileIO.getNextRandomWaitTime(waitTime);
-      } catch (IllegalStateException e) {
-        if (e.getCause() instanceof IOException) {
-          log.debug("Unable to read {}", storageObjectDataFile);
-          log.debug("Embedded read error, waiting " + waitTime, e);
-          waitTime = FileIO.getNextRandomWaitTime(waitTime);
-        } else {
-          log.debug("Embedded read error, throwing", e);
-          throw e;
-        }
-      }
-      try {
-        Thread.sleep(waitTime);
-      } catch (InterruptedException e) {
-        throw new RuntimeException("The reading was interrupted.", e);
-      }
-    }
+  private StorageObjectData readObjectDataFromRow(URI objectUri, DataRow objectRow) {
+    return new StorageObjectData().className(objectRow.get(objectEntryDef.className()))
+        .uri(objectUri);
   }
 
-  /**
-   * Return the object data if it exists. To load the latest add versionless uri.
-   * 
-   * @param objectUri The versioned or versionless uri of the object.
-   * @return The exact version
-   */
-  private final StorageObjectData readObjectData(URI objectUri) {
-    DataRow objectRow;
+  private final Optional<DataRow> queryObjectEntry(URI objectUri, boolean lock) {
     try {
-      objectRow = Crud.read(objectEntryDef)
+      CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(objectUri)).lock()
-          .onlyOne()
-          .orElse(null);
+          .where(objectEntryDef.uri().eq(objectUri));
+      if (lock) {
+        read.lock();
+      }
+      return read.onlyOne();
     } catch (Exception e) {
-      objectRow = null;
+      return Optional.empty();
     }
-    if (objectRow == null) {
-      return null;
-    }
-    return new StorageObjectData().className(objectRow.get(objectEntryDef.className()))
-        .uri(objectUri)
-        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
-            objectRow.get(objectEntryDef.version())));
   }
 
   /**
    * Return the object version object.
    * 
-   * @param objectUri The versionless uri of the object.
+   * @param id The id of the object entry.
+   * @param version The version of the object.
    * @return
    */
   private final ObjectVersion readObjectVersion(Long id, Long version) {
-    DataRow objectRow;
-    try {
-      PropertySet allExceptContent = objectVersionDef.allProperties();
-      allExceptContent.remove(objectVersionDef.objectContent());
-      objectRow = Crud.read(objectVersionDef)
-          .select(allExceptContent)
-          .where(objectVersionDef.entryId().eq(id).AND(objectVersionDef.version().eq(version)))
-          .onlyOne().orElse(null);
-    } catch (Exception e) {
-      objectRow = null;
-    }
-    if (objectRow == null) {
+    Optional<DataRow> objectRow = queryObjectVersion(id, version, true);
+    if (objectRow.isEmpty()) {
       return null;
     }
     // TODO extract the current and the pending version...
+    return readObjectVersionFromRow(version, objectRow.get());
+  }
+
+  /**
+   * Executes the query to retrieve the {@link DataRow} of the given object version.
+   * 
+   * @param id The objet entry id.
+   * @param version The version.
+   * @param skipContent Indicate to skip the content itself fro better performance.
+   * @return The {@link DataRow}
+   */
+  private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent) {
+    try {
+      PropertySet properties = objectVersionDef.allProperties();
+      if (skipContent) {
+        properties.remove(objectVersionDef.objectContent());
+      }
+      return Crud.read(objectVersionDef)
+          .select(properties)
+          .where(objectVersionDef.entryId().eq(id).AND(objectVersionDef.version().eq(version)))
+          .onlyOne();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  private final ObjectVersion readObjectVersionFromRow(Long version, DataRow objectRow) {
     return new ObjectVersion()
         .commonAncestorUri(objectRow.get(objectVersionDef.commonAncestorUri()))
         .createdAt(objectRow.get(objectVersionDef.createdAt()))
@@ -691,52 +569,37 @@ public class StorageSQL extends ObjectStorageImpl {
         .transactionId(objectRow.get(objectVersionDef.transactionId()));
   }
 
-  private <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,
-      Map<String, Object> object,
-      Long versionDataSerialNo,
-      StorageLoadOption[] options) {
-    if (!StorageLoadOption.checkUriWithVersionOption(options)) {
-      // If no options specified the default behavior is to return the with the requested uri
-      // This can ensure that the uri will be the exact uri used for the load.
-      object.put("uri", uri);
-    } else {
-      Long uriVersion = getUriVersion(uri);
-      boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
-
-      URI uriToSet = null;
-      // TODO manage the path itself.
-      if (uriVersion == null && uriNeedsVersion) {
-        uriToSet = URI.create(uri.toString() + versionPostfix + versionDataSerialNo);
-      } else if (uriVersion != null && !uriNeedsVersion) {
-        String uriTxt = uri.toString();
-        uriToSet = URI.create(uriTxt.substring(0, uriTxt.lastIndexOf(versionPostfix)));
-      } else {
-        // (has and need) OR (has not and dont need)
-        uriToSet = uri;
-      }
-      object.put("uri", uriToSet);
-    }
+  private final BinaryData readObjectContentFromRow(Long version, DataRow objectRow) {
+    return objectRow.get(objectVersionDef.objectContent());
   }
 
+  /**
+   * Return the {@link StorageObjectHistoryEntry} that contains the loaded object as object and as
+   * map and the {@link ObjectVersion} also.
+   * 
+   * @param <T> The type of the object.
+   * @param definition The definition of the object.
+   * @param id The id of the object entry.
+   * @param version
+   * @param versionUri
+   * @return
+   */
   private <T> StorageObjectHistoryEntry loadObjectVersion(ObjectDefinition<T> definition,
-      File historyBasePath,
-      long version,
+      Long id,
+      Long version,
       URI versionUri) {
-    File objectVersionFile = getObjectVersionFile(
-        historyBasePath,
-        version);
 
-    List<BinaryData> multipart = storageAccessApi.readVersion(objectVersionFile, versionUri);
+    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false);
+    if (optObjectVersion.isEmpty()) {
+      return null;
+    }
 
-    BinaryData versionObjectBinaryData = multipart.get(0);
-    BinaryData versionBinaryData = multipart.get(1);
+    DataRow objectRow = optObjectVersion.get();
+    ObjectVersion objectVersion = readObjectVersionFromRow(version, objectRow);
+    BinaryData versionBinaryData = readObjectContentFromRow(version, objectRow);
 
-    ObjectVersion objectVersion;
-    T object;
     Map<String, Object> objectAsMap;
     try {
-      objectVersion = objectDefinitionApi.getDefaultSerializer()
-          .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
       objectAsMap = definition.deserializeAsMap(versionBinaryData);
       if (BinaryDataObject.class.equals(definition.getClazz())) {
         objectAsMap.put("uri", versionUri);
@@ -754,24 +617,15 @@ public class StorageSQL extends ObjectStorageImpl {
       return null;
     }
 
-    File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
+    if (optObjectRow.isEmpty()) {
       return null;
     }
-
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject;
-    try {
-      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
-    } catch (IOException e) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-
-    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    DataRow objectRow = optObjectRow.get();
+    StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
+        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
+            objectRow.get(objectEntryDef.version())));
+    ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;
     }
@@ -792,7 +646,7 @@ public class StorageSQL extends ObjectStorageImpl {
           @Override
           public StorageObjectHistoryEntry next() {
             i++;
-            return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
+            return loadObjectVersion(definition, objectRow.get(objectEntryDef.id()), i,
                 getUriWithVersion(uri, i));
           }
 
@@ -808,24 +662,15 @@ public class StorageSQL extends ObjectStorageImpl {
       return null;
     }
 
-    File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
+    if (optObjectRow.isEmpty()) {
       return null;
     }
-
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject;
-    try {
-      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
-    } catch (IOException e) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-
-    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    DataRow objectRow = optObjectRow.get();
+    StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
+        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
+            objectRow.get(objectEntryDef.version())));
+    ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;
     }
@@ -848,7 +693,7 @@ public class StorageSQL extends ObjectStorageImpl {
           @Override
           public StorageObjectHistoryEntry next() {
             i--;
-            return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
+            return loadObjectVersion(definition, objectRow.get(objectEntryDef.id()), i,
                 getUriWithVersion(uri, i));
           }
 

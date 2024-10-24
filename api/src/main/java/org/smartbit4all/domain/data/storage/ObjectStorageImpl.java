@@ -574,8 +574,35 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return uriWithoutVersion != null ? URI
         .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber)
         : null;
-
   }
+
+  protected <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,
+      Map<String, Object> object,
+      Long versionDataSerialNo,
+      StorageLoadOption[] options) {
+    if (!StorageLoadOption.checkUriWithVersionOption(options)) {
+      // If no options specified the default behavior is to return the with the requested uri
+      // This can ensure that the uri will be the exact uri used for the load.
+      object.put("uri", uri);
+    } else {
+      Long uriVersion = getUriVersion(uri);
+      boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
+
+      URI uriToSet = null;
+      // TODO manage the path itself.
+      if (uriVersion == null && uriNeedsVersion) {
+        uriToSet = URI.create(uri.toString() + versionPostfix + versionDataSerialNo);
+      } else if (uriVersion != null && !uriNeedsVersion) {
+        String uriTxt = uri.toString();
+        uriToSet = URI.create(uriTxt.substring(0, uriTxt.lastIndexOf(versionPostfix)));
+      } else {
+        // (has and need) OR (has not and dont need)
+        uriToSet = uri;
+      }
+      object.put("uri", uriToSet);
+    }
+  }
+
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
