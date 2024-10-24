@@ -10,7 +10,7 @@ import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 
-@ViewApi(value = PlatformViewNames.OBJECT_PROPERTY_DESCRIPTOR_PAGE)
+@ViewApi(value = PlatformViewNames.OBJECT_DESCRIPTOR_PAGE)
 public interface ObjectDescriptorEditorPageApi extends MDMEntryEditPageApi {
 
   String ADD_PROPERTY = "ADD_PROPERTY";
