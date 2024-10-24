@@ -39,7 +39,7 @@ public class ObjectDescriptorEditorPageApiImpl extends MDMEntryEditPageApiImpl
   private static final String OBJECT_DESCRIPTOR = ObjectDescriptor.class.getSimpleName();
 
   private static final List<String> ORDERED_COLUMNS =
-      List.of(ObjectPropertyDescriptor.PROPERTY_NAME);
+      Arrays.asList(ObjectPropertyDescriptor.PROPERTY_NAME);
 
   @Autowired
   private GridModelApi gridModelApi;
@@ -101,7 +101,7 @@ public class ObjectDescriptorEditorPageApiImpl extends MDMEntryEditPageApiImpl
   @Override
   public GridPage onGridPageRender(GridPage gridPage) {
     gridPage.getRows()
-        .forEach(row -> row.actions(List.of(new UiAction().code(EDIT_PROPERTY).model(true),
+        .forEach(row -> row.actions(Arrays.asList(new UiAction().code(EDIT_PROPERTY).model(true),
             new UiAction().code(DELETE_PROPERTY).model(true))));
     return gridPage;
   }
