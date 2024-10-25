@@ -20,5 +20,4 @@ public class CollectionTestConfig {
     return new StorageTransactionManagerFS(storageFS);
   }
 
-
 }
