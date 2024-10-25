@@ -184,7 +184,7 @@ public class StorageSQL extends ObjectStorageImpl {
               object.getUuid() == null ? null : object.getUuid().toString())
           .set(objectEntryDef.version(), FIRST_VERSION)
           .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build());
-      Crud.update(builderVersion
+      Crud.create(builderVersion
           .addRow()
           .set(objectVersionDef.entryId(), nextId)
           .set(objectVersionDef.version(), FIRST_VERSION)
@@ -233,13 +233,14 @@ public class StorageSQL extends ObjectStorageImpl {
     URI uriWithoutVersion = getUriWithoutVersion(object.getUri());
 
     Optional<DataRow> optObjectRow = queryObjectEntry(uriWithoutVersion, true);
-    if (optObjectRow.isEmpty()) {
-      return null;
+    DataRow objectRow = null;
+    StorageObjectData storageObjectData = null;
+    if (optObjectRow.isPresent()) {
+      objectRow = optObjectRow.get();
+      storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
+          .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
+              objectRow.get(objectEntryDef.version())));
     }
-    DataRow objectRow = optObjectRow.get();
-    StorageObjectData storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
-        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
-            objectRow.get(objectEntryDef.version())));
 
     ObjectVersion newVersion;
     ObjectVersion currentVersion = null;
@@ -300,8 +301,8 @@ public class StorageSQL extends ObjectStorageImpl {
     ObjectVersion oldVersion = currentVersion;
     updateStorageObjectWithVersion(object, newVersion);
     URI newVersionUri = object.getVersionUri();
-    addInvokeOnSucceedFunctions(object, objectRow.get(objectEntryDef.id()), oldVersion,
-        oldVersionUri, newVersionUri);
+    // addInvokeOnSucceedFunctions(object, objectRow.get(objectEntryDef.id()), oldVersion,
+    // oldVersionUri, newVersionUri);
     return newVersionUri;
   }
 

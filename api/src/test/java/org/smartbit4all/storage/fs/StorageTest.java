@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -45,10 +44,11 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Disabled
-class StorageTest {
+public class StorageTest {
 
   private static final String MY_MAP = "MyMap";
 
@@ -103,13 +103,13 @@ class StorageTest {
   }
 
   @Autowired
-  StorageApi storageApi;
+  protected StorageApi storageApi;
 
   @Autowired
-  ObjectApi objectApi;
+  protected ObjectApi objectApi;
 
   @Autowired
-  StorageTestApi testApi;
+  protected StorageTestApi testApi;
 
   protected URI collectionsTestUri;
 

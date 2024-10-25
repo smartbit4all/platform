@@ -18,6 +18,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.annotation.property.Entity;
+import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.Join;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.ReferenceEntity;
@@ -70,9 +71,11 @@ public interface ObjectVersionDef extends EntityDefinition {
   String OBJECT_CONTENT = "objectcontent";
   String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
 
+  @Id
   @OwnProperty(name = ENTRY_ID, columnName = ENTRY_ID_COL, mandatory = true)
   Property<Long> entryId();
 
+  @Id
   @OwnProperty(name = VERSION, columnName = VERSION_COL, mandatory = true)
   Property<Long> version();
 
@@ -82,10 +85,10 @@ public interface ObjectVersionDef extends EntityDefinition {
   @OwnProperty(name = CREATED_AT, columnName = CREATED_AT_COL, mandatory = true)
   Property<OffsetDateTime> createdAt();
 
-  @OwnProperty(name = CREATED_BY_URI, columnName = CREATED_AT_COL, mandatory = false)
+  @OwnProperty(name = CREATED_BY_URI, columnName = CREATED_BY_URI_COL, mandatory = false)
   Property<URI> createdByUri();
 
-  @OwnProperty(name = CREATED_BY, columnName = CREATED_BY, mandatory = false)
+  @OwnProperty(name = CREATED_BY, columnName = CREATED_BY_COL, mandatory = false)
   Property<String> createdBy();
 
   @OwnProperty(name = OPERATION, columnName = OPERATION_COL, mandatory = false)
