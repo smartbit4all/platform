@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -43,6 +46,7 @@ import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -112,6 +116,9 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Autowired
   private BlobObjectStorageAccessApi storageAccessApi;
+
+  @Autowired
+  private StorageApi self;
 
   /**
    * @param rootFolder The root folder, in which the storage place the files.
@@ -938,6 +945,13 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    return new StoredSequenceStorageImpl(self,
+        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
+        name);
   }
 
 }

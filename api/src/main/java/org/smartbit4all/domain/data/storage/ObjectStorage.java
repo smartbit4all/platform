@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
@@ -204,5 +205,14 @@ public interface ObjectStorage {
    * @return
    */
   ObjectHistoryIterator objectHistoryReverse(URI uri, ObjectDefinition<?> definition);
+
+  /**
+   * Get a {@link StoredSequence} adequate for the given storage.
+   * 
+   * @param schema The schema for the sequence
+   * @param name The name of the sequence
+   * @return The {@link StoredSequence} instance.
+   */
+  StoredSequence getSequence(String schema, String name);
 
 }

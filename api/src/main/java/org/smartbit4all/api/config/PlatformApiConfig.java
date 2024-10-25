@@ -11,8 +11,6 @@ import org.smartbit4all.api.collection.EmbeddingApi;
 import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
-import org.smartbit4all.api.collection.StorageSequenceApi;
-import org.smartbit4all.api.collection.StorageSequenceApiImpl;
 import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.collection.VectorDDBApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -803,11 +801,6 @@ public class PlatformApiConfig {
   @Bean
   public BinaryDataSorageApi binaryDataSorageApi() {
     return new BinaryDataSorageApiImpl();
-  }
-
-  @Bean
-  public StorageSequenceApi storageSequenceApi() {
-    return new StorageSequenceApiImpl();
   }
 
   @Bean

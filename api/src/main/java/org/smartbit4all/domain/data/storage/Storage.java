@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.data.storage;
 
-import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -18,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -29,6 +29,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -881,6 +882,10 @@ public final class Storage {
   public final Storage setVersionPolicy(VersionPolicy versionPolicy) {
     this.versionPolicy = versionPolicy;
     return this;
+  }
+
+  public StoredSequence getSequence(String schema, String name) {
+    return objectStorage.getSequence(schema, name);
   }
 
 }

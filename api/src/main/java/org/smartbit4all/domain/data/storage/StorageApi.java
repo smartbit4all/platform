@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import org.smartbit4all.api.collection.StoredSequence;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
@@ -72,5 +73,14 @@ public interface StorageApi {
   ObjectHistoryIterator objectHistoryReverse(URI uri);
 
   ObjectStorage getDefaultObjectStorage();
+
+  /**
+   * Get a {@link StoredSequence} adequate for the given storage.
+   * 
+   * @param schema The schema for the sequence
+   * @param name The name of the sequence
+   * @return The {@link StoredSequence} instance.
+   */
+  StoredSequence getSequence(String schema, String name);
 
 }

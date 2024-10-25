@@ -39,7 +39,6 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public static final String STOREDMAP = "storedmap";
   public static final String STOREDLIST = "storedlist";
   public static final String STOREDREF = "storedRef";
-  public static final String STOREDSEQ = "storedSeq";
 
   @Autowired
   private StorageApi storageApi;
@@ -49,9 +48,6 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Autowired
   private BranchApi branchApi;
-
-  @Autowired
-  private StorageSequenceApi sequenceApi;
 
   @Autowired
   private VectorDBApi vectorDBApi;
@@ -237,8 +233,9 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public StoredSequence sequence(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredSequenceStorageImpl(constructGlobalUri(schema, name, STOREDSEQ), name,
-        sequenceApi);
+    return storageApi.getSequence(schema, name);
+    // return new StoredSequenceStorageImpl(constructGlobalUri(schema, name, STOREDSEQ), name,
+    // sequenceApi);
   }
 
   /**

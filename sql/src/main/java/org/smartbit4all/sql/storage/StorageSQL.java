@@ -3,6 +3,7 @@ package org.smartbit4all.sql.storage;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -40,6 +42,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.service.identifier.CurrentIdentifier;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -715,6 +718,49 @@ public class StorageSQL extends ObjectStorageImpl {
           "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence", e);
     }
     return next.output();
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    return new StoredSequence() {
+
+      @Override
+      public List<Long> next(int count) {
+        List<Long> result = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+          NextIdentifier next = identifierService.next();
+          next.setInput(name);
+          try {
+            next.execute();
+          } catch (Exception e) {
+            throw new IllegalStateException(
+                "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence",
+                e);
+          }
+          result.add(next.output());
+        }
+        return result;
+      }
+
+      @Override
+      public Long next() {
+        return next(1).get(0);
+      }
+
+      @Override
+      public Long current() {
+        CurrentIdentifier current = identifierService.current();
+        current.setInput(name);
+        try {
+          current.execute();
+        } catch (Exception e) {
+          throw new IllegalStateException(
+              "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence",
+              e);
+        }
+        return current.output();
+      }
+    };
   }
 
 }

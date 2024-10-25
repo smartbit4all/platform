@@ -12,12 +12,26 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.service.identifier;
+package org.smartbit4all.sql.service.identifier;
 
-public interface IdentifierService {
+import java.sql.SQLException;
+import org.smartbit4all.core.SB4FunctionImpl;
+import org.smartbit4all.domain.service.identifier.CurrentIdentifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-  NextIdentifier next();
+public class SQLCurrentIdentifierOracle extends SB4FunctionImpl<String, Long>
+    implements CurrentIdentifier {
 
-  CurrentIdentifier current();
+  protected JdbcTemplate jdbcTemplate;
+
+  public SQLCurrentIdentifierOracle(JdbcTemplate jdbcTemplate) {
+    super();
+    this.jdbcTemplate = jdbcTemplate;
+  }
+
+  @Override
+  public void execute() throws SQLException {
+    output = jdbcTemplate.queryForObject("select " + input + ".curval from dual", Long.class);
+  }
 
 }

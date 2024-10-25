@@ -17,6 +17,8 @@ import org.smartbit4all.core.object.ObjectNodeReference;
  */
 public interface CollectionApi {
 
+  String STOREDSEQ = "storedSeq";
+
   /**
    * A common problem to store object references mapped by a string.
    * 
