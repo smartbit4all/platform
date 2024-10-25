@@ -527,7 +527,7 @@ public class StorageSQL extends ObjectStorageImpl {
    */
   private final ObjectVersion readObjectVersion(Long id, Long version) {
     Optional<DataRow> objectRow = queryObjectVersion(id, version, true);
-    if (objectRow.isEmpty()) {
+    if (!objectRow.isPresent()) {
       return null;
     }
     // TODO extract the current and the pending version...
@@ -591,7 +591,7 @@ public class StorageSQL extends ObjectStorageImpl {
       URI versionUri) {
 
     Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false);
-    if (optObjectVersion.isEmpty()) {
+    if (!optObjectVersion.isPresent()) {
       return null;
     }
 
@@ -619,7 +619,7 @@ public class StorageSQL extends ObjectStorageImpl {
     }
 
     Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (optObjectRow.isEmpty()) {
+    if (!optObjectRow.isPresent()) {
       return null;
     }
     DataRow objectRow = optObjectRow.get();
@@ -664,7 +664,7 @@ public class StorageSQL extends ObjectStorageImpl {
     }
 
     Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (optObjectRow.isEmpty()) {
+    if (!optObjectRow.isPresent()) {
       return null;
     }
     DataRow objectRow = optObjectRow.get();
