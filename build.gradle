@@ -77,3 +77,7 @@ task publishToMavenLocal {
 	subprojects.each { dependsOn("${it.name}:publishToMavenLocal") }
 }
 
+task compileTestJava {
+	subprojects.each { dependsOn("${it.name}:compileTestJava") }
+}
+

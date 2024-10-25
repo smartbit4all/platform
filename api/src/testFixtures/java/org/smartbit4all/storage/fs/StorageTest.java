@@ -640,14 +640,12 @@ public class StorageTest {
 
     assertEquals(1, storageObject.getAspects().size());
 
-    org.assertj.core.api.Assertions.assertThat(storageObject.getAspects()).isNotNull()
-        .containsKey(AccessControlInternalApi.ACL_ASPECT);
+    Assertions.assertNotNull(storageObject.getAspects());
+    Assertions.assertNotNull(storageObject.getAspects().get(AccessControlInternalApi.ACL_ASPECT));
 
-    org.assertj.core.api.Assertions
-        .assertThat(storageObject.getAspects().values().stream()
-            .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap())))
-        .allMatch(s -> "apple".equals(s.getName()));
-
+    storageObject.getAspects().values().stream()
+        .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap()))
+            .forEach(s -> Assertions.assertEquals("apple", s.getName()));
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {

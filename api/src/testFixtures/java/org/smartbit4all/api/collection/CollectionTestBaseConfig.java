@@ -10,6 +10,7 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -43,9 +44,9 @@ public class CollectionTestBaseConfig {
   @Bean
   public SearchIndex<SampleDataSheet> sampleDatasheetIndex() {
     return new SearchIndexWithFilterBeanImpl<>(
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.MY_SEARCH,
-        TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.MY_SEARCH,
+        TestFilter.class, CollectionApiTestBase.SCHEMA, SampleDataSheet.class)
             .map(TestFilter.NAME, String.class, 150, SampleDataSheet.NAME)
             .map(TestFilter.URI, URI.class, 500, SampleDataSheet.URI)
             .mapProcessed(TestFilter.ISODD, Boolean.class, 1, n -> Boolean.valueOf("odd".equals(n)),
@@ -89,7 +90,9 @@ public class CollectionTestBaseConfig {
               // Java 8 is incapable to infer types of lambda parameters even if explicit type
               // notation is used, we must explicitly cast to let the compiler pass, or upgrade to
               // JDK 9+!
-              for (FilterExpressionData expression : filters
+              // Nota bene: The above comment is still true! Do not remove the seemingly
+              // unnecessary typecast, and don't let your IDE remove it automatically!
+              for (FilterExpressionData expression : ((FilterExpressionList) filters)
                   .getExpressions()) {
                 if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
                     && "process".equals(expression.getOperand2().getValueAsString())) {
@@ -105,9 +108,9 @@ public class CollectionTestBaseConfig {
   public SearchIndex<SampleCategory> sampleCategoryWithValueDetails() {
     SearchIndexImpl<SampleCategory> index =
         new SearchIndexWithFilterBeanImpl<>(
-            CollectionApiTest.SCHEMA,
-            CollectionApiTest.MY_SEARCHDETAILVALUES,
-            TestCategoryFilter.class, CollectionApiTest.SCHEMA, SampleCategory.class)
+            CollectionApiTestBase.SCHEMA,
+            CollectionApiTestBase.MY_SEARCHDETAILVALUES,
+            TestCategoryFilter.class, CollectionApiTestBase.SCHEMA, SampleCategory.class)
                 .map(TestCategoryFilter.URI, URI.class, 500, SampleCategory.URI)
                 .map(TestCategoryFilter.NAME, String.class, 150, SampleCategory.NAME)
                 .detailListOfValue(TestCategoryFilter.KEYWORDS, SampleCategory.URI, String.class,
@@ -156,8 +159,8 @@ public class CollectionTestBaseConfig {
   @Bean
   public SearchIndex<SampleCategory> sampleMasterDetailIndex() {
     SearchIndexImpl<SampleCategory> index = new SearchIndexImpl<>(
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_CATEGORY, CollectionApiTest.SCHEMA, SampleCategory.class)
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_CATEGORY, CollectionApiTestBase.SCHEMA, SampleCategory.class)
             .map(SampleCategory.NAME, String.class, categoryNameComparator(), SampleCategory.NAME)
             .map(SampleCategory.URI, SampleCategory.URI)
             .detailListOfValue(TestCategoryFilter.KEYWORDS, SampleCategory.URI, String.class,
@@ -202,15 +205,15 @@ public class CollectionTestBaseConfig {
   @Bean
   public SearchIndex<SampleEmployee> sampleEmployee() {
     SearchIndexImpl<SampleEmployee> index = new SearchIndexImpl<>(
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_EMPLOYEE, CollectionApiTest.SCHEMA, SampleEmployee.class)
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_EMPLOYEE, CollectionApiTestBase.SCHEMA, SampleEmployee.class)
             .map(SampleEmployee.NAME, String.class, SampleEmployee.NAME)
             .map(SampleEmployee.ID, String.class, SampleEmployee.ID)
             .map(SampleEmployee.DEPARTMENT, URI.class, SampleEmployee.DEPARTMENT)
             .map(SampleEmployee.URI, SampleEmployee.URI);
-    index.reference(CollectionApiTest.SAMPLE_DEPARTMENT_REF,
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_DEPARTMENT,
+    index.reference(CollectionApiTestBase.SAMPLE_DEPARTMENT_REF,
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_DEPARTMENT,
         SampleEmployee.DEPARTMENT,
         SampleDepartment.URI);
 
@@ -220,15 +223,15 @@ public class CollectionTestBaseConfig {
   @Bean
   public SearchIndex<SampleDepartment> sampleDepartment() {
     SearchIndexImpl<SampleDepartment> index = new SearchIndexImpl<>(
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_DEPARTMENT, CollectionApiTest.SCHEMA, SampleDepartment.class)
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_DEPARTMENT, CollectionApiTestBase.SCHEMA, SampleDepartment.class)
             .map(SampleDepartment.NAME, String.class, SampleDepartment.NAME)
             .map(SampleDepartment.ID, String.class, SampleDepartment.ID)
             .map(SampleDepartment.COMPANY, URI.class, SampleDepartment.COMPANY)
             .map(SampleDepartment.URI, SampleDepartment.URI);
-    index.reference(CollectionApiTest.SAMPLE_COMPANY_REF,
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_COMPANY,
+    index.reference(CollectionApiTestBase.SAMPLE_COMPANY_REF,
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_COMPANY,
         SampleDepartment.COMPANY,
         SampleCompany.URI);
     return index;
@@ -237,8 +240,8 @@ public class CollectionTestBaseConfig {
   @Bean
   public SearchIndex<SampleCompany> sampleCompany() {
     SearchIndexImpl<SampleCompany> index = new SearchIndexImpl<>(
-        CollectionApiTest.SCHEMA,
-        CollectionApiTest.SAMPLE_COMPANY, CollectionApiTest.SCHEMA, SampleCompany.class)
+        CollectionApiTestBase.SCHEMA,
+        CollectionApiTestBase.SAMPLE_COMPANY, CollectionApiTestBase.SCHEMA, SampleCompany.class)
             .map(SampleCompany.NAME, String.class, SampleCompany.NAME)
             .map(SampleCompany.ID, String.class, SampleCompany.ID)
             .map(SampleCompany.URI, SampleCompany.URI);
