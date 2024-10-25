@@ -12,5 +12,8 @@ dependencies {
 
     api 'org.openapitools:jackson-databind-nullable:0.2.1'
     api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    testFixturesImplementation project(':api')
+    testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 	
 }

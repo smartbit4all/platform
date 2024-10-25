@@ -476,7 +476,8 @@ public class StorageSQL extends ObjectStorageImpl {
       objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
           .where(
-              objectEntryDef.scheme().eq(storageScheme).AND(objectEntryDef.className().eq(setPath)))
+              objectEntryDef.scheme().eq(storageScheme)
+                  .AND(objectEntryDef.className().eq(objectDefinition.getAlias())))
           .listData();
       return objectList.rows().stream().map(r -> reader.apply(r.get(objectEntryDef.uri())))
           .collect(toList());
