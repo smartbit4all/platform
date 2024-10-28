@@ -180,6 +180,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return executeSearch(filterExpressions, orderByList, true, objects, null);
   }
 
+
+
+  @Override
+  public TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields) {
+    return executeSearch(filterExpressions, orderByList, fields, true, objects, null);
+  }
+
+
   @Override
   public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
       FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList) {
