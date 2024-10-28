@@ -89,6 +89,16 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     return setupObjectMapper();
   }
 
+  public static final <T extends Object> T deepCopy(T object, Class<T> clazz)
+      throws IOException {
+    if (object == null) {
+      return null;
+    }
+    ObjectMapper localObjectMapper = getObjectMapper();
+    byte[] value = localObjectMapper.writeValueAsBytes(object);
+    return localObjectMapper.readValue(value, clazz);
+  }
+
   @Override
   public String getName() {
     return ObjectMapper.class.getName();
