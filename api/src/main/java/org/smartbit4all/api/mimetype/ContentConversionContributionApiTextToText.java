@@ -27,7 +27,7 @@ public class ContentConversionContributionApiTextToText extends ContentConversio
 
   @Override
   public List<String> getTargetMimeTypes() {
-    return List.of(MimeTypeApi.TXT_MIMETYPE);
+    return Arrays.asList(MimeTypeApi.TXT_MIMETYPE);
   }
 
   @Override
