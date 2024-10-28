@@ -21,6 +21,7 @@ public class ContentConversionContributionApiTextToText extends ContentConversio
     return Arrays.asList(
         MimeTypeApi.CSS_MIMETYPE,
         MimeTypeApi.HTML_MIMETYPE,
+        MimeTypeApi.XML_MIMETYPE,
         MimeTypeApi.JSON_MIMETYPE,
         MimeTypeApi.CSV_MIMETYPE);
   }
