@@ -6,7 +6,7 @@ pluginManagement {
 
 rootProject.name = 'platform'
 
-includeBuild '../../develop/platform-gradle'
+// includeBuild '../../develop/platform-gradle'
 
 include 'api'
 include 'api-domain'
