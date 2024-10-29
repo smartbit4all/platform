@@ -27,6 +27,16 @@ public final class ObjectStreamUtils {
   }
 
   /**
+   * Checks whether an {@link ObjectNodeReference} is considered present or not.
+   * 
+   * @param ref an {@link ObjectNodeReference} to examine, nullable
+   * @return false, if the ref is either null or empty, true otherwise
+   */
+  public static boolean isPresent(final ObjectNodeReference ref) {
+    return ref != null && ref.isPresent();
+  }
+
+  /**
    * Converts an {@link ObjectNodeReference} to a {@link Stream} of a single {@link ObjectNode}, or
    * an empty {@code Stream} if the reference was empty.
    *
