@@ -1,12 +1,20 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.config.PlatformViewNames;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMModificationApi;
@@ -18,19 +26,36 @@ import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.ViewEventApi;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
+import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.api.view.bean.ViewEventHandler;
+import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
+import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.bff.api.generic.GenericPageApi;
+import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
+
+  private static final String TEMPLATE_NAME_KEY = "name";
+  private static final String TEMPLATE_CODE_KEY = "code";
+  private static final String TEMPLATE_TYPE_NAME_KEY = "type";
 
   @Autowired
   protected MasterDataManagementApi masterDataManagementApi;
@@ -169,6 +194,19 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
             .collect(toList());
     actions.addAll(openListActions);
 
+    if (ctx.isAdmin() && ctx.getModificationApi() != null
+        && !ObjectUtils.isEmpty(ctx.definition.getTemplates())
+        && !MDMConstants.MDM_ADMIN_VALUES.equals(ctx.view.getViewName())) {
+      actions.add(new UiAction().code(ACTION_ADD_TEMPLATE_BASED_DESCRIPTOR)
+          .descriptor(new UiActionDescriptor()
+              .title(StringConstant.EMPTY)
+              .color(UiActions.Color.PRIMARY)
+              .icon("Plus")
+              .iconColor("white")
+              .iconPosition(IconPosition.PRE)
+              .type(UiActionButtonType.NORMAL)));
+    }
+
     ctx.view.actions(actions);
   }
 
@@ -265,7 +303,8 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
         .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
-            context.definition.getName()));
+            context.definition.getName())
+        .putParametersItem(MDMEntryChangesPageApi.PARAM_PARENT_UUID, viewUuid));
     styleViewActions(view, ACTION_OPEN_MDM_CHANGES);
   }
 
@@ -284,6 +323,85 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
 
   }
 
+  @Override
+  public void performAddTemplateBasedDescriptor(UUID viewUuid, UiActionRequest request) {
+    View view = viewApi.getView(viewUuid);
+    PageContext context = getContextByView(view);
+    if (!(context.isAdmin() || context.isAdminApprover())) {
+      throw new IllegalAccessError("Only admins can add MDM descriptors!");
+    }
+
+    List<Value> descriptorValueSet = context.definition.getTemplates().values().stream()
+        .map(desc -> new Value().code(desc.getName())
+            .displayValue(localeSettingApi.get("mdm", "temaplate", desc.getName())))
+        .collect(toList());
+
+    Map<String, Object> modelMap = new LinkedHashMap<>();
+    modelMap.put(TEMPLATE_NAME_KEY, StringConstant.EMPTY);
+    modelMap.put(TEMPLATE_CODE_KEY, StringConstant.EMPTY);
+    modelMap.put(TEMPLATE_TYPE_NAME_KEY, StringConstant.EMPTY);
+
+    viewApi.showView(new View()
+        .viewName(PlatformViewNames.GENERIC_PAGE)
+        .type(ViewType.DIALOG)
+        .putParametersItem(GenericPageApi.PARAM_MODEL, modelMap)
+        .putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT,
+            form(LayoutDirection.VERTICAL,
+                textfield(TEMPLATE_NAME_KEY,
+                    localeSettingApi.get("mdm.template.name.widget")),
+                textfield(TEMPLATE_CODE_KEY,
+                    localeSettingApi.get("mdm.template.code.widget")),
+                new SmartWidgetDefinition()
+                    .type(SmartFormWidgetType.SELECT)
+                    .key(TEMPLATE_TYPE_NAME_KEY)
+                    .label(localeSettingApi.get("mdm.template.type.widget"))
+                    .values(descriptorValueSet)))
+        .constraint(new ViewConstraint()
+            .componentConstraints(
+                asList(
+                    new ComponentConstraint().dataName(TEMPLATE_NAME_KEY)
+                        .enabled(true)
+                        .mandatory(true)
+                        .visible(true),
+                    new ComponentConstraint().dataName(TEMPLATE_CODE_KEY)
+                        .enabled(true)
+                        .mandatory(true)
+                        .visible(true),
+                    new ComponentConstraint().dataName(TEMPLATE_TYPE_NAME_KEY)
+                        .enabled(true)
+                        .mandatory(true)
+                        .visible(true))))
+        .actions(UiActions.builder()
+            .add(new UiAction()
+                .code("SAVE")
+                .submit(true))
+            .add(GenericPageApi.ACTION_CLOSE_VIEW)
+            .build())
+        .eventHandlers(asList(
+            new ViewEventHandler()
+                .viewEventType(ViewEventTypeEnum.INSTEAD)
+                .addPathItem(ViewEventApi.ACTION)
+                .addPathItem("SAVE")
+                .invocationRequest(invocationApi.builder(MDMAdminPageApi.class)
+                    .build(api -> api.addTemplateBasedDescriptorCallback(null, null, viewUuid))))));
+
+
+  }
+
+  @Override
+  public void addTemplateBasedDescriptorCallback(UUID dialogUuid, UiActionRequest request,
+      UUID viewUuid) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> model = actionRequestHelper(request).get(UiActions.MODEL, Map.class);
+    View view = viewApi.getView(viewUuid);
+    PageContext context = getContextByView(view);
+    masterDataManagementApi.addTemplateBasedDescriptorToDefinition(context.definition,
+        model.get(TEMPLATE_NAME_KEY).toString(),
+        model.get(TEMPLATE_CODE_KEY).toString(),
+        model.get(TEMPLATE_TYPE_NAME_KEY).toString());
+    viewApi.closeView(dialogUuid);
+    refreshUiActions(viewUuid);
+  }
 
   @Override
   public void refreshUiActions(UUID viewUuid) {

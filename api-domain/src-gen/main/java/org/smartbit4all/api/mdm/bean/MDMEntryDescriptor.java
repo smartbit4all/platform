@@ -70,7 +70,8 @@ import javax.validation.Valid;
   MDMEntryDescriptor.FILTER_MODEL_ADMIN,
   MDMEntryDescriptor.IMPORTABLE,
   MDMEntryDescriptor.HIDDEN,
-  MDMEntryDescriptor.DISPLAY_NAME_PROPERTY_PATH
+  MDMEntryDescriptor.DISPLAY_NAME_PROPERTY_PATH,
+  MDMEntryDescriptor.EDITOR_PARAMETERS
 })
 @JsonTypeName("MDMEntryDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -155,6 +156,9 @@ public class MDMEntryDescriptor {
 
   public static final String DISPLAY_NAME_PROPERTY_PATH = "displayNamePropertyPath";
   private List<String> displayNamePropertyPath = null;
+
+  public static final String EDITOR_PARAMETERS = "editorParameters";
+  private Map<String, Object> editorParameters = null;
 
   public MDMEntryDescriptor() { 
   }
@@ -954,6 +958,41 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor editorParameters(Map<String, Object> editorParameters) {
+    
+    this.editorParameters = editorParameters;
+    return this;
+  }
+
+  public MDMEntryDescriptor putEditorParametersItem(String key, Object editorParametersItem) {
+    if (this.editorParameters == null) {
+      this.editorParameters = new HashMap<>();
+    }
+    this.editorParameters.put(key, editorParametersItem);
+    return this;
+  }
+
+   /**
+   * A set of parameters passed to the editor page of the entry.
+   * @return editorParameters
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "A set of parameters passed to the editor page of the entry.")
+  @JsonProperty(EDITOR_PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getEditorParameters() {
+    return editorParameters;
+  }
+
+
+  @JsonProperty(EDITOR_PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditorParameters(Map<String, Object> editorParameters) {
+    this.editorParameters = editorParameters;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -989,12 +1028,13 @@ public class MDMEntryDescriptor {
         Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin) &&
         Objects.equals(this.importable, mdMEntryDescriptor.importable) &&
         Objects.equals(this.hidden, mdMEntryDescriptor.hidden) &&
-        Objects.equals(this.displayNamePropertyPath, mdMEntryDescriptor.displayNamePropertyPath);
+        Objects.equals(this.displayNamePropertyPath, mdMEntryDescriptor.displayNamePropertyPath) &&
+        Objects.equals(this.editorParameters, mdMEntryDescriptor.editorParameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden, displayNamePropertyPath);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden, displayNamePropertyPath, editorParameters);
   }
 
   @Override
@@ -1028,6 +1068,7 @@ public class MDMEntryDescriptor {
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("    displayNamePropertyPath: ").append(toIndentedString(displayNamePropertyPath)).append("\n");
+    sb.append("    editorParameters: ").append(toIndentedString(editorParameters)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -19,6 +19,8 @@ public interface MDMEntryChangesPageApi extends PageApi<MDMEntryChangesPageModel
 
   public static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
 
+  public static final String PARAM_PARENT_UUID = "PARENT_UUID";
+
   @ActionHandler(MDMActions.REFRESH)
   void refresh(UUID viewUuid, UiActionRequest request);
 
