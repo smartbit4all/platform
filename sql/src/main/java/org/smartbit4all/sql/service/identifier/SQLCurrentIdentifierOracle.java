@@ -31,7 +31,7 @@ public class SQLCurrentIdentifierOracle extends SB4FunctionImpl<String, Long>
 
   @Override
   public void execute() throws SQLException {
-    output = jdbcTemplate.queryForObject("select " + input + ".curval from dual", Long.class);
+    output = jdbcTemplate.queryForObject("select " + input + ".currval from dual", Long.class);
   }
 
 }

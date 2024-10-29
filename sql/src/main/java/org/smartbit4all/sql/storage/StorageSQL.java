@@ -734,7 +734,7 @@ public class StorageSQL extends ObjectStorageImpl {
             next.execute();
           } catch (Exception e) {
             throw new IllegalStateException(
-                "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence",
+                "Unable to retreive new identifier from database " + name + " sequence",
                 e);
           }
           result.add(next.output());
@@ -755,7 +755,7 @@ public class StorageSQL extends ObjectStorageImpl {
           current.execute();
         } catch (Exception e) {
           throw new IllegalStateException(
-              "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence",
+              "Unable to retreive the current value from database " + name + " sequence",
               e);
         }
         return current.output();
