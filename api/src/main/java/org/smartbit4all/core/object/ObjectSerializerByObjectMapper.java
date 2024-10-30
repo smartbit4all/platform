@@ -89,14 +89,17 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     return setupObjectMapper();
   }
 
-  public static final <T extends Object> T deepCopy(T object, Class<T> clazz)
-      throws IOException {
+  public static final <T> T deepCopy(T object, Class<T> type) {
     if (object == null) {
       return null;
     }
     ObjectMapper localObjectMapper = getObjectMapper();
-    byte[] value = localObjectMapper.writeValueAsBytes(object);
-    return localObjectMapper.readValue(value, clazz);
+    try {
+      byte[] value = localObjectMapper.writeValueAsBytes(object);
+      return localObjectMapper.readValue(value, type);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   @Override

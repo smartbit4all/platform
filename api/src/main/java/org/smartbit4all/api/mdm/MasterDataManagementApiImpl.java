@@ -2,7 +2,6 @@ package org.smartbit4all.api.mdm;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -871,13 +870,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       String descriptorName, String descriptorCode, String templateName) {
     MDMEntryDescriptor template = definition.getTemplates().get(templateName);
     Objects.requireNonNull(template);
-    MDMEntryDescriptor descriptor;
-    try {
-      descriptor = ObjectSerializerByObjectMapper.deepCopy(template,
-          MDMEntryDescriptor.class);
-    } catch (IOException e) {
-      throw new IllegalArgumentException(e);
-    }
+    MDMEntryDescriptor descriptor = ObjectSerializerByObjectMapper.deepCopy(
+        template,
+        MDMEntryDescriptor.class);
 
     // setting up the descriptor
     if (descriptor.getBranchingStrategy() == null) {
