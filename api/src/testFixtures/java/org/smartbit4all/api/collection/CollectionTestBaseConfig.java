@@ -10,7 +10,6 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -32,11 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @Import({PlatformApiConfig.class})
-@EnableTransactionManagement
 public class CollectionTestBaseConfig {
 
   public static final String SHADOW_ITEMS = "shadowItems";
@@ -92,7 +89,7 @@ public class CollectionTestBaseConfig {
               // JDK 9+!
               // Nota bene: The above comment is still true! Do not remove the seemingly
               // unnecessary typecast, and don't let your IDE remove it automatically!
-              for (FilterExpressionData expression : ((FilterExpressionList) filters)
+              for (FilterExpressionData expression : filters
                   .getExpressions()) {
                 if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
                     && "process".equals(expression.getOperand2().getValueAsString())) {
@@ -224,7 +221,8 @@ public class CollectionTestBaseConfig {
   public SearchIndex<SampleDepartment> sampleDepartment() {
     SearchIndexImpl<SampleDepartment> index = new SearchIndexImpl<>(
         CollectionApiTestBase.SCHEMA,
-        CollectionApiTestBase.SAMPLE_DEPARTMENT, CollectionApiTestBase.SCHEMA, SampleDepartment.class)
+        CollectionApiTestBase.SAMPLE_DEPARTMENT, CollectionApiTestBase.SCHEMA,
+        SampleDepartment.class)
             .map(SampleDepartment.NAME, String.class, SampleDepartment.NAME)
             .map(SampleDepartment.ID, String.class, SampleDepartment.ID)
             .map(SampleDepartment.COMPANY, URI.class, SampleDepartment.COMPANY)

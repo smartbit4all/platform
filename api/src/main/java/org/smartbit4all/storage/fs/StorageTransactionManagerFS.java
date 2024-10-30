@@ -165,7 +165,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
       // Call the events.
       Map<StorageObject<?>, List<StorageSaveEvent>> events =
           ((StorageTransaction) status.getTransaction()).getSaveEvents();
-      if (events != null) {
+      if (events != null && storageFS != null) {
         for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : events.entrySet()) {
           if (entry.getValue() != null) {
             for (StorageSaveEvent event : entry.getValue()) {

@@ -2,6 +2,7 @@ package org.smartbit4all.sql.storage;
 
 import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
@@ -10,6 +11,7 @@ import org.smartbit4all.sql.config.SQLObjectStorageEntityConfiguration;
 import org.smartbit4all.sql.service.identifier.SQLIdentifierService;
 import org.smartbit4all.sql.util.EmptyDatabasePopulator;
 import org.smartbit4all.storage.fs.StorageTestConfig;
+import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,11 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
     StorageTestConfig.class
 })
 public class StorageSQLTestConfig {
+
+  @Bean(Storage.STORAGETX)
+  public StorageTransactionManagerFS transactionManager() {
+    return new StorageTransactionManagerFS(null);
+  }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)
   public SQLDBParameter h2Parameter() {

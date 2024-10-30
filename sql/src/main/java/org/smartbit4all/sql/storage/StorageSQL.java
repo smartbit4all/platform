@@ -144,18 +144,23 @@ public class StorageSQL extends ObjectStorageImpl {
       OffsetDateTime now = OffsetDateTime.now();
       if (object.isSingleVersion()) {
         // If it is a single version then we update the one and only one version of the object.
+        Long newVersion = Long.valueOf(0);
         Crud.update(builderVersion
             .addRow()
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
-            .set(objectVersionDef.version(), Long.valueOf(0))
+            .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .build());
-        return Long.valueOf(0);
+        objectRow.set(objectEntryDef.version(), newVersion);
+        objectRow.set(objectEntryDef.modifiedAt(), now);
+        Crud.update(objectRow.tableData());
+        return newVersion;
       } else {
         // Update the entry with the new version and insert the new version.
         Long newVersion = objectRow.get(objectEntryDef.version()) + 1;
         objectRow.set(objectEntryDef.version(), newVersion);
+        objectRow.set(objectEntryDef.modifiedAt(), now);
         Crud.update(objectRow.tableData());
         Crud.create(builderVersion
             .addRow()
@@ -385,7 +390,7 @@ public class StorageSQL extends ObjectStorageImpl {
       return null;
     }
     OffsetDateTime modifiedAt = objectRow.get(objectEntryDef.modifiedAt());
-    return modifiedAt == null ? null : modifiedAt.toEpochSecond();
+    return modifiedAt == null ? null : modifiedAt.toInstant().toEpochMilli();
   }
 
   @Override
