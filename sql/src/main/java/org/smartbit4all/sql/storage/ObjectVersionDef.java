@@ -67,9 +67,14 @@ public interface ObjectVersionDef extends EntityDefinition {
   String MERGED_WITH_URI = "mergedWithUri";
   String MERGED_WITH_URI_COL = "MERGEDWITHURI";
 
-
   String OBJECT_CONTENT = "objectcontent";
   String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
+
+  String REF_CONTENT = "refcontent";
+  String REF_CONTENT_COL = "REF_CONTENT";
+
+  String ASPECT_CONTENT = "aspectcontent";
+  String ASPECT_CONTENT_COL = "ASPECT_CONTENT";
 
   @Id
   @OwnProperty(name = ENTRY_ID, columnName = ENTRY_ID_COL, mandatory = true)
@@ -105,6 +110,12 @@ public interface ObjectVersionDef extends EntityDefinition {
 
   @OwnProperty(name = OBJECT_CONTENT, columnName = OBJECT_CONTENT_COL, mandatory = true)
   Property<BinaryData> objectContent();
+
+  @OwnProperty(name = REF_CONTENT, columnName = REF_CONTENT_COL, mandatory = true)
+  Property<BinaryData> refContent();
+
+  @OwnProperty(name = ASPECT_CONTENT, columnName = ASPECT_CONTENT_COL, mandatory = true)
+  Property<BinaryData> aspectContent();
 
   @ReferenceEntity
   @Join(source = ENTRY_ID, target = ObjectEntryDef.ID)

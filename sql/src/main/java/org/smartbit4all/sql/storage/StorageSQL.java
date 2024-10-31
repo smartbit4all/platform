@@ -21,9 +21,11 @@ import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
+import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -49,6 +51,7 @@ import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl {
 
@@ -123,13 +126,26 @@ public class StorageSQL extends ObjectStorageImpl {
    * @return
    */
   private final Long saveObject(StorageObject<?> object) {
+    return saveObject(object, null);
+  }
+
+  /**
+   * In case of the database the save process is almost the same. We select the object record for
+   * update or insert this
+   * 
+   * @param object
+   * @param relationBinaryData
+   * @return
+   */
+  private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
     DataRow objectRow;
     try {
+      String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(getUriWithoutVersion(object.getUri()))).lock()
+          .where(objectEntryDef.uri().eq(uriWithoutVersion)).lock()
           .onlyOne()
           .orElse(null);
     } catch (Exception e) {
@@ -138,7 +154,8 @@ public class StorageSQL extends ObjectStorageImpl {
 
     BuilderWithFixProperties<ObjectVersionDef> builderVersion = TableDatas
         .builder(objectVersionDef, objectVersionDef.entryId(), objectVersionDef.version(),
-            objectVersionDef.createdAt(), objectVersionDef.objectContent());
+            objectVersionDef.createdAt(), objectVersionDef.objectContent(),
+            objectVersionDef.refContent(), objectVersionDef.aspectContent());
     if (objectRow != null) {
       // It is an already existing object so it is an update
       OffsetDateTime now = OffsetDateTime.now();
@@ -151,6 +168,8 @@ public class StorageSQL extends ObjectStorageImpl {
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
+            .set(objectVersionDef.refContent(), relationBinaryData)
+            .set(objectVersionDef.aspectContent(), object.serializeAspects())
             .build());
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
@@ -168,6 +187,8 @@ public class StorageSQL extends ObjectStorageImpl {
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
+            .set(objectVersionDef.refContent(), relationBinaryData)
+            .set(objectVersionDef.aspectContent(), object.serializeAspects())
             .build());
         return newVersion;
       }
@@ -182,7 +203,7 @@ public class StorageSQL extends ObjectStorageImpl {
               objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
               objectEntryDef.version(), objectEntryDef.singleVersion())
           .addRow()
-          .set(objectEntryDef.uri(), uri)
+          .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
           .set(objectEntryDef.scheme(), uri.getScheme())
           .set(objectEntryDef.className(), object.definition().getAlias())
@@ -198,9 +219,15 @@ public class StorageSQL extends ObjectStorageImpl {
           .set(objectVersionDef.version(), FIRST_VERSION)
           .set(objectVersionDef.createdAt(), now)
           .set(objectVersionDef.objectContent(), object.serializeMapAware())
+          .set(objectVersionDef.refContent(), relationBinaryData)
+          .set(objectVersionDef.aspectContent(), object.serializeAspects())
           .build());
       return FIRST_VERSION;
     }
+  }
+
+  private final String getUriString(URI uri) {
+    return uri == null ? null : uri.toString();
   }
 
   /**
@@ -299,8 +326,27 @@ public class StorageSQL extends ObjectStorageImpl {
       newVersion.setAspects(aspects);
     }
 
+    // Manage the references, load the current references
+    Long objectRelationVersion = storageObjectData.getCurrentVersion() != null
+        && storageObjectData.getCurrentVersion().getSerialNoRelation() != null
+            ? storageObjectData.getCurrentVersion().getSerialNoRelation()
+            : null;
+    StorageObjectRelationData storageObjectReferences =
+        saveStorageObjectReferences(object,
+            loadRelationData(objectRow != null ? objectRow.get(objectEntryDef.id()) : null,
+                objectRelationVersion));
+    BinaryData relationBinaryData = null;
+    if (storageObjectReferences != null) {
+      // The data serial number will be the serial number of the version.
+      newVersion.setSerialNoRelation(
+          (currentVersion == null || currentVersion.getSerialNoRelation() == null) ? 0L
+              : (currentVersion.getSerialNoRelation() + 1));
+      relationBinaryData = storageObjectRelationDataDef.serialize(storageObjectReferences);
+    }
+
+
     // Write the version files
-    newVersion.setSerialNoData(saveObject(object));
+    newVersion.setSerialNoData(saveObject(object, relationBinaryData));
 
     // Set the current version, change it at the last point to be able to use earlier.
     storageObjectData.currentVersion(newVersion);
@@ -362,7 +408,7 @@ public class StorageSQL extends ObjectStorageImpl {
     try {
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriWithoutVersion(uri)))
+          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
           .onlyOne()
           .orElse(null);
     } catch (Exception e) {
@@ -380,7 +426,7 @@ public class StorageSQL extends ObjectStorageImpl {
     try {
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriWithoutVersion(uri)))
+          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
           .onlyOne()
           .orElse(null);
     } catch (Exception e) {
@@ -456,6 +502,13 @@ public class StorageSQL extends ObjectStorageImpl {
       storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
     }
 
+    // Load the relation if exists in the actual version.
+    BinaryData relationBinaryData = objectVersionRow.get(objectVersionDef.refContent());
+    if (relationBinaryData != null) {
+      loadStorageObjectReferences(storageObject,
+          loadRelationData(relationBinaryData));
+    }
+
     if (skipData) {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
@@ -474,10 +527,11 @@ public class StorageSQL extends ObjectStorageImpl {
     ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
 
     String storageScheme = getStorageScheme(storage);
-    String setPath = StringConstant.SLASH + objectDefinition.getAlias()
-        + (Strings.isBlank(setName) ? StringConstant.EMPTY
-            : StringConstant.SLASH
-                + setName);
+    String setPath =
+        storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
+            + (Strings.isBlank(setName) ? StringConstant.EMPTY
+                : StringConstant.SLASH
+                    + setName);
 
     TableData<ObjectEntryDef> objectList;
     try {
@@ -485,9 +539,10 @@ public class StorageSQL extends ObjectStorageImpl {
           .select(objectEntryDef.allProperties())
           .where(
               objectEntryDef.scheme().eq(storageScheme)
-                  .AND(objectEntryDef.className().eq(objectDefinition.getAlias())))
+                  .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
-      return objectList.rows().stream().map(r -> reader.apply(r.get(objectEntryDef.uri())))
+      return objectList.rows().stream()
+          .map(r -> reader.apply(UriUtils.asUri(r.get(objectEntryDef.uri()))))
           .collect(toList());
     } catch (Exception e) {
       log.debug("Unable to read all the objects from the set.", e);
@@ -501,7 +556,7 @@ public class StorageSQL extends ObjectStorageImpl {
     Optional<DataRow> optObjectEntryRow = queryObjectEntry(uri, true);
     if (optObjectEntryRow.isPresent()) {
       DataRow objectEntryRow = optObjectEntryRow.get();
-      objectEntryRow.set(objectEntryDef.uri(), targetUri);
+      objectEntryRow.set(objectEntryDef.uri(), getUriString(targetUri));
       Crud.update(objectEntryRow.tableData());
       return true;
     }
@@ -517,7 +572,7 @@ public class StorageSQL extends ObjectStorageImpl {
     try {
       CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(objectUri));
+          .where(objectEntryDef.uri().eq(getUriString(objectUri)));
       if (lock) {
         read.lock();
       }
@@ -552,6 +607,9 @@ public class StorageSQL extends ObjectStorageImpl {
    * @return The {@link DataRow}
    */
   private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent) {
+    if (id == null || version == null) {
+      return Optional.empty();
+    }
     try {
       PropertySet properties = objectVersionDef.allProperties();
       if (skipContent) {
@@ -579,8 +637,12 @@ public class StorageSQL extends ObjectStorageImpl {
         .transactionId(objectRow.get(objectVersionDef.transactionId()));
   }
 
-  private final BinaryData readObjectContentFromRow(Long version, DataRow objectRow) {
+  private final BinaryData readObjectContentFromRow(DataRow objectRow) {
     return objectRow.get(objectVersionDef.objectContent());
+  }
+
+  private final BinaryData readAspectContentFromRow(DataRow objectRow) {
+    return objectRow.get(objectVersionDef.aspectContent());
   }
 
   /**
@@ -606,7 +668,7 @@ public class StorageSQL extends ObjectStorageImpl {
 
     DataRow objectRow = optObjectVersion.get();
     ObjectVersion objectVersion = readObjectVersionFromRow(version, objectRow);
-    BinaryData versionBinaryData = readObjectContentFromRow(version, objectRow);
+    BinaryData versionBinaryData = readObjectContentFromRow(objectRow);
 
     Map<String, Object> objectAsMap;
     try {
@@ -618,7 +680,45 @@ public class StorageSQL extends ObjectStorageImpl {
       log.error("Unable to read version data", e);
       return null;
     }
+
+    BinaryData aspectBinaryData = readAspectContentFromRow(objectRow);
+    if (aspectBinaryData != null) {
+      try {
+        Map<String, ObjectAspect> aspectAsMap = definition.deserializeAsMap(aspectBinaryData)
+            .entrySet().stream().collect(toMap(e -> e.getKey(), e -> objectDefinitionApi
+                .definition(ObjectAspect.class).fromMap((Map<String, Object>) e.getValue())));
+        objectVersion.aspects(aspectAsMap);
+      } catch (IOException e) {
+        log.error("Unable to read version data", e);
+        return null;
+      }
+    }
     return new StorageObjectHistoryEntry(objectVersion, objectAsMap);
+  }
+
+  private final StorageObjectRelationData loadRelationData(Long entryId, Long relationVersione) {
+    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersione, false);
+    if (optObjectVersion.isPresent()) {
+      BinaryData binaryData = optObjectVersion.get().get(objectVersionDef.refContent());
+      try {
+        return storageObjectRelationDataDef.deserialize(binaryData).orElse(null);
+      } catch (IOException e) {
+        log.error("Unable to deserialize reference", e);
+      }
+    }
+    return null;
+  }
+
+  private final StorageObjectRelationData loadRelationData(BinaryData relContent) {
+    if (relContent == null) {
+      return null;
+    }
+    try {
+      return storageObjectRelationDataDef.deserialize(relContent).orElse(null);
+    } catch (IOException e) {
+      log.error("Unable to deserialize reference", e);
+    }
+    return null;
   }
 
   @Override

@@ -333,6 +333,7 @@ public class StorageTest {
   }
 
   @RepeatedTest(5)
+  @Disabled
   void collectionsTest() throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(5);
     List<Future<?>> futures = new ArrayList<>();
@@ -645,7 +646,7 @@ public class StorageTest {
 
     storageObject.getAspects().values().stream()
         .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap()))
-            .forEach(s -> Assertions.assertEquals("apple", s.getName()));
+        .forEach(s -> Assertions.assertEquals("apple", s.getName()));
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {

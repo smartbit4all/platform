@@ -10,6 +10,7 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -89,7 +90,7 @@ public class CollectionTestBaseConfig {
               // JDK 9+!
               // Nota bene: The above comment is still true! Do not remove the seemingly
               // unnecessary typecast, and don't let your IDE remove it automatically!
-              for (FilterExpressionData expression : filters
+              for (FilterExpressionData expression : ((FilterExpressionList) filters)
                   .getExpressions()) {
                 if (TestFilter.NAME.equals(expression.getOperand1().getValueAsString())
                     && "process".equals(expression.getOperand2().getValueAsString())) {

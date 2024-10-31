@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.sql.storage;
 
-import java.net.URI;
 import java.time.OffsetDateTime;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
@@ -65,7 +64,7 @@ public interface ObjectEntryDef extends EntityDefinition {
   String SINGLEVERSION_COL = "SINGLEVERSION";
 
   @OwnProperty(name = URI, columnName = URI_COL, mandatory = true)
-  Property<URI> uri();
+  Property<String> uri();
 
   @OwnProperty(name = ID, columnName = ID_COL, mandatory = true)
   @Id

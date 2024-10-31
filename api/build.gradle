@@ -14,6 +14,7 @@ dependencies {
     api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     
     testFixturesImplementation project(':api')
+    testFixturesImplementation project(':api-domain')
     testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testFixturesImplementation "org.assertj:assertj-core:3.16.1"
 

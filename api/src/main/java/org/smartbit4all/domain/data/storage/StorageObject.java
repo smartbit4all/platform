@@ -536,6 +536,16 @@ public final class StorageObject<T> {
         : getObject());
   }
 
+  /**
+   * @return The serialized form of the object by the {@link ObjectDefinition} defined.
+   */
+  public final BinaryData serializeAspects() {
+    if (aspects == null || aspects.isEmpty()) {
+      return null;
+    }
+    return definition.serialize(aspects);
+  }
+
   public final boolean isSkipLock() {
     return skipLock;
   }
