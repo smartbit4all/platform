@@ -504,7 +504,7 @@ public class StorageSQL extends ObjectStorageImpl {
 
     // Load the relation if exists in the actual version.
     BinaryData relationBinaryData = objectVersionRow.get(objectVersionDef.refContent());
-    if (relationBinaryData != null) {
+    if (relationBinaryData != null && !skipData) {
       loadStorageObjectReferences(storageObject,
           loadRelationData(relationBinaryData));
     }

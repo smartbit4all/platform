@@ -333,7 +333,6 @@ public class StorageTest {
   }
 
   @RepeatedTest(5)
-  @Disabled
   void collectionsTest() throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(5);
     List<Future<?>> futures = new ArrayList<>();
