@@ -22,7 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.value.bean.ValueSetData;
+import org.smartbit4all.api.view.bean.NamedValidator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,7 +40,12 @@ import javax.validation.Valid;
   ComponentConstraint.VISIBLE,
   ComponentConstraint.MANDATORY,
   ComponentConstraint.ENABLED,
-  ComponentConstraint.VALUE_SET
+  ComponentConstraint.VALUE_SET,
+  ComponentConstraint.MIN,
+  ComponentConstraint.MAX,
+  ComponentConstraint.MIN_LENGTH,
+  ComponentConstraint.MAX_LENGTH,
+  ComponentConstraint.NAMED_VALIDATORS
 })
 @JsonTypeName("ComponentConstraint")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -56,6 +64,21 @@ public class ComponentConstraint {
 
   public static final String VALUE_SET = "valueSet";
   private ValueSetData valueSet = null;
+
+  public static final String MIN = "min";
+  private Integer min;
+
+  public static final String MAX = "max";
+  private Integer max;
+
+  public static final String MIN_LENGTH = "minLength";
+  private Integer minLength;
+
+  public static final String MAX_LENGTH = "maxLength";
+  private Integer maxLength;
+
+  public static final String NAMED_VALIDATORS = "namedValidators";
+  private List<NamedValidator> namedValidators = new ArrayList<>();
 
   public ComponentConstraint() { 
   }
@@ -196,6 +219,148 @@ public class ComponentConstraint {
   }
 
 
+  public ComponentConstraint min(Integer min) {
+    
+    this.min = min;
+    return this;
+  }
+
+   /**
+   * Get min
+   * @return min
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MIN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMin() {
+    return min;
+  }
+
+
+  @JsonProperty(MIN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMin(Integer min) {
+    this.min = min;
+  }
+
+
+  public ComponentConstraint max(Integer max) {
+    
+    this.max = max;
+    return this;
+  }
+
+   /**
+   * Get max
+   * @return max
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MAX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMax() {
+    return max;
+  }
+
+
+  @JsonProperty(MAX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMax(Integer max) {
+    this.max = max;
+  }
+
+
+  public ComponentConstraint minLength(Integer minLength) {
+    
+    this.minLength = minLength;
+    return this;
+  }
+
+   /**
+   * Get minLength
+   * @return minLength
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MIN_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMinLength() {
+    return minLength;
+  }
+
+
+  @JsonProperty(MIN_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMinLength(Integer minLength) {
+    this.minLength = minLength;
+  }
+
+
+  public ComponentConstraint maxLength(Integer maxLength) {
+    
+    this.maxLength = maxLength;
+    return this;
+  }
+
+   /**
+   * Get maxLength
+   * @return maxLength
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MAX_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMaxLength() {
+    return maxLength;
+  }
+
+
+  @JsonProperty(MAX_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMaxLength(Integer maxLength) {
+    this.maxLength = maxLength;
+  }
+
+
+  public ComponentConstraint namedValidators(List<NamedValidator> namedValidators) {
+    
+    this.namedValidators = namedValidators;
+    return this;
+  }
+
+  public ComponentConstraint addNamedValidatorsItem(NamedValidator namedValidatorsItem) {
+    this.namedValidators.add(namedValidatorsItem);
+    return this;
+  }
+
+   /**
+   * Get namedValidators
+   * @return namedValidators
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(NAMED_VALIDATORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<NamedValidator> getNamedValidators() {
+    return namedValidators;
+  }
+
+
+  @JsonProperty(NAMED_VALIDATORS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNamedValidators(List<NamedValidator> namedValidators) {
+    this.namedValidators = namedValidators;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -209,12 +374,17 @@ public class ComponentConstraint {
         Objects.equals(this.visible, componentConstraint.visible) &&
         Objects.equals(this.mandatory, componentConstraint.mandatory) &&
         Objects.equals(this.enabled, componentConstraint.enabled) &&
-        Objects.equals(this.valueSet, componentConstraint.valueSet);
+        Objects.equals(this.valueSet, componentConstraint.valueSet) &&
+        Objects.equals(this.min, componentConstraint.min) &&
+        Objects.equals(this.max, componentConstraint.max) &&
+        Objects.equals(this.minLength, componentConstraint.minLength) &&
+        Objects.equals(this.maxLength, componentConstraint.maxLength) &&
+        Objects.equals(this.namedValidators, componentConstraint.namedValidators);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dataName, visible, mandatory, enabled, valueSet);
+    return Objects.hash(dataName, visible, mandatory, enabled, valueSet, min, max, minLength, maxLength, namedValidators);
   }
 
   @Override
@@ -226,6 +396,11 @@ public class ComponentConstraint {
     sb.append("    mandatory: ").append(toIndentedString(mandatory)).append("\n");
     sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("    valueSet: ").append(toIndentedString(valueSet)).append("\n");
+    sb.append("    min: ").append(toIndentedString(min)).append("\n");
+    sb.append("    max: ").append(toIndentedString(max)).append("\n");
+    sb.append("    minLength: ").append(toIndentedString(minLength)).append("\n");
+    sb.append("    maxLength: ").append(toIndentedString(maxLength)).append("\n");
+    sb.append("    namedValidators: ").append(toIndentedString(namedValidators)).append("\n");
     sb.append("}");
     return sb.toString();
   }
