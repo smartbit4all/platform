@@ -48,6 +48,7 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.subjectselector.bean.UserSelectorPageModel;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,7 +323,8 @@ public class UserSelectorPageApiImpl extends PageApiImpl<UserSelectorPageModel>
     if (config != null) {
       return config;
     }
-    return userSelectorSearchPageConfig;
+    return ObjectSerializerByObjectMapper.deepCopy(userSelectorSearchPageConfig,
+        SearchPageConfig.class);
   }
 
   private List<URI> getExcludedUser(UUID viewUuid) {
