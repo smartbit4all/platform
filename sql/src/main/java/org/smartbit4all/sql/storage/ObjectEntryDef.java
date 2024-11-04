@@ -60,6 +60,9 @@ public interface ObjectEntryDef extends EntityDefinition {
   String VERSION = "version";
   String VERSION_COL = "VERSION";
 
+  String REFVERSION = "refVersion";
+  String REFVERSION_COL = "REFVERSION";
+
   String SINGLEVERSION = "singleVersion";
   String SINGLEVERSION_COL = "SINGLEVERSION";
 
@@ -87,6 +90,9 @@ public interface ObjectEntryDef extends EntityDefinition {
 
   @OwnProperty(name = VERSION, columnName = VERSION_COL, mandatory = true)
   Property<Long> version();
+
+  @OwnProperty(name = REFVERSION, columnName = REFVERSION_COL, mandatory = true)
+  Property<Long> refVersion();
 
   @OwnProperty(name = SINGLEVERSION, columnName = SINGLEVERSION_COL, mandatory = true)
   Property<Boolean> singleVersion();

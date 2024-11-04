@@ -161,7 +161,8 @@ public class StorageSQL extends ObjectStorageImpl {
       OffsetDateTime now = OffsetDateTime.now();
       if (object.isSingleVersion()) {
         // If it is a single version then we update the one and only one version of the object.
-        Long newVersion = Long.valueOf(0);
+        Long newVersion = FIRST_VERSION;
+        Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
         Crud.update(builderVersion
             .addRow()
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -172,13 +173,22 @@ public class StorageSQL extends ObjectStorageImpl {
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
             .build());
         objectRow.set(objectEntryDef.version(), newVersion);
+        objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
         Crud.update(objectRow.tableData());
         return newVersion;
       } else {
         // Update the entry with the new version and insert the new version.
         Long newVersion = objectRow.get(objectEntryDef.version()) + 1;
+        Long currentRefVersion = objectRow.get(objectEntryDef.refVersion());
+        Long newRefVersion = null;
+        if (relationBinaryData != null) {
+          newRefVersion = newVersion;
+        } else {
+          newRefVersion = currentRefVersion;
+        }
         objectRow.set(objectEntryDef.version(), newVersion);
+        objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
         Crud.update(objectRow.tableData());
         Crud.create(builderVersion
@@ -197,11 +207,12 @@ public class StorageSQL extends ObjectStorageImpl {
       URI uri = object.getUri();
       Long nextId = getNextId();
       OffsetDateTime now = OffsetDateTime.now();
+      Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
       Crud.create(TableDatas
           .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
               objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
               objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
-              objectEntryDef.version(), objectEntryDef.singleVersion())
+              objectEntryDef.version(), objectEntryDef.refVersion(), objectEntryDef.singleVersion())
           .addRow()
           .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
@@ -212,6 +223,7 @@ public class StorageSQL extends ObjectStorageImpl {
           .set(objectEntryDef.uuid(),
               object.getUuid() == null ? null : object.getUuid().toString())
           .set(objectEntryDef.version(), FIRST_VERSION)
+          .set(objectEntryDef.refVersion(), newRefVersion)
           .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build());
       Crud.create(builderVersion
           .addRow()
@@ -327,10 +339,8 @@ public class StorageSQL extends ObjectStorageImpl {
     }
 
     // Manage the references, load the current references
-    Long objectRelationVersion = storageObjectData.getCurrentVersion() != null
-        && storageObjectData.getCurrentVersion().getSerialNoRelation() != null
-            ? storageObjectData.getCurrentVersion().getSerialNoRelation()
-            : null;
+    Long objectRelationVersion =
+        objectRow != null ? objectRow.get(objectEntryDef.refVersion()) : null;
     StorageObjectRelationData storageObjectReferences =
         saveStorageObjectReferences(object,
             loadRelationData(objectRow != null ? objectRow.get(objectEntryDef.id()) : null,
@@ -467,8 +477,12 @@ public class StorageSQL extends ObjectStorageImpl {
       version = objectEntryRow.get(objectEntryDef.version());
     }
 
+    // The version number of the last relation version row
+    Long refVersion = objectEntryRow.get(objectEntryDef.refVersion());
+
+    Long objectId = objectEntryRow.get(objectEntryDef.id());
     Optional<DataRow> optObjectVersionRow =
-        queryObjectVersion(objectEntryRow.get(objectEntryDef.id()), version, true);
+        queryObjectVersion(objectId, version, true);
     DataRow objectVersionRow = optObjectVersionRow
         .orElseThrow(() -> new ObjectNotFoundException(uri, clazz, "Object version not found."));
 
@@ -485,7 +499,7 @@ public class StorageSQL extends ObjectStorageImpl {
     if (versionDataSerialNo != null && !skipData) {
 
       StorageObjectHistoryEntry loadObjectVersion =
-          loadObjectVersion(definition, objectEntryRow.get(objectEntryDef.id()),
+          loadObjectVersion(definition, objectId,
               versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo));
 
       // if (loadObjectVersion != null) {
@@ -502,11 +516,14 @@ public class StorageSQL extends ObjectStorageImpl {
       storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
     }
 
-    // Load the relation if exists in the actual version.
-    BinaryData relationBinaryData = objectVersionRow.get(objectVersionDef.refContent());
-    if (relationBinaryData != null && !skipData) {
-      loadStorageObjectReferences(storageObject,
-          loadRelationData(relationBinaryData));
+    // Load the relation if the object entry denotes this..
+    if (refVersion != null) {
+      Optional<DataRow> refVersionRow = queryObjectVersion(objectId, refVersion, skipData);
+      if (refVersionRow.isPresent()) {
+        BinaryData relationBinaryData = refVersionRow.get().get(objectVersionDef.refContent());
+        loadStorageObjectReferences(storageObject,
+            loadRelationData(relationBinaryData));
+      }
     }
 
     if (skipData) {
@@ -697,6 +714,9 @@ public class StorageSQL extends ObjectStorageImpl {
   }
 
   private final StorageObjectRelationData loadRelationData(Long entryId, Long relationVersione) {
+    if (relationVersione == null) {
+      return null;
+    }
     Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersione, false);
     if (optObjectVersion.isPresent()) {
       BinaryData binaryData = optObjectVersion.get().get(objectVersionDef.refContent());
