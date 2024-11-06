@@ -180,6 +180,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return executeSearch(filterExpressions, orderByList, true, objects, null);
   }
 
+
+
+  @Override
+  public TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields) {
+    return executeSearch(filterExpressions, orderByList, fields, true, objects, null);
+  }
+
+
   @Override
   public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
       FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList) {
@@ -214,7 +223,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
     }
-    log.info(queryInput.where().toString());
+
+    if (log.isTraceEnabled()) {
+      log.trace("Executing query...: {}", queryInput.where());
+    }
+
     TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
 
     processCalculators(result, calculators);

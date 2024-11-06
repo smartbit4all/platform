@@ -100,6 +100,18 @@ public class MDMDefinitionOption {
     definition.putDescriptorsItem(descriptor.getName(), descriptor);
   }
 
+  public void addTemplate(MDMEntryDescriptor descriptor) {
+    if (definition.getDescriptors().containsKey(descriptor.getName())) {
+      throw new IllegalArgumentException(
+          "temőlate already registered (" + definition.getName()
+              + "." + descriptor.getName() + ")");
+    }
+    if (descriptor.getBranchingStrategy() == null) {
+      descriptor.setBranchingStrategy(definition.getBranchingStrategy());
+    }
+    definition.putTemplatesItem(descriptor.getName(), descriptor);
+  }
+
   public final MDMDefinition getDefinition() {
     return definition;
   }

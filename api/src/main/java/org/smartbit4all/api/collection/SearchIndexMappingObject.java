@@ -711,8 +711,6 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       if (!deleteRows.isEmpty()) {
         TableData<?> tdDelete = TableDatas.copyRows(oldDetailRecords, deleteRows);
         Crud.delete(tdDelete);
-        log.info("Deleted detail:" + tdDelete);
-        log.info("", new Exception());
       }
       if (!insertRows.isEmpty()) {
         TableData<?> tdInsert = TableDatas.copyRows(updateResult.result, insertRows);

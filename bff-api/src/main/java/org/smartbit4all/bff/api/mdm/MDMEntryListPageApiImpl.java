@@ -642,7 +642,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .addIf(new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true), !isView)
         .add(new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL))
         .build();
-    viewApi.showView(new View()
+    View view = new View()
         .viewName(getEditorViewName(ctx))
         .type(ViewType.DIALOG)
         .objectUri(modelNode.getObjectUri())
@@ -654,7 +654,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
         .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap())
         .putParametersItem(PARAM_ACTION_CODE, actionCode)
-        .actions(actions));
+        .actions(actions);
+
+    MDMEntryDescriptor descriptor = ctx.entryDescriptor;
+    if (!ObjectUtils.isEmpty(descriptor.getEditorParameters())) {
+      view.getParameters().putAll(descriptor.getEditorParameters());
+    }
+
+    viewApi.showView(view);
   }
 
   @Override

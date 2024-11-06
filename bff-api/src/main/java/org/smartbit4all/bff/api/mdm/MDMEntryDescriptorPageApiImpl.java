@@ -282,7 +282,7 @@ public class MDMEntryDescriptorPageApiImpl
       MDMDefinitionOption option) {
     try {
       MDMEntryDescriptor descriptor =
-          option.addDefaultDescriptor(GenericValue.class, code).name(code)
+          option.addDefaultDescriptor(GenericValue.class, code)
               .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name(GenericValue.CODE)
                   .addPathItem(GenericValue.CODE),
                   new MDMTableColumnDescriptor().name(GenericValue.NAME)

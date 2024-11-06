@@ -128,13 +128,13 @@ public class MDMDefinitionState {
   }
 
    /**
-   * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  
+   * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty. 
    * @return activeModifications
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  ")
+  @ApiModelProperty(required = true, value = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty. ")
   @JsonProperty(ACTIVE_MODIFICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

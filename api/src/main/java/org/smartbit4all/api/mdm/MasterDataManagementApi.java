@@ -139,6 +139,9 @@ public interface MasterDataManagementApi {
    */
   void addDescriptorToDefinition(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
+  void addTemplateBasedDescriptorToDefinition(MDMDefinition definition, String descriptorName,
+      String descriptorCode, String templateName);
+
   String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
 
   /**
