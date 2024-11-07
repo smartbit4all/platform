@@ -157,7 +157,7 @@ public class MDMEntryDescriptor {
   private List<String> displayNamePropertyPath = new ArrayList<>();
 
   public static final String EDITOR_PARAMETERS = "editorParameters";
-  private Map<String, Object> editorParameters = null;
+  private Map<String, Object> editorParameters = new HashMap<>();
 
   public MDMEntryDescriptor() {
   }
@@ -977,12 +977,13 @@ public class MDMEntryDescriptor {
     return this;
   }
 
-   /**
+  /**
    * A set of parameters passed to the editor page of the entry.
    * @return editorParameters
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "A set of parameters passed to the editor page of the entry.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A set of parameters passed to the editor page of the entry.")
   @JsonProperty(EDITOR_PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -996,7 +997,6 @@ public class MDMEntryDescriptor {
   public void setEditorParameters(Map<String, Object> editorParameters) {
     this.editorParameters = editorParameters;
   }
-
 
   @Override
   public boolean equals(Object o) {

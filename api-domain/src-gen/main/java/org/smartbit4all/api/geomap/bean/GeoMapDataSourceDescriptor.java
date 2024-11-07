@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
@@ -33,8 +33,8 @@ import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * GeoMapDataSourceDescriptor
@@ -64,8 +64,7 @@ import javax.validation.Valid;
   GeoMapDataSourceDescriptor.INVOCATION_REQUEST,
   GeoMapDataSourceDescriptor.INLINE_ITEMS
 })
-@JsonTypeName("GeoMapDataSourceDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapDataSourceDescriptor {
   public static final String ID = "id";
   private String id;
@@ -86,22 +85,22 @@ public class GeoMapDataSourceDescriptor {
   private StoredCollectionDescriptor sourceCollection = null;
 
   public static final String PATH_TO_ID = "pathToId";
-  private List<String> pathToId = null;
+  private List<String> pathToId = new ArrayList<>();
 
   public static final String PATH_TO_POSITION = "pathToPosition";
-  private List<String> pathToPosition = null;
+  private List<String> pathToPosition = new ArrayList<>();
 
   public static final String PATH_TO_BOUNDS = "pathToBounds";
-  private List<String> pathToBounds = null;
+  private List<String> pathToBounds = new ArrayList<>();
 
   public static final String PATH_TO_TITLE = "pathToTitle";
-  private List<String> pathToTitle = null;
+  private List<String> pathToTitle = new ArrayList<>();
 
   public static final String PATH_TO_DESCRIPTION = "pathToDescription";
-  private List<String> pathToDescription = null;
+  private List<String> pathToDescription = new ArrayList<>();
 
   public static final String INCLUDE_IF = "includeIf";
-  private List<String> includeIf = null;
+  private List<String> includeIf = new ArrayList<>();
 
   public static final String INCLUSION_PREDICATE = "inclusionPredicate";
   private InvocationRequest inclusionPredicate = null;
@@ -134,9 +133,9 @@ public class GeoMapDataSourceDescriptor {
   private InvocationRequest invocationRequest = null;
 
   public static final String INLINE_ITEMS = "inlineItems";
-  private List<GeoMapItem> inlineItems = null;
+  private List<@Valid GeoMapItem> inlineItems = new ArrayList<>();
 
-  public GeoMapDataSourceDescriptor() { 
+  public GeoMapDataSourceDescriptor() {
   }
 
   public GeoMapDataSourceDescriptor id(String id) {
@@ -145,12 +144,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Uniquely identifies the the data source for a given map. May be retrieved from GeoMapApi if the data source needs to be modified after map creation. 
    * @return id
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Uniquely identifies the the data source for a given map. May be retrieved from GeoMapApi if the data source needs to be modified after map creation. ")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Uniquely identifies the the data source for a given map. May be retrieved from GeoMapApi if the data source needs to be modified after map creation. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -165,19 +165,19 @@ public class GeoMapDataSourceDescriptor {
     this.id = id;
   }
 
-
   public GeoMapDataSourceDescriptor targetLayer(String targetLayer) {
     
     this.targetLayer = targetLayer;
     return this;
   }
 
-   /**
+  /**
    * Get targetLayer
    * @return targetLayer
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TARGET_LAYER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -192,20 +192,20 @@ public class GeoMapDataSourceDescriptor {
     this.targetLayer = targetLayer;
   }
 
-
   public GeoMapDataSourceDescriptor sourceType(GeoMapDataSourceType sourceType) {
     
     this.sourceType = sourceType;
     return this;
   }
 
-   /**
+  /**
    * Get sourceType
    * @return sourceType
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -220,20 +220,20 @@ public class GeoMapDataSourceDescriptor {
     this.sourceType = sourceType;
   }
 
-
   public GeoMapDataSourceDescriptor itemKind(GeoMapItemKind itemKind) {
     
     this.itemKind = itemKind;
     return this;
   }
 
-   /**
+  /**
    * Get itemKind
    * @return itemKind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ITEM_KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -248,20 +248,20 @@ public class GeoMapDataSourceDescriptor {
     this.itemKind = itemKind;
   }
 
-
   public GeoMapDataSourceDescriptor loadingMode(GeoMapDataLoadingMode loadingMode) {
     
     this.loadingMode = loadingMode;
     return this;
   }
 
-   /**
+  /**
    * Get loadingMode
    * @return loadingMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOADING_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -276,20 +276,20 @@ public class GeoMapDataSourceDescriptor {
     this.loadingMode = loadingMode;
   }
 
-
   public GeoMapDataSourceDescriptor sourceCollection(StoredCollectionDescriptor sourceCollection) {
     
     this.sourceCollection = sourceCollection;
     return this;
   }
 
-   /**
+  /**
    * Get sourceCollection
    * @return sourceCollection
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SOURCE_COLLECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -303,7 +303,6 @@ public class GeoMapDataSourceDescriptor {
   public void setSourceCollection(StoredCollectionDescriptor sourceCollection) {
     this.sourceCollection = sourceCollection;
   }
-
 
   public GeoMapDataSourceDescriptor pathToId(List<String> pathToId) {
     
@@ -319,12 +318,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get pathToId
    * @return pathToId
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH_TO_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -338,7 +338,6 @@ public class GeoMapDataSourceDescriptor {
   public void setPathToId(List<String> pathToId) {
     this.pathToId = pathToId;
   }
-
 
   public GeoMapDataSourceDescriptor pathToPosition(List<String> pathToPosition) {
     
@@ -354,12 +353,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get pathToPosition
    * @return pathToPosition
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH_TO_POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -373,7 +373,6 @@ public class GeoMapDataSourceDescriptor {
   public void setPathToPosition(List<String> pathToPosition) {
     this.pathToPosition = pathToPosition;
   }
-
 
   public GeoMapDataSourceDescriptor pathToBounds(List<String> pathToBounds) {
     
@@ -389,12 +388,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Define what kind of item to create
    * @return pathToBounds
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Define what kind of item to create")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Define what kind of item to create")
   @JsonProperty(PATH_TO_BOUNDS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -408,7 +408,6 @@ public class GeoMapDataSourceDescriptor {
   public void setPathToBounds(List<String> pathToBounds) {
     this.pathToBounds = pathToBounds;
   }
-
 
   public GeoMapDataSourceDescriptor pathToTitle(List<String> pathToTitle) {
     
@@ -424,12 +423,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get pathToTitle
    * @return pathToTitle
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH_TO_TITLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -443,7 +443,6 @@ public class GeoMapDataSourceDescriptor {
   public void setPathToTitle(List<String> pathToTitle) {
     this.pathToTitle = pathToTitle;
   }
-
 
   public GeoMapDataSourceDescriptor pathToDescription(List<String> pathToDescription) {
     
@@ -459,12 +458,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get pathToDescription
    * @return pathToDescription
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PATH_TO_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -478,7 +478,6 @@ public class GeoMapDataSourceDescriptor {
   public void setPathToDescription(List<String> pathToDescription) {
     this.pathToDescription = pathToDescription;
   }
-
 
   public GeoMapDataSourceDescriptor includeIf(List<String> includeIf) {
     
@@ -494,12 +493,13 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get includeIf
    * @return includeIf
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INCLUDE_IF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -514,20 +514,20 @@ public class GeoMapDataSourceDescriptor {
     this.includeIf = includeIf;
   }
 
-
   public GeoMapDataSourceDescriptor inclusionPredicate(InvocationRequest inclusionPredicate) {
     
     this.inclusionPredicate = inclusionPredicate;
     return this;
   }
 
-   /**
+  /**
    * Get inclusionPredicate
    * @return inclusionPredicate
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INCLUSION_PREDICATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -542,19 +542,19 @@ public class GeoMapDataSourceDescriptor {
     this.inclusionPredicate = inclusionPredicate;
   }
 
-
   public GeoMapDataSourceDescriptor searchIndexSchema(String searchIndexSchema) {
     
     this.searchIndexSchema = searchIndexSchema;
     return this;
   }
 
-   /**
+  /**
    * Get searchIndexSchema
    * @return searchIndexSchema
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEARCH_INDEX_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -569,19 +569,19 @@ public class GeoMapDataSourceDescriptor {
     this.searchIndexSchema = searchIndexSchema;
   }
 
-
   public GeoMapDataSourceDescriptor searchIndexName(String searchIndexName) {
     
     this.searchIndexName = searchIndexName;
     return this;
   }
 
-   /**
+  /**
    * Get searchIndexName
    * @return searchIndexName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEARCH_INDEX_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -596,19 +596,19 @@ public class GeoMapDataSourceDescriptor {
     this.searchIndexName = searchIndexName;
   }
 
-
   public GeoMapDataSourceDescriptor idColumn(String idColumn) {
     
     this.idColumn = idColumn;
     return this;
   }
 
-   /**
+  /**
    * Get idColumn
    * @return idColumn
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -623,19 +623,19 @@ public class GeoMapDataSourceDescriptor {
     this.idColumn = idColumn;
   }
 
-
   public GeoMapDataSourceDescriptor titleColumn(String titleColumn) {
     
     this.titleColumn = titleColumn;
     return this;
   }
 
-   /**
+  /**
    * Get titleColumn
    * @return titleColumn
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TITLE_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -650,19 +650,19 @@ public class GeoMapDataSourceDescriptor {
     this.titleColumn = titleColumn;
   }
 
-
   public GeoMapDataSourceDescriptor descriptionColumn(String descriptionColumn) {
     
     this.descriptionColumn = descriptionColumn;
     return this;
   }
 
-   /**
+  /**
    * Get descriptionColumn
    * @return descriptionColumn
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTION_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -677,19 +677,19 @@ public class GeoMapDataSourceDescriptor {
     this.descriptionColumn = descriptionColumn;
   }
 
-
   public GeoMapDataSourceDescriptor latitudeColumn(String latitudeColumn) {
     
     this.latitudeColumn = latitudeColumn;
     return this;
   }
 
-   /**
+  /**
    * Get latitudeColumn
    * @return latitudeColumn
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LATITUDE_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -704,19 +704,19 @@ public class GeoMapDataSourceDescriptor {
     this.latitudeColumn = latitudeColumn;
   }
 
-
   public GeoMapDataSourceDescriptor longitudeColumn(String longitudeColumn) {
     
     this.longitudeColumn = longitudeColumn;
     return this;
   }
 
-   /**
+  /**
    * Get longitudeColumn
    * @return longitudeColumn
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LONGITUDE_COLUMN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -731,20 +731,20 @@ public class GeoMapDataSourceDescriptor {
     this.longitudeColumn = longitudeColumn;
   }
 
-
   public GeoMapDataSourceDescriptor filterExpressionList(FilterExpressionList filterExpressionList) {
     
     this.filterExpressionList = filterExpressionList;
     return this;
   }
 
-   /**
+  /**
    * Get filterExpressionList
    * @return filterExpressionList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_EXPRESSION_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -759,20 +759,20 @@ public class GeoMapDataSourceDescriptor {
     this.filterExpressionList = filterExpressionList;
   }
 
-
   public GeoMapDataSourceDescriptor invocationRequest(InvocationRequest invocationRequest) {
     
     this.invocationRequest = invocationRequest;
     return this;
   }
 
-   /**
+  /**
    * GeoMapViewport -&gt; List&lt;GeoMapItem&gt; 
    * @return invocationRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "GeoMapViewport -> List<GeoMapItem> ")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "GeoMapViewport -> List<GeoMapItem> ")
   @JsonProperty(INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -787,8 +787,7 @@ public class GeoMapDataSourceDescriptor {
     this.invocationRequest = invocationRequest;
   }
 
-
-  public GeoMapDataSourceDescriptor inlineItems(List<GeoMapItem> inlineItems) {
+  public GeoMapDataSourceDescriptor inlineItems(List<@Valid GeoMapItem> inlineItems) {
     
     this.inlineItems = inlineItems;
     return this;
@@ -802,27 +801,27 @@ public class GeoMapDataSourceDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get inlineItems
    * @return inlineItems
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(INLINE_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<GeoMapItem> getInlineItems() {
+  public List<@Valid GeoMapItem> getInlineItems() {
     return inlineItems;
   }
 
 
   @JsonProperty(INLINE_ITEMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInlineItems(List<GeoMapItem> inlineItems) {
+  public void setInlineItems(List<@Valid GeoMapItem> inlineItems) {
     this.inlineItems = inlineItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

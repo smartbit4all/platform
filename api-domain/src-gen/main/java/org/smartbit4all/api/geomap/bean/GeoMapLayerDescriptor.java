@@ -20,19 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import org.smartbit4all.api.geomap.bean.GeoMapSelectionMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * How the layer behaves.
  */
-@ApiModel(description = "How the layer behaves.")
+@Schema(description = "How the layer behaves.")
 @JsonPropertyOrder({
   GeoMapLayerDescriptor.CODE,
   GeoMapLayerDescriptor.LABEL,
@@ -42,8 +41,7 @@ import javax.validation.Valid;
   GeoMapLayerDescriptor.PRESERVE_SELECTION,
   GeoMapLayerDescriptor.OPERATION_MODE
 })
-@JsonTypeName("GeoMapLayerDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapLayerDescriptor {
   public static final String CODE = "code";
   private String code;
@@ -66,7 +64,7 @@ public class GeoMapLayerDescriptor {
   public static final String OPERATION_MODE = "operationMode";
   private GeoMapOperationMode operationMode;
 
-  public GeoMapLayerDescriptor() { 
+  public GeoMapLayerDescriptor() {
   }
 
   public GeoMapLayerDescriptor code(String code) {
@@ -75,12 +73,13 @@ public class GeoMapLayerDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -95,19 +94,19 @@ public class GeoMapLayerDescriptor {
     this.code = code;
   }
 
-
   public GeoMapLayerDescriptor label(String label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,19 +121,19 @@ public class GeoMapLayerDescriptor {
     this.label = label;
   }
 
-
   public GeoMapLayerDescriptor description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * Get description
    * @return description
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -149,19 +148,19 @@ public class GeoMapLayerDescriptor {
     this.description = description;
   }
 
-
   public GeoMapLayerDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
   }
 
-   /**
+  /**
    * Get icon
    * @return icon
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ICON)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -176,20 +175,20 @@ public class GeoMapLayerDescriptor {
     this.icon = icon;
   }
 
-
   public GeoMapLayerDescriptor selectionMode(GeoMapSelectionMode selectionMode) {
     
     this.selectionMode = selectionMode;
     return this;
   }
 
-   /**
+  /**
    * Get selectionMode
    * @return selectionMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -204,20 +203,20 @@ public class GeoMapLayerDescriptor {
     this.selectionMode = selectionMode;
   }
 
-
   public GeoMapLayerDescriptor preserveSelection(Boolean preserveSelection) {
     
     this.preserveSelection = preserveSelection;
     return this;
   }
 
-   /**
+  /**
    * Reserves the selected items even if they are invisible.
    * @return preserveSelection
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Reserves the selected items even if they are invisible.")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Reserves the selected items even if they are invisible.")
   @JsonProperty(PRESERVE_SELECTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -232,20 +231,20 @@ public class GeoMapLayerDescriptor {
     this.preserveSelection = preserveSelection;
   }
 
-
   public GeoMapLayerDescriptor operationMode(GeoMapOperationMode operationMode) {
     
     this.operationMode = operationMode;
     return this;
   }
 
-   /**
+  /**
    * Get operationMode
    * @return operationMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -259,7 +258,6 @@ public class GeoMapLayerDescriptor {
   public void setOperationMode(GeoMapOperationMode operationMode) {
     this.operationMode = operationMode;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -137,7 +137,7 @@ public class MDMDefinitionState {
   @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  ")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty. ")
   @JsonProperty(ACTIVE_MODIFICATIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

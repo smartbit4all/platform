@@ -2,6 +2,7 @@ package org.smartbit4all.api.filterexpression.restserver;
 
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

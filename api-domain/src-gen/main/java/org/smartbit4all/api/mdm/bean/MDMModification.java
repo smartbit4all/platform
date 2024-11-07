@@ -120,7 +120,7 @@ public class MDMModification {
    */
   @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  ")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -503,14 +503,15 @@ public class MDMModification {
     return this;
   }
 
-   /**
+  /**
    * Get templates
    * @return templates
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TEMPLATES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -524,7 +525,6 @@ public class MDMModification {
   public void setTemplates(Map<String, MDMEntryDescriptor> templates) {
     this.templates = templates;
   }
-
 
   public MDMModification modificationItems(Map<String, MDMModificationItem> modificationItems) {
     

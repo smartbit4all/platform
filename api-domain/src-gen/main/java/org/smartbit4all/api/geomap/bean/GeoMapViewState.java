@@ -20,21 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.geomap.bean.GeoMapLayerDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * What to show and how...
  */
-@ApiModel(description = "What to show and how...")
+@Schema(description = "What to show and how...")
 @JsonPropertyOrder({
   GeoMapViewState.LABEL,
   GeoMapViewState.LAYER_DESCRIPTORS,
@@ -44,14 +44,13 @@ import javax.validation.Valid;
   GeoMapViewState.OPERATION_MODE,
   GeoMapViewState.SELECTED_ITEMS
 })
-@JsonTypeName("GeoMapViewState")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapViewState {
   public static final String LABEL = "label";
   private String label;
 
   public static final String LAYER_DESCRIPTORS = "layerDescriptors";
-  private List<GeoMapLayerDescriptor> layerDescriptors = new ArrayList<>();
+  private List<@Valid GeoMapLayerDescriptor> layerDescriptors = new ArrayList<>();
 
   public static final String VISIBLE_LAYERS = "visibleLayers";
   private List<String> visibleLayers = new ArrayList<>();
@@ -68,7 +67,7 @@ public class GeoMapViewState {
   public static final String SELECTED_ITEMS = "selectedItems";
   private List<String> selectedItems = new ArrayList<>();
 
-  public GeoMapViewState() { 
+  public GeoMapViewState() {
   }
 
   public GeoMapViewState label(String label) {
@@ -77,12 +76,13 @@ public class GeoMapViewState {
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -97,40 +97,42 @@ public class GeoMapViewState {
     this.label = label;
   }
 
-
-  public GeoMapViewState layerDescriptors(List<GeoMapLayerDescriptor> layerDescriptors) {
+  public GeoMapViewState layerDescriptors(List<@Valid GeoMapLayerDescriptor> layerDescriptors) {
     
     this.layerDescriptors = layerDescriptors;
     return this;
   }
 
   public GeoMapViewState addLayerDescriptorsItem(GeoMapLayerDescriptor layerDescriptorsItem) {
+    if (this.layerDescriptors == null) {
+      this.layerDescriptors = new ArrayList<>();
+    }
     this.layerDescriptors.add(layerDescriptorsItem);
     return this;
   }
 
-   /**
+  /**
    * Get layerDescriptors
    * @return layerDescriptors
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LAYER_DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GeoMapLayerDescriptor> getLayerDescriptors() {
+  public List<@Valid GeoMapLayerDescriptor> getLayerDescriptors() {
     return layerDescriptors;
   }
 
 
   @JsonProperty(LAYER_DESCRIPTORS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLayerDescriptors(List<GeoMapLayerDescriptor> layerDescriptors) {
+  public void setLayerDescriptors(List<@Valid GeoMapLayerDescriptor> layerDescriptors) {
     this.layerDescriptors = layerDescriptors;
   }
-
 
   public GeoMapViewState visibleLayers(List<String> visibleLayers) {
     
@@ -139,17 +141,21 @@ public class GeoMapViewState {
   }
 
   public GeoMapViewState addVisibleLayersItem(String visibleLayersItem) {
+    if (this.visibleLayers == null) {
+      this.visibleLayers = new ArrayList<>();
+    }
     this.visibleLayers.add(visibleLayersItem);
     return this;
   }
 
-   /**
+  /**
    * Get visibleLayers
    * @return visibleLayers
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VISIBLE_LAYERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -164,20 +170,20 @@ public class GeoMapViewState {
     this.visibleLayers = visibleLayers;
   }
 
-
   public GeoMapViewState fitToInitialItems(Boolean fitToInitialItems) {
     
     this.fitToInitialItems = fitToInitialItems;
     return this;
   }
 
-   /**
+  /**
    * Get fitToInitialItems
    * @return fitToInitialItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FIT_TO_INITIAL_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -192,20 +198,20 @@ public class GeoMapViewState {
     this.fitToInitialItems = fitToInitialItems;
   }
 
-
   public GeoMapViewState centerOnItemClick(Boolean centerOnItemClick) {
     
     this.centerOnItemClick = centerOnItemClick;
     return this;
   }
 
-   /**
+  /**
    * Get centerOnItemClick
    * @return centerOnItemClick
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(CENTER_ON_ITEM_CLICK)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -220,20 +226,20 @@ public class GeoMapViewState {
     this.centerOnItemClick = centerOnItemClick;
   }
 
-
   public GeoMapViewState operationMode(GeoMapOperationMode operationMode) {
     
     this.operationMode = operationMode;
     return this;
   }
 
-   /**
+  /**
    * Get operationMode
    * @return operationMode
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(OPERATION_MODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -248,7 +254,6 @@ public class GeoMapViewState {
     this.operationMode = operationMode;
   }
 
-
   public GeoMapViewState selectedItems(List<String> selectedItems) {
     
     this.selectedItems = selectedItems;
@@ -256,17 +261,21 @@ public class GeoMapViewState {
   }
 
   public GeoMapViewState addSelectedItemsItem(String selectedItemsItem) {
+    if (this.selectedItems == null) {
+      this.selectedItems = new ArrayList<>();
+    }
     this.selectedItems.add(selectedItemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectedItems
    * @return selectedItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -280,7 +289,6 @@ public class GeoMapViewState {
   public void setSelectedItems(List<String> selectedItems) {
     this.selectedItems = selectedItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

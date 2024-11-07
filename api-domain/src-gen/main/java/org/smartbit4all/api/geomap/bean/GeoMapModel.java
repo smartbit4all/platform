@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.geomap.bean.GeoMapLayer;
@@ -30,13 +30,13 @@ import org.smartbit4all.api.geomap.bean.GeoMapViewState;
 import org.smartbit4all.api.geomap.bean.GeoMapViewport;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents the client model of a geomap component. 
  */
-@ApiModel(description = "This object represents the client model of a geomap component. ")
+@Schema(description = "This object represents the client model of a geomap component. ")
 @JsonPropertyOrder({
   GeoMapModel.VIEW_UUID,
   GeoMapModel.IDENTIFIER,
@@ -47,8 +47,7 @@ import javax.validation.Valid;
   GeoMapModel.DEFAULT_ITEM_ACTIONS,
   GeoMapModel.PENDING_ITEMS
 })
-@JsonTypeName("GeoMapModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapModel {
   public static final String VIEW_UUID = "viewUuid";
   private UUID viewUuid;
@@ -60,7 +59,7 @@ public class GeoMapModel {
   private String qualifier;
 
   public static final String LAYERS = "layers";
-  private List<GeoMapLayer> layers = new ArrayList<>();
+  private List<@Valid GeoMapLayer> layers = new ArrayList<>();
 
   public static final String VIEW_STATE = "viewState";
   private GeoMapViewState viewState;
@@ -74,7 +73,7 @@ public class GeoMapModel {
   public static final String PENDING_ITEMS = "pendingItems";
   private List<String> pendingItems = new ArrayList<>();
 
-  public GeoMapModel() { 
+  public GeoMapModel() {
   }
 
   public GeoMapModel viewUuid(UUID viewUuid) {
@@ -83,13 +82,14 @@ public class GeoMapModel {
     return this;
   }
 
-   /**
+  /**
    * Get viewUuid
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -104,19 +104,19 @@ public class GeoMapModel {
     this.viewUuid = viewUuid;
   }
 
-
   public GeoMapModel identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -131,19 +131,19 @@ public class GeoMapModel {
     this.identifier = identifier;
   }
 
-
   public GeoMapModel qualifier(String qualifier) {
     
     this.qualifier = qualifier;
     return this;
   }
 
-   /**
+  /**
    * Get qualifier
    * @return qualifier
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(QUALIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -158,40 +158,42 @@ public class GeoMapModel {
     this.qualifier = qualifier;
   }
 
-
-  public GeoMapModel layers(List<GeoMapLayer> layers) {
+  public GeoMapModel layers(List<@Valid GeoMapLayer> layers) {
     
     this.layers = layers;
     return this;
   }
 
   public GeoMapModel addLayersItem(GeoMapLayer layersItem) {
+    if (this.layers == null) {
+      this.layers = new ArrayList<>();
+    }
     this.layers.add(layersItem);
     return this;
   }
 
-   /**
+  /**
    * Get layers
    * @return layers
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LAYERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GeoMapLayer> getLayers() {
+  public List<@Valid GeoMapLayer> getLayers() {
     return layers;
   }
 
 
   @JsonProperty(LAYERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLayers(List<GeoMapLayer> layers) {
+  public void setLayers(List<@Valid GeoMapLayer> layers) {
     this.layers = layers;
   }
-
 
   public GeoMapModel viewState(GeoMapViewState viewState) {
     
@@ -199,13 +201,14 @@ public class GeoMapModel {
     return this;
   }
 
-   /**
+  /**
    * Get viewState
    * @return viewState
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -220,20 +223,20 @@ public class GeoMapModel {
     this.viewState = viewState;
   }
 
-
   public GeoMapModel viewport(GeoMapViewport viewport) {
     
     this.viewport = viewport;
     return this;
   }
 
-   /**
+  /**
    * Get viewport
    * @return viewport
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEWPORT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -248,7 +251,6 @@ public class GeoMapModel {
     this.viewport = viewport;
   }
 
-
   public GeoMapModel defaultItemActions(List<String> defaultItemActions) {
     
     this.defaultItemActions = defaultItemActions;
@@ -256,17 +258,21 @@ public class GeoMapModel {
   }
 
   public GeoMapModel addDefaultItemActionsItem(String defaultItemActionsItem) {
+    if (this.defaultItemActions == null) {
+      this.defaultItemActions = new ArrayList<>();
+    }
     this.defaultItemActions.add(defaultItemActionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get defaultItemActions
    * @return defaultItemActions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DEFAULT_ITEM_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -281,7 +287,6 @@ public class GeoMapModel {
     this.defaultItemActions = defaultItemActions;
   }
 
-
   public GeoMapModel pendingItems(List<String> pendingItems) {
     
     this.pendingItems = pendingItems;
@@ -289,17 +294,21 @@ public class GeoMapModel {
   }
 
   public GeoMapModel addPendingItemsItem(String pendingItemsItem) {
+    if (this.pendingItems == null) {
+      this.pendingItems = new ArrayList<>();
+    }
     this.pendingItems.add(pendingItemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get pendingItems
    * @return pendingItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PENDING_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -313,7 +322,6 @@ public class GeoMapModel {
   public void setPendingItems(List<String> pendingItems) {
     this.pendingItems = pendingItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The position defined by the gps coordinates. 
  */
-@ApiModel(description = "The position defined by the gps coordinates. ")
+@Schema(description = "The position defined by the gps coordinates. ")
 @JsonPropertyOrder({
   GPSPosition.LATITUDE,
   GPSPosition.LONGITUDE,
   GPSPosition.REFERENCE_SEA,
   GPSPosition.HEIGHT
 })
-@JsonTypeName("GPSPosition")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GPSPosition {
   public static final String LATITUDE = "latitude";
   private Float latitude;
@@ -52,7 +50,7 @@ public class GPSPosition {
   public static final String HEIGHT = "height";
   private Float height;
 
-  public GPSPosition() { 
+  public GPSPosition() {
   }
 
   public GPSPosition latitude(Float latitude) {
@@ -61,13 +59,14 @@ public class GPSPosition {
     return this;
   }
 
-   /**
+  /**
    * The latitude of the GPS position
    * @return latitude
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(example = "40.7128", required = true, value = "The latitude of the GPS position")
+
+  @Schema(example = "40.7128", requiredMode = Schema.RequiredMode.REQUIRED, description = "The latitude of the GPS position")
   @JsonProperty(LATITUDE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,20 +81,20 @@ public class GPSPosition {
     this.latitude = latitude;
   }
 
-
   public GPSPosition longitude(Float longitude) {
     
     this.longitude = longitude;
     return this;
   }
 
-   /**
+  /**
    * The longitude of the GPS position
    * @return longitude
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(example = "-74.006", required = true, value = "The longitude of the GPS position")
+
+  @Schema(example = "-74.006", requiredMode = Schema.RequiredMode.REQUIRED, description = "The longitude of the GPS position")
   @JsonProperty(LONGITUDE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -110,19 +109,19 @@ public class GPSPosition {
     this.longitude = longitude;
   }
 
-
   public GPSPosition referenceSea(String referenceSea) {
     
     this.referenceSea = referenceSea;
     return this;
   }
 
-   /**
+  /**
    * The reference Sea that gives the zero height level. It is just an information not necessary to set.
    * @return referenceSea
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "Baltic, Adriatic", value = "The reference Sea that gives the zero height level. It is just an information not necessary to set.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(example = "Baltic, Adriatic", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The reference Sea that gives the zero height level. It is just an information not necessary to set.")
   @JsonProperty(REFERENCE_SEA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,19 +136,19 @@ public class GPSPosition {
     this.referenceSea = referenceSea;
   }
 
-
   public GPSPosition height(Float height) {
     
     this.height = height;
     return this;
   }
 
-   /**
+  /**
    * The height above reference sea level.
    * @return height
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "174.6", value = "The height above reference sea level.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(example = "174.6", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The height above reference sea level.")
   @JsonProperty(HEIGHT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -163,7 +162,6 @@ public class GPSPosition {
   public void setHeight(Float height) {
     this.height = height;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * SearchIndexDescriptor
@@ -34,8 +33,7 @@ import javax.validation.Valid;
   SearchIndexDescriptor.SCHEMA,
   SearchIndexDescriptor.NAME
 })
-@JsonTypeName("SearchIndexDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchIndexDescriptor {
   public static final String SCHEMA = "schema";
   private String schema;
@@ -43,7 +41,7 @@ public class SearchIndexDescriptor {
   public static final String NAME = "name";
   private String name;
 
-  public SearchIndexDescriptor() { 
+  public SearchIndexDescriptor() {
   }
 
   public SearchIndexDescriptor schema(String schema) {
@@ -52,13 +50,14 @@ public class SearchIndexDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get schema
    * @return schema
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SCHEMA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -73,20 +72,20 @@ public class SearchIndexDescriptor {
     this.schema = schema;
   }
 
-
   public SearchIndexDescriptor name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -100,7 +99,6 @@ public class SearchIndexDescriptor {
   public void setName(String name) {
     this.name = name;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +33,13 @@ import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object is a geomap row containening the identifier and actions releted with the row. 
  */
-@ApiModel(description = "This object is a geomap row containening the identifier and actions releted with the row. ")
+@Schema(description = "This object is a geomap row containening the identifier and actions releted with the row. ")
 @JsonPropertyOrder({
   GeoMapItem.ID,
   GeoMapItem.KIND,
@@ -54,8 +54,7 @@ import javax.validation.Valid;
   GeoMapItem.POSITION,
   GeoMapItem.BOUNDS
 })
-@JsonTypeName("GeoMapItem")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapItem {
   public static final String ID = "id";
   private String id;
@@ -91,9 +90,9 @@ public class GeoMapItem {
   private GPSPosition position;
 
   public static final String BOUNDS = "bounds";
-  private List<GPSPosition> bounds = new ArrayList<>();
+  private List<@Valid GPSPosition> bounds = new ArrayList<>();
 
-  public GeoMapItem() { 
+  public GeoMapItem() {
   }
 
   public GeoMapItem id(String id) {
@@ -102,12 +101,13 @@ public class GeoMapItem {
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -122,20 +122,20 @@ public class GeoMapItem {
     this.id = id;
   }
 
-
   public GeoMapItem kind(GeoMapItemKind kind) {
     
     this.kind = kind;
     return this;
   }
 
-   /**
+  /**
    * Get kind
    * @return kind
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(KIND)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,7 +150,6 @@ public class GeoMapItem {
     this.kind = kind;
   }
 
-
   public GeoMapItem actions(List<UiAction> actions) {
     
     this.actions = actions;
@@ -158,18 +157,22 @@ public class GeoMapItem {
   }
 
   public GeoMapItem addActionsItem(UiAction actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
     this.actions.add(actionsItem);
     return this;
   }
 
-   /**
+  /**
    * Get actions
    * @return actions
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ACTIONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -184,19 +187,19 @@ public class GeoMapItem {
     this.actions = actions;
   }
 
-
   public GeoMapItem data(Object data) {
     
     this.data = data;
     return this;
   }
 
-   /**
+  /**
    * Get data
    * @return data
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -211,19 +214,19 @@ public class GeoMapItem {
     this.data = data;
   }
 
-
   public GeoMapItem selectable(Boolean selectable) {
     
     this.selectable = selectable;
     return this;
   }
 
-   /**
+  /**
    * Get selectable
    * @return selectable
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -238,19 +241,19 @@ public class GeoMapItem {
     this.selectable = selectable;
   }
 
-
   public GeoMapItem selected(Boolean selected) {
     
     this.selected = selected;
     return this;
   }
 
-   /**
+  /**
    * Get selected
    * @return selected
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SELECTED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -265,19 +268,19 @@ public class GeoMapItem {
     this.selected = selected;
   }
 
-
   public GeoMapItem label(String label) {
     
     this.label = label;
     return this;
   }
 
-   /**
+  /**
    * Get label
    * @return label
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LABEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -292,19 +295,19 @@ public class GeoMapItem {
     this.label = label;
   }
 
-
   public GeoMapItem description(String description) {
     
     this.description = description;
     return this;
   }
 
-   /**
+  /**
    * Get description
    * @return description
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -319,7 +322,6 @@ public class GeoMapItem {
     this.description = description;
   }
 
-
   public GeoMapItem icons(Map<String, List<ImageResource>> icons) {
     
     this.icons = icons;
@@ -331,14 +333,15 @@ public class GeoMapItem {
     return this;
   }
 
-   /**
+  /**
    * Get icons
    * @return icons
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ICONS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -353,20 +356,20 @@ public class GeoMapItem {
     this.icons = icons;
   }
 
-
   public GeoMapItem style(Style style) {
     
     this.style = style;
     return this;
   }
 
-   /**
+  /**
    * If present, this Style will be applied to the row. 
    * @return style
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If present, this Style will be applied to the row. ")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If present, this Style will be applied to the row. ")
   @JsonProperty(STYLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -381,20 +384,20 @@ public class GeoMapItem {
     this.style = style;
   }
 
-
   public GeoMapItem position(GPSPosition position) {
     
     this.position = position;
     return this;
   }
 
-   /**
+  /**
    * Get position
    * @return position
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(POSITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -409,40 +412,42 @@ public class GeoMapItem {
     this.position = position;
   }
 
-
-  public GeoMapItem bounds(List<GPSPosition> bounds) {
+  public GeoMapItem bounds(List<@Valid GPSPosition> bounds) {
     
     this.bounds = bounds;
     return this;
   }
 
   public GeoMapItem addBoundsItem(GPSPosition boundsItem) {
+    if (this.bounds == null) {
+      this.bounds = new ArrayList<>();
+    }
     this.bounds.add(boundsItem);
     return this;
   }
 
-   /**
+  /**
    * Get bounds
    * @return bounds
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(BOUNDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GPSPosition> getBounds() {
+  public List<@Valid GPSPosition> getBounds() {
     return bounds;
   }
 
 
   @JsonProperty(BOUNDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBounds(List<GPSPosition> bounds) {
+  public void setBounds(List<@Valid GPSPosition> bounds) {
     this.bounds = bounds;
   }
-
 
   @Override
   public boolean equals(Object o) {

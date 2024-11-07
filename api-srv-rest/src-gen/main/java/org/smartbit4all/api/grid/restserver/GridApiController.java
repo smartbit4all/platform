@@ -4,6 +4,7 @@ import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridSelectionChange;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

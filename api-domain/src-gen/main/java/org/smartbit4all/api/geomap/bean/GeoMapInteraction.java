@@ -20,14 +20,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * GeoMapInteraction
@@ -38,8 +37,7 @@ import javax.validation.Valid;
   GeoMapInteraction.TARGET_ITEM,
   GeoMapInteraction.INVERSE
 })
-@JsonTypeName("GeoMapInteraction")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapInteraction {
   public static final String OPERATION_MODE = "operationMode";
   private GeoMapOperationMode operationMode;
@@ -53,7 +51,7 @@ public class GeoMapInteraction {
   public static final String INVERSE = "inverse";
   private Boolean inverse = false;
 
-  public GeoMapInteraction() { 
+  public GeoMapInteraction() {
   }
 
   public GeoMapInteraction operationMode(GeoMapOperationMode operationMode) {
@@ -62,14 +60,15 @@ public class GeoMapInteraction {
     return this;
   }
 
-   /**
+  /**
    * Get operationMode
    * @return operationMode
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(OPERATION_MODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -84,20 +83,20 @@ public class GeoMapInteraction {
     this.operationMode = operationMode;
   }
 
-
   public GeoMapInteraction targetLayer(String targetLayer) {
     
     this.targetLayer = targetLayer;
     return this;
   }
 
-   /**
+  /**
    * Get targetLayer
    * @return targetLayer
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TARGET_LAYER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -112,21 +111,21 @@ public class GeoMapInteraction {
     this.targetLayer = targetLayer;
   }
 
-
   public GeoMapInteraction targetItem(GeoMapItem targetItem) {
     
     this.targetItem = targetItem;
     return this;
   }
 
-   /**
+  /**
    * Get targetItem
    * @return targetItem
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TARGET_ITEM)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -141,20 +140,20 @@ public class GeoMapInteraction {
     this.targetItem = targetItem;
   }
 
-
   public GeoMapInteraction inverse(Boolean inverse) {
     
     this.inverse = inverse;
     return this;
   }
 
-   /**
+  /**
    * Marks inverse operations (unselect, remove pending placement)
    * @return inverse
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Marks inverse operations (unselect, remove pending placement)")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Marks inverse operations (unselect, remove pending placement)")
   @JsonProperty(INVERSE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -168,7 +167,6 @@ public class GeoMapInteraction {
   public void setInverse(Boolean inverse) {
     this.inverse = inverse;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -2,6 +2,9 @@ package org.smartbit4all.api.uitree.restserver;
 
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

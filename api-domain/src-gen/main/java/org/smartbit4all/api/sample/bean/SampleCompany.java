@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * An example Company object containing and id and a name. 
  */
-@ApiModel(description = "An example Company object containing and id and a name. ")
+@Schema(description = "An example Company object containing and id and a name. ")
 @JsonPropertyOrder({
   SampleCompany.URI,
   SampleCompany.ID,
   SampleCompany.NAME,
   SampleCompany.ADDRESS
 })
-@JsonTypeName("SampleCompany")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SampleCompany {
   public static final String URI = "uri";
   private URI uri;
@@ -53,7 +51,7 @@ public class SampleCompany {
   public static final String ADDRESS = "address";
   private URI address;
 
-  public SampleCompany() { 
+  public SampleCompany() {
   }
 
   public SampleCompany uri(URI uri) {
@@ -62,13 +60,14 @@ public class SampleCompany {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -83,19 +82,19 @@ public class SampleCompany {
     this.uri = uri;
   }
 
-
   public SampleCompany id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * Get id
    * @return id
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,19 +109,19 @@ public class SampleCompany {
     this.id = id;
   }
 
-
   public SampleCompany name(String name) {
     
     this.name = name;
     return this;
   }
 
-   /**
+  /**
    * Get name
    * @return name
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -137,20 +136,20 @@ public class SampleCompany {
     this.name = name;
   }
 
-
   public SampleCompany address(URI address) {
     
     this.address = address;
     return this;
   }
 
-   /**
+  /**
    * Get address
    * @return address
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ADDRESS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -164,7 +163,6 @@ public class SampleCompany {
   public void setAddress(URI address) {
     this.address = address;
   }
-
 
   @Override
   public boolean equals(Object o) {

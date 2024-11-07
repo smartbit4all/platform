@@ -290,14 +290,15 @@ public class MDMDefinition {
     return this;
   }
 
-   /**
+  /**
    * Get templates
    * @return templates
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TEMPLATES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -311,7 +312,6 @@ public class MDMDefinition {
   public void setTemplates(Map<String, MDMEntryDescriptor> templates) {
     this.templates = templates;
   }
-
 
   public MDMDefinition updateRequest(InvocationRequest updateRequest) {
     

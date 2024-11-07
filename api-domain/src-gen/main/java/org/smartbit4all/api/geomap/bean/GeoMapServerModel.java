@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,21 +30,20 @@ import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object represents the server model of a geomap component. 
  */
-@ApiModel(description = "This object represents the server model of a geomap component. ")
+@Schema(description = "This object represents the server model of a geomap component. ")
 @JsonPropertyOrder({
   GeoMapServerModel.SELECTED_ITEMS,
   GeoMapServerModel.SELECTED_LAYERS,
   GeoMapServerModel.DATA_SOURCES,
   GeoMapServerModel.PENDING_ITEMS
 })
-@JsonTypeName("GeoMapServerModel")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapServerModel {
   public static final String SELECTED_ITEMS = "selectedItems";
   private Map<String, GeoMapItem> selectedItems = new HashMap<>();
@@ -56,9 +55,9 @@ public class GeoMapServerModel {
   private Map<String, GeoMapDataSourceDescriptor> dataSources = new HashMap<>();
 
   public static final String PENDING_ITEMS = "pendingItems";
-  private Map<String, List<GeoMapItem>> pendingItems = new HashMap<>();
+  private Map<String, List<@Valid GeoMapItem>> pendingItems = new HashMap<>();
 
-  public GeoMapServerModel() { 
+  public GeoMapServerModel() {
   }
 
   public GeoMapServerModel selectedItems(Map<String, GeoMapItem> selectedItems) {
@@ -72,14 +71,15 @@ public class GeoMapServerModel {
     return this;
   }
 
-   /**
+  /**
    * Get selectedItems
    * @return selectedItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -94,7 +94,6 @@ public class GeoMapServerModel {
     this.selectedItems = selectedItems;
   }
 
-
   public GeoMapServerModel selectedLayers(List<String> selectedLayers) {
     
     this.selectedLayers = selectedLayers;
@@ -102,17 +101,21 @@ public class GeoMapServerModel {
   }
 
   public GeoMapServerModel addSelectedLayersItem(String selectedLayersItem) {
+    if (this.selectedLayers == null) {
+      this.selectedLayers = new ArrayList<>();
+    }
     this.selectedLayers.add(selectedLayersItem);
     return this;
   }
 
-   /**
+  /**
    * Get selectedLayers
    * @return selectedLayers
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(SELECTED_LAYERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -127,7 +130,6 @@ public class GeoMapServerModel {
     this.selectedLayers = selectedLayers;
   }
 
-
   public GeoMapServerModel dataSources(Map<String, GeoMapDataSourceDescriptor> dataSources) {
     
     this.dataSources = dataSources;
@@ -139,14 +141,15 @@ public class GeoMapServerModel {
     return this;
   }
 
-   /**
+  /**
    * Get dataSources
    * @return dataSources
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA_SOURCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -161,40 +164,39 @@ public class GeoMapServerModel {
     this.dataSources = dataSources;
   }
 
-
-  public GeoMapServerModel pendingItems(Map<String, List<GeoMapItem>> pendingItems) {
+  public GeoMapServerModel pendingItems(Map<String, List<@Valid GeoMapItem>> pendingItems) {
     
     this.pendingItems = pendingItems;
     return this;
   }
 
-  public GeoMapServerModel putPendingItemsItem(String key, List<GeoMapItem> pendingItemsItem) {
+  public GeoMapServerModel putPendingItemsItem(String key, List<@Valid GeoMapItem> pendingItemsItem) {
     this.pendingItems.put(key, pendingItemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get pendingItems
    * @return pendingItems
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(PENDING_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<GeoMapItem>> getPendingItems() {
+  public Map<String, List<@Valid GeoMapItem>> getPendingItems() {
     return pendingItems;
   }
 
 
   @JsonProperty(PENDING_ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPendingItems(Map<String, List<GeoMapItem>> pendingItems) {
+  public void setPendingItems(Map<String, List<@Valid GeoMapItem>> pendingItems) {
     this.pendingItems = pendingItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

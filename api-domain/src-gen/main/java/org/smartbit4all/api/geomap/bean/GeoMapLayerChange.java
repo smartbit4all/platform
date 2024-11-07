@@ -20,38 +20,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object containt the page information of the content. The currently seen row range, the total row cont and other options. 
  */
-@ApiModel(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
+@Schema(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GeoMapLayerChange.CODE,
   GeoMapLayerChange.TO_ADD,
   GeoMapLayerChange.TO_REMOVE
 })
-@JsonTypeName("GeoMapLayerChange")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapLayerChange {
   public static final String CODE = "code";
   private String code;
 
   public static final String TO_ADD = "toAdd";
-  private List<GeoMapItem> toAdd = new ArrayList<>();
+  private List<@Valid GeoMapItem> toAdd = new ArrayList<>();
 
   public static final String TO_REMOVE = "toRemove";
   private List<String> toRemove = new ArrayList<>();
 
-  public GeoMapLayerChange() { 
+  public GeoMapLayerChange() {
   }
 
   public GeoMapLayerChange code(String code) {
@@ -60,12 +59,13 @@ public class GeoMapLayerChange {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,40 +80,42 @@ public class GeoMapLayerChange {
     this.code = code;
   }
 
-
-  public GeoMapLayerChange toAdd(List<GeoMapItem> toAdd) {
+  public GeoMapLayerChange toAdd(List<@Valid GeoMapItem> toAdd) {
     
     this.toAdd = toAdd;
     return this;
   }
 
   public GeoMapLayerChange addToAddItem(GeoMapItem toAddItem) {
+    if (this.toAdd == null) {
+      this.toAdd = new ArrayList<>();
+    }
     this.toAdd.add(toAddItem);
     return this;
   }
 
-   /**
+  /**
    * Get toAdd
    * @return toAdd
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GeoMapItem> getToAdd() {
+  public List<@Valid GeoMapItem> getToAdd() {
     return toAdd;
   }
 
 
   @JsonProperty(TO_ADD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setToAdd(List<GeoMapItem> toAdd) {
+  public void setToAdd(List<@Valid GeoMapItem> toAdd) {
     this.toAdd = toAdd;
   }
-
 
   public GeoMapLayerChange toRemove(List<String> toRemove) {
     
@@ -122,17 +124,21 @@ public class GeoMapLayerChange {
   }
 
   public GeoMapLayerChange addToRemoveItem(String toRemoveItem) {
+    if (this.toRemove == null) {
+      this.toRemove = new ArrayList<>();
+    }
     this.toRemove.add(toRemoveItem);
     return this;
   }
 
-   /**
+  /**
    * Get toRemove
    * @return toRemove
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(TO_REMOVE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -146,7 +152,6 @@ public class GeoMapLayerChange {
   public void setToRemove(List<String> toRemove) {
     this.toRemove = toRemove;
   }
-
 
   @Override
   public boolean equals(Object o) {

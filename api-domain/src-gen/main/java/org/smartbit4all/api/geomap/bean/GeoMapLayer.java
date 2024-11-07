@@ -20,34 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object containt the page information of the content. The currently seen row range, the total row cont and other options. 
  */
-@ApiModel(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
+@Schema(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GeoMapLayer.CODE,
   GeoMapLayer.ITEMS
 })
-@JsonTypeName("GeoMapLayer")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapLayer {
   public static final String CODE = "code";
   private String code;
 
   public static final String ITEMS = "items";
-  private List<GeoMapItem> items = new ArrayList<>();
+  private List<@Valid GeoMapItem> items = new ArrayList<>();
 
-  public GeoMapLayer() { 
+  public GeoMapLayer() {
   }
 
   public GeoMapLayer code(String code) {
@@ -56,12 +55,13 @@ public class GeoMapLayer {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -76,40 +76,42 @@ public class GeoMapLayer {
     this.code = code;
   }
 
-
-  public GeoMapLayer items(List<GeoMapItem> items) {
+  public GeoMapLayer items(List<@Valid GeoMapItem> items) {
     
     this.items = items;
     return this;
   }
 
   public GeoMapLayer addItemsItem(GeoMapItem itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
     this.items.add(itemsItem);
     return this;
   }
 
-   /**
+  /**
    * Get items
    * @return items
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GeoMapItem> getItems() {
+  public List<@Valid GeoMapItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<GeoMapItem> items) {
+  public void setItems(List<@Valid GeoMapItem> items) {
     this.items = items;
   }
-
 
   @Override
   public boolean equals(Object o) {

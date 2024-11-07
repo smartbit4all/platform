@@ -20,27 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.geomap.bean.GPSPosition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * The viewport...
  */
-@ApiModel(description = "The viewport...")
+@Schema(description = "The viewport...")
 @JsonPropertyOrder({
   GeoMapViewport.CENTER,
   GeoMapViewport.ZOOM_LEVEL,
   GeoMapViewport.BOUNDS
 })
-@JsonTypeName("GeoMapViewport")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapViewport {
   public static final String CENTER = "center";
   private GPSPosition center;
@@ -49,9 +48,9 @@ public class GeoMapViewport {
   private Integer zoomLevel;
 
   public static final String BOUNDS = "bounds";
-  private List<GPSPosition> bounds = new ArrayList<>();
+  private List<@Valid GPSPosition> bounds = new ArrayList<>();
 
-  public GeoMapViewport() { 
+  public GeoMapViewport() {
   }
 
   public GeoMapViewport center(GPSPosition center) {
@@ -60,13 +59,14 @@ public class GeoMapViewport {
     return this;
   }
 
-   /**
+  /**
    * Get center
    * @return center
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CENTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,19 +81,19 @@ public class GeoMapViewport {
     this.center = center;
   }
 
-
   public GeoMapViewport zoomLevel(Integer zoomLevel) {
     
     this.zoomLevel = zoomLevel;
     return this;
   }
 
-   /**
+  /**
    * Get zoomLevel
    * @return zoomLevel
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ZOOM_LEVEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -108,40 +108,42 @@ public class GeoMapViewport {
     this.zoomLevel = zoomLevel;
   }
 
-
-  public GeoMapViewport bounds(List<GPSPosition> bounds) {
+  public GeoMapViewport bounds(List<@Valid GPSPosition> bounds) {
     
     this.bounds = bounds;
     return this;
   }
 
   public GeoMapViewport addBoundsItem(GPSPosition boundsItem) {
+    if (this.bounds == null) {
+      this.bounds = new ArrayList<>();
+    }
     this.bounds.add(boundsItem);
     return this;
   }
 
-   /**
+  /**
    * Get bounds
    * @return bounds
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(BOUNDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GPSPosition> getBounds() {
+  public List<@Valid GPSPosition> getBounds() {
     return bounds;
   }
 
 
   @JsonProperty(BOUNDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBounds(List<GPSPosition> bounds) {
+  public void setBounds(List<@Valid GPSPosition> bounds) {
     this.bounds = bounds;
   }
-
 
   @Override
   public boolean equals(Object o) {
