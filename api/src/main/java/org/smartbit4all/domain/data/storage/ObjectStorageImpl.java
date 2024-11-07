@@ -27,7 +27,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
-import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -236,7 +235,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
       long startTime = System.currentTimeMillis();
 
-      if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
+      if (object.isSingleVersion()) {
         saveSingleVersionObject(object);
       } else {
         saveVersionedObject(object);
@@ -575,8 +574,35 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return uriWithoutVersion != null ? URI
         .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber)
         : null;
-
   }
+
+  protected <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,
+      Map<String, Object> object,
+      Long versionDataSerialNo,
+      StorageLoadOption[] options) {
+    if (!StorageLoadOption.checkUriWithVersionOption(options)) {
+      // If no options specified the default behavior is to return the with the requested uri
+      // This can ensure that the uri will be the exact uri used for the load.
+      object.put("uri", uri);
+    } else {
+      Long uriVersion = getUriVersion(uri);
+      boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
+
+      URI uriToSet = null;
+      // TODO manage the path itself.
+      if (uriVersion == null && uriNeedsVersion) {
+        uriToSet = URI.create(uri.toString() + versionPostfix + versionDataSerialNo);
+      } else if (uriVersion != null && !uriNeedsVersion) {
+        String uriTxt = uri.toString();
+        uriToSet = URI.create(uriTxt.substring(0, uriTxt.lastIndexOf(versionPostfix)));
+      } else {
+        // (has and need) OR (has not and dont need)
+        uriToSet = uri;
+      }
+      object.put("uri", uriToSet);
+    }
+  }
+
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {

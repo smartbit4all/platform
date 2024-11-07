@@ -318,7 +318,8 @@ final class SQLQueryExecution {
             resultAssembler.setValue(indexTrans[colIdx],
                 builder.getResultValue(resultSet, colIdx + 1, propertyTrans[colIdx]));
           } catch (Exception e) {
-            throw new DataRetrievalFailureException("Error occured while fetching data", e);
+            throw new DataRetrievalFailureException(
+                "Error occured while fetching data from " + propertyTrans[colIdx], e);
           }
         }
       }

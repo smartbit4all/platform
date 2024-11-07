@@ -11,8 +11,6 @@ import org.smartbit4all.api.collection.EmbeddingApi;
 import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
-import org.smartbit4all.api.collection.StorageSequenceApi;
-import org.smartbit4all.api.collection.StorageSequenceApiImpl;
 import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.collection.VectorDDBApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -109,6 +107,8 @@ import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
+import org.smartbit4all.api.view.WidgetCallbackApi;
+import org.smartbit4all.api.view.WidgetCallbackApiImpl;
 import org.smartbit4all.api.view.action.LookupApi;
 import org.smartbit4all.api.view.action.LookupApiImpl;
 import org.smartbit4all.api.view.action.ToolbarManagementApi;
@@ -120,6 +120,10 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverter;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverterImpl;
+import org.smartbit4all.api.view.geomap.GeoMapApi;
+import org.smartbit4all.api.view.geomap.GeoMapApiImpl;
+import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactory;
+import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactoryImpl;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModelApiImpl;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
@@ -218,8 +222,23 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public WidgetCallbackApi widgetCallbackApi() {
+    return new WidgetCallbackApiImpl();
+  }
+
+  @Bean
   public GridModelApi gridApi() {
     return new GridModelApiImpl();
+  }
+
+  @Bean
+  public GeoMapApi geoMapApi() {
+    return new GeoMapApiImpl();
+  }
+
+  @Bean
+  public GeoMapDataLoadingStrategyFactory geoMapDataLoadingStrategyFactory() {
+    return new GeoMapDataLoadingStrategyFactoryImpl();
   }
 
   @Bean
@@ -782,11 +801,6 @@ public class PlatformApiConfig {
   @Bean
   public BinaryDataSorageApi binaryDataSorageApi() {
     return new BinaryDataSorageApiImpl();
-  }
-
-  @Bean
-  public StorageSequenceApi storageSequenceApi() {
-    return new StorageSequenceApiImpl();
   }
 
   @Bean

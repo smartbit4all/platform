@@ -30,7 +30,7 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * This object is a history object that is saved when a modification is archived from the active modification list. The archived  
+ * This object is a history object that is saved when a modification is archived from the active modification list. The archived 
  */
 @Schema(description = "This object is a history object that is saved when a modification is archived from the active modification list. The archived  ")
 @JsonPropertyOrder({

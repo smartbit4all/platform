@@ -106,6 +106,19 @@ public class EntityDefinitionBuilder {
     return this;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends Comparable<T>> EntityDefinitionBuilder reference(String refName,
+      EntityDefinition target,
+      List<String[]> joins) {
+    instance.createReference(instance, target, joins.stream()
+        .map(j -> (Property<T>[]) new Property[] {(Property<T>) instance.getProperty(j[0]),
+            (Property<T>) target.getProperty(j[1])})
+        .collect(toList()), refName,
+        ReferenceMandatory.BYPROPERTY);
+
+    return this;
+  }
+
   public Reference<?, ?> getReference(String refName) {
     return instance.getReference(refName);
   }

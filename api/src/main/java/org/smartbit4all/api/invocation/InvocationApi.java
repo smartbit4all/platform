@@ -27,7 +27,7 @@ public interface InvocationApi {
    * This is the constant object to use when we don't want to override the parameter of an
    * INvocationRequest.
    */
-  public static final Object LEAVE = new Object();
+  Object LEAVE = new Object();
 
   /**
    * The builder can be used to produce an {@link InvocationRequest} by calling the method in the

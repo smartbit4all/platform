@@ -1,15 +1,11 @@
 package org.smartbit4all.api.invocation.restclient;
 
 import java.net.URI;
-import java.util.UUID;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.session.SessionApi;
-import org.smartbit4all.api.session.bean.SessionInfoData;
-import org.smartbit4all.domain.application.ApplicationRuntime;
-import org.smartbit4all.domain.application.ApplicationRuntimeApi;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,27 +28,16 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   private RestTemplate restTemplate;
 
   @Autowired
-  private ApplicationRuntimeApi applicationRuntimeApi;
-
-  @Autowired
   private ObjectMapper objectMapper;
 
-  @Autowired(required = false)
-  private SessionApi sessionApi;
-
   @Override
-  public InvocationParameter invoke(UUID runtime, InvocationRequest request) {
-
-    ApplicationRuntime applicationRuntime = applicationRuntimeApi.get(runtime);
-    String ipAddress = applicationRuntime.getIpAddress();
-    String baseUrl = applicationRuntime.getBaseUrl();
-    int serverPort = applicationRuntime.getServerPort();
+  public InvocationParameter invoke(ServiceConnection serviceConnection,
+      InvocationRequest request) {
 
     // TODO url összeállítása
-    String url =
-        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + "/invokeApi";
+    String url = serviceConnection.getEndpoint();
     HttpHeaders headers = new HttpHeaders();
-    String sessionToken = getSessionToken();
+    String sessionToken = serviceConnection.getAuthToken();
     if (!ObjectUtils.isEmpty(sessionToken)) {
       headers.add("Authorization", "Bearer " + sessionToken);
     }
@@ -71,12 +56,6 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
     Invocations.resolveParam(objectMapper, respParam);
     return respParam;
-  }
-
-  private String getSessionToken() {
-    return sessionApi != null
-        ? sessionApi.getParameter(SessionInfoData.SID)
-        : null;
   }
 
 }

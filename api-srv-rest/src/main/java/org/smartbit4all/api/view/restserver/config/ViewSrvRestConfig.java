@@ -4,6 +4,9 @@ import org.smartbit4all.api.filterexpression.restserver.FilterApi;
 import org.smartbit4all.api.filterexpression.restserver.FilterApiController;
 import org.smartbit4all.api.filterexpression.restserver.FilterApiDelegate;
 import org.smartbit4all.api.filterexpression.restserver.impl.FilterApiDelegateImpl;
+import org.smartbit4all.api.geomap.restserver.GeoMapApiController;
+import org.smartbit4all.api.geomap.restserver.GeoMapApiDelegate;
+import org.smartbit4all.api.geomap.restserver.GeoMapApiDelegateImpl;
 import org.smartbit4all.api.grid.restserver.GridApiController;
 import org.smartbit4all.api.grid.restserver.GridApiDelegate;
 import org.smartbit4all.api.grid.restserver.impl.GridApiDelegateImpl;
@@ -84,6 +87,16 @@ public class ViewSrvRestConfig {
   @Bean
   public GridApiController gridApiController(GridApiDelegate delegate) {
     return new GridApiController(delegate);
+  }
+
+  @Bean
+  public GeoMapApiDelegate geoMapApiDelegate() {
+    return new GeoMapApiDelegateImpl();
+  }
+
+  @Bean
+  public GeoMapApiController geoMapApiController(GeoMapApiDelegate delegate) {
+    return new GeoMapApiController(delegate);
   }
 
   @Bean

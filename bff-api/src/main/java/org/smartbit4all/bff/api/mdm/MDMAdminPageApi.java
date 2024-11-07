@@ -66,6 +66,11 @@ public interface MDMAdminPageApi extends PageApi<Object> {
    */
   static final String ACTION_OPEN_MDM_SESSIONS = "OPEN_MDM_SESSIONS";
 
+  /**
+   * The identifier of the add template based descriptor action.
+   */
+  static final String ACTION_ADD_TEMPLATE_BASED_DESCRIPTOR = "ADD_TEMPLATE_BASED_DESCRIPTOR";
+
   @ActionHandler
   void openList(UUID viewUuid, UiActionRequest request);
 
@@ -78,6 +83,10 @@ public interface MDMAdminPageApi extends PageApi<Object> {
   @ActionHandler(ACTION_OPEN_MDM_SESSIONS)
   void performOpenSessions(UUID viewUuid, UiActionRequest request);
 
-  void refreshUiActions(UUID viewUuid);
+  @ActionHandler(ACTION_ADD_TEMPLATE_BASED_DESCRIPTOR)
+  void performAddTemplateBasedDescriptor(UUID viewUuid, UiActionRequest request);
 
+  void addTemplateBasedDescriptorCallback(UUID dialogUuid, UiActionRequest request, UUID viewUuid);
+
+  void refreshUiActions(UUID viewUuid);
 }

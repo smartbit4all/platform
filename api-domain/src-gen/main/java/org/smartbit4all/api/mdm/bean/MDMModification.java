@@ -55,6 +55,7 @@ import jakarta.validation.Valid;
   MDMModification.STATE,
   MDMModification.NOTES,
   MDMModification.DESCRIPTORS,
+  MDMModification.TEMPLATES,
   MDMModification.MODIFICATION_ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -98,6 +99,9 @@ public class MDMModification {
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
 
+  public static final String TEMPLATES = "templates";
+  private Map<String, MDMEntryDescriptor> templates = new HashMap<>();
+
   public static final String MODIFICATION_ITEMS = "modificationItems";
   private Map<String, MDMModificationItem> modificationItems = new HashMap<>();
 
@@ -111,7 +115,7 @@ public class MDMModification {
   }
 
   /**
-   * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification.  
+   * A unique identifier generated for the modification when it is created. It is used to identify the modification package and refer this. It is uuid or a monoton increasing number to identify the modification. 
    * @return id
    */
   @jakarta.annotation.Nullable
@@ -488,6 +492,40 @@ public class MDMModification {
     this.descriptors = descriptors;
   }
 
+  public MDMModification templates(Map<String, MDMEntryDescriptor> templates) {
+    
+    this.templates = templates;
+    return this;
+  }
+
+  public MDMModification putTemplatesItem(String key, MDMEntryDescriptor templatesItem) {
+    this.templates.put(key, templatesItem);
+    return this;
+  }
+
+   /**
+   * Get templates
+   * @return templates
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(TEMPLATES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, MDMEntryDescriptor> getTemplates() {
+    return templates;
+  }
+
+
+  @JsonProperty(TEMPLATES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTemplates(Map<String, MDMEntryDescriptor> templates) {
+    this.templates = templates;
+  }
+
+
   public MDMModification modificationItems(Map<String, MDMModificationItem> modificationItems) {
     
     this.modificationItems = modificationItems;
@@ -546,12 +584,13 @@ public class MDMModification {
         Objects.equals(this.state, mdMModification.state) &&
         Objects.equals(this.notes, mdMModification.notes) &&
         Objects.equals(this.descriptors, mdMModification.descriptors) &&
+        Objects.equals(this.templates, mdMModification.templates) &&
         Objects.equals(this.modificationItems, mdMModification.modificationItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approved, state, notes, descriptors, modificationItems);
+    return Objects.hash(id, name, description, branchUri, created, updated, currentEditors, sentToApproval, approver, approved, state, notes, descriptors, templates, modificationItems);
   }
 
   @Override
@@ -571,6 +610,7 @@ public class MDMModification {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
+    sb.append("    templates: ").append(toIndentedString(templates)).append("\n");
     sb.append("    modificationItems: ").append(toIndentedString(modificationItems)).append("\n");
     sb.append("}");
     return sb.toString();

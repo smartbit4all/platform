@@ -48,6 +48,7 @@ import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -64,6 +65,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectHistoryIterator;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.service.CrudApi;
@@ -357,7 +359,11 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           if (def.getDescriptors() == null) {
             def.setDescriptors(new HashMap<>());
           }
-          putEntryDescriptorsInMap(def.getDescriptors(), o);
+          if (def.getTemplates() == null) {
+            def.setTemplates(new HashMap<>());
+          }
+          putEntryDescriptorsInMap(o.getDefinition().getDescriptors(), def.getDescriptors());
+          putEntryDescriptorsInMap(o.getDefinition().getTemplates(), def.getTemplates());
         }
         return def
             .branchingStrategy(o.getDefinition().getBranchingStrategy())
@@ -372,7 +378,13 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
               if (modification.getDescriptors() == null) {
                 modification.setDescriptors(new HashMap<>());
               }
-              putEntryDescriptorsInMap(modification.getDescriptors(), o);
+              if (modification.getTemplates() == null) {
+                modification.setTemplates(new HashMap<>());
+              }
+              putEntryDescriptorsInMap(o.getDefinition().getDescriptors(),
+                  modification.getDescriptors());
+              putEntryDescriptorsInMap(o.getDefinition().getTemplates(),
+                  modification.getTemplates());
               return state;
             });
       }
@@ -430,15 +442,24 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   // return branch;
   // }
   //
-  private void putEntryDescriptorsInMap(Map<String, MDMEntryDescriptor> current,
-      MDMDefinitionOption o) {
-    for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
-        .entrySet()) {
-      // MDMEntryDescriptor currentDesc = current.get(descEntry.getKey());
-      // TODO merge later.
-      current.put(descEntry.getKey(), descEntry.getValue());
+
+  private void putEntryDescriptorsInMap(Map<String, MDMEntryDescriptor> from,
+      Map<String, MDMEntryDescriptor> to) {
+    if ((!ObjectUtils.isEmpty(from)) && (!ObjectUtils.isEmpty(from))) {
+      to.putAll(from);
     }
   }
+
+  // ORIGINAL IMPL, BEFORE TEMPLATES
+  // private void putEntryDescriptorsInMap(Map<String, MDMEntryDescriptor> current,
+  // MDMDefinitionOption o) {
+  // for (Entry<String, MDMEntryDescriptor> descEntry : o.getDefinition().getDescriptors()
+  // .entrySet()) {
+  // // MDMEntryDescriptor currentDesc = current.get(descEntry.getKey());
+  // // TODO merge later.
+  // current.put(descEntry.getKey(), descEntry.getValue());
+  // }
+  // }
 
   private String constructEntrySecurityGroupName(MDMDefinition definition, MDMEntryDescriptor d) {
     return d.getAdminGroupName() != null ? d.getAdminGroupName() : definition.getAdminGroupName();
@@ -568,7 +589,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
         filterExpressionApi, comparatorProvider);
     try {
-      result.afterPropertiesSet();
+      result.initDefinition();
     } catch (Exception e) {
       log.error("Unable to initialize the search index for the {} - {}", defName,
           entryDescriptor);
@@ -584,7 +605,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
         filterExpressionApi, comparatorProvider);
     try {
-      result.afterPropertiesSet();
+      result.initDefinition();
     } catch (Exception e) {
       log.error("Unable to initialize the search index for the {} - {}", def.getName(),
           entryDescriptor);
@@ -848,6 +869,31 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       descriptor.setBranchingStrategy(definition.getBranchingStrategy());
     }
     definition.putDescriptorsItem(descriptor.getName(), descriptor);
+  }
+
+  @Override
+  public void addTemplateBasedDescriptorToDefinition(MDMDefinition definition,
+      String descriptorName, String descriptorCode, String templateName) {
+    MDMEntryDescriptor template = definition.getTemplates().get(templateName);
+    Objects.requireNonNull(template);
+    MDMEntryDescriptor descriptor = ObjectSerializerByObjectMapper.deepCopy(
+        template,
+        MDMEntryDescriptor.class);
+
+    // setting up the descriptor
+    if (descriptor.getBranchingStrategy() == null) {
+      descriptor.setBranchingStrategy(definition.getBranchingStrategy());
+    }
+    descriptor
+        .name(descriptorCode)
+        .displayNameForm(new LangString().defaultValue(descriptorName))
+        .displayNameList(new LangString().defaultValue(descriptorName));
+
+
+
+    MDMDefinitionOption option = new MDMDefinitionOption(definition);
+    option.addDescriptor(descriptor);
+    addNewEntries(option, getGlobalBranch(definition));
   }
 
   @Override

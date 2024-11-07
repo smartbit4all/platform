@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 
@@ -114,6 +115,12 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
 
   @Override
   protected URI saveVersionedObject(StorageObject<?> object) throws IOException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
     // TODO Auto-generated method stub
     return null;
   }

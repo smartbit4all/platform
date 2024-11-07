@@ -2,6 +2,8 @@ package org.smartbit4all.api.mimetype.config;
 
 import org.smartbit4all.api.mimetype.ContentConversionApi;
 import org.smartbit4all.api.mimetype.ContentConversionApiImpl;
+import org.smartbit4all.api.mimetype.ContentConversionContributionApi;
+import org.smartbit4all.api.mimetype.ContentConversionContributionApiTextToText;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandler;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
@@ -21,6 +23,11 @@ public class MimeTypeConfig {
   @Bean
   ContentConversionApi conversionApi() {
     return new ContentConversionApiImpl();
+  }
+
+  @Bean
+  ContentConversionContributionApi textToTextConverter() {
+    return new ContentConversionContributionApiTextToText();
   }
 
   @Bean

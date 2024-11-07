@@ -130,7 +130,7 @@ public class MDMDefinitionState {
   }
 
   /**
-   * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty.  
+   * The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then the global modification should be empty. 
    * @return activeModifications
    */
   @jakarta.annotation.Nonnull

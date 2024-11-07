@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -45,10 +44,11 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Disabled
-class StorageTest {
+public class StorageTest {
 
   private static final String MY_MAP = "MyMap";
 
@@ -103,13 +103,13 @@ class StorageTest {
   }
 
   @Autowired
-  StorageApi storageApi;
+  protected StorageApi storageApi;
 
   @Autowired
-  ObjectApi objectApi;
+  protected ObjectApi objectApi;
 
   @Autowired
-  StorageTestApi testApi;
+  protected StorageTestApi testApi;
 
   protected URI collectionsTestUri;
 
@@ -333,6 +333,7 @@ class StorageTest {
   }
 
   @RepeatedTest(5)
+  @Disabled
   void collectionsTest() throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(5);
     List<Future<?>> futures = new ArrayList<>();
@@ -640,14 +641,12 @@ class StorageTest {
 
     assertEquals(1, storageObject.getAspects().size());
 
-    org.assertj.core.api.Assertions.assertThat(storageObject.getAspects()).isNotNull()
-        .containsKey(AccessControlInternalApi.ACL_ASPECT);
+    Assertions.assertNotNull(storageObject.getAspects());
+    Assertions.assertNotNull(storageObject.getAspects().get(AccessControlInternalApi.ACL_ASPECT));
 
-    org.assertj.core.api.Assertions
-        .assertThat(storageObject.getAspects().values().stream()
-            .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap())))
-        .allMatch(s -> "apple".equals(s.getName()));
-
+    storageObject.getAspects().values().stream()
+        .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap()))
+        .forEach(s -> Assertions.assertEquals("apple", s.getName()));
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {

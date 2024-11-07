@@ -61,6 +61,8 @@ public final class TableData<E extends EntityDefinition> {
    */
   private final E entityDef;
 
+  private boolean useRefTables = false;
+
   /**
    * These are the references of the data table. Every reference points to neighboring entity. The
    * meta data comes from the definition objects. The same reference is maintained by the referred
@@ -306,7 +308,7 @@ public final class TableData<E extends EntityDefinition> {
    * @return
    */
   public <T> DataColumn<T> addColumn(Property<T> property) {
-    if (property instanceof PropertyRef<?>) {
+    if (property instanceof PropertyRef<?> && useRefTables) {
       return addColumnRef((PropertyRef<T>) property);
     } else {
       return addColumnOwn(property);
@@ -707,6 +709,14 @@ public final class TableData<E extends EntityDefinition> {
     this.uri = uri;
   }
 
+  public void useRefTables(boolean useRefTables) {
+    this.useRefTables = useRefTables;
+  }
+
+  public boolean isUseRefTables() {
+    return useRefTables;
+  }
+  
   public void hideRows(List<DataRow> rows) {
     this.rowModel.hideRows(rows);
   }

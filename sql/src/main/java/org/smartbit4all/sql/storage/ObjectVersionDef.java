@@ -14,9 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.sql.storage;
 
-import java.time.LocalDateTime;
+import java.net.URI;
+import java.time.OffsetDateTime;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.annotation.property.Entity;
+import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.Join;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.ReferenceEntity;
@@ -41,23 +43,79 @@ public interface ObjectVersionDef extends EntityDefinition {
   String VERSION = "version";
   String VERSION_COL = "VERSION";
 
+  String TRANSACTION_ID = "transactionId";
+  String TRANSACTION_ID_COL = "TRANSACTION_ID";
+
   String CREATED_AT = "createdAt";
   String CREATED_AT_COL = "CREATED_AT";
+
+  String CREATED_BY_URI = "createdByUri";
+  String CREATED_BY_URI_COL = "CREATEDBYURI";
+
+  String CREATED_BY = "createdBy";
+  String CREATED_BY_COL = "CREATEDBY";
+
+  String OPERATION = "operation";
+  String OPERATION_COL = "OPERATION";
+
+  String REBASED_FROM_URI = "rebasedFromUri";
+  String REBASED_FROM_URI_COL = "REBASEDFROMURI";
+
+  String COMMON_ANCESTOR_URI = "commonAncestorUri";
+  String COMMON_ANCESTOR_URI_COL = "COMMONANCESTORURI";
+
+  String MERGED_WITH_URI = "mergedWithUri";
+  String MERGED_WITH_URI_COL = "MERGEDWITHURI";
 
   String OBJECT_CONTENT = "objectcontent";
   String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
 
+  String REF_CONTENT = "refcontent";
+  String REF_CONTENT_COL = "REF_CONTENT";
+
+  String ASPECT_CONTENT = "aspectcontent";
+  String ASPECT_CONTENT_COL = "ASPECT_CONTENT";
+
+  @Id
   @OwnProperty(name = ENTRY_ID, columnName = ENTRY_ID_COL, mandatory = true)
   Property<Long> entryId();
 
+  @Id
   @OwnProperty(name = VERSION, columnName = VERSION_COL, mandatory = true)
   Property<Long> version();
 
+  @OwnProperty(name = TRANSACTION_ID, columnName = TRANSACTION_ID_COL, mandatory = false)
+  Property<String> transactionId();
+
   @OwnProperty(name = CREATED_AT, columnName = CREATED_AT_COL, mandatory = true)
-  Property<LocalDateTime> createdAt();
+  Property<OffsetDateTime> createdAt();
+
+  @OwnProperty(name = CREATED_BY_URI, columnName = CREATED_BY_URI_COL, mandatory = false)
+  Property<URI> createdByUri();
+
+  @OwnProperty(name = CREATED_BY, columnName = CREATED_BY_COL, mandatory = false)
+  Property<String> createdBy();
+
+  @OwnProperty(name = OPERATION, columnName = OPERATION_COL, mandatory = false)
+  Property<String> operation();
+
+  @OwnProperty(name = REBASED_FROM_URI, columnName = REBASED_FROM_URI_COL, mandatory = false)
+  Property<URI> rebasedFromUri();
+
+  @OwnProperty(name = COMMON_ANCESTOR_URI, columnName = COMMON_ANCESTOR_URI_COL, mandatory = false)
+  Property<URI> commonAncestorUri();
+
+  @OwnProperty(name = MERGED_WITH_URI, columnName = MERGED_WITH_URI_COL, mandatory = false)
+  Property<URI> mergedWithUri();
 
   @OwnProperty(name = OBJECT_CONTENT, columnName = OBJECT_CONTENT_COL, mandatory = true)
   Property<BinaryData> objectContent();
+
+  @OwnProperty(name = REF_CONTENT, columnName = REF_CONTENT_COL, mandatory = true)
+  Property<BinaryData> refContent();
+
+  @OwnProperty(name = ASPECT_CONTENT, columnName = ASPECT_CONTENT_COL, mandatory = true)
+  Property<BinaryData> aspectContent();
 
   @ReferenceEntity
   @Join(source = ENTRY_ID, target = ObjectEntryDef.ID)

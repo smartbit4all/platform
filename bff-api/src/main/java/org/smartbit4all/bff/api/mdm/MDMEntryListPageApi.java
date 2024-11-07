@@ -12,6 +12,7 @@ import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -248,8 +249,11 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param viewUuid The list view instance
    * @param objectUri The uri of the edited object.
    * @param editingObject The object or map value of the newly created / updated object.
+   * @param editorView The mdm editor view.
+   * @param request The save request.
    */
-  void saveObject(UUID viewUuid, URI objectUri, Object editingObject);
+  void saveObject(UUID viewUuid, URI objectUri, Object editingObject, View editorView,
+      UiActionRequest request);
 
   /**
    * This callback function is responsible for saving an object into the MDM entry list we are
@@ -257,8 +261,10 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    *
    * @param viewUuid The list view instance
    * @param objectNode The objectNode of the newly created / updated object.
+   * @param editorView The mdm editor view.
+   * @param request The save request.
    */
-  void saveObject(UUID viewUuid, ObjectNode objectNode);
+  void saveObject(UUID viewUuid, ObjectNode objectNode, View editorView, UiActionRequest request);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 

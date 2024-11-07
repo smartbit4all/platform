@@ -1,7 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -25,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiData;
@@ -40,6 +40,7 @@ import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelRegistry;
 import org.smartbit4all.api.invocation.bean.ScheduledInvocationRequest;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectNode;
@@ -60,6 +61,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -191,6 +194,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   @Value("${InvocationRegisterApi.readScheduledInvocations.maximumPoolSize:10}")
   private int maximumPoolSize = 10;
+
+  private StoredCollectionDescriptor apiRegistryList =
+      new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
+          .schema(Invocations.INVOCATION_SCHEME)
+          .name(InvocationApiMdmConfig.MDM_ENTRY_APIREGISTRY);
 
   /**
    * This is the OrgApi scheme where we save the settings for the notify.
@@ -328,11 +336,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       return;
     }
     UUID myRuntimeUUID = applicationRuntimeApi.self().getUuid();
-    // Get apis from all active runtime. The current instance is an exception because we know what
-    // we are providing.
-    List<ApplicationRuntime> activeOtherRuntimes = applicationRuntimeApi.getActiveRuntimes()
-        .stream()
-        .filter(r -> !r.getUuid().equals(myRuntimeUUID)).collect(toList());
 
     Set<URI> activeApis = new HashSet<>();
     Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
@@ -346,6 +349,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     // Add our apis to the active apis. They are obviously active ones.
     activeApis.addAll(apiInstanceByApiDataUri.keySet());
 
+    // Get apis from all active runtime. The current instance is an exception because we know what
+    // we are providing.
+    List<ApplicationRuntime> activeOtherRuntimes = applicationRuntimeApi.getActiveRuntimes()
+        .stream()
+        .filter(r -> !r.getUuid().equals(myRuntimeUUID)).collect(toList());
     for (ApplicationRuntime applicationRuntime : activeOtherRuntimes) {
       List<URI> runtimeApis = applicationRuntimeApi.getApis(applicationRuntime.getUuid());
 
@@ -361,6 +369,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
 
     runtimesByApis = activeRuntimesByApisMap;
+
+    // Add the MDM registered apis to the active apis.
+    activeApis.addAll(collectionApi.list(apiRegistryList).uris());
 
     List<URI> currentActiveApiUris = apiRegister.values().stream()
         .flatMap(m -> m.values().stream().map(ad -> ad.getApiData().getUri())).collect(toList());

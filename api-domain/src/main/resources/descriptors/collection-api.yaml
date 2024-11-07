@@ -15,7 +15,7 @@ paths:
       responses:
         '200':
           description: nope
-                
+
 components:
   schemas:
     StoredMapData:
@@ -97,6 +97,14 @@ components:
         singleVersion:
           type: boolean
           default: true
+    SearchIndexDescriptor:
+      type: object
+      properties:
+        schema:
+          type: string
+        name:
+          type: string
+      required: [schema, name]
     VectorCollectionDescriptor:
       type: object
       description: |
@@ -154,7 +162,7 @@ components:
           type: number
           format: float
           description: The score of the found item.
-        value:          
+        value:
           type: object
           additionalProperties: true
     ObjectLookupParameter:
@@ -204,7 +212,7 @@ components:
           type: integer
         items:
           type: array
-          items:          
+          items:
             $ref: '#/components/schemas/ObjectLookupResultItem'
     ObjectLookupResultItem:
       description: |

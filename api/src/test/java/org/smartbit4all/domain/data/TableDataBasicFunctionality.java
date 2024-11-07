@@ -74,6 +74,7 @@ public class TableDataBasicFunctionality {
     AddressDef addressDef = ctx.getBean(AddressDef.class);
 
     TableData<UserAccountDef> tableData = new TableData<>(userAccountDef);
+    tableData.useRefTables(true);
     Set<DataColumn<?>> primaryKeySet = tableData.addColumns(userAccountDef.PRIMARYKEYDEF());
     // Set<DataColumn<?>> mandatories = tableData.addColumns(userAccountDef.MANDATORIES());
     // Set<DataColumn<?>> security = tableData.addColumns(userAccountDef.SECURITY());

@@ -16,6 +16,7 @@ package org.smartbit4all.domain.meta;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
@@ -33,8 +34,13 @@ public class EntityConfiguration {
 
   @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
+    ApplicationContext applicationContext = event.getApplicationContext();
+    setupEntityDefinitions(applicationContext);
+  }
+
+  protected void setupEntityDefinitions(ApplicationContext applicationContext) {
     Map<String, EntitySetup> setups =
-        event.getApplicationContext().getBeansOfType(EntitySetup.class);
+        applicationContext.getBeansOfType(EntitySetup.class);
     // for (EntitySetup entity : setups.values()) {
     // entity.initContext();
     // }

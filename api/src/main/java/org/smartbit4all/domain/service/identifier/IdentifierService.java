@@ -18,4 +18,6 @@ public interface IdentifierService {
 
   NextIdentifier next();
 
+  CurrentIdentifier current();
+
 }

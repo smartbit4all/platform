@@ -18,7 +18,7 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
   private static final Logger log = LoggerFactory.getLogger(MDMEntryEditPageApiImpl.class);
 
   @Autowired
-  private MDMEntryListPageApi listPageApi;
+  protected MDMEntryListPageApi listPageApi;
 
   public MDMEntryEditPageApiImpl() {
     super(Object.class);
@@ -47,7 +47,7 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
     UUID parentUUID = parameters(view)
         .get(MDMEntryListPageApi.PARAM_MDM_LIST_VIEW, UUID.class);
     view.setModel(request.getParams().get(UiActions.MODEL));
-    listPageApi.saveObject(parentUUID, view.getObjectUri(), view.getModel());
+    listPageApi.saveObject(parentUUID, view.getObjectUri(), view.getModel(), view, request);
     viewApi.closeView(viewUuid);
   }
 

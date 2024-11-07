@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -17,6 +18,10 @@ import javax.script.ScriptException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
@@ -27,14 +32,19 @@ import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.session.bean.SessionInfoData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
+import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 /**
  * The implementation of the {@link InvocationApi}. It collects all the
@@ -61,20 +71,30 @@ public final class InvocationApiImpl implements InvocationApi {
   private SessionManagementApi sessionManagementApi;
 
   /**
-   * The {@link InvocationExecutionApi} is for handling remote calls.
+   * The registered {@link InvocationExecutionApi}s that can be referred as executorApi for APIs.
    */
   @Autowired(required = false)
-  private InvocationExecutionApi executionApi;
+  private List<InvocationExecutionApi> executionApis;
+
+  private StoredCollectionDescriptor serviceConnectionList =
+      new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
+          .schema(Invocations.INVOCATION_SCHEME)
+          .name(InvocationApiMdmConfig.MDM_ENTRY_SERVICECONNECTION);
 
   @Autowired
   private ObjectApi objectApi;
 
+  private CollectionApi collectionApi;
+
+  @Autowired
   private InvocationApi self;
 
-  @PostConstruct
-  private void postConstruct() {
-    self = this;
-  }
+  /**
+   * By default the platform uses the rest client to access and call the api of a module over the
+   * same storage.
+   */
+  private String defaultExecutionApiName =
+      "org.smartbit4all.api.invocation.restclient.InvocationExecutionApiRestclient";
 
   @Override
   public InvocationParameter invoke(InvocationRequest request, Object... args)
@@ -103,6 +123,23 @@ public final class InvocationApiImpl implements InvocationApi {
       throws ApiNotFoundException {
 
     ApiData apiData = apiDescriptor.getApiData();
+
+    // If we have a denoted execution api and it exists then we use it to invoke the given service.
+    if (!Strings.isNullOrEmpty(apiData.getExecutionApi())) {
+      InvocationExecutionApi executionApi = getExecutionApi(apiData.getExecutionApi());
+      if (executionApi != null) {
+        StoredList list = collectionApi.list(serviceConnectionList);
+        Optional<ObjectNode> serviceConnection =
+            list.nodesFromCache().filter(n -> Objects.equals(apiData.getServiceConnection(),
+                n.getValueAsString(ServiceConnection.NAME))).findFirst();
+        return executionApi
+            .invoke(serviceConnection.orElseThrow(() -> new UnsupportedOperationException(
+                "The service connection is not configured to access the following api (" + apiData
+                    + ")"))
+                .getObject(ServiceConnection.class), request);
+      }
+    }
+
     List<UUID> runtimes = invocationRegisterApi.getRuntimesForApi(apiData.getUri());
 
     if (runtimes.isEmpty()) {
@@ -112,14 +149,42 @@ public final class InvocationApiImpl implements InvocationApi {
     // If the applicationRuntimeApi is null, then we can only invoke the api call in our own runtime
     if (applicationRuntimeApi == null
         || runtimes.contains(applicationRuntimeApi.self().getUuid())) {
-      Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
-      Method method = Invocations.getMethodToCall(apiInstance, request);
-      return Invocations.invokeMethod(objectApi, request, apiInstance, method);
+      return invokeLocalApi(request, apiData);
     } else {
       UUID runtimeToRun = getRuntimeToRun(runtimes);
-
-      return executionApi.invoke(runtimeToRun, request);
+      InvocationExecutionApi executionApi = getExecutionApi(defaultExecutionApiName);
+      if (executionApi == null) {
+        throw new UnsupportedOperationException("The " + defaultExecutionApiName
+            + " execution api is not registered to access the following api (" + apiData + ")");
+      }
+      return executionApi.invoke(getServiceConnectionOfRuntime(runtimeToRun), request);
     }
+  }
+
+  private final InvocationParameter invokeLocalApi(InvocationRequest request, ApiData apiData) {
+    Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
+    Method method = Invocations.getMethodToCall(apiInstance, request);
+    return Invocations.invokeMethod(objectApi, request, apiInstance, method);
+  }
+
+  private final ServiceConnection getServiceConnectionOfRuntime(UUID runtimeUuid) {
+    ApplicationRuntime applicationRuntime = applicationRuntimeApi.get(runtimeUuid);
+    if (applicationRuntime == null) {
+      return null;
+    }
+    String ipAddress = applicationRuntime.getIpAddress();
+    String baseUrl = applicationRuntime.getBaseUrl();
+    int serverPort = applicationRuntime.getServerPort();
+
+    return new ServiceConnection().endpoint(
+        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + "/invokeApi")
+        .authToken(getSessionToken());
+  }
+
+  private String getSessionToken() {
+    return sessionApi != null
+        ? sessionApi.getParameter(SessionInfoData.SID)
+        : null;
   }
 
   private final InvocationParameter invokeScript(InvocationRequest request)
@@ -340,6 +405,14 @@ public final class InvocationApiImpl implements InvocationApi {
       }
     }
     return true;
+  }
+
+  private final InvocationExecutionApi getExecutionApi(String api) {
+    if (executionApis == null || executionApis.isEmpty() || api == null) {
+      return null;
+    }
+    return executionApis.stream().filter(a -> api.equals(a.getClass().getName())).findFirst()
+        .orElse(null);
   }
 
 }

@@ -122,6 +122,9 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   @Autowired
   private ViewPublisherApi viewPublisherApi;
 
+  @Autowired
+  private MDMAdminPageApi mdmAdminPageApi;
+
   /**
    * The page context is a useful object to encapsulate all the parameters necessary to execute the
    * actions of the page.
@@ -310,6 +313,13 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
       uiActions.add(MDMActions.REFRESH);
       ctx.view.actions(uiActions.build());
+
+      // Refresh the actions on the admin page
+      UUID parentUuid = parameters(ctx.view).get(PARAM_PARENT_UUID, UUID.class);
+      if (parentUuid != null) {
+        mdmAdminPageApi.refreshUiActions(parentUuid);
+      }
+
     }
   }
 

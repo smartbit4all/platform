@@ -1,14 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -30,6 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
@@ -44,6 +36,13 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridView;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -98,12 +97,27 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class},
                 properties = "spring.main.allow-circular-references=true")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
+
+  private static final String ORG_SMARTBIT4ALL_API_MY_CUSTOM_API =
+      "org.smartbit4all.api.MyCustomApi";
+
+  private static final String MY_CUSTOM_API =
+      "MyCustomApi";
 
   private static final String SCHEMA = "test";
 
@@ -162,6 +176,9 @@ class MDMApiTest {
 
   @Autowired
   private MDMEntryEditPageApi editorPageApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   private URI adminUri;
 
@@ -1282,6 +1299,61 @@ class MDMApiTest {
 
   }
 
+  /**
+   * Validate if the api registry and the related service connection is working well. The newly
+   * registered api can be called.
+   * 
+   * @throws InterruptedException
+   */
+  @Test
+  @Order(9)
+  void testInvocationApiByApiRegistry() throws InterruptedException {
+
+    MDMEntryApi apiRegisryEntry =
+        masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_APIREGISTRY);
+
+    String serviceConnection = "MyApiConnection";
+    // Create a new ApiData entry. Ber careful, the URI of the ApiData is prepared from the fully
+    // qualified name of the api.
+    apiRegisryEntry.save(objectApi.create(SCHEMA,
+        new ApiData().name(MY_CUSTOM_API)
+            .interfaceName(ORG_SMARTBIT4ALL_API_MY_CUSTOM_API)
+            .executionApi(InvocationExecutionApiTest.class.getName())
+            .serviceConnection(serviceConnection)
+            .uri(Invocations.uriOf(ORG_SMARTBIT4ALL_API_MY_CUSTOM_API, MY_CUSTOM_API))));
+
+    // Add a service connection to meet with the api service connection.
+    MDMEntryApi serviceConnectionEntry =
+        masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_SERVICECONNECTION);
+    serviceConnectionEntry
+        .save(objectApi.create(SCHEMA, new ServiceConnection().name(serviceConnection)));
+
+    // Check if we have the api entry
+    StoredList apiList = collectionApi.list(Invocations.INVOCATION_SCHEME,
+        InvocationApiMdmConfig.MDM_ENTRY_APIREGISTRY);
+    assertThat(apiList.uris()).hasSize(1);
+
+    // Wait a little bit to ensure that the InvocationRegistryApi load the give api to the registry
+    Thread.sleep(6000);
+
+    InvocationRequest invocationRequest = new InvocationRequest().name(MY_CUSTOM_API)
+        .interfaceClass(ORG_SMARTBIT4ALL_API_MY_CUSTOM_API).methodName("doSomeThing");
+
+    try {
+      // Do invoke where the execution api is simple reserve the last invovation request
+      invocationApi.invoke(invocationRequest);
+    } catch (ApiNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    // Check if we have the invocation request (the invoke was successful
+    assertThat(invocationRequest).isEqualTo(InvocationExecutionApiTest.lastRequest);
+
+  }
+
   private void checkSampleContainerValues(MDMEntryApi entryApi, List<String> valueList) {
     List<ObjectNode> list = entryApi.getList().nodesFromCache().collect(toList());
     Assertions.assertThat(list).hasSize(valueList.size());
@@ -1313,7 +1385,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   void testUserActivityLogHandling() throws Exception {
 
     authService.login(admin, "asd");

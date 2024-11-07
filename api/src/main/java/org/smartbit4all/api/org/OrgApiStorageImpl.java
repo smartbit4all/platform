@@ -1,7 +1,5 @@
 package org.smartbit4all.api.org;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -61,6 +59,8 @@ import org.springframework.util.ObjectUtils;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -117,7 +117,7 @@ public class OrgApiStorageImpl implements OrgApi {
       throws Exception {
     this.storageApi = storageApi;
     this.securityOptions = securityOptions;
-    initSecurityOptions();
+    // initSecurityOptions();
   }
 
   /**

@@ -44,6 +44,7 @@ import jakarta.validation.Valid;
   MDMDefinition.STATE,
   MDMDefinition.BRANCHING_STRATEGY,
   MDMDefinition.DESCRIPTORS,
+  MDMDefinition.TEMPLATES,
   MDMDefinition.UPDATE_REQUEST
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -68,6 +69,9 @@ public class MDMDefinition {
 
   public static final String DESCRIPTORS = "descriptors";
   private Map<String, MDMEntryDescriptor> descriptors = new HashMap<>();
+
+  public static final String TEMPLATES = "templates";
+  private Map<String, MDMEntryDescriptor> templates = new HashMap<>();
 
   public static final String UPDATE_REQUEST = "updateRequest";
   private InvocationRequest updateRequest = null;
@@ -275,6 +279,40 @@ public class MDMDefinition {
     this.descriptors = descriptors;
   }
 
+  public MDMDefinition templates(Map<String, MDMEntryDescriptor> templates) {
+    
+    this.templates = templates;
+    return this;
+  }
+
+  public MDMDefinition putTemplatesItem(String key, MDMEntryDescriptor templatesItem) {
+    this.templates.put(key, templatesItem);
+    return this;
+  }
+
+   /**
+   * Get templates
+   * @return templates
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(TEMPLATES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, MDMEntryDescriptor> getTemplates() {
+    return templates;
+  }
+
+
+  @JsonProperty(TEMPLATES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTemplates(Map<String, MDMEntryDescriptor> templates) {
+    this.templates = templates;
+  }
+
+
   public MDMDefinition updateRequest(InvocationRequest updateRequest) {
     
     this.updateRequest = updateRequest;
@@ -319,12 +357,13 @@ public class MDMDefinition {
         Objects.equals(this.state, mdMDefinition.state) &&
         Objects.equals(this.branchingStrategy, mdMDefinition.branchingStrategy) &&
         Objects.equals(this.descriptors, mdMDefinition.descriptors) &&
+        Objects.equals(this.templates, mdMDefinition.templates) &&
         Objects.equals(this.updateRequest, mdMDefinition.updateRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, adminGroupName, adminApproverGroupName, state, branchingStrategy, descriptors, updateRequest);
+    return Objects.hash(uri, name, adminGroupName, adminApproverGroupName, state, branchingStrategy, descriptors, templates, updateRequest);
   }
 
   @Override
@@ -338,6 +377,7 @@ public class MDMDefinition {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    branchingStrategy: ").append(toIndentedString(branchingStrategy)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
+    sb.append("    templates: ").append(toIndentedString(templates)).append("\n");
     sb.append("    updateRequest: ").append(toIndentedString(updateRequest)).append("\n");
     sb.append("}");
     return sb.toString();

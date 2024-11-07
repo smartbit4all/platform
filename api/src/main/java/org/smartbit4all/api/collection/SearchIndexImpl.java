@@ -1,8 +1,10 @@
 package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.PathProcessor;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.TriFunction;
 import org.smartbit4all.domain.data.TableData;
@@ -32,23 +35,27 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionPropertyCollector;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 
 /**
  * @author Peter Boros
  *
  * @param <O>
  */
-public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
+public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
 
@@ -173,6 +180,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return executeSearch(filterExpressions, orderByList, true, objects, null);
   }
 
+
+
+  @Override
+  public TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields) {
+    return executeSearch(filterExpressions, orderByList, fields, true, objects, null);
+  }
+
+
   @Override
   public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
       FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList) {
@@ -182,11 +198,17 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
+    List<SearchIndexFieldCalculator> calculators = new ArrayList<>();
+    separateCalculatedFieldsInQueryInput(queryInput, calculators);
+
     queryInput = process(queryInput, queryInputPreProcessors);
     if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
         && !isUseDatabase())
         || readFromStorage) {
-      SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes);
+
+      Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
+      SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
+          propertiesToQuery);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
@@ -201,10 +223,88 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
     }
+
+    if (log.isTraceEnabled()) {
+      log.trace("Executing query...: {}", queryInput.where());
+    }
+
     TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+
+    processCalculators(result, calculators);
+
     result = process(result, postProcessor);
 
     return result;
+  }
+
+  protected Collection<Property<?>> getPropertiesToQueryInMemory(QueryInput queryInput) {
+    Stream<Property<?>> selectProperties = queryInput.properties().stream();
+
+    Stream<Property<?>> expressionProperties;
+    if (queryInput.where() != null) {
+      ExpressionPropertyCollector expressionPropertyCollector = new ExpressionPropertyCollector();
+      queryInput.where().accept(expressionPropertyCollector);
+      expressionProperties = expressionPropertyCollector.getProperties().stream();
+    } else {
+      expressionProperties = Stream.empty();
+    }
+    List<Property<?>> propertiesToQuery =
+        Stream.concat(selectProperties, expressionProperties)
+            .distinct()
+            .collect(toList());
+    return propertiesToQuery;
+  }
+
+  private void processCalculators(TableData<?> tableData,
+      List<SearchIndexFieldCalculator> calculators) {
+    tableData.rows().forEach(row -> {
+      calculators.forEach(calc -> calc.calculate(row));
+    });
+  }
+
+
+  private void separateCalculatedFieldsInQueryInput(QueryInput queryInput,
+      List<SearchIndexFieldCalculator> calculators) {
+    List<Property<?>> resultProperties = new ArrayList<>();
+    List<Property<?>> currentProperties = queryInput.properties();
+    separateCalculatedFields(currentProperties, calculators, resultProperties);
+    queryInput.properties().clear();
+    queryInput.select(resultProperties);
+  }
+
+  private void separateCalculatedFieldsInPropertyList(Collection<Property<?>> properties,
+      List<SearchIndexFieldCalculator> calculators) {
+    List<Property<?>> resultProperties = new ArrayList<>();
+    separateCalculatedFields(properties, calculators, resultProperties);
+    properties.clear();
+    properties.addAll(resultProperties);
+  }
+
+  protected void separateCalculatedFields(Collection<Property<?>> currentProperties,
+      List<SearchIndexFieldCalculator> resultCalculatedFields,
+      List<Property<?>> resultProperties) {
+    Map<String, Property<?>> resultPropertiesMap = new LinkedHashMap<>();
+    EntityDefinition definition = getDefinition().definition;
+    for (Property<?> property : currentProperties) {
+      PathProcessor propertyPath = PathProcessor.of(property.getName());
+      SearchIndexMappingCalculatedProperty calculatedPropertyMapping =
+          getMapping().getCalculatedPropertyMapping(property.getName());
+      if (calculatedPropertyMapping != null) {
+        String prefix = propertyPath.beginning();
+        List<String> dependsOnProperties = calculatedPropertyMapping.dependsOnProperties;
+        for (String dependsOnPropertyName : dependsOnProperties) {
+          String dependsOnPropertyFullName = joinDot(prefix, dependsOnPropertyName);
+          Property<?> dependsOnProperty = definition.getProperty(dependsOnPropertyFullName);
+          resultPropertiesMap.put(dependsOnPropertyFullName, dependsOnProperty);
+        }
+        resultCalculatedFields.add(new SearchIndexFieldCalculator(calculatedPropertyMapping.name,
+            definition, calculatedPropertyMapping.complexProcessor, prefix));
+      } else {
+        resultPropertiesMap.put(property.getName(), property);
+      }
+    }
+
+    resultProperties.addAll(resultPropertiesMap.values());
   }
 
   private void setupExists(QueryInput queryInput, SearchEntityTableDataResult objectResult,
@@ -230,14 +330,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   private final SearchEntityTableDataResult constructResult() {
+    return constructResult(null);
+  }
+
+  private final SearchEntityTableDataResult constructResult(Collection<Property<?>> properties) {
     return new SearchEntityTableDataResult()
         .searchEntityDefinition(getDefinition())
-        .result(createEmptyTableData());
+        .result(createEmptyTableData(properties));
   }
 
   private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris,
-      Stream<ObjectNode> objectNodes) {
-    return readAllObjects(constructResult(), objectUris, objectNodes);
+      Stream<ObjectNode> objectNodes, Collection<Property<?>> properties) {
+    return readAllObjects(constructResult(properties), objectUris, objectNodes);
   }
 
 
@@ -245,7 +349,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   public void updateIndexWithData(List<SearchIndexObject> changeList) {
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
-      SearchEntityTableDataResult updateResult = constructResult();
+
+      Collection<Property<?>> ownedProperties = getDefinition().definition.allProperties().stream()
+          .filter(p -> !getMapping().isCalculatedProperty(p.getName()))
+          .collect(toList());
+      SearchEntityTableDataResult updateResult = constructResult(ownedProperties);
       objectMapping.readObjects(changeList.stream().map(u -> {
         if (u.getObjectNode() == null) {
           u.objectNode(objectApi.load(u.getObjectUri()));
@@ -286,6 +394,14 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return result;
   }
 
+  Object readValue(SearchIndexContext context, Map<String, ObjectNode> referenceObjects,
+      ObjectNode n, String columName,
+      Map<String, Object> defaultValues,
+      boolean useLength) {
+    return objectMapping.readValue(context, referenceObjects, n, columName, defaultValues,
+        useLength);
+  }
+
   /**
    * Produce the relevant object uris by default all the uris in the storage. But can be override
    *
@@ -299,22 +415,34 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> tableDataOfUris(Stream<URI> uris) {
-    SearchEntityTableDataResult entityResult = constructResult();
+    PropertySet allProperties = getDefinition().definition.allProperties();
+    List<SearchIndexFieldCalculator> calculatedFields = new ArrayList<>();
+    separateCalculatedFieldsInPropertyList(allProperties, calculatedFields);
+
+    SearchEntityTableDataResult entityResult = constructResult(allProperties);
     objectMapping.readObjects(uris.map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
         entityResult,
         Collections.emptyMap(),
         false);
+    processCalculators(entityResult.result, calculatedFields);
     return entityResult.result;
   }
 
   @Override
   public TableData<?> tableDataOfObjects(Stream<O> objects) {
-    SearchEntityTableDataResult entityResult = constructResult();
+    PropertySet allProperties = getDefinition().definition.allProperties();
+
+    List<SearchIndexFieldCalculator> calculatedFields = new ArrayList<>();
+    separateCalculatedFieldsInPropertyList(allProperties, calculatedFields);
+
+    SearchEntityTableDataResult entityResult = constructResult(allProperties);
     objectMapping.readObjects(
         objects.map(o -> new SearchIndexObject().objectNode(objectApi
             .create(StringConstant.EMPTY, o))),
         entityResult,
         Collections.emptyMap(), false);
+
+    processCalculators(entityResult.result, calculatedFields);
     return entityResult.result;
   }
 
@@ -400,6 +528,25 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return this;
   }
 
+  public SearchIndexImpl<O> reference(String referenceName,
+      String targetSearchIndexSchema,
+      String targetSearchIndexName,
+      String sourcePropertyName,
+      String targetPropertyName) {
+    objectMapping.reference(referenceName, targetSearchIndexSchema, targetSearchIndexName,
+        sourcePropertyName,
+        targetPropertyName);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapCalculated(String propertyName,
+      List<String> dependsOnProperties, Class<?> dataType,
+      Function<SearchIndexDataRowWrapper, Object> complexProcessor) {
+    objectMapping.mapCalculated(propertyName, dependsOnProperties, dataType,
+        complexProcessor);
+    return this;
+  }
+
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
     objectMapping.map(propertyName, null, -1, null, pathes);
     return this;
@@ -478,6 +625,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
       Comparator<Object> comparator,
+
       Function<ObjectNode, Object> complexProcessor) {
     objectMapping.mapComplex(propertyName, dataType, length, comparator, complexProcessor);
     return this;
@@ -528,8 +676,22 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return executeSearch(filterExpressions, orderByList, false, null, null);
   }
 
+  @Override
+  public TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields) {
+    return executeSearch(filterExpressions, orderByList, fields, false, null, null);
+  }
+
   private TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList, boolean readFromStorage,
+      Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
+
+    return executeSearch(filterExpressions, orderByList, Collections.emptyList(), readFromStorage,
+        objectUris, objectNodes);
+  }
+
+  private TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, List<String> fields, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
     filterExpressions = process(filterExpressions, filterExpressionListPreProcessors);
@@ -538,9 +700,17 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
                 filterExpressions, getDefinition(), getObjectMapping(), expressionByPropertyName);
-    CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition)
-        .selectAllProperties()
-        .where(queryExpression);
+    EntityDefinition entityDef = getDefinition().definition;
+    CrudRead<EntityDefinition> read = Crud.read(entityDef);
+    if (fields != null && !fields.isEmpty()) {
+      read.select(fields.stream()
+          .map(f -> entityDef.getProperty(f))
+          .filter(Objects::nonNull)
+          .collect(toList()));
+    } else {
+      read.select(entityDef.allProperties());
+    }
+    read.where(queryExpression);
     if (orderByList != null) {
       for (FilterExpressionOrderBy orderBy : orderByList) {
         read.order(orderBy.getOrder() == OrderEnum.DESC
@@ -565,9 +735,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> createEmptyTableData() {
+    return createEmptyTableData(null);
+  }
+
+  private TableData<?> createEmptyTableData(Collection<Property<?>> properties) {
     EntityDefinition entityDef = getDefinition().definition;
     TableData<EntityDefinition> tableData = new TableData<>(entityDef);
-    tableData.addColumns(entityDef.allProperties());
+    if (properties != null) {
+      properties.stream()
+          .forEach(tableData::addColumn);
+    } else {
+      tableData.addColumns(entityDef.allProperties());
+    }
     return tableData;
   }
 
@@ -620,10 +799,16 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return objectMapping.allFilterFields(localeSettingApi);
   }
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
+  @EventListener(ApplicationStartedEvent.class)
+  public void initDefinition() {
     initComparators();
     initObjectMapping();
+    objectMapping.initDefinition();
+  }
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void initReferences() {
+    objectMapping.initReferences();
   }
 
   public SearchIndexImpl<O> primaryKey(String propertyName) {

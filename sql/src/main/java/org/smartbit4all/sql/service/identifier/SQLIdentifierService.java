@@ -16,6 +16,7 @@ package org.smartbit4all.sql.service.identifier;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.smartbit4all.domain.service.identifier.CurrentIdentifier;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class SQLIdentifierService implements IdentifierService {
 
   protected JdbcTemplate jdbcTemplate;
   protected Supplier<NextIdentifier> nextIdentifier;
+  protected Supplier<CurrentIdentifier> currentIdentifier;
 
   /**
    * Creates a new instance backed by the Oracle based {@link SQLNextIdentifierOracle}.
@@ -33,7 +35,8 @@ public class SQLIdentifierService implements IdentifierService {
    */
   @Autowired
   public SQLIdentifierService(JdbcTemplate jdbcTemplate) {
-    this(jdbcTemplate, () -> new SQLNextIdentifierOracle(jdbcTemplate));
+    this(jdbcTemplate, () -> new SQLNextIdentifierOracle(jdbcTemplate),
+        () -> new SQLCurrentIdentifierOracle(jdbcTemplate));
   }
 
   /**
@@ -43,15 +46,23 @@ public class SQLIdentifierService implements IdentifierService {
    * @param nextIdentifier a {@code Supplier} to be used to acquire fresh {@link NextIdentifier}
    *        {@code SB4Function}s
    */
-  public SQLIdentifierService(JdbcTemplate jdbcTemplate, Supplier<NextIdentifier> nextIdentifier) {
+  public SQLIdentifierService(JdbcTemplate jdbcTemplate, Supplier<NextIdentifier> nextIdentifier,
+      Supplier<CurrentIdentifier> currentIdentifier) {
     super();
     this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate, "jdbcTemplate cannot be null!");
     this.nextIdentifier = Objects.requireNonNull(nextIdentifier, "nextIdentifier cannot be null!");
+    this.currentIdentifier =
+        Objects.requireNonNull(currentIdentifier, "currentIdentifier cannot be null!");
   }
 
   @Override
   public NextIdentifier next() {
     return nextIdentifier.get();
+  }
+
+  @Override
+  public CurrentIdentifier current() {
+    return currentIdentifier.get();
   }
 
 }

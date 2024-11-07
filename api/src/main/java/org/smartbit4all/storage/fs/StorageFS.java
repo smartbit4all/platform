@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -43,9 +46,9 @@ import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageObject.OperationMode;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
@@ -113,6 +116,9 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Autowired
   private BlobObjectStorageAccessApi storageAccessApi;
+
+  @Autowired
+  private StorageApi self;
 
   /**
    * @param rootFolder The root folder, in which the storage place the files.
@@ -389,9 +395,7 @@ public class StorageFS extends ObjectStorageImpl {
         // Write the data version file
         storageAccessApi.writeVersion(objectVersionFile, object.getUri(),
             binaryDataVersion,
-            object.definition()
-                .serialize(object.getMode() == OperationMode.AS_MAP ? object.getObjectAsMap()
-                    : object.getObject()));
+            object.serializeMapAware());
         // FileIO.writeMultipart(objectVersionFile,
         // binaryDataVersion,
         // object.definition()
@@ -487,7 +491,7 @@ public class StorageFS extends ObjectStorageImpl {
       binaryData = new BinaryData(EMPTY_BYTE_ARRAY);
     }
     FileIO.writeMultipart(objectDataFileTemp, binaryData,
-        object.serialize(SINGLEVERSION_MEMORYLIMIT));
+        object.serializeMapAware());
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
     try {
@@ -804,33 +808,6 @@ public class StorageFS extends ObjectStorageImpl {
     }
   }
 
-  private <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,
-      Map<String, Object> object,
-      Long versionDataSerialNo,
-      StorageLoadOption[] options) {
-    if (!StorageLoadOption.checkUriWithVersionOption(options)) {
-      // If no options specified the default behavior is to return the with the requested uri
-      // This can ensure that the uri will be the exact uri used for the load.
-      object.put("uri", uri);
-    } else {
-      Long uriVersion = getUriVersion(uri);
-      boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
-
-      URI uriToSet = null;
-      // TODO manage the path itself.
-      if (uriVersion == null && uriNeedsVersion) {
-        uriToSet = URI.create(uri.toString() + versionPostfix + versionDataSerialNo);
-      } else if (uriVersion != null && !uriNeedsVersion) {
-        String uriTxt = uri.toString();
-        uriToSet = URI.create(uriTxt.substring(0, uriTxt.lastIndexOf(versionPostfix)));
-      } else {
-        // (has and need) OR (has not and dont need)
-        uriToSet = uri;
-      }
-      object.put("uri", uriToSet);
-    }
-  }
-
   private final StorageObjectRelationData loadRelationData(File relationVersionFile) {
     if (relationVersionFile == null || !relationVersionFile.exists()) {
       return null;
@@ -862,7 +839,6 @@ public class StorageFS extends ObjectStorageImpl {
     BinaryData versionBinaryData = multipart.get(1);
 
     ObjectVersion objectVersion;
-    T object;
     Map<String, Object> objectAsMap;
     try {
       objectVersion = objectDefinitionApi.getDefaultSerializer()
@@ -886,22 +862,12 @@ public class StorageFS extends ObjectStorageImpl {
 
     File storageObjectDataFile =
         getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+
+    StorageObjectData objectData = readObjectData(storageObjectDataFile);
+    if (objectData == null) {
       return null;
     }
-
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject;
-    try {
-      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
-    } catch (IOException e) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-
-    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;
     }
@@ -940,22 +906,11 @@ public class StorageFS extends ObjectStorageImpl {
 
     File storageObjectDataFile =
         getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+    StorageObjectData objectData = readObjectData(storageObjectDataFile);
+    if (objectData == null) {
       return null;
     }
-
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject;
-    try {
-      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
-    } catch (IOException e) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-
-    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;
     }
@@ -990,6 +945,13 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    return new StoredSequenceStorageImpl(self,
+        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
+        name);
   }
 
 }

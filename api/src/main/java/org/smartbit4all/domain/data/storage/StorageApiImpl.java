@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.value.ValueUris;
@@ -245,4 +246,11 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   public final ObjectStorage getDefaultObjectStorage() {
     return defaultObjectStorage;
   }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    Storage storage = get(schema);
+    return storage.getSequence(schema, name);
+  }
+
 }

@@ -253,3 +253,68 @@ components:
           type: string
         props:
           $ref: '#/components/schemas/SampleProperties'
+
+    SampleEmployee:
+      description: |
+        An example Employee object containing and id, a name and a reference to a department.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        department:
+          type: string
+          format: uri
+    SampleDepartment:
+      description: |
+        An example Department object containing and id, a name and a reference to a company.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        name:
+          type: string
+        company:
+          type: string
+          format: uri
+    SampleCompany:
+      description: |
+        An example Company object containing and id and a name.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+          format: uri
+    SampleAddress:
+      description: |
+        An example Company object containing and id and a name.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+          format: uri
