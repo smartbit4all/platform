@@ -5,8 +5,10 @@ import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -49,7 +51,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @Import({PlatformApiConfig.class,
-    TestFSConfig.class, SecurityLocalTestConfig.class})
+    TestFSConfig.class, SecurityLocalTestConfig.class,
+    InvocationApiMdmConfig.class})
 @EnableTransactionManagement
 public class MDMApiTestConfig extends TestFSCleaner {
 
@@ -235,5 +238,9 @@ public class MDMApiTestConfig extends TestFSCleaner {
             ReferencePropertyKind.REFERENCE);
   }
 
+  @Bean
+  public InvocationExecutionApi invocationExecutionApiTest() {
+    return new InvocationExecutionApiTest();
+  }
 
 }

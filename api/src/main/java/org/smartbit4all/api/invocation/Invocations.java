@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
@@ -450,6 +452,13 @@ public class Invocations {
           .ifPresent(p -> p.setValue(value));
     }
     return request;
+  }
+
+  public static <T> URI uriOf(String interfaceClassName, String name) {
+    return URI
+        .create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
+            + interfaceClassName.replace(StringConstant.DOT, StringConstant.SLASH)
+            + StringConstant.SLASH + name);
   }
 
 }

@@ -74,10 +74,7 @@ public class ProviderApiInvocationHandler<T> {
   }
 
   public static <T> URI uriOf(Class<T> interfaceClass, String name) {
-    return URI
-        .create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
-            + interfaceClass.getName().replace(StringConstant.DOT, StringConstant.SLASH)
-            + StringConstant.SLASH + name);
+    return Invocations.uriOf(interfaceClass.getName(), name);
   }
 
   static final <T> ProviderApiInvocationHandler<T> providerOf(Class<T> interfaceClass, String name,

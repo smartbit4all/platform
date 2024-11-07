@@ -70,6 +70,11 @@ public class PlatformSecurityOption implements SecurityOption {
           .description("Platform method template editor")
           .subgroup(admin)
           .builtIn(true);
+  public static final SecurityGroup invocationApiAdmin =
+      SecurityGroup.of().title("Platform invocation api administrator")
+          .description("Platform invocation api administrator")
+          .subgroup(admin)
+          .builtIn(true);
   public static final SecurityGroup layoutDescriptorEditor =
       SecurityGroup.of().title("Platform layout descriptor editor")
           .description("Platform layout descriptor editor")

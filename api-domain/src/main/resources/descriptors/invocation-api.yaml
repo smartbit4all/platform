@@ -379,6 +379,14 @@ components:
             The  
           items:
             $ref: '#/components/schemas/EventSubscriptionData'
+        executionApi:
+          type: string
+          description: |
+            The name for the execution api to use. If it is empty then we try the normal remote call by the available runtime. 
+        serviceConnection:
+          type: string
+          description: |
+            The name of the service connection that can be used to execute the invocation by the execution API. 
     PublishedEventData:
       type: object
       description: |

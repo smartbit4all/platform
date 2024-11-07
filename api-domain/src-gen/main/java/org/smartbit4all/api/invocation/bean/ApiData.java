@@ -43,7 +43,9 @@ import javax.validation.Valid;
   ApiData.NAME,
   ApiData.METHODS,
   ApiData.PUBLISHED_EVENTS,
-  ApiData.EVENT_SUBSCRIPTIONS
+  ApiData.EVENT_SUBSCRIPTIONS,
+  ApiData.EXECUTION_API,
+  ApiData.SERVICE_CONNECTION
 })
 @JsonTypeName("ApiData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +67,12 @@ public class ApiData {
 
   public static final String EVENT_SUBSCRIPTIONS = "eventSubscriptions";
   private List<EventSubscriptionData> eventSubscriptions = new ArrayList<>();
+
+  public static final String EXECUTION_API = "executionApi";
+  private String executionApi;
+
+  public static final String SERVICE_CONNECTION = "serviceConnection";
+  private String serviceConnection;
 
   public ApiData() { 
   }
@@ -256,6 +264,60 @@ public class ApiData {
   }
 
 
+  public ApiData executionApi(String executionApi) {
+    
+    this.executionApi = executionApi;
+    return this;
+  }
+
+   /**
+   * The name for the execution api to use. If it is empty then we try the normal remote call by the available runtime.  
+   * @return executionApi
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name for the execution api to use. If it is empty then we try the normal remote call by the available runtime.  ")
+  @JsonProperty(EXECUTION_API)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getExecutionApi() {
+    return executionApi;
+  }
+
+
+  @JsonProperty(EXECUTION_API)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExecutionApi(String executionApi) {
+    this.executionApi = executionApi;
+  }
+
+
+  public ApiData serviceConnection(String serviceConnection) {
+    
+    this.serviceConnection = serviceConnection;
+    return this;
+  }
+
+   /**
+   * The name of the service connection that can be used to execute the invocation by the execution API.  
+   * @return serviceConnection
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the service connection that can be used to execute the invocation by the execution API.  ")
+  @JsonProperty(SERVICE_CONNECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getServiceConnection() {
+    return serviceConnection;
+  }
+
+
+  @JsonProperty(SERVICE_CONNECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setServiceConnection(String serviceConnection) {
+    this.serviceConnection = serviceConnection;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -270,12 +332,14 @@ public class ApiData {
         Objects.equals(this.name, apiData.name) &&
         Objects.equals(this.methods, apiData.methods) &&
         Objects.equals(this.publishedEvents, apiData.publishedEvents) &&
-        Objects.equals(this.eventSubscriptions, apiData.eventSubscriptions);
+        Objects.equals(this.eventSubscriptions, apiData.eventSubscriptions) &&
+        Objects.equals(this.executionApi, apiData.executionApi) &&
+        Objects.equals(this.serviceConnection, apiData.serviceConnection);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, interfaceName, name, methods, publishedEvents, eventSubscriptions);
+    return Objects.hash(uri, interfaceName, name, methods, publishedEvents, eventSubscriptions, executionApi, serviceConnection);
   }
 
   @Override
@@ -288,6 +352,8 @@ public class ApiData {
     sb.append("    methods: ").append(toIndentedString(methods)).append("\n");
     sb.append("    publishedEvents: ").append(toIndentedString(publishedEvents)).append("\n");
     sb.append("    eventSubscriptions: ").append(toIndentedString(eventSubscriptions)).append("\n");
+    sb.append("    executionApi: ").append(toIndentedString(executionApi)).append("\n");
+    sb.append("    serviceConnection: ").append(toIndentedString(serviceConnection)).append("\n");
     sb.append("}");
     return sb.toString();
   }
