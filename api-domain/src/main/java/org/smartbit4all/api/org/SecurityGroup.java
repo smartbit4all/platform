@@ -3,7 +3,10 @@ package org.smartbit4all.api.org;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The security group is an object representing a security group the user can be assigned to. The
@@ -11,10 +14,12 @@ import java.util.function.BiFunction;
  * instance of the {@link SecurityGroup} is identified by the fully qualified name of the variable
  * by default. We can set the name directly but it's not necessary. This object provides an api for
  * the developer to be able to check if the current user is assigned to the given group or not.
- * 
+ *
  * @author Peter Boros
  */
 public final class SecurityGroup {
+
+  private static final Logger log = LoggerFactory.getLogger(SecurityGroup.class);
 
   /**
    * The title of the given security group.
@@ -43,8 +48,9 @@ public final class SecurityGroup {
    */
   private List<SecurityGroup> subGroups = new ArrayList<>();
 
-  public static SecurityGroup of() {
-    return new SecurityGroup();
+  public static SecurityGroup of(String name) {
+    Objects.requireNonNull(name, "name must be specified");
+    return new SecurityGroup().name(name);
   }
 
   public SecurityGroup title(String title) {
@@ -75,13 +81,18 @@ public final class SecurityGroup {
     this.name = name;
   }
 
+  final SecurityGroup name(String name) {
+    this.name = name;
+    return this;
+  }
+
   public String getDescription() {
     return description;
   }
 
   /**
    * Checks if the given group is assigned to the current user.
-   * 
+   *
    * @return true if there is no api for accessing the user rights or if the group is not assigned
    *         to the user. Else we get false.
    */
@@ -91,12 +102,13 @@ public final class SecurityGroup {
 
   /**
    * Checks if the given group is assigned to the given user.
-   * 
+   *
    * @return true if there is no api for accessing the user rights or if the group is not assigned
    *         to the user. Else we get false.
    */
   public boolean check(URI userUri) {
     if (securityPredicate == null) {
+      log.warn("No securityPredicate when checking {}, default allow.", this.name);
       return true;
     }
     return securityPredicate.apply(this, userUri);
