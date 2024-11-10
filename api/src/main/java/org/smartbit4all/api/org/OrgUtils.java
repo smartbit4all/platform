@@ -75,7 +75,6 @@ public class OrgUtils {
     return sessionApi.getAuthentications().stream()
         .map(AccountInfo::getRoles)
         .flatMap(List::stream)
-        .anyMatch(
-            g -> securityGroupName.equals(g));
+        .anyMatch(securityGroupName::equals);
   }
 }
