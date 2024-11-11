@@ -18,8 +18,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(classes = {
     QuerySeparatedSchemaTestConfig.class,
-},
-                properties = "spring.main.allow-circular-references=true")
+})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class QuerySeparatedSchemaTests {

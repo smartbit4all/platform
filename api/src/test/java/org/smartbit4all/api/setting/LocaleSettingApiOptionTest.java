@@ -1,5 +1,6 @@
 package org.smartbit4all.api.setting;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,10 +9,8 @@ import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
 class LocaleSettingApiOptionTest {
 
   private static Locale hu;

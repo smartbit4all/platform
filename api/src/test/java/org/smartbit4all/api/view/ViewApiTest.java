@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -17,11 +19,8 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {ViewApiTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ViewApiTestConfig.class})
 class ViewApiTest {
 
   public static final String USER_CATEGORY = "USER_CATEGORY";

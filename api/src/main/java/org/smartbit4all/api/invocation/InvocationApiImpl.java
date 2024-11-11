@@ -84,6 +84,7 @@ public final class InvocationApiImpl implements InvocationApi {
   @Autowired
   private ObjectApi objectApi;
 
+  @Autowired
   private CollectionApi collectionApi;
 
   @Autowired

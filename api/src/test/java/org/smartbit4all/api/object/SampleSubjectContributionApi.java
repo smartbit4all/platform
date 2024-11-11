@@ -13,6 +13,7 @@ import org.smartbit4all.api.org.bean.Subject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class SampleSubjectContributionApi extends ContributionApiImpl
     implements SubjectContributionApi {

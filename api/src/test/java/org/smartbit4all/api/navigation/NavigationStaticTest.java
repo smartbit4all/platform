@@ -1,5 +1,7 @@
 package org.smartbit4all.api.navigation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +15,8 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = NavigationTestConfig.class,
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = NavigationTestConfig.class)
 class NavigationStaticTest {
 
   @Autowired

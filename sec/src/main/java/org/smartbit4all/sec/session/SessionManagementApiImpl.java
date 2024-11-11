@@ -36,7 +36,6 @@ import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.smartbit4all.sec.utils.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -79,7 +78,6 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   private ObjectMapper objectMapper;
 
   @Autowired(required = false)
-  @Lazy
   private SessionPublisherApi sessionPublisherApi;
 
   @Value("${session.timeout-min:60}")
@@ -98,7 +96,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   private List<BiConsumer<URI, String>> localeChangeListeners = new ArrayList<>();
   private List<BiConsumer<URI, URI>> userChangeListeners = new ArrayList<>();
 
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  private Supplier<Storage> storage = new Supplier<>() {
 
     private Storage storageInstance;
 

@@ -1,5 +1,13 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,17 +41,8 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {ApplyChangeTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
 
   public static final String MY_SCHEME = "myScheme";
@@ -1005,7 +1004,7 @@ class ApplyChangeTest {
             SampleStandaloneObject.PROPERTY_CONTAINER,
             SamplePropertyContainer.PROPS,
             SampleProperties.ETC))
-        .containsEntry("4", "tessera");
+                .containsEntry("4", "tessera");
 
     uri = objectApi.save(node);
     node = objectApi.loadLatest(uri);

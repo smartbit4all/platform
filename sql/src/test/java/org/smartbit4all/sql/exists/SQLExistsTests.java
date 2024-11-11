@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.exists;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,17 +33,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(
     classes = {
         ExistTestConfig.class,
     },
     properties = {
-        "platform.sql.temptable-autocreate.enabled=true",
-        "spring.main.allow-circular-references=true"
+        "platform.sql.temptable-autocreate.enabled=true"
     })
 @Sql({"/script/exists_schema.sql", "/script/exists_data_01.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,8 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {ApplyChangeTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class CompareApiTest {
 
   public static final String SCHEME = "compare";

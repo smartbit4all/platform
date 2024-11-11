@@ -8,8 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {
     InvocationTestConfig.class,
-},
-                properties = "spring.main.allow-circular-references=true")
+})
 class InvocationApiTest {
 
   @Autowired

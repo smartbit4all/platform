@@ -8,20 +8,19 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-                classes = {ContentAccessSrvRestTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+    classes = {ContentAccessSrvRestTestConfig.class})
 public class ContentAccessSrvRestTest {
-	
-	@Autowired
-	protected org.smartbit4all.api.contentaccess.ContentAccessApi contentAccessApi;
-	
+
+  @Autowired
+  protected org.smartbit4all.api.contentaccess.ContentAccessApi contentAccessApi;
+
   @LocalServerPort
   protected int port;
-  
+
   @Autowired
   protected TestRestTemplate restTemplate;
-  
+
   protected String basePath() {
-  	return "http://localhost:"+ port + "/";
+    return "http://localhost:" + port + "/";
   }
 }

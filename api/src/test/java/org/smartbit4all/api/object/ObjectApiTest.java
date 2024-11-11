@@ -71,8 +71,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SpringBootTest(classes = {ObjectApiTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ObjectApiTestConfig.class})
 class ObjectApiTest {
 
   public static final String USER_CATEGORY = "USER_CATEGORY";

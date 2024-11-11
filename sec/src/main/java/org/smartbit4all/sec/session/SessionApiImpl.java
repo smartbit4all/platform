@@ -38,6 +38,7 @@ public class SessionApiImpl implements SessionApi {
   private SessionManagementApi sessionManagementApi;
 
   @Autowired
+  @Lazy
   private OrgApi orgApi;
 
   @Autowired

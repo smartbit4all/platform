@@ -29,8 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
         PlatformApiConfig.class,
         SecurityEntityConfiguration.class,
         TestFSConfig.class
-    },
-    properties = "spring.main.allow-circular-references=true")
+    })
 public class TableDataSerializerTest {
 
   @TempDir

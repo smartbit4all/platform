@@ -14,25 +14,24 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(classes = {
     QueryExecutionTestConfig.class,
-},
-                properties = "spring.main.allow-circular-references=true")
+})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class QueryExecutionTests {
 
   @Autowired
   private AddressDef addressDef;
-  
+
   @Autowired
   private TicketDef ticketDef;
-  
+
   @Test
   public void twoQueriesFromDifferentDb() throws Exception {
     TableData<AddressDef> addresses = Crud.read(addressDef).selectAllProperties().listData();
     TableData<TicketDef> tickets = Crud.read(ticketDef).selectAllProperties().listData();
-    
+
     assertTrue(addresses.size() >= 11);
     assertTrue(tickets.size() >= 6);
   }
-  
+
 }

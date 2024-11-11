@@ -1,5 +1,7 @@
 package org.smartbit4all.api.contentaccess;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
@@ -14,11 +16,8 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {ContentAccessTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ContentAccessTestConfig.class})
 public class ContentAccessTest {
 
   @Autowired

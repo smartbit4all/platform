@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -17,10 +18,8 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {ObjectOperationTestConfig.class},
-                properties = "spring.main.allow-circular-references=true")
+@SpringBootTest(classes = {ObjectOperationTestConfig.class})
 class ObjectDeepCopyApiTest {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectDeepCopyApiTest.class);
@@ -37,7 +36,7 @@ class ObjectDeepCopyApiTest {
   /**
    * This is the OrgApi scheme where we save the settings for the notify.
    */
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  private Supplier<Storage> storage = new Supplier<>() {
 
     private Storage storageInstance;
 
