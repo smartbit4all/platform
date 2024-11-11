@@ -24,8 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
-
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
@@ -41,10 +39,10 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.springframework.context.annotation.Lazy;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -56,6 +54,8 @@ public class ObjectApiImpl implements ObjectApi {
   @Autowired
   private RetrievalApi retrievalApi;
 
+  @Autowired
+  @Lazy
   private ObjectApi self;
 
   @Autowired
@@ -63,11 +63,6 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Autowired
   private StorageApi storageApi;
-
-  @PostConstruct
-  void postConstruct() {
-    self = this;
-  }
 
   /**
    * The already initialized {@link ObjectCacheEntry}s in the application.
@@ -252,7 +247,7 @@ public class ObjectApiImpl implements ObjectApi {
     ObjectNode lastObject = loadLatest(uriWithoutVersion);
     long lastVersion = lastObject.getVersionNr();
 
-    return new Iterator<ObjectNode>() {
+    return new Iterator<>() {
 
       private long i = lastVersion + 1;
 

@@ -24,8 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {
     OrgApiTestConfig.class
-},
-                properties = "spring.main.allow-circular-references=true")
+})
 class OrgApiTest {
 
   @Autowired

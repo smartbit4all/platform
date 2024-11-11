@@ -88,7 +88,7 @@ public class TestApiImpl implements TestApi {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    if ((0 < thirdErrorCounter--) || rnd.nextBoolean()) {
+    if ((0 < thirdErrorCounter--) || rnd.nextInt(10) < 2) { // 50-50 to 20-80 for error
       throw new IllegalArgumentException("IllegalArgumentException");
     }
     String result = p + postfix;

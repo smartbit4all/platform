@@ -27,8 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {
     BinaryContentTestConfig.class
-},
-                properties = "spring.main.allow-circular-references=true")
+})
 public class BinaryContentTest {
 
   public static final String BINARYDATA_SCHEMA = "testFS";

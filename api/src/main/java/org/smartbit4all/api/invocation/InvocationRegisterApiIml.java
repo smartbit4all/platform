@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -61,8 +63,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -112,6 +112,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Autowired
   private ObjectApi objectApi;
 
+  @Autowired
+  @Lazy
   private InvocationRegisterApi self;
 
   /**
@@ -203,7 +205,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   /**
    * This is the OrgApi scheme where we save the settings for the notify.
    */
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  private Supplier<Storage> storage = new Supplier<>() {
 
     private Storage storageInstance;
 
@@ -219,7 +221,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   @EventListener(ApplicationStartedEvent.class)
   public void initRegistry() {
-    self = this;
     long startTime = System.currentTimeMillis();
 
     if (storage.get() == null) {
@@ -614,7 +615,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * Adds the given {@link ApiData} to the local in memory register. It can be the startup of this
    * runtime from the {@link #initRegistry()} call or it can be a {@link #refreshRegistry()} when
    * the available apis are read from the storage.
-   * 
+   *
    * @param apiData
    * @return
    */

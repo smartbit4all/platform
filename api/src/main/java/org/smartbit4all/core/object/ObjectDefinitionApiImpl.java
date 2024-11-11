@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -33,7 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toMap;
+import jakarta.validation.constraints.NotNull;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
 
@@ -134,6 +134,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   private StorageApi storageApi;
 
+  @Autowired
+  @Lazy
   private ObjectDefinitionApi self;
 
   private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -162,7 +164,6 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    self = this;
     initSerializers();
     initSummarySuppliers();
     defaultSerializer = serializersByName.get(defaultSerializerName);
@@ -403,7 +404,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
    * Some properties may define outgoing reference since they define the referred types and referred
    * properties. And on the other hand the outgoing references should be applied onto the properties
    * to contain this information.
-   * 
+   *
    * @param definitionData
    * @return
    */

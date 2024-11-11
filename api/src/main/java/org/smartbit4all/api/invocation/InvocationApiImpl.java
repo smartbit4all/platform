@@ -14,8 +14,6 @@ import java.util.UUID;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -44,6 +42,7 @@ import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import com.google.common.base.Strings;
 
 /**
@@ -59,6 +58,7 @@ public final class InvocationApiImpl implements InvocationApi {
   private static final Logger log = LoggerFactory.getLogger(InvocationApiImpl.class);
 
   @Autowired
+  @Lazy
   private InvocationRegisterApi invocationRegisterApi;
 
   @Autowired(required = false)
@@ -87,6 +87,7 @@ public final class InvocationApiImpl implements InvocationApi {
   private CollectionApi collectionApi;
 
   @Autowired
+  @Lazy
   private InvocationApi self;
 
   /**

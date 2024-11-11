@@ -21,8 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.gateway.SecurityGateways;
@@ -85,7 +83,7 @@ public class OrgApiStorageImpl implements OrgApi {
   @Autowired
   private ObjectApi objectApi;
 
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  private Supplier<Storage> storage = new Supplier<>() {
 
     private Storage storageInstance;
 
@@ -98,21 +96,17 @@ public class OrgApiStorageImpl implements OrgApi {
     }
   };
 
+  @Autowired
+  @Lazy
   private OrgApi self;
 
   @Autowired(required = false)
   private UserSessionApi userSessionApi;
 
   @Autowired(required = false)
-  @Lazy
   private SessionApi sessionApi;
 
   public OrgApiStorageImpl() {}
-
-  @PostConstruct
-  private void postConstruct() {
-    self = this;
-  }
 
   public OrgApiStorageImpl(StorageApi storageApi, List<SecurityOption> securityOptions)
       throws Exception {
