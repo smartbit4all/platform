@@ -16,6 +16,6 @@ dependencies {
     testFixturesImplementation project(':api')
     testFixturesImplementation project(':api-domain')
     testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testFixturesImplementation "org.assertj:assertj-core:3.16.1"
+    testFixturesImplementation "org.assertj:assertj-core:3.25.2"
 
 }
