@@ -4,7 +4,6 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
@@ -22,9 +21,10 @@ import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import io.jsonwebtoken.lang.Assert;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class SessionApiDelegateImpl implements SessionApiDelegate {
 

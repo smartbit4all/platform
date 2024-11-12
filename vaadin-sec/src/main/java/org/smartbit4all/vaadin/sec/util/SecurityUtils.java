@@ -1,12 +1,12 @@
 package org.smartbit4all.vaadin.sec.util;
 
 import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.vaadin.flow.server.HandlerHelper;
 import com.vaadin.flow.shared.ApplicationConstants;
+import jakarta.servlet.http.HttpServletRequest;
 
 // https://github.com/vaadin/flow/issues/4212
 public final class SecurityUtils {
