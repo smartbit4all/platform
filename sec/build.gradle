@@ -13,7 +13,6 @@ dependencies {
 	api 'org.springframework.security:spring-security-config'
 	api 'org.springframework.security:spring-security-web'
 	api 'org.springframework.session:spring-session-core'
-	api 'javax.servlet:javax.servlet-api:4.0.1'
 	api 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
  	testImplementation 'org.smartbit4all.platform:api'
