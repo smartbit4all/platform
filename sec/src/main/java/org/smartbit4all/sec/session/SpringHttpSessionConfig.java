@@ -10,7 +10,7 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 public class SpringHttpSessionConfig {
 
   @Bean
-  public SessionRepository sessionRepository() {
+  public SessionRepository<SpringSessionWrapper> sessionRepository() {
     return new SpringSessionStorageRepository();
   }
 

@@ -6,10 +6,12 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class SessionPublisherApiImpl implements SessionPublisherApi {
 
   @Autowired
+  @Lazy
   private InvocationApi invocationApi;
 
   @Override
