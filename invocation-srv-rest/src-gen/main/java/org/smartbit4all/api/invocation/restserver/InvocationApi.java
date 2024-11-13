@@ -33,6 +33,7 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or The api was not found. (status code 404)
      */
     @ApiOperation(
         tags = { "Invocation" },
@@ -42,7 +43,8 @@ public interface InvocationApi {
         response = InvocationParameter.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = InvocationParameter.class)
+        @ApiResponse(code = 200, message = "", response = InvocationParameter.class),
+        @ApiResponse(code = 404, message = "The api was not found.")
     })
     @RequestMapping(
         method = RequestMethod.POST,
@@ -54,6 +56,39 @@ public interface InvocationApi {
         @ApiParam(value = "", required = true) @Valid @RequestBody InvocationRequest invocationRequest
     ) throws Exception {
         return getDelegate().invokeApi(invocationRequest);
+    }
+
+
+    /**
+     * POST /invokeDownload
+     *
+     * @param invocationRequest  (required)
+     * @return  (status code 200)
+     *         or The api was not found. (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     */
+    @ApiOperation(
+        tags = { "Invocation" },
+        value = "",
+        nickname = "invokeDownload",
+        notes = "",
+        response = org.springframework.core.io.Resource.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = org.springframework.core.io.Resource.class),
+        @ApiResponse(code = 404, message = "The api was not found."),
+        @ApiResponse(code = 500, message = "Error occured while fetching the downloadable item")
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/invokeDownload",
+        produces = { "application/octet-stream" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<org.springframework.core.io.Resource> invokeDownload(
+        @ApiParam(value = "", required = true) @Valid @RequestBody InvocationRequest invocationRequest
+    ) throws Exception {
+        return getDelegate().invokeDownload(invocationRequest);
     }
 
 }

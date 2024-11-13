@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation.restclientgen;
 
 import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 
+import java.io.File;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -52,6 +53,7 @@ public class InvocationApi {
      * 
      * 
      * <p><b>200</b>
+     * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return InvocationParameter
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -64,6 +66,7 @@ public class InvocationApi {
      * 
      * 
      * <p><b>200</b>
+     * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return ResponseEntity&lt;InvocationParameter&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -95,5 +98,57 @@ public class InvocationApi {
 
         ParameterizedTypeReference<InvocationParameter> returnType = new ParameterizedTypeReference<InvocationParameter>() {};
         return apiClient.invokeAPI("/invokeApi", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+    }
+    /**
+     * 
+     * 
+     * <p><b>200</b>
+     * <p><b>404</b> - The api was not found.
+     * <p><b>500</b> - Error occured while fetching the downloadable item
+     * @param invocationRequest  (required)
+     * @return File
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public File invokeDownload(InvocationRequest invocationRequest) throws RestClientException {
+        return invokeDownloadWithHttpInfo(invocationRequest).getBody();
+    }
+
+    /**
+     * 
+     * 
+     * <p><b>200</b>
+     * <p><b>404</b> - The api was not found.
+     * <p><b>500</b> - Error occured while fetching the downloadable item
+     * @param invocationRequest  (required)
+     * @return ResponseEntity&lt;File&gt;
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public ResponseEntity<File> invokeDownloadWithHttpInfo(InvocationRequest invocationRequest) throws RestClientException {
+        Object postBody = invocationRequest;
+        
+        // verify the required parameter 'invocationRequest' is set
+        if (invocationRequest == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'invocationRequest' when calling invokeDownload");
+        }
+        
+
+        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders headerParams = new HttpHeaders();
+        final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+
+        final String[] localVarAccepts = { 
+            "application/octet-stream"
+         };
+        final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        final String[] contentTypes = { 
+            "application/json"
+         };
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(contentTypes);
+
+        String[] authNames = new String[] {  };
+
+        ParameterizedTypeReference<File> returnType = new ParameterizedTypeReference<File>() {};
+        return apiClient.invokeAPI("/invokeDownload", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
 }

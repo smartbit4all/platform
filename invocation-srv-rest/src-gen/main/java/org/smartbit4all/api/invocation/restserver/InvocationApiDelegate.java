@@ -29,6 +29,7 @@ public interface InvocationApiDelegate {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeApi
      */
     default ResponseEntity<InvocationParameter> invokeApi(InvocationRequest invocationRequest) throws Exception {
@@ -41,6 +42,20 @@ public interface InvocationApiDelegate {
                 }
             }
         });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /invokeDownload
+     *
+     * @param invocationRequest  (required)
+     * @return  (status code 200)
+     *         or The api was not found. (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     * @see InvocationApi#invokeDownload
+     */
+    default ResponseEntity<org.springframework.core.io.Resource> invokeDownload(InvocationRequest invocationRequest) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
