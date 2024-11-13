@@ -62,7 +62,6 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
 
         return new BinaryContentData()
             .fileName(filename)
-            .mimeType(mimeType)
             .size(Integer.toUnsignedLong(allBytes.length))
             .created(created)
             .updated(created)
