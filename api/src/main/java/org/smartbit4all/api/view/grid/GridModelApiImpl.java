@@ -213,7 +213,8 @@ public class GridModelApiImpl implements GridModelApi {
         && gridModel.getView().getDescriptor().getShowEditColumns() == null) {
       gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
     }
-    if (Boolean.TRUE.equals(gridModel.getView().getDescriptor().getIsExportable())) {
+    if (gridModel.getView() != null && gridModel.getView().getDescriptor() != null
+        && Boolean.TRUE.equals(gridModel.getView().getDescriptor().getIsExportable())) {
       setupExportGridAction(viewUuid, gridId);
     }
     gridModel.setViewUuid(viewUuid);
