@@ -490,3 +490,59 @@ components:
           type: array
           items:
             type: string
+
+    MDMDefinitionChange:
+      description: |
+        The change entry is created and updated for every MDMDefinition as scoped object. Th URI is computed from the uri of
+        the definition. At every change of the given definition this object is updated with the current change. The chenge denotes
+        the modified entries and contains the list of changes. There can be objects added to the entry when we point the version uri
+        of the newly added object. If an existing object was modifed then we get the previous versuion uri and the new one also. In case
+        of inactivation we get the uri to remove. The change entry history itself shows the modification history of the given definition.
+        The definition should be instructed to produce this change history.
+      type: object
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+        entries:
+          description: |
+            The entries with their changes.
+          type: array
+          items:
+            $ref: "#/components/schemas/MDMEntryChange"
+    MDMEntryChange:
+      description: |
+        The entry change contains all the changeed items of an MDMEntry.
+      type: object
+      required: [entry, items]
+      properties:
+        entry:
+          description: The name of the entry
+          type: string
+        items:
+          description: The chnages items of the entry.
+          type: array
+          items:
+            $ref: "#/components/schemas/MDMEntryChangeItem"
+    MDMEntryChangeItem:
+      description: |
+        The change item defines the operation and refers to the related versioned uris of the chnaged object.
+      type: object
+      required: [operation]
+      properties:
+        operation:
+          description: The operation of the change. Could be NEW, MODIFIED, INACTIVATED, REACTIVATED.
+          $ref: "#/components/schemas/MDMEntryChangeOperation"
+        uri:
+          description: |
+            The uri refers to the actual state of the new or changed object. It is versioned object uri points to
+            the exact version of the object.
+          type: string
+          format: uri
+        prevUri:
+          description: The uri refers to the previous state of the new or changed object. Set only in case of change.
+          type: string
+          format: uri
+    MDMEntryChangeOperation:
+      enum: [NEW, MODIFIED, INACTIVATED, REACTIVATED]

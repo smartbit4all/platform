@@ -595,6 +595,12 @@ components:
             Additional parameters for tree. 
           type: object
           additionalProperties: true
+        vars:
+          description: |
+            Variables for tree handling code. It will be cleared (won't be saved) 
+            at the end of request. 
+          type: object
+          additionalProperties: true
     UiTreeNode:
       type: object
       required: [classes, children, actions]

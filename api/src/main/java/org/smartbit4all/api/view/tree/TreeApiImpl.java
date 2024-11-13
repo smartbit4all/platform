@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -380,8 +381,10 @@ public class TreeApiImpl implements TreeApi {
     if (treeState == null) {
       return null;
     }
+    treeState.setVars(new HashMap<>());
     treeState.setViewUuid(viewUuid);
     T result = treeCall.apply(treeState);
+    treeState.setVars(null);
     viewApi.setWidgetModelInView(UiTreeState.class, viewUuid, treeId, treeState);
     return result;
   }
