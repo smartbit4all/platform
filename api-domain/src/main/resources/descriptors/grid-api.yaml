@@ -430,6 +430,10 @@ components:
           type: string
         highlightClass:
           type: string
+        isExportable:
+          type: boolean  
+        exportMimeType:
+          type: string  
     GridSelectionMode:
       type: string
       enum:

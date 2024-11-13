@@ -36,13 +36,22 @@ import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.ViewEventApi;
 import org.smartbit4all.api.view.WidgetCallbackApi;
+import org.smartbit4all.api.view.bean.IconPosition;
+import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewEventHandler;
+import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
@@ -110,6 +119,12 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private WidgetCallbackApi widgetCallbackApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
+
+  @Autowired
+  private GridExportApi gridExportApi;
 
   @Override
   public GridView createGridView(Class<?> clazz, List<String> columns, String... columnPrefix) {
@@ -197,6 +212,9 @@ public class GridModelApiImpl implements GridModelApi {
     if (gridModel.getView() != null && gridModel.getView().getDescriptor() != null
         && gridModel.getView().getDescriptor().getShowEditColumns() == null) {
       gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
+    }
+    if (Boolean.TRUE.equals(gridModel.getView().getDescriptor().getIsExportable())) {
+      setupExportGridAction(viewUuid, gridId);
     }
     gridModel.setViewUuid(viewUuid);
     gridModel.setIdentifier(gridId);
@@ -1058,6 +1076,24 @@ public class GridModelApiImpl implements GridModelApi {
       return null;
     }
     return viewApi.getWidgetServerModelFromView(GridServerModel.class, viewUuid, gridId);
+  }
+
+  private void setupExportGridAction(UUID viewUuid, String gridId) {
+    View view = viewApi.getView(viewUuid);
+    UiActions.add(view, new UiAction().code(GridExportApi.EXPORT_GRID)
+        .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
+        .descriptor(new UiActionDescriptor()
+            .type(UiActionButtonType.FLAT).icon("file-export")
+            .iconPosition(IconPosition.PRE)
+            .color(UiActions.Color.PRIMARY)
+            .title(localeSettingApi.get("grid.export.button.title"))));
+
+    view.addEventHandlersItem(new ViewEventHandler()
+        .viewEventType(ViewEventTypeEnum.INSTEAD)
+        .addPathItem(ViewEventApi.ACTION)
+        .addPathItem(GridExportApi.EXPORT_GRID)
+        .invocationRequest(invocationApi.builder(GridExportApi.class)
+            .build(api -> api.exportGridAction(viewUuid, null, gridId))));
   }
 
 }
