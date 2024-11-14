@@ -15,6 +15,7 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel.TypeEnum;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -213,10 +214,24 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       pageTitle = filterModel.getLabel();
       filterModel.label(null);
       filters = filterModel.getWorkplaceList();
-      FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
-          filterExpressionBuilderApi.createFilterBuilder(filterModel, null);
-      filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
-          filterExpressionBuilderUiModel);
+
+      if (ctx.pageConfig.getFilterConfig() != null) {
+
+        FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+            filterExpressionBuilderApi.createFilterBuilder(filterModel,
+                ctx.pageConfig.getFilterConfig());
+        filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
+            filterExpressionBuilderUiModel);
+        filterExpressionBuilderUiModel.setType(TypeEnum.COMPLEX);
+
+      } else {
+        FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+            filterExpressionBuilderApi.createFilterBuilder(filterModel,
+                null);
+        filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
+        filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
+            filterExpressionBuilderUiModel);
+      }
     }
 
     if (!Boolean.TRUE.equals(ctx.pageConfig.getSkipInitialQuery())) {

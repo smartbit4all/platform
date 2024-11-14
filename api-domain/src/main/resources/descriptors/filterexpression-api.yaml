@@ -362,6 +362,9 @@ components:
             This object describes the possible filter fields and also the included filters fields. It can be used in the FilterExpressionApi
             to transform a FilterExpressionList for the search execution.
           $ref: '#/components/schemas/FilterExpressionBuilderModel'
+        filterConfig:
+          description: |
+          $ref: '#/components/schemas/FilterExpressionBuilderApiConfig'
         searchIndexSchema:
           description: The schema name of the search index.
           type: string

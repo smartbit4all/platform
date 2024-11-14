@@ -216,8 +216,14 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     FilterExpressionField field = params.get(UiActions.MODEL, FilterExpressionField.class);
 
     if (field.getWidgetType() == null) {
-      model.setSelectedField(null);
-      model.setSelectedFieldEditor(null);
+      if (field.getExpressionData().getCurrentOperation() == FilterExpressionOperation.EXPRESSION) {
+        model.setSelectedFieldEditor(new FilterExpressionFieldEditor()
+            .possibleActions(Arrays.asList(REMOVE_FILTER_EXPRESSION_ACTION)));
+        model.setSelectedField(field);
+      } else {
+        model.setSelectedField(null);
+        model.setSelectedFieldEditor(null);
+      }
     } else {
 
       model.setSelectedField(field);
