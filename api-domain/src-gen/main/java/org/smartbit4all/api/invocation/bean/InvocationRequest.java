@@ -42,6 +42,8 @@ import jakarta.validation.Valid;
   InvocationRequest.SCRIPT_KIND,
   InvocationRequest.SCRIPT_BODY,
   InvocationRequest.PARAMETERS,
+  InvocationRequest.RETURN_TYPE_CLASS,
+  InvocationRequest.RETURN_INNER_TYPE_CLASS,
   InvocationRequest.SESSION_URI
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -63,6 +65,12 @@ public class InvocationRequest {
 
   public static final String PARAMETERS = "parameters";
   private List<@Valid InvocationParameter> parameters = new ArrayList<>();
+
+  public static final String RETURN_TYPE_CLASS = "returnTypeClass";
+  private String returnTypeClass;
+
+  public static final String RETURN_INNER_TYPE_CLASS = "returnInnerTypeClass";
+  private String returnInnerTypeClass;
 
   public static final String SESSION_URI = "sessionUri";
   private URI sessionUri;
@@ -244,6 +252,60 @@ public class InvocationRequest {
     this.parameters = parameters;
   }
 
+  public InvocationRequest returnTypeClass(String returnTypeClass) {
+    
+    this.returnTypeClass = returnTypeClass;
+    return this;
+  }
+
+  /**
+   * The fully qualified type class name of the return type.
+   * @return returnTypeClass
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified type class name of the return type.")
+  @JsonProperty(RETURN_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getReturnTypeClass() {
+    return returnTypeClass;
+  }
+
+
+  @JsonProperty(RETURN_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReturnTypeClass(String returnTypeClass) {
+    this.returnTypeClass = returnTypeClass;
+  }
+
+  public InvocationRequest returnInnerTypeClass(String returnInnerTypeClass) {
+    
+    this.returnInnerTypeClass = returnInnerTypeClass;
+    return this;
+  }
+
+  /**
+   * If the type of the parameter is List or Map container then the inner type is saved into this property.
+   * @return returnInnerTypeClass
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
+  @JsonProperty(RETURN_INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getReturnInnerTypeClass() {
+    return returnInnerTypeClass;
+  }
+
+
+  @JsonProperty(RETURN_INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReturnInnerTypeClass(String returnInnerTypeClass) {
+    this.returnInnerTypeClass = returnInnerTypeClass;
+  }
+
   public InvocationRequest sessionUri(URI sessionUri) {
     
     this.sessionUri = sessionUri;
@@ -287,12 +349,14 @@ public class InvocationRequest {
         Objects.equals(this.scriptKind, invocationRequest.scriptKind) &&
         Objects.equals(this.scriptBody, invocationRequest.scriptBody) &&
         Objects.equals(this.parameters, invocationRequest.parameters) &&
+        Objects.equals(this.returnTypeClass, invocationRequest.returnTypeClass) &&
+        Objects.equals(this.returnInnerTypeClass, invocationRequest.returnInnerTypeClass) &&
         Objects.equals(this.sessionUri, invocationRequest.sessionUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, sessionUri);
+    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, returnTypeClass, returnInnerTypeClass, sessionUri);
   }
 
   @Override
@@ -305,6 +369,8 @@ public class InvocationRequest {
     sb.append("    scriptKind: ").append(toIndentedString(scriptKind)).append("\n");
     sb.append("    scriptBody: ").append(toIndentedString(scriptBody)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    returnTypeClass: ").append(toIndentedString(returnTypeClass)).append("\n");
+    sb.append("    returnInnerTypeClass: ").append(toIndentedString(returnInnerTypeClass)).append("\n");
     sb.append("    sessionUri: ").append(toIndentedString(sessionUri)).append("\n");
     sb.append("}");
     return sb.toString();

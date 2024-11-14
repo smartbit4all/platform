@@ -219,6 +219,9 @@ public class SubjectSelectorPageApiImpl extends PageApiImpl<SubjectSelectorPageM
       GridModels.hideColumns(gridModel, subjectTypeDescriptor.getParentIdentifierPropertyName());
       gridModel.getView().getDescriptor().setShowEditColumns(false);
     }
+    if (selectionConfig.getPageSize() != null) {
+      gridModel.pageSize(selectionConfig.getPageSize());
+    }
     gridModelApi.initGridInView(viewUuid, SUBJECT_GRID_ID, gridModel);
     if (isTree) {
       gridModelApi.setTreePropertyNames(viewUuid, SUBJECT_GRID_ID,

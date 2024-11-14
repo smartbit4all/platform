@@ -43,6 +43,7 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or The api was not found. (status code 404)
      */
     @Operation(
         operationId = "invokeApi",
@@ -51,7 +52,8 @@ public interface InvocationApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
-            })
+            }),
+            @ApiResponse(responseCode = "404", description = "The api was not found.")
         }
     )
     @RequestMapping(
@@ -65,6 +67,40 @@ public interface InvocationApi {
         @Parameter(name = "InvocationRequest", description = "", required = true) @Valid @RequestBody InvocationRequest invocationRequest
     ) throws Exception {
         return getDelegate().invokeApi(invocationRequest);
+    }
+
+
+    /**
+     * POST /invokeDownload : 
+     *
+     * @param invocationRequest  (required)
+     * @return  (status code 200)
+     *         or The api was not found. (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     */
+    @Operation(
+        operationId = "invokeDownload",
+        summary = "",
+        tags = { "Invocation" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "", content = {
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "The api was not found."),
+            @ApiResponse(responseCode = "500", description = "Error occured while fetching the downloadable item")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/invokeDownload",
+        produces = { "application/octet-stream" },
+        consumes = { "application/json" }
+    )
+    
+    default ResponseEntity<org.springframework.core.io.Resource> invokeDownload(
+        @Parameter(name = "InvocationRequest", description = "", required = true) @Valid @RequestBody InvocationRequest invocationRequest
+    ) throws Exception {
+        return getDelegate().invokeDownload(invocationRequest);
     }
 
 }

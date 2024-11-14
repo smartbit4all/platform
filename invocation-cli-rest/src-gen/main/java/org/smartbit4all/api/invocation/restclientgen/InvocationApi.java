@@ -3,6 +3,7 @@ package org.smartbit4all.api.invocation.restclientgen;
 import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 import org.smartbit4all.api.invocation.restclientgen.util.BaseApi;
 
+import java.io.File;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -42,6 +43,7 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return InvocationParameter
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -54,6 +56,7 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return ResponseEntity&lt;InvocationParameter&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -86,6 +89,58 @@ public class InvocationApi extends BaseApi {
         ParameterizedTypeReference<InvocationParameter> localReturnType = new ParameterizedTypeReference<InvocationParameter>() {};
         return apiClient.invokeAPI("/invokeApi", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
     }
+    /**
+     * 
+     * 
+     * <p><b>200</b> - 
+     * <p><b>404</b> - The api was not found.
+     * <p><b>500</b> - Error occured while fetching the downloadable item
+     * @param invocationRequest  (required)
+     * @return File
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public org.springframework.core.io.Resource invokeDownload(InvocationRequest invocationRequest) throws RestClientException {
+        return invokeDownloadWithHttpInfo(invocationRequest).getBody();
+    }
+
+    /**
+     * 
+     * 
+     * <p><b>200</b> - 
+     * <p><b>404</b> - The api was not found.
+     * <p><b>500</b> - Error occured while fetching the downloadable item
+     * @param invocationRequest  (required)
+     * @return ResponseEntity&lt;File&gt;
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public ResponseEntity<org.springframework.core.io.Resource> invokeDownloadWithHttpInfo(InvocationRequest invocationRequest) throws RestClientException {
+        Object localVarPostBody = invocationRequest;
+        
+        // verify the required parameter 'invocationRequest' is set
+        if (invocationRequest == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'invocationRequest' when calling invokeDownload");
+        }
+        
+
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
+
+        final String[] localVarAccepts = { 
+            "application/octet-stream"
+         };
+        final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        final String[] localVarContentTypes = { 
+            "application/json"
+         };
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] {  };
+
+        ParameterizedTypeReference<org.springframework.core.io.Resource> localReturnType = new ParameterizedTypeReference<org.springframework.core.io.Resource>() {};
+        return apiClient.invokeAPI("/invokeDownload", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
+    }
 
     @Override
     public <T> ResponseEntity<T> invokeAPI(String url, HttpMethod method, Object request, ParameterizedTypeReference<T> returnType) throws RestClientException {
@@ -99,7 +154,7 @@ public class InvocationApi extends BaseApi {
         final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         final String[] localVarAccepts = { 
-            "application/json"
+            "application/octet-stream"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
         final String[] localVarContentTypes = { 

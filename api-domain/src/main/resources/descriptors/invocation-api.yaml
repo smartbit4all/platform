@@ -28,6 +28,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvocationParameter'
+        '404':
+          description: 'The api was not found.'
+  /invokeDownload:
+    post:
+      tags:
+      - Invocation
+      summary: ''
+      operationId: 'invokeDownload'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvocationRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: 'The api was not found.'
+        '500':
+          description: 'Error occured while fetching the downloadable item'
 components:
   schemas:
     InvocationRequestDefinition:
@@ -115,6 +141,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationParameter'
+        returnTypeClass:
+          type: string
+          description: The fully qualified type class name of the return type.
+        returnInnerTypeClass:
+          type: string
+          description: If the type of the parameter is List or Map container then the inner type is saved into this property.
         sessionUri:
           type: string
           format: uri

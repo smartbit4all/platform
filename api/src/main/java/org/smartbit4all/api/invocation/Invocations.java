@@ -338,6 +338,19 @@ public class Invocations {
     }
   }
 
+  /**
+   * Converts the parameter to its original type
+   *
+   * @param objectMapper
+   * @param parameters
+   */
+  public static void resolveParams(ObjectMapper objectMapper,
+      List<InvocationParameter> parameters) {
+    for (InvocationParameter param : parameters) {
+      resolveParam(objectMapper, param);
+    }
+  }
+
   public static class ListWrapper implements InvocationHandler {
 
     private List<?> list;

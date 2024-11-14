@@ -55,6 +55,10 @@ import com.google.common.base.Strings;
  */
 public final class InvocationApiImpl implements InvocationApi {
 
+  public static final String INVOKE_API = "/invokeApi";
+
+  public static final String INVOKE_DOWNLOAD = "/invokeDownload";
+
   private static final Logger log = LoggerFactory.getLogger(InvocationApiImpl.class);
 
   @Autowired
@@ -179,7 +183,7 @@ public final class InvocationApiImpl implements InvocationApi {
     int serverPort = applicationRuntime.getServerPort();
 
     return new ServiceConnection().endpoint(
-        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + "/invokeApi")
+        (baseUrl != null ? baseUrl : "http://" + ipAddress + ":" + serverPort) + INVOKE_API)
         .authToken(getSessionToken());
   }
 
