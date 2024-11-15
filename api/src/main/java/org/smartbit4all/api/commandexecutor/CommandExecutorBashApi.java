@@ -2,6 +2,7 @@ package org.smartbit4all.api.commandexecutor;
 
 import java.io.IOException;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.core.io.utility.FileIO;
 
 public class CommandExecutorBashApi implements CommandExecutorApi {
 
@@ -15,11 +16,13 @@ public class CommandExecutorBashApi implements CommandExecutorApi {
     processBuilder.command().add("-c");
     processBuilder.command().add(script);
     Process process = processBuilder.start();
-    return new String(process.getInputStream().readAllBytes());
+    byte[] byteArray = FileIO.readInputStreamToByteArray(process.getInputStream());
+    return new String(byteArray);
   }
 
   public String executeBashScript(BinaryData scriptFile) throws IOException {
-    return executeBashScript(new String(scriptFile.inputStream().readAllBytes()));
+    byte[] byteArray = FileIO.readInputStreamToByteArray(scriptFile.inputStream());
+    return executeBashScript(new String(byteArray));
   }
 
 }
