@@ -15,7 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.AccessControlApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.bean.ClipboardData;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.DownloadedFile;
@@ -38,6 +41,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
 public class ViewApiImpl implements ViewApi {
@@ -54,6 +58,12 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private AccessControlApi accessControlApi;
+
+  @Autowired(required = false)
+  private SessionApi sessionApi;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -433,7 +443,22 @@ public class ViewApiImpl implements ViewApi {
         .startServerRequest(new ServerRequestTrack().type(ServerRequestType.SHOW_SMARTLINK)
             .viewUuid(linkNode.getValue(UUID.class, SmartLinkData.VIEW, View.UUID))
             .viewName(linkNode.getValueAsString(SmartLinkData.VIEW, View.VIEW_NAME)));
-    UUID uuid = showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
+
+    UUID uuid;
+    if (!ObjectUtils.isEmpty(linkNode.getValue(URI.class, SmartLinkData.ACL))
+        && sessionApi != null
+        && !accessControlApi.isSubjectOfAcl(
+            linkNode.getValue(URI.class, SmartLinkData.ACL),
+            sessionApi.getUserUri(),
+            SmartLinkApi.ACL_SMART_LINK_ACCESS_PERMISSION,
+            SmartLinkApi.ACL_SMART_LINK_ACCESS_PERMISSION)) {
+
+      uuid = showView(new View()
+          .viewName(PlatformViewNames.NO_PERRMISSION_PAGE_NAME));
+
+    } else {
+      uuid = showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
+    }
     viewContextService.finishServerRequest();
     return uuid;
   }

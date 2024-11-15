@@ -11,6 +11,8 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.bff.api.acl.AclEditingPageApi;
 import org.smartbit4all.bff.api.acl.AclEditingPageApiImpl;
+import org.smartbit4all.bff.api.acl.NoPermissionPageApi;
+import org.smartbit4all.bff.api.acl.NoPermissionPageApiImpl;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApi;
 import org.smartbit4all.bff.api.acl.SubjectSelectorPageApiImpl;
 import org.smartbit4all.bff.api.acl.UserSelectorPageApi;
@@ -134,6 +136,11 @@ public class PlatformBffApiConfig {
   @Bean
   public AclEditingPageApi aclEditingPageApi() {
     return new AclEditingPageApiImpl();
+  }
+
+  @Bean
+  public NoPermissionPageApi noPermissionPageApi() {
+    return new NoPermissionPageApiImpl();
   }
 
   @Bean

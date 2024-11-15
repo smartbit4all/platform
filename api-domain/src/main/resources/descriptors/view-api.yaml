@@ -1225,7 +1225,10 @@ components:
           $ref: '#/components/schemas/View'
         url:
           type: string
-
+        acl:
+          description: If the user who clicked the link, is not part of the acl, an error page will open.
+          type: string
+          format: uri
     # UiAction descriptors
     UiActionDescriptor:
       type: object

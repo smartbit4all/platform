@@ -20,5 +20,6 @@ public class PlatformViewNames {
   public static final String LAYOUT_DESRIPTOR_DIALOG = "LayoutDescriptorDialog";
   public static final String OBJECT_DESCRIPTOR_PAGE = "ObjectDescriptorPage";
   public static final String OBJECT_PROPERTY_DESCRIPTOR_PAGE = "ObjectPropertyDescriptorPage";
+  public static final String NO_PERRMISSION_PAGE_NAME = "noPermissionPageName";
 
 }

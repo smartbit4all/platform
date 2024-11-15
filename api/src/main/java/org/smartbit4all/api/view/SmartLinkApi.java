@@ -33,6 +33,12 @@ public interface SmartLinkApi {
   String PARAM_OPENED_FROM_SMART_LINK = "p-opened-from-smartlink";
 
   /**
+   * ACL permission required to open the view via a smart link. If the user has this permission,
+   * they can access the view, otherwise, a "no permission" page is displayed.
+   */
+  String ACL_SMART_LINK_ACCESS_PERMISSION = "aclSmartLinkAccessPermission";
+
+  /**
    * Publishes the view in a {@link SmartLinkData} and returns it's URI.
    * 
    * <p>
@@ -43,6 +49,19 @@ public interface SmartLinkApi {
    * @param view
    */
   URI publishView(String channel, View view);
+
+  /**
+   * Publishes the view in a {@link SmartLinkData}, sets the acl and returns it's URI.
+   * 
+   * <p>
+   * The published {@link View} shall carry the value {@link Boolean#TRUE} under the
+   * {@link View#PARAMETERS} named {@link #PARAM_OPENED_FROM_SMART_LINK}.
+   *
+   * @param channel
+   * @param view
+   * @param aclUri
+   */
+  URI publishView(String channel, View view, URI aclUri);
 
   /**
    * Finds the SmartLinkData in the channel, identified by it's UUID, and returns it as an
