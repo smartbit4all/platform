@@ -8,9 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
-import org.smartbit4all.api.mimetype.MimeTypeApi;
-import org.smartbit4all.api.session.SessionApi;
-import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +17,13 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
 
   @Autowired
   private ObjectApi objectApi;
-  @Autowired(required = false)
-  private SessionApi sessionApi;
-  @Autowired
-  private MimeTypeApi mimeTypeApi;
 
   @Override
   public String getCliName() {
     return "ffmpeg";
   }
 
-  public BinaryContentData convert(BinaryContentData inputContentData, String toExtension,
-      String schema)
+  public BinaryData convert(BinaryContentData inputContentData, String toExtension)
       throws IOException, InterruptedException {
     ProcessBuilder processBuilder = getProcessBuilder();
     List<String> command = processBuilder.command();
@@ -58,21 +50,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     if (!waitFor) {
       return null;
     }
-
-    BinaryData outputData = BinaryData.of(process.getInputStream());
-    UserActivityLog userActivityLog = sessionApi.createActivityLog();
-    String mimeType = mimeTypeApi.getMimeType(outputFileName);
-
-    return new BinaryContentData()
-        .fileName(outputFileName)
-        .mimeType(mimeType)
-        .size(outputData.length())
-        .created(userActivityLog)
-        .updated(userActivityLog)
-        .extension(toExtension)
-        .contentHash(outputData.hashIfPresent())
-        .dataUri(objectApi.saveAsNew(schema, new BinaryDataObject(outputData)));
-
+    return BinaryData.of(process.getInputStream());
   }
 
 }
