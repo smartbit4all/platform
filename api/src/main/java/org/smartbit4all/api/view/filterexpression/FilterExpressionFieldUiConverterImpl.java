@@ -28,24 +28,26 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
   @Override
   public SmartLayoutDefinition convertToSmartLayoutDefiniton(FilterExpressionField field) {
     SmartLayoutDefinition layoutDefinition = new SmartLayoutDefinition();
+    if (field.getWidgetType() != null) {
 
-    if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE) || field
-        .getExpressionData().getCurrentOperation().equals(FilterExpressionOperation.BETWEEN)) {
-      layoutDefinition.widgets(convertRangeFilter(field));
-    } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT)
-        || field.getWidgetType().equals(FilterExpressionFieldWidgetType.RADIO_BUTTON)) {
-      layoutDefinition.widgets(convertSelectFilter(field));
-    } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT_MULTIPLE)) {
-      layoutDefinition.widgets(convertSelectMultipleFilter(field));
-    } else {
-      layoutDefinition.addWidgetsItem(
-          new SmartWidgetDefinition()
-              .key(EXPRESSION_DATA_OPERAND2)
-              .type(getLayoutTypeFromField(field))
-              .label(field.getLabel())
-              .placeholder(field.getLabel()));
+      if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE) || field
+          .getExpressionData().getCurrentOperation().equals(FilterExpressionOperation.BETWEEN)) {
+        layoutDefinition.widgets(convertRangeFilter(field));
+      } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT)
+          || field.getWidgetType().equals(FilterExpressionFieldWidgetType.RADIO_BUTTON)) {
+        layoutDefinition.widgets(convertSelectFilter(field));
+      } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT_MULTIPLE)) {
+        layoutDefinition.widgets(convertSelectMultipleFilter(field));
+      } else {
+        layoutDefinition.addWidgetsItem(
+            new SmartWidgetDefinition()
+                .key(EXPRESSION_DATA_OPERAND2)
+                .type(getLayoutTypeFromField(field))
+                .label(field.getLabel())
+                .placeholder(field.getLabel()));
+      }
+      layoutDefinition.addWidgetsItem(getPossibleOperations(field));
     }
-    layoutDefinition.addWidgetsItem(getPossibleOperations(field));
     return layoutDefinition;
   }
 
