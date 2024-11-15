@@ -1,5 +1,6 @@
 package org.smartbit4all.core.io.utility;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -643,6 +644,19 @@ public class FileIO {
     }
   }
 
+  public static final byte[] readInputStreamToByteArray(InputStream inputStream)
+      throws IOException {
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    byte[] data = new byte[1024];
+    int bytesRead;
+
+    while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+      buffer.write(data, 0, bytesRead);
+    }
+    inputStream.close();
+
+    return buffer.toByteArray();
+  }
 
 
 }
