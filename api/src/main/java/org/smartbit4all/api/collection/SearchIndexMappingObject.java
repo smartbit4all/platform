@@ -53,6 +53,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -63,6 +64,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   private String logicalSchema;
 
   private String name;
+
+  private String tableName;
 
   /**
    * The name of the primary key property that must be unique in the search index. Not necessarily
@@ -301,6 +304,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     detail.init(ctx, entityManager, objectApi, extensionStrategy, comparatorsByClass);
     detail.setLogicalSchema(logicalSchema);
     detail.setName(getName() + StringConstant.UNDERLINE + propertyName);
+    detail.setTableName(getTableName() + StringConstant.UNDERLINE + propertyName);
     mappingsByPropertyName.put(propertyName,
         detail);
     return detail;
@@ -341,7 +345,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     builder = EntityDefinitionBuilder.of(ctx)
         .name(getName())
-        .tableName(getName())
+        .tableName(getTableName())
         .domain(getLogicalSchema());
 
     SearchEntityDefinition result = new SearchEntityDefinition();
@@ -879,6 +883,20 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    */
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getTableName() {
+    // tableName, if specified, otherwise name
+    return StringUtils.hasText(tableName) ? tableName : name;
+  }
+
+  /**
+   * Use with caution, only when creating a SearchIndex based on another!
+   *
+   * @param tableName
+   */
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
   }
 
   public SearchIndexMappingObject reference(String referenceName,
