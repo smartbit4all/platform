@@ -18,6 +18,7 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.UserSessionApiLocal;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +33,9 @@ class OrgApiTest {
 
   @Autowired
   private OrgApi orgApi;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   @Autowired
   private UserSessionApiLocal userSessionApi;
@@ -251,7 +255,13 @@ class OrgApiTest {
     Group testGroup = createTestGroup();
     URI testGroupUri = orgApi.saveGroup(testGroup);
 
-    orgApi.addUserToGroup(testUserUri, testGroupUri);
+    testGroup = orgApi.getGroup(testGroupUri);
+    testGroup.setTitle("title");
+    URI updatedGroupUri = orgApi.updateGroup(testGroup);
+    assertTrue(objectApi.equalsIgnoreVersion(testGroupUri, updatedGroupUri));
+    orgApi.addUserToGroup(testUserUri, updatedGroupUri);
+
+    // orgApi.updateGroup(orgApi)
 
     boolean inGroup = isUserInGroup(testUser, testGroup);
     assertTrue(inGroup);

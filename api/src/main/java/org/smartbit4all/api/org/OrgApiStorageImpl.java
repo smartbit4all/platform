@@ -257,6 +257,7 @@ public class OrgApiStorageImpl implements OrgApi {
     if (securityOptions != null) {
       groupByNameCache.invalidateAll();
       usersOfGroupCache.invalidateAll();
+      directGroupsOfUserCache.invalidateAll();
       Map<SecurityGroup, Group> analizedGroups = new HashMap<>();
       for (SecurityOption securityOption : securityOptions) {
         analizedGroups.putAll(analyzeSecurityOptions(securityOption));
@@ -371,10 +372,11 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public List<User> getUsersOfGroup(URI groupUri) {
+    URI uri = objectApi.getLatestUri(groupUri);
     try {
       return new ArrayList<>(usersOfGroupCache.get(
-          groupUri,
-          () -> getUsersOfGroups(Arrays.asList(groupUri))));
+          uri,
+          () -> getUsersOfGroups(Arrays.asList(uri))));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the users of group.", e);
       return Collections.emptyList();
@@ -383,12 +385,13 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public List<User> getUsersOfGroupAndParentGroups(URI groupUri) {
+    URI uri = objectApi.getLatestUri(groupUri);
     try {
       return new ArrayList<>(usersOfGroupAndParentGroupsCache.get(
-          groupUri,
+          uri,
           () -> {
-            List<URI> groupUris = getAllParentGroups(groupUri);
-            groupUris.add(groupUri);
+            List<URI> groupUris = getAllParentGroups(uri);
+            groupUris.add(uri);
             return getUsersOfGroups(groupUris);
           }));
     } catch (ExecutionException e) {
@@ -399,13 +402,16 @@ public class OrgApiStorageImpl implements OrgApi {
 
   private List<User> getUsersOfGroups(List<URI> groupUris) {
     Set<URI> users = new HashSet<>();
+    List<URI> latestGroupUris = groupUris.stream()
+        .map(objectApi::getLatestUri)
+        .collect(toList());
 
     UsersOfGroupCollection collection =
         readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
     List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
     for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
 
-      if (groupUris.contains(usersOfGroup.getGroupUri())) {
+      if (latestGroupUris.contains(objectApi.getLatestUri(usersOfGroup.getGroupUri()))) {
         users.addAll(usersOfGroup.getUsers());
       }
     }
@@ -424,32 +430,37 @@ public class OrgApiStorageImpl implements OrgApi {
 
   protected List<Group> getGroupsOfUser(URI userUri, Cache<URI, List<Group>> cache,
       boolean directGroupsOnly) {
+    URI uri = objectApi.getLatestUri(userUri);
     try {
-      return new ArrayList<>(cache.get(userUri, new Callable<List<Group>>() {
+      return new ArrayList<>(
+          cache.get(uri, new Callable<List<Group>>() {
 
-        @Override
-        public List<Group> call() throws Exception {
-          Set<Group> groups = new HashSet<>();
-          GroupsOfUserCollection collection =
-              readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
-          List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
+            @Override
+            public List<Group> call() throws Exception {
+              Set<Group> groups = new HashSet<>();
+              GroupsOfUserCollection collection =
+                  readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE,
+                      GroupsOfUserCollection.class);
+              List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
 
-          for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
+              for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
 
-            if (groupsOfUser.getUserUri().equals(userUri)) {
-              List<Group> directGroups = storage.get().read(groupsOfUser.getGroups(), Group.class);
-              for (Group group : directGroups) {
-                groups.add(group);
-                if (!directGroupsOnly) {
-                  groups.addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+                if (objectApi.equalsIgnoreVersion(groupsOfUser.getUserUri(), userUri)) {
+                  List<Group> directGroups =
+                      storage.get().read(groupsOfUser.getGroups(), Group.class);
+                  for (Group group : directGroups) {
+                    groups.add(group);
+                    if (!directGroupsOnly) {
+                      groups
+                          .addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+                    }
+                  }
                 }
-              }
-            }
 
-          }
-          return new ArrayList<>(groups);
-        }
-      }));
+              }
+              return new ArrayList<>(groups);
+            }
+          }));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the groups of user.", e);
       return Collections.emptyList();
@@ -563,7 +574,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
     List<UsersOfGroup> usersOfGroupList = usersOfGroupCollection.getUsersOfGroupCollection();
     UsersOfGroup usersOfGroup = usersOfGroupList.stream()
-        .filter(u -> u.getGroupUri().equals(groupUri))
+        .filter(u -> objectApi.equalsIgnoreVersion(u.getGroupUri(), groupUri))
         .findFirst()
         .orElse(null);
 
@@ -576,7 +587,8 @@ public class OrgApiStorageImpl implements OrgApi {
           .addUsersItem(userUri);
       usersOfGroupCollection.addUsersOfGroupCollectionItem(usersOfGroup);
       anyChange = true;
-    } else if (!usersOfGroup.getUsers().contains(userUri)) {
+    } else if (usersOfGroup.getUsers().stream()
+        .noneMatch(uri -> objectApi.equalsIgnoreVersion(uri, userUri))) {
       // user wasn't in group's list, update and save entry
       usersOfGroup.addUsersItem(userUri);
       anyChange = true;
@@ -601,7 +613,7 @@ public class OrgApiStorageImpl implements OrgApi {
     GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionSO.getObject();
     List<GroupsOfUser> groupsOfUserList = groupsOfUserCollection.getGroupsOfUserCollection();
     GroupsOfUser groupsOfUser = groupsOfUserList.stream()
-        .filter(u -> u.getUserUri().equals(userUri))
+        .filter(u -> objectApi.equalsIgnoreVersion(u.getUserUri(), userUri))
         .findFirst()
         .orElse(null);
 
@@ -614,7 +626,8 @@ public class OrgApiStorageImpl implements OrgApi {
           .addGroupsItem(groupUri);
       groupsOfUserCollection.addGroupsOfUserCollectionItem(groupsOfUser);
       anyChange = true;
-    } else if (!groupsOfUser.getGroups().contains(groupUri)) {
+    } else if (groupsOfUser.getGroups().stream()
+        .noneMatch(uri -> objectApi.equalsIgnoreVersion(uri, groupUri))) {
       // group wasn't in user's list, update and save entry
       groupsOfUser.addGroupsItem(groupUri);
       anyChange = true;
@@ -794,26 +807,43 @@ public class OrgApiStorageImpl implements OrgApi {
         loadSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
     GroupsOfUserCollection object = groupsOfUserReference.getObject();
     List<GroupsOfUser> groupsOfUserCollection = object.getGroupsOfUserCollection();
+    boolean saveGroupsOfUser = false;
     for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
-      if (groupsOfUser.getUserUri().equals(userUri)) {
-        groupsOfUser.getGroups().remove(groupUri);
+      if (objectApi.equalsIgnoreVersion(groupsOfUser.getUserUri(), userUri)) {
+        boolean anyChange = groupsOfUser.getGroups()
+            .removeIf(uri -> objectApi.equalsIgnoreVersion(uri, groupUri));
+        if (anyChange) {
+          saveGroupsOfUser = true;
+        }
       }
     }
-    storage.get().save(groupsOfUserReference);
+    if (saveGroupsOfUser) {
+      storage.get().save(groupsOfUserReference);
+    }
 
     StorageObject<UsersOfGroupCollection> usersOfGroupReference =
         loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
     UsersOfGroupCollection usersOfGroupObject = usersOfGroupReference.getObject();
 
     List<UsersOfGroup> usersOfGroupCollection = usersOfGroupObject.getUsersOfGroupCollection();
+    boolean saveUsersOfGroup = false;
     for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
-      if (usersOfGroup.getGroupUri().equals(groupUri)) {
-        usersOfGroup.getUsers().remove(userUri);
+      if (objectApi.equalsIgnoreVersion(usersOfGroup.getGroupUri(), groupUri)) {
+        boolean anyChange = usersOfGroup.getUsers()
+            .removeIf(uri -> objectApi.equalsIgnoreVersion(uri, userUri));
+        if (anyChange) {
+          saveUsersOfGroup = true;
+        }
       }
     }
-    storage.get().save(usersOfGroupReference);
 
-    invalidateCache();
+    if (saveUsersOfGroup) {
+      storage.get().save(usersOfGroupReference);
+    }
+
+    if (saveGroupsOfUser || saveUsersOfGroup) {
+      invalidateCache();
+    }
 
   }
 
