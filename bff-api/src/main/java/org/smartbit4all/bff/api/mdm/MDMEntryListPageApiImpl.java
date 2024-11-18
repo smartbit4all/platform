@@ -834,22 +834,28 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     } else {
       String entryName = getEntryName(context, objectNode);
       Object initialEditorModel = editorView.getParameters().get(ViewContexts.INITIAL_MODEL);
-      Map<String, Object> initalEditorModelAsMap = initialEditorModel instanceof Map
-          ? (Map<String, Object>) initialEditorModel
-          : objectApi.getDefaultSerializer().toMap(initialEditorModel);
-      Map<String, Object> editorModelAsMap = editorView.getModel() instanceof Map
-          ? (Map<String, Object>) editorView.getModel()
-          : objectApi.getDefaultSerializer().toMap(editorView.getModel());
+      if (initialEditorModel == null) {
+        log.warn("cannot fire action performed on save [{}] type entry, initialEditorModel is null",
+            context.getEntryApi().getName());
+      } else {
+        Map<String, Object> initalEditorModelAsMap = initialEditorModel instanceof Map
+            ? (Map<String, Object>) initialEditorModel
+            : objectApi.getDefaultSerializer().toMap(initialEditorModel);
+        Map<String, Object> editorModelAsMap = editorView.getModel() instanceof Map
+            ? (Map<String, Object>) editorView.getModel()
+            : objectApi.getDefaultSerializer().toMap(editorView.getModel());
 
-      editorModelAsMap.put(MDMEntryApi.Props.CREATED,
-          initalEditorModelAsMap.get(MDMEntryApi.Props.CREATED));
-      editorModelAsMap.put(MDMEntryApi.Props.UPDATED,
-          initalEditorModelAsMap.get(MDMEntryApi.Props.UPDATED));
-      editorView.setModel(editorModelAsMap);
+        editorModelAsMap.put(MDMEntryApi.Props.CREATED,
+            initalEditorModelAsMap.get(MDMEntryApi.Props.CREATED));
+        editorModelAsMap.put(MDMEntryApi.Props.UPDATED,
+            initalEditorModelAsMap.get(MDMEntryApi.Props.UPDATED));
+        editorView.setModel(editorModelAsMap);
 
-      viewPublisherApi.fireActionPerformed(editorView, request,
-          context.modificationApi != null ? context.modificationApi.getModification().getId() : "",
-          entryName);
+        viewPublisherApi.fireActionPerformed(editorView, request,
+            context.modificationApi != null ? context.modificationApi.getModification().getId()
+                : "",
+            entryName);
+      }
     }
 
     refreshGrid(context);
