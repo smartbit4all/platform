@@ -80,6 +80,8 @@ public class SQLCreateExecution<E extends EntityDefinition> {
       SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
+    this.schema = schema;
+    this.sqlDBParameter = sqlDBParameter;
     this.objectApi = objectApi;
   }
 
