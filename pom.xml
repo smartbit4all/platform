@@ -40,6 +40,7 @@
         <module>ui-api</module>
         <module>ui-api-srv-rest</module>
         <module>ui-common</module>
+        <module>sql</module>
     </modules>
 
     <scm>
