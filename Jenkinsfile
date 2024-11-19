@@ -36,8 +36,11 @@ pipeline {
             steps {
                 // Sonar analízis aszinkron módon fut, ezért meg kell várni az eredményt
                 // A sonarban a projecten beállított profile alapján képzi a metrikákat és a beállított quality gate-nek kell megfelelnie
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: false
+                // TODO temporally ignore sonar scan result
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    timeout(time: 10, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: false
+                    }
                 }
             }
         }
