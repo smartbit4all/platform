@@ -2,6 +2,7 @@ HELP.md
 .gradle
 build/
 target/
+.flattened-pom.xml
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
