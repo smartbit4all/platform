@@ -12,6 +12,11 @@ public interface UserSubscriptionListPageApi extends SearchPageApi {
 
   String REVOKE = "ROW_REVOKE";
 
+  String MODIFY = "ROW_MODIFY";
+
   @WidgetActionHandler(REVOKE)
   void revoke(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
+
+  @WidgetActionHandler(MODIFY)
+  void modify(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
 }

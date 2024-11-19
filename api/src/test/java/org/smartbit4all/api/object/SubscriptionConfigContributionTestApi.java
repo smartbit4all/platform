@@ -49,4 +49,9 @@ public class SubscriptionConfigContributionTestApi implements SubscriptionConfig
     return false;
   }
 
+  @Override
+  public boolean supportsModify(String config) {
+    return false;
+  }
+
 }

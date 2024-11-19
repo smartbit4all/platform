@@ -107,6 +107,14 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
         GridModels.getValueFromGridRow(row,
             SubscriptionConfigApi.SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED));
 
+    Boolean modifySupported = objectApi.asType(Boolean.class,
+        GridModels.getValueFromGridRow(row,
+            SubscriptionConfigApi.SUBSCRIPTION_OPERATION_MODIFY_SUPPORTED));
+
+    if (Boolean.TRUE.equals(modifySupported)) {
+      row.addActionsItem(new UiAction().code(MODIFY));
+    }
+
     if (Boolean.TRUE.equals(revokeSupported)) {
       row.addActionsItem(new UiAction().code(REVOKE));
     }
@@ -116,6 +124,11 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
   @Override
   public void revoke(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request) {
     // TODO
+  }
+
+  @Override
+  public void modify(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request) {
+    // override
   }
 
 }
