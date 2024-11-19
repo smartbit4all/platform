@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withMaven(maven: "${maven}") {
                     withSonarQubeEnv('SonarQube') {
-                        sh "mvn -Drevision=${version} -Dsonar.branch.name=${env.BRANCH_NAME} --no-transfer-progress sonar:sonar"
+                        sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} --no-transfer-progress sonar:sonar"
                     }
                 }
             }
