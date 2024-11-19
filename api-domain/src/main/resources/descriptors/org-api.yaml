@@ -452,6 +452,10 @@ components:
           description: |
             If needed, a type can specified for this ALCSubject's operation.
           type: string
+        params:
+          description: Operation related parameters.
+          type: object
+          additionalProperties: true
     ACLSubjectOperations:
       type: object
       description: |
