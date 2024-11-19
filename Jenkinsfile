@@ -19,7 +19,7 @@ pipeline {
         stage('Build & Unit test') {
             steps {
                 withMaven(maven: "${maven}") {
-                    sh "mvn -Drevision=${version} --no-transfer-progress clean install"
+                    sh "mvn --no-transfer-progress clean install"
                 }
             }
         }
