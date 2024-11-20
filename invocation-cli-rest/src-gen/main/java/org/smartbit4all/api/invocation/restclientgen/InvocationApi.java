@@ -142,35 +142,10 @@ public class InvocationApi extends BaseApi {
         ParameterizedTypeReference<org.springframework.core.io.Resource> localReturnType = new ParameterizedTypeReference<org.springframework.core.io.Resource>() {};
         return apiClient.invokeAPI("/invokeDownload", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
     }
-
-    @Override
-    public <T> ResponseEntity<T> invokeAPI(String url, HttpMethod method, Object request, ParameterizedTypeReference<T> returnType) throws RestClientException {
-        String localVarPath = url.replace(apiClient.getBasePath(), "");
-        Object localVarPostBody = request;
-
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
-        final HttpHeaders localVarHeaderParams = new HttpHeaders();
-        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
-        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
-
-        final String[] localVarAccepts = { 
-            "application/octet-stream"
-         };
-        final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { 
-            "application/json"
-         };
-        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-        String[] localVarAuthNames = new String[] {  };
-
-        return apiClient.invokeAPI(localVarPath, method, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, returnType);
-    }
     /**
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. 
-     * <p><b>200</b>
+     * <p><b>200</b> - 
      * <p><b>404</b> - The api was not found.
      * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param uuid  (required)
@@ -179,14 +154,14 @@ public class InvocationApi extends BaseApi {
      * @return File
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public File invokeUploadDownloadMultiple(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+    public org.springframework.core.io.Resource invokeUploadDownloadMultiple(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
         return invokeUploadDownloadMultipleWithHttpInfo(uuid, invocationRequest, contents).getBody();
     }
 
     /**
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. 
-     * <p><b>200</b>
+     * <p><b>200</b> - 
      * <p><b>404</b> - The api was not found.
      * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param uuid  (required)
@@ -195,8 +170,8 @@ public class InvocationApi extends BaseApi {
      * @return ResponseEntity&lt;File&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<File> invokeUploadDownloadMultipleWithHttpInfo(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
-        Object postBody = null;
+    public ResponseEntity<org.springframework.core.io.Resource> invokeUploadDownloadMultipleWithHttpInfo(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+        Object localVarPostBody = null;
         
         // verify the required parameter 'uuid' is set
         if (uuid == null) {
@@ -207,34 +182,34 @@ public class InvocationApi extends BaseApi {
         final Map<String, Object> uriVariables = new HashMap<String, Object>();
         uriVariables.put("uuid", uuid);
 
-        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
-        final HttpHeaders headerParams = new HttpHeaders();
-        final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
-        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         if (invocationRequest != null)
-            formParams.add("invocationRequest", invocationRequest);
+            localVarFormParams.add("invocationRequest", invocationRequest);
         if (contents != null)
-            formParams.addAll("contents", contents.stream().collect(Collectors.toList()));
+            localVarFormParams.addAll("contents", contents.stream().collect(Collectors.toList()));
 
         final String[] localVarAccepts = { 
             "application/octet-stream"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] contentTypes = { 
+        final String[] localVarContentTypes = { 
             "multipart/form-data"
          };
-        final MediaType localVarContentType = apiClient.selectHeaderContentType(contentTypes);
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] authNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {  };
 
-        ParameterizedTypeReference<File> returnType = new ParameterizedTypeReference<File>() {};
-        return apiClient.invokeAPI("/invokeUploadDownloadMultiple", HttpMethod.POST, uriVariables, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+        ParameterizedTypeReference<org.springframework.core.io.Resource> localReturnType = new ParameterizedTypeReference<org.springframework.core.io.Resource>() {};
+        return apiClient.invokeAPI("/invokeUploadDownloadMultiple", HttpMethod.POST, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
     }
     /**
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
-     * <p><b>200</b>
+     * <p><b>200</b> - 
      * <p><b>404</b> - The api was not found.
      * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
@@ -249,7 +224,7 @@ public class InvocationApi extends BaseApi {
     /**
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
-     * <p><b>200</b>
+     * <p><b>200</b> - 
      * <p><b>404</b> - The api was not found.
      * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
@@ -258,7 +233,7 @@ public class InvocationApi extends BaseApi {
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
     public ResponseEntity<InvocationParameter> invokeUploadMultipleWithHttpInfo(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
-        Object postBody = null;
+        Object localVarPostBody = null;
         
         // verify the required parameter 'uuid' is set
         if (uuid == null) {
@@ -269,28 +244,53 @@ public class InvocationApi extends BaseApi {
         final Map<String, Object> uriVariables = new HashMap<String, Object>();
         uriVariables.put("uuid", uuid);
 
-        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
-        final HttpHeaders headerParams = new HttpHeaders();
-        final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
-        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         if (invocationRequest != null)
-            formParams.add("invocationRequest", invocationRequest);
+            localVarFormParams.add("invocationRequest", invocationRequest);
         if (contents != null)
-            formParams.addAll("contents", contents.stream().collect(Collectors.toList()));
+            localVarFormParams.addAll("contents", contents.stream().collect(Collectors.toList()));
 
         final String[] localVarAccepts = { 
             "application/json"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] contentTypes = { 
+        final String[] localVarContentTypes = { 
             "multipart/form-data"
          };
-        final MediaType localVarContentType = apiClient.selectHeaderContentType(contentTypes);
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] authNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {  };
 
-        ParameterizedTypeReference<InvocationParameter> returnType = new ParameterizedTypeReference<InvocationParameter>() {};
-        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, uriVariables, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+        ParameterizedTypeReference<InvocationParameter> localReturnType = new ParameterizedTypeReference<InvocationParameter>() {};
+        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
+    }
+
+    @Override
+    public <T> ResponseEntity<T> invokeAPI(String url, HttpMethod method, Object request, ParameterizedTypeReference<T> returnType) throws RestClientException {
+        String localVarPath = url.replace(apiClient.getBasePath(), "");
+        Object localVarPostBody = request;
+
+        final Map<String, Object> uriVariables = new HashMap<String, Object>();
+        final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders localVarHeaderParams = new HttpHeaders();
+        final MultiValueMap<String, String> localVarCookieParams = new LinkedMultiValueMap<String, String>();
+        final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
+
+        final String[] localVarAccepts = { 
+            "application/json"
+         };
+        final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        final String[] localVarContentTypes = { 
+            "multipart/form-data"
+         };
+        final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] {  };
+
+        return apiClient.invokeAPI(localVarPath, method, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, returnType);
     }
 }

@@ -7,6 +7,7 @@ package org.smartbit4all.api.invocation.restserver;
 
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import java.util.UUID;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -115,28 +116,29 @@ public interface InvocationApi {
      *         or The api was not found. (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
      */
-    @ApiOperation(
+    @Operation(
+        operationId = "invokeUploadDownloadMultiple",
+        description = "Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. ",
         tags = { "Invocation" },
-        value = "",
-        nickname = "invokeUploadDownloadMultiple",
-        notes = "Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. ",
-        response = org.springframework.core.io.Resource.class
+        responses = {
+            @ApiResponse(responseCode = "200", description = "", content = {
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "The api was not found."),
+            @ApiResponse(responseCode = "500", description = "Error occured while fetching the downloadable item")
+        }
     )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = org.springframework.core.io.Resource.class),
-        @ApiResponse(code = 404, message = "The api was not found."),
-        @ApiResponse(code = 500, message = "Error occured while fetching the downloadable item")
-    })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/invokeUploadDownloadMultiple",
         produces = { "application/octet-stream" },
         consumes = { "multipart/form-data" }
     )
+    
     default ResponseEntity<org.springframework.core.io.Resource> invokeUploadDownloadMultiple(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.") @Valid @RequestPart(value = "invocationRequest", required = false) String invocationRequest,
-        @ApiParam(value = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
+        @Parameter(name = "uuid", description = "", required = true, in = ParameterIn.PATH) @PathVariable("uuid") UUID uuid,
+        @Parameter(name = "invocationRequest", description = "Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.") @Valid @RequestParam(value = "invocationRequest", required = false) String invocationRequest,
+        @Parameter(name = "contents", description = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
     ) throws Exception {
         return getDelegate().invokeUploadDownloadMultiple(uuid, invocationRequest, contents);
     }
@@ -152,27 +154,28 @@ public interface InvocationApi {
      * @return  (status code 200)
      *         or The api was not found. (status code 404)
      */
-    @ApiOperation(
+    @Operation(
+        operationId = "invokeUploadMultiple",
+        description = "Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. ",
         tags = { "Invocation" },
-        value = "",
-        nickname = "invokeUploadMultiple",
-        notes = "Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. ",
-        response = InvocationParameter.class
+        responses = {
+            @ApiResponse(responseCode = "200", description = "", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "The api was not found.")
+        }
     )
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "", response = InvocationParameter.class),
-        @ApiResponse(code = 404, message = "The api was not found.")
-    })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/invokeUploadMultiple",
         produces = { "application/json" },
         consumes = { "multipart/form-data" }
     )
+    
     default ResponseEntity<InvocationParameter> invokeUploadMultiple(
-        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.") @Valid @RequestPart(value = "invocationRequest", required = false) String invocationRequest,
-        @ApiParam(value = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
+        @Parameter(name = "uuid", description = "", required = true, in = ParameterIn.PATH) @PathVariable("uuid") UUID uuid,
+        @Parameter(name = "invocationRequest", description = "Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.") @Valid @RequestParam(value = "invocationRequest", required = false) String invocationRequest,
+        @Parameter(name = "contents", description = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
     ) throws Exception {
         return getDelegate().invokeUploadMultiple(uuid, invocationRequest, contents);
     }

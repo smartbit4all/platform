@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -51,7 +50,7 @@ public class ACLOperation {
   private String type;
 
   public static final String PARAMS = "params";
-  private Map<String, Object> params = null;
+  private Map<String, Object> params = new HashMap<>();
 
   public ACLOperation() {
   }
@@ -152,12 +151,13 @@ public class ACLOperation {
     return this;
   }
 
-   /**
+  /**
    * Operation related parameters.
    * @return params
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Operation related parameters.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Operation related parameters.")
   @JsonProperty(PARAMS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -171,7 +171,6 @@ public class ACLOperation {
   public void setParams(Map<String, Object> params) {
     this.params = params;
   }
-
 
   @Override
   public boolean equals(Object o) {

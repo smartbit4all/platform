@@ -177,13 +177,14 @@ public class SmartLinkData {
     return this;
   }
 
-   /**
+  /**
    * If the user who clicked the link, is not part of the acl, an error page will open.
    * @return acl
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If the user who clicked the link, is not part of the acl, an error page will open.")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the user who clicked the link, is not part of the acl, an error page will open.")
   @JsonProperty(ACL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -197,7 +198,6 @@ public class SmartLinkData {
   public void setAcl(URI acl) {
     this.acl = acl;
   }
-
 
   @Override
   public boolean equals(Object o) {

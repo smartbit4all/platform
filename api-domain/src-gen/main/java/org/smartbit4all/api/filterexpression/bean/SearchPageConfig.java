@@ -141,7 +141,6 @@ public class SearchPageConfig {
     this.uri = uri;
   }
 
-
   public SearchPageConfig pageTitle(String pageTitle) {
     
     this.pageTitle = pageTitle;
@@ -168,7 +167,6 @@ public class SearchPageConfig {
   public void setPageTitle(String pageTitle) {
     this.pageTitle = pageTitle;
   }
-
 
   public SearchPageConfig filterModel(FilterExpressionBuilderModel filterModel) {
     
@@ -198,20 +196,20 @@ public class SearchPageConfig {
     this.filterModel = filterModel;
   }
 
-
   public SearchPageConfig filterConfig(FilterExpressionBuilderApiConfig filterConfig) {
     
     this.filterConfig = filterConfig;
     return this;
   }
 
-   /**
+  /**
    * Get filterConfig
    * @return filterConfig
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -225,7 +223,6 @@ public class SearchPageConfig {
   public void setFilterConfig(FilterExpressionBuilderApiConfig filterConfig) {
     this.filterConfig = filterConfig;
   }
-
 
   public SearchPageConfig searchIndexSchema(String searchIndexSchema) {
     
