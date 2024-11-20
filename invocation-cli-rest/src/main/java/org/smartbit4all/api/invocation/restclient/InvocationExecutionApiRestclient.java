@@ -2,6 +2,9 @@ package org.smartbit4all.api.invocation.restclient;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
@@ -10,6 +13,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.BodyBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,19 +44,15 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
       InvocationRequest request) {
 
     String url = serviceConnection.getEndpoint();
+
+    // Collect the BinaryData input parameters. If there is any then we have to call some upload.
+    List<BinaryData> binaryDataInputList = getAndSetupBinaryDataParameters(request);
+
     // We decide which endpoint to use depending on the proposed return value of the request.
+    boolean binaryUpload = !binaryDataInputList.isEmpty();
     boolean binaryResult = BinaryData.class.getName().equals(request.getReturnTypeClass());
-    if (binaryResult) {
-      if (url.endsWith(InvocationApiImpl.INVOKE_API)) {
-        url = url.replace(InvocationApiImpl.INVOKE_API, InvocationApiImpl.INVOKE_DOWNLOAD);
-      } else {
-        url += InvocationApiImpl.INVOKE_DOWNLOAD;
-      }
-    } else {
-      if (!url.endsWith(InvocationApiImpl.INVOKE_API)) {
-        url += InvocationApiImpl.INVOKE_API;
-      }
-    }
+    url = getProperURL(url, binaryUpload, binaryResult);
+
     HttpHeaders headers = new HttpHeaders();
     String sessionToken = serviceConnection.getAuthToken();
     if (!ObjectUtils.isEmpty(sessionToken)) {
@@ -60,11 +61,15 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
     final BodyBuilder requestBuilder = RequestEntity
         .method(HttpMethod.POST, URI.create(url))
-        .accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
+        .accept(binaryResult ? MediaType.APPLICATION_OCTET_STREAM : MediaType.APPLICATION_JSON)
+        .contentType(binaryUpload ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_JSON)
         .headers(headers);
 
-    RequestEntity<Object> requestEntity = requestBuilder.body(request);
+    // If binary upload then append the multipart contents els the body is the request itself.
+    RequestEntity<Object> requestEntity =
+        requestBuilder.body(getBody(request, binaryDataInputList));
+
+
     InvocationParameter respParam;
     if (binaryResult) {
       ResponseEntity<Resource> resp =
@@ -87,6 +92,65 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
     }
 
     return respParam;
+  }
+
+  private Object getBody(InvocationRequest request, List<BinaryData> binaryDataInputList) {
+    if (binaryDataInputList.isEmpty()) {
+      return request;
+    } else {
+      MultipartBodyBuilder mpBuilder = new MultipartBodyBuilder();
+      mpBuilder.part("invocationRequest", Invocations.stringifyRequest(objectMapper, request));
+      mpBuilder.part("contents",
+          binaryDataInputList.stream().map(b -> new InputStreamResource(b.inputStream())));
+      return mpBuilder.build();
+    }
+  }
+
+  private final String getProperURL(String url, boolean binaryUpload, boolean binaryResult) {
+    String operation = null;
+    if (binaryResult && binaryUpload) {
+      operation = InvocationApiImpl.INVOKE_UPLOAD_DOWNLOAD;
+    } else if (binaryUpload) {
+      operation = InvocationApiImpl.INVOKE_UPLOAD;
+    } else if (binaryResult) {
+      operation = InvocationApiImpl.INVOKE_DOWNLOAD;
+    }
+    if (operation != null) {
+      if (url.endsWith(InvocationApiImpl.INVOKE_API)) {
+        url = url.replace(InvocationApiImpl.INVOKE_API, operation);
+      } else {
+        url += operation;
+      }
+    } else {
+      if (!url.endsWith(InvocationApiImpl.INVOKE_API)) {
+        url += InvocationApiImpl.INVOKE_API;
+      }
+    }
+    return url;
+  }
+
+  /**
+   * Collect the {@link BinaryData} input parameters and replace their value with their index in the
+   * result list. Also set the class name for the server to ba able to look for the relevant content
+   * from the list.
+   * 
+   * @param request
+   * @return
+   */
+  private final List<BinaryData> getAndSetupBinaryDataParameters(InvocationRequest request) {
+    List<BinaryData> result;
+    if (request.getParameters() != null) {
+      result = new ArrayList<>();
+      for (InvocationParameter param : request.getParameters()) {
+        if (param.getValue() instanceof BinaryData) {
+          result.add((BinaryData) param.getValue());
+          param.typeClass(BinaryData.class.getName()).value(result.size() - 1);
+        }
+      }
+    } else {
+      result = Collections.emptyList();
+    }
+    return result;
   }
 
 }

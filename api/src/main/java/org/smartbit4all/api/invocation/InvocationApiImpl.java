@@ -58,6 +58,10 @@ public final class InvocationApiImpl implements InvocationApi {
 
   public static final String INVOKE_DOWNLOAD = "/invokeDownload";
 
+  public static final String INVOKE_UPLOAD = "/invokeUploadMultiple";
+
+  public static final String INVOKE_UPLOAD_DOWNLOAD = "/invokeUploadDownloadMultiple";
+
   private static final Logger log = LoggerFactory.getLogger(InvocationApiImpl.class);
 
   @Autowired
