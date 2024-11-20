@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.org;
 
 import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -43,14 +44,17 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
   @Autowired
   protected AccessControlInternalApi aclInternalApi;
 
+  protected static final List<String> orderedColumns = new ArrayList<>();
+
+  static {
+    orderedColumns.add(SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_NAME);
+    orderedColumns.add(SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE_NAME);
+    orderedColumns.add(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_ENTITYSUMMARY);
+    orderedColumns.add(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_CONTEXTCONFIG_NAME);
+  }
+
   @Override
   public SearchPageModel initModel(View view) {
-    List<String> orderedColumns = Arrays.asList(
-        SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_NAME,
-        SubscriptionConfigApi.SUBSCRIPTION_SUBJECT_TYPE_NAME,
-        SubscriptionConfigApi.SUBSCRIPTION_OPERATION_ENTITYSUMMARY,
-        SubscriptionConfigApi.SUBSCRIPTION_OPERATION_CONTEXTCONFIG_NAME);
-
     List<GridColumnMeta> columns = orderedColumns.stream()
         .map(col -> new GridColumnMeta().propertyName(col)
             .typeClass(null)
