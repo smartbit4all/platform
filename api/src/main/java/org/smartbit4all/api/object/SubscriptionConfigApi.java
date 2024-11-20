@@ -23,6 +23,8 @@ public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigCont
 
   public static final String REVOKE_SUPPORTED = "revokeSupported";
 
+  public static final String MODIFY_SUPPORTED = "modifySupported";
+
   public static final String SEARCH_USER_SUBSCRIPTION = "UserSubscriptionSearch";
 
   public static final String SUBSCRIPTION_SUBJECT_TYPE =
@@ -37,6 +39,8 @@ public interface SubscriptionConfigApi extends PrimaryApi<SubscriptionConfigCont
       joinUnder(ACLSubjectSubscription.SUBJECT, Subject.REF);
   public static final String SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED =
       joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, REVOKE_SUPPORTED);
+  public static final String SUBSCRIPTION_OPERATION_MODIFY_SUPPORTED =
+      joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, MODIFY_SUPPORTED);
   public static final String SUBSCRIPTION_OPERATION =
       joinUnder(ACLSubjectSubscription.OPERATION_REFERENCE, ACLOperationReference.OPERATION);
   public static final String SUBSCRIPTION_OPERATION_NAME =

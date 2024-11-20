@@ -5,6 +5,7 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Optional;
 import javax.script.ScriptException;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
@@ -63,10 +64,25 @@ public interface InvocationApi {
    * The generic api call executed synchronously. BE CAREFUL! If it is a script then it must be
    * prepared previously in this case the args won't be applied.
    *
-   * @param request
+   * @param request The invocation request ready to call.
+   * @param args The arguments of the invocation in order. If we pass nothing then the originaly set
+   *        parameters will be used from the request!
+   * @return The {@link InvocationParameter} as the result of the call.
    * @throws ApiNotFoundException
    */
   InvocationParameter invoke(InvocationRequest request, Object... args) throws ApiNotFoundException;
+
+  /**
+   * The generic api call executed synchronously. BE CAREFUL! If it is a script then it must be
+   * prepared previously in this case the args won't be applied.
+   *
+   * @param request The invocation request ready to call.
+   * @param args The arguments of the invocation in order. If we pass nothing then the originaly set
+   *        parameters will be used from the request!
+   * @return The optional {@link InvocationParameter} result of the call. If it is missing then the
+   *         invocation has been failed, there is no api found.
+   */
+  Optional<InvocationParameter> tryInvoke(InvocationRequest request, Object... args);
 
   /**
    * The generic api call executed synchronously.

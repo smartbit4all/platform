@@ -175,46 +175,48 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
       Map<String, CustomExpressionMapping> searchExpressionByPropertyName) {
     Expression currentExpression = null;
     FilterExpressionData prevFed = null;
-    for (FilterExpressionData fed : filterExpressions.getExpressions()) {
-      Expression exp = null;
-      if (searchExpressionByPropertyName != null && searchExpressionByPropertyName != null) {
-        String propertyName = getPropertyName(fed);
+    if (filterExpressions != null) {
+      for (FilterExpressionData fed : filterExpressions.getExpressions()) {
+        Expression exp = null;
+        if (searchExpressionByPropertyName != null && searchExpressionByPropertyName != null) {
+          String propertyName = getPropertyName(fed);
 
-        if (propertyName != null && searchExpressionByPropertyName.containsKey(propertyName)) {
-          Property<?> property = searchEntityDef.getDefinition().getProperty(propertyName);
-          Object value = getValue(fed, property != null ? property.type() : null);
-          CustomExpressionMapping customExpressionMapping =
-              searchExpressionByPropertyName.get(propertyName);
-          if (customExpressionMapping.complexExpressionProcessor != null) {
-            exp = customExpressionMapping.complexExpressionProcessor
-                .apply(value, searchEntityDef.definition, searchIndexMappingObject).BRACKET();
-          } else if (customExpressionMapping.expressionProcessor != null && property != null) {
-            exp = customExpressionMapping.expressionProcessor.apply(value, property);
-          } else if (customExpressionMapping.detailExpressionProcessor != null) {
-            exp =
-                customExpressionMapping.detailExpressionProcessor.apply(value,
-                    searchIndexMappingObject);
+          if (propertyName != null && searchExpressionByPropertyName.containsKey(propertyName)) {
+            Property<?> property = searchEntityDef.getDefinition().getProperty(propertyName);
+            Object value = getValue(fed, property != null ? property.type() : null);
+            CustomExpressionMapping customExpressionMapping =
+                searchExpressionByPropertyName.get(propertyName);
+            if (customExpressionMapping.complexExpressionProcessor != null) {
+              exp = customExpressionMapping.complexExpressionProcessor
+                  .apply(value, searchEntityDef.definition, searchIndexMappingObject).BRACKET();
+            } else if (customExpressionMapping.expressionProcessor != null && property != null) {
+              exp = customExpressionMapping.expressionProcessor.apply(value, property);
+            } else if (customExpressionMapping.detailExpressionProcessor != null) {
+              exp =
+                  customExpressionMapping.detailExpressionProcessor.apply(value,
+                      searchIndexMappingObject);
+            }
           }
-        }
 
-      }
-      if (exp == null) {
-        // Construct the Expression from the FilterExpressionData
-        exp =
-            convertFilterExpression(fed, searchEntityDef, entityDef, searchIndexMappingObject,
-                searchExpressionByPropertyName);
-      }
-      if (exp != null) {
-        if (currentExpression != null && prevFed != null) {
-          if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.OR) {
-            currentExpression = currentExpression.OR(exp);
+        }
+        if (exp == null) {
+          // Construct the Expression from the FilterExpressionData
+          exp =
+              convertFilterExpression(fed, searchEntityDef, entityDef, searchIndexMappingObject,
+                  searchExpressionByPropertyName);
+        }
+        if (exp != null) {
+          if (currentExpression != null && prevFed != null) {
+            if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.OR) {
+              currentExpression = currentExpression.OR(exp);
+            } else {
+              currentExpression = currentExpression.AND(exp);
+            }
           } else {
-            currentExpression = currentExpression.AND(exp);
+            currentExpression = exp;
           }
-        } else {
-          currentExpression = exp;
+          prevFed = fed;
         }
-        prevFed = fed;
       }
     }
     return currentExpression;
@@ -327,9 +329,12 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
     // expression
     if (fed.getCurrentOperation().equals(FilterExpressionOperation.EXPRESSION)) {
       // TODO detail entitydef?
+
       Expression innerExpression =
           constructExpressionInner(fed.getSubExpression(), searchEntityDef, entityDef,
               searchIndexMappingObject, searchExpressionByPropertyName);
+
+
       return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
     }
 

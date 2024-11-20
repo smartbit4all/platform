@@ -20,14 +20,14 @@ public class AccessControlApiImpl implements AccessControlApi {
   private AccessControlInternalApi accessControlInternalApi;
 
   @Override
-  public URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+  public URI addOrUpdateSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations) {
 
-    return addSubjects(aclObjectUri, subjects, aclName, operations, null, null);
+    return addOrUpdateSubjects(aclObjectUri, subjects, aclName, operations, null, null);
   }
 
   @Override
-  public URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+  public URI addOrUpdateSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations, URI contextEntity, String contextConfigCode) {
     ObjectNode aclObjectNode = objectApi.loadLatest(aclObjectUri);
     aclObjectNode.modify(ACLObject.class, aclObject -> {
@@ -38,7 +38,13 @@ public class AccessControlApiImpl implements AccessControlApi {
 
         for (Subject subject : subjects) {
           if (!checkSubjectIsAlreadyInAcl(acl, subject.getRef())) {
+            // add
             currentSubjects.add(new ACLSubject().subject(subject).operation(operation));
+          } else {
+            // update
+            currentSubjects.stream()
+                .filter(aclSubject -> subject.getRef().equals(aclSubject.getSubject().getRef()))
+                .forEach(aclSubject -> aclSubject.operation(operation));
           }
         }
         accessControlInternalApi.applySubjects(acl, currentSubjects, operation.getName(),

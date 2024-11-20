@@ -10,6 +10,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 public class SmartLinkApiImpl implements SmartLinkApi {
 
@@ -21,6 +22,11 @@ public class SmartLinkApiImpl implements SmartLinkApi {
 
   @Override
   public URI publishView(String channel, View view) {
+    return publishView(channel, view, null);
+  }
+
+  @Override
+  public URI publishView(String channel, View view, URI aclUri) {
     Objects.requireNonNull(view, "view cannot be null!");
     Objects.requireNonNull(channel, "channel cannot be null!");
 
@@ -33,6 +39,9 @@ public class SmartLinkApiImpl implements SmartLinkApi {
         .uuid(uuid)
         .view(view)
         .url("/" + channel + "/" + uuid.toString());
+    if (!ObjectUtils.isEmpty(aclUri)) {
+      smartLinkData.acl(aclUri);
+    }
     ObjectNode smartLinkNode = objectApi.create(channel, smartLinkData);
     URI smartLinkUri = objectApi.save(smartLinkNode);
     linkMap.put(uuid.toString(), smartLinkUri);

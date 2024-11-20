@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.grid.bean.GridView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,6 +42,7 @@ import jakarta.validation.Valid;
   SearchPageConfig.URI,
   SearchPageConfig.PAGE_TITLE,
   SearchPageConfig.FILTER_MODEL,
+  SearchPageConfig.FILTER_CONFIG,
   SearchPageConfig.SEARCH_INDEX_SCHEMA,
   SearchPageConfig.SEARCH_INDEX_NAME,
   SearchPageConfig.CONTAINER,
@@ -65,6 +67,9 @@ public class SearchPageConfig {
 
   public static final String FILTER_MODEL = "filterModel";
   private FilterExpressionBuilderModel filterModel;
+
+  public static final String FILTER_CONFIG = "filterConfig";
+  private FilterExpressionBuilderApiConfig filterConfig;
 
   public static final String SEARCH_INDEX_SCHEMA = "searchIndexSchema";
   private String searchIndexSchema;
@@ -136,6 +141,7 @@ public class SearchPageConfig {
     this.uri = uri;
   }
 
+
   public SearchPageConfig pageTitle(String pageTitle) {
     
     this.pageTitle = pageTitle;
@@ -162,6 +168,7 @@ public class SearchPageConfig {
   public void setPageTitle(String pageTitle) {
     this.pageTitle = pageTitle;
   }
+
 
   public SearchPageConfig filterModel(FilterExpressionBuilderModel filterModel) {
     
@@ -190,6 +197,35 @@ public class SearchPageConfig {
   public void setFilterModel(FilterExpressionBuilderModel filterModel) {
     this.filterModel = filterModel;
   }
+
+
+  public SearchPageConfig filterConfig(FilterExpressionBuilderApiConfig filterConfig) {
+    
+    this.filterConfig = filterConfig;
+    return this;
+  }
+
+   /**
+   * Get filterConfig
+   * @return filterConfig
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FILTER_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionBuilderApiConfig getFilterConfig() {
+    return filterConfig;
+  }
+
+
+  @JsonProperty(FILTER_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterConfig(FilterExpressionBuilderApiConfig filterConfig) {
+    this.filterConfig = filterConfig;
+  }
+
 
   public SearchPageConfig searchIndexSchema(String searchIndexSchema) {
     
@@ -574,6 +610,7 @@ public class SearchPageConfig {
     return Objects.equals(this.uri, searchPageConfig.uri) &&
         Objects.equals(this.pageTitle, searchPageConfig.pageTitle) &&
         Objects.equals(this.filterModel, searchPageConfig.filterModel) &&
+        Objects.equals(this.filterConfig, searchPageConfig.filterConfig) &&
         Objects.equals(this.searchIndexSchema, searchPageConfig.searchIndexSchema) &&
         Objects.equals(this.searchIndexName, searchPageConfig.searchIndexName) &&
         Objects.equals(this.container, searchPageConfig.container) &&
@@ -591,7 +628,7 @@ public class SearchPageConfig {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, pageTitle, filterModel, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions);
+    return Objects.hash(uri, pageTitle, filterModel, filterConfig, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions);
   }
 
   @Override
@@ -601,6 +638,7 @@ public class SearchPageConfig {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    pageTitle: ").append(toIndentedString(pageTitle)).append("\n");
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
+    sb.append("    filterConfig: ").append(toIndentedString(filterConfig)).append("\n");
     sb.append("    searchIndexSchema: ").append(toIndentedString(searchIndexSchema)).append("\n");
     sb.append("    searchIndexName: ").append(toIndentedString(searchIndexName)).append("\n");
     sb.append("    container: ").append(toIndentedString(container)).append("\n");

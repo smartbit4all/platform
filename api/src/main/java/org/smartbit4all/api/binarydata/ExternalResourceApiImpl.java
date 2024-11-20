@@ -1,8 +1,6 @@
 package org.smartbit4all.api.binarydata;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -12,6 +10,7 @@ import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
+import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +54,13 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
           }
         }
 
-        byte[] allBytes = readInputStreamToByteArray(connection.getInputStream());
+        byte[] allBytes = FileIO.readInputStreamToByteArray(connection.getInputStream());
 
         UserActivityLog created = sessionApi.createActivityLog();
         BinaryData binaryData = new BinaryData(allBytes);
 
         return new BinaryContentData()
             .fileName(filename)
-            .mimeType(mimeType)
             .size(Integer.toUnsignedLong(allBytes.length))
             .created(created)
             .updated(created)
@@ -81,19 +79,6 @@ public class ExternalResourceApiImpl implements ExternalResourceApi {
         connection.disconnect();
       }
     }
-  }
-
-  private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    byte[] data = new byte[1024];
-    int bytesRead;
-
-    while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
-      buffer.write(data, 0, bytesRead);
-    }
-    inputStream.close();
-
-    return buffer.toByteArray();
   }
 
   // @Override

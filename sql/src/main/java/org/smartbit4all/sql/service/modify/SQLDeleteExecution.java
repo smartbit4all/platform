@@ -70,6 +70,8 @@ public class SQLDeleteExecution<E extends EntityDefinition> {
       SQLDBParameter sqlDBParameter) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
+    this.schema = schema;
+    this.sqlDBParameter = sqlDBParameter;
   }
 
   public DeleteOutput execute() {

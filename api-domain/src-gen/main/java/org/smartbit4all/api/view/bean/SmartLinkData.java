@@ -37,7 +37,8 @@ import jakarta.validation.Valid;
   SmartLinkData.URI,
   SmartLinkData.UUID,
   SmartLinkData.VIEW,
-  SmartLinkData.URL
+  SmartLinkData.URL,
+  SmartLinkData.ACL
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLinkData {
@@ -52,6 +53,9 @@ public class SmartLinkData {
 
   public static final String URL = "url";
   private String url;
+
+  public static final String ACL = "acl";
+  private URI acl;
 
   public SmartLinkData() {
   }
@@ -167,6 +171,34 @@ public class SmartLinkData {
     this.url = url;
   }
 
+  public SmartLinkData acl(URI acl) {
+    
+    this.acl = acl;
+    return this;
+  }
+
+   /**
+   * If the user who clicked the link, is not part of the acl, an error page will open.
+   * @return acl
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If the user who clicked the link, is not part of the acl, an error page will open.")
+  @JsonProperty(ACL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getAcl() {
+    return acl;
+  }
+
+
+  @JsonProperty(ACL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAcl(URI acl) {
+    this.acl = acl;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -179,12 +211,13 @@ public class SmartLinkData {
     return Objects.equals(this.uri, smartLinkData.uri) &&
         Objects.equals(this.uuid, smartLinkData.uuid) &&
         Objects.equals(this.view, smartLinkData.view) &&
-        Objects.equals(this.url, smartLinkData.url);
+        Objects.equals(this.url, smartLinkData.url) &&
+        Objects.equals(this.acl, smartLinkData.acl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, view, url);
+    return Objects.hash(uri, uuid, view, url, acl);
   }
 
   @Override
@@ -195,6 +228,7 @@ public class SmartLinkData {
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    url: ").append(toIndentedString(url)).append("\n");
+    sb.append("    acl: ").append(toIndentedString(acl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

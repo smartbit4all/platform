@@ -486,8 +486,14 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass, boolean useDatabase) {
+    this(logicalSchema, name, indexedObjectSchema, indexedObjectDefinitionClass, useDatabase, null);
+  }
+
+  public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
+      Class<O> indexedObjectDefinitionClass, boolean useDatabase, String tableName) {
     super();
     this.objectMapping.setName(name);
+    this.objectMapping.setTableName(tableName);
     this.objectMapping.setLogicalSchema(logicalSchema);
     this.objectMapping.filterClass(indexedObjectDefinitionClass);
     this.indexedObjectSchema = indexedObjectSchema;

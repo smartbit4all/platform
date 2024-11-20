@@ -8,10 +8,10 @@ import org.smartbit4all.api.org.bean.Subject;
 
 public interface AccessControlApi {
 
-  URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+  URI addOrUpdateSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations);
 
-  URI addSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
+  URI addOrUpdateSubjects(URI aclObjectUri, List<Subject> subjects, String aclName,
       List<ACLOperation> operations, URI contextEntity, String contextConfigCode);
 
   URI deleteSubjects(URI aclObjectUri, List<URI> subjects, String aclName,

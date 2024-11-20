@@ -195,8 +195,14 @@ public final class LocaleSettingApi implements InitializingBean {
     Locale sessionLocale = null;
     if (sessionApi != null) {
       sessionLocale = sessionApi.getLocale();
-    } else if (userSessionApi != null && userSessionApi.currentSession() != null) {
-      sessionLocale = userSessionApi.currentSession().getCurrentLocale();
+    } else {
+      try {
+        if (userSessionApi != null && userSessionApi.currentSession() != null) {
+          sessionLocale = userSessionApi.currentSession().getCurrentLocale();
+        }
+      } catch (Exception e) {
+        // no authentication yet
+      }
     }
     Locale defaultLocaleTmp = defaultLocale != null ? defaultLocale : Locales.HUNGARIAN;
     return sessionLocale != null ? sessionLocale : defaultLocaleTmp;

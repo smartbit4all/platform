@@ -14,6 +14,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
@@ -334,6 +335,36 @@ public class Invocations {
       parameter.setValue(data);
     } catch (ClassNotFoundException | IllegalArgumentException e) {
       throw new IllegalArgumentException("Error while resolving invocation parameter!" + parameter,
+          e);
+    }
+  }
+
+  /**
+   * Stringify the request
+   *
+   * @param objectMapper
+   * @param request
+   */
+  public static String stringifyRequest(ObjectMapper objectMapper, InvocationRequest request) {
+    try {
+      return objectMapper.writeValueAsString(request);
+    } catch (IllegalArgumentException | JsonProcessingException e) {
+      throw new IllegalArgumentException("Error while serializing invocation request!" + request,
+          e);
+    }
+  }
+
+  /**
+   * Resolve the request
+   *
+   * @param objectMapper
+   * @param request
+   */
+  public static String resolveRequest(ObjectMapper objectMapper, InvocationRequest request) {
+    try {
+      return objectMapper.writeValueAsString(request);
+    } catch (IllegalArgumentException | JsonProcessingException e) {
+      throw new IllegalArgumentException("Error while serializing invocation request!" + request,
           e);
     }
   }

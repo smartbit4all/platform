@@ -54,6 +54,87 @@ paths:
           description: 'The api was not found.'
         '500':
           description: 'Error occured while fetching the downloadable item'
+  /invokeUploadMultiple:
+    post:
+      tags:
+        - Invocation
+      description: |
+        Performs a generic invocation with contents to upload. These uploaded contents are identified
+        by their position by the parameters.
+      operationId: 'invokeUploadMultiple'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                invocationRequest:
+                  description: Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.
+                  type: string
+                contents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationParameter'
+        '404':
+          description: 'The api was not found.'
+  /invokeUploadDownloadMultiple:
+    post:
+      tags:
+        - Invocation
+      description: |
+        Performs a generic invocation with contents to upload. These uploaded contents are identified
+        by their position by the parameters. The result is a content also.
+      operationId: 'invokeUploadDownloadMultiple'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                invocationRequest:
+                  description: Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.
+                  type: string
+                contents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: ''
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: 'The api was not found.'
+        '500':
+          description: 'Error occured while fetching the downloadable item'
 components:
   schemas:
     InvocationRequestDefinition:
