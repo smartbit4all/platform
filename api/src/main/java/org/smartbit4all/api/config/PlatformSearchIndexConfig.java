@@ -83,6 +83,9 @@ public class PlatformSearchIndexConfig {
             .mapComplex(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED,
                 Boolean.class,
                 -1, n -> false)
+            .mapComplex(SubscriptionConfigApi.SUBSCRIPTION_OPERATION_MODIFY_SUPPORTED,
+                Boolean.class,
+                -1, n -> false)
             .postProcess((td, si) -> {
               return configApi == null ? td : configApi.postProcess(si, td);
             });

@@ -24,6 +24,14 @@ public interface SubscriptionConfigContributionApi extends ContributionApi {
   boolean supportsRevoke(String config);
 
   /**
+   * Returns true if the contribution supports modify action for the config.
+   * 
+   * @param config
+   * @return
+   */
+  boolean supportsModify(String config);
+
+  /**
    * A contribution can manage the revoke of a list of configurations. These configuration are
    * referred by the {@link ACLOperationReference#CONFIG}.
    * 

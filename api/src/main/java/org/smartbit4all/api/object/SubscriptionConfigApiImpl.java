@@ -58,6 +58,8 @@ public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfig
         contentDef.getProperty(SUBSCRIPTION_SUBJECT_TYPE_NAME);
     Property<?> revokeSupportedProperty =
         contentDef.getProperty(SUBSCRIPTION_OPERATION_REVOKE_SUPPORTED);
+    Property<?> modifySupportedProperty =
+        contentDef.getProperty(SUBSCRIPTION_OPERATION_MODIFY_SUPPORTED);
 
     DataColumn<?> configCol = td.getColumn(configProperty);
     DataColumn<?> entityUriCol = td.getColumn(entityUriProperty);
@@ -80,7 +82,9 @@ public class SubscriptionConfigApiImpl extends PrimaryApiImpl<SubscriptionConfig
                 objectApi.asType(URI.class, dataRow.get(entityUriProperty))));
 
         dataRow.setObject(revokeSupportedProperty,
-            api.supports(config));
+            api.supportsRevoke(config));
+        dataRow.setObject(modifySupportedProperty,
+            api.supportsModify(config));
       }
       String subjectType = (String) dataRow.get(subjectTypeProperty);
       dataRow.setObject(subjectTypeNameProperty,

@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +37,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ACLOperation.NAME,
   ACLOperation.COMMENT,
-  ACLOperation.TYPE
+  ACLOperation.TYPE,
+  ACLOperation.PARAMS
 })
 @JsonTypeName("ACLOperation")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +51,9 @@ public class ACLOperation {
 
   public static final String TYPE = "type";
   private String type;
+
+  public static final String PARAMS = "params";
+  private Map<String, Object> params = null;
 
   public ACLOperation() { 
   }
@@ -133,6 +140,41 @@ public class ACLOperation {
   }
 
 
+  public ACLOperation params(Map<String, Object> params) {
+    
+    this.params = params;
+    return this;
+  }
+
+  public ACLOperation putParamsItem(String key, Object paramsItem) {
+    if (this.params == null) {
+      this.params = new HashMap<>();
+    }
+    this.params.put(key, paramsItem);
+    return this;
+  }
+
+   /**
+   * Operation related parameters.
+   * @return params
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Operation related parameters.")
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getParams() {
+    return params;
+  }
+
+
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParams(Map<String, Object> params) {
+    this.params = params;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -144,12 +186,13 @@ public class ACLOperation {
     ACLOperation acLOperation = (ACLOperation) o;
     return Objects.equals(this.name, acLOperation.name) &&
         Objects.equals(this.comment, acLOperation.comment) &&
-        Objects.equals(this.type, acLOperation.type);
+        Objects.equals(this.type, acLOperation.type) &&
+        Objects.equals(this.params, acLOperation.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, comment, type);
+    return Objects.hash(name, comment, type, params);
   }
 
   @Override
@@ -159,6 +202,7 @@ public class ACLOperation {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");
     return sb.toString();
   }
