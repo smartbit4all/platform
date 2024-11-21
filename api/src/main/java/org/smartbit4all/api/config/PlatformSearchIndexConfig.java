@@ -42,6 +42,11 @@ public class PlatformSearchIndexConfig {
   public SearchIndex<ACLSubjectSubscription> searchACLSubjectSubscription(
       SubjectManagementApi subjectManagementApi,
       SubscriptionConfigApi configApi) {
+    return createSearchACLSubjectSubscriptionSearchIndex(subjectManagementApi, configApi);
+  }
+
+  protected SearchIndexImpl<ACLSubjectSubscription> createSearchACLSubjectSubscriptionSearchIndex(
+      SubjectManagementApi subjectManagementApi, SubscriptionConfigApi configApi) {
     return new SearchIndexImpl<>(OrgApiStorageImpl.ORG_SCHEME,
         SubscriptionConfigApi.SEARCH_USER_SUBSCRIPTION,
         OrgApiStorageImpl.ORG_SCHEME, ACLSubjectSubscription.class)
