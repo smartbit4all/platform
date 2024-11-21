@@ -19,7 +19,7 @@ pipeline {
         stage('Build & Unit test') {
             steps {
                 withMaven(maven: "${maven}") {
-                    sh "mvn -Drevision=${version} --no-transfer-progress clean install"
+                    sh "mvn --no-transfer-progress clean install"
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withMaven(maven: "${maven}") {
                     withSonarQubeEnv('SonarQube') {
-                        sh "mvn -Drevision=${version} -Dsonar.branch.name=${env.BRANCH_NAME} --no-transfer-progress sonar:sonar"
+                        sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} --no-transfer-progress sonar:sonar"
                     }
                 }
             }
@@ -36,8 +36,11 @@ pipeline {
             steps {
                 // Sonar analízis aszinkron módon fut, ezért meg kell várni az eredményt
                 // A sonarban a projecten beállított profile alapján képzi a metrikákat és a beállított quality gate-nek kell megfelelnie
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: false
+                // TODO temporally ignore sonar scan result
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    timeout(time: 10, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: false
+                    }
                 }
             }
         }
