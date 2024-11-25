@@ -37,6 +37,8 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   /**
    * The UUID identifier of the list view for the editing view.
    */
+  static final String PARAM_MDM_LIST_VIEW_UUID = "MDM_LIST_VIEW_UUID";
+
   static final String PARAM_MDM_LIST_VIEW = "MDM_LIST_VIEW";
 
   /**
@@ -265,6 +267,17 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * @param request The save request.
    */
   void saveObject(UUID viewUuid, ObjectNode objectNode, View editorView, UiActionRequest request);
+
+  /**
+   * This callback function is responsible for saving an object into the MDM entry list we are
+   * working on currently.
+   *
+   * @param view The list view instance
+   * @param objectNode The objectNode of the newly created / updated object.
+   * @param editorView The mdm editor view.
+   * @param request The save request.
+   */
+  void saveObject(View view, ObjectNode objectNode, View editorView, UiActionRequest request);
 
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 

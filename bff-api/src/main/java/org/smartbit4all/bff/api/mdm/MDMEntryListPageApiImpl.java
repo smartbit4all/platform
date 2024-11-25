@@ -651,7 +651,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .putParametersItem(PARAM_MDM_DEFINITION, ctx.getDefinition())
         .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.getEntryDescriptor())
         .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
-        .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
+        .putParametersItem(PARAM_MDM_LIST_VIEW_UUID, viewUuid)
         .putParametersItem(PARAM_RAW_MODEL, modelNode.getObjectAsMap())
         .putParametersItem(PARAM_ACTION_CODE, actionCode)
         .actions(actions);
@@ -823,6 +823,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void saveObject(UUID viewUuid, ObjectNode objectNode, View editorView,
       UiActionRequest request) {
     saveObjectInternal(getContextByViewUUID(viewUuid), objectNode, editorView, request);
+  }
+
+  @Override
+  public void saveObject(View view, ObjectNode objectNode, View editorView,
+      UiActionRequest request) {
+    saveObjectInternal(getContextByView(view), objectNode, editorView, request);
   }
 
   protected void saveObjectInternal(PageContext context, ObjectNode objectNode, View editorView,

@@ -45,7 +45,7 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
     View view = viewApi.getView(viewUuid);
     // TODO use view.containerUuid
     UUID parentUUID = parameters(view)
-        .get(MDMEntryListPageApi.PARAM_MDM_LIST_VIEW, UUID.class);
+        .get(MDMEntryListPageApi.PARAM_MDM_LIST_VIEW_UUID, UUID.class);
     view.setModel(request.getParams().get(UiActions.MODEL));
     listPageApi.saveObject(parentUUID, view.getObjectUri(), view.getModel(), view, request);
     viewApi.closeView(viewUuid);
