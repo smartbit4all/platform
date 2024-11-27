@@ -441,7 +441,7 @@ public interface ObjectApi {
   String asString(Object o);
 
   /**
-   * Can be used to serialize any Java object as a String.
+   * Can be used to deserialize any Java object from a String.
    * 
    * @param s The string serialized version of the given object.
    * @param clazz The class of the object to deserialize from the String.
