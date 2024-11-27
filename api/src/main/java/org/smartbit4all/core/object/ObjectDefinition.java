@@ -264,6 +264,15 @@ public final class ObjectDefinition<T> {
     return defaultSerializer.writeValueAsString(o);
   }
 
+  public final T readFromString(String s) {
+    try {
+      return defaultSerializer.fromString(s, clazz);
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "Unable to read " + clazz + " object from the following string: " + s);
+    }
+  }
+
   public final T deepCopy(T o) {
     return defaultSerializer.fromMap(defaultSerializer.toMap(o), clazz);
   }
