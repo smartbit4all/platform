@@ -804,6 +804,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   public void saveObject(UUID viewUuid, URI objectUri, Object editingObject, View editorView,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
+    ObjectNode objectNode = createObjectNodeToSave(objectUri, editingObject, context);
+    saveObjectInternal(context, objectNode, editorView, request);
+  }
+
+  private ObjectNode createObjectNodeToSave(URI objectUri, Object editingObject,
+      PageContext context) {
     ObjectDefinition<?> objectDefinition = context.getEntryApi().getObjectDefinition();
     Map<String, Object> editingObjectAsMap = objectDefinition.toMap(editingObject);
     ObjectNode objectNode;
@@ -813,16 +819,24 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           objectDefinition,
           editingObjectAsMap);
     } else {
-      objectNode = objectApi.load(objectUri);
+      objectNode = objectApi.load(objectUri, context.getMdmBranch());
       objectNode.setValues(editingObjectAsMap);
     }
-    saveObjectInternal(context, objectNode, editorView, request);
+    return objectNode;
   }
 
   @Override
   public void saveObject(UUID viewUuid, ObjectNode objectNode, View editorView,
       UiActionRequest request) {
     saveObjectInternal(getContextByViewUUID(viewUuid), objectNode, editorView, request);
+  }
+
+  @Override
+  public void saveObject(View view, URI objectUri, Object editingObject, View editorView,
+      UiActionRequest request) {
+    PageContext context = getContextByView(view);
+    ObjectNode objectNode = createObjectNodeToSave(objectUri, editingObject, context);
+    saveObjectInternal(context, objectNode, editorView, request);
   }
 
   @Override
@@ -864,7 +878,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       }
     }
 
-    refreshGrid(context);
+    // refresh if it's not a placeholder view to save
+    if (context.getView().getUuid() != null) {
+      refreshGrid(context);
+    }
   }
 
   private final void performActionOnGridRow(PageContext context, String gridId, String rowId,

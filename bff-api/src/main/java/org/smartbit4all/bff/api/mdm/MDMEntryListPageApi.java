@@ -273,6 +273,19 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
    * working on currently.
    *
    * @param view The list view instance
+   * @param objectUri The uri of the edited object.
+   * @param editingObject The object or map value of the newly created / updated object.
+   * @param editorView The mdm editor view.
+   * @param request The save request.
+   */
+  void saveObject(View view, URI objectUri, Object editingObject, View editorView,
+      UiActionRequest request);
+
+  /**
+   * This callback function is responsible for saving an object into the MDM entry list we are
+   * working on currently.
+   *
+   * @param view The list view instance
    * @param objectNode The objectNode of the newly created / updated object.
    * @param editorView The mdm editor view.
    * @param request The save request.
