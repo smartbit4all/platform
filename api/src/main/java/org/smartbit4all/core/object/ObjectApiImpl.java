@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -42,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -398,6 +398,14 @@ public class ObjectApiImpl implements ObjectApi {
           "Unable to convert value (" + o + ") to String");
     }
 
+  }
+
+  @Override
+  public <T> T fromString(String s, Class<T> clazz) {
+    if (s == null) {
+      return null;
+    }
+    return definition(clazz).readFromString(s);
   }
 
   @Override
