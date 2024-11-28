@@ -105,7 +105,7 @@ public class ViewSrvRestConfig {
   }
 
   @Bean
-  public FilterApi filterApiController(FilterApiDelegate delegate) {
+  public FilterApiController filterApiController(FilterApiDelegate delegate) {
     return new FilterApiController(delegate);
   }
 
