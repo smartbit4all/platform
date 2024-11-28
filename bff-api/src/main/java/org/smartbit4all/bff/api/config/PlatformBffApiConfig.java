@@ -20,6 +20,10 @@ import org.smartbit4all.bff.api.acl.UserSelectorPageApiImpl;
 import org.smartbit4all.bff.api.assoc.AssociationGridApi;
 import org.smartbit4all.bff.api.assoc.AssociationGridApiImpl;
 import org.smartbit4all.bff.api.attachment.AttachmentListPageApi;
+import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridApi;
+import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridApiImpl;
+import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridInvocationApi;
+import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridInvocationApiImpl;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
@@ -236,6 +240,22 @@ public class PlatformBffApiConfig {
   @ConditionalOnBean(ObjectDescriptorEditorPageApi.class)
   ObjectPropertyDescriptorPageApi objectPropertyDescriptorPageApi() {
     return new ObjectPropertyDescriptorPageApiImpl();
+  }
+
+  @Bean
+  AttachmentGridApi attachmentGridApi() {
+    return new AttachmentGridApiImpl();
+  }
+
+  @Bean
+  AttachmentGridInvocationApi attachmentGridInvocationApi() {
+    return new AttachmentGridInvocationApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<AttachmentGridInvocationApi> attachmentGridInvocationApiProvider(
+      AttachmentGridInvocationApi api) {
+    return Invocations.asProvider(AttachmentGridInvocationApi.class, api);
   }
 
 }

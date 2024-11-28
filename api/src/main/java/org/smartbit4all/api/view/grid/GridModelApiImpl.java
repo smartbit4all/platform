@@ -574,6 +574,14 @@ public class GridModelApiImpl implements GridModelApi {
       }
       Integer pageSize = newPageSize.applyAsInt(model);
       model.setPageSize(pageSize);
+
+      List<Integer> pageSizeOptions = new ArrayList<Integer>(model.getPageSizeOptions());
+      if (!pageSizeOptions.contains(pageSize)) {
+        pageSizeOptions.add(pageSize);
+        Collections.sort(pageSizeOptions);
+        model.setPageSizeOptions(pageSizeOptions);
+      }
+
       TableData<?> tableData =
           tableDataApi.readPage(model.getAccessConfig().getDataUri(),
               model.getPage().getLowerBound(), pageSize);
