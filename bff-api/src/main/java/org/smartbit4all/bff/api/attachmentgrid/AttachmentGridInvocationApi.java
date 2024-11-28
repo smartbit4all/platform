@@ -1,0 +1,48 @@
+package org.smartbit4all.bff.api.attachmentgrid;
+
+import java.util.List;
+import java.util.UUID;
+import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.ViewEventHandler;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
+
+public interface AttachmentGridInvocationApi {
+
+  public static final String ATTACHMENT_OPEN_HANDLER = "ATTACHMENT_OPEN_HANDLER";
+  public static final String ATTACHMENT_DOWNLOAD_HANDLER = "ATTACHMENT_DOWNLOAD_HANDLER";
+  public static final String ATTACHMENT_REMOVE_HANDLER = "ATTACHMENT_REMOVE_HANDLER";
+
+  public static final String ATTACHMENT_UPLOAD_HANDLER = "ATTACHMENT_UPLOAD_HANDLER";
+  public static final String ATTACHMENT_REFRESH_LIST_HANDLER = "ATTACHMENT_REFRESH_LIST_HANDLER";
+  public static final String ATTACHMENT_SAVE_LIST_HANDLER = "ATTACHMENT_SAVE_LIST_HANDLER";
+
+  public static final String ATTACHMENT_DIALOG_CLOSE_HANDLER = "ATTACHMENT_DIALOG_CLOSE_HANDLER";
+
+  public static final String ATTACHMENT_DOWNLOADBLE_FILE = "ATTACHMENT_DOWNLOADBLE_FILE";
+  public static final String ATTACHMENT_TEMP_SCHEMA = "temp";
+
+  GridPage extendPageDataForAttachment(GridPage page, UUID viewUuid,
+      String widgetId);
+
+  void addAttachment(UUID viewUuid, UiActionRequest request, String widgetId);
+
+  void refreshGridToOriginalState(UUID viewUuid, UiActionRequest request, String widgetId);
+
+  void openAttachmentFromGrid(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request);
+
+  void downloadAttachmentFromGrid(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request);
+
+  void removeAttachment(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request);
+
+  void saveListRequest(UUID viewUuid, UiActionRequest request, String widgetId);
+
+  void closeDialogWindow(UUID viewUuid, UiActionRequest request);
+
+  public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor);
+
+  public List<ViewEventHandler> getEventHandlers(AttachmentGridDescriptor descriptor);
+}

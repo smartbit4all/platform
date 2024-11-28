@@ -1,0 +1,49 @@
+openapi: 3.0.1
+info:
+  title: Attachment grid api
+  description: Attachment grid api.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: AttachmentGrid
+paths: {}
+components:
+  schemas:
+    AttachmentGridDescriptor:
+      type: object
+      description: Describes an attachment grid, made up of BinaryContentDatas.
+      properties:
+        attachmentList:
+          type: array
+          items:
+            type: BinaryContentData
+        gridWidgetId:
+          type: string
+        viewUuid:
+          type: string
+          format: uuid
+        buttonColor:
+          type: string
+          default: primary
+        logicalSchema:
+          type: string
+        saveRequest:
+          type: InvocationRequest
+        isPreviewable:
+          type: boolean
+          default: true
+        isDownloadable:
+          type: boolean
+          default: true
+        isEditable:
+          type: boolean
+          default: false
+        isPaginatorEnabled:
+          type: boolean
+          default: true
+        pageSize:
+          type: integer
+          format: int32
+      

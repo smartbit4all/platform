@@ -12,6 +12,7 @@ smartbit4all {
     modelPackagePostfix = "bean"
   	dateTimeMapping = "java.time.LocalDateTime"
     importMappings = [
+     "BinaryContentData" : "org.smartbit4all.api.attachment.bean.BinaryContentData",
      "UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
      "User": "org.smartbit4all.api.org.bean.User",
      "Group": "org.smartbit4all.api.org.bean.Group",
