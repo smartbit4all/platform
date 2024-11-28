@@ -140,17 +140,6 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     GridModels.hideColumns(gridModel,
         Arrays.asList(BinaryContentData.DATA_URI, BinaryContentData.EXTENSION));
     gridModel.getView().getDescriptor().kind(KindEnum.TABLE);
-    if (descriptor.getPageSize() != null) {
-      gridModel.setPageSize(descriptor.getPageSize());
-    }
-
-    if (!descriptor.getIsPaginatorEnabled()) {
-      gridModel.setPaginator(false);
-      if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())
-          && descriptor.getPageSize() != null) {
-        gridModel.setPageSize(descriptor.getAttachmentList().size());
-      }
-    }
 
     UUID uuid = view.getUuid();
     gridModelApi.initGridInView(uuid, gridId, gridModel);
@@ -160,8 +149,21 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     if (ObjectUtils.isEmpty(attachmentList)) {
       attachmentList = new ArrayList<>();
     }
+    gridModelApi.setData(uuid, gridId, BinaryContentData.class, attachmentList);
 
-    gridModelApi.setData(view.getUuid(), gridId, BinaryContentData.class, attachmentList);
+    if (descriptor.getPageSize() != null) {
+      gridModelApi.setPageSize(uuid, gridId,
+          (m) -> descriptor.getPageSize());
+    }
+
+    if (!descriptor.getIsPaginatorEnabled()) {
+      gridModel.setPaginator(false);
+      if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())
+          && descriptor.getPageSize() != null) {
+        gridModelApi.setPageSize(uuid, gridId,
+            (m) -> descriptor.getAttachmentList().size());
+      }
+    }
     AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
   }
 

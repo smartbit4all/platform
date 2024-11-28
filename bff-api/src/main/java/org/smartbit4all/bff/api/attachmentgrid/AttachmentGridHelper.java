@@ -9,7 +9,6 @@ import org.smartbit4all.core.object.ObjectApi;
 
 final class AttachmentGridHelper {
 
-
   public static final String ATTACHMENT_GRID_DESCRIPTOR_POSTFIX =
       "_ATTACHMENT_GRID_DESCRIPTOR_POSTFIX";
   public static final String ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX =
