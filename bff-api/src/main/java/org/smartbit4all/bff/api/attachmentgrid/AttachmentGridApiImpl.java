@@ -170,6 +170,9 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
   private SmartComponentLayoutDefinition createDialogGridLayout(
       AttachmentGridDescriptor descriptor) {
     return ObjectLayoutBuilder.container(LayoutDirection.VERTICAL)
+        .addComponentsItem(ObjectLayoutBuilder.form(LayoutDirection.HORIZONTAL,
+            ObjectLayoutBuilder.label("label", localeSettingApi.get("attachment.grid.dialog.title"))
+                .cssClass("attachmentDialogTitle")))
         .addComponentsItem(ObjectLayoutBuilder.grid(descriptor.getGridWidgetId()))
         .addComponentsItem(ObjectLayoutBuilder.toolbar(
             descriptor.getGridWidgetId() + AttachmentGridHelper.ATTACHMENT_TOOLBAR_POSTFIX));
