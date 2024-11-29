@@ -406,8 +406,7 @@ components:
           description: |
             If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse
             situation then the condition is NOTIN.
-          enum: [IN, NOTIN]
-          default: IN
+          $ref: '#/components/schemas/SubjectCondition'
         setOperation:
           enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]
           default: UNION
@@ -431,6 +430,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ACLEntry'
+    SubjectCondition:
+      type: string
+      enum:
+        - IN
+        - NOTIN
+      default: IN
     ACLOperation:
       type: object
       description: |
@@ -542,6 +547,10 @@ components:
           description: |
             The operation object of the given subject.
           $ref: '#/components/schemas/ACLOperation'
+        subjectCondition:
+          description: |
+            SubjectCondition of the given subject. It will determine if this subject is allows this operation (IN) or forbids it (NOTIN).
+          $ref: '#/components/schemas/SubjectCondition'
     ACLSubjectSubscription:
       type: object
       description: |

@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectCondition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -35,7 +36,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object is a transient one but can be used for UI editing and caching also. It contains the subject and the ACLOperations  if the given subject and the operation is attached. ")
 @JsonPropertyOrder({
   ACLSubject.SUBJECT,
-  ACLSubject.OPERATION
+  ACLSubject.OPERATION,
+  ACLSubject.SUBJECT_CONDITION
 })
 @JsonTypeName("ACLSubject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +47,9 @@ public class ACLSubject {
 
   public static final String OPERATION = "operation";
   private ACLOperation operation;
+
+  public static final String SUBJECT_CONDITION = "subjectCondition";
+  private SubjectCondition subjectCondition = SubjectCondition.IN;
 
   public ACLSubject() { 
   }
@@ -106,6 +111,34 @@ public class ACLSubject {
   }
 
 
+  public ACLSubject subjectCondition(SubjectCondition subjectCondition) {
+    
+    this.subjectCondition = subjectCondition;
+    return this;
+  }
+
+   /**
+   * Get subjectCondition
+   * @return subjectCondition
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SUBJECT_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SubjectCondition getSubjectCondition() {
+    return subjectCondition;
+  }
+
+
+  @JsonProperty(SUBJECT_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubjectCondition(SubjectCondition subjectCondition) {
+    this.subjectCondition = subjectCondition;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -116,12 +149,13 @@ public class ACLSubject {
     }
     ACLSubject acLSubject = (ACLSubject) o;
     return Objects.equals(this.subject, acLSubject.subject) &&
-        Objects.equals(this.operation, acLSubject.operation);
+        Objects.equals(this.operation, acLSubject.operation) &&
+        Objects.equals(this.subjectCondition, acLSubject.subjectCondition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subject, operation);
+    return Objects.hash(subject, operation, subjectCondition);
   }
 
   @Override
@@ -130,6 +164,7 @@ public class ACLSubject {
     sb.append("class ACLSubject {\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
+    sb.append("    subjectCondition: ").append(toIndentedString(subjectCondition)).append("\n");
     sb.append("}");
     return sb.toString();
   }

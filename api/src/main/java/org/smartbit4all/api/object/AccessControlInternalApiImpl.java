@@ -26,7 +26,6 @@ import org.smartbit4all.api.org.bean.ACL;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
 import org.smartbit4all.api.org.bean.ACLEntry.SetOperationEnum;
-import org.smartbit4all.api.org.bean.ACLEntry.SubjectConditionEnum;
 import org.smartbit4all.api.org.bean.ACLObject;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
@@ -35,6 +34,7 @@ import org.smartbit4all.api.org.bean.ACLSubjectOperationModification;
 import org.smartbit4all.api.org.bean.ACLSubjectOperations;
 import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectCondition;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -117,12 +117,12 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     // Should be cached.
     Map<URI, Subject> subjectMap =
         subjects.stream().collect(toMap(s -> objectApi.getLatestUri(s.getRef()), s -> s));
-    Map<SubjectConditionEnum, List<ACLEntry>> entriesByCond =
+    Map<SubjectCondition, List<ACLEntry>> entriesByCond =
         acl.getRootEntry().getEntries().stream()
             .filter(e -> subjectMap.containsKey(objectApi.getLatestUri(e.getSubject().getRef())))
             .collect(groupingBy(e -> e.getSubjectCondition()));
     List<String> result = new ArrayList<>();
-    List<ACLEntry> inList = entriesByCond.get(SubjectConditionEnum.IN);
+    List<ACLEntry> inList = entriesByCond.get(SubjectCondition.IN);
     if (inList != null && !inList.isEmpty()) {
       result.addAll(inList.stream().flatMap(e -> e.getOperations().stream()).collect(toList()));
     } else {
@@ -133,11 +133,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       }
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
-    List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
+    List<ACLEntry> notInLIst = entriesByCond.get(SubjectCondition.NOTIN);
     if (notInLIst != null && !notInLIst.isEmpty()) {
       Set<String> forbiddenOperations =
           notInLIst.stream().flatMap(e -> e.getOperations().stream()).collect(toSet());
-      result.removeIf(o -> forbiddenOperations.contains(o));
+      result.removeIf(forbiddenOperations::contains);
     }
     return result;
   }
@@ -145,10 +145,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   @Override
   public Map<String, List<URI>> getUsersByOperation(String modelName, ACL acl,
       List<String> operations) {
-    Map<SubjectConditionEnum, List<ACLEntry>> entriesByCond =
+    Map<SubjectCondition, List<ACLEntry>> entriesByCond =
         acl.getRootEntry().getEntries().stream().collect(groupingBy(e -> e.getSubjectCondition()));
     Map<String, List<URI>> result;
-    List<ACLEntry> inList = entriesByCond.get(SubjectConditionEnum.IN);
+    List<ACLEntry> inList = entriesByCond.get(SubjectCondition.IN);
     // if (inList != null && !inList.isEmpty()) {
     // List<User> allUsers = orgApi.getAllUsers();
     // List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
@@ -168,7 +168,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
 
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
-    List<ACLEntry> notInLIst = entriesByCond.get(SubjectConditionEnum.NOTIN);
+    List<ACLEntry> notInLIst = entriesByCond.get(SubjectCondition.NOTIN);
     if (notInLIst != null && !notInLIst.isEmpty()) {
       Map<String, List<URI>> forbiddenUsersByOperation =
           getUsersByOperation(modelName, operations, notInLIst);
@@ -286,7 +286,9 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       acl.getRootEntry().addEntriesItem(new ACLEntry()
           .subject(aclSubject.getSubject())
           .addOperationsItem(operation)
-          .addOperationObjectsItem(aclSubject.getOperation()));
+          .addOperationObjectsItem(aclSubject.getOperation())
+      // .subjectCondition(aclSubject.getSubjectCondition())
+      );
       if (contextEntity != null) {
         // Add the operation reference to the referenced entries.
         ACLSubjectOperationModification subjectModification =
