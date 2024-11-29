@@ -20,22 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes an attachment grid, made up of BinaryContentDatas.
  */
-@ApiModel(description = "Describes an attachment grid, made up of BinaryContentDatas.")
+@Schema(description = "Describes an attachment grid, made up of BinaryContentDatas.")
 @JsonPropertyOrder({
   AttachmentGridDescriptor.ATTACHMENT_LIST,
   AttachmentGridDescriptor.GRID_WIDGET_ID,
@@ -49,11 +49,10 @@ import javax.validation.Valid;
   AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
   AttachmentGridDescriptor.PAGE_SIZE
 })
-@JsonTypeName("AttachmentGridDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
   public static final String ATTACHMENT_LIST = "attachmentList";
-  private List<BinaryContentData> attachmentList = null;
+  private List<BinaryContentData> attachmentList = new ArrayList<>();
 
   public static final String GRID_WIDGET_ID = "gridWidgetId";
   private String gridWidgetId;
@@ -85,7 +84,7 @@ public class AttachmentGridDescriptor {
   public static final String PAGE_SIZE = "pageSize";
   private Integer pageSize;
 
-  public AttachmentGridDescriptor() { 
+  public AttachmentGridDescriptor() {
   }
 
   public AttachmentGridDescriptor attachmentList(List<BinaryContentData> attachmentList) {
@@ -102,13 +101,14 @@ public class AttachmentGridDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get attachmentList
    * @return attachmentList
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ATTACHMENT_LIST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -123,19 +123,19 @@ public class AttachmentGridDescriptor {
     this.attachmentList = attachmentList;
   }
 
-
   public AttachmentGridDescriptor gridWidgetId(String gridWidgetId) {
     
     this.gridWidgetId = gridWidgetId;
     return this;
   }
 
-   /**
+  /**
    * Get gridWidgetId
    * @return gridWidgetId
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(GRID_WIDGET_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -150,20 +150,20 @@ public class AttachmentGridDescriptor {
     this.gridWidgetId = gridWidgetId;
   }
 
-
   public AttachmentGridDescriptor viewUuid(UUID viewUuid) {
     
     this.viewUuid = viewUuid;
     return this;
   }
 
-   /**
+  /**
    * Get viewUuid
    * @return viewUuid
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -178,19 +178,19 @@ public class AttachmentGridDescriptor {
     this.viewUuid = viewUuid;
   }
 
-
   public AttachmentGridDescriptor buttonColor(String buttonColor) {
     
     this.buttonColor = buttonColor;
     return this;
   }
 
-   /**
+  /**
    * Get buttonColor
    * @return buttonColor
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BUTTON_COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -205,19 +205,19 @@ public class AttachmentGridDescriptor {
     this.buttonColor = buttonColor;
   }
 
-
   public AttachmentGridDescriptor logicalSchema(String logicalSchema) {
     
     this.logicalSchema = logicalSchema;
     return this;
   }
 
-   /**
+  /**
    * Get logicalSchema
    * @return logicalSchema
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(LOGICAL_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -232,20 +232,20 @@ public class AttachmentGridDescriptor {
     this.logicalSchema = logicalSchema;
   }
 
-
   public AttachmentGridDescriptor saveRequest(InvocationRequest saveRequest) {
     
     this.saveRequest = saveRequest;
     return this;
   }
 
-   /**
+  /**
    * Get saveRequest
    * @return saveRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SAVE_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -260,19 +260,19 @@ public class AttachmentGridDescriptor {
     this.saveRequest = saveRequest;
   }
 
-
   public AttachmentGridDescriptor isPreviewable(Boolean isPreviewable) {
     
     this.isPreviewable = isPreviewable;
     return this;
   }
 
-   /**
+  /**
    * Get isPreviewable
    * @return isPreviewable
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_PREVIEWABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -287,19 +287,19 @@ public class AttachmentGridDescriptor {
     this.isPreviewable = isPreviewable;
   }
 
-
   public AttachmentGridDescriptor isDownloadable(Boolean isDownloadable) {
     
     this.isDownloadable = isDownloadable;
     return this;
   }
 
-   /**
+  /**
    * Get isDownloadable
    * @return isDownloadable
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_DOWNLOADABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -314,19 +314,19 @@ public class AttachmentGridDescriptor {
     this.isDownloadable = isDownloadable;
   }
 
-
   public AttachmentGridDescriptor isEditable(Boolean isEditable) {
     
     this.isEditable = isEditable;
     return this;
   }
 
-   /**
+  /**
    * Get isEditable
    * @return isEditable
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_EDITABLE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -341,19 +341,19 @@ public class AttachmentGridDescriptor {
     this.isEditable = isEditable;
   }
 
-
   public AttachmentGridDescriptor isPaginatorEnabled(Boolean isPaginatorEnabled) {
     
     this.isPaginatorEnabled = isPaginatorEnabled;
     return this;
   }
 
-   /**
+  /**
    * Get isPaginatorEnabled
    * @return isPaginatorEnabled
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IS_PAGINATOR_ENABLED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -368,19 +368,19 @@ public class AttachmentGridDescriptor {
     this.isPaginatorEnabled = isPaginatorEnabled;
   }
 
-
   public AttachmentGridDescriptor pageSize(Integer pageSize) {
     
     this.pageSize = pageSize;
     return this;
   }
 
-   /**
+  /**
    * Get pageSize
    * @return pageSize
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PAGE_SIZE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -394,7 +394,6 @@ public class AttachmentGridDescriptor {
   public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
-
 
   @Override
   public boolean equals(Object o) {
