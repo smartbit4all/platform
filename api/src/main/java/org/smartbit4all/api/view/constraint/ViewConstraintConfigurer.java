@@ -460,6 +460,39 @@ public final class ViewConstraintConfigurer {
           .mandatory(mandatory != null ? mandatory : componentConstraint.getMandatory());
     }
 
+    @Override
+    public int hashCode() {
+      return Objects.hash(enabled, mandatory, visible);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      ConstraintMarker other = (ConstraintMarker) obj;
+      return Objects.equals(enabled, other.enabled) && Objects.equals(mandatory, other.mandatory)
+          && Objects.equals(visible, other.visible);
+    }
+
+    @Override
+    public String toString() {
+      return "ConstraintMarker { visible: " + markerValToString(visible)
+          + ", enabled: " + markerValToString(enabled)
+          + ", mandatory: " + markerValToString(mandatory) + "}";
+    }
+
+    private String markerValToString(final Boolean b) {
+      if (b == null) {
+        return "NOT ALTERED";
+      }
+
+      return b.toString();
+    }
+
   }
 
   private static class ConstraintConfigurationInstruction {
