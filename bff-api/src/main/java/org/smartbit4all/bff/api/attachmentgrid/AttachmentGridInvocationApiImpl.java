@@ -68,7 +68,6 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   @Autowired
   private ConverterApi converterApi;
 
-
   @Override
   public GridPage extendPageDataForAttachment(GridPage page, UUID viewUuid,
       String widgetId) {
@@ -351,7 +350,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
-            .icon("refresh").iconPosition(IconPosition.PRE)
+            .icon("sync").iconPosition(IconPosition.PRE)
             .color(descriptor.getButtonColor()));
   }
 
