@@ -276,19 +276,29 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
           currentEntry.addOperationsItem(operation);
         }
         currentEntry.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
-        currentEntry.addOperationObjectsItem(aclSubject.getOperation());
+        if (aclSubject.getOperation() != null) {
+          currentEntry.addOperationObjectsItem(aclSubject.getOperation());
+        }
       }
     }
     // Collect all the changes on the subjects.
     Map<String, ACLSubjectOperationModification> modifications = new HashMap<>();
     // Add the necessary entries and set
     for (ACLSubject aclSubject : toAdd) {
-      acl.getRootEntry().addEntriesItem(new ACLEntry()
+      final ACLEntry entry = new ACLEntry()
           .subject(aclSubject.getSubject())
-          .addOperationsItem(operation)
-          .addOperationObjectsItem(aclSubject.getOperation())
-      // .subjectCondition(aclSubject.getSubjectCondition())
-      );
+          .addOperationsItem(operation);
+      final ACLOperation op = aclSubject.getOperation();
+      if (op != null) {
+        entry.addOperationObjectsItem(op);
+      }
+
+      final SubjectCondition subjectCondition = aclSubject.getSubjectCondition();
+      if (subjectCondition != null) {
+        entry.subjectCondition(subjectCondition);
+      }
+
+      acl.getRootEntry().addEntriesItem(entry);
       if (contextEntity != null) {
         // Add the operation reference to the referenced entries.
         ACLSubjectOperationModification subjectModification =
