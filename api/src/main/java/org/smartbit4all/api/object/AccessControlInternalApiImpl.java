@@ -278,6 +278,8 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
         currentEntry.getOperationObjects().removeIf(op -> operation.equals(op.getName()));
         if (aclSubject.getOperation() != null) {
           currentEntry.addOperationObjectsItem(aclSubject.getOperation());
+        } else {
+          currentEntry.addOperationObjectsItem(new ACLOperation().name(operation));
         }
       }
     }
@@ -291,6 +293,8 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       final ACLOperation op = aclSubject.getOperation();
       if (op != null) {
         entry.addOperationObjectsItem(op);
+      } else {
+        entry.addOperationObjectsItem(new ACLOperation().name(operation));
       }
 
       final SubjectCondition subjectCondition = aclSubject.getSubjectCondition();
