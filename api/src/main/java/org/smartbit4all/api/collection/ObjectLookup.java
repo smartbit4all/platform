@@ -86,10 +86,7 @@ public abstract class ObjectLookup {
         if (lookupResultItem == null) {
           throw new IllegalArgumentException("LookUp resulted in no items!");
         }
-        if (parameter.getRelevanceLimitPercent() != null
-            && lookupResultItem.getScoreInPercent() >= parameter.getRelevanceLimitPercent()) {
-          mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
-        }
+        mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
         if (parameter.getValuesForUpdate() != null) {
           toMap.putAll(parameter.getValuesForUpdate());
         }

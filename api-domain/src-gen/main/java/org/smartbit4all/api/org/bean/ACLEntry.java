@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.org.bean.ACLOperation;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectCondition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -87,43 +88,8 @@ public class ACLEntry {
   public static final String SUBJECT = "subject";
   private Subject subject;
 
-  /**
-   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
-   */
-  public enum SubjectConditionEnum {
-    IN("IN"),
-    
-    NOTIN("NOTIN");
-
-    private String value;
-
-    SubjectConditionEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static SubjectConditionEnum fromValue(String value) {
-      for (SubjectConditionEnum b : SubjectConditionEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
   public static final String SUBJECT_CONDITION = "subjectCondition";
-  private SubjectConditionEnum subjectCondition = SubjectConditionEnum.IN;
+  private SubjectCondition subjectCondition = SubjectCondition.IN;
 
   /**
    * Gets or Sets setOperation
@@ -235,30 +201,31 @@ public class ACLEntry {
     this.subject = subject;
   }
 
-  public ACLEntry subjectCondition(SubjectConditionEnum subjectCondition) {
+  public ACLEntry subjectCondition(SubjectCondition subjectCondition) {
     
     this.subjectCondition = subjectCondition;
     return this;
   }
 
   /**
-   * If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. 
+   * Get subjectCondition
    * @return subjectCondition
    */
   @jakarta.annotation.Nullable
+  @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the subject defines the users belongs to the given referred object then the condition is IN. If we would like to define the inverse situation then the condition is NOTIN. ")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUBJECT_CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public SubjectConditionEnum getSubjectCondition() {
+  public SubjectCondition getSubjectCondition() {
     return subjectCondition;
   }
 
 
   @JsonProperty(SUBJECT_CONDITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubjectCondition(SubjectConditionEnum subjectCondition) {
+  public void setSubjectCondition(SubjectCondition subjectCondition) {
     this.subjectCondition = subjectCondition;
   }
 
