@@ -1,13 +1,14 @@
 package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
@@ -155,13 +156,34 @@ public class VectorCollectionImpl implements VectorCollection {
     @Override
     public ObjectLookupResult lookup(Object values,
         ObjectLookupParameter parameter) {
-      List<VectorSearchResultItem> result = new ArrayList<>();
-      result = search(values, parameter.getLimit());
-      return new ObjectLookupResult().numberOfRelevant(result.isEmpty() ? 0 : 1).items(result
-          .stream().filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
+      List<VectorSearchResultItem> resultList = search(values, parameter.getLimit());
+
+      if (parameter.getRelevanceLimitRange() != null) {
+        // We cut the end of the list if needed
+        resultList.sort(Comparator.comparing(e -> e.getScore()));
+        int index = 0;
+        for (int i = 0; i < resultList.size(); i++) {
+          if (i > 0 && Math.abs(resultList.get(i - 1).getScore()
+              - resultList.get(i).getScore()) > parameter.getRelevanceLimitRange()) {
+            index = i;
+            break;
+          }
+        }
+        if (index != 0) {
+          resultList = IntStream.range(0, index)
+              .mapToObj(resultList::get)
+              .collect(Collectors.toList());
+        }
+      }
+
+      ObjectLookupResult lookupResult = new ObjectLookupResult().items(resultList
+          .stream()
+          .filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
           .map(si -> new ObjectLookupResultItem()
               .scoreInPercent(si.getScore()).objectAsMap(si.getValue()))
           .collect(toList()));
+      lookupResult.numberOfRelevant(lookupResult.getItems().size());
+      return lookupResult;
     }
 
   }
