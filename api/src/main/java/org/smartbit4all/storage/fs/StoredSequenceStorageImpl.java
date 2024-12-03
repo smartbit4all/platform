@@ -20,7 +20,7 @@ public class StoredSequenceStorageImpl implements StoredSequence {
 
   private static final Long START_VALUE = Long.valueOf(0);
 
-  StoredSequenceStorageImpl(StorageApi storageApi, URI uri, String name) {
+  public StoredSequenceStorageImpl(StorageApi storageApi, URI uri, String name) {
     this.uri = uri;
     this.storageApi = storageApi;
   }

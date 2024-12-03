@@ -190,11 +190,10 @@ public final class RetrievalApiImpl implements RetrievalApi {
   }
 
   private Map<Object, ObjectNodeData> createLatestNodeMap(Map<URI, ObjectNodeData> loadedMap) {
-    Map<Object, ObjectNodeData> loadedLatestMap = loadedMap.entrySet().stream()
+    return loadedMap.entrySet().stream()
         .collect(Collectors.toMap(
             e -> ObjectStorageImpl.getUriWithoutVersion(e.getKey()),
             Entry::getValue));
-    return loadedLatestMap;
   }
 
 

@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -46,6 +48,7 @@ import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -55,11 +58,11 @@ import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.service.identifier.CurrentIdentifier;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,6 +110,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private Cache<String, DataRow> versionContentCache = null;
 
+  @Autowired
+  private StorageApi self;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -1118,45 +1123,52 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Override
   public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequence() {
-
-      @Override
-      public List<Long> next(int count) {
-        List<Long> result = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-          NextIdentifier next = identifierService.next();
-          next.setInput(name);
-          try {
-            next.execute();
-          } catch (Exception e) {
-            throw new IllegalStateException(
-                "Unable to retreive new identifier from database " + name + " sequence",
-                e);
-          }
-          result.add(next.output());
-        }
-        return result;
-      }
-
-      @Override
-      public Long next() {
-        return next(1).get(0);
-      }
-
-      @Override
-      public Long current() {
-        CurrentIdentifier current = identifierService.current();
-        current.setInput(name);
-        try {
-          current.execute();
-        } catch (Exception e) {
-          throw new IllegalStateException(
-              "Unable to retreive the current value from database " + name + " sequence",
-              e);
-        }
-        return current.output();
-      }
-    };
+    return new StoredSequenceStorageImpl(self,
+        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
+        name);
   }
+
+  // @Override
+  // public StoredSequence getSequence(String schema, String name) {
+  // return new StoredSequence() {
+  //
+  // @Override
+  // public List<Long> next(int count) {
+  // List<Long> result = new ArrayList<>();
+  // for (int i = 0; i < count; i++) {
+  // NextIdentifier next = identifierService.next();
+  // next.setInput(name);
+  // try {
+  // next.execute();
+  // } catch (Exception e) {
+  // throw new IllegalStateException(
+  // "Unable to retreive new identifier from database " + name + " sequence",
+  // e);
+  // }
+  // result.add(next.output());
+  // }
+  // return result;
+  // }
+  //
+  // @Override
+  // public Long next() {
+  // return next(1).get(0);
+  // }
+  //
+  // @Override
+  // public Long current() {
+  // CurrentIdentifier current = identifierService.current();
+  // current.setInput(name);
+  // try {
+  // current.execute();
+  // } catch (Exception e) {
+  // throw new IllegalStateException(
+  // "Unable to retreive the current value from database " + name + " sequence",
+  // e);
+  // }
+  // return current.output();
+  // }
+  // };
+  // }
 
 }
