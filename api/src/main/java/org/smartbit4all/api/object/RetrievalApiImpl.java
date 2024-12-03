@@ -165,21 +165,16 @@ public final class RetrievalApiImpl implements RetrievalApi {
               branchEntry);
       Map<URI, ObjectNodeData> loadedMap = loadedObjects.stream()
           .collect(Collectors.toMap(ObjectNodeData::getObjectUri, o -> o));
-      Map<Object, ObjectNodeData> loadedLatestMap = null;
+      boolean isLoadLatest = RetrievalRequest.calcLoadLatest(ref, refRequest.getRetrievalMode());
+      if (isLoadLatest) {
+        loadedMap = createLatestNodeMap(loadedMap);
+      }
       // Distribute loaded objects back to their owners
       Map<URI, List<ObjectNodeData>> ownersMap = referenceOwners.get(ref);
       for (Entry<URI, List<ObjectNodeData>> ownerEntry : ownersMap.entrySet()) {
         URI uri = ownerEntry.getKey();
-        ObjectNodeData loaded = loadedMap.get(uri);
-        if (loaded == null) {
-          URI latestUri = ObjectStorageImpl.getUriWithoutVersion(uri);
-          if (Objects.equals(latestUri, uri)) {
-            if (loadedLatestMap == null) {
-              loadedLatestMap = createLatestNodeMap(loadedMap);
-            }
-            loaded = loadedLatestMap.get(uri);
-          }
-        }
+        ObjectNodeData loaded = loadedMap.get(
+            isLoadLatest ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri);
         if (loaded != null) {
           for (ObjectNodeData owner : ownerEntry.getValue()) {
             populateReferenceInObject(ref, owner, uri, loaded);
@@ -189,7 +184,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
     }
   }
 
-  private Map<Object, ObjectNodeData> createLatestNodeMap(Map<URI, ObjectNodeData> loadedMap) {
+  private Map<URI, ObjectNodeData> createLatestNodeMap(Map<URI, ObjectNodeData> loadedMap) {
     return loadedMap.entrySet().stream()
         .collect(Collectors.toMap(
             e -> ObjectStorageImpl.getUriWithoutVersion(e.getKey()),

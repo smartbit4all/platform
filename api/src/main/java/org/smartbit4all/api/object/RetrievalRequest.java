@@ -17,7 +17,7 @@ import com.google.common.base.Strings;
 
 /**
  * The retrieval request that defines the object node of the request.
- * 
+ *
  * @author Peter Boros
  */
 public final class RetrievalRequest {
@@ -69,7 +69,7 @@ public final class RetrievalRequest {
 
   /**
    * The request is constructed by the {@link ObjectApi} with an {@link ObjectDefinition}.
-   * 
+   *
    */
   public RetrievalRequest(ObjectApi objectApi, ObjectDefinition<?> definition,
       RetrievalMode retrievalMode) {
@@ -82,7 +82,7 @@ public final class RetrievalRequest {
 
   /**
    * The object request is constructed by itself and the RetrievalRequest.
-   * 
+   *
    */
   RetrievalRequest(ObjectDefinition<?> definition, RetrievalRequest predecessor) {
     this.definition = definition;
@@ -110,7 +110,7 @@ public final class RetrievalRequest {
 
   /**
    * This function adds a new Object to the request by the given {@link ReferenceDefinition}.
-   * 
+   *
    * @param paths The names of the outgoing references to follow when loading the referred objects.
    *        Without any modification it is the name of the property that contains the referrer URI.
    * @return The {@link RetrievalRequest} of the last referred object. If paths is null or empty,
@@ -123,7 +123,7 @@ public final class RetrievalRequest {
   /**
    * Similar to {@link #append(String...)}, but return this, the root request, so subsequent
    * <code>add</code> calls will add paths to the same request.
-   * 
+   *
    * @param paths The names of the outgoing references to follow when loading the referred objects.
    *        Without any modification it is the name of the property that contains the referrer URI.
    * @return
@@ -172,7 +172,7 @@ public final class RetrievalRequest {
 
   /**
    * Return request on given path. If request is missing anywhere in path, returns null.
-   * 
+   *
    * @param paths
    * @return
    */
@@ -182,7 +182,7 @@ public final class RetrievalRequest {
 
   /**
    * Traverses this request by the path, and if needed, creates next request.
-   * 
+   *
    * @param create
    * @param paths
    * @return
@@ -230,7 +230,7 @@ public final class RetrievalRequest {
   /**
    * A recursive function to collect all request nodes inclusively itself into a {@link Stream} for
    * further processing.
-   * 
+   *
    * @return The nodes {@link Stream}.
    */
   public Stream<RetrievalRequest> all() {
@@ -273,7 +273,7 @@ public final class RetrievalRequest {
   /**
    * Defined if we need the latest version of the given object. By default we load the referred
    * version directly.
-   * 
+   *
    * @return
    */
   public final boolean isLoadLatest() {
@@ -283,7 +283,7 @@ public final class RetrievalRequest {
   /**
    * Defined if we need the latest version of the given object. By default we load the referred
    * version directly.
-   * 
+   *
    */
   public final RetrievalRequest setLoadLatest(boolean loadLatest) {
     this.loadLatest = loadLatest;
@@ -292,7 +292,7 @@ public final class RetrievalRequest {
 
   /**
    * Load the whole request from the root, with a specified objectUri.
-   * 
+   *
    * @param objectUri
    * @return
    */
@@ -302,7 +302,7 @@ public final class RetrievalRequest {
 
   /**
    * Load the whole request from the root, with a specified objectUri.
-   * 
+   *
    * @param objectUris
    * @return
    */
@@ -315,7 +315,7 @@ public final class RetrievalRequest {
    * label to go back when we reach the same object node later on. The label is a logical jump point
    * in the {@link RetrievalRequest} that is a definition of the retrieval operation. This label
    * should be unique in a path.
-   * 
+   *
    * @return
    */
   public final String getRecursiveStartLabel() {
@@ -325,7 +325,7 @@ public final class RetrievalRequest {
   /**
    * We can setup the {@link #recursiveStartLabel} to continue at. If we have a leaf node then the
    * retrieval operation can be continued from the same point.
-   * 
+   *
    * @return
    */
   public final RetrievalRequest getContinueRecursionAt() {
@@ -335,6 +335,10 @@ public final class RetrievalRequest {
   public final RetrievalRequest recursiveStartLabel(String recursiveStartLabel) {
     this.recursiveStartLabel = recursiveStartLabel;
     return this;
+  }
+
+  public RetrievalMode getRetrievalMode() {
+    return retrievalMode;
   }
 
 }
