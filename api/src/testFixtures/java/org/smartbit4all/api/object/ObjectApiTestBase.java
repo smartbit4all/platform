@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
@@ -84,6 +85,9 @@ public class ObjectApiTestBase {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private BranchApi branchApi;
 
   @Autowired
   private CollectionApi collectionApi;
@@ -345,6 +349,61 @@ public class ObjectApiTestBase {
     }
 
   }
+
+  @Test
+  protected void testBranchBasics() {
+    URI objectUri = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("Root"));
+
+    ObjectNode node = objectApi.load(objectUri);
+    node.modify(SampleCategory.class, cat -> cat.name("Root modified on branch"));
+
+    URI branchUri = branchApi.makeBranch("test branch").getUri();
+    objectApi.save(node, branchUri);
+
+    node = objectApi.load(objectUri);
+    node.modify(SampleCategory.class, cat -> cat.name("Root modified on main"));
+    objectApi.save(node, null);
+
+    ObjectNode nodeMain = objectApi.loadLatest(objectUri);
+    ObjectNode nodeBranch = objectApi.loadLatest(objectUri, branchUri);
+    assertEquals("Root modified on main", nodeMain.getValueAsString(SampleCategory.NAME));
+    assertEquals("Root modified on branch", nodeBranch.getValueAsString(SampleCategory.NAME));
+  }
+
+  @Test
+  protected void testSnapshotBasics() {
+    URI userUri = objectApi.saveAsNew(SCHEMA_ASPECTS,
+        new User().name("user"));
+    URI userLatestUri = objectApi.getLatestUri(userUri);
+    URI objectUri = objectApi.saveAsNew(SCHEMA_ASPECTS,
+        new SampleContainerItem().name("Root").userUri(userLatestUri));
+
+    BranchEntry branch = branchApi.makeBranch("snapshot branch");
+    ObjectNode contentNode = objectApi.load(
+        objectApi.request(SampleContainerItem.class)
+            .add(SampleContainerItem.USER_URI),
+        objectUri);
+    URI branchuri = branch.getUri();
+    branchApi.addSnapshotBranch(branchuri, Arrays.asList(contentNode));
+
+    ObjectNode userNode = objectApi.load(userLatestUri);
+    userNode.modify(User.class, user -> user.name("user modified on main"));
+    objectApi.save(userNode, null);
+
+    ObjectNode userNodeMain = objectApi.loadLatest(userLatestUri);
+    ObjectNode userNodeBranch = objectApi.loadLatest(userLatestUri, branchuri);
+    assertEquals("user modified on main", userNodeMain.getValueAsString(User.NAME));
+    assertEquals("user", userNodeBranch.getValueAsString(User.NAME));
+
+    ObjectNode itemNodeOnMain = objectApi.load(objectUri);
+    ObjectNode itemNodeOnBranch = objectApi.load(objectUri, branchuri);
+    assertEquals("user modified on main", itemNodeOnMain.getValueAsString(
+        SampleContainerItem.USER_URI, User.NAME));
+    assertEquals("user", itemNodeOnBranch.getValueAsString(
+        SampleContainerItem.USER_URI, User.NAME));
+
+  }
+
 
   @Test
   protected void testSubjects() {

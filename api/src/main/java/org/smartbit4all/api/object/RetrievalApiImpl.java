@@ -165,12 +165,21 @@ public final class RetrievalApiImpl implements RetrievalApi {
               branchEntry);
       Map<URI, ObjectNodeData> loadedMap = loadedObjects.stream()
           .collect(Collectors.toMap(ObjectNodeData::getObjectUri, o -> o));
-
+      Map<Object, ObjectNodeData> loadedLatestMap = null;
       // Distribute loaded objects back to their owners
       Map<URI, List<ObjectNodeData>> ownersMap = referenceOwners.get(ref);
       for (Entry<URI, List<ObjectNodeData>> ownerEntry : ownersMap.entrySet()) {
         URI uri = ownerEntry.getKey();
         ObjectNodeData loaded = loadedMap.get(uri);
+        if (loaded == null) {
+          URI latestUri = ObjectStorageImpl.getUriWithoutVersion(uri);
+          if (Objects.equals(latestUri, uri)) {
+            if (loadedLatestMap == null) {
+              loadedLatestMap = createLatestNodeMap(loadedMap);
+            }
+            loaded = loadedLatestMap.get(uri);
+          }
+        }
         if (loaded != null) {
           for (ObjectNodeData owner : ownerEntry.getValue()) {
             populateReferenceInObject(ref, owner, uri, loaded);
@@ -179,6 +188,16 @@ public final class RetrievalApiImpl implements RetrievalApi {
       }
     }
   }
+
+  private Map<Object, ObjectNodeData> createLatestNodeMap(Map<URI, ObjectNodeData> loadedMap) {
+    Map<Object, ObjectNodeData> loadedLatestMap = loadedMap.entrySet().stream()
+        .collect(Collectors.toMap(
+            e -> ObjectStorageImpl.getUriWithoutVersion(e.getKey()),
+            Entry::getValue));
+    return loadedLatestMap;
+  }
+
+
 
   private void populateReferenceInObject(ReferenceDefinition ref, ObjectNodeData owner, URI uri,
       ObjectNodeData referenced) {
