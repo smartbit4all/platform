@@ -3,10 +3,9 @@ package org.smartbit4all.bff.api.attachmentgrid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -131,12 +130,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     List<UploadedFile> uploadedFiles =
         actionRequestHelper.getAsList(UiActions.INPUT2, UploadedFile.class);
 
-    Set<String> existingFileNames;
+    List<String> existingFileNames;
     if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())) {
       existingFileNames = descriptor.getAttachmentList().stream().map(a -> a.getFileName())
-          .collect(Collectors.toSet());
+          .collect(Collectors.toList());
     } else {
-      existingFileNames = new HashSet<>();
+      existingFileNames = new ArrayList<>();
     }
 
     List<BinaryContentData> newAttachments = uploadedFiles.stream().map(uploadedFile -> {
@@ -227,29 +226,28 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   }
 
   private BinaryContentData generateUniqueFilename(String uploadedFilename,
-      Set<String> existingFileNames) {
+      List<String> existingFileNames) {
 
-    String originalFilename = uploadedFilename;
+    String regex = "^(.*?)(\\s*\\(\\d+\\))*\\s*\\.\\w+$";
+
+    String baseName = uploadedFilename.replaceAll(regex, "$1");
     String extension = uploadedFilename.replaceAll("^.*\\.(.*)$", "$1");
 
-    String filename;
-    if (existingFileNames.contains(uploadedFilename) && existingFileNames.isEmpty()) {
+    List<String> baseFileNames = existingFileNames.stream()
+        .map(filename -> filename.replaceAll(regex, "$1"))
+        .collect(Collectors.toList());
 
-      String baseName = originalFilename.replaceAll("(.*)\\.[^.]+$", "$1");
-      filename = originalFilename;
-      int counter = 1;
-
-      while (existingFileNames.contains(filename)) {
-        filename = String.format("%s(%d).%s", baseName, counter, extension);
-        counter++;
-      }
-    } else {
-      filename = uploadedFilename;
+    if (!baseFileNames.contains(baseName)) {
+      return new BinaryContentData()
+          .fileName(baseName + "." + extension).extension(extension);
     }
-    return new BinaryContentData()
-        .fileName(filename).extension(extension);
-  }
 
+    int counter = Collections.frequency(baseFileNames, baseName);
+    String uniqueName = baseName + " (" + counter + ")." + extension;
+
+    return new BinaryContentData()
+        .fileName(uniqueName).extension(extension);
+  }
 
   @Override
   public void saveListRequest(UUID viewUuid, UiActionRequest request, String widgetId) {
@@ -269,7 +267,6 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     UiActions.remove(view, getSaveListAction(descriptor));
     UiActions.add(view, getSaveListAction(descriptor).disabled(true));
   }
-
 
   private void previewFile(View view, URI dataUri, String fileName, String extension) {
     Optional<URI> previewableFileUri = createPreviewableFile(dataUri, extension);
@@ -298,12 +295,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         case MimeTypeApi.PDF_EXT:
           return Optional.of(binaryDataObject.getUri());
         case MimeTypeApi.DOCX_EXT:
-          URI docxConvertedUri = saveTemporaryBinaryData(objectApi,
+          URI docxConvertedUri = saveTemporaryBinaryData(
               converterApi.convert(binaryDataObject.getBinaryData(),
                   MimeTypeApi.DOCX_MIMETYPE, MimeTypeApi.PDF_MIMETYPE));
           return Optional.of(docxConvertedUri);
         case MimeTypeApi.PNG_EXT:
-          URI pngConvertedUri = saveTemporaryBinaryData(objectApi,
+          URI pngConvertedUri = saveTemporaryBinaryData(
               converterApi.convert(binaryDataObject.getBinaryData(),
                   MimeTypeApi.PNG_MIMETYPE, MimeTypeApi.PDF_MIMETYPE));
           return Optional.of(pngConvertedUri);
@@ -316,7 +313,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
   }
 
-  private static URI saveTemporaryBinaryData(ObjectApi objectApi, final BinaryData contentData) {
+  private URI saveTemporaryBinaryData(final BinaryData contentData) {
     return objectApi.saveAsNew(ATTACHMENT_TEMP_SCHEMA, contentData.asObject());
   }
 
@@ -331,6 +328,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     return new UiAction()
         .input2Type(UiActionInputType.MULTIPLE_FILES)
         .code(ATTACHMENT_UPLOAD_HANDLER)
+        .model(true)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
@@ -359,7 +357,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         .code(ATTACHMENT_SAVE_LIST_HANDLER)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .disabled(true)
-        .submit(true)
+        .model(true)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
             .icon("save").iconPosition(IconPosition.PRE)
@@ -395,6 +393,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.addAttachment(null, null, gridId))));
       handlers.add(new ViewEventHandler()
+          .viewEventType(ViewEventTypeEnum.BEFORE)
+          .addPathItem(ViewEventApi.ACTION)
+          .addPathItem(ATTACHMENT_UPLOAD_HANDLER)
+          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+              .build(api -> api.saveModel(null, null))));
+
+      handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.WIDGET)
           .addPathItem(gridId)
@@ -402,18 +407,39 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.removeAttachment(null, gridId, null, null))));
       handlers.add(new ViewEventHandler()
+          .viewEventType(ViewEventTypeEnum.BEFORE)
+          .addPathItem(ViewEventApi.ACTION)
+          .addPathItem(ATTACHMENT_REMOVE_HANDLER)
+          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+              .build(api -> api.saveModel(null, null))));
+
+      handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_REFRESH_LIST_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.refreshGridToOriginalState(null, null, gridId))));
       handlers.add(new ViewEventHandler()
+          .viewEventType(ViewEventTypeEnum.BEFORE)
+          .addPathItem(ViewEventApi.ACTION)
+          .addPathItem(ATTACHMENT_REFRESH_LIST_HANDLER)
+          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+              .build(api -> api.saveModel(null, null))));
+
+      handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_SAVE_LIST_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.saveListRequest(null, null, gridId))));
+      handlers.add(new ViewEventHandler()
+          .viewEventType(ViewEventTypeEnum.BEFORE)
+          .addPathItem(ViewEventApi.ACTION)
+          .addPathItem(ATTACHMENT_SAVE_LIST_HANDLER)
+          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+              .build(api -> api.saveModel(null, null))));
     }
+
     if (Boolean.TRUE.equals(descriptor.getIsDownloadable())) {
       handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
@@ -443,6 +469,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   @Override
   public void closeDialogWindow(UUID viewUuid, UiActionRequest request) {
     viewApi.closeView(viewUuid);
+  }
+
+  @Override
+  public void saveModel(UUID viewUuid, UiActionRequest request) {
+    viewApi.getView(viewUuid)
+        .setModel(actionRequestHelper(request)
+            .get(UiActions.MODEL, Object.class));
   }
 
 }

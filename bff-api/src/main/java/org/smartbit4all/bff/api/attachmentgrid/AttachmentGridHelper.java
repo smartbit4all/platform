@@ -42,6 +42,15 @@ final class AttachmentGridHelper {
         descriptor.getAttachmentList());
   }
 
+  static public void getOriginalAttachmentList(
+      AttachmentGridDescriptor descriptor,
+      ViewApi viewApi) {
+    View view = viewApi.getView(descriptor.getViewUuid());
+    view.putParametersItem(
+        descriptor.getGridWidgetId() + ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX,
+        descriptor.getAttachmentList());
+  }
+
   static public void setGrid(
       AttachmentGridDescriptor descriptor,
       GridModelApi gridModelApi, ViewApi viewApi) {

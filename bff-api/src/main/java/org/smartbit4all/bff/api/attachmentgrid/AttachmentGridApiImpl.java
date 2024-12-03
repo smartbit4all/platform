@@ -30,6 +30,7 @@ import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
   private AttachmentGridInvocationApi attachmentGridInvocationApi;
   @Autowired
   private LocaleSettingApi localeSettingApi;
+  @Autowired
+  private ObjectApi objectApi;
 
   private static List<String> attachmentOrderedColumns =
       Arrays.asList(BinaryContentData.FILE_NAME, BinaryContentData.DATA_URI,

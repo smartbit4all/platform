@@ -42,6 +42,8 @@ public interface AttachmentGridInvocationApi {
 
   void closeDialogWindow(UUID viewUuid, UiActionRequest request);
 
+  void saveModel(UUID viewUuid, UiActionRequest request);
+
   public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor);
 
   public List<ViewEventHandler> getEventHandlers(AttachmentGridDescriptor descriptor);

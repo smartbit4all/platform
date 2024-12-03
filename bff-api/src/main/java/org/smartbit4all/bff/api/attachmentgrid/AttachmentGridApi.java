@@ -22,6 +22,5 @@ public interface AttachmentGridApi {
    */
   void createDialogAttachmentGrid(AttachmentGridDescriptor descriptor);
 
-
 }
 
