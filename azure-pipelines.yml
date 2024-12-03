@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- develop
+- feature/jdk21
 
 schedules:
 - cron: "0 2 * * *"
@@ -12,7 +12,7 @@ schedules:
   always: 'true'
   branches:
     include:
-      - develop
+      - feature/jdk21
 
 pool:
   vmImage: 'ubuntu-latest'
