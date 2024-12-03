@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
+import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -29,7 +30,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
-import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -391,12 +391,20 @@ public final class Storage {
    * @return The list of the {@link StorageObject}s found.
    * @throws ObjectNotFoundException if any of the uris is not found on the storage.
    */
-  public <T> List<StorageObject<T>> load(List<URI> uris, Class<T> clazz) {
+  public <T> List<StorageObject<T>> loadBatch(List<URI> uris, Class<T> clazz) {
     if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
     }
 
-    return objectStorage.load(this, uris, clazz);
+    return objectStorage.loadBatch(this, uris, clazz);
+  }
+
+  public List<StorageObject<?>> loadBatch(List<URI> uris) {
+    if (uris == null || uris.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return objectStorage.loadBatch(this, uris);
   }
 
   /**
@@ -440,7 +448,7 @@ public final class Storage {
    */
   public <T> List<StorageObject<T>> load(List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
-    return objectStorage.load(this, uris, clazz, options);
+    return objectStorage.loadBatch(this, uris, clazz, options);
   }
 
   /**

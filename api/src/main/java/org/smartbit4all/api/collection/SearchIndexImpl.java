@@ -350,10 +350,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
 
-      Collection<Property<?>> ownedProperties = getDefinition().definition.allProperties().stream()
-          .filter(p -> !getMapping().isCalculatedProperty(p.getName()))
-          .collect(toList());
-      SearchEntityTableDataResult updateResult = constructResult(ownedProperties);
+      SearchEntityTableDataResult updateResult = createUpdateResult();
+      // TODO SQL here
       objectMapping.readObjects(changeList.stream().map(u -> {
         if (u.getObjectNode() == null) {
           u.objectNode(objectApi.load(u.getObjectUri()));
@@ -369,27 +367,47 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     }
   }
 
+
+  private SearchEntityTableDataResult createUpdateResult() {
+    Collection<Property<?>> ownedProperties = getDefinition().definition.allProperties().stream()
+        .filter(p -> !getMapping().isCalculatedProperty(p.getName()))
+        .collect(toList());
+    SearchEntityTableDataResult updateResult = constructResult(ownedProperties);
+    return updateResult;
+  }
+
   @Override
   public void updateIndex(List<URI> changeList) {
-    updateIndexWithData(
-        changeList.stream().map(c -> new SearchIndexObject().objectUri(c)).collect(toList()));
+    if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
+        || isUseDatabase()) {
+      SearchEntityTableDataResult updateResult = createUpdateResult();
+      objectMapping.readObjectNodes(
+          objectApi.loadBatch(changeList),
+          updateResult,
+          Collections.emptyMap(),
+          true);
+      // Update the entity definitions by the table data in the result.
+      objectMapping.merge(updateResult, Collections.emptyList());
+    }
   }
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
       Stream<URI> objectUris,
       Stream<ObjectNode> objectNodes) {
 
+    Stream<ObjectNode> nodes;
     if (objectNodes == null) {
       List<URI> allObjectUris =
           objectUris == null ? getRelevantObjectUris() : objectUris.collect(toList());
-      objectMapping.readObjects(
-          allObjectUris.stream().map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
-          result,
-          Collections.emptyMap(), false);
+      nodes = objectApi.loadBatch(allObjectUris).stream();
     } else {
-      objectMapping.readObjects(objectNodes.map(n -> new SearchIndexObject().objectNode(n)), result,
-          Collections.emptyMap(), false);
+      nodes = objectNodes;
     }
+    objectMapping.readObjects(
+        nodes.map(n -> new SearchIndexObject().objectNode(n)),
+        result,
+        Collections.emptyMap(),
+        false);
 
     return result;
   }
@@ -420,7 +438,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     separateCalculatedFieldsInPropertyList(allProperties, calculatedFields);
 
     SearchEntityTableDataResult entityResult = constructResult(allProperties);
-    objectMapping.readObjects(uris.map(u -> new SearchIndexObject().objectNode(objectApi.load(u))),
+    Stream<ObjectNode> nodes = objectApi.loadBatch(uris.collect(toList())).stream();
+    objectMapping.readObjects(
+        nodes.map(u -> new SearchIndexObject().objectNode(u)),
         entityResult,
         Collections.emptyMap(),
         false);

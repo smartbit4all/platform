@@ -29,7 +29,7 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
 
   @Override
   public List<Subject> getUserSubjects(String modelName, URI userUri) {
-    StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
+    StoredMap map = collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
     URI subjectUri = map.uris().get(objectApi.getLatestUri(userUri).toString());
     if (subjectUri == null) {
       return Collections.emptyList();
@@ -44,7 +44,7 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
 
   @Override
   public List<Subject> getAllSubjects(String modelName) {
-    StoredMap map = collectionApi.map(ObjectApiTest.SCHEMA_ASPECTS, ObjectApiTest.USER_CATEGORY);
+    StoredMap map = collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
     return map.uris().values().stream()
         .map(u -> new Subject()
             .model(modelName)

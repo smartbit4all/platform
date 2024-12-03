@@ -416,6 +416,17 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return Objects.equals(primaryKey, propertyName);
   }
 
+  final void readObjectNodes(List<ObjectNode> nodes,
+      SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
+    readObjectNodes(nodes.stream(), result, defaultValues, useLength);
+  }
+
+  final void readObjectNodes(Stream<ObjectNode> nodes,
+      SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
+    readObjects(nodes.map(d -> new SearchIndexObject().objectNode(d)),
+        result, defaultValues, useLength);
+  }
+
   final void readObjects(Stream<SearchIndexObject> objects,
       SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
 
@@ -485,15 +496,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             }
           }
         } else {
-          detailObjectMapping.readObjects(
-              n.list(detailObjectMapping.path).nodeStream()
-                  .map(d -> new SearchIndexObject().objectNode(d)),
+          detailObjectMapping.readObjectNodes(
+              n.list(detailObjectMapping.path).nodes(),
               detailResult,
               entry.getValue().masterJoin.getReferences().get(0).joins().stream()
                   .collect(toMap(j -> j.getSourceProperty().getName(),
                       j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
               useLength);
-
         }
       }
     });

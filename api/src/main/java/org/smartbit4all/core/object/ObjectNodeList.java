@@ -12,8 +12,10 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 
 public final class ObjectNodeList {
 
@@ -21,6 +23,8 @@ public final class ObjectNodeList {
 
   private final ObjectNode referrerNode;
   private final ReferenceDefinition referenceDefinition;
+
+  private ObjectApi objectApi;
 
   ObjectNodeList(ObjectApi objectApi, ObjectNode referrerNode,
       ReferenceDefinition referenceDefinition,
@@ -68,11 +72,49 @@ public final class ObjectNodeList {
   }
 
   public Stream<ObjectNode> nodeStream() {
+    // return nodes().stream();
     return stream().map(ObjectNodeReference::get);
   }
 
+  public List<ObjectNode> nodes() {
+    loadMissingObjectNodes(false);
+    return list.stream().map(ObjectNodeReference::get).collect(toList());
+  }
+
+  private void loadMissingObjectNodes(boolean versioned) {
+    List<URI> urisToLoad = new ArrayList<>();
+    for (ObjectNodeReference ref : list) {
+      if (!ref.isLoaded() && ref.getObjectUri() != null) {
+        urisToLoad.add(ref.getObjectUri());
+      }
+    }
+    List<ObjectNode> objectNodes = ObjectApiImpl.loadInternalBatch(
+        referrerNode.objectApi,
+        urisToLoad,
+        referrerNode.branchUri,
+        RetrievalMode.NORMAL,
+        versioned ? false // if versioned == true we need the exact version -> loadLatest = false
+            : RetrievalRequest.calcLoadLatest(referenceDefinition, RetrievalMode.NORMAL));
+    Iterator<ObjectNode> it = objectNodes.iterator();
+    for (ObjectNodeReference ref : list) {
+      if (!ref.isLoaded() && ref.getObjectUri() != null) {
+        if (!it.hasNext()) {
+          throw new IllegalStateException("Unexpected end of list when querying refNodes from " +
+              referenceDefinition.getSourcePropertyPath());
+        }
+        ref.set(it.next());
+      }
+    }
+  }
+
   public Stream<ObjectNode> nodeStreamVersioned() {
-    return stream().map(ObjectNodeReference::getVersioned);
+    return nodesVersioned().stream();
+    // return stream().map(ObjectNodeReference::getVersioned);
+  }
+
+  public List<ObjectNode> nodesVersioned() {
+    loadMissingObjectNodes(true);
+    return list.stream().map(ObjectNodeReference::getVersioned).collect(toList());
   }
 
   public <T> Stream<T> stream(Class<T> clazz) {
@@ -191,7 +233,7 @@ public final class ObjectNodeList {
 
   /**
    * Removes the references matching the given filter
-   * 
+   *
    * @param filter a predicate which returns {@code true} for elements to be removed
    * @return {@code true} if any elements were removed
    */
@@ -207,7 +249,7 @@ public final class ObjectNodeList {
 
   /**
    * Removes the first reference matching the given filter
-   * 
+   *
    * @param filter a predicate which returns {@code true} for the element to be removed
    * @return {@code true} if any elements were removed
    */
@@ -240,7 +282,7 @@ public final class ObjectNodeList {
   /**
    * Execute a sort operation on the object node list. As a result of the call the list itself will
    * be sorted via the comparator passed as parameter.
-   * 
+   *
    * @param comparator
    */
   public void sort(Comparator<ObjectNode> comparator) {

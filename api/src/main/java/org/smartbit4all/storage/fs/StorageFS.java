@@ -536,6 +536,9 @@ public class StorageFS extends ObjectStorageImpl {
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
+    if (uri == null) {
+      throw new IllegalArgumentException("Unable to load object with uri=null");
+    }
     long startTime = System.currentTimeMillis();
     URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
@@ -546,12 +549,12 @@ public class StorageFS extends ObjectStorageImpl {
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
     long lastModified = storageObjectDataFile.lastModified();
-    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
-        && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
+    boolean isSingleVersion = isSingleVersion(uriWithoutVersion);
+    if (isSingleVersion && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
       throw new IllegalArgumentException("Unable to load single version object with .");
     }
 
-    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)) {
+    if (isSingleVersion) {
       // Load the single version from file.
       return readObjectSingleVersion(storage, uriWithoutVersion, clazz, storageObjectDataFile)
           .lastModified(lastModified);

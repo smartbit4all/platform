@@ -67,7 +67,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   @Override
   public Stream<ObjectNode> nodes() {
-    return uris().stream().map(u -> objectApi.load(u));
+    return objectApi.loadBatch(uris(), branchUri).stream();
   }
 
   @Override

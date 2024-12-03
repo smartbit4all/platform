@@ -183,10 +183,22 @@ public interface ObjectApi {
    * @param branchUri
    * @return
    */
-  List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri);
+  List<ObjectNode> loadBatch(RetrievalRequest request, List<URI> objectUris, URI branchUri);
 
-  default List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris) {
-    return load(request, objectUris, null);
+  default List<ObjectNode> loadBatch(RetrievalRequest request, List<URI> objectUris) {
+    return loadBatch(request, objectUris, null);
+  }
+
+  List<ObjectNode> loadBatch(List<URI> objectUris, URI branchUri);
+
+  default List<ObjectNode> loadBatch(List<URI> objectUris) {
+    return loadBatch(objectUris, null);
+  }
+
+  List<ObjectNode> loadLatestBatch(List<URI> objectUris, URI branchUri);
+
+  default List<ObjectNode> loadLatestBatch(List<URI> objectUris) {
+    return loadLatestBatch(objectUris, null);
   }
 
   /**
@@ -249,7 +261,7 @@ public interface ObjectApi {
 
   /**
    * Constructs the latest uri version from the uri.
-   * 
+   *
    * @param uri The uri.
    * @return If the uri is already the latest (it doesn't have any version segment) then returns the
    *         uri parameter. If the uri contains version then it will return an uri without this
@@ -259,7 +271,7 @@ public interface ObjectApi {
 
   /**
    * Checks whether the latest uri version from the uri.
-   * 
+   *
    * @param uri The uri.
    * @return If the true if the uri is a latest (it doesn't have any version segment) then returns
    *         the uri parameter.
@@ -269,7 +281,7 @@ public interface ObjectApi {
   /**
    * Returns an iterator of the given object's version list. The returned iterator iterates from the
    * very first object to the last.
-   * 
+   *
    * @param objectUri The Unified Resource Identifier of the object we want the history of.
    * @return An iterator of the object versions from the first one.
    */
@@ -283,7 +295,7 @@ public interface ObjectApi {
   /**
    * Returns an iterator of the given object's version list. The returned iterator iterates from the
    * very last version to the beginning of the list.
-   * 
+   *
    * @param objectUri The Unified Resource Identifier of the object we want the history of.
    * @return An iterator of the object versions from the last one.
    */
@@ -308,7 +320,7 @@ public interface ObjectApi {
 
   /**
    * Get the value located on a given path in the parameter map.
-   * 
+   *
    * @param map The map that contains the property values of an object.
    * @param paths The path of the property to set.
    * @return The value on the given path.
@@ -317,7 +329,7 @@ public interface ObjectApi {
 
   /**
    * Set the value located on a given path in the parameter map.
-   * 
+   *
    * @param map The map that contains the property values of an object.
    * @param paths The path of the property to set.
    * @return The previous value on the given path.
@@ -336,7 +348,7 @@ public interface ObjectApi {
    * resolve call. But be careful it cannot be refreshed so if we make changes on the original
    * object then this will resolve the previous values until we create a new resolver via the
    * {@link ObjectApi#resolver()}.
-   * 
+   *
    * @return
    */
   ObjectPropertyResolver resolver();
@@ -345,7 +357,7 @@ public interface ObjectApi {
    * Constructs an object property mapper instance. The object property mapper is the central logic
    * that can help to copy values from one object to another. To perform resolution we have to pass
    * an {@link ObjectMappingDefinition}.
-   * 
+   *
    * @return
    */
   ObjectPropertyMapper mapper();
@@ -353,7 +365,7 @@ public interface ObjectApi {
   /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the
    * lock creation. We can use this lock one time to place a lock and remove it at the end.
-   * 
+   *
    * @param uri The URI of the object. It doesn't matter if it is latest or not the lock will be
    *        applied on the object not on the version of the object.
    * @return A {@link Lock} object that can be used like a normal Java Lock.
@@ -363,7 +375,7 @@ public interface ObjectApi {
   /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the
    * lock creation. We can use this lock one time to place a lock and remove it at the end.
-   * 
+   *
    * @param uris The URI collection of the objects we would like to lock. It doesn't matter if it is
    *        latest or not the lock will be applied on the object not on the version of the object.
    * @return A list of {@link Lock} object that can be used like a normal Java Lock. They are
@@ -373,7 +385,7 @@ public interface ObjectApi {
 
   /**
    * Retrieves the last modification of the given object identified by the URI.
-   * 
+   *
    * @param uri The uri of the object
    * @return return the last modification time epoch or null if the object doesn't exist.
    */
@@ -382,7 +394,7 @@ public interface ObjectApi {
   /**
    * Get a cache entry for the given object type. If the entry doesn't exist then it will create a
    * new one.
-   * 
+   *
    * @param clazz The class to manage by the cache.
    * @return The cache entry.
    */
@@ -390,7 +402,7 @@ public interface ObjectApi {
 
   /**
    * Perform a quick check for existence of a given uri.
-   * 
+   *
    * @param uri The object uri to check.
    * @return Return true if the given entry exists. Doesn't check the consistency of the data
    *         because it's not loading data itself.
@@ -399,7 +411,7 @@ public interface ObjectApi {
 
   /**
    * Perform a quick check for existence of a given uri on the given branch.
-   * 
+   *
    * @param uri The object uri to check.
    * @param branchUri The branch uri
    * @return Return true if the given entry exists. Doesn't check the consistency of the data
@@ -409,7 +421,7 @@ public interface ObjectApi {
 
   /**
    * Perform a quick check for existence of a given object identified by the id on the given branch.
-   * 
+   *
    * @param schema The object schema.
    * @param definition The object definition.
    * @param id The string identifier of the object. Used to construct the identifier.
@@ -422,7 +434,7 @@ public interface ObjectApi {
 
   /**
    * Perform a quick check for existence of a given object identified by the id on the given branch.
-   * 
+   *
    * @param schema The object schema.
    * @param definition The object definition.
    * @param id The string identifier of the object. Used to construct the identifier.
@@ -434,7 +446,7 @@ public interface ObjectApi {
 
   /**
    * Can be used to serialize any Java object as a String.
-   * 
+   *
    * @param o The object to serialize
    * @return The result string. Typical JSON like mapping. Returns null if the object is null.
    */
@@ -442,7 +454,7 @@ public interface ObjectApi {
 
   /**
    * Can be used to deserialize any Java object from a String.
-   * 
+   *
    * @param s The string serialized version of the given object.
    * @param clazz The class of the object to deserialize from the String.
    * @return The result object.

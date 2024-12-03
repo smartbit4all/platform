@@ -6,8 +6,10 @@ dependencies {
 	
 	api project(':bff-api')
 	api project(':api-srv-rest')
-	implementation 'org.smartbit4all.platform:sec'
+	implementation project(':sec')
+	implementation project(':sql')
 	testImplementation 'org.smartbit4all.platform:api'
-	testImplementation testFixtures('org.smartbit4all.platform:api')
-	testImplementation testFixtures('org.smartbit4all.platform:sec')
+	testImplementation testFixtures(project(':api'))
+	testImplementation testFixtures(project(':sec'))
+	testImplementation testFixtures(project(':sql'))
 }

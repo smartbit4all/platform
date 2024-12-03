@@ -1,17 +1,28 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +60,14 @@ import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import org.springframework.beans.factory.annotation.Value;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalNotification;
 
-public class StorageSQL extends ObjectStorageImpl {
+public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(StorageSQL.class);
 
@@ -76,8 +90,42 @@ public class StorageSQL extends ObjectStorageImpl {
   @Autowired
   public IdentifierService identifierService;
 
+  @Value("${storageSql.maximumCacheSize:81920}")
+  private long maximumCacheSize;
+
+  @Value("${storageSql.cacheConcurrencyLevel:10}")
+  private int cacheConcurrencyLevel;
+
+  /**
+   * The default is one hour
+   */
+  @Value("${storageSql.expireAfterAccessInMillis:3600000}")
+  private int expireAfterAccessInMillis;
+
+  @Value("${storageSql.useCache:true}")
+  private boolean useCache;
+
+  private Cache<String, DataRow> versionContentCache = null;
+
+
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (useCache) {
+      versionContentCache = CacheBuilder.newBuilder().maximumSize(maximumCacheSize)
+          .concurrencyLevel(cacheConcurrencyLevel)
+          .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
+          .removalListener((RemovalNotification<String, DataRow> notif) -> {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - evict, {}", notif.getKey());
+            }
+          })
+          // TODO removalListener
+          .build();
+    }
   }
 
   @Override
@@ -121,7 +169,7 @@ public class StorageSQL extends ObjectStorageImpl {
   /**
    * In case of the database the save process is almost the same. We select the object record for
    * update or insert this
-   * 
+   *
    * @param object
    * @return
    */
@@ -132,7 +180,7 @@ public class StorageSQL extends ObjectStorageImpl {
   /**
    * In case of the database the save process is almost the same. We select the object record for
    * update or insert this
-   * 
+   *
    * @param object
    * @param relationBinaryData
    * @return
@@ -143,6 +191,9 @@ public class StorageSQL extends ObjectStorageImpl {
     DataRow objectRow;
     try {
       String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
+      if (log.isTraceEnabled()) {
+        log.trace("saveObject read: uriWithoutVersion={}", uriWithoutVersion);
+      }
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
           .where(objectEntryDef.uri().eq(uriWithoutVersion)).lock()
@@ -153,7 +204,8 @@ public class StorageSQL extends ObjectStorageImpl {
     }
 
     BuilderWithFixProperties<ObjectVersionDef> builderVersion = TableDatas
-        .builder(objectVersionDef, objectVersionDef.entryId(), objectVersionDef.version(),
+        .builder(objectVersionDef, objectVersionDef.versionId(),
+            objectVersionDef.entryId(), objectVersionDef.version(),
             objectVersionDef.createdAt(), objectVersionDef.objectContent(),
             objectVersionDef.refContent(), objectVersionDef.aspectContent());
     if (objectRow != null) {
@@ -162,9 +214,11 @@ public class StorageSQL extends ObjectStorageImpl {
       if (object.isSingleVersion()) {
         // If it is a single version then we update the one and only one version of the object.
         Long newVersion = FIRST_VERSION;
+        String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
         Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
         Crud.update(builderVersion
             .addRow()
+            .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
@@ -187,12 +241,10 @@ public class StorageSQL extends ObjectStorageImpl {
         } else {
           newRefVersion = currentRefVersion;
         }
-        objectRow.set(objectEntryDef.version(), newVersion);
-        objectRow.set(objectEntryDef.refVersion(), newRefVersion);
-        objectRow.set(objectEntryDef.modifiedAt(), now);
-        Crud.update(objectRow.tableData());
+        String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
         Crud.create(builderVersion
             .addRow()
+            .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
@@ -200,6 +252,10 @@ public class StorageSQL extends ObjectStorageImpl {
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
             .build());
+        objectRow.set(objectEntryDef.version(), newVersion);
+        objectRow.set(objectEntryDef.refVersion(), newRefVersion);
+        objectRow.set(objectEntryDef.modifiedAt(), now);
+        Crud.update(objectRow.tableData());
         return newVersion;
       }
     } else {
@@ -208,6 +264,7 @@ public class StorageSQL extends ObjectStorageImpl {
       Long nextId = getNextId();
       OffsetDateTime now = OffsetDateTime.now();
       Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
+      Long newVersion = FIRST_VERSION;
       Crud.create(TableDatas
           .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
               objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
@@ -222,24 +279,30 @@ public class StorageSQL extends ObjectStorageImpl {
           .set(objectEntryDef.modifiedAt(), now)
           .set(objectEntryDef.uuid(),
               object.getUuid() == null ? null : object.getUuid().toString())
-          .set(objectEntryDef.version(), FIRST_VERSION)
+          .set(objectEntryDef.version(), newVersion)
           .set(objectEntryDef.refVersion(), newRefVersion)
           .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build());
+      String versionId = createVersionId(nextId, newVersion);
       Crud.create(builderVersion
           .addRow()
+          .set(objectVersionDef.versionId(), versionId)
           .set(objectVersionDef.entryId(), nextId)
-          .set(objectVersionDef.version(), FIRST_VERSION)
+          .set(objectVersionDef.version(), newVersion)
           .set(objectVersionDef.createdAt(), now)
           .set(objectVersionDef.objectContent(), object.serializeMapAware())
           .set(objectVersionDef.refContent(), relationBinaryData)
           .set(objectVersionDef.aspectContent(), object.serializeAspects())
           .build());
-      return FIRST_VERSION;
+      return newVersion;
     }
   }
 
   private final String getUriString(URI uri) {
     return uri == null ? null : uri.toString();
+  }
+
+  private String createVersionId(Long entryId, Long version) {
+    return entryId + HYPHEN + version;
   }
 
   /**
@@ -285,8 +348,10 @@ public class StorageSQL extends ObjectStorageImpl {
     if (optObjectRow.isPresent()) {
       objectRow = optObjectRow.get();
       storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
-          .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
-              objectRow.get(objectEntryDef.version())));
+          .currentVersion(readObjectVersion(
+              objectRow.get(objectEntryDef.id()),
+              objectRow.get(objectEntryDef.version()),
+              uriWithoutVersion));
     }
 
     ObjectVersion newVersion;
@@ -343,8 +408,10 @@ public class StorageSQL extends ObjectStorageImpl {
         objectRow != null ? objectRow.get(objectEntryDef.refVersion()) : null;
     StorageObjectRelationData storageObjectReferences =
         saveStorageObjectReferences(object,
-            loadRelationData(objectRow != null ? objectRow.get(objectEntryDef.id()) : null,
-                objectRelationVersion));
+            loadRelationData(
+                objectRow != null ? objectRow.get(objectEntryDef.id()) : null,
+                objectRelationVersion,
+                uriWithoutVersion));
     BinaryData relationBinaryData = null;
     if (storageObjectReferences != null) {
       // The data serial number will be the serial number of the version.
@@ -416,6 +483,9 @@ public class StorageSQL extends ObjectStorageImpl {
   public boolean exists(URI uri) {
     DataRow objectRow;
     try {
+      if (log.isTraceEnabled()) {
+        log.trace("exists: uri={}", uri);
+      }
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.modifiedAt())
           .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
@@ -434,6 +504,9 @@ public class StorageSQL extends ObjectStorageImpl {
   public Long lastModified(URI uri) {
     DataRow objectRow;
     try {
+      if (log.isTraceEnabled()) {
+        log.trace("lastModified: uri={}", uri);
+      }
       objectRow = Crud.read(objectEntryDef)
           .select(objectEntryDef.modifiedAt())
           .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
@@ -452,89 +525,231 @@ public class StorageSQL extends ObjectStorageImpl {
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
+    return (StorageObject<T>) loadBatch(storage, Arrays.asList(uri), options).get(0);
+  }
+
+  @Override
+  public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,
+      StorageLoadOption... options) {
+    if (uris == null || uris.isEmpty()) {
+      return Collections.emptyList();
+    }
+
     long startTime = System.currentTimeMillis();
-    URI uriWithoutVersion = getUriWithoutVersion(uri);
-    Long version = getUriVersion(uri);
 
-    // First we read the object entry
-    Optional<DataRow> optObjectEntryRow = queryObjectEntry(uriWithoutVersion, false);
+    // batch query object entries
+    Map<String, DataRow> objectEntryRows = queryObjectEntries(uris);
 
-    DataRow objectEntryRow = optObjectEntryRow
-        .orElseThrow(() -> new ObjectNotFoundException(uri, clazz, "Object not found."));
+    // collect entry IDs and versions, handling single versioned objects
+    Map<Long, Long> entryIdToVersion = new HashMap<>();
+    Map<String, Long> uriToVersion = new HashMap<>();
+    Map<Long, URI> entryIdToUri = new HashMap<>();
+    collectEntryIdsVersions(storage, uris, objectEntryRows, entryIdToVersion, uriToVersion,
+        entryIdToUri);
 
-    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
-        && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
-      throw new IllegalArgumentException("Unable to load single version object with .");
-    }
+    // batch query object versions
+    Map<String, DataRow> versionRows = queryObjectVersions(entryIdToVersion, entryIdToUri);
 
-    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)) {
-      // Load the single version from file.
-      version = FIRST_VERSION;
-    }
+    // process results and create StorageObjects
+    List<StorageObject<?>> result = new ArrayList<>();
 
-    if (version == null) {
-      // Use the latest version.
-      version = objectEntryRow.get(objectEntryDef.version());
-    }
+    for (URI uri : uris) {
+      String uriString = getUriString(getUriWithoutVersion(uri));
+      DataRow entryRow = objectEntryRows.get(uriString);
 
-    // The version number of the last relation version row
-    Long refVersion = objectEntryRow.get(objectEntryDef.refVersion());
-
-    Long objectId = objectEntryRow.get(objectEntryDef.id());
-    Optional<DataRow> optObjectVersionRow =
-        queryObjectVersion(objectId, version, true);
-    DataRow objectVersionRow = optObjectVersionRow
-        .orElseThrow(() -> new ObjectNotFoundException(uri, clazz, "Object version not found."));
-
-    StorageObjectData storageObjectData = readObjectDataFromRow(uri, objectEntryRow)
-        .currentVersion(readObjectVersionFromRow(version, objectVersionRow));
-
-    @SuppressWarnings("unchecked")
-    ObjectDefinition<T> definition =
-        (ObjectDefinition<T>) getObjectDefinition(uri, storageObjectData, clazz);
-    StorageObject<T> storageObject;
-    ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
-    Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);
-    boolean skipData = StorageLoadOption.checkSkipData(options);
-    if (versionDataSerialNo != null && !skipData) {
-
-      StorageObjectHistoryEntry loadObjectVersion =
-          loadObjectVersion(definition, objectId,
-              versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo));
-
-      // if (loadObjectVersion != null) {
-      objectVersion = loadObjectVersion.getVersion();
-      setObjectUriVersionByOptions(uri, definition, loadObjectVersion.getObjectAsMap(),
-          versionDataSerialNo, options);
-      storageObject =
-          instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
-              objectVersion);
-      storageObject.setAspects(objectVersion.getAspects());
-      // }
-
-    } else {
-      storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
-    }
-
-    // Load the relation if the object entry denotes this..
-    if (refVersion != null) {
-      Optional<DataRow> refVersionRow = queryObjectVersion(objectId, refVersion, skipData);
-      if (refVersionRow.isPresent()) {
-        BinaryData relationBinaryData = refVersionRow.get().get(objectVersionDef.refContent());
-        loadStorageObjectReferences(storageObject,
-            loadRelationData(relationBinaryData));
+      if (entryRow == null) {
+        continue;
       }
-    }
 
-    if (skipData) {
-      setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
+      Long entryId = entryRow.get(objectEntryDef.id());
+      Long version = uriToVersion.get(uriString);
+      String versionKey = entryId + "-" + version;
+      DataRow versionRow = versionRows.get(versionKey);
+
+      if (versionRow == null) {
+        continue;
+      }
+
+      try {
+        StorageObjectData storageObjectData = readObjectDataFromRow(uri, entryRow)
+            .currentVersion(readObjectVersionFromRow(version, versionRow));
+
+        ObjectDefinition<?> definition = getObjectDefinition(uri, storageObjectData, null);
+
+        StorageObject<?> storageObject;
+        ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
+
+        boolean skipData = StorageLoadOption.checkSkipData(options);
+        if (!skipData) {
+          Map<String, Object> objectMap = definition.deserializeAsMap(
+              readObjectContentFromRow(versionRow));
+          setObjectUriVersionByOptions(uri, definition, objectMap, version, options);
+          storageObject = instanceOf(storage, definition, objectMap, objectVersion);
+
+          // Handle aspects
+          BinaryData aspectBinaryData = readAspectContentFromRow(versionRow);
+          if (aspectBinaryData != null) {
+            try {
+              Map<String, ObjectAspect> aspectAsMap = definition.deserializeAsMap(aspectBinaryData)
+                  .entrySet().stream()
+                  .collect(toMap(
+                      Entry::getKey,
+                      e -> objectDefinitionApi.definition(ObjectAspect.class)
+                          .fromMap((Map<String, Object>) e.getValue())));
+              objectVersion.aspects(aspectAsMap);
+              storageObject.setAspects(aspectAsMap);
+            } catch (IOException e) {
+              log.error("Unable to read aspect data for uri: " + uri, e);
+            }
+          }
+        } else {
+          storageObject = instanceOf(storage, definition, uri, storageObjectData);
+          setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
+        }
+        // handle relations
+        Long refVersion = entryRow.get(objectEntryDef.refVersion());
+        if (refVersion != null) {
+          loadStorageObjectReferences(storageObject,
+              loadRelationData(entryId, refVersion, uri));
+        }
+
+        result.add(storageObject
+            .lastModified(entryRow.get(objectEntryDef.modifiedAt()).toEpochSecond()));
+
+      } catch (Exception e) {
+        log.error("Failed to load object: " + uri, e);
+        // TODO throw exception or continue with next object?
+      }
     }
 
     long endTime = System.currentTimeMillis();
     addRead(endTime - startTime);
 
-    return storageObject
-        .lastModified(objectEntryRow.get(objectEntryDef.modifiedAt()).toEpochSecond());
+    return result;
+  }
+
+  private Map<String, DataRow> queryObjectVersions(Map<Long, Long> entryIdToVersion,
+      Map<Long, URI> entryIdToUri) {
+    if (entryIdToVersion.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    Map<String, DataRow> versionRows = new HashMap<>();
+
+    // split entries into cacheable and non-cacheable groups
+    Map<String, DataRow> cachedVersions = new HashMap<>();
+    List<String> idsToQuery = new ArrayList<>();
+    Set<String> nonCachedIds = new HashSet<>();
+
+    entryIdToVersion.forEach((entryId, version) -> {
+      String versionId = createVersionId(entryId, version);
+      URI uri = entryIdToUri.get(entryId);
+      boolean isSingleVersion = uri != null && isSingleVersion(uri);
+
+      // skip cache for single version objects
+      if (!isSingleVersion && versionContentCache != null) {
+        DataRow cachedRow = versionContentCache.getIfPresent(versionId);
+        if (cachedRow != null) {
+          if (log.isTraceEnabled()) {
+            log.trace("Cache - hit, {}", versionId);
+          }
+          cachedVersions.put(versionId, cachedRow);
+          return;
+        }
+      }
+
+      idsToQuery.add(versionId);
+      if (!isSingleVersion) {
+        nonCachedIds.add(versionId);
+      }
+    });
+
+    // query database only for idsToQuery
+    if (!idsToQuery.isEmpty()) {
+      Map<String, DataRow> dbRows = Crud.read(objectVersionDef)
+          .select(objectVersionDef.allProperties())
+          .where(objectVersionDef.versionId().in(idsToQuery))
+          .listData()
+          .rows()
+          .stream()
+          .collect(Collectors.toMap(
+              row -> row.get(objectVersionDef.versionId()),
+              row -> row));
+
+      // add to cache if appropriate
+      if (versionContentCache != null) {
+        dbRows.forEach((id, row) -> {
+          // cache if it was in non-cached set (avoid caching unrelated/singleversion rows)
+          if (nonCachedIds.contains(id)) {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - load, size:{} ", versionContentCache.size());
+            }
+            versionContentCache.put(id, row);
+          }
+        });
+      }
+
+      versionRows.putAll(dbRows);
+    }
+
+    // merge cached and database results
+    versionRows.putAll(cachedVersions);
+
+    return versionRows;
+  }
+
+  private void collectEntryIdsVersions(Storage storage, List<URI> uris,
+      Map<String, DataRow> objectEntryRows,
+      Map<Long, Long> entryIdToVersion, Map<String, Long> uriToVersion,
+      Map<Long, URI> entryIdToUri) {
+    for (URI uri : uris) {
+      String uriString = getUriString(getUriWithoutVersion(uri));
+      DataRow entryRow = objectEntryRows.get(uriString);
+      if (entryRow != null) {
+        Long entryId = entryRow.get(objectEntryDef.id());
+        entryIdToUri.put(entryId, uri);
+        boolean isSingleVersion = isSingleVersion(uri);
+
+        // for single version objects, always use FIRST_VERSION
+        if (isSingleVersion) {
+          if (storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
+            throw new IllegalArgumentException(
+                "Unable to load single version object with non-single version policy for URI: "
+                    + uri);
+          }
+          entryIdToVersion.put(entryId, FIRST_VERSION);
+          uriToVersion.put(uriString, FIRST_VERSION);
+        } else {
+          // for versioned objects, use URI version or latest version
+          Long version = getUriVersion(uri);
+          if (version == null) {
+            version = entryRow.get(objectEntryDef.version());
+          }
+          entryIdToVersion.put(entryId, version);
+          uriToVersion.put(uriString, version);
+        }
+      }
+    }
+  }
+
+  private Map<String, DataRow> queryObjectEntries(List<URI> uris) {
+    List<String> uriStrings = uris.stream()
+        .map(uri -> getUriString(getUriWithoutVersion(uri)))
+        .collect(Collectors.toList());
+
+    Map<String, DataRow> objectEntryRows = Crud.read(objectEntryDef)
+        .select(objectEntryDef.allProperties())
+        .where(objectEntryDef.uri().in(uriStrings))
+        .listData()
+        .rows()
+        .stream()
+        .collect(Collectors.toMap(
+            row -> row.get(objectEntryDef.uri()),
+            row -> row));
+    if (objectEntryRows.size() != uris.size()) {
+      throw new ObjectNotFoundException(uris, null, "Object not found.");
+    }
+    return objectEntryRows;
   }
 
   @Override
@@ -552,15 +767,22 @@ public class StorageSQL extends ObjectStorageImpl {
 
     TableData<ObjectEntryDef> objectList;
     try {
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={}", setName);
+      }
       objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
           .where(
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
-      return objectList.rows().stream()
+      List<O> result = objectList.rows().stream()
           .map(r -> reader.apply(UriUtils.asUri(r.get(objectEntryDef.uri()))))
           .collect(toList());
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={} size{}", setName, result.size());
+      }
+      return result;
     } catch (Exception e) {
       log.debug("Unable to read all the objects from the set.", e);
       return Collections.emptyList();
@@ -587,6 +809,9 @@ public class StorageSQL extends ObjectStorageImpl {
 
   private final Optional<DataRow> queryObjectEntry(URI objectUri, boolean lock) {
     try {
+      if (log.isTraceEnabled()) {
+        log.trace("queryObjectEntry: objectUri={}, lock: {}", objectUri, lock);
+      }
       CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
           .where(objectEntryDef.uri().eq(getUriString(objectUri)));
@@ -601,13 +826,14 @@ public class StorageSQL extends ObjectStorageImpl {
 
   /**
    * Return the object version object.
-   * 
+   *
    * @param id The id of the object entry.
    * @param version The version of the object.
    * @return
    */
-  private final ObjectVersion readObjectVersion(Long id, Long version) {
-    Optional<DataRow> objectRow = queryObjectVersion(id, version, true);
+  private final ObjectVersion readObjectVersion(Long id, Long version, URI uri) {
+
+    Optional<DataRow> objectRow = queryObjectVersion(id, version, true, isSingleVersion(uri));
     if (!objectRow.isPresent()) {
       return null;
     }
@@ -617,27 +843,77 @@ public class StorageSQL extends ObjectStorageImpl {
 
   /**
    * Executes the query to retrieve the {@link DataRow} of the given object version.
-   * 
+   *
    * @param id The objet entry id.
    * @param version The version.
    * @param skipContent Indicate to skip the content itself fro better performance.
    * @return The {@link DataRow}
    */
-  private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent) {
+  private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent,
+      boolean isSingleVersion) {
+    if (versionContentCache == null) {
+      DataRow result = queryObjectVersionInner(id, version, skipContent);
+      return result == null ? Optional.empty() : Optional.of(result);
+    }
+
     if (id == null || version == null) {
       return Optional.empty();
     }
+    if (isSingleVersion) {
+      // skip cache
+      DataRow result = queryObjectVersionInner(id, version, skipContent);
+      return result == null ? Optional.empty() : Optional.of(result);
+    }
+    String cacheId = id + "-" + version;
+    DataRow cachedRow = versionContentCache.getIfPresent(cacheId);
+    if (cachedRow != null) {
+      if (log.isTraceEnabled()) {
+        log.trace("Cache - hit, {} ", cacheId);
+      }
+      return Optional.of(cachedRow);
+    }
+    DataRow result;
+    if (skipContent) {
+      // don't cache when skipContent
+      if (log.isTraceEnabled()) {
+        log.trace("Cache - wont cache, {}", cacheId);
+      }
+      result = queryObjectVersionInner(id, version, skipContent);
+    } else {
+      try {
+        result = versionContentCache.get(cacheId,
+            () -> {
+              if (log.isTraceEnabled()) {
+                log.trace("Cache - load, size:{} ", versionContentCache.size());
+              }
+              return queryObjectVersionInner(id, version, skipContent);
+            });
+      } catch (ExecutionException e) {
+        log.warn("Unable to load to cache", e);
+        result = null;
+      }
+    }
+
+    return result == null ? Optional.empty() : Optional.of(result);
+  }
+
+  private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
     try {
       PropertySet properties = objectVersionDef.allProperties();
       if (skipContent) {
         properties.remove(objectVersionDef.objectContent());
       }
+      String versionId = createVersionId(id, version);
+
+      if (log.isTraceEnabled()) {
+        log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
+      }
       return Crud.read(objectVersionDef)
           .select(properties)
-          .where(objectVersionDef.entryId().eq(id).AND(objectVersionDef.version().eq(version)))
-          .onlyOne();
+          .where(objectVersionDef.versionId().eq(versionId))
+          .onlyOne().get();
     } catch (Exception e) {
-      return Optional.empty();
+      return null;
     }
   }
 
@@ -665,7 +941,7 @@ public class StorageSQL extends ObjectStorageImpl {
   /**
    * Return the {@link StorageObjectHistoryEntry} that contains the loaded object as object and as
    * map and the {@link ObjectVersion} also.
-   * 
+   *
    * @param <T> The type of the object.
    * @param definition The definition of the object.
    * @param id The id of the object entry.
@@ -678,7 +954,8 @@ public class StorageSQL extends ObjectStorageImpl {
       Long version,
       URI versionUri) {
 
-    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false);
+    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false,
+        isSingleVersion(versionUri));
     if (!optObjectVersion.isPresent()) {
       return null;
     }
@@ -713,11 +990,13 @@ public class StorageSQL extends ObjectStorageImpl {
     return new StorageObjectHistoryEntry(objectVersion, objectAsMap);
   }
 
-  private final StorageObjectRelationData loadRelationData(Long entryId, Long relationVersione) {
-    if (relationVersione == null) {
+  private final StorageObjectRelationData loadRelationData(Long entryId, Long relationVersion,
+      URI uri) {
+    if (relationVersion == null) {
       return null;
     }
-    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersione, false);
+    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersion, false,
+        isSingleVersion(uri));
     if (optObjectVersion.isPresent()) {
       BinaryData binaryData = optObjectVersion.get().get(objectVersionDef.refContent());
       try {
@@ -725,18 +1004,6 @@ public class StorageSQL extends ObjectStorageImpl {
       } catch (IOException e) {
         log.error("Unable to deserialize reference", e);
       }
-    }
-    return null;
-  }
-
-  private final StorageObjectRelationData loadRelationData(BinaryData relContent) {
-    if (relContent == null) {
-      return null;
-    }
-    try {
-      return storageObjectRelationDataDef.deserialize(relContent).orElse(null);
-    } catch (IOException e) {
-      log.error("Unable to deserialize reference", e);
     }
     return null;
   }
@@ -753,8 +1020,10 @@ public class StorageSQL extends ObjectStorageImpl {
     }
     DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
-        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
-            objectRow.get(objectEntryDef.version())));
+        .currentVersion(readObjectVersion(
+            objectRow.get(objectEntryDef.id()),
+            objectRow.get(objectEntryDef.version()),
+            uri));
     ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;
@@ -798,8 +1067,10 @@ public class StorageSQL extends ObjectStorageImpl {
     }
     DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
-        .currentVersion(readObjectVersion(objectRow.get(objectEntryDef.id()),
-            objectRow.get(objectEntryDef.version())));
+        .currentVersion(readObjectVersion(
+            objectRow.get(objectEntryDef.id()),
+            objectRow.get(objectEntryDef.version()),
+            uri));
     ObjectVersion currentObjectVersion = objectData.getCurrentVersion();
     if (currentObjectVersion.getSerialNoData() == null) {
       return null;

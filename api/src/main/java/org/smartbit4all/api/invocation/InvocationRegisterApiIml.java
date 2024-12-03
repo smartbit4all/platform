@@ -573,7 +573,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   private void removeApis(Set<URI> apiUris) {
     List<StorageObject<ApiData>> apiDataSos =
-        storage.get().load(new ArrayList<>(apiUris), ApiData.class);
+        storage.get().loadBatch(new ArrayList<>(apiUris), ApiData.class);
 
     for (StorageObject<ApiData> apiDataSo : apiDataSos) {
       ApiData apiData = apiDataSo.getObject();
@@ -598,7 +598,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   private void addApis(Set<URI> apiUris) {
     List<StorageObject<ApiData>> apiDataSos =
-        storage.get().load(new ArrayList<>(apiUris), ApiData.class);
+        storage.get().loadBatch(new ArrayList<>(apiUris), ApiData.class);
 
     for (StorageObject<ApiData> apiDataSo : apiDataSos) {
       ApiData apiData = apiDataSo.getObject();

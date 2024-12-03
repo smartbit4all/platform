@@ -306,8 +306,8 @@ public final class RetrievalRequest {
    * @param objectUris
    * @return
    */
-  public List<ObjectNode> load(List<URI> objectUris) {
-    return objectApi.get().load(root(), objectUris);
+  public List<ObjectNode> loadBatch(List<URI> objectUris) {
+    return objectApi.get().loadBatch(root(), objectUris);
   }
 
   /**

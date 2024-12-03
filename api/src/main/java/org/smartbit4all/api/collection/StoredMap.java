@@ -5,10 +5,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This map can be used to store a map of uri globally or scoped for an object.
- * 
+ *
  * @author Peter Boros
  */
 public interface StoredMap {
@@ -16,14 +17,19 @@ public interface StoredMap {
   /**
    * The uris stored in the given container. Be careful this function reads the given collection
    * every time you call it.
-   * 
+   *
    * @return
    */
   Map<String, URI> uris();
 
   /**
+   * @return The node stream constructed by reading the {@link #uris()} of the values in the map.
+   */
+  Stream<ObjectNode> valueNodesLatest();
+
+  /**
    * Locks the given collection object and put a new uri.
-   * 
+   *
    * @param key
    * @param uri
    */
@@ -31,7 +37,7 @@ public interface StoredMap {
 
   /**
    * Locks the given collection object and put all the entries from the parameter map.
-   * 
+   *
    * @param values
    */
   void putAll(Map<String, URI> values);
@@ -48,7 +54,7 @@ public interface StoredMap {
 
   /**
    * If we set this branch then we access the branched object if it exists.
-   * 
+   *
    * @param branchUri
    */
   void branch(URI branchUri);
