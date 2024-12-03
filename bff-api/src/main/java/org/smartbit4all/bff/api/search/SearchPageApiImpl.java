@@ -285,7 +285,14 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
               getOrderByList(ctx));
     } else {
       // We try the database or read all.
-      gridContent = ctx.searchIndex.executeSearch(filters, getOrderByList(ctx));
+      if (ctx.pageConfig.getFieldsToQuery() != null
+          && !ctx.pageConfig.getFieldsToQuery().isEmpty()) {
+
+        gridContent = ctx.searchIndex.executeSearch(filters, getOrderByList(ctx),
+            ctx.pageConfig.getFieldsToQuery());
+      } else {
+        gridContent = ctx.searchIndex.executeSearch(filters, getOrderByList(ctx));
+      }
     }
     setDataToGrid(ctx.view.getUuid(), ctx.searchIndex, gridContent, filters);
     if (gridContent.size() == 0) {

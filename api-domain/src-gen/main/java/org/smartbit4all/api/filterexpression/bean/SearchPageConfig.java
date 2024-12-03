@@ -55,7 +55,8 @@ import javax.validation.Valid;
   SearchPageConfig.SKIP_INITIAL_QUERY,
   SearchPageConfig.NO_RESULT_TEXT,
   SearchPageConfig.GRID_VIEW_OPTIONS,
-  SearchPageConfig.DEFAULT_ROW_ACTIONS
+  SearchPageConfig.DEFAULT_ROW_ACTIONS,
+  SearchPageConfig.FIELDS_TO_QUERY
 })
 @JsonTypeName("SearchPageConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -110,6 +111,9 @@ public class SearchPageConfig {
 
   public static final String DEFAULT_ROW_ACTIONS = "defaultRowActions";
   private List<String> defaultRowActions = null;
+
+  public static final String FIELDS_TO_QUERY = "fieldsToQuery";
+  private List<String> fieldsToQuery = new ArrayList<>();
 
   public SearchPageConfig() { 
   }
@@ -593,6 +597,39 @@ public class SearchPageConfig {
   }
 
 
+  public SearchPageConfig fieldsToQuery(List<String> fieldsToQuery) {
+    
+    this.fieldsToQuery = fieldsToQuery;
+    return this;
+  }
+
+  public SearchPageConfig addFieldsToQueryItem(String fieldsToQueryItem) {
+    this.fieldsToQuery.add(fieldsToQueryItem);
+    return this;
+  }
+
+   /**
+   * Get fieldsToQuery
+   * @return fieldsToQuery
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(FIELDS_TO_QUERY)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getFieldsToQuery() {
+    return fieldsToQuery;
+  }
+
+
+  @JsonProperty(FIELDS_TO_QUERY)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setFieldsToQuery(List<String> fieldsToQuery) {
+    this.fieldsToQuery = fieldsToQuery;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -618,12 +655,13 @@ public class SearchPageConfig {
         Objects.equals(this.skipInitialQuery, searchPageConfig.skipInitialQuery) &&
         Objects.equals(this.noResultText, searchPageConfig.noResultText) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions) &&
-        Objects.equals(this.defaultRowActions, searchPageConfig.defaultRowActions);
+        Objects.equals(this.defaultRowActions, searchPageConfig.defaultRowActions) &&
+        Objects.equals(this.fieldsToQuery, searchPageConfig.fieldsToQuery);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, pageTitle, filterModel, filterConfig, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions);
+    return Objects.hash(uri, pageTitle, filterModel, filterConfig, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions, fieldsToQuery);
   }
 
   @Override
@@ -647,6 +685,7 @@ public class SearchPageConfig {
     sb.append("    noResultText: ").append(toIndentedString(noResultText)).append("\n");
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("    defaultRowActions: ").append(toIndentedString(defaultRowActions)).append("\n");
+    sb.append("    fieldsToQuery: ").append(toIndentedString(fieldsToQuery)).append("\n");
     sb.append("}");
     return sb.toString();
   }
