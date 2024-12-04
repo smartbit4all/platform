@@ -57,6 +57,8 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   @Autowired(required = false)
   private ViewApi viewApi;
+  @Autowired(required = false)
+  private ConverterApi converterApi;
   @Autowired
   private LocaleSettingApi localeSettingApi;
   @Autowired
@@ -65,8 +67,6 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   private InvocationApi invocationApi;
   @Autowired
   private GridModelApi gridModelApi;
-  @Autowired
-  private ConverterApi converterApi;
 
 
   @Override
