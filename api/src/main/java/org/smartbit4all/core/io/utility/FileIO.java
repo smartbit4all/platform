@@ -571,7 +571,17 @@ public class FileIO {
     }
   }
 
+  public static void copy(File sourceObjectFile, File targetObjectFile)
+      throws InterruptedException {
+    copyOrmove(sourceObjectFile, targetObjectFile, true);
+  }
+
   public static void move(File sourceObjectFile, File targetObjectFile)
+      throws InterruptedException {
+    copyOrmove(sourceObjectFile, targetObjectFile, false);
+  }
+
+  private static void copyOrmove(File sourceObjectFile, File targetObjectFile, boolean copy)
       throws InterruptedException {
     if (sourceObjectFile != null && sourceObjectFile.exists() && targetObjectFile != null) {
       targetObjectFile.getParentFile().mkdirs();
@@ -581,12 +591,18 @@ public class FileIO {
           return;
         }
         try {
-          Files.move(sourceObjectFile.toPath(), targetObjectFile.toPath(),
-              StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+          if (copy) {
+            Files.copy(sourceObjectFile.toPath(), targetObjectFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING);
+          } else {
+            Files.move(sourceObjectFile.toPath(), targetObjectFile.toPath(),
+                StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+          }
           return;
         } catch (IOException e) {
           // We must try again.
-          log.debug("Unable to move {} -> {}", sourceObjectFile, targetObjectFile);
+          log.debug("Unable to {} {} -> {}", copy ? "copy" : "move",
+              sourceObjectFile, targetObjectFile);
           waitTime = getNextRandomWaitTime(waitTime);
           Thread.sleep(waitTime);
         }

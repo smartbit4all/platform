@@ -499,10 +499,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     } catch (Exception e) {
       objectRow = null;
     }
-    if (objectRow == null) {
-      return false;
-    }
-    return true;
+    return objectRow != null;
   }
 
   @Override

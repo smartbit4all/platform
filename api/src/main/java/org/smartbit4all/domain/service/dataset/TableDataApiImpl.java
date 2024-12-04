@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.core.io.utility.FileIO;
@@ -68,6 +70,8 @@ public class TableDataApiImpl implements TableDataApi {
 
   private Map<URI, TableData<?>> tableDatas = new HashMap<>();
 
+  private StorageApi storageApi;
+
   @Autowired
   private EntityManager entityManager;
 
@@ -80,17 +84,22 @@ public class TableDataApiImpl implements TableDataApi {
    */
   private File rootFolder = null;
 
+  private final boolean isStorageFs;
+
   public TableDataApiImpl(@Autowired(required = false) StorageApi storageApi) {
     super();
-    if (storageApi != null && storageApi.getDefaultObjectStorage() instanceof StorageFS) {
+    this.storageApi = storageApi;
+    isStorageFs = storageApi != null && storageApi.getDefaultObjectStorage() instanceof StorageFS;
+    if (isStorageFs) {
       rootFolder = new File(((StorageFS) storageApi.getDefaultObjectStorage()).getRootFolder(),
           TABLEDATACONTENTS);
+      log.info("Tabledata folder created in StorageFS: {}", rootFolder.getAbsolutePath());
     } else {
       try {
-        File parentFile = File.createTempFile("tabledata", "root").getParentFile();
-        rootFolder =
-            new File(parentFile, TABLEDATACONTENTS);
-        Files.delete(parentFile.toPath());
+        // rootFolder is temp folder now
+        rootFolder = Files.createTempDirectory(TABLEDATACONTENTS).toFile();
+        rootFolder.deleteOnExit();
+        log.info("Tabledata folder created in temp: {}", rootFolder.getAbsolutePath());
       } catch (IOException e) {
         log.error("Unable to initiate the temp directory to save table data serialized contents.");
       }
@@ -111,7 +120,17 @@ public class TableDataApiImpl implements TableDataApi {
       fileByUri.getParentFile().mkdirs();
       try (FileOutputStream os = new FileOutputStream(fileByUri)) {
         TableDataSerializer.save(tableData, os, objectApi);
-      } catch (IOException e) {
+        if (!isStorageFs && storageApi != null) {
+          BinaryDataObject data = new BinaryData(fileByUri).asObject();
+          data.setUri(uri);
+          URI newUri = storageApi.getStorage(uri).saveAsNew(data);
+          File newFileByUri = FileIO.getFileByUri(rootFolder, newUri, TABLEDATAFILEEXTESION);
+          // TODO move hanged indefinitely, but would be a better option
+          FileIO.copy(fileByUri, newFileByUri);
+          newFileByUri.deleteOnExit();
+          uri = newUri;
+        }
+      } catch (IOException | InterruptedException e) {
         throw new IllegalStateException("Unable to construct the file for the table data.", e);
       }
     } else {
@@ -126,9 +145,7 @@ public class TableDataApiImpl implements TableDataApi {
     TableData<?> result;
     if (rootFolder != null) {
       try {
-        TableDataPager<?> pager = TableDataPager
-            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager,
-                objectApi);
+        TableDataPager<?> pager = getPager(uri);
         result = pager.fetchAll();
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
@@ -142,13 +159,22 @@ public class TableDataApiImpl implements TableDataApi {
     return result;
   }
 
+  private TableDataPager<?> getPager(URI uri) throws Exception {
+    File fileByUri = FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION);
+    if (!fileByUri.exists() && !isStorageFs && storageApi != null) {
+      BinaryDataObject data = storageApi.getStorage(uri).read(uri, BinaryDataObject.class);
+      FileIO.write(fileByUri, data.getBinaryData());
+    }
+    return TableDataPager
+        .create(fileByUri, entityManager,
+            objectApi);
+  }
+
   @Override
   public TableData<?> readPage(URI uri, int offset, int limit) {
     if (rootFolder != null) {
       try {
-        TableDataPager<?> pager = TableDataPager
-            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager,
-                objectApi);
+        TableDataPager<?> pager = getPager(uri);
         return pager.fetch(offset, limit);
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
