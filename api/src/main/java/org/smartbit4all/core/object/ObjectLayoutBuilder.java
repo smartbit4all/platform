@@ -325,6 +325,17 @@ public final class ObjectLayoutBuilder {
         .selection(selectionDefinition);
   }
 
+  public static SmartWidgetDefinition checkBox(String key, String itemLabel) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.CHECK_BOX)
+        .key(key)
+        .label(StringConstant.EMPTY)
+        .showLabel(false)
+        .addValuesItem(new Value()
+            .code(key)
+            .displayValue(itemLabel));
+  }
+
 
   private static final String PROP_YT_PLAYER_URL = "link";
   private static final String PROP_YT_PLAYER_START_SECONDS = "startSeconds";
