@@ -183,15 +183,13 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   private final Map<String, List<URI>> getUsersByOperation(String modelName,
       List<String> operations,
       List<ACLEntry> inList) {
-    Map<String, List<URI>> result;
-    result = operations.stream()
+    return operations.stream()
         .collect(toMap(o -> o, o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
             .filter(a -> a.getOperations().contains(o))
             .map(a -> {
               return a.getSubject();
             })
             .collect(toList()))));
-    return result;
   }
 
   @Override

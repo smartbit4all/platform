@@ -49,6 +49,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.ObjectUtils;
 
 /**
  * @author Peter Boros
@@ -378,6 +379,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Override
   public void updateIndex(List<URI> changeList) {
+    if (ObjectUtils.isEmpty(changeList)) {
+      return;
+    }
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
       SearchEntityTableDataResult updateResult = createUpdateResult();
