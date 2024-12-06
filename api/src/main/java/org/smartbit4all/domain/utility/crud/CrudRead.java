@@ -96,7 +96,7 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
 
-  public void execute() throws Exception {
+  public void execute() {
     Objects.requireNonNull(queryInput, "Can not execute query with null value QueryInput!");
 
     QueryOutput output = CrudApis.getCrudApi().executeQuery(queryInput);
@@ -177,9 +177,8 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * @param multipleRowsExceptionMessage exception message when there are more than one result rows
    * @return
-   * @throws Exception
    */
-  public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) throws Exception {
+  public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) {
     TableData<E> result = listData();
     checkResultSize(multipleRowsExceptionMessage, result);
     if (result.rows().isEmpty()) {
@@ -192,12 +191,11 @@ public class CrudRead<E extends EntityDefinition> {
    * @return the optional first result row
    * @throws IllegalArgumentException when there are more then one result rows.
    */
-  public Optional<DataRow> onlyOne() throws Exception {
+  public Optional<DataRow> onlyOne() {
     return onlyOne("There are more than one results on read!");
   }
 
-  public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage)
-      throws Exception {
+  public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage) {
     TableData<E> result = listData();
     checkResultSize(multipleRowsExceptionMessage, result);
     checkResultProperty(property, result);
@@ -209,9 +207,8 @@ public class CrudRead<E extends EntityDefinition> {
    * @param <T> the value type of the property
    * @param property
    * @return
-   * @throws Exception
    */
-  public <T> Optional<T> onlyOneValue(Property<T> property) throws Exception {
+  public <T> Optional<T> onlyOneValue(Property<T> property) {
     return onlyOneValue(property, "There are more than one results on read!");
   }
 
@@ -600,7 +597,6 @@ public class CrudRead<E extends EntityDefinition> {
    *
    * @param beanClass The bean that has fields translatable to entity properties
    * @return
-   * @throws Exception
    */
   public <B> CrudRead<E> select(Class<B> beanClass) throws Exception {
     BeanEntityBinding binding =
@@ -613,10 +609,9 @@ public class CrudRead<E extends EntityDefinition> {
    * Executes the query and returns the {@link TableData} as a result.
    *
    * @return Return the result as the typed table data of the given entity.
-   * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  public TableData<E> listData() throws Exception {
+  public TableData<E> listData() {
     execute();
     return (TableData<E>) queryOutput.getTableData();
   }

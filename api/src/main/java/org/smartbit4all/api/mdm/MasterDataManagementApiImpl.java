@@ -469,8 +469,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private final void synchronizeValueSets() {
     StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
     List<MDMDefinition> definitions =
-        map.uris().values().stream()
-            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+        map.valueNodesLatest()
+            .map(n -> n.getObject(MDMDefinition.class))
             .collect(toList());
 
     for (MDMDefinition definition : definitions) {
@@ -495,8 +495,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private final void synchronizeObjectDefinitions() {
     StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
     List<MDMDefinition> definitions =
-        map.uris().values().stream()
-            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+        map.valueNodesLatest()
+            .map(n -> n.getObject(MDMDefinition.class))
             .collect(toList());
 
     for (MDMDefinition definition : definitions) {
@@ -558,8 +558,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private final void synchronizeSearchIndices() {
     StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
     List<MDMDefinition> definitions =
-        map.uris().values().stream()
-            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+        map.valueNodesLatest()
+            .map(n -> n.getObject(MDMDefinition.class))
             .collect(toList());
 
     for (MDMDefinition definition : definitions) {

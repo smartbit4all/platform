@@ -234,7 +234,7 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
-  public void invoke(ObjectNode asyncInvocationNode) {
+  public void invokeAsyncRequest(ObjectNode asyncInvocationNode) {
     invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(asyncInvocationNode);
   }
 

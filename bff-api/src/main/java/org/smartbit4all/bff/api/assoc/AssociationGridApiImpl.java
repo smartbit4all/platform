@@ -142,7 +142,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     ObjectNodeList refObjectNodeList = getRefObjectNodeList(objectNode, config).childList;
     return refObjectNodeList == null
         ? Collections.emptyList()
-        : refObjectNodeList.nodeStream().collect(toList());
+        : refObjectNodeList.nodes();
   }
 
   private ParentAndChildList getRefObjectNodeList(ObjectNode objectNode,
@@ -216,7 +216,7 @@ public class AssociationGridApiImpl implements AssociationGridApi, InitializingB
     });
     objectApi.save(refObjectNodeList.parentNode);
     setGridData(configName, viewUuid, config.searchIndex(collectionApi),
-        refObjectNodeList.childList.nodeStream());
+        refObjectNodeList.childList.nodes().stream());
   }
 
   private static final class ParentAndChildList {

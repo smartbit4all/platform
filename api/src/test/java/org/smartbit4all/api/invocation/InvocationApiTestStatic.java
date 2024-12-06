@@ -112,7 +112,7 @@ public class InvocationApiTestStatic {
     String second = " Second";
     String third = " Third";
     invocationApi
-        .invoke(invocationApi.asyncBuilder()
+        .invokeAsyncRequest(invocationApi.asyncBuilder()
             .call(TestApi.class, a -> a.firstStep(value), InvocationTestConfig.GLOBAL_ASYNC_CHANNEL)
             .evaluate(TestApi.class, a -> a.firstStepOnError(null, null))
             .andThen(TestApi.class, a -> a.secondStep(null, second),

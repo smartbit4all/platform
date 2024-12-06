@@ -211,7 +211,15 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
   @Override
-  public <T> List<StorageObject<T>> load(Storage storage, List<URI> uris, Class<T> clazz,
+  public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,
+      StorageLoadOption... options) {
+    return uris.parallelStream()
+        .map(u -> load(storage, u, options))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
     // TODO The same thread locks must be used and acquired by all the threads.
     return uris.parallelStream()
@@ -329,7 +337,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Override
   public <T> List<T> read(Storage storage, List<URI> uris, Class<T> clazz) {
-    List<StorageObject<T>> load = load(storage, uris, clazz);
+    List<StorageObject<T>> load = loadBatch(storage, uris, clazz);
     return load.stream().map(s -> s.getObject()).filter(o -> o != null)
         .collect(Collectors.toList());
   }
@@ -672,6 +680,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       runtimeWasSet = true;
     }
     return myRuntimeApi;
+  }
+
+  protected boolean isSingleVersion(URI uri) {
+    if (uri == null) {
+      return false;
+    }
+    return getUriWithoutVersion(uri).getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX);
   }
 
 }

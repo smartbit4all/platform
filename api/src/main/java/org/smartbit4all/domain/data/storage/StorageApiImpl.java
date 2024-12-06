@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.smartbit4all.api.value.bean.ValueSetDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
@@ -148,6 +150,22 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     }
 
     return storageObject;
+  }
+
+  @Override
+  public List<StorageObject<?>> loadBatch(List<URI> uris) {
+    // StorageObject<?> storageObject = getObjectFromValueSet(uri);
+    //
+    // if (storageObject == null) {
+
+    if (ObjectUtils.isEmpty(uris)) {
+      return new ArrayList<>();
+    }
+    Storage storage = getStorage(uris.get(0));
+    return storage.loadBatch(uris);
+    // }
+    //
+    // return storageObject;
   }
 
   private StorageObject<?> getObjectFromValueSet(URI uri) {

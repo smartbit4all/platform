@@ -39,10 +39,10 @@ public interface RetrievalApi {
    * @param branchEntry The branch entry if the retrieve is performed on the branch.
    * @return The result of the object retrieve as an {@link ObjectNodeData}.
    */
-  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris, BranchEntry branchEntry);
+  List<ObjectNodeData> loadBatch(RetrievalRequest request, List<URI> uris, BranchEntry branchEntry);
 
-  default List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris) {
-    return load(request, uris, null);
+  default List<ObjectNodeData> loadBatch(RetrievalRequest request, List<URI> uris) {
+    return loadBatch(request, uris, null);
   }
 
   /**

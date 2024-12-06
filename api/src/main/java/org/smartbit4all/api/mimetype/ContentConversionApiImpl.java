@@ -1,5 +1,6 @@
 package org.smartbit4all.api.mimetype;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionContributionApi>
     implements ContentConversionApi {
@@ -56,7 +56,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
       return Collections.emptyList();
     }
     MutableValueGraph<String, ContentConversionContributionApi> conversionGraph =
-        ValueGraphBuilder.directed().build();
+        ValueGraphBuilder.directed().allowsSelfLoops(true).build();
     for (ContentConversionContributionApi api : getContributionApis().values()) {
       for (String acceptedMimeType : api.getAcceptedMimeTypes()) {
         for (String targetMimeType : api.getTargetMimeTypes()) {
@@ -98,7 +98,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
           pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
               ep.target(), toMimeType, alreadyVisited);
       if (!pathRecursive.isEmpty()) {
-        List<EndpointPair<String>> tmp = new ArrayList<EndpointPair<String>>();
+        List<EndpointPair<String>> tmp = new ArrayList<>();
         tmp.add(ep);
         tmp.addAll(pathRecursive);
         pathRecursive = tmp;

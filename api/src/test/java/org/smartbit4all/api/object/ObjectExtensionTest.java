@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.config.PlatformSearchIndexConfig;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -20,6 +22,7 @@ import org.smartbit4all.api.sample.bean.SampleExtensibleObject;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionIdentifier;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -29,7 +32,12 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {ObjectApiTestConfig.class})
+@SpringBootTest(classes = {
+    PlatformApiConfig.class,
+    TestFSConfig.class,
+    PlatformSearchIndexConfig.class,
+    ObjectApiTestConfig.class
+})
 class ObjectExtensionTest {
 
   @Autowired

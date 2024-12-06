@@ -1,6 +1,6 @@
 package org.smartbit4all.core.object;
 
-import java.io.IOException;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,10 +39,10 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -135,10 +135,39 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
-    return retrievalApi.load(request, objectUris, getBranchEntry(branchUri)).stream()
+  public List<ObjectNode> loadBatch(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
+    return retrievalApi.loadBatch(request, objectUris, getBranchEntry(branchUri)).stream()
         .map(this::node).map(node -> node.branchUri(branchUri))
         .collect(toList());
+  }
+
+  @Override
+  public List<ObjectNode> loadBatch(List<URI> objectUris, URI branchUri) {
+    return loadInternalBatch(this, objectUris, branchUri, RetrievalMode.NORMAL, false);
+  }
+
+  @Override
+  public List<ObjectNode> loadLatestBatch(List<URI> objectUris, URI branchUri) {
+    return loadInternalBatch(this, objectUris, branchUri, RetrievalMode.NORMAL, true);
+  }
+
+  static List<ObjectNode> loadInternalBatch(ObjectApi objectApi, List<URI> objectUris, URI branchUri,
+      RetrievalMode retrievalMode,
+      boolean loadLatest) {
+    if (ObjectUtils.isEmpty(objectUris)) {
+      return new ArrayList<>();
+    }
+    if (objectUris.stream().anyMatch(Objects::isNull)) {
+      throw new IllegalArgumentException("load List<URI> cannot handle null uris");
+    }
+    URI objectUri = objectUris.get(0);
+    RetrievalRequest request =
+        new RetrievalRequest(
+            objectApi,
+            objectApi.definition(objectUri),
+            retrievalMode);
+    request.setLoadLatest(loadLatest);
+    return objectApi.loadBatch(request, objectUris, branchUri);
   }
 
   private final BranchEntry getBranchEntry(URI branchUri) {
@@ -362,13 +391,9 @@ public class ObjectApiImpl implements ObjectApi {
       // Try to retrieve the proper object
       return definition(clazz).fromMap((Map<String, Object>) value);
     }
+
     if (value instanceof String && !clazz.equals(String.class)) {
-      try {
-        return getDefaultSerializer().fromString((String) value, clazz);
-      } catch (IOException e) {
-        throw new IllegalArgumentException(
-            "Unable to convert value (" + value.getClass().getName() + ") to " + clazz.getName());
-      }
+      return definition(clazz).readFromString((String) value);
     }
     if (clazz.equals(String.class)) {
       return (T) String.valueOf(value);

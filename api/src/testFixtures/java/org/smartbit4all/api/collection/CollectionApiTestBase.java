@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
@@ -52,12 +52,7 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
-@TestInstance(Lifecycle.PER_CLASS)
-@Disabled
 public class CollectionApiTestBase {
 
   private static final String LATE = "late";

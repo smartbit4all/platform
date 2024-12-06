@@ -92,7 +92,7 @@ public interface InvocationApi {
    */
   InvocationBatchResult invokeBatch(InvocationBatchRequest batch) throws ApiNotFoundException;
 
-  void invoke(ObjectNode asyncInvocationNode);
+  void invokeAsyncRequest(ObjectNode asyncInvocationNode);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the

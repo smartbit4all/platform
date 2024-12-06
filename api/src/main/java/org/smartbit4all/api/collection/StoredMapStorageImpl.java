@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,11 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
     } catch (ObjectNotFoundException e) {
       return Collections.emptyMap();
     }
+  }
+
+  @Override
+  public Stream<ObjectNode> valueNodesLatest() {
+    return objectApi.loadLatestBatch(new ArrayList<>(uris().values()), branchUri).stream();
   }
 
   @Override

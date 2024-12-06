@@ -1086,7 +1086,7 @@ class MDMApiTest {
 
     rootNode = objectApi.loadLatest(rootUri);
 
-    rootNode.list(SampleCategory.SUB_CATEGORIES).nodeStream().forEach(node -> node
+    rootNode.list(SampleCategory.SUB_CATEGORIES).nodes().forEach(node -> node
         .modify(SampleCategory.class, c -> c.name(c.getName() + StringConstant.HYPHEN + caption)));
 
     objectApi.save(rootNode, branch1);
