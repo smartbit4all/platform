@@ -3,17 +3,26 @@ package org.smartbit4all.api.commandexecutor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import com.google.common.io.ByteStreams;
 
 public class CommandExecutorFfmpegApi implements CommandExecutorApi {
+
+  @Value("${fs.base.directory:./test-fs}")
+  private String baseDirectory;
 
   @Autowired
   private ObjectApi objectApi;
@@ -27,9 +36,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
       throws IOException, InterruptedException {
     ProcessBuilder processBuilder = getProcessBuilder();
     List<String> command = processBuilder.command();
-
     command.add("-i");
-
     // temp file to send to ffmpeg
     File tempFile = null;
     tempFile = File.createTempFile("aasdasd", "basdasasd" + inputContentData.getExtension());
@@ -40,17 +47,32 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     fos.flush();
     fos.close();
     command.add(tempFile.getPath());
-    command.add("-f");
     int end = inputContentData.getFileName().lastIndexOf(StringConstant.DOT);
-    String outputFileName = inputContentData.getFileName().substring(0, end).concat(toExtension);
-    command.add(outputFileName);
-
-    Process process = processBuilder.start();
-    boolean waitFor = process.waitFor(300, TimeUnit.SECONDS);
-    if (!waitFor) {
+    String outputFileName = inputContentData.getFileName().substring(0, end)
+        .concat(StringConstant.DOT).concat(toExtension);
+    final UUID uuid = UUID.randomUUID();
+    String tempOutputName = uuid.toString() + outputFileName;
+    Path tempOutputPath = Paths.get(baseDirectory).resolve(tempOutputName);
+    command.add(tempOutputPath.toString());
+    Process process = processBuilder.inheritIO().redirectOutput(Redirect.PIPE).start();
+    // process.getInputStream().transferTo(System.out);
+    // TODO remove this, use fileSystem watcher
+    Thread.sleep(60000);
+    try (InputStream in = Files.newInputStream(tempOutputPath)) {
+      return BinaryData.of(in);
+    } catch (Exception e) {
       return null;
     }
-    return BinaryData.of(process.getInputStream());
   }
+
+  // public List<BinaryData> split(BinaryData input, Integer parts) {
+  //
+  // }
+  //
+  // public List<BinaryData> split(BinaryData input, Long maxBytes) {
+  // long length = input.length();
+  // int parts = Math.round(((float) length) / maxBytes);
+  // return split(input, parts);
+  // }
 
 }
