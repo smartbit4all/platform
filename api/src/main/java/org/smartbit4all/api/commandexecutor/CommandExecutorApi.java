@@ -17,7 +17,11 @@ public interface CommandExecutorApi {
   String getCliName();
 
   default ProcessBuilder getProcessBuilder() {
-    ProcessBuilder processBuilder = new ProcessBuilder(getCliName());
+    return getProcessBuilder(getCliName());
+  }
+
+  default ProcessBuilder getProcessBuilder(String cli) {
+    ProcessBuilder processBuilder = new ProcessBuilder(cli);
     processBuilder.redirectErrorStream(true);
     return processBuilder;
   }

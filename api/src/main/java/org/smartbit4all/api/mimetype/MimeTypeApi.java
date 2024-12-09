@@ -73,6 +73,7 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GPP2_MIMETYPE = "video/3gpp2";
   public static final String M4V_MIMETYPE = "video/x-m4v";
   public static final String GPP_MIMETYPE = "video/3gpp";
+  public static final String MKV_MIMETYPE = "video/x-matroska";
 
 
   // extensions
@@ -129,6 +130,7 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GPP2_EXT = "3g2";
   public static final String M4V_EXT = "m4v";
   public static final String GPP_EXT = "3gp";
+  public static final String MKV_EXT = "mkv";
 
 
 
@@ -213,6 +215,7 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(GPP2_MIMETYPE, GPP2_EXT);
     extensionsByMimeType.put(M4V_MIMETYPE, M4V_EXT);
     extensionsByMimeType.put(GPP_MIMETYPE, GPP_EXT);
+    extensionsByMimeType.put(MKV_MIMETYPE, MKV_EXT);
   }
 
 
