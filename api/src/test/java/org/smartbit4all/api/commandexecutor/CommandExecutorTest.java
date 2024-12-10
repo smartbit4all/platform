@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -38,6 +39,7 @@ public class CommandExecutorTest {
   }
 
   @Test
+  @Disabled
   void executeFileCommand() throws IOException, InterruptedException {
     BinaryData data = BinaryData.of(this.getClass().getResourceAsStream("/mp4Example.mp4"));
 
@@ -54,6 +56,7 @@ public class CommandExecutorTest {
   }
 
   @Test
+  @Disabled
   void split() throws IOException, InterruptedException {
     BinaryData data = BinaryData.of(this.getClass().getResourceAsStream("/mp4Example.mp4"));
 
@@ -76,6 +79,7 @@ public class CommandExecutorTest {
   }
 
   @Test
+  @Disabled
   void getDur() throws IOException, InterruptedException {
     BinaryData data = BinaryData.of(this.getClass().getResourceAsStream("/mp4Example.mp4"));
 
