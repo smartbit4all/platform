@@ -75,6 +75,71 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GPP_MIMETYPE = "video/3gpp";
   public static final String MKV_MIMETYPE = "video/x-matroska";
 
+  public static final String JAVA_MIMETYPE = "text/x-java-source";
+  public static final String CPP_MIMETYPE = "text/x-c++src";
+  public static final String GROOVY_MIMETYPE = "text/x-groovy";
+  public static final String IBPK_MIMETYPE = "application/x-ibooks+zip";
+  public static final String ATOM_MIMETYPE = "application/atom+xml";
+  public static final String RSS_MIMETYPE = "application/rss+xml";
+  public static final String AFM_MIMETYPE = "application/x-font-adobe-metric";
+  public static final String HDF_MIMETYPE = "application/x-hdf";
+  public static final String ASP_MIMETYPE = "application/x-asp";
+  public static final String XHTML_MIMETYPE = "application/xhtml+xml";
+  public static final String PSD_MIMETYPE = "image/vnd.adobe.photoshop";
+  public static final String ANPA_MIMETYPE = "text/vnd.iptc.anpa";
+  public static final String IWORK_MIMETYPE = "application/vnd.apple.iwork";
+  public static final String NUMBERS_MIMETYPE = "application/vnd.apple.numbers";
+  public static final String KEY_MIMETYPE = "application/vnd.apple.keynote";
+  public static final String PAGES_MIMETYPE = "application/vnd.apple.pages";
+  public static final String RFC822_MIMETYPE = "message/rfc822";
+  public static final String MATLAB_MIMETYPE = "application/x-matlab-data";
+  public static final String MBOX_MIMETYPE = "application/mbox";
+  public static final String PST_MIMETYPE = "application/vnd.ms-outlook-pst";
+  public static final String MSPUB_MIMETYPE = "application/x-mspublisher";
+  public static final String MSOFFICE_MIMETYPE = "application/x-tika-msoffice";
+  public static final String SLDWORKS_MIMETYPE = "application/sldworks";
+  public static final String MSWORKS_MIMETYPE = "application/x-tika-msworks-spreadsheet";
+  public static final String OLE10_MIMETYPE =
+      "application/x-tika-msoffice-embedded; format=ole10_native";
+  public static final String MPP_MIMETYPE = "application/vnd.ms-project";
+  public static final String OOXML_MIMETYPE = "application/x-tika-ooxml-protected";
+  public static final String MSG_MIMETYPE = "application/vnd.ms-outlook";
+  public static final String VSD_MIMETYPE = "application/vnd.visio";
+  public static final String TNEF_MIMETYPE = "application/vnd.ms-tnef";
+  public static final String XLSM_MIMETYPE = "application/vnd.ms-excel.sheet.macroenabled.12";
+  public static final String PPTM_MIMETYPE =
+      "application/vnd.ms-powerpoint.presentation.macroenabled.12";
+  public static final String XLTX_MIMETYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
+  public static final String POTX_MIMETYPE =
+      "application/vnd.openxmlformats-officedocument.presentationml.template";
+  public static final String XLAM_MIMETYPE = "application/vnd.ms-excel.addin.macroenabled.12";
+  public static final String DOTM_MIMETYPE = "application/vnd.ms-word.document.macroenabled.12";
+  public static final String XLTM_MIMETYPE = "application/vnd.ms-excel.template.macroenabled.12";
+  public static final String DOTX_MIMETYPE =
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
+  public static final String PPSM_MIMETYPE =
+      "application/vnd.ms-powerpoint.slideshow.macroenabled.12";
+  public static final String PPAM_MIMETYPE = "application/vnd.ms-powerpoint.addin.macroenabled.12";
+  public static final String DOT_MIMETYPE = "application/vnd.ms-word.template.macroenabled.12";
+  public static final String PPSX_MIMETYPE =
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow";
+  public static final String ODG_MIMETYPE =
+      "application/x-vnd.oasis.opendocument.graphics-template";
+  public static final String SXW_MIMETYPE = "application/vnd.sun.xml.writer";
+  public static final String ODM_MIMETYPE = "application/vnd.oasis.opendocument.text-master";
+  public static final String OTT_MIMETYPE = "application/vnd.oasis.opendocument.text-template";
+  public static final String OTP_MIMETYPE =
+      "application/vnd.oasis.opendocument.presentation-template";
+  public static final String ODC_MIMETYPE = "application/vnd.oasis.opendocument.chart-template";
+  public static final String FODT_MIMETYPE =
+      "application/x-vnd.oasis.opendocument.formula-template";
+  public static final String BZ_MIMETYPE = "application/x-bzip";
+  public static final String BZ2_MIMETYPE = "application/x-bzip2";
+  public static final String JAR_MIMETYPE = "application/java-archive";
+  public static final String CPIO_MIMETYPE = "application/x-cpio";
+  public static final String RTF_MIMETYPE = "application/rtf";
+  public static final String FB2_MIMETYPE = "application/x-fictionbook+xml";
 
   // extensions
   public static final String PDF_EXT = "pdf";
@@ -132,7 +197,61 @@ public class MimeTypeApi implements InitializingBean {
   public static final String GPP_EXT = "3gp";
   public static final String MKV_EXT = "mkv";
 
-
+  public static final String JAVA_EXT = "java";
+  public static final String CPP_EXT = "cpp";
+  public static final String GROOVY_EXT = "groovy";
+  public static final String IBPK_EXT = "ibooks";
+  public static final String ATOM_EXT = "atom";
+  public static final String RSS_EXT = "rss";
+  public static final String AFM_EXT = "afm";
+  public static final String HDF_EXT = "hdf";
+  public static final String ASP_EXT = "asp";
+  public static final String XHTML_EXT = "xhtml";
+  public static final String PSD_EXT = "psd";
+  public static final String ANPA_EXT = "anpa";
+  public static final String IWORK_EXT = "iwork";
+  public static final String NUMBERS_EXT = "numbers";
+  public static final String KEY_EXT = "key";
+  public static final String PAGES_EXT = "pages";
+  public static final String RFC822_EXT = "eml";
+  public static final String MATLAB_EXT = "mat";
+  public static final String MBOX_EXT = "mbox";
+  public static final String PST_EXT = "pst";
+  public static final String MSPUB_EXT = "pub";
+  public static final String MSOFFICE_EXT = "mso";
+  public static final String SLDWORKS_EXT = "sldprt";
+  public static final String MSWORKS_EXT = "wks";
+  public static final String OLE10_EXT = "ole10";
+  public static final String MPP_EXT = "mpp";
+  public static final String OOXML_EXT = "ooxml";
+  public static final String MSG_EXT = "msg";
+  public static final String VSD_EXT = "vsd";
+  public static final String TNEF_EXT = "tnef";
+  public static final String XLSM_EXT = "xlsm";
+  public static final String PPTM_EXT = "pptm";
+  public static final String XLTX_EXT = "xltx";
+  public static final String POTX_EXT = "potx";
+  public static final String XLAM_EXT = "xlam";
+  public static final String DOTM_EXT = "dotm";
+  public static final String XLTM_EXT = "xltm";
+  public static final String DOTX_EXT = "dotx";
+  public static final String PPSM_EXT = "ppsm";
+  public static final String PPAM_EXT = "ppam";
+  public static final String DOT_EXT = "dot";
+  public static final String PPSX_EXT = "ppsx";
+  public static final String ODG_EXT = "odg";
+  public static final String SXW_EXT = "sxw";
+  public static final String ODM_EXT = "odm";
+  public static final String OTT_EXT = "ott";
+  public static final String OTP_EXT = "otp";
+  public static final String ODC_EXT = "odc";
+  public static final String FODT_EXT = "fodt";
+  public static final String BZ_EXT = "bz";
+  public static final String BZ2_EXT = "bz2";
+  public static final String JAR_EXT = "jar";
+  public static final String CPIO_EXT = "cpio";
+  public static final String RTF_EXT = "rtf";
+  public static final String FB2_EXT = "fb2";
 
   /**
    * Includes the mimeTypes that can be recognized by the {@link MimetypesFileTypeMap}.
@@ -216,6 +335,62 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(M4V_MIMETYPE, M4V_EXT);
     extensionsByMimeType.put(GPP_MIMETYPE, GPP_EXT);
     extensionsByMimeType.put(MKV_MIMETYPE, MKV_EXT);
+
+    extensionsByMimeType.put(JAVA_MIMETYPE, JAVA_EXT);
+    extensionsByMimeType.put(CPP_MIMETYPE, CPP_EXT);
+    extensionsByMimeType.put(GROOVY_MIMETYPE, GROOVY_EXT);
+    extensionsByMimeType.put(IBPK_MIMETYPE, IBPK_EXT);
+    extensionsByMimeType.put(ATOM_MIMETYPE, ATOM_EXT);
+    extensionsByMimeType.put(RSS_MIMETYPE, RSS_EXT);
+    extensionsByMimeType.put(AFM_MIMETYPE, AFM_EXT);
+    extensionsByMimeType.put(HDF_MIMETYPE, HDF_EXT);
+    extensionsByMimeType.put(ASP_MIMETYPE, ASP_EXT);
+    extensionsByMimeType.put(XHTML_MIMETYPE, XHTML_EXT);
+    extensionsByMimeType.put(PSD_MIMETYPE, PSD_EXT);
+    extensionsByMimeType.put(ANPA_MIMETYPE, ANPA_EXT);
+    extensionsByMimeType.put(IWORK_MIMETYPE, IWORK_EXT);
+    extensionsByMimeType.put(NUMBERS_MIMETYPE, NUMBERS_EXT);
+    extensionsByMimeType.put(KEY_MIMETYPE, KEY_EXT);
+    extensionsByMimeType.put(PAGES_MIMETYPE, PAGES_EXT);
+    extensionsByMimeType.put(RFC822_MIMETYPE, RFC822_EXT);
+    extensionsByMimeType.put(MATLAB_MIMETYPE, MATLAB_EXT);
+    extensionsByMimeType.put(MBOX_MIMETYPE, MBOX_EXT);
+    extensionsByMimeType.put(PST_MIMETYPE, PST_EXT);
+    extensionsByMimeType.put(MSPUB_MIMETYPE, MSPUB_EXT);
+    extensionsByMimeType.put(MSOFFICE_MIMETYPE, MSOFFICE_EXT);
+    extensionsByMimeType.put(SLDWORKS_MIMETYPE, SLDWORKS_EXT);
+    extensionsByMimeType.put(MSWORKS_MIMETYPE, MSWORKS_EXT);
+    extensionsByMimeType.put(OLE10_MIMETYPE, OLE10_EXT);
+    extensionsByMimeType.put(MPP_MIMETYPE, MPP_EXT);
+    extensionsByMimeType.put(OOXML_MIMETYPE, OOXML_EXT);
+    extensionsByMimeType.put(MSG_MIMETYPE, MSG_EXT);
+    extensionsByMimeType.put(VSD_MIMETYPE, VSD_EXT);
+    extensionsByMimeType.put(TNEF_MIMETYPE, TNEF_EXT);
+    extensionsByMimeType.put(XLSM_MIMETYPE, XLSM_EXT);
+    extensionsByMimeType.put(PPTM_MIMETYPE, PPTM_EXT);
+    extensionsByMimeType.put(XLTX_MIMETYPE, XLTX_EXT);
+    extensionsByMimeType.put(POTX_MIMETYPE, POTX_EXT);
+    extensionsByMimeType.put(XLAM_MIMETYPE, XLAM_EXT);
+    extensionsByMimeType.put(DOTM_MIMETYPE, DOTM_EXT);
+    extensionsByMimeType.put(XLTM_MIMETYPE, XLTM_EXT);
+    extensionsByMimeType.put(DOTX_MIMETYPE, DOTX_EXT);
+    extensionsByMimeType.put(PPSM_MIMETYPE, PPSM_EXT);
+    extensionsByMimeType.put(PPAM_MIMETYPE, PPAM_EXT);
+    extensionsByMimeType.put(DOT_MIMETYPE, DOT_EXT);
+    extensionsByMimeType.put(PPSX_MIMETYPE, PPSX_EXT);
+    extensionsByMimeType.put(ODG_MIMETYPE, ODG_EXT);
+    extensionsByMimeType.put(SXW_MIMETYPE, SXW_EXT);
+    extensionsByMimeType.put(ODM_MIMETYPE, ODM_EXT);
+    extensionsByMimeType.put(OTT_MIMETYPE, OTT_EXT);
+    extensionsByMimeType.put(OTP_MIMETYPE, OTP_EXT);
+    extensionsByMimeType.put(ODC_MIMETYPE, ODC_EXT);
+    extensionsByMimeType.put(FODT_MIMETYPE, FODT_EXT);
+    extensionsByMimeType.put(BZ_MIMETYPE, BZ_EXT);
+    extensionsByMimeType.put(BZ2_MIMETYPE, BZ2_EXT);
+    extensionsByMimeType.put(JAR_MIMETYPE, JAR_EXT);
+    extensionsByMimeType.put(CPIO_MIMETYPE, CPIO_EXT);
+    extensionsByMimeType.put(RTF_MIMETYPE, RTF_EXT);
+    extensionsByMimeType.put(FB2_MIMETYPE, FB2_EXT);
   }
 
 
