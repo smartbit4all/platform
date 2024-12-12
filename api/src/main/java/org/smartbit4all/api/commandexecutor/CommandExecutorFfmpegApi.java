@@ -64,7 +64,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     String tempOutputName = uuid.toString() + outputFileName;
     Path tempOutputPath = Paths.get(baseDirectory).resolve(tempOutputName);
     command.add(tempOutputPath.toString());
-    Process process = processBuilder.inheritIO().redirectOutput(Redirect.PIPE).start();
+    Process process = processBuilder.start();
     transferInputStreamToSysOut(process);
     try (InputStream in = Files.newInputStream(tempOutputPath)) {
       return BinaryData.of(in);
@@ -102,7 +102,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     String tempOutputName = uuid.toString() + outputFileName;
     Path tempOutputPath = Paths.get(baseDirectory).resolve(tempOutputName);
     command.add(tempOutputPath.toString());
-    Process process = processBuilder.inheritIO().redirectOutput(Redirect.PIPE).start();
+    Process process = processBuilder.start();
     transferInputStreamToSysOut(process);
     try (InputStream in = Files.newInputStream(tempOutputPath)) {
       return BinaryData.of(in);
@@ -137,7 +137,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     // formats the output as plain text (just the duration value)
     command.add("-of");
     command.add("csv=\"p=0\"");
-    Process process = processBuilder.inheritIO().redirectOutput(Redirect.PIPE).start();
+    Process process = processBuilder.start();
     try (InputStream in = process.getInputStream()) {
       byte[] allBytes = FileIO.readInputStreamToByteArray(in);
       String outputString = new String(allBytes);

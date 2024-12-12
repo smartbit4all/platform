@@ -1,5 +1,7 @@
-package org.smartbit4all.api.commandexecutor;
+package org.smartbit4all.api.commandexecutor.config;
 
+import org.smartbit4all.api.commandexecutor.CommandExecutorBashApi;
+import org.smartbit4all.api.commandexecutor.CommandExecutorFfmpegApi;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.springframework.context.annotation.Bean;

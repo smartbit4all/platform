@@ -1,6 +1,7 @@
 package org.smartbit4all.api.commandexecutor;
 
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 
 public interface CommandExecutorApi {
 
@@ -21,8 +22,9 @@ public interface CommandExecutorApi {
   }
 
   default ProcessBuilder getProcessBuilder(String cli) {
-    ProcessBuilder processBuilder = new ProcessBuilder(cli);
+    ProcessBuilder processBuilder = new ProcessBuilder(getCliName());
     processBuilder.redirectErrorStream(true);
+    processBuilder.redirectOutput(Redirect.PIPE);
     return processBuilder;
   }
 

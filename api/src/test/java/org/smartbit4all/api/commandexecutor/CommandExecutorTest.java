@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.commandexecutor.config.CommandExecutorTestConfig;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
