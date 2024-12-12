@@ -69,6 +69,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     try (InputStream in = Files.newInputStream(tempOutputPath)) {
       return BinaryData.of(in);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return null;
     }
   }
@@ -106,6 +107,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     try (InputStream in = Files.newInputStream(tempOutputPath)) {
       return BinaryData.of(in);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return null;
     }
   }
@@ -142,13 +144,14 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
       float seconds = Float.parseFloat(outputString);
       return (long) Math.round(seconds);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return null;
     }
   }
 
   private void transferInputStreamToSysOut(Process process) throws IOException {
-    try (InputStream inputStream = process.getInputStream();
-        OutputStream outputStream = System.out) {
+    OutputStream outputStream = System.out;
+    try (InputStream inputStream = process.getInputStream()) {
       byte[] buffer = new byte[8192]; // Buffer size
       int bytesRead;
       while ((bytesRead = inputStream.read(buffer)) != -1) {

@@ -74,6 +74,7 @@ public class MimeTypeApi implements InitializingBean {
   public static final String M4V_MIMETYPE = "video/x-m4v";
   public static final String GPP_MIMETYPE = "video/3gpp";
   public static final String MKV_MIMETYPE = "video/x-matroska";
+  public static final String EXE_MIMETYPE = "application/vnd.microsoft.portable-executable";
 
   public static final String JAVA_MIMETYPE = "text/x-java-source";
   public static final String CPP_MIMETYPE = "text/x-c++src";
@@ -196,6 +197,7 @@ public class MimeTypeApi implements InitializingBean {
   public static final String M4V_EXT = "m4v";
   public static final String GPP_EXT = "3gp";
   public static final String MKV_EXT = "mkv";
+  public static final String EXE_EXT = "exe";
 
   public static final String JAVA_EXT = "java";
   public static final String CPP_EXT = "cpp";
@@ -335,6 +337,7 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(M4V_MIMETYPE, M4V_EXT);
     extensionsByMimeType.put(GPP_MIMETYPE, GPP_EXT);
     extensionsByMimeType.put(MKV_MIMETYPE, MKV_EXT);
+    extensionsByMimeType.put(EXE_MIMETYPE, EXE_EXT);
 
     extensionsByMimeType.put(JAVA_MIMETYPE, JAVA_EXT);
     extensionsByMimeType.put(CPP_MIMETYPE, CPP_EXT);
