@@ -18,6 +18,7 @@ import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.api.filter.util.FilterService;
+import org.smartbit4all.api.filterexpression.bean.SearchConfigHierarchy;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.Invocations;
@@ -120,6 +121,8 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverter;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverterImpl;
+import org.smartbit4all.api.view.filterexpression.SearchConfigHierarchyApi;
+import org.smartbit4all.api.view.filterexpression.SearchConfigHierarchyApiImpl;
 import org.smartbit4all.api.view.geomap.GeoMapApi;
 import org.smartbit4all.api.view.geomap.GeoMapApiImpl;
 import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactory;
@@ -178,6 +181,8 @@ public class PlatformApiConfig {
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
 
   public static final String VALUE_TRANSFORMATIONS = "valueTransformations";
+
+  public static final String SCHEMA_SEARCH_INDEX_FILTER_HIERARCHY = "si-filter-hierarchy";
 
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
@@ -664,6 +669,28 @@ public class PlatformApiConfig {
                   .addPathItem(LayoutDefinitionDescriptor.NAME));
       result.addDescriptor(entry);
     }
+
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(SearchConfigHierarchyApi.SCHEMA)
+          .publishedListName(SearchConfigHierarchyApi.LIST)
+          .name(SearchConfigHierarchyApi.MDM_NAME)
+          .adminGroupName(PlatformSecurityOption.layoutDescriptorEditor.getName())
+          .displayNameList(new LangString().defaultValue("Filter hierarchy")
+              .putValueByLocaleItem(Locales.L_HU, "Keresőmenü leírók")
+              .putValueByLocaleItem(Locales.L_EN, "Filter hierarchy descriptors"))
+          .displayNameForm(new LangString().defaultValue("Layout descriptor")
+              .putValueByLocaleItem(Locales.L_HU, "Keresőmenü leíró")
+              .putValueByLocaleItem(Locales.L_EN, "Filter hierarchy descriptor"))
+          .order(7L)
+          .typeQualifiedName(SearchConfigHierarchy.class.getName())
+          .uniquePropertyPaths(Arrays.asList(Arrays.asList(SearchConfigHierarchy.CODE)))
+          .addTableColumnsItem(new MDMTableColumnDescriptor()
+              .name(localeSettingApi.get(SearchConfigHierarchy.class.getName(),
+                  SearchConfigHierarchy.CODE))
+              .addPathItem(SearchConfigHierarchy.CODE));
+      result.addDescriptor(entry);
+    }
     return result;
   }
 
@@ -706,6 +733,11 @@ public class PlatformApiConfig {
   @Bean
   public FilterExpressionApi filterExpressionApi() {
     return new FilterExpressionApiImpl();
+  }
+
+  @Bean
+  public SearchConfigHierarchyApi searchConfigHierarchyApi() {
+    return new SearchConfigHierarchyApiImpl();
   }
 
   @Bean
