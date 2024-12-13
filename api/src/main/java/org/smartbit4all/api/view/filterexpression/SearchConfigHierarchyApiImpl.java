@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view.filterexpression;
 
+import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,9 +28,14 @@ public class SearchConfigHierarchyApiImpl implements SearchConfigHierarchyApi {
 
   @Override
   public List<UiAction> render(SearchConfigHierarchy hierarchy) {
-    return hierarchy.getFilters().stream()
-        .map(this::convertFilterToAction)
-        .collect(Collectors.toList());
+    final List<UiAction> result = new ArrayList<>();
+    result.add(new UiAction()
+        .code(hierarchy.getCode())
+        .descriptor(hierarchy.getActionDescriptor())
+        .subActions(hierarchy.getFilters().stream()
+            .map(this::convertFilterToAction)
+            .collect(Collectors.toList())));
+    return result;
   }
 
   private UiAction convertFilterToAction(SearchConfigHierarchyFilter filter) {
@@ -60,7 +67,11 @@ public class SearchConfigHierarchyApiImpl implements SearchConfigHierarchyApi {
     for (final SearchConfigHierarchyFilter filter : hierarchy.getFilters()) {
       assemble(result, filter, baseConfig);
     }
-    return result.stream().collect(Collectors.toMap(it -> it.code, it -> it.config, (a, b) -> b));
+    return result.stream().collect(toMap(
+        it -> it.code,
+        it -> it.config,
+        (a, b) -> b,
+        HashMap::new));
   }
 
   private void assemble(List<ConfigByCode> result, SearchConfigHierarchyFilter filter,

@@ -16,6 +16,8 @@ public interface SearchConfigHierarchyApi {
   String LIST = "filter-hierarchy-list";
   String MDM_NAME = "filter-hierarchies";
 
+  String VIEW_VARIABLE = "v-filter-hierarchy-action-cache";
+
   final class SearchConfigHierarchyViewData {
     private final String code;
     private final List<UiAction> actions;
@@ -35,7 +37,14 @@ public interface SearchConfigHierarchyApi {
       UiActions.add(view, Strings.isNullOrEmpty(toolbar)
           ? actions
           : actions.stream().map(it -> it.toolbar(toolbar)).collect(toList()));
-      view.putVariablesItem(code, variables);
+      Object vars = view.getVariables().get(VIEW_VARIABLE);
+      if (vars == null) {
+        view.putVariablesItem(VIEW_VARIABLE, variables);
+      } else if (vars instanceof Map<?, ?>) {
+        @SuppressWarnings({"unchecked"})
+        final Map<String, Object> varMap = (Map<String, Object>) vars;
+        varMap.putAll(variables);
+      }
     }
   }
 
