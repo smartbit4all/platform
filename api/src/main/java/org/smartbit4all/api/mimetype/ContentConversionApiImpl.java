@@ -12,8 +12,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
+import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableValueGraph;
@@ -24,9 +27,10 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
 
   @Autowired(required = false)
   SessionApi sessionApi;
-
   @Autowired
   MimeTypeApi mimeTypeApi;
+  @Autowired
+  ObjectApi objectApi;
 
   public ContentConversionApiImpl() {
     super(ContentConversionContributionApi.class);
@@ -132,11 +136,18 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
     if (api != null) {
       URI dataUri = api.convert(binaryContentData,
           toMimeType, logicalSchema, parameters);
+      BinaryDataObject dataObject =
+          objectApi.loadLatest(dataUri).getObject(BinaryDataObject.class);
+      UserActivityLog activityLog = sessionApi != null ? sessionApi.createActivityLog() : null;
       return new BinaryContentData()
-          .created(sessionApi != null ? sessionApi.createActivityLog() : null).dataUri(dataUri)
-          .extension(mimeTypeApi.getExtension(toMimeType))
+          .dataUri(dataUri)
+          .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType))
+          .created(activityLog)
+          .updated(activityLog)
           .mimeType(toMimeType)
-          .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType));
+          .extension(mimeTypeApi.getExtension(toMimeType))
+          .size(dataObject.getBinaryData().length())
+          .contentHash(dataObject.getBinaryData().hashIfPresent());
     }
     return null;
   }

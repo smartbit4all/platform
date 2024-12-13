@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
+import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
@@ -16,9 +18,10 @@ public class BinaryContentDataApiImpl implements BinaryContentDataApi {
 
   @Autowired
   private ObjectApi objectApi;
-
   @Autowired
   private MimeTypeApi mimeTypeApi;
+  @Autowired(required = false)
+  private SessionApi sessionApi;
 
   @Override
   public String readStringContent(URI dataUri, Charset charset) throws IOException {
@@ -41,11 +44,17 @@ public class BinaryContentDataApiImpl implements BinaryContentDataApi {
     if (binaryData == null) {
       throw new IllegalArgumentException("Unable to load binary data from " + fileRelativePath);
     }
+    UserActivityLog activityLog = sessionApi != null ? sessionApi.createActivityLog() : null;
     return new BinaryContentData()
         .dataUri(
             objectApi.saveAsNew(schemaToSave, binaryData.asObject()))
-        .fileName(fileName).extension(extensionFromFileName);
-
+        .fileName(fileName)
+        .extension(extensionFromFileName)
+        .mimeType(mimeTypeApi.getMimeType(fileName))
+        .created(activityLog)
+        .updated(activityLog)
+        .size(binaryData.length())
+        .contentHash(binaryData.hashIfPresent());
   }
 
 }
