@@ -22,7 +22,7 @@ public interface CommandExecutorApi {
   }
 
   default ProcessBuilder getProcessBuilder(String cli) {
-    ProcessBuilder processBuilder = new ProcessBuilder(getCliName());
+    ProcessBuilder processBuilder = new ProcessBuilder(cli);
     processBuilder.redirectErrorStream(true);
     processBuilder.redirectOutput(Redirect.PIPE);
     return processBuilder;
