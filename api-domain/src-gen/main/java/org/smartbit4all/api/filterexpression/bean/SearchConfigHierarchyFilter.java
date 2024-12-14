@@ -20,29 +20,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Additional filter expression. 
  */
-@ApiModel(description = "Additional filter expression. ")
+@Schema(description = "Additional filter expression. ")
 @JsonPropertyOrder({
   SearchConfigHierarchyFilter.CODE,
   SearchConfigHierarchyFilter.FILTER_EXPRESSION,
   SearchConfigHierarchyFilter.FILTERS,
   SearchConfigHierarchyFilter.ACTION_DESCRIPTOR
 })
-@JsonTypeName("SearchConfigHierarchyFilter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchConfigHierarchyFilter {
   public static final String CODE = "code";
   private String code;
@@ -51,12 +50,12 @@ public class SearchConfigHierarchyFilter {
   private FilterExpressionList filterExpression;
 
   public static final String FILTERS = "filters";
-  private List<SearchConfigHierarchyFilter> filters = new ArrayList<>();
+  private List<@Valid SearchConfigHierarchyFilter> filters = new ArrayList<>();
 
   public static final String ACTION_DESCRIPTOR = "actionDescriptor";
   private UiActionDescriptor actionDescriptor = null;
 
-  public SearchConfigHierarchyFilter() { 
+  public SearchConfigHierarchyFilter() {
   }
 
   public SearchConfigHierarchyFilter code(String code) {
@@ -65,12 +64,13 @@ public class SearchConfigHierarchyFilter {
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -85,20 +85,20 @@ public class SearchConfigHierarchyFilter {
     this.code = code;
   }
 
-
   public SearchConfigHierarchyFilter filterExpression(FilterExpressionList filterExpression) {
     
     this.filterExpression = filterExpression;
     return this;
   }
 
-   /**
+  /**
    * Get filterExpression
    * @return filterExpression
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(FILTER_EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -113,40 +113,42 @@ public class SearchConfigHierarchyFilter {
     this.filterExpression = filterExpression;
   }
 
-
-  public SearchConfigHierarchyFilter filters(List<SearchConfigHierarchyFilter> filters) {
+  public SearchConfigHierarchyFilter filters(List<@Valid SearchConfigHierarchyFilter> filters) {
     
     this.filters = filters;
     return this;
   }
 
   public SearchConfigHierarchyFilter addFiltersItem(SearchConfigHierarchyFilter filtersItem) {
+    if (this.filters == null) {
+      this.filters = new ArrayList<>();
+    }
     this.filters.add(filtersItem);
     return this;
   }
 
-   /**
+  /**
    * Get filters
    * @return filters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SearchConfigHierarchyFilter> getFilters() {
+  public List<@Valid SearchConfigHierarchyFilter> getFilters() {
     return filters;
   }
 
 
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilters(List<SearchConfigHierarchyFilter> filters) {
+  public void setFilters(List<@Valid SearchConfigHierarchyFilter> filters) {
     this.filters = filters;
   }
-
 
   public SearchConfigHierarchyFilter actionDescriptor(UiActionDescriptor actionDescriptor) {
     
@@ -154,13 +156,14 @@ public class SearchConfigHierarchyFilter {
     return this;
   }
 
-   /**
+  /**
    * Get actionDescriptor
    * @return actionDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -174,7 +177,6 @@ public class SearchConfigHierarchyFilter {
   public void setActionDescriptor(UiActionDescriptor actionDescriptor) {
     this.actionDescriptor = actionDescriptor;
   }
-
 
   @Override
   public boolean equals(Object o) {

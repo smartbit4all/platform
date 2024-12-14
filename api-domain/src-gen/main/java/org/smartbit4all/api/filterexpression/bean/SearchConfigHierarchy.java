@@ -20,23 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.SearchConfigHierarchyFilter;
 import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. 
  */
-@ApiModel(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
+@Schema(description = "This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object. ")
 @JsonPropertyOrder({
   SearchConfigHierarchy.URI,
   SearchConfigHierarchy.CODE,
@@ -44,8 +44,7 @@ import javax.validation.Valid;
   SearchConfigHierarchy.FILTERS,
   SearchConfigHierarchy.ACTION_DESCRIPTOR
 })
-@JsonTypeName("SearchConfigHierarchy")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchConfigHierarchy {
   public static final String URI = "uri";
   private URI uri;
@@ -57,12 +56,12 @@ public class SearchConfigHierarchy {
   private SearchPageConfig searchConfig;
 
   public static final String FILTERS = "filters";
-  private List<SearchConfigHierarchyFilter> filters = new ArrayList<>();
+  private List<@Valid SearchConfigHierarchyFilter> filters = new ArrayList<>();
 
   public static final String ACTION_DESCRIPTOR = "actionDescriptor";
   private UiActionDescriptor actionDescriptor = null;
 
-  public SearchConfigHierarchy() { 
+  public SearchConfigHierarchy() {
   }
 
   public SearchConfigHierarchy uri(URI uri) {
@@ -71,13 +70,14 @@ public class SearchConfigHierarchy {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -92,19 +92,19 @@ public class SearchConfigHierarchy {
     this.uri = uri;
   }
 
-
   public SearchConfigHierarchy code(String code) {
     
     this.code = code;
     return this;
   }
 
-   /**
+  /**
    * Get code
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -119,20 +119,20 @@ public class SearchConfigHierarchy {
     this.code = code;
   }
 
-
   public SearchConfigHierarchy searchConfig(SearchPageConfig searchConfig) {
     
     this.searchConfig = searchConfig;
     return this;
   }
 
-   /**
+  /**
    * Get searchConfig
    * @return searchConfig
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SEARCH_CONFIG)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -147,40 +147,42 @@ public class SearchConfigHierarchy {
     this.searchConfig = searchConfig;
   }
 
-
-  public SearchConfigHierarchy filters(List<SearchConfigHierarchyFilter> filters) {
+  public SearchConfigHierarchy filters(List<@Valid SearchConfigHierarchyFilter> filters) {
     
     this.filters = filters;
     return this;
   }
 
   public SearchConfigHierarchy addFiltersItem(SearchConfigHierarchyFilter filtersItem) {
+    if (this.filters == null) {
+      this.filters = new ArrayList<>();
+    }
     this.filters.add(filtersItem);
     return this;
   }
 
-   /**
+  /**
    * Get filters
    * @return filters
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SearchConfigHierarchyFilter> getFilters() {
+  public List<@Valid SearchConfigHierarchyFilter> getFilters() {
     return filters;
   }
 
 
   @JsonProperty(FILTERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFilters(List<SearchConfigHierarchyFilter> filters) {
+  public void setFilters(List<@Valid SearchConfigHierarchyFilter> filters) {
     this.filters = filters;
   }
-
 
   public SearchConfigHierarchy actionDescriptor(UiActionDescriptor actionDescriptor) {
     
@@ -188,13 +190,14 @@ public class SearchConfigHierarchy {
     return this;
   }
 
-   /**
+  /**
    * Get actionDescriptor
    * @return actionDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ACTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -208,7 +211,6 @@ public class SearchConfigHierarchy {
   public void setActionDescriptor(UiActionDescriptor actionDescriptor) {
     this.actionDescriptor = actionDescriptor;
   }
-
 
   @Override
   public boolean equals(Object o) {
