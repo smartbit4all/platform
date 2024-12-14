@@ -100,6 +100,12 @@ public class PlatformSecurityOption implements SecurityOption {
           .description("Platform layout descriptor editor")
           .subgroup(admin)
           .builtIn(true);
+  public static final SecurityGroup filterHierarchyEditor =
+      SecurityGroup.of(name("filterHierarchyEditor"))
+          .title("Platform filter hierarchy descriptor editor")
+          .description("Platform filter hierarchy descriptor editor")
+          .subgroup(admin)
+          .builtIn(true);
 
 
 }

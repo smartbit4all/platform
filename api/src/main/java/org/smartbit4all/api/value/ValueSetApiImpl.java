@@ -213,10 +213,9 @@ public class ValueSetApiImpl implements ValueSetApi {
         collectionApi.list(definitionData.getStorageSchema(), definitionData.getContainerName());
     if (storedList != null) {
       storedList.branch(branchUri);
-      return storedList.uris().stream()
-          .collect(toMap(u -> objectApi.getLatestUri(u),
-              u -> useObjectNode ? objectApi.load(u)
-                  : objectApi.read(u, objectDefinition.getClazz()),
+      return storedList.nodes()
+          .collect(toMap(n -> objectApi.getLatestUri(n.getObjectUri()),
+              n -> useObjectNode ? n : n.getObject(objectDefinition.getClazz()),
               (v1, v2) -> v1));
     }
     return Collections.emptyMap();
@@ -228,10 +227,10 @@ public class ValueSetApiImpl implements ValueSetApi {
     if (storage != null) {
       List<URI> allObjectUris = storage.readAllUris(objectDefinition.getClazz());
       // Quick win that we read all the properties.
-      return allObjectUris.stream()
-          .collect(toMap(u -> objectApi.getLatestUri(u),
-              u -> useObjectNode ? objectApi.load(u)
-                  : objectApi.read(u, objectDefinition.getClazz())));
+      return objectApi.loadBatch(allObjectUris).stream()
+          .collect(toMap(n -> objectApi.getLatestUri(n.getObjectUri()),
+              n -> useObjectNode ? n : n.getObject(objectDefinition.getClazz()),
+              (v1, v2) -> v1));
     }
     return Collections.emptyMap();
   }

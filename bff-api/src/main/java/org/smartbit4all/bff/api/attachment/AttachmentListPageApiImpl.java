@@ -107,8 +107,15 @@ public class AttachmentListPageApiImpl extends PageApiImpl<AttachmentList>
       URI dataUri =
           objectApi.saveAsNew(SCHEMA, new BinaryDataObject(data));
       UserActivityLog created = sessionApi.createActivityLog();
-      return new BinaryContentData().dataUri(dataUri).fileName(filename).created(created)
-          .updated(created).mimeType(mimeType).extension(extension).size(file.getSize());
+      return new BinaryContentData()
+          .dataUri(dataUri)
+          .fileName(filename)
+          .created(created)
+          .updated(created)
+          .mimeType(mimeType)
+          .extension(extension)
+          .size(file.getSize())
+          .contentHash(data.hashIfPresent());
     }).forEach(pageModel::addContentsItem);
     setModel(viewUuid, pageModel);
     refreshGrid(viewUuid, pageModel);

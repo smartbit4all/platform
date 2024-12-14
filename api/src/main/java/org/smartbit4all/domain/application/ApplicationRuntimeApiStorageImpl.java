@@ -152,7 +152,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     log.info("initRuntime execution time: {} ms", duration);
   }
 
-  @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
+  @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
+      fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
   public void maintain() throws InterruptedException, ExecutionException {
     if (storageCluster == null) {
       return;
