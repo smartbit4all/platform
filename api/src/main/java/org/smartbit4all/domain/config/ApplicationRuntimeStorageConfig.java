@@ -32,5 +32,10 @@ public class ApplicationRuntimeStorageConfig implements SchedulingConfigurer {
     return Executors.newScheduledThreadPool(5);
   }
 
+  @Bean(destroyMethod = "shutdown")
+  public Executor applicationRuntimeScheduler() {
+    return Executors.newScheduledThreadPool(2);
+  }
+
 
 }
