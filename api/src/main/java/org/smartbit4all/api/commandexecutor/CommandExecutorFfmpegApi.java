@@ -1,6 +1,10 @@
 package org.smartbit4all.api.commandexecutor;
 
+import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFMPEG;
+import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFPROBE;
+import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.PROCESS;
 import static org.smartbit4all.core.utility.StringConstant.DOT;
+import static org.smartbit4all.core.utility.StringConstant.SPACE;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,7 +13,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +30,6 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
 
   private static final Logger log = LoggerFactory.getLogger(CommandExecutorFfmpegApi.class);
 
-  public static final String FFPROBE = "ffprobe";
-
   @Value("${fs.base.directory:./test-fs}")
   private String baseDirectory;
 
@@ -36,76 +37,120 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
   private ObjectApi objectApi;
 
   @Override
-  public String getCliName() {
-    return "ffmpeg";
+  public boolean isAvailable() {
+    try {
+      ProcessBuilder processBuilder = getProcessBuilder();
+      StringBuilder commandBuilder = new StringBuilder();
+      commandBuilder.append(FFMPEG);
+      commandBuilder.append(SPACE);
+      commandBuilder.append("-version");
+      processBuilder.command().add(commandBuilder.toString());
+      processBuilder.start();
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
   }
 
   public BinaryData convert(BinaryContentData inputContentData, String toExtension)
-      throws IOException, InterruptedException {
+      throws IOException {
     ProcessBuilder processBuilder = getProcessBuilder();
-    List<String> command = processBuilder.command();
-    command.add("-i");
-    // temp file for ffmpeg
-    File tempFile = null;
-    tempFile = File.createTempFile("ffmpeg",
-        "convert" + DOT + inputContentData.getExtension());
+
+    // Using StringBuilder
+    StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(FFMPEG);
+
+    // specifying that the next parameter will be the input file
+    commandBuilder.append("-i");
+    commandBuilder.append(SPACE);
+
+    // temporal file for ffmpeg
+    File tempFile = File.createTempFile(FFMPEG,
+        PROCESS + DOT + inputContentData.getExtension());
     FileOutputStream fos = new FileOutputStream(tempFile);
     BinaryData inputData = objectApi.loadLatest(inputContentData.getDataUri())
         .getObject(BinaryDataObject.class).getBinaryData();
     ByteStreams.copy(inputData.inputStream(), fos);
     fos.flush();
     fos.close();
-    command.add(tempFile.getPath());
+    // adding the temporal input file's path
+    commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(SPACE);
+
+    // specifying the output file. The extension of the output file is responsible for determining
+    // which format to convert to
     int end = inputContentData.getFileName().lastIndexOf(DOT);
     String outputFileName = inputContentData.getFileName().substring(0, end)
         .concat(DOT).concat(toExtension);
     UUID uuid = UUID.randomUUID();
-    String tempOutputName = uuid.toString() + outputFileName;
-    Path tempOutputPath = Paths.get(baseDirectory).resolve(tempOutputName);
-    command.add(tempOutputPath.toString());
+    String uniqueOutputFileName = uuid.toString() + outputFileName;
+    Path uniqueOutputFilePath = Paths.get(baseDirectory).resolve(uniqueOutputFileName);
+    commandBuilder.append(uniqueOutputFilePath.toString());
+
+    processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
+    // transfer the logging of the process to the standard out
     transferInputStreamToSysOut(process);
-    try (InputStream in = Files.newInputStream(tempOutputPath)) {
+    try (InputStream in = Files.newInputStream(uniqueOutputFilePath)) {
       return BinaryData.of(in);
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error(e.getMessage(), e);
       return null;
     }
   }
 
   public BinaryData split(BinaryContentData inputContentData, Long start, Long end)
-      throws IOException, InterruptedException {
+      throws IOException {
     ProcessBuilder processBuilder = getProcessBuilder();
-    List<String> command = processBuilder.command();
-    command.add("-i");
+
+    // Using StringBuilder
+    StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(FFMPEG);
+
+    // specifying that the next parameter will be the input file
+    commandBuilder.append("-i");
+    commandBuilder.append(SPACE);
+
     // temp file for ffmpeg
-    File tempFile = null;
-    tempFile = File.createTempFile("ffmpeg",
-        "convert" + DOT + inputContentData.getExtension());
+    File tempFile = File.createTempFile(FFMPEG,
+        PROCESS + DOT + inputContentData.getExtension());
     FileOutputStream fos = new FileOutputStream(tempFile);
     BinaryData inputData = objectApi.loadLatest(inputContentData.getDataUri())
         .getObject(BinaryDataObject.class).getBinaryData();
     ByteStreams.copy(inputData.inputStream(), fos);
     fos.flush();
     fos.close();
-    command.add(tempFile.getPath());
+    // adding the temporal input file's path
+    commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(SPACE);
+
+    // specifying the start and end time of the snippet
+    commandBuilder.append("-ss");
+    commandBuilder.append(SPACE);
+    commandBuilder.append(start.toString());
+    commandBuilder.append(SPACE);
+    commandBuilder.append("-to");
+    commandBuilder.append(SPACE);
+    commandBuilder.append(end.toString());
+    commandBuilder.append(SPACE);
+
+    // specifying the output file. The file name will be "filename_start_end.ext"
     int fileNameEnd = inputContentData.getFileName().lastIndexOf(DOT);
     String outputFileName = inputContentData.getFileName().substring(0, fileNameEnd)
         + StringConstant.UNDERLINE + start + StringConstant.UNDERLINE + end + DOT
         + inputContentData.getExtension();
-    command.add("-ss");
-    command.add(start.toString());
-    command.add("-to");
-    command.add(end.toString());
     UUID uuid = UUID.randomUUID();
-    String tempOutputName = uuid.toString() + outputFileName;
-    Path tempOutputPath = Paths.get(baseDirectory).resolve(tempOutputName);
-    command.add(tempOutputPath.toString());
+    String uniqueOutputFileName = uuid.toString() + outputFileName;
+    Path uniqueOutputFilePath = Paths.get(baseDirectory).resolve(uniqueOutputFileName);
+    commandBuilder.append(uniqueOutputFilePath.toString());
+
+    processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
+    // transfer the logging of the process to the standard out
     transferInputStreamToSysOut(process);
-    try (InputStream in = Files.newInputStream(tempOutputPath)) {
+    try (InputStream in = Files.newInputStream(uniqueOutputFilePath)) {
       return BinaryData.of(in);
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error(e.getMessage(), e);
       return null;
     }
@@ -113,29 +158,46 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
 
   public Long getDuration(BinaryContentData inputContentData)
       throws IOException, InterruptedException {
-    ProcessBuilder processBuilder = getProcessBuilder(FFPROBE);
-    List<String> command = processBuilder.command();
-    command.add("-i");
-    // temp file for ffmpeg
-    File tempFile = null;
-    tempFile = File.createTempFile("ffmpeg",
-        "convert" + DOT + inputContentData.getExtension());
+    ProcessBuilder processBuilder = getProcessBuilder();
+
+    // Using StringBuilder
+    StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(FFPROBE);
+
+    // specifying that the next parameter will be the input file
+    commandBuilder.append("-i");
+    commandBuilder.append(SPACE);
+
+
+    // temporal file for ffmpeg
+    File tempFile = File.createTempFile(FFMPEG,
+        PROCESS + DOT + inputContentData.getExtension());
     FileOutputStream fos = new FileOutputStream(tempFile);
     BinaryData inputData = objectApi.loadLatest(inputContentData.getDataUri())
         .getObject(BinaryDataObject.class).getBinaryData();
     ByteStreams.copy(inputData.inputStream(), fos);
     fos.flush();
     fos.close();
-    command.add(tempFile.getPath());
+    commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(SPACE);
+
     // outputs only the duration information
-    command.add("-show_entries");
-    command.add("format=duration");
+    commandBuilder.append("-show_entries");
+    commandBuilder.append(SPACE);
+    commandBuilder.append("format=duration");
+    commandBuilder.append(SPACE);
     // suppresses all logs except the requested output
-    command.add("-v");
-    command.add("quiet");
+    commandBuilder.append("-v");
+    commandBuilder.append(SPACE);
+    commandBuilder.append("quiet");
+    commandBuilder.append(SPACE);
     // formats the output as plain text (just the duration value)
-    command.add("-of");
-    command.add("csv=\"p=0\"");
+    commandBuilder.append("-of");
+    commandBuilder.append(SPACE);
+    commandBuilder.append("csv=\"p=0\"");
+    commandBuilder.append(SPACE);
+
+    processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
     try (InputStream in = process.getInputStream()) {
       byte[] allBytes = FileIO.readInputStreamToByteArray(in);
