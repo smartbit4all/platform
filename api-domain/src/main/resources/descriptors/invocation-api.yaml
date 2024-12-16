@@ -563,6 +563,28 @@ components:
         SESSIONS - The invocation of the publisher method implies one invocation for the every session consuming
         the event. The session storage contains the map for the active sessions and also the sessions
         that are interested in the given event.
+    FutureAwait:
+      type: object
+      description: |
+        This is a saved entry that is identified by a stringified unique identifier that can describe an object, an event or
+        whatever. If there is a process that is awaiting for a future result then this entry denotes the invocation request
+        or requests to call when the given result is ready. The result is nothing else but the parameters of the signal call.
+      required: [id, request]
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+          description: |
+            The identifier of the future object. It must be unique in a scheme where it is saved. For example if it is the
+            future of a process execution then in the process scheme it must be unique.
+        request:
+          description: |
+            The invocation request to call when the signal is coming. The request already contains the necessary identifier
+            as the first mandatory parameter of the invocation request. signalFuture call is refering the identifier as the
+            first parameter. The result of the parameters are passed to the invocation request. The number parameters must match!
+          $ref: '#/components/schemas/InvocationRequest'
     MethodData:
       type: object
       required: [uri,name,parameters]

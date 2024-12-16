@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -31,6 +32,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -334,6 +336,31 @@ public class InvocationApiTestStatic {
             .map(u -> objectApi.loadLatest(u).getObject(SampleCategory.class).getName())
             .collect(toList()))
         .allMatch(s -> "common".equals(s));
+
+  }
+
+  static void testSignalFutureAwait(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first to store the result of the future.
+
+    URI categoryUri = objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN));
+
+
+    InvocationRequest originalRequest = invocationApi.builder(TestApi.class)
+        .build(a -> a.applyParentNamChangeForCategory(categoryUri, null));
+
+    UUID uuid = UUID.randomUUID();
+
+    invocationApi.awaitFor(INVOCATIONTEST, uuid.toString(), originalRequest);
+
+    invocationApi.signalFuture(INVOCATIONTEST, uuid.toString(), "Modified 1");
+
+    ObjectNode categoryNode = objectApi.loadLatest(categoryUri);
+
+    Assertions.assertEquals("Modified 1", categoryNode.getValueAsString(SampleCategory.NAME));
 
   }
 
