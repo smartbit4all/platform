@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a saved entry that is identified by a stringified unique identifier that can describe an object, an event or whatever. If there is a process that is awaiting for a future result then this entry denotes the invocation request or requests to call when the given result is ready. The result is nothing else but the parameters of the signal call. 
  */
-@ApiModel(description = "This is a saved entry that is identified by a stringified unique identifier that can describe an object, an event or whatever. If there is a process that is awaiting for a future result then this entry denotes the invocation request or requests to call when the given result is ready. The result is nothing else but the parameters of the signal call. ")
+@Schema(description = "This is a saved entry that is identified by a stringified unique identifier that can describe an object, an event or whatever. If there is a process that is awaiting for a future result then this entry denotes the invocation request or requests to call when the given result is ready. The result is nothing else but the parameters of the signal call. ")
 @JsonPropertyOrder({
   FutureAwait.URI,
   FutureAwait.ID,
   FutureAwait.REQUEST
 })
-@JsonTypeName("FutureAwait")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FutureAwait {
   public static final String URI = "uri";
   private URI uri;
@@ -50,7 +48,7 @@ public class FutureAwait {
   public static final String REQUEST = "request";
   private InvocationRequest request;
 
-  public FutureAwait() { 
+  public FutureAwait() {
   }
 
   public FutureAwait uri(URI uri) {
@@ -59,13 +57,14 @@ public class FutureAwait {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -80,20 +79,20 @@ public class FutureAwait {
     this.uri = uri;
   }
 
-
   public FutureAwait id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * The identifier of the future object. It must be unique in a scheme where it is saved. For example if it is the future of a process execution then in the process scheme it must be unique. 
    * @return id
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The identifier of the future object. It must be unique in a scheme where it is saved. For example if it is the future of a process execution then in the process scheme it must be unique. ")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The identifier of the future object. It must be unique in a scheme where it is saved. For example if it is the future of a process execution then in the process scheme it must be unique. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -108,21 +107,21 @@ public class FutureAwait {
     this.id = id;
   }
 
-
   public FutureAwait request(InvocationRequest request) {
     
     this.request = request;
     return this;
   }
 
-   /**
+  /**
    * Get request
    * @return request
-  **/
-  @javax.annotation.Nonnull
+   */
+  @jakarta.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -136,7 +135,6 @@ public class FutureAwait {
   public void setRequest(InvocationRequest request) {
     this.request = request;
   }
-
 
   @Override
   public boolean equals(Object o) {
