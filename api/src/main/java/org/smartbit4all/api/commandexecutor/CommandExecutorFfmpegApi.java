@@ -30,7 +30,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
 
   private static final Logger log = LoggerFactory.getLogger(CommandExecutorFfmpegApi.class);
 
-  @Value("${fs.base.directory:./test-fs}")
+  @Value("${fs.base.directory:../../dev-fs}")
   private String baseDirectory;
 
   @Autowired
