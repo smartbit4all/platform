@@ -59,6 +59,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
     commandBuilder.append(FFMPEG);
+    commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
     commandBuilder.append("-i");
@@ -106,6 +107,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
     commandBuilder.append(FFMPEG);
+    commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
     commandBuilder.append("-i");
@@ -163,6 +165,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
     commandBuilder.append(FFPROBE);
+    commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
     commandBuilder.append("-i");

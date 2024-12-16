@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -13,11 +12,10 @@ import org.smartbit4all.api.commandexecutor.config.CommandExecutorTestConfig;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {CommandExecutorTestConfig.class})
-public class CommandExecutorTest {
+class CommandExecutorTest {
 
   @Autowired
   private CommandExecutorFfmpegApi ffmpegApi;
@@ -27,7 +25,6 @@ public class CommandExecutorTest {
   MimeTypeApi mimeTypeApi;
 
   @Test
-  @Disabled
   void executeFileCommand() throws IOException, InterruptedException {
     BinaryData data = BinaryData.of(this.getClass().getResourceAsStream("/mp4Example.mp4"));
 
