@@ -28,6 +28,7 @@ import org.smartbit4all.api.invocation.ServiceConnectionApiImpl;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
@@ -310,6 +311,12 @@ public class PlatformApiConfig {
         ObjectDefinitionApiImpl.constructDefinitionBase(ObjectDefinitionData.class);
     result.setExplicitUri(true);
     return result;
+  }
+
+  @Bean
+  public ObjectDefinition<FutureAwait> objectDefinitionFutureAwait() {
+    return ObjectDefinitionApiImpl.constructDefinitionBase(FutureAwait.class)
+        .idPath(FutureAwait.ID);
   }
 
   @Bean

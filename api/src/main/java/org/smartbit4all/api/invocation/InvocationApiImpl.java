@@ -22,6 +22,7 @@ import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -39,6 +40,7 @@ import org.smartbit4all.api.session.bean.SessionInfoData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,6 +432,53 @@ public final class InvocationApiImpl implements InvocationApi {
     }
     return executionApis.stream().filter(a -> api.equals(a.getClass().getName())).findFirst()
         .orElse(null);
+  }
+
+  @Override
+  public URI awaitFor(String scheme, String id, InvocationRequest request) {
+    return objectApi.saveAsNew(scheme, new FutureAwait().id(id).request(request));
+  }
+
+  @Override
+  public void signalFuture(String scheme, String id, Object... parameters) {
+    ObjectNode futureAwaitNode =
+        objectApi.loadLatest(scheme, objectApi.definition(FutureAwait.class), id);
+    String futureId = scheme + StringConstant.DOT + id;
+    if (futureAwaitNode == null) {
+      log.error("Unable to signal the Future {} - the future is missing. parameters: {}",
+          futureId, parameters);
+      return;
+    }
+    InvocationRequest invocationRequest =
+        futureAwaitNode.getValue(InvocationRequest.class, FutureAwait.REQUEST);
+    if (invocationRequest == null) {
+      log.error(
+          "Unable to signal the Future {} - the invocation is missing from the future. parameters: {}",
+          futureId, parameters);
+      return;
+    }
+    // Set the parameters of the signal from the 1. parameter. The 0. is reserved as the context
+    // identifier.
+    for (int i = 0; i < parameters.length; i++) {
+      int j = i + 1;
+      if (j < invocationRequest.getParameters().size()) {
+        InvocationParameter parameter = invocationRequest.getParameters().get(j);
+        if (parameter != null) {
+          parameter.value(parameters[i]);
+        } else {
+          invocationRequest.getParameters().set(j, new InvocationParameter().value(parameters[i]));
+        }
+      } else {
+        break;
+      }
+    }
+    try {
+      invoke(invocationRequest);
+    } catch (Exception e) {
+      log.error(
+          "Unable to signal the Future {} - the invocation is failed. parameters: {}",
+          futureId, parameters, e);
+    }
   }
 
 }

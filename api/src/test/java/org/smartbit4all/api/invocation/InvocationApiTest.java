@@ -90,4 +90,9 @@ class InvocationApiTest {
     InvocationApiTestStatic.testInvokeWithPrepare(invocationApi, collectionApi, objectApi);
   }
 
+  @Test
+  void testSignalFutureAwait() throws Exception {
+    InvocationApiTestStatic.testSignalFutureAwait(invocationApi, collectionApi, objectApi);
+  }
+
 }

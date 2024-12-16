@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.script.ScriptException;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -229,5 +230,32 @@ public interface InvocationApi {
    *         application runtime exists and up.
    */
   boolean checkCallable(Object api);
+
+  /**
+   * The await is persisting a {@link FutureAwait} object for tha later signal event expressed by
+   * the {@link #signalFuture(String, String, Object...)}. This future is nothing else but a saved
+   * {@link InvocationRequest} that will be invoked when the signal is coming. The parameters must
+   * be started with a reserved parameter, the identifier object itself that is not necessarily the
+   * id value. The additional parameters are filled with the parameters passed to the
+   * {@link #signalFuture(String, String, Object...)}.
+   * 
+   * @param scheme The scheme of the future object.
+   * @param id The unique identifier that must be uuid, or a numeric id in stringified form.
+   * @param request The request to be called. Be careful to fill the first parameter with the
+   *        necessary parameter to find the context for the incoming signal.
+   * @return The URI of the saved {@link FutureAwait}
+   */
+  URI awaitFor(String scheme, String id, InvocationRequest request);
+
+  /**
+   * If an incoming event is coming and we have to give a signal for a {@link FutureAwait} to call
+   * the proper request to manage the result of the event.
+   * 
+   * @param scheme The scheme of the future object.
+   * @param id The unique identifier that must be uuid, or a numeric id in stringified form.
+   * @param parameters The parameters of the future that will be additional parameters of the
+   *        {@link InvocationRequest} saved in the future.
+   */
+  void signalFuture(String scheme, String id, Object... parameters);
 
 }
