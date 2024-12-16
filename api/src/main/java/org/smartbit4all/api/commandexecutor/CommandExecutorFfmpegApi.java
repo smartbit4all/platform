@@ -38,16 +38,25 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
 
   @Override
   public boolean isAvailable() {
+    ProcessBuilder processBuilder = getProcessBuilder();
+    StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(FFMPEG);
+    commandBuilder.append(SPACE);
+    commandBuilder.append("-version");
+    processBuilder.command().add(commandBuilder.toString());
+    Process process;
     try {
-      ProcessBuilder processBuilder = getProcessBuilder();
-      StringBuilder commandBuilder = new StringBuilder();
-      commandBuilder.append(FFMPEG);
-      commandBuilder.append(SPACE);
-      commandBuilder.append("-version");
-      processBuilder.command().add(commandBuilder.toString());
-      processBuilder.start();
-      return true;
+      process = processBuilder.start();
     } catch (IOException e) {
+      log.error(e.getMessage(), e);
+      return false;
+    }
+    try (InputStream in = process.getInputStream()) {
+      byte[] allBytes = FileIO.readInputStreamToByteArray(in);
+      String outputString = new String(allBytes);
+      return outputString.contains("FFmpeg");
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
       return false;
     }
   }
@@ -207,7 +216,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
       String outputString = new String(allBytes);
       float seconds = Float.parseFloat(outputString);
       return (long) Math.round(seconds);
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error(e.getMessage(), e);
       return null;
     }
