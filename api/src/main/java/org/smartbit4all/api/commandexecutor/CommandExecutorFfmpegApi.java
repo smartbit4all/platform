@@ -4,6 +4,7 @@ import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFMP
 import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFPROBE;
 import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.PROCESS;
 import static org.smartbit4all.core.utility.StringConstant.DOT;
+import static org.smartbit4all.core.utility.StringConstant.DOUBLE_QUOTE;
 import static org.smartbit4all.core.utility.StringConstant.SPACE;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,7 +85,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     fos.flush();
     fos.close();
     // adding the temporal input file's path
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(SPACE);
 
     // specifying the output file. The extension of the output file is responsible for determining
@@ -95,7 +98,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     UUID uuid = UUID.randomUUID();
     String uniqueOutputFileName = uuid.toString() + outputFileName;
     Path uniqueOutputFilePath = Paths.get(baseDirectory).resolve(uniqueOutputFileName);
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(uniqueOutputFilePath.toString());
+    commandBuilder.append(DOUBLE_QUOTE);
 
     processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
@@ -132,7 +137,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     fos.flush();
     fos.close();
     // adding the temporal input file's path
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(SPACE);
 
     // specifying the start and end time of the snippet
@@ -153,7 +160,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     UUID uuid = UUID.randomUUID();
     String uniqueOutputFileName = uuid.toString() + outputFileName;
     Path uniqueOutputFilePath = Paths.get(baseDirectory).resolve(uniqueOutputFileName);
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(uniqueOutputFilePath.toString());
+    commandBuilder.append(DOUBLE_QUOTE);
 
     processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
@@ -190,7 +199,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     ByteStreams.copy(inputData.inputStream(), fos);
     fos.flush();
     fos.close();
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(tempFile.getPath());
+    commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(SPACE);
 
     // outputs only the duration information
