@@ -1,5 +1,6 @@
 package org.smartbit4all.sec.session;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -41,6 +42,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -57,6 +59,8 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   private static final Logger log = LoggerFactory.getLogger(SessionManagementApiImpl.class);
 
   private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
+
+  private static final String EXPMSG_MISSING_KEY = "key can not be null!";
 
   private static final String ACTIVE_SESSIONS = "activeSessions";
 
@@ -295,22 +299,33 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Override
   public void setSessionParameter(URI sessionUri, String key, String value) {
+    setSessionParameterInternal(sessionUri, key, value, String.class);
+  }
+
+  private void setSessionParameterInternal(URI sessionUri, String key, String value,
+      Class<?> clazz) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(key, "key can not be null!");
-    updateSession(sessionUri, s -> s.putParametersItem(key, value));
+    Objects.requireNonNull(key, EXPMSG_MISSING_KEY);
+    updateSession(sessionUri, s -> s
+        .putParametersItem(key, value)
+        .putParameterClassesItem(key, clazz.getName()));
   }
 
   @Override
   public String removeSessionParameter(URI sessionUri, String key) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(key, "key can not be null!");
+    Objects.requireNonNull(key, EXPMSG_MISSING_KEY);
 
     String value = readSession(sessionUri).getParameters().get(key);
 
     if (value != null) {
       updateSession(sessionUri, s -> {
-        Map<String, String> parameters = s.getParameters();
-        parameters.remove(key);
+        if (s.getParameters() != null) {
+          s.getParameters().remove(key);
+        }
+        if (s.getParameterClasses() != null) {
+          s.getParameterClasses().remove(key);
+        }
         return s;
       });
     }
@@ -579,19 +594,38 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Override
   public <T> void setSessionParameterObject(URI sessionUri, String key, T value) {
-    Objects.requireNonNull(key, "key can not be null!");
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(key, EXPMSG_MISSING_KEY);
     if (value == null) {
       this.removeSessionParameter(sessionUri, key);
     } else {
       String valueTxt = SessionUtils.serializeSessionParameter(value, objectMapper);
-      this.setSessionParameter(sessionUri, key, valueTxt);
+      this.setSessionParameterInternal(sessionUri, key, valueTxt, value.getClass());
     }
   }
 
   @Override
+  public <T> T getSessionParameterObject(URI sessionUri, String key) {
+    Session session = readSession(sessionUri);
+    String parameterClassName = session.getParameterClasses().get(key);
+    Class<?> clazz;
+    if (StringUtils.hasLength(parameterClassName)) {
+      try {
+        clazz = Class.forName(parameterClassName);
+      } catch (ClassNotFoundException e) {
+        clazz = Serializable.class;
+        log.warn("Unable to instantiate class for parameter {}, class is [{}]",
+            key, parameterClassName);
+      }
+    } else {
+      clazz = String.class;
+    }
+    return (T) getSessionParameterObject(sessionUri, key, clazz);
+  }
+
+  @Override
   public <T> T getSessionParameterObject(URI sessionUri, String key, Class<T> clazz) {
-    Session session = storage.get().read(sessionUri, Session.class);
+    Session session = readSession(sessionUri);
     String valueTxt = session.getParameters().get(key);
     return SessionUtils.deserializeSessionParameter(valueTxt, clazz, objectMapper);
   }

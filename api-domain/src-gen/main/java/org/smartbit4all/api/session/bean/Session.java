@@ -45,6 +45,7 @@ import jakarta.validation.Valid;
   Session.AUTHENTICATIONS,
   Session.USER,
   Session.PARAMETERS,
+  Session.PARAMETER_CLASSES,
   Session.VIEW_CONTEXTS,
   Session.CREATED_AT
 })
@@ -70,6 +71,9 @@ public class Session {
 
   public static final String PARAMETERS = "parameters";
   private Map<String, String> parameters = new HashMap<>();
+
+  public static final String PARAMETER_CLASSES = "parameterClasses";
+  private Map<String, String> parameterClasses = new HashMap<>();
 
   public static final String VIEW_CONTEXTS = "viewContexts";
   private Map<String, URI> viewContexts = new HashMap<>();
@@ -289,6 +293,41 @@ public class Session {
     this.parameters = parameters;
   }
 
+  public Session parameterClasses(Map<String, String> parameterClasses) {
+    
+    this.parameterClasses = parameterClasses;
+    return this;
+  }
+
+  public Session putParameterClassesItem(String key, String parameterClassesItem) {
+    if (this.parameterClasses == null) {
+      this.parameterClasses = new HashMap<>();
+    }
+    this.parameterClasses.put(key, parameterClassesItem);
+    return this;
+  }
+
+  /**
+   * Get parameterClasses
+   * @return parameterClasses
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(PARAMETER_CLASSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getParameterClasses() {
+    return parameterClasses;
+  }
+
+
+  @JsonProperty(PARAMETER_CLASSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParameterClasses(Map<String, String> parameterClasses) {
+    this.parameterClasses = parameterClasses;
+  }
+
   public Session viewContexts(Map<String, URI> viewContexts) {
     
     this.viewContexts = viewContexts;
@@ -367,13 +406,14 @@ public class Session {
         Objects.equals(this.authentications, session.authentications) &&
         Objects.equals(this.user, session.user) &&
         Objects.equals(this.parameters, session.parameters) &&
+        Objects.equals(this.parameterClasses, session.parameterClasses) &&
         Objects.equals(this.viewContexts, session.viewContexts) &&
         Objects.equals(this.createdAt, session.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts, createdAt);
+    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, parameterClasses, viewContexts, createdAt);
   }
 
   @Override
@@ -387,6 +427,7 @@ public class Session {
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");
     sb.append("    user: ").append(toIndentedString(user)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    parameterClasses: ").append(toIndentedString(parameterClasses)).append("\n");
     sb.append("    viewContexts: ").append(toIndentedString(viewContexts)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");

@@ -30,7 +30,16 @@ public class SessionUtils {
 
     String valueTxt = null;
 
-    if (objectMapper != null && objectMapper.canSerialize(clazz)) {
+    if (Serializable.class.isAssignableFrom(clazz)) {
+      try {
+        valueTxt = serializeSerializable((Serializable) value);
+      } catch (Exception e) {
+        log.warn(
+            "Parameter can not be deserialized from session as Serializable. class: [{}]",
+            clazz.getName(), e);
+      }
+    }
+    if (valueTxt == null && objectMapper != null && objectMapper.canSerialize(clazz)) {
       try {
         valueTxt = objectMapper.writeValueAsString(value);
       } catch (JsonProcessingException e) {
@@ -40,15 +49,6 @@ public class SessionUtils {
       }
     }
 
-    if (valueTxt == null && Serializable.class.isAssignableFrom(clazz)) {
-      try {
-        valueTxt = serializeSerializable((Serializable) value);
-      } catch (Exception e) {
-        log.warn(
-            "Parameter can not be deserialized from session as Serializable. class: [{}]",
-            clazz.getName(), e);
-      }
-    }
     if (valueTxt != null) {
       return valueTxt;
     } else {
@@ -69,21 +69,21 @@ public class SessionUtils {
     if (ObjectUtils.isEmpty(valueTxt)) {
       return null;
     }
+    if (Serializable.class.isAssignableFrom(clazz)) {
+      try {
+        return deserializeSerializable(valueTxt);
+      } catch (Exception e) {
+        log.warn(
+            "Parameter can not be deserialized from session as Serializable. Class: [{}], value: {}",
+            clazz.getName(), valueTxt, e);
+      }
+    }
     if (objectMapper != null && objectMapper.canDeserialize(objectMapper.constructType(clazz))) {
       try {
         return objectMapper.readValue(valueTxt, clazz);
       } catch (JsonProcessingException e) {
         log.warn(
             "Parameter can not be deserialized from session with ObjectMapper. Class: [{}]",
-            clazz.getName(), e);
-      }
-    }
-    if (Serializable.class.isAssignableFrom(clazz)) {
-      try {
-        return deserializeSerializable(valueTxt);
-      } catch (Exception e) {
-        log.warn(
-            "Parameter can not be deserialized from session as Serializable. Class: [{}]",
             clazz.getName(), e);
       }
     }

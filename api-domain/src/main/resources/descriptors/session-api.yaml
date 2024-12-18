@@ -141,6 +141,10 @@ components:
           type: object
           additionalProperties:
             type: string
+        parameterClasses:
+          type: object
+          additionalProperties:
+            type: string
         viewContexts:
           description: ViewContexts in this session, URIs by UUID.
           type: object

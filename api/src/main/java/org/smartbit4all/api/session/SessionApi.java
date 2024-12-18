@@ -103,6 +103,8 @@ public interface SessionApi {
    */
   <T> T getParameterObject(String key, Class<T> clazz);
 
+  <T> T getParameterObject(String key);
+
   /**
    * Sets or updates a session parameter as an object.
    *

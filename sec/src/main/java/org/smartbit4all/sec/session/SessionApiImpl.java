@@ -118,6 +118,11 @@ public class SessionApiImpl implements SessionApi {
   }
 
   @Override
+  public <T> T getParameterObject(String key) {
+    return sessionManagementApi.getSessionParameterObject(getSessionUri(), key);
+  }
+
+  @Override
   public <T> void setParameterObject(String key, T value) {
     sessionManagementApi.setSessionParameterObject(getSessionUri(), key, value);
   }

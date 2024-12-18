@@ -1,11 +1,6 @@
 package org.smartbit4all.sec.oauth2;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -66,11 +61,8 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
       return null;
     }
 
-    String clientTxt =
-        session.getParameters().get(getAuthorizedClientParameterKey(clientRegistrationId));
-
-
-    return deserializeClient(clientTxt);
+    return sessionManagementApi.getSessionParameterObject(session.getUri(),
+        getAuthorizedClientParameterKey(clientRegistrationId));
   }
 
   @Override
@@ -81,9 +73,9 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
     if (principal instanceof SessionAuthToken) {
       SessionAuthPrincipal sessionPrincipal = ((SessionAuthToken) principal).getPrincipal();
       String clientRegistrationId = authorizedClient.getClientRegistration().getRegistrationId();
-      sessionManagementApi.setSessionParameter(sessionPrincipal.getSessionUri(),
+      sessionManagementApi.setSessionParameterObject(sessionPrincipal.getSessionUri(),
           getAuthorizedClientParameterKey(clientRegistrationId),
-          serializeClient(authorizedClient));
+          authorizedClient);
     } else {
       inMemoryClientService.saveAuthorizedClient(authorizedClient, principal);
     }
@@ -119,36 +111,6 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
   private boolean isValidUri(URI sessionUri) {
     return !ObjectUtils.isEmpty(sessionUri.getScheme())
         && !ObjectUtils.isEmpty(sessionUri.getPath());
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T extends OAuth2AuthorizedClient> T deserializeClient(String clientTxt) {
-    if (clientTxt == null) {
-      return null;
-    }
-    try {
-      byte[] data = Base64.getDecoder().decode(clientTxt);
-      ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-      Object o = ois.readObject();
-      ois.close();
-      return (T) o;
-    } catch (Exception e) {
-      log.error("Unable to deserialize OAuth2AuthorizedClient", e);
-      return null;
-    }
-  }
-
-  private String serializeClient(OAuth2AuthorizedClient client) {
-    try {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(client);
-      oos.close();
-      return Base64.getEncoder().encodeToString(baos.toByteArray());
-    } catch (Exception e) {
-      log.error("Unable to serialize OAuth2AuthorizedClient", e);
-      return null;
-    }
   }
 
   private String getAuthorizedClientParameterKey(String clientRegistrationId) {

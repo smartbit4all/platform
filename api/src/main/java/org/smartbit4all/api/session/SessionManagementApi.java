@@ -16,7 +16,7 @@ public interface SessionManagementApi {
 
   /**
    * Calculates the duration between two {@link OffsetDateTime}s in seconds.
-   * 
+   *
    * @param now the start {@link OffsetDateTime} of the period
    * @param refreshExpiration the end {@link OffsetDateTime} of the period
    * @return the number of whole seconds between the two moments in time; 0 is returned if any of
@@ -57,6 +57,8 @@ public interface SessionManagementApi {
 
   <T> T getSessionParameterObject(URI sessionUri, String key, Class<T> clazz);
 
+  <T> T getSessionParameterObject(URI sessionUri, String key);
+
   String removeSessionParameter(URI sessionUri, String key);
 
   void setSessionLocale(URI sessionUri, String locale);
@@ -83,7 +85,7 @@ public interface SessionManagementApi {
   /**
    * Read all the active sessions that are still active it is a relatively expensive function
    * because it clean up the inactive sessions from the active storage registry.
-   * 
+   *
    * @return
    */
   List<Session> getActiveSessions();
@@ -91,7 +93,7 @@ public interface SessionManagementApi {
   /**
    * Read all the active sessions that are still active it is a relatively expensive function
    * because it clean up the inactive sessions from the active storage registry.
-   * 
+   *
    * @param sessionListName The session list where the active sessions come from. If this list
    *        doesn't exist then we get back the {@link #getActiveSessions()} result.
    * @return
@@ -106,14 +108,14 @@ public interface SessionManagementApi {
 
   /**
    * Sets the duration of the session token.
-   * 
+   *
    * @param minutes {@code int} token lifetime in minutes
    */
   void setSessionExpirationTime(final int minutes);
 
   /**
    * Sets the duration of the session refresh token.
-   * 
+   *
    * @param minutes {@code int} token lifetime in minutes, negative values mean the session is
    *        always refreshable
    */
