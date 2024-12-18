@@ -26,6 +26,7 @@ import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
+import org.smartbit4all.api.grid.bean.GridExportDescriptor;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -214,8 +215,11 @@ public class GridModelApiImpl implements GridModelApi {
       gridModel.getView().getDescriptor().setShowEditColumns(getDefaultShowEditColumns());
     }
     if (gridModel.getView() != null && gridModel.getView().getDescriptor() != null
-        && Boolean.TRUE.equals(gridModel.getView().getDescriptor().getIsExportable())) {
-      setupExportGridAction(viewUuid, gridId);
+        && (gridModel.getView().getDescriptor().getExportDescriptor() != null
+            && Boolean.TRUE.equals(
+                gridModel.getView().getDescriptor().getExportDescriptor().getIsExportable()))) {
+      setupExportGridAction(viewUuid, gridId,
+          gridModel.getView().getDescriptor().getExportDescriptor());
     }
     gridModel.setViewUuid(viewUuid);
     gridModel.setIdentifier(gridId);
@@ -1087,15 +1091,24 @@ public class GridModelApiImpl implements GridModelApi {
     return viewApi.getWidgetServerModelFromView(GridServerModel.class, viewUuid, gridId);
   }
 
-  private void setupExportGridAction(UUID viewUuid, String gridId) {
+  private void setupExportGridAction(UUID viewUuid, String gridId,
+      GridExportDescriptor descriptor) {
     View view = viewApi.getView(viewUuid);
-    UiActions.add(view, new UiAction().code(GridExportApi.EXPORT_GRID)
-        .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
+
+    UiAction button = new UiAction().code(GridExportApi.EXPORT_GRID)
+        .toolbar(descriptor.getButtonToolbar() != null
+            ? descriptor.getButtonToolbar()
+            : gridId + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
-            .type(UiActionButtonType.FLAT).icon("file-export")
+            .type(UiActionButtonType.FLAT)
+            .icon(descriptor.getButtonIcon() != null
+                ? descriptor.getButtonIcon()
+                : "file-export")
             .iconPosition(IconPosition.PRE)
-            .color(UiActions.Color.PRIMARY)
-            .title(localeSettingApi.get("grid.export.button.title"))));
+            .color(descriptor.getButtonColor())
+            .title(localeSettingApi.get("grid.export.button.title")));
+
+    UiActions.add(view, button);
 
     view.addEventHandlersItem(new ViewEventHandler()
         .viewEventType(ViewEventTypeEnum.INSTEAD)

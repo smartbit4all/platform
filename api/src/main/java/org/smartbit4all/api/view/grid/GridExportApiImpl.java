@@ -4,8 +4,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
+import org.smartbit4all.api.grid.bean.GridExportDescriptor;
 import org.smartbit4all.api.grid.bean.GridModel;
-import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -59,12 +59,12 @@ public class GridExportApiImpl
 
   @Override
   public void exportGridAction(UUID viewUuid, UiActionRequest request, String gridId) {
-    GridViewDescriptor descriptor = viewApi
+    GridExportDescriptor descriptor = viewApi
         .getWidgetModelFromView(
             GridModel.class,
             viewUuid,
             gridId)
-        .getView().getDescriptor();
+        .getView().getDescriptor().getExportDescriptor();
 
     BinaryContentData binaryContentData = null;
     if (ObjectUtils.isEmpty(descriptor.getExportMimeType())) {
