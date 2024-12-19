@@ -11,19 +11,24 @@ import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class TreeSetupApiImpl implements TreeSetupApi, InitializingBean {
 
   @Autowired(required = false)
+  @Lazy
   private List<TreeConfig> treeConfigs;
 
   @Autowired(required = false)
+  @Lazy
   private List<TreeNodeRenderer> treeNodeRenderers;
 
   @Autowired(required = false)
+  @Lazy
   private List<TreeNodeActionHandler> treeNodeActionHandlers;
 
   @Autowired(required = false)
+  @Lazy
   private List<TreeRelation> treeRelations;
 
   private Map<String, TreeConfig> configsByName = new HashMap<>();

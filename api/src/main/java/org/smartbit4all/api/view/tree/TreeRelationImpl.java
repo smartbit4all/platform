@@ -17,6 +17,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public abstract class TreeRelationImpl implements TreeRelation {
 
@@ -30,6 +31,7 @@ public abstract class TreeRelationImpl implements TreeRelation {
   protected ObjectApi objectApi;
 
   @Autowired
+  @Lazy
   protected TreeSetupApi treeSetupApi;
 
   @Autowired

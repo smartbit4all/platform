@@ -29,6 +29,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import com.google.common.base.Strings;
 
 public class TreeApiImpl implements TreeApi {
@@ -43,6 +44,7 @@ public class TreeApiImpl implements TreeApi {
   private ObjectApi objectApi;
 
   @Autowired
+  @Lazy
   private TreeSetupApi treeSetupApi;
 
   @Autowired

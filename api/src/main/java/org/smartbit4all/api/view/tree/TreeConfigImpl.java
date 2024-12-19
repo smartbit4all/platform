@@ -10,6 +10,7 @@ import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public abstract class TreeConfigImpl implements TreeConfig {
 
@@ -23,6 +24,7 @@ public abstract class TreeConfigImpl implements TreeConfig {
   protected final List<String> relationNames;
 
   @Autowired
+  @Lazy
   protected TreeSetupApi treeSetupApi;
 
   public TreeConfigImpl(String configName, List<String> relationNames) {
