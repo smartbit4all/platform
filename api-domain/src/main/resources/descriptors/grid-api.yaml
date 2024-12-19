@@ -430,10 +430,28 @@ components:
           type: string
         highlightClass:
           type: string
+        exportDescriptor:
+          $ref: '#/components/schemas/GridExportDescriptor'
+    GridExportDescriptor:
+      type: object
+      required: [columnsToExport]
+      properties:
         isExportable:
-          type: boolean  
+          type: boolean
+          default: true    
         exportMimeType:
-          type: string  
+          type: string 
+        columnsToExport:
+          type: array 
+          items:
+            type: string
+        buttonColor:
+          type: string
+          default: primary
+        buttonToolbar:
+          type: string
+        buttonIcon:
+          type: string
     GridSelectionMode:
       type: string
       enum:

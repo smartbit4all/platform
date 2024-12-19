@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
+import org.smartbit4all.api.grid.bean.GridExportDescriptor;
 import org.smartbit4all.api.grid.bean.GridSelectionMode;
 import org.smartbit4all.api.grid.bean.GridSelectionType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -47,8 +48,7 @@ import jakarta.validation.Valid;
   GridViewDescriptor.SHOW_EDIT_COLUMNS,
   GridViewDescriptor.HIGHLIGHT_PROPERTY,
   GridViewDescriptor.HIGHLIGHT_CLASS,
-  GridViewDescriptor.IS_EXPORTABLE,
-  GridViewDescriptor.EXPORT_MIME_TYPE
+  GridViewDescriptor.EXPORT_DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridViewDescriptor {
@@ -119,11 +119,8 @@ public class GridViewDescriptor {
   public static final String HIGHLIGHT_CLASS = "highlightClass";
   private String highlightClass;
 
-  public static final String IS_EXPORTABLE = "isExportable";
-  private Boolean isExportable;
-
-  public static final String EXPORT_MIME_TYPE = "exportMimeType";
-  private String exportMimeType;
+  public static final String EXPORT_DESCRIPTOR = "exportDescriptor";
+  private GridExportDescriptor exportDescriptor;
 
   public GridViewDescriptor() {
   }
@@ -410,58 +407,32 @@ public class GridViewDescriptor {
     this.highlightClass = highlightClass;
   }
 
-  public GridViewDescriptor isExportable(Boolean isExportable) {
+  public GridViewDescriptor exportDescriptor(GridExportDescriptor exportDescriptor) {
     
-    this.isExportable = isExportable;
+    this.exportDescriptor = exportDescriptor;
     return this;
   }
 
   /**
-   * Get isExportable
-   * @return isExportable
+   * Get exportDescriptor
+   * @return exportDescriptor
    */
   @jakarta.annotation.Nullable
+  @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_EXPORTABLE)
+  @JsonProperty(EXPORT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Boolean getIsExportable() {
-    return isExportable;
+  public GridExportDescriptor getExportDescriptor() {
+    return exportDescriptor;
   }
 
 
-  @JsonProperty(IS_EXPORTABLE)
+  @JsonProperty(EXPORT_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsExportable(Boolean isExportable) {
-    this.isExportable = isExportable;
-  }
-
-  public GridViewDescriptor exportMimeType(String exportMimeType) {
-    
-    this.exportMimeType = exportMimeType;
-    return this;
-  }
-
-  /**
-   * Get exportMimeType
-   * @return exportMimeType
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(EXPORT_MIME_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getExportMimeType() {
-    return exportMimeType;
-  }
-
-
-  @JsonProperty(EXPORT_MIME_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExportMimeType(String exportMimeType) {
-    this.exportMimeType = exportMimeType;
+  public void setExportDescriptor(GridExportDescriptor exportDescriptor) {
+    this.exportDescriptor = exportDescriptor;
   }
 
   @Override
@@ -483,13 +454,12 @@ public class GridViewDescriptor {
         Objects.equals(this.showEditColumns, gridViewDescriptor.showEditColumns) &&
         Objects.equals(this.highlightProperty, gridViewDescriptor.highlightProperty) &&
         Objects.equals(this.highlightClass, gridViewDescriptor.highlightClass) &&
-        Objects.equals(this.isExportable, gridViewDescriptor.isExportable) &&
-        Objects.equals(this.exportMimeType, gridViewDescriptor.exportMimeType);
+        Objects.equals(this.exportDescriptor, gridViewDescriptor.exportDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange, showEditColumns, highlightProperty, highlightClass, isExportable, exportMimeType);
+    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange, showEditColumns, highlightProperty, highlightClass, exportDescriptor);
   }
 
   @Override
@@ -506,8 +476,7 @@ public class GridViewDescriptor {
     sb.append("    showEditColumns: ").append(toIndentedString(showEditColumns)).append("\n");
     sb.append("    highlightProperty: ").append(toIndentedString(highlightProperty)).append("\n");
     sb.append("    highlightClass: ").append(toIndentedString(highlightClass)).append("\n");
-    sb.append("    isExportable: ").append(toIndentedString(isExportable)).append("\n");
-    sb.append("    exportMimeType: ").append(toIndentedString(exportMimeType)).append("\n");
+    sb.append("    exportDescriptor: ").append(toIndentedString(exportDescriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

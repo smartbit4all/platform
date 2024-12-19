@@ -1,31 +1,29 @@
 package org.smartbit4all.api.commandexecutor;
 
-import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.List;
 
 public interface CommandExecutorApi {
 
-  default boolean isAvailable() {
-    ProcessBuilder processBuilder = getProcessBuilder();
-    try {
-      processBuilder.start();
-      return true;
-    } catch (IOException e) {
-      return false;
-    }
-  }
-
-  String getCliName();
-
   default ProcessBuilder getProcessBuilder() {
-    return getProcessBuilder(getCliName());
-  }
-
-  default ProcessBuilder getProcessBuilder(String cli) {
-    ProcessBuilder processBuilder = new ProcessBuilder(cli);
+    ProcessBuilder processBuilder = new ProcessBuilder();
     processBuilder.redirectErrorStream(true);
     processBuilder.redirectOutput(Redirect.PIPE);
+    List<String> command = processBuilder.command();
+
+    String os = System.getProperty("os.name").toLowerCase();
+    boolean isWindows = os.contains("win");
+    if (isWindows) {
+      command.add("cmd.exe");
+      command.add("/c");
+    } else {
+      command.add("/bin/bash");
+      command.add("-c");
+    }
+
     return processBuilder;
   }
+
+  boolean isAvailable();
 
 }
