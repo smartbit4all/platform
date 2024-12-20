@@ -2,6 +2,7 @@ package org.smartbit4all.api.setup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.mdm.bean.ApplicationSetupData;
 import org.smartbit4all.api.mdm.bean.ApplicationSetupKind;
@@ -21,9 +22,18 @@ public abstract class ApplicationSetupApiImpl extends ContributionApiImpl
             : new ArrayList<>());
   }
 
+  protected ApplicationSetupApiImpl(Class<? extends ApplicationSetupApi> clazz) {
+    this(clazz, Collections.emptyList());
+  }
+
   @Override
   public ApplicationSetupData getData() {
     return setupData;
+  }
+
+  @Override
+  public boolean checkRunAgain() {
+    return false;
   }
 
 }

@@ -22,4 +22,14 @@ public interface ApplicationSetupApi extends ContributionApi {
    */
   void execute();
 
+  /**
+   * This function can be implemented and check if it is necessary to run the setup again. In the
+   * first execution of the setup it doesn't take into account.
+   * 
+   * @return By default it is false, so this given setup will be executed only ones. If it is
+   *         necessary then implement this function to check the resource if it is necessary to
+   *         reapply the setup logic.
+   */
+  boolean checkRunAgain();
+
 }

@@ -42,9 +42,13 @@ public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<Applicatio
   public void scheduleSetup() {
     StoredMap map = collectionApi.map(MasterDataManagementApi.SCHEMA, SETUP_MAP);
     Map<String, URI> alreadyExecuted = map.uris();
+
     Map<String, ApplicationSetupApi> setups =
         getContributionApis().values().stream()
-            .filter(setup -> !alreadyExecuted.containsKey(setup.getData().getName()))
+            .filter(setup -> {
+              boolean already = alreadyExecuted.containsKey(setup.getData().getName());
+              return !already || setup.checkRunAgain();
+            })
             .collect(toMap(a -> a.getApiName(), a -> a));
     Map<String, Set<String>> setupPreRequisites =
         setups.entrySet().stream().collect(toMap(e -> e.getKey(),
