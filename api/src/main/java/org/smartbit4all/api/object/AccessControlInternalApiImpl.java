@@ -262,7 +262,7 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       String contextConfigCode) {
     // Find all the entries currently attached to the operation in the ACL.
     Map<String, ACLEntry> currentEntries = getEntriesByOperation(operation, acl).stream()
-        .collect(toMap(e -> subjectManagementApi.toString(e.getSubject()), e -> e));
+        .collect(toMap(e -> subjectManagementApi.toString(e.getSubject()), e -> e, (e1, e2) -> e1));
     List<ACLSubject> toAdd = new ArrayList<>();
     for (ACLSubject aclSubject : subjects) {
       ACLEntry currentEntry =

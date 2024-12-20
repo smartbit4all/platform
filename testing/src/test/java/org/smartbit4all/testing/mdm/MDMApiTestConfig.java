@@ -182,6 +182,16 @@ public class MDMApiTestConfig extends TestFSCleaner {
   }
 
   @Bean
+  MDMApiTestSetupv1 mdmApiTestSetupv1() {
+    return new MDMApiTestSetupv1(MDMApiTestSetupv1.class);
+  }
+
+  @Bean
+  MDMApiTestSetupv2 mdmApiTestSetupv2() {
+    return new MDMApiTestSetupv2(MDMApiTestSetupv2.class);
+  }
+
+  @Bean
   public ObjectReferenceConfigs refDefs() {
     return new ObjectReferenceConfigs()
         .ref(SampleCategory.class,
