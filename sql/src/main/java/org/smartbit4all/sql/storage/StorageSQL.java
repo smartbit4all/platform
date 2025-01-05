@@ -527,11 +527,18 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
-    return (StorageObject<T>) loadBatch(storage, Arrays.asList(uri), options).get(0);
+    return loadBatch(storage, Arrays.asList(uri), clazz, options).get(0);
   }
 
   @Override
   public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,
+      StorageLoadOption... options) {
+    List<StorageObject<Object>> result = loadBatch(storage, uris, null, options);
+    return new ArrayList<>(result);
+  }
+
+  @Override
+  public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
     if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
@@ -553,7 +560,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     Map<String, DataRow> versionRows = queryObjectVersions(entryIdToVersion, entryIdToUri);
 
     // process results and create StorageObjects
-    List<StorageObject<?>> result = new ArrayList<>();
+    List<StorageObject<T>> result = new ArrayList<>();
 
     for (URI uri : uris) {
       String uriString = getUriString(getUriWithoutVersion(uri));
@@ -576,9 +583,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         StorageObjectData storageObjectData = readObjectDataFromRow(uri, entryRow)
             .currentVersion(readObjectVersionFromRow(version, versionRow));
 
-        ObjectDefinition<?> definition = getObjectDefinition(uri, storageObjectData, null);
+        ObjectDefinition<T> definition = getObjectDefinition(uri, storageObjectData, clazz);
 
-        StorageObject<?> storageObject;
+        StorageObject<T> storageObject;
         ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
 
         boolean skipData = StorageLoadOption.checkSkipData(options);
