@@ -22,46 +22,46 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.smartbit4all.api.object.bean.ObjectPropertyValue;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This is a set of value from an object. It can denote the type of the object but not necessarily. If we need a subset of properties from an object then it is the best way to extract a value set and use this as a parameter. 
+ * This is a map of string and value that contains an object. It is similar to the ObjectPropertyValueSet but in this case the available values of the object are formed into a map. This object can be used to create or update the properties of an object that should be idenfified. 
  */
-@ApiModel(description = "This is a set of value from an object. It can denote the type of the object but not necessarily. If we need a subset of properties from an object then it is the best way to extract a value set and use this as a parameter. ")
+@ApiModel(description = "This is a map of string and value that contains an object. It is similar to the ObjectPropertyValueSet but in this case the available values of the object are formed into a map. This object can be used to create or update the properties of an object that should be idenfified. ")
 @JsonPropertyOrder({
-  ObjectPropertyValueSet.QUALIFIED_NAME,
-  ObjectPropertyValueSet.VALUES
+  ObjectValue.QUALIFIED_NAME,
+  ObjectValue.OBJECT_AS_MAP
 })
-@JsonTypeName("ObjectPropertyValueSet")
+@JsonTypeName("ObjectValue")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ObjectPropertyValueSet {
+public class ObjectValue {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
-  public static final String VALUES = "values";
-  private List<ObjectPropertyValue> values = new ArrayList<>();
+  public static final String OBJECT_AS_MAP = "objectAsMap";
+  private Map<String, Object> objectAsMap = new HashMap<>();
 
-  public ObjectPropertyValueSet() { 
+  public ObjectValue() { 
   }
 
-  public ObjectPropertyValueSet qualifiedName(String qualifiedName) {
+  public ObjectValue qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
   }
 
    /**
-   * Get qualifiedName
+   * The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class. 
    * @return qualifiedName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class. ")
   @JsonProperty(QUALIFIED_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -77,37 +77,36 @@ public class ObjectPropertyValueSet {
   }
 
 
-  public ObjectPropertyValueSet values(List<ObjectPropertyValue> values) {
+  public ObjectValue objectAsMap(Map<String, Object> objectAsMap) {
     
-    this.values = values;
+    this.objectAsMap = objectAsMap;
     return this;
   }
 
-  public ObjectPropertyValueSet addValuesItem(ObjectPropertyValue valuesItem) {
-    this.values.add(valuesItem);
+  public ObjectValue putObjectAsMapItem(String key, Object objectAsMapItem) {
+    this.objectAsMap.put(key, objectAsMapItem);
     return this;
   }
 
    /**
-   * Get values
-   * @return values
+   * The values of the object properties. These values could be applied onto an object but first we must resolve the references by the definitions of the mappings. 
+   * @return objectAsMap
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(required = true, value = "The values of the object properties. These values could be applied onto an object but first we must resolve the references by the definitions of the mappings. ")
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
-  public List<ObjectPropertyValue> getValues() {
-    return values;
+  public Map<String, Object> getObjectAsMap() {
+    return objectAsMap;
   }
 
 
-  @JsonProperty(VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setValues(List<ObjectPropertyValue> values) {
-    this.values = values;
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+  public void setObjectAsMap(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
   }
 
 
@@ -119,22 +118,22 @@ public class ObjectPropertyValueSet {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectPropertyValueSet objectPropertyValueSet = (ObjectPropertyValueSet) o;
-    return Objects.equals(this.qualifiedName, objectPropertyValueSet.qualifiedName) &&
-        Objects.equals(this.values, objectPropertyValueSet.values);
+    ObjectValue objectValue = (ObjectValue) o;
+    return Objects.equals(this.qualifiedName, objectValue.qualifiedName) &&
+        Objects.equals(this.objectAsMap, objectValue.objectAsMap);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(qualifiedName, values);
+    return Objects.hash(qualifiedName, objectAsMap);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectPropertyValueSet {\n");
+    sb.append("class ObjectValue {\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
-    sb.append("    values: ").append(toIndentedString(values)).append("\n");
+    sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("}");
     return sb.toString();
   }

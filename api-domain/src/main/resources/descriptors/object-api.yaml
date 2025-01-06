@@ -950,7 +950,7 @@ components:
         This is a set of value from an object. It can denote the type of the object but not necessarily. If we need
         a subset of properties from an object then it is the best way to extract a value set and use this as a parameter.
       type: object
-      required: [properties]
+      required: [values]
       properties:
         qualifiedName:
           type: string
@@ -975,3 +975,34 @@ components:
             type: string
         value:
           type: object
+    ObjectValue:
+      description: |
+        This is a map of string and value that contains an object. It is similar to the ObjectPropertyValueSet but in this case the
+        available values of the object are formed into a map. This object can be used to create or update the properties of an object
+        that should be idenfified.
+      type: object
+      required: [objectAsMap]
+      properties:
+        qualifiedName:
+          description: |
+            The qualified globaly unique name of the object definition. In a java application it is the qualified name of the class.
+          type: string
+        objectAsMap:
+          description: |
+            The values of the object properties. These values could be applied onto an object but first we must resolve the references
+            by the definitions of the mappings.
+          type: object
+          additionalProperties: true
+    ObjectValueList:
+      description: |
+        This is the list of ObjectValues.
+      type: object
+      required: [items]
+      properties:
+        items:
+          description: |
+            The object instances as ObjectValue list. The object value is a free form Object that contains only the properties that are
+            available. The ObjectValue can be used for integration and business logic where only some aspects of the objects are available.
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectValue'
