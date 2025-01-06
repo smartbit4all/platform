@@ -189,8 +189,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
   private User setSessionUser(URI sessionURI, OAuth2AuthenticationToken oauthToken)
       throws Exception {
-    String name = oauthToken.getName();
-    User user = orgApi.getUserByUsername(name);
+    User user = getUserByOAuthToken(oauthToken);
     URI userUri = null;
     if (user == null) {
       userUri = orgUserHandler.onMissingUser(oauthToken);
@@ -215,6 +214,11 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     }
     throw new IllegalStateException(
         "There is already a different user in the session. It is not possible to override it!");
+  }
+
+  protected User getUserByOAuthToken(OAuth2AuthenticationToken oauthToken) {
+    String name = oauthToken.getName();
+    return orgApi.getUserByUsername(name);
   }
 
   private AccountInfo createDefaultAccountInfo(User user, OAuth2AuthorizedClient authorizedClient,
