@@ -69,9 +69,9 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
   private SessionTokenHandler sessionTokenHandler;
 
   @Autowired
-  private OrgApi orgApi;
-  @Autowired
+  protected OrgApi orgApi;
 
+  @Autowired
   private ObjectApi objectApi;
 
   private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
