@@ -77,6 +77,11 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     row.getActions().addAll(getUserRowActions());
   }
 
+  protected void refreshGrid(UUID viewUuid) {
+    gridModelApi.setDataFromUris(viewUuid, USER_GRID, userSearch,
+        orgApi.getAllUsers().stream().map(User::getUri));
+  }
+
   @Override
   public void openUserEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);

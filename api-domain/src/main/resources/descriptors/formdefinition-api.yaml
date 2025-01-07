@@ -180,6 +180,17 @@ components:
           description: |
             The error message to show for the widget.
           type: string
+        sortDefinition:
+          description: |
+            A descriptor for the sortable widget type.
+          $ref: '#/components/schemas/SortDefinition'
+    SortDefinition:
+      type: object
+      properties:
+        key:
+          type: string
+        displayValue:
+          type: string
     ValueChangeMode:
       description: |
         This enum defines the value change handling strategy. Currently only one method is supported,

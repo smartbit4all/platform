@@ -787,3 +787,36 @@ components:
         parameters:
           type: object
           additionalProperties: true
+    InvocationStackEntry:
+      type: object
+      required: [uri, root]
+      description: The invocation stack object that contains the root and its sub items.
+      properties:
+        uri:
+          type: string
+          format: uri
+        root:
+          description: The root stack item that represents the global stack.
+          $ref: '#/components/schemas/InvocationStackItem'
+    InvocationStackItem:
+      type: object
+      required: [code, name, subItems, inputParameters, variables]
+      description: |
+        The stack item that is an identified by a code and a name that denotes the invocation currently active.
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        inputParameters:
+          type: object
+          additionalProperties:
+            type: object
+        variables:
+          type: object
+          additionalProperties:
+            type: object
+        subItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationStackItem'

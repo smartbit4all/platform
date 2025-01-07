@@ -9,6 +9,13 @@ import org.apache.logging.log4j.util.Strings;
  */
 public class NumberingUtils {
 
+  /**
+   * To restruct instantiation.
+   */
+  private NumberingUtils() {
+    super();
+  }
+
   public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 
   public static final String ROMAN_NUMERALS = "IVXLCDM";
@@ -24,6 +31,27 @@ public class NumberingUtils {
       }
     }
     return (int) evaluateNextRomanNumeral(roman, roman.length() - 1, 0);
+  }
+
+  /**
+   * Construct the Roman number from an integer.
+   * 
+   * @param num
+   * @return An empty string if the value is not valid like 0.
+   */
+  public static String intToRoman(int num) {
+    int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+
+    StringBuilder roman = new StringBuilder();
+
+    for (int i = 0; i < values.length; i++) {
+      while (num >= values[i]) {
+        roman.append(symbols[i]);
+        num -= values[i];
+      }
+    }
+    return roman.toString();
   }
 
   private static double evaluateNextRomanNumeral(String roman, int pos, double rightNumeral) {

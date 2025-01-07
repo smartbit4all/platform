@@ -296,13 +296,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @param objectData The {@link StorageObjectData}.
    * @return The {@link ObjectDefinition} or null if not found.
    */
-  protected ObjectDefinition<?> getObjectDefinition(URI uri, StorageObjectData objectData,
-      Class<?> clazz) {
+  protected <T> ObjectDefinition<T> getObjectDefinition(URI uri, StorageObjectData objectData,
+      Class<T> clazz) {
     if (clazz != null) {
       return objectDefinitionApi.definition(clazz);
     }
     if (objectData != null && objectData.getClassName() != null) {
-      return objectDefinitionApi.definition(objectData.getClassName());
+      return (ObjectDefinition<T>) objectDefinitionApi.definition(objectData.getClassName());
     }
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
       return null;
@@ -318,7 +318,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     if (objectDefinition == null) {
       throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
     }
-    return objectDefinition;
+    return (ObjectDefinition<T>) objectDefinition;
   }
 
   protected String getStorageScheme(Storage storage) {

@@ -32,6 +32,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartMatrixModel;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetHint;
+import org.smartbit4all.api.formdefinition.bean.SortDefinition;
 import org.smartbit4all.api.formdefinition.bean.ValueChangeMode;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.bean.IconPosition;
@@ -78,7 +79,8 @@ import jakarta.validation.Valid;
   SmartWidgetDefinition.PROPERTIES,
   SmartWidgetDefinition.ERROR_MESSAGE,
   SmartWidgetDefinition.ERROR_ICON,
-  SmartWidgetDefinition.ERROR_COLOR
+  SmartWidgetDefinition.ERROR_COLOR,
+  SmartWidgetDefinition.SORT_DEFINITION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartWidgetDefinition {
@@ -180,6 +182,9 @@ public class SmartWidgetDefinition {
 
   public static final String ERROR_COLOR = "errorColor";
   private String errorColor;
+
+  public static final String SORT_DEFINITION = "sortDefinition";
+  private SortDefinition sortDefinition;
 
   public SmartWidgetDefinition() {
   }
@@ -1114,6 +1119,34 @@ public class SmartWidgetDefinition {
     this.errorColor = errorColor;
   }
 
+  public SmartWidgetDefinition sortDefinition(SortDefinition sortDefinition) {
+    
+    this.sortDefinition = sortDefinition;
+    return this;
+  }
+
+  /**
+   * Get sortDefinition
+   * @return sortDefinition
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(SORT_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SortDefinition getSortDefinition() {
+    return sortDefinition;
+  }
+
+
+  @JsonProperty(SORT_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSortDefinition(SortDefinition sortDefinition) {
+    this.sortDefinition = sortDefinition;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1155,12 +1188,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.properties, smartWidgetDefinition.properties) &&
         Objects.equals(this.errorMessage, smartWidgetDefinition.errorMessage) &&
         Objects.equals(this.errorIcon, smartWidgetDefinition.errorIcon) &&
-        Objects.equals(this.errorColor, smartWidgetDefinition.errorColor);
+        Objects.equals(this.errorColor, smartWidgetDefinition.errorColor) &&
+        Objects.equals(this.sortDefinition, smartWidgetDefinition.sortDefinition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties, errorMessage, errorIcon, errorColor);
+    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties, errorMessage, errorIcon, errorColor, sortDefinition);
   }
 
   @Override
@@ -1200,6 +1234,7 @@ public class SmartWidgetDefinition {
     sb.append("    errorMessage: ").append(toIndentedString(errorMessage)).append("\n");
     sb.append("    errorIcon: ").append(toIndentedString(errorIcon)).append("\n");
     sb.append("    errorColor: ").append(toIndentedString(errorColor)).append("\n");
+    sb.append("    sortDefinition: ").append(toIndentedString(sortDefinition)).append("\n");
     sb.append("}");
     return sb.toString();
   }

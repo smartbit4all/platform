@@ -21,6 +21,8 @@ import org.smartbit4all.api.filter.util.FilterService;
 import org.smartbit4all.api.filterexpression.bean.SearchConfigHierarchy;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
+import org.smartbit4all.api.invocation.InvocationStackApi;
+import org.smartbit4all.api.invocation.InvocationStackApiImpl;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.invocation.ServiceConnectionApi;
@@ -194,6 +196,11 @@ public class PlatformApiConfig {
   @Bean
   public InvocationApi invocationApi() {
     return new InvocationApiImpl();
+  }
+
+  @Bean
+  public InvocationStackApi invocationStackApi() {
+    return new InvocationStackApiImpl();
   }
 
   @Bean

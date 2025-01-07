@@ -161,6 +161,17 @@ components:
           format: float
           description: The height above reference sea level.
           example: 174.6
+    GPSRoute:
+      type: object
+      description: |
+        An ordered list of GPSpositions defines a route on the surface of earth..
+      required: [points]
+      properties:
+        points:
+          description: The ordered list of gps positions defining the route. The first point is necessarily the 0 distance from the start of the route.
+          type: array
+          items:
+            $ref: '#/components/schemas/GPSPosition'
     GeoMapModel:
       type: object
       description: |
@@ -262,6 +273,8 @@ components:
           type: Style
         position:
           $ref: '#/components/schemas/GPSPosition'
+        route:
+          $ref: '#/components/schemas/GPSRoute'
         bounds:
           type: array
           items:
