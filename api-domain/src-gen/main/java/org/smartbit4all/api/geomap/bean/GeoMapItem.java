@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.geomap.bean.GPSPosition;
+import org.smartbit4all.api.geomap.bean.GPSRoute;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.Style;
@@ -52,6 +53,7 @@ import javax.validation.Valid;
   GeoMapItem.ICONS,
   GeoMapItem.STYLE,
   GeoMapItem.POSITION,
+  GeoMapItem.ROUTE,
   GeoMapItem.BOUNDS
 })
 @JsonTypeName("GeoMapItem")
@@ -89,6 +91,9 @@ public class GeoMapItem {
 
   public static final String POSITION = "position";
   private GPSPosition position;
+
+  public static final String ROUTE = "route";
+  private GPSRoute route;
 
   public static final String BOUNDS = "bounds";
   private List<GPSPosition> bounds = new ArrayList<>();
@@ -410,6 +415,34 @@ public class GeoMapItem {
   }
 
 
+  public GeoMapItem route(GPSRoute route) {
+    
+    this.route = route;
+    return this;
+  }
+
+   /**
+   * Get route
+   * @return route
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ROUTE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GPSRoute getRoute() {
+    return route;
+  }
+
+
+  @JsonProperty(ROUTE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRoute(GPSRoute route) {
+    this.route = route;
+  }
+
+
   public GeoMapItem bounds(List<GPSPosition> bounds) {
     
     this.bounds = bounds;
@@ -464,12 +497,13 @@ public class GeoMapItem {
         Objects.equals(this.icons, geoMapItem.icons) &&
         Objects.equals(this.style, geoMapItem.style) &&
         Objects.equals(this.position, geoMapItem.position) &&
+        Objects.equals(this.route, geoMapItem.route) &&
         Objects.equals(this.bounds, geoMapItem.bounds);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, kind, actions, data, selectable, selected, label, description, icons, style, position, bounds);
+    return Objects.hash(id, kind, actions, data, selectable, selected, label, description, icons, style, position, route, bounds);
   }
 
   @Override
@@ -487,6 +521,7 @@ public class GeoMapItem {
     sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    position: ").append(toIndentedString(position)).append("\n");
+    sb.append("    route: ").append(toIndentedString(route)).append("\n");
     sb.append("    bounds: ").append(toIndentedString(bounds)).append("\n");
     sb.append("}");
     return sb.toString();
