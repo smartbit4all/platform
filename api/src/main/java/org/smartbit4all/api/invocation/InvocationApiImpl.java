@@ -439,7 +439,13 @@ public final class InvocationApiImpl implements InvocationApi {
 
   @Override
   public URI awaitFor(String scheme, String id, InvocationRequest request) {
-    return objectApi.saveAsNew(scheme, new FutureAwait().id(id).request(request));
+    return awaitFor(scheme, id, request, 1);
+  }
+
+  @Override
+  public URI awaitFor(String scheme, String id, InvocationRequest request, int firstParamIndex) {
+    return objectApi.saveAsNew(scheme,
+        new FutureAwait().id(id).firstParamIndex(firstParamIndex).request(request));
   }
 
   @Override
@@ -460,10 +466,15 @@ public final class InvocationApiImpl implements InvocationApi {
           futureId, parameters);
       return;
     }
+
+    Integer firstParamIndexInt =
+        futureAwaitNode.getValue(Integer.class, FutureAwait.FIRST_PARAM_INDEX);
+    int firstParamIndex = firstParamIndexInt == null ? 1 : firstParamIndexInt.intValue();
+
     // Set the parameters of the signal from the 1. parameter. The 0. is reserved as the context
     // identifier.
     for (int i = 0; i < parameters.length; i++) {
-      int j = i + 1;
+      int j = i + firstParamIndex;
       if (j < invocationRequest.getParameters().size()) {
         InvocationParameter parameter = invocationRequest.getParameters().get(j);
         if (parameter != null) {
