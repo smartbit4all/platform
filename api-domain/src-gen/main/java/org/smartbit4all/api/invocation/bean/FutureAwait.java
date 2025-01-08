@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   FutureAwait.URI,
   FutureAwait.ID,
+  FutureAwait.FIRST_PARAM_INDEX,
   FutureAwait.REQUEST
 })
 @JsonTypeName("FutureAwait")
@@ -46,6 +47,9 @@ public class FutureAwait {
 
   public static final String ID = "id";
   private String id;
+
+  public static final String FIRST_PARAM_INDEX = "firstParamIndex";
+  private Integer firstParamIndex = null;
 
   public static final String REQUEST = "request";
   private InvocationRequest request;
@@ -109,6 +113,33 @@ public class FutureAwait {
   }
 
 
+  public FutureAwait firstParamIndex(Integer firstParamIndex) {
+    
+    this.firstParamIndex = firstParamIndex;
+    return this;
+  }
+
+   /**
+   * The first parameter index that is awaiting as parameter of the signal call. By default it is 1 which meand that the  first (0.) parameter is reserved as context parameter. 
+   * @return firstParamIndex
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The first parameter index that is awaiting as parameter of the signal call. By default it is 1 which meand that the  first (0.) parameter is reserved as context parameter. ")
+  @JsonProperty(FIRST_PARAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getFirstParamIndex() {
+    return firstParamIndex;
+  }
+
+
+  @JsonProperty(FIRST_PARAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFirstParamIndex(Integer firstParamIndex) {
+    this.firstParamIndex = firstParamIndex;
+  }
+
+
   public FutureAwait request(InvocationRequest request) {
     
     this.request = request;
@@ -149,12 +180,13 @@ public class FutureAwait {
     FutureAwait futureAwait = (FutureAwait) o;
     return Objects.equals(this.uri, futureAwait.uri) &&
         Objects.equals(this.id, futureAwait.id) &&
+        Objects.equals(this.firstParamIndex, futureAwait.firstParamIndex) &&
         Objects.equals(this.request, futureAwait.request);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, request);
+    return Objects.hash(uri, id, firstParamIndex, request);
   }
 
   @Override
@@ -163,6 +195,7 @@ public class FutureAwait {
     sb.append("class FutureAwait {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    firstParamIndex: ").append(toIndentedString(firstParamIndex)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("}");
     return sb.toString();

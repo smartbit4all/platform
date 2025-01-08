@@ -579,6 +579,13 @@ components:
           description: |
             The identifier of the future object. It must be unique in a scheme where it is saved. For example if it is the
             future of a process execution then in the process scheme it must be unique.
+        firstParamIndex:
+          description: |
+            The first parameter index that is awaiting as parameter of the signal call. By default it is 1 which meand that the 
+            first (0.) parameter is reserved as context parameter.
+          type: int
+          format: int32
+          default: 1
         request:
           description: |
             The invocation request to call when the signal is coming. The request already contains the necessary identifier
