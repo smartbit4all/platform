@@ -30,7 +30,7 @@ public interface InvocationStackApi {
   /**
    * Initiate an active stack for the current thread.
    * 
-   * @param processUri
+   * @param stackUri
    * @param path
    * @return
    */
