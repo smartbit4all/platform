@@ -48,6 +48,8 @@ public class RequestResponseLoggingFilter implements Filter {
     String responseBody = new String(responseData, httpResponse.getCharacterEncoding());
     LOGGER.info("Response for {} is: [status: {}, body: {}]", httpRequest.getRequestURI(),
         httpResponse.getStatus(), responseBody);
+
+    response.getOutputStream().write(responseData);
   }
 
   /**
