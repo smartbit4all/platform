@@ -2,7 +2,9 @@ package org.smartbit4all.api.invocation.restclient;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -56,7 +58,15 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
     HttpHeaders headers = new HttpHeaders();
     String sessionToken = serviceConnection.getAuthToken();
     if (!ObjectUtils.isEmpty(sessionToken)) {
-      headers.add("Authorization", "Bearer " + sessionToken);
+      headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + sessionToken);
+    }
+
+    String username = serviceConnection.getUsername();
+    String password = serviceConnection.getPassword();
+    if (!ObjectUtils.isEmpty(serviceConnection.getUsername())) {
+      String str = username + ":" + (password == null ? "" : password);
+      headers.add(HttpHeaders.AUTHORIZATION,
+          "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
     }
 
     final BodyBuilder requestBuilder = RequestEntity
