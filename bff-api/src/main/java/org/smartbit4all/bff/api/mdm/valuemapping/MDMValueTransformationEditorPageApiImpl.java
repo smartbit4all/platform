@@ -143,8 +143,6 @@ public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApi
         ORDERED_COLUMNS, gridId);
     gridModel.getView().getDescriptor().showEditColumns(false);
     gridModel.paginator(true);
-    gridModel.setPageSize(5);
-    gridModel.setPageSizeOptions(Arrays.asList(5, 10));
     gridModelApi.initGridInView(viewUuid, gridId, gridModel);
     gridModelApi.addGridPageCallback(viewUuid, gridId,
         invocationApi
