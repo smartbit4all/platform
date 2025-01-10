@@ -52,7 +52,6 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
-import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
@@ -537,6 +536,28 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
+  private class UriInfo {
+    final URI uri;
+    final String baseUri;
+    final Long originalVersion;
+    final boolean isSingleVersion;
+
+    Long entryId;
+    Long calculatedVersion;
+    String versionId;
+
+    UriInfo(URI uri) {
+      this.uri = uri;
+      this.baseUri = getUriString(getUriWithoutVersion(uri));
+      this.isSingleVersion = isSingleVersion(uri);
+      if (this.isSingleVersion) {
+        this.originalVersion = FIRST_VERSION;
+      } else {
+        this.originalVersion = getUriVersion(uri);
+      }
+    }
+  }
+
   @Override
   public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
@@ -546,33 +567,45 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     long startTime = System.currentTimeMillis();
 
-    // batch query object entries
-    Map<String, DataRow> objectEntryRows = queryObjectEntries(uris);
+    // create URI metadata list preserving order
+    List<UriInfo> uriInfos = uris.stream()
+        .map(UriInfo::new)
+        .collect(Collectors.toList());
 
-    // collect entry IDs and versions, handling single versioned objects
-    Map<Long, Long> entryIdToVersion = new HashMap<>();
-    Map<String, Long> uriToVersion = new HashMap<>();
-    Map<Long, URI> entryIdToUri = new HashMap<>();
-    collectEntryIdsVersions(storage, uris, objectEntryRows, entryIdToVersion, uriToVersion,
-        entryIdToUri);
+    // batch query object entries
+    Map<String, DataRow> objectEntryRows = queryObjectEntries(uriInfos);
+
+    // calculate uriInfo data
+    for (UriInfo info : uriInfos) {
+      DataRow entryRow = objectEntryRows.get(info.baseUri);
+      if (entryRow != null) {
+        // surely will exist, queryObjectEntries will throw an exception if not
+        info.entryId = entryRow.get(objectEntryDef.id());
+        info.calculatedVersion =
+            info.originalVersion != null ? info.originalVersion
+                : entryRow.get(objectEntryDef.version());
+        info.versionId = createVersionId(info.entryId, info.calculatedVersion);
+      }
+    }
 
     // batch query object versions
-    Map<String, DataRow> versionRows = queryObjectVersions(entryIdToVersion, entryIdToUri);
+    Map<String, DataRow> versionRows = queryObjectVersions(uriInfos);
 
     // process results and create StorageObjects
     List<StorageObject<T>> result = new ArrayList<>();
 
-    for (URI uri : uris) {
-      String uriString = getUriString(getUriWithoutVersion(uri));
+    for (UriInfo info : uriInfos) {
+      String uriString = info.baseUri;
       DataRow entryRow = objectEntryRows.get(uriString);
 
       if (entryRow == null) {
         continue;
       }
 
-      Long entryId = entryRow.get(objectEntryDef.id());
-      Long version = uriToVersion.get(uriString);
-      String versionKey = entryId + "-" + version;
+      URI uri = info.uri;
+      Long entryId = info.entryId;
+      Long version = info.calculatedVersion; // original version might be null
+      String versionKey = info.versionId;
       DataRow versionRow = versionRows.get(versionKey);
 
       if (versionRow == null) {
@@ -637,9 +670,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return result;
   }
 
-  private Map<String, DataRow> queryObjectVersions(Map<Long, Long> entryIdToVersion,
-      Map<Long, URI> entryIdToUri) {
-    if (entryIdToVersion.isEmpty()) {
+  private Map<String, DataRow> queryObjectVersions(List<UriInfo> uriInfos) {
+    if (uriInfos.isEmpty()) {
       return Collections.emptyMap();
     }
 
@@ -650,10 +682,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     List<String> idsToQuery = new ArrayList<>();
     Set<String> nonCachedIds = new HashSet<>();
 
-    entryIdToVersion.forEach((entryId, version) -> {
-      String versionId = createVersionId(entryId, version);
-      URI uri = entryIdToUri.get(entryId);
-      boolean isSingleVersion = uri != null && isSingleVersion(uri);
+    uriInfos.forEach((info) -> {
+      String versionId = info.versionId;
+      boolean isSingleVersion = info.isSingleVersion;
 
       // skip cache for single version objects
       if (!isSingleVersion && versionContentCache != null) {
@@ -707,56 +738,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return versionRows;
   }
 
-  private void collectEntryIdsVersions(Storage storage, List<URI> uris,
-      Map<String, DataRow> objectEntryRows,
-      Map<Long, Long> entryIdToVersion, Map<String, Long> uriToVersion,
-      Map<Long, URI> entryIdToUri) {
-    for (URI uri : uris) {
-      String uriString = getUriString(getUriWithoutVersion(uri));
-      DataRow entryRow = objectEntryRows.get(uriString);
-      if (entryRow != null) {
-        Long entryId = entryRow.get(objectEntryDef.id());
-        entryIdToUri.put(entryId, uri);
-        boolean isSingleVersion = isSingleVersion(uri);
-
-        // for single version objects, always use FIRST_VERSION
-        if (isSingleVersion) {
-          if (storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
-            throw new IllegalArgumentException(
-                "Unable to load single version object with non-single version policy for URI: "
-                    + uri);
-          }
-          entryIdToVersion.put(entryId, FIRST_VERSION);
-          uriToVersion.put(uriString, FIRST_VERSION);
-        } else {
-          // for versioned objects, use URI version or latest version
-          Long version = getUriVersion(uri);
-          if (version == null) {
-            version = entryRow.get(objectEntryDef.version());
-          }
-          entryIdToVersion.put(entryId, version);
-          uriToVersion.put(uriString, version);
-        }
-      }
-    }
-  }
-
-  private Map<String, DataRow> queryObjectEntries(List<URI> uris) {
-    List<String> uriStrings = uris.stream()
-        .map(uri -> getUriString(getUriWithoutVersion(uri)))
-        .collect(Collectors.toList());
-
+  private Map<String, DataRow> queryObjectEntries(List<UriInfo> uriInfos) {
+    Set<String> uniqueBaseUris = uriInfos.stream()
+        .map(info -> info.baseUri)
+        .collect(Collectors.toSet());
     Map<String, DataRow> objectEntryRows = Crud.read(objectEntryDef)
         .select(objectEntryDef.allProperties())
-        .where(objectEntryDef.uri().in(uriStrings))
+        .where(objectEntryDef.uri().in(uniqueBaseUris))
         .listData()
         .rows()
         .stream()
         .collect(Collectors.toMap(
             row -> row.get(objectEntryDef.uri()),
             row -> row));
-    if (objectEntryRows.size() != uris.size()) {
-      throw new ObjectNotFoundException(uris, null, "Object not found.");
+    if (objectEntryRows.size() != uniqueBaseUris.size()) {
+      throw new ObjectNotFoundException(uniqueBaseUris, null, "Object not found.");
     }
     return objectEntryRows;
   }

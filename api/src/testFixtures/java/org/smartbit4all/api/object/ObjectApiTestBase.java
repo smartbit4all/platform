@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
@@ -858,6 +859,23 @@ public class ObjectApiTestBase {
             uri,
             g));
     return uri;
+  }
+
+  @Test
+  void loadBatchVersionedUris() {
+    URI uri0 = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("Root0"));
+    ObjectNode node = objectApi.load(uri0);
+    node.setValue("Root1", SampleCategory.NAME);
+    URI uri1 = objectApi.save(node);
+    node = objectApi.load(uri1);
+    node.setValue("Root2", SampleCategory.NAME);
+    URI uri2 = objectApi.save(node);
+    List<ObjectNode> nodes = objectApi.loadBatch(Arrays.asList(uri0, uri1, uri2));
+    assertNotNull(nodes);
+    assertEquals(3, nodes.size());
+    assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
   }
 
 }
