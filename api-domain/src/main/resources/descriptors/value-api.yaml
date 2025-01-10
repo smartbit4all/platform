@@ -286,8 +286,10 @@ components:
       properties:
         sourceValue:
           type: object
-        transformedValue:
-          type: object
+        transformedValues:
+          type: array
+          items:
+            type: object
         error:
           description: The error about transforming the given value.
           type: string

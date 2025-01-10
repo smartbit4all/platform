@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -32,7 +35,7 @@ import jakarta.validation.Valid;
 @Schema(description = "This item is returned by the tranform methods. It contains the transformed value or the error code if any. ")
 @JsonPropertyOrder({
   ValueTransformationResult.SOURCE_VALUE,
-  ValueTransformationResult.TRANSFORMED_VALUE,
+  ValueTransformationResult.TRANSFORMED_VALUES,
   ValueTransformationResult.ERROR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -40,8 +43,8 @@ public class ValueTransformationResult {
   public static final String SOURCE_VALUE = "sourceValue";
   private Object sourceValue;
 
-  public static final String TRANSFORMED_VALUE = "transformedValue";
-  private Object transformedValue;
+  public static final String TRANSFORMED_VALUES = "transformedValues";
+  private List<Object> transformedValues = new ArrayList<>();
 
   public static final String ERROR = "error";
   private String error;
@@ -76,31 +79,39 @@ public class ValueTransformationResult {
     this.sourceValue = sourceValue;
   }
 
-  public ValueTransformationResult transformedValue(Object transformedValue) {
+  public ValueTransformationResult transformedValues(List<Object> transformedValues) {
     
-    this.transformedValue = transformedValue;
+    this.transformedValues = transformedValues;
+    return this;
+  }
+
+  public ValueTransformationResult addTransformedValuesItem(Object transformedValuesItem) {
+    if (this.transformedValues == null) {
+      this.transformedValues = new ArrayList<>();
+    }
+    this.transformedValues.add(transformedValuesItem);
     return this;
   }
 
   /**
-   * Get transformedValue
-   * @return transformedValue
+   * Get transformedValues
+   * @return transformedValues
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(TRANSFORMED_VALUE)
+  @JsonProperty(TRANSFORMED_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Object getTransformedValue() {
-    return transformedValue;
+  public List<Object> getTransformedValues() {
+    return transformedValues;
   }
 
 
-  @JsonProperty(TRANSFORMED_VALUE)
+  @JsonProperty(TRANSFORMED_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransformedValue(Object transformedValue) {
-    this.transformedValue = transformedValue;
+  public void setTransformedValues(List<Object> transformedValues) {
+    this.transformedValues = transformedValues;
   }
 
   public ValueTransformationResult error(String error) {
@@ -140,13 +151,13 @@ public class ValueTransformationResult {
     }
     ValueTransformationResult valueTransformationResult = (ValueTransformationResult) o;
     return Objects.equals(this.sourceValue, valueTransformationResult.sourceValue) &&
-        Objects.equals(this.transformedValue, valueTransformationResult.transformedValue) &&
+        Objects.equals(this.transformedValues, valueTransformationResult.transformedValues) &&
         Objects.equals(this.error, valueTransformationResult.error);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceValue, transformedValue, error);
+    return Objects.hash(sourceValue, transformedValues, error);
   }
 
   @Override
@@ -154,7 +165,7 @@ public class ValueTransformationResult {
     StringBuilder sb = new StringBuilder();
     sb.append("class ValueTransformationResult {\n");
     sb.append("    sourceValue: ").append(toIndentedString(sourceValue)).append("\n");
-    sb.append("    transformedValue: ").append(toIndentedString(transformedValue)).append("\n");
+    sb.append("    transformedValues: ").append(toIndentedString(transformedValues)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");
     sb.append("}");
     return sb.toString();

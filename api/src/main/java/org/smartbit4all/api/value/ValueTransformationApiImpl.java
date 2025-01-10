@@ -1,7 +1,8 @@
 package org.smartbit4all.api.value;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,17 +33,18 @@ public class ValueTransformationApiImpl implements ValueTransformationApi {
             .addPathItem(ValueTransformationConfigData.NAME).value(configName),
         ValueTransformationConfig.class);
     if (config.getData().getKind() == ValueTransformationKind.MAPPING) {
-      Map<Object, Object> mapping = config.getData().getMappings().stream()
-          .collect(toMap(ValueTransformationMappingItem::getSourceValue,
-              ValueTransformationMappingItem::getTargetValue));
+      Map<Object, List<Object>> mapping = config.getData().getMappings().stream()
+          .collect(groupingBy(ValueTransformationMappingItem::getSourceValue,
+              mapping(ValueTransformationMappingItem::getTargetValue, toList())));
+
       return inputValues.stream().map(o -> {
-        Object transformedValue = mapping.get(o);
-        return new ValueTransformationResult().sourceValue(o).transformedValue(transformedValue)
+        List<Object> transformedValues = mapping.get(o);
+        return new ValueTransformationResult().sourceValue(o).transformedValues(transformedValues)
             .error(o == null ? "Not found in mapping" : null);
       }).collect(toList());
     }
     return inputValues.stream().map(o -> {
-      return new ValueTransformationResult().sourceValue(o).transformedValue(null)
+      return new ValueTransformationResult().sourceValue(o).transformedValues(null)
           .error("Tranformation is not defined");
     }).collect(toList());
   }
