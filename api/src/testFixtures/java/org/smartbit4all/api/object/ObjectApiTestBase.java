@@ -876,6 +876,21 @@ public class ObjectApiTestBase {
     assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
     assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
     assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
+
+    URI uriLatest = objectApi.getLatestUri(uri2);
+
+    nodes = objectApi.loadBatch(Arrays.asList(uri0, uri1, uri2, uriLatest, uri1, uri0, uriLatest));
+    assertNotNull(nodes);
+    assertEquals(7, nodes.size());
+    assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root2", nodes.get(3).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root1", nodes.get(4).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root0", nodes.get(5).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root2", nodes.get(6).getValueAsString(SampleCategory.NAME));
+
+
   }
 
 }
