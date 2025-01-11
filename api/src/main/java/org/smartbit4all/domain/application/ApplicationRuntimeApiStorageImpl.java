@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
  * The application runtime api implementation via {@link StorageApi}.
@@ -145,6 +145,13 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
     }
+
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(3);
+    taskScheduler.setThreadNamePrefix("App-Runtime");
+    taskScheduler.initialize();
+    taskScheduler.scheduleAtFixedRate(this::doMaintain, 5000);
+
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
@@ -152,8 +159,14 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     log.info("initRuntime execution time: {} ms", duration);
   }
 
-  @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
-      fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
+  public void doMaintain() {
+    try {
+      maintain();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error during Aplication Runtime maintain!", e);
+    }
+  }
+
   public void maintain() throws InterruptedException, ExecutionException {
     if (storageCluster == null) {
       return;

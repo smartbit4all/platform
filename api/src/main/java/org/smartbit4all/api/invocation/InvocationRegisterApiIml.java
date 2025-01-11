@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -59,9 +61,8 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.CollectionUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -263,6 +264,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     initRuntimeChannels();
 
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(3);
+    taskScheduler.setThreadNamePrefix("Invocation-Registry");
+    taskScheduler.initialize();
+    taskScheduler.scheduleAtFixedRate(this::refreshRegistry, 30000);
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
@@ -322,8 +328,19 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     initialized = true;
   }
 
+  // TODO move to another api
+  @Scheduled(initialDelayString = "${invocationregistry.refresh.fixeddelay:60000}",
+      fixedDelayString = "${invocationregistry.refresh.fixeddelay:60000}")
+  public void refreshAsyncChannlers() {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
+    manageAsyncChannels(applicationRuntimeApi.getActiveRuntimes());
+  }
+
   @Override
-  @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:5000}")
   public void refreshRegistry() {
     if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
       return;
@@ -385,7 +402,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     addApis(apisToAdd);
     removeApis(apisToRemove);
     // At last we manage the channels of the
-    manageAsyncChannels(applicationRuntimeApi.getActiveRuntimes());
     maintainLatch.countDown();
   }
 
