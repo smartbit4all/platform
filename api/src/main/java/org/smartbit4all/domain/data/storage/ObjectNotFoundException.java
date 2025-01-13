@@ -1,7 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Collection;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -21,7 +21,7 @@ public class ObjectNotFoundException extends RuntimeException {
         + StringConstant.RIGHT_PARENTHESIS);
   }
 
-  public ObjectNotFoundException(List<URI> objectUris, Class<?> clazz, String message) {
+  public ObjectNotFoundException(Collection<String> objectUris, Class<?> clazz, String message) {
     super(message + StringConstant.LEFT_PARENTHESIS + objectUris + StringConstant.COMMA_SPACE
         + (clazz == null ? UNKNOWN_CLASS
             : clazz.toString())

@@ -145,12 +145,14 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
     }
+
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
     long duration = endTime - startTime;
     log.info("initRuntime execution time: {} ms", duration);
   }
+
 
   @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
       fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}",
