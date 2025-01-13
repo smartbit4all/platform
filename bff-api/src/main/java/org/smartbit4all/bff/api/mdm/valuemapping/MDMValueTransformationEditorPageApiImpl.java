@@ -130,10 +130,10 @@ public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApi
     ViewConstraint viewConstraint = new ViewConstraint().componentConstraints(Arrays.asList(
         new ComponentConstraint()
             .dataName(widgetKey(ValueTransformationConfig.DATA, ValueTransformationConfigData.NAME))
-            .enabled(true).mandatory(true).visible(true),
+            .enabled(false).mandatory(true).visible(true),
         new ComponentConstraint()
             .dataName(widgetKey(ValueTransformationConfig.DATA, ValueTransformationConfigData.KIND))
-            .enabled(true).mandatory(true).visible(true)));
+            .enabled(false).mandatory(true).visible(true)));
     view.constraint(viewConstraint);
   }
 
