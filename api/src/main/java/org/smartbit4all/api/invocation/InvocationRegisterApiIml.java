@@ -62,7 +62,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.CollectionUtils;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
@@ -268,11 +267,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     initRuntimeChannels();
 
-    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    taskScheduler.setPoolSize(3);
-    taskScheduler.setThreadNamePrefix("Invocation-Registry");
-    taskScheduler.initialize();
-    taskScheduler.scheduleAtFixedRate(this::refreshRegistry, 30000);
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
@@ -345,6 +339,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   @Override
+  @Scheduled(initialDelayString = "${invocationregistry.refresh.fixeddelay:0}",
+      fixedDelayString = "${invocationregistry.refresh.fixeddelay:30000}",
+      scheduler = "invocationRegisterScheduler")
   public void refreshRegistry() {
     if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
       return;

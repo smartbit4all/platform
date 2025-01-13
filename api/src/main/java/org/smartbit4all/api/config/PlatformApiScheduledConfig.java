@@ -1,5 +1,7 @@
 package org.smartbit4all.api.config;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import org.smartbit4all.api.binarydata.BinaryDataMaintenanceApi;
 import org.smartbit4all.api.binarydata.BinaryDataMaintenanceApiImpl;
 import org.smartbit4all.api.invocation.InvocationRegisterApi;
@@ -35,6 +37,11 @@ public class PlatformApiScheduledConfig {
   @Bean
   public ApplicationSetupManagementApi applicationSetupManagementApi() {
     return new ApplicationSetupManagementApiImpl();
+  }
+
+  @Bean(destroyMethod = "shutdown")
+  public Executor invocationRegisterScheduler() {
+    return Executors.newScheduledThreadPool(2);
   }
 
 }
