@@ -50,6 +50,30 @@ public final class ObjectLayoutBuilder {
   }
 
   /**
+   * Constructs a GeoMap layout definition with the provided map identifier.
+   *
+   * @param mapIdentifier the {@code String} map identifier for the map to use, not null
+   *
+   * @return a {@link SmartComponentLayoutDefinition} representing a map
+   */
+  public static SmartComponentLayoutDefinition map(String mapIdentifier) {
+    return map(null, mapIdentifier);
+  }
+
+  /**
+   * Constructs a GeoMap layout definition with the provided map identifier.
+   * 
+   * @param layoutIdentifier the {@code String} layout identifier to uniquely mark the widget's
+   *        layout itself (useful for styling), nullable
+   * @param mapIdentifier the {@code String} map identifier for the map to use, not null
+   * @return a {@link SmartComponentLayoutDefinition} representing a map
+   */
+  public static SmartComponentLayoutDefinition map(String layoutIdentifier,
+      String mapIdentifier) {
+    return widget(layoutIdentifier, ComponentWidgetType.MAP, mapIdentifier);
+  }
+
+  /**
    * Constructs a form layout definition with the provided widget definitions.
    *
    * @param layoutDirection the cardinal direction in which form elements are placed after each
@@ -120,13 +144,13 @@ public final class ObjectLayoutBuilder {
 
   private static SmartComponentLayoutDefinition widget(String layoutIdentifier,
       ComponentWidgetType type,
-      String toolbarIdentifier) {
+      String widgetIdentifier) {
     return new SmartComponentLayoutDefinition()
         .identifier(layoutIdentifier)
         .type(ComponentType.WIDGET)
         .widget(new SmartComponentWidgetDefinition()
             .type(type)
-            .identifier(toolbarIdentifier));
+            .identifier(widgetIdentifier));
   }
 
   /**
