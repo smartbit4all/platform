@@ -34,7 +34,9 @@ public enum ComponentWidgetType {
   
   TREE("tree"),
   
-  TOOLBAR("toolbar");
+  TOOLBAR("toolbar"),
+  
+  MAP("map");
 
   private String value;
 
