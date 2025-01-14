@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiRestclientTestConfig.class}, properties = {
-    "InvocationRegisterApi.refreshFrequency=2000",
+    "invocationregistry.refresh.fixeddelay=2000",
     "applicationruntime.maintain.fixeddelay=2000"
 })
 @MockBean(SessionApi.class)

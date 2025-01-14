@@ -37,7 +37,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
-@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {})
+@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {
+    "applicationruntime.maintain.fixeddelay=2000",
+    "invocationregistry.refresh.fixeddelay=2000"
+})
 @MockBean(SessionApi.class)
 public class InvocationApiPrimaryApiRegisterRestclientTests {
 
@@ -132,6 +135,6 @@ public class InvocationApiPrimaryApiRegisterRestclientTests {
   }
 
   private void waitForRefresh() throws NumberFormatException, InterruptedException {
-    Thread.sleep(Long.valueOf(schedulePeriodString));
+    Thread.sleep(Long.parseLong(schedulePeriodString) * 2);
   }
 }

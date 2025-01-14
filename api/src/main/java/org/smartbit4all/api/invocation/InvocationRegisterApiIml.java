@@ -194,8 +194,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Value("${InvocationRegisterApi.readScheduledInvocations.maximumPoolSize:10}")
   private int maximumPoolSize = 10;
   
-  @Value("${InvocationRegisterApi.refreshFrequency:30000}")
+  @Value("${invocationregistry.refresh.fixeddelay:30000}")
   private int refreshFrequency = 30_000;
+  
+  @Value("{invocationregistry.refresh-async-channels.fixeddelay:60000")
+  private String asyncChannelRefreshFrequency = "60000";
 
   private StoredCollectionDescriptor apiRegistryList =
       new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
@@ -332,8 +335,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   // TODO move to another api
-  @Scheduled(initialDelayString = "${invocationregistry.refresh.fixeddelay:60000}",
-      fixedDelayString = "${invocationregistry.refresh.fixeddelay:60000}")
+  @Scheduled(initialDelayString = "${invocationregistry.refresh-async-channels.fixeddelay:60000}",
+      fixedDelayString = "${invocationregistry.refresh-async-channels.fixeddelay:60000}")
   public void refreshAsyncChannlers() {
     try {
       maintainLatch.await();
