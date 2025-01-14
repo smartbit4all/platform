@@ -107,7 +107,10 @@ import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {MDMApiTestConfig.class})
+@SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
+    "invocationregistry.refresh.fixeddelay=2000",
+    "applicationruntime.maintain.fixeddelay=2000"
+})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
