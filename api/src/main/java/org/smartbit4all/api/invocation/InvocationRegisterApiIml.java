@@ -193,6 +193,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   @Value("${InvocationRegisterApi.readScheduledInvocations.maximumPoolSize:10}")
   private int maximumPoolSize = 10;
+  
+  @Value("${InvocationRegisterApi.refreshFrequency:30000}")
+  private int refreshFrequency = 30_000;
 
   private StoredCollectionDescriptor apiRegistryList =
       new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
@@ -268,7 +271,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     taskScheduler.setPoolSize(3);
     taskScheduler.setThreadNamePrefix("Invocation-Registry");
     taskScheduler.initialize();
-    taskScheduler.scheduleAtFixedRate(this::refreshRegistry, 30000);
+    taskScheduler.scheduleAtFixedRate(this::refreshRegistry, refreshFrequency);
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
