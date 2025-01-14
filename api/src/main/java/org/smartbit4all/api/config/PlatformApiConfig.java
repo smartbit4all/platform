@@ -5,6 +5,8 @@ import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
+import org.smartbit4all.api.cache.CacheService;
+import org.smartbit4all.api.cache.CacheServiceImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.EmbeddingApi;
@@ -1017,6 +1019,11 @@ public class PlatformApiConfig {
   @Bean
   public ValueTransformationApi valueTransformationApi() {
     return new ValueTransformationApiImpl();
+  }
+
+  @Bean
+  public CacheService cacheService() {
+    return new CacheServiceImpl();
   }
 
 }

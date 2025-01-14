@@ -26,6 +26,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.cache.CacheService;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
@@ -167,6 +168,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Autowired
   private ViewPublisherApi publisherApi;
+
+  @Autowired
+  private CacheService cacheService;
 
   public static boolean collectExecution = false;
 
@@ -610,6 +614,7 @@ public class ViewContextServiceImpl implements ViewContextService {
           });
       currentViewContext.set(contextNode.getObject(ViewContext.class));
       currentLoadedPlaceholders.set(new HashMap<>());
+      cacheService.startRequestScope();
       command.execute();
       if (!readOnly) {
         currentLoadedPlaceholders.get().forEach((viewUuid, view) -> {
@@ -621,6 +626,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     } finally {
       currentLoadedPlaceholders.remove();
       currentViewContext.remove();
+      cacheService.endRequestScope();
       if (lock != null) {
         lock.unlock();
       }
@@ -1362,6 +1368,12 @@ public class ViewContextServiceImpl implements ViewContextService {
     public MissinCurrentViewContextException(String msg) {
       super(msg);
     }
+  }
+
+  @Override
+  public Map<String, Object> getCache(UUID viewUuid) {
+    Objects.requireNonNull(viewUuid, "viewUuid must be specified");
+    return cacheService.getRequestScopedCache(viewUuid.toString());
   }
 
 }

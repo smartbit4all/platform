@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
@@ -196,5 +197,7 @@ public interface ViewContextService {
   View getAndClearViewFromPlaceholder(ViewPlaceholder placeholder);
 
   View getView(ViewContext context, UUID viewUuid);
+
+  Map<String, Object> getCache(UUID viewUuid);
 
 }
