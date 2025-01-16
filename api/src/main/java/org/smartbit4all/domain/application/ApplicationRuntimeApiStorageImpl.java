@@ -122,7 +122,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     if (schedulePeriod == null) {
       schedulePeriod = Long.valueOf(schedulePeriodString);
     }
-    return schedulePeriod.longValue();
+    return schedulePeriod;
   }
 
   @EventListener(ApplicationStartedEvent.class)
@@ -145,6 +145,12 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
     }
+
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(3);
+    taskScheduler.setThreadNamePrefix("App-Runtime");
+    taskScheduler.initialize();
+    taskScheduler.scheduleAtFixedRate(this::doMaintain, getSchedulePeriod());
 
     // End time
     long endTime = System.currentTimeMillis();

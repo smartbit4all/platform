@@ -107,7 +107,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-@SpringBootTest(classes = {MDMApiTestConfig.class})
+@SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
+    "invocationregistry.refresh.fixeddelay=2000",
+    "applicationruntime.maintain.fixeddelay=2000"
+})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {

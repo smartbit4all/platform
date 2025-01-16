@@ -16,6 +16,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.MediaType;
 import org.mockserver.springtest.MockServerPort;
 import org.mockserver.springtest.MockServerTest;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
 import org.smartbit4all.api.invocation.InvocationRegisterApiIml;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
@@ -37,7 +38,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
-@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class})
+@SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {
+    "invocationregistry.refresh.fixeddelay=2000",
+    "applicationruntime.maintain.fixeddelay=2000"
+})
 @MockBean(SessionApi.class)
 public class InvocationApiPrimaryApiRestclientTests {
 
@@ -52,8 +56,9 @@ public class InvocationApiPrimaryApiRestclientTests {
   @BeforeAll
   public static void setUpBeforeClass(@Autowired StorageApi storageApi,
       @Value("${mockServerPort}") Integer mockServerPort,
-      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString)
-      throws IOException {
+      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString,
+  @Autowired InvocationRegisterApi invocationRegisterApi)
+  throws IOException, InterruptedException {
 
     URI uri = ProviderApiInvocationHandler.uriOf(TestContributionApi.class,
         TestContributionApiImpl.NAME_REMOTE);
@@ -74,7 +79,7 @@ public class InvocationApiPrimaryApiRestclientTests {
       r.addApiListItem(apiData.getUri());
       return r;
     });
-    waitForRefresh(maintainDelay);
+    Thread.sleep(maintainDelay * 2);
   }
 
   @Test
@@ -129,10 +134,4 @@ public class InvocationApiPrimaryApiRestclientTests {
 
   }
 
-  protected static void waitForRefresh(Long maintainDelay) {
-    try {
-      Thread.sleep(maintainDelay);
-    } catch (InterruptedException e) {
-    }
-  }
 }

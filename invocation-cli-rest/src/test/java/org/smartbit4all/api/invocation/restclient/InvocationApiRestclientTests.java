@@ -15,6 +15,7 @@ import org.mockserver.model.MediaType;
 import org.mockserver.springtest.MockServerPort;
 import org.mockserver.springtest.MockServerTest;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
 import org.smartbit4all.api.invocation.InvocationRegisterApiIml;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
@@ -37,7 +38,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
-@SpringBootTest(classes = {InvocationApiRestclientTestConfig.class})
+@SpringBootTest(classes = {InvocationApiRestclientTestConfig.class}, properties = {
+    "invocationregistry.refresh.fixeddelay=2000",
+    "applicationruntime.maintain.fixeddelay=2000"
+})
 @MockBean(SessionApi.class)
 public class InvocationApiRestclientTests {
 
@@ -55,16 +59,18 @@ public class InvocationApiRestclientTests {
   @BeforeAll
   public static void setUpBeforeClass(@Autowired StorageApi storageApi,
       @Value("${mockServerPort}") Integer mockServerPort,
-      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString)
-      throws IOException {
+      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString,
+                                      @Autowired InvocationRegisterApi invocationRegisterApi)
+  throws IOException, InterruptedException {
 
     URI uri = ProviderApiInvocationHandler.uriOf(TestApi.class, TestApiImpl.NAME);
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData().ipAddress("127.0.0.1")
         .serverPort(mockServerPort).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis())
         .timeOffset(0l).apis(Arrays.asList(uri));
-
+    
     Long maintainDelay = Long.valueOf(schedulePeriodString);
-    TestApplicationRuntime.create(storageApi).runtimeOf(runtimeData)
+    TestApplicationRuntime.create(storageApi)
+        .runtimeOf(runtimeData)
         .withMaintainDelay(maintainDelay).start();
 
     Storage appRegistryStorage = storageApi.get(Invocations.APIREGISTRATION_SCHEME);
@@ -76,6 +82,9 @@ public class InvocationApiRestclientTests {
       r.addApiListItem(apiData.getUri());
       return r;
     });
+
+    System.out.println("Maintain delay: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + maintainDelay);
+    Thread.sleep(maintainDelay * 2);
   }
 
   @Test

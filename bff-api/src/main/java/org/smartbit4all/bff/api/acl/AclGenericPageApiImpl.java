@@ -390,8 +390,9 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     PageContext ctx = context(viewUuid);
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);
 
+    boolean enableModify = isEnableModify(ctx, gridId);
     page.getRows().forEach(row -> {
-      if (isEnableModify(ctx, gridId)) {
+      if (enableModify) {
         if (Boolean.TRUE.equals(gridConfig.getHasComment())) {
           row.addActionsItem(new UiAction()
               .code(EDIT_COMMENT)
@@ -405,13 +406,14 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
                   .title(localeSettingApi.get(PREFIX, DELETE_SUBJECT))));
         }
 
-        addRowAction(ctx, row, viewUuid, gridId);
       }
+      addRowAction(ctx, row, viewUuid, gridId, enableModify);
     });
     return page;
   }
 
-  protected void addRowAction(PageContext ctx, GridRow row, UUID viewUuid, String gridId) {}
+  protected void addRowAction(PageContext ctx, GridRow row, UUID viewUuid, String gridId,
+      boolean enableModify) {}
 
   protected boolean isEnableAdd(PageContext ctx, String gridId) {
     AclGridConfig gridConfig = ctx.findGridConfig(gridId);

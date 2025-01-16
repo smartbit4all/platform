@@ -287,4 +287,20 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     return map1;
   }
 
+  protected void cachePut(UUID viewUuid, String key, Object value) {
+    viewContextService.getCache(viewUuid).put(key, value);
+  }
+
+  protected <T> T cacheGet(UUID viewUuid, String key) {
+    return (T) viewContextService.getCache(viewUuid).get(key);
+  }
+
+  protected <T> T cacheClear(UUID viewUuid, String key) {
+    return (T) viewContextService.getCache(viewUuid).remove(key);
+  }
+
+  protected void cacheClear(UUID viewUuid) {
+    viewContextService.getCache(viewUuid).clear();
+  }
+
 }

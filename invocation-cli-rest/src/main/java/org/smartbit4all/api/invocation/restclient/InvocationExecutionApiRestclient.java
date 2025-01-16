@@ -35,6 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class InvocationExecutionApiRestclient implements InvocationExecutionApi {
 
+  // This key is used to get the apikey header key from the ServiceConnection.parameters map
+  public static final String API_KEY_HEADER_KEY = "apiKeyHeader";
+
   @Autowired
   private RestTemplate restTemplate;
 
@@ -56,9 +59,10 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
     url = getProperURL(url, binaryUpload, binaryResult);
 
     HttpHeaders headers = new HttpHeaders();
-    String sessionToken = serviceConnection.getAuthToken();
-    if (!ObjectUtils.isEmpty(sessionToken)) {
-      headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + sessionToken);
+    String authToken = serviceConnection.getAuthToken();
+    Object headerKeyObj = serviceConnection.getParameters().get(API_KEY_HEADER_KEY);
+    if (!ObjectUtils.isEmpty(authToken) && !ObjectUtils.isEmpty(headerKeyObj)) {
+      headers.add(headerKeyObj.toString(), authToken);
     }
 
     String username = serviceConnection.getUsername();
