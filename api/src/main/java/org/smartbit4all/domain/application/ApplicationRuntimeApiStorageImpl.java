@@ -146,12 +146,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       self.setValue(myRuntime);
     }
 
-    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    taskScheduler.setPoolSize(3);
-    taskScheduler.setThreadNamePrefix("App-Runtime");
-    taskScheduler.initialize();
-    taskScheduler.scheduleAtFixedRate(this::doMaintain, getSchedulePeriod());
-
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log

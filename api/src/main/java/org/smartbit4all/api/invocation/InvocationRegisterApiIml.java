@@ -196,10 +196,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   @Value("${InvocationRegisterApi.readScheduledInvocations.maximumPoolSize:10}")
   private int maximumPoolSize = 10;
-  
+
   @Value("${invocationregistry.refresh.fixeddelay:30000}")
   private int refreshFrequency = 30_000;
-  
+
   @Value("{invocationregistry.refresh-async-channels.fixeddelay:60000")
   private String asyncChannelRefreshFrequency = "60000";
 
@@ -273,11 +273,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     initRuntimeChannels();
 
-    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    taskScheduler.setPoolSize(3);
-    taskScheduler.setThreadNamePrefix("Invocation-Registry");
-    taskScheduler.initialize();
-    taskScheduler.scheduleAtFixedRate(this::refreshRegistry, refreshFrequency);
     // End time
     long endTime = System.currentTimeMillis();
     // Calculate duration and log
