@@ -641,8 +641,10 @@ public class GridModelApiImpl implements GridModelApi {
       }
       if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
         TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-        tableDataApi.sortByFilterExpression(data, update.getOrderByList());
-        tableDataApi.save(data);
+        if (update.getOrderByList() != null && !update.getOrderByList().isEmpty()) {
+          tableDataApi.sortByFilterExpression(data, update.getOrderByList());
+          tableDataApi.save(data);
+        }
         model.getAccessConfig().dataUri(data.getUri());
         int lowerBound = model.getPage().getLowerBound();
         int upperBound = model.getPage().getUpperBound();
