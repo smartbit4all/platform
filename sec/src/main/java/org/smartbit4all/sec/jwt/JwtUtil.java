@@ -25,7 +25,7 @@ public class JwtUtil {
 
   private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
-  @Value("${jwt.secret:secret}")
+  @Value("${jwt.secret:it4allsmartbit4allsecret2025it4allsmartbit4allsecret2025it4allsmartbit4allsecret2025}")
   private String secretKey;
 
   @Value("${jwt.timeout:10}")
@@ -98,11 +98,11 @@ public class JwtUtil {
       expiration = OffsetDateTime.now().plusHours(timeout);
     }
     return Jwts.builder()
-        .setSubject(subject)
-        .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(OffsetDateTime.MAX.equals(expiration) ? new Date(Long.MAX_VALUE)
+        .subject(subject)
+        .issuedAt(new Date(System.currentTimeMillis()))
+        .expiration(OffsetDateTime.MAX.equals(expiration) ? new Date(Long.MAX_VALUE)
             : new Date(expiration.toInstant().toEpochMilli()))
-        .setHeaderParam("uuid", UUID.randomUUID()) // make every created token identical
+        .header().add("uuid", UUID.randomUUID()).and() // make every created token identical
         // .signWith(getSecretKey())
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();

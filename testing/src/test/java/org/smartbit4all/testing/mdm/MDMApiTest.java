@@ -1,14 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -106,11 +97,22 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
+
+  private static final String PASSWORD_UNENCRYPTED = "ThePassword2025";
 
   private static final String ORG_SMARTBIT4ALL_API_MY_CUSTOM_API =
       "org.smartbit4all.api.MyCustomApi";
@@ -186,7 +188,7 @@ class MDMApiTest {
   private UUID viewContextUUID;
 
   private static final String PASSWD =
-      "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
+      "$2a$10$D/BMYZxAXyYBHVnvSvq2meXNggX5nrCQAii1X/IS8lbyOjTkzjMme";
   private static final String admin = "user_admin";
 
   private static final String admin2 = "user_admin2";
@@ -209,7 +211,7 @@ class MDMApiTest {
   @Order(1)
   void testPublishingAndEditingAsDraft() throws Exception {
 
-    authService.login(admin, "asd");
+    authService.login(admin, PASSWORD_UNENCRYPTED);
 
     List<AccountInfo> authentications = sessionApi.getAuthentications();
 
@@ -555,7 +557,7 @@ class MDMApiTest {
 
     authService.logout();
 
-    authService.login(normal_user, "asd");
+    authService.login(normal_user, PASSWORD_UNENCRYPTED);
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
@@ -592,7 +594,7 @@ class MDMApiTest {
 
     authService.logout();
 
-    authService.login(admin, "asd");
+    authService.login(admin, PASSWORD_UNENCRYPTED);
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
@@ -635,7 +637,7 @@ class MDMApiTest {
 
     authService.logout();
 
-    authService.login(normal_user, "asd");
+    authService.login(normal_user, PASSWORD_UNENCRYPTED);
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
@@ -678,7 +680,7 @@ class MDMApiTest {
   void testSearchIndexResultPageApis() throws Exception {
 
 
-    authService.login(normal_user, "asd");
+    authService.login(normal_user, PASSWORD_UNENCRYPTED);
 
     objectApi.saveAsNew(MDMApiTestConfig.TEST,
         new SampleCategory().name("Category 1").color(ColorEnum.RED));
@@ -740,7 +742,7 @@ class MDMApiTest {
   @Test
   @Order(4)
   void testSearchIndexResultPageApiHistory() throws Exception {
-    authService.login(normal_user, "asd");
+    authService.login(normal_user, PASSWORD_UNENCRYPTED);
 
     URI uri = objectApi.saveAsNew(MDMApiTestConfig.TEST,
         new SampleCategory().name("Category 1").color(ColorEnum.RED));
@@ -784,7 +786,7 @@ class MDMApiTest {
   @Test
   @Order(5)
   void testSearchIndexResultPageApiHistoryHighVolume() throws Exception {
-    authService.login(normal_user, "asd");
+    authService.login(normal_user, PASSWORD_UNENCRYPTED);
 
     URI uri = null;
 
@@ -1387,7 +1389,7 @@ class MDMApiTest {
   @Order(10)
   void testUserActivityLogHandling() throws Exception {
 
-    authService.login(admin, "asd");
+    authService.login(admin, PASSWORD_UNENCRYPTED);
 
     MDMEntryApi mdmEntryApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         SampleCategoryType.class.getSimpleName());
@@ -1462,7 +1464,7 @@ class MDMApiTest {
   @Order(100)
   void testPublishingAndEditingAsDraft_paralel() throws Exception {
 
-    authService.login(admin, "asd");
+    authService.login(admin, PASSWORD_UNENCRYPTED);
 
     List<AccountInfo> authentications = sessionApi.getAuthentications();
 
@@ -1729,7 +1731,7 @@ class MDMApiTest {
 
       authService.logout();
 
-      authService.login(admin2, "asd");
+      authService.login(admin2, PASSWORD_UNENCRYPTED);
 
       Assertions
           .assertThat(typeApi.getBranchingList().stream()
@@ -1770,5 +1772,5 @@ class MDMApiTest {
     Assertions.assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
     Assertions.assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3);
   }
-  
+
 }
