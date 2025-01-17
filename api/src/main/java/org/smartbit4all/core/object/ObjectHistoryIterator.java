@@ -99,6 +99,11 @@ public class ObjectHistoryIterator implements Iterator<ObjectNode> {
     return objectApi().load(currentObjectUri, branchUri);
   }
 
+  public ObjectNode get() {
+    URI currentObjectUri = ObjectStorageImpl.getUriWithVersion(uriWithoutVersion, i);
+    return objectApi().load(currentObjectUri, branchUri);
+  }
+
   @Override
   public boolean hasNext() {
     return reverese ? i > firstVersion : i < lastVersion;
