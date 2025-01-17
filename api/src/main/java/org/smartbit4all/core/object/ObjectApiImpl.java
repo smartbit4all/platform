@@ -149,7 +149,8 @@ public class ObjectApiImpl implements ObjectApi {
     return loadInternalBatch(this, objectUris, branchUri, RetrievalMode.NORMAL, true);
   }
 
-  static List<ObjectNode> loadInternalBatch(ObjectApi objectApi, List<URI> objectUris, URI branchUri,
+  static List<ObjectNode> loadInternalBatch(ObjectApi objectApi, List<URI> objectUris,
+      URI branchUri,
       RetrievalMode retrievalMode,
       boolean loadLatest) {
     if (ObjectUtils.isEmpty(objectUris)) {
@@ -626,6 +627,16 @@ public class ObjectApiImpl implements ObjectApi {
       }
     }
     return result;
+  }
+
+  @Override
+  public void unlockAll(List<Lock> locks) {
+    Objects.requireNonNull(locks);
+    List<Lock> unlocking = new ArrayList<>(locks);
+    Collections.reverse(unlocking);
+    for (Lock lock : unlocking) {
+      lock.unlock();
+    }
   }
 
   @Override
