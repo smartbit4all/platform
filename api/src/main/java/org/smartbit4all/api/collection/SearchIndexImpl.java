@@ -196,6 +196,14 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return executeSearch(filterExpressions, orderByList, true, null, objects);
   }
 
+  @Override
+  public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList,
+      List<String> columns) {
+    return executeSearch(filterExpressions, orderByList, columns, true,
+        null, objects);
+  }
+
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
@@ -229,12 +237,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       log.trace("Executing query...: {}", queryInput.where());
     }
 
+    log.info("Executing query...: {}", queryInput.where());
     TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+    log.info("Finished");
 
     processCalculators(result, calculators);
 
     result = process(result, postProcessor);
 
+    log.info("Finished2");
     return result;
   }
 
