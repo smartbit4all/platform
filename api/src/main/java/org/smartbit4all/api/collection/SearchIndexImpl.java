@@ -237,15 +237,12 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       log.trace("Executing query...: {}", queryInput.where());
     }
 
-    log.info("Executing query...: {}", queryInput.where());
     TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
-    log.info("Finished");
 
     processCalculators(result, calculators);
 
     result = process(result, postProcessor);
 
-    log.info("Finished2");
     return result;
   }
 
