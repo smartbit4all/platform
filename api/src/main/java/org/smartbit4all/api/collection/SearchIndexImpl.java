@@ -196,6 +196,14 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return executeSearch(filterExpressions, orderByList, true, null, objects);
   }
 
+  @Override
+  public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList,
+      List<String> columns) {
+    return executeSearch(filterExpressions, orderByList, columns, true,
+        null, objects);
+  }
+
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 

@@ -46,4 +46,6 @@ components:
         pageSize:
           type: integer
           format: int32
-      
+        closeOnSave:
+          type: boolean
+          default: false      

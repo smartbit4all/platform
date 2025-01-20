@@ -128,6 +128,19 @@ public interface SearchIndex<O> {
    *
    * @param objects The URIs of objects which the query is running on.
    * @param filterExpressions The expression list for the query.
+   * @param orderByList desired order of result
+   * @return The result table data of the search.
+   */
+  TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList,
+      List<String> columns);
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param objects The URIs of objects which the query is running on.
+   * @param filterExpressions The expression list for the query.
    * @return The result table data of the search.
    */
   default TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,

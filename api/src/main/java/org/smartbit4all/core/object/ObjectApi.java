@@ -384,6 +384,14 @@ public interface ObjectApi {
   List<Lock> lockAll(List<URI> uris);
 
   /**
+   * After retrieving a list of locks with lockAll, you can use this method to release the locks in
+   * the correct order - locks returned by lockAll are in order of creating the lock.
+   *
+   * @param locks
+   */
+  void unlockAll(List<Lock> locks);
+
+  /**
    * Retrieves the last modification of the given object identified by the URI.
    *
    * @param uri The uri of the object

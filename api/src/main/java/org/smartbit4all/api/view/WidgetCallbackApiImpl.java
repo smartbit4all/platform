@@ -45,6 +45,11 @@ public class WidgetCallbackApiImpl implements WidgetCallbackApi {
   }
 
   @Override
+  public void clearCallbacks(UUID viewUuid) {
+    viewApi.clearCallbacks(viewUuid);
+  }
+
+  @Override
   public Object executeObjectCallback(InvocationRequest request, Object parameter) {
     if (request == null) {
       return parameter;

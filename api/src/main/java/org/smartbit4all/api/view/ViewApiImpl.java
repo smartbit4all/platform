@@ -599,6 +599,11 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
+  public void clearCallbacks(UUID viewUuid) {
+    getView(viewUuid).getCallbacks().clear();
+  }
+
+  @Override
   public ViewEventApi events(UUID viewUuid) {
     return new ViewEventApiImpl(getView(viewUuid));
   }

@@ -35,7 +35,11 @@ public final class ExpressionPropertyCollector extends ExpressionVisitor {
 
   protected <T> void addIfOperandProperty(Operand<T> operand) {
     if (operand instanceof OperandProperty) {
-      properties.add(((OperandProperty) operand).property());
+      Property property = ((OperandProperty) operand).property();
+      if (property instanceof PropertyObject) {
+        property = ((PropertyObject) property).getBasic();
+      }
+      properties.add(property);
     }
   }
 
