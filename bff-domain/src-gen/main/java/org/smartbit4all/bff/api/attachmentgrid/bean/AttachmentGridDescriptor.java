@@ -47,7 +47,8 @@ import javax.validation.Valid;
   AttachmentGridDescriptor.IS_DOWNLOADABLE,
   AttachmentGridDescriptor.IS_EDITABLE,
   AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
-  AttachmentGridDescriptor.PAGE_SIZE
+  AttachmentGridDescriptor.PAGE_SIZE,
+  AttachmentGridDescriptor.CLOSE_ON_SAVE
 })
 @JsonTypeName("AttachmentGridDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -84,6 +85,9 @@ public class AttachmentGridDescriptor {
 
   public static final String PAGE_SIZE = "pageSize";
   private Integer pageSize;
+
+  public static final String CLOSE_ON_SAVE = "closeOnSave";
+  private Boolean closeOnSave = false;
 
   public AttachmentGridDescriptor() { 
   }
@@ -396,6 +400,33 @@ public class AttachmentGridDescriptor {
   }
 
 
+  public AttachmentGridDescriptor closeOnSave(Boolean closeOnSave) {
+    
+    this.closeOnSave = closeOnSave;
+    return this;
+  }
+
+   /**
+   * Get closeOnSave
+   * @return closeOnSave
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CLOSE_ON_SAVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getCloseOnSave() {
+    return closeOnSave;
+  }
+
+
+  @JsonProperty(CLOSE_ON_SAVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCloseOnSave(Boolean closeOnSave) {
+    this.closeOnSave = closeOnSave;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -415,12 +446,13 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.isDownloadable, attachmentGridDescriptor.isDownloadable) &&
         Objects.equals(this.isEditable, attachmentGridDescriptor.isEditable) &&
         Objects.equals(this.isPaginatorEnabled, attachmentGridDescriptor.isPaginatorEnabled) &&
-        Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize);
+        Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
+        Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave);
   }
 
   @Override
@@ -438,6 +470,7 @@ public class AttachmentGridDescriptor {
     sb.append("    isEditable: ").append(toIndentedString(isEditable)).append("\n");
     sb.append("    isPaginatorEnabled: ").append(toIndentedString(isPaginatorEnabled)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
+    sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
     sb.append("}");
     return sb.toString();
   }

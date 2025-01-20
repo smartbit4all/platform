@@ -268,6 +268,11 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
     UiActions.remove(view, getSaveListAction(descriptor));
     UiActions.add(view, getSaveListAction(descriptor).disabled(true));
+
+    if (viewApi.getView(viewUuid).getType().equals(ViewType.DIALOG)
+        && descriptor.getCloseOnSave().equals(Boolean.TRUE)) {
+      viewApi.closeView(viewUuid);
+    }
   }
 
 
