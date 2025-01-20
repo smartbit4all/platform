@@ -939,6 +939,11 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
+  public void clearCallbacks(UUID viewUuid) {
+    widgetCallbackApi.clearCallbacks(viewUuid);
+  }
+
+  @Override
   public Object expand(UUID viewUuid, String gridId, String rowId) {
     return executeGridCall(viewUuid, gridId, grid -> {
       Objects.requireNonNull(rowId, "rowId must not be null");

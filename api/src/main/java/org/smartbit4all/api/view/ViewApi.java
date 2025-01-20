@@ -172,6 +172,13 @@ public interface ViewApi {
   List<InvocationRequest> getCallbacks(UUID viewUuid, String requestId);
 
   /**
+   * Clears all callbacks in registered to this View.
+   *
+   * @param viewUuid
+   */
+  void clearCallbacks(UUID viewUuid);
+
+  /**
    * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
    * execution cycle. Typically one server call because it refers to the actual loaded View
    * instance.
@@ -202,7 +209,7 @@ public interface ViewApi {
 
   /**
    * Instructs the client to copy the provided data to the user's clipboard.
-   * 
+   *
    * @param clipboardData the {@link ClipboardData} describing the content to copy, not null
    */
   void copyToClipboard(ClipboardData clipboardData);
@@ -217,7 +224,7 @@ public interface ViewApi {
 
   /**
    * Retrieve the callback from the given view merging with the parent callbacks.
-   * 
+   *
    * @param viewUuid The uuid of the view.
    * @param requestId The id of the request.
    * @return
