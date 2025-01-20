@@ -884,7 +884,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
     try {
       Map<String, URI> uris = activeObjectMap.getUris().entrySet().stream()
-          .collect(toMap(e -> e.getKey().toLowerCase(), Entry::getValue));
+          .collect(toMap(e -> e.getKey().toLowerCase(), Entry::getValue, (e1, e2) -> e1));
       URI userUri = uris.get(username.toLowerCase());
       if (userUri == null) {
         return null;
