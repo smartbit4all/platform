@@ -107,11 +107,16 @@ public final class AsyncInvocationChannelImpl
   public void invoke(AsyncInvocationRequestEntry requestEntry) {
     executorService.submit(() -> {
       // decorate the thread of given call.
-      URI userUri = getTechnicalUserUri();
-      if (userUri != null && sessionManagementApi != null) {
-        ensureUriTechnicalSession();
-      } else if (requestEntry.request.getRequest().getSessionUri() != null) {
+      if (Boolean.TRUE.equals(requestEntry.request.getRequest().getInheritSession())
+          && requestEntry.request.getRequest().getSessionUri() != null) {
         sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
+      } else {
+        URI userUri = getTechnicalUserUri();
+        if (userUri != null && sessionManagementApi != null) {
+          ensureUriTechnicalSession();
+        } else if (requestEntry.request.getRequest().getSessionUri() != null) {
+          sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
+        }
       }
       InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
       try {
