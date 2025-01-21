@@ -7,6 +7,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -503,6 +504,20 @@ public class Invocations {
         .create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
             + interfaceClassName.replace(StringConstant.DOT, StringConstant.SLASH)
             + StringConstant.SLASH + name);
+  }
+
+  public static InvocationParameter invokeTestMethod(Object apiObject,
+      InvocationRequest request) {
+    Class<?> parameters[] = new Class[request.getParameters().size()];
+    Arrays.fill(parameters, InvocationParameter.class);
+    try {
+      Method method = apiObject.getClass().getMethod(request.getMethodName(), parameters);
+      Object result = method.invoke(apiObject, request.getParameters().toArray());
+      return (InvocationParameter) result;
+    } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+        | InvocationTargetException e) {
+      throw new IllegalArgumentException("Unable to find call the " + request, e);
+    }
   }
 
 }
