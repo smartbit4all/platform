@@ -49,7 +49,7 @@ public class FutureAwait {
   private String id;
 
   public static final String FIRST_PARAM_INDEX = "firstParamIndex";
-  private Integer firstParamIndex = null;
+  private Integer firstParamIndex = 1;
 
   public static final String REQUEST = "request";
   private InvocationRequest request;

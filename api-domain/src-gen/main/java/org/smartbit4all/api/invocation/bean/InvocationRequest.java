@@ -44,7 +44,8 @@ import javax.validation.Valid;
   InvocationRequest.PARAMETERS,
   InvocationRequest.RETURN_TYPE_CLASS,
   InvocationRequest.RETURN_INNER_TYPE_CLASS,
-  InvocationRequest.SESSION_URI
+  InvocationRequest.SESSION_URI,
+  InvocationRequest.INHERIT_SESSION
 })
 @JsonTypeName("InvocationRequest")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -75,6 +76,9 @@ public class InvocationRequest {
 
   public static final String SESSION_URI = "sessionUri";
   private URI sessionUri;
+
+  public static final String INHERIT_SESSION = "inheritSession";
+  private Boolean inheritSession = false;
 
   public InvocationRequest() { 
   }
@@ -332,6 +336,33 @@ public class InvocationRequest {
   }
 
 
+  public InvocationRequest inheritSession(Boolean inheritSession) {
+    
+    this.inheritSession = inheritSession;
+    return this;
+  }
+
+   /**
+   * The true value of the indicator implies that the ssesion uri set is used by the invocation framework. Should be used when the upcoming execution of the request is relatively close to the initiation point. So the session will be still valid. 
+   * @return inheritSession
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The true value of the indicator implies that the ssesion uri set is used by the invocation framework. Should be used when the upcoming execution of the request is relatively close to the initiation point. So the session will be still valid. ")
+  @JsonProperty(INHERIT_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getInheritSession() {
+    return inheritSession;
+  }
+
+
+  @JsonProperty(INHERIT_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInheritSession(Boolean inheritSession) {
+    this.inheritSession = inheritSession;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -349,12 +380,13 @@ public class InvocationRequest {
         Objects.equals(this.parameters, invocationRequest.parameters) &&
         Objects.equals(this.returnTypeClass, invocationRequest.returnTypeClass) &&
         Objects.equals(this.returnInnerTypeClass, invocationRequest.returnInnerTypeClass) &&
-        Objects.equals(this.sessionUri, invocationRequest.sessionUri);
+        Objects.equals(this.sessionUri, invocationRequest.sessionUri) &&
+        Objects.equals(this.inheritSession, invocationRequest.inheritSession);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, returnTypeClass, returnInnerTypeClass, sessionUri);
+    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, returnTypeClass, returnInnerTypeClass, sessionUri, inheritSession);
   }
 
   @Override
@@ -370,6 +402,7 @@ public class InvocationRequest {
     sb.append("    returnTypeClass: ").append(toIndentedString(returnTypeClass)).append("\n");
     sb.append("    returnInnerTypeClass: ").append(toIndentedString(returnInnerTypeClass)).append("\n");
     sb.append("    sessionUri: ").append(toIndentedString(sessionUri)).append("\n");
+    sb.append("    inheritSession: ").append(toIndentedString(inheritSession)).append("\n");
     sb.append("}");
     return sb.toString();
   }
