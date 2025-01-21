@@ -234,6 +234,13 @@ components:
           description: |
             The URI of the session that belongs to the request. Optional and can be used to inherit session
             for the asynchronous call.
+        inheritSession:
+          type: boolean
+          default: false
+          description: |
+            The true value of the indicator implies that the ssesion uri set is used by the invocation framework.
+            Should be used when the upcoming execution of the request is relatively close to the initiation point. So
+            the session will be still valid.
     InvocationParameter:
       type: object
       required: [name, typeClass]
@@ -583,7 +590,7 @@ components:
           description: |
             The first parameter index that is awaiting as parameter of the signal call. By default it is 1 which meand that the 
             first (0.) parameter is reserved as context parameter.
-          type: int
+          type: integer
           format: int32
           default: 1
         request:
