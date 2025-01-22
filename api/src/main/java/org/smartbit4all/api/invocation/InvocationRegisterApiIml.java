@@ -496,7 +496,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         collectionApi.reference(Invocations.INVOCATION_SCHEME,
             scheduledInvocationReferenceName(channel.getName()),
             AsyncChannelScheduledInvocationList.class);
-    OffsetDateTime limitTime = OffsetDateTime.now().minusSeconds(5);
+    OffsetDateTime limitTime = OffsetDateTime.now();
     if (refScheduled.exists()) {
       refScheduled.update(scheduledList -> {
         // check if list exists
