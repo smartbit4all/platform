@@ -811,6 +811,9 @@ components:
       required: [severity, items]
       properties:
         severity:
+          description: |
+            The strongest severity of all the items. It is calculated and saved so it's easy to use as indicator wheather or not to
+            display or ask any questions
           $ref: '#/components/schemas/ObjectValidationSeverity'
         items:
           type: array
@@ -827,10 +830,21 @@ components:
         message:
           $ref: '#/components/schemas/LangString'
         propertyPath:
+          description: |
+            The validation can refer to the property of the object, like the page model. If the object is not a plat object (contains some
+            inline objects) then this path shows the fully qualified path of the property that cause the problem.
           type: array
           items:
             type: string
     ObjectValidationSeverity:
+      description: |
+        The severity of a validation could be the following in decreasing precedence.
+        The strongest one is the BLOCKER when there is no option to continue the process. The ERROR is still prevent from the next step in
+        the process but it is only a logical problem, not physical. The WARNING can be ignored to go on. To skip the given warning we have to set
+        the CODE of the validation to be able to refer later on for a pre saved answer. In this way we can skip the warning in a given situation.
+        The INFO is an optional item that can be displayd or not. The OK is not necessarily included in the validation result but sometimes it's good
+        to show even the passed validations also. Like when we would like to display after the validation that this and this validation is passed and these
+        ones are failed.
       enum: [BLOCKER, ERROR, WARNING, INFO, OK]
     ObjectValidationOperation:
       type: object

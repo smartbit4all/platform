@@ -15,6 +15,7 @@ package org.smartbit4all.api.object.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
+import io.swagger.annotations.ApiModel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ObjectValidationSeverity
+ * The severity of a validation could be the following in decreasing precedence. The strongest one is the BLOCKER when there is no option to continue the process. The ERROR is still prevent from the next step in the process but it is only a logical problem, not physical. The WARNING can be ignored to go on. To skip the given warning we have to set the CODE of the validation to be able to refer later on for a pre saved answer. In this way we can skip the warning in a given situation. The INFO is an optional item that can be displayd or not. The OK is not necessarily included in the validation result but sometimes it&#39;s good to show even the passed validations also. Like when we would like to display after the validation that this and this validation is passed and these ones are failed. 
  */
 public enum ObjectValidationSeverity {
   
