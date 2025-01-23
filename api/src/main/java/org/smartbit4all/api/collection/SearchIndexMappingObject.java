@@ -718,7 +718,6 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         .selectAllProperties()
         .where(masterReferenceProperty.in(masterRefValues))
         .listData();
-    // THIS WON'T WORK...
     Crud.delete(details);
   }
 

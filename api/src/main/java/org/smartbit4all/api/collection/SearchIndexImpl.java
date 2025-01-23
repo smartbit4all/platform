@@ -419,6 +419,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     }
 
     final SearchEntityTableDataResult data = createUpdateResult();
+    // As the URIs are most probably the only primary keys of the Search Index, we need not load the
+    // objects themselves for the delete -> REFACTOR!
     objectMapping.readObjectNodes(
         objectApi.loadBatch(new ArrayList<>(urisToDelete)),
         data,
