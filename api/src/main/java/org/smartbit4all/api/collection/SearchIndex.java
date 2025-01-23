@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
@@ -189,6 +190,17 @@ public interface SearchIndex<O> {
   void updateIndex(List<URI> changeList);
 
   void updateIndexWithData(List<SearchIndexObject> changeList);
+
+  /**
+   * Deletes the entries identified by the provided {@code URI}s.
+   * 
+   * This is an optional operation: if this instance is not backed by an actual database table, no
+   * action shall be performed.
+   * 
+   * @param toDelete the object entry {@link URI}s to delete, nullable
+   * @return the number of entries deleted
+   */
+  long delete(Collection<URI> toDelete);
 
   SearchIndexMappingObject getSearchIndexMappingObject();
 }

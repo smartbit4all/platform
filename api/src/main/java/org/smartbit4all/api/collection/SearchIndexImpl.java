@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -402,6 +404,31 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       objectMapping.merge(updateResult, Collections.emptyList());
     }
   }
+
+  @Override
+  public long delete(Collection<URI> toDelete) {
+    if (ObjectUtils.isEmpty(toDelete)) {
+      return 0L;
+    }
+
+    final Set<URI> urisToDelete = toDelete.stream()
+        .filter(Objects::nonNull)
+        .collect(toSet());
+    if (!isUseDatabase() && !crudApi.isExecutionApiExists(getDefinition().getDefinition())) {
+      return 0L;
+    }
+
+    final SearchEntityTableDataResult data = createUpdateResult();
+    objectMapping.readObjectNodes(
+        objectApi.loadBatch(new ArrayList<>(urisToDelete)),
+        data,
+        Collections.emptyMap(),
+        true);
+    objectMapping.delete(data, Collections.emptyList());
+
+    return 0L;
+  }
+
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
       Stream<URI> objectUris,
