@@ -635,6 +635,27 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     }
   }
 
+  void delete(SearchEntityTableDataResult dataToDelete, List<Object> masterRefValues) {
+    PropertyObject masterReferenceProperty = null;
+    if (masterReferenceName != null) {
+      masterReferenceProperty =
+          dataToDelete.searchEntityDefinition.definition.getPropertyObject(masterReferenceName);
+    }
+    if (masterReferenceProperty != null) {
+      detailDelete(dataToDelete, masterReferenceProperty, masterRefValues);
+    } else {
+      PropertyObject primaryKeyProperty = null;
+      if (primaryKey != null) {
+        primaryKeyProperty = dataToDelete.searchEntityDefinition.definition
+            .getPropertyObject(primaryKey);
+      }
+      if (primaryKeyProperty != null) {
+        deleteDetails(dataToDelete);
+        Crud.delete(dataToDelete.result);
+      }
+    }
+  }
+
   /**
    * A recursive function that insert or update the given row in the database depending on if it is
    * exist or not.
@@ -691,6 +712,15 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     }
   }
 
+  private void detailDelete(SearchEntityTableDataResult deleteData,
+      PropertyObject masterReferenceProperty, List<Object> masterRefValues) {
+    TableData<EntityDefinition> details = Crud.read(deleteData.searchEntityDefinition.definition)
+        .selectAllProperties()
+        .where(masterReferenceProperty.in(masterRefValues))
+        .listData();
+    Crud.delete(details);
+  }
+
   private void detailMerge(SearchEntityTableDataResult updateResult,
       PropertyObject masterReferenceProperty, List<Object> masterRefValues) {
     PropertyObject valueProperty =
@@ -738,6 +768,26 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   final void insertAll(SearchEntityTableDataResult updateResult) {
     Crud.create(updateResult.result);
     mergeDetails(updateResult);
+  }
+
+  private void deleteDetails(SearchEntityTableDataResult dataToDelete) {
+    for (Entry<String, SearchIndexMapping> detailMapping : mappingsByPropertyName.entrySet()) {
+      if (detailMapping.getValue() instanceof SearchIndexMappingObject) {
+        SearchIndexMappingObject mappingObject =
+            (SearchIndexMappingObject) detailMapping.getValue();
+        Property<?> masterRefTargetProperty =
+            mappingObject.entityDefinition.masterRef.joins().get(0).getTargetProperty();
+        DataColumn<?> masterRefTargetColumn =
+            dataToDelete.result.getColumn(masterRefTargetProperty);
+        List<Object> masterRefValues =
+            dataToDelete.result.values(masterRefTargetColumn).stream()
+                .distinct()
+                .collect(toList());
+        mappingObject.delete(
+            dataToDelete.detailResults.get(detailMapping.getKey()),
+            masterRefValues);
+      }
+    }
   }
 
   private final void mergeDetails(SearchEntityTableDataResult updateResult) {
