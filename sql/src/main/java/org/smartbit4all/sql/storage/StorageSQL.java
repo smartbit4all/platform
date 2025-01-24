@@ -1,8 +1,5 @@
 package org.smartbit4all.sql.storage;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -68,6 +65,9 @@ import org.springframework.beans.factory.annotation.Value;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -626,7 +626,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           Map<String, Object> objectMap = definition.deserializeAsMap(
               readObjectContentFromRow(versionRow));
           setObjectUriVersionByOptions(uri, definition, objectMap, version, options);
-          storageObject = instanceOf(storage, definition, objectMap, objectVersion);
+          storageObject =
+              instanceOf(storage, definition, objectMap, objectVersion, entryId.toString());
 
           // Handle aspects
           BinaryData aspectBinaryData = readAspectContentFromRow(versionRow);
@@ -645,7 +646,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             }
           }
         } else {
-          storageObject = instanceOf(storage, definition, uri, storageObjectData);
+          storageObject =
+              instanceOf(storage, definition, uri, storageObjectData, entryId.toString());
           setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
         }
         // handle relations

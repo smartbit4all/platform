@@ -590,7 +590,7 @@ public class StorageFS extends ObjectStorageImpl {
     StorageObjectData storageObjectData = readObjectData(storageObjectDataFile);
     @SuppressWarnings("unchecked")
     ObjectDefinition<T> definition =
-        (ObjectDefinition<T>) getObjectDefinition(uri, storageObjectData, clazz);
+        getObjectDefinition(uri, storageObjectData, clazz);
     StorageObject<T> storageObject;
     ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
     Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);
@@ -608,12 +608,12 @@ public class StorageFS extends ObjectStorageImpl {
           versionDataSerialNo, options);
       storageObject =
           instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
-              objectVersion);
+              objectVersion, null);
       storageObject.setAspects(objectVersion.getAspects());
       // }
 
     } else {
-      storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
+      storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData, null);
     }
 
     if (objectVersion != null && objectVersion.getSerialNoRelation() != null) {
@@ -768,7 +768,7 @@ public class StorageFS extends ObjectStorageImpl {
         }
         @SuppressWarnings("unchecked")
         ObjectDefinition<T> definition =
-            (ObjectDefinition<T>) getObjectDefinition(uri, dataObject, clazz);
+            getObjectDefinition(uri, dataObject, clazz);
 
         Map<String, Object> obj = null;
         if (dataParts.get(1).length() != 0) {
@@ -784,7 +784,7 @@ public class StorageFS extends ObjectStorageImpl {
           }
         }
         return instanceOf(storage, definition, obj,
-            dataObject == null ? null : dataObject.getCurrentVersion());
+            dataObject == null ? null : dataObject.getCurrentVersion(), null);
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", storageObjectDataFile);

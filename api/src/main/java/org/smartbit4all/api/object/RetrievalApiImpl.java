@@ -1,7 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +31,8 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The abstract implementation of the retrieval. It will use contribution apis to access objects.
@@ -252,6 +252,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .aspects(storageObject.getAspects())
         .versionNr(version == null ? null : version.getSerialNoData())
         .lastModified(storageObject.getLastModified())
+        .physicalObjectId(storageObject.getPhysicalObjectId())
         .createdAt(version == null ? null : version.getCreatedAt());
   }
 
