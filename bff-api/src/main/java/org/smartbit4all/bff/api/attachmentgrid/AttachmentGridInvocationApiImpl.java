@@ -127,8 +127,6 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
 
-    List<UploadedFile> uploadedFiles =
-        actionRequestHelper.getAsList(UiActions.INPUT2, UploadedFile.class);
 
     List<String> existingFileNames;
     if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())) {
@@ -137,18 +135,34 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     } else {
       existingFileNames = new ArrayList<>();
     }
+    List<BinaryContentData> newAttachments = new ArrayList<>();
+    Boolean isMultipleInput = descriptor.getIsMultipleInput();
+    if (Boolean.TRUE.equals(isMultipleInput)) {
 
-    List<BinaryContentData> newAttachments = uploadedFiles.stream().map(uploadedFile -> {
+      List<UploadedFile> uploadedFiles =
+          actionRequestHelper.getAsList(UiActions.INPUT2, UploadedFile.class);
+      newAttachments.addAll(uploadedFiles.stream().map(uploadedFile -> {
+        BinaryContentData bCData = generateUniqueFilename(
+            uploadedFile.getFilename(), existingFileNames)
+                .dataUri(objectApi.saveAsNew(
+                    descriptor.getLogicalSchema(), uploadedFile.getData().asObject()));
+        existingFileNames.add(bCData.getFileName());
+        return bCData;
+
+      }).collect(Collectors.toList()));
+    } else {
+      UploadedFile uploadedFile =
+          actionRequestHelper.get(UiActions.INPUT2, UploadedFile.class);
       BinaryContentData bCData = generateUniqueFilename(
           uploadedFile.getFilename(), existingFileNames)
               .dataUri(objectApi.saveAsNew(
                   descriptor.getLogicalSchema(), uploadedFile.getData().asObject()));
       existingFileNames.add(bCData.getFileName());
-      return bCData;
+      newAttachments.add(bCData);
+    }
 
-    }).collect(Collectors.toList());
-
-    if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())) {
+    if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())
+        && Boolean.TRUE.equals(isMultipleInput)) {
       List<BinaryContentData> existingAttachments = descriptor.getAttachmentList();
       existingAttachments.addAll(newAttachments);
       descriptor.setAttachmentList(existingAttachments);
@@ -331,7 +345,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   public UiAction getAddAttachmentAction(AttachmentGridDescriptor descriptor) {
     return new UiAction()
-        .input2Type(UiActionInputType.MULTIPLE_FILES)
+        .input2Type(
+            Boolean.TRUE.equals(descriptor.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
+                : UiActionInputType.FILE)
         .code(ATTACHMENT_UPLOAD_HANDLER)
         .model(true)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)

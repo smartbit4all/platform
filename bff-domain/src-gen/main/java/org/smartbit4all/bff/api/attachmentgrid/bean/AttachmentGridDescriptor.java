@@ -48,7 +48,8 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.IS_EDITABLE,
   AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
   AttachmentGridDescriptor.PAGE_SIZE,
-  AttachmentGridDescriptor.CLOSE_ON_SAVE
+  AttachmentGridDescriptor.CLOSE_ON_SAVE,
+  AttachmentGridDescriptor.IS_MULTIPLE_INPUT
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
@@ -87,6 +88,9 @@ public class AttachmentGridDescriptor {
 
   public static final String CLOSE_ON_SAVE = "closeOnSave";
   private Boolean closeOnSave = false;
+
+  public static final String IS_MULTIPLE_INPUT = "isMultipleInput";
+  private Boolean isMultipleInput = true;
 
   public AttachmentGridDescriptor() {
   }
@@ -426,6 +430,33 @@ public class AttachmentGridDescriptor {
     this.closeOnSave = closeOnSave;
   }
 
+  public AttachmentGridDescriptor isMultipleInput(Boolean isMultipleInput) {
+    
+    this.isMultipleInput = isMultipleInput;
+    return this;
+  }
+
+  /**
+   * Get isMultipleInput
+   * @return isMultipleInput
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IS_MULTIPLE_INPUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsMultipleInput() {
+    return isMultipleInput;
+  }
+
+
+  @JsonProperty(IS_MULTIPLE_INPUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsMultipleInput(Boolean isMultipleInput) {
+    this.isMultipleInput = isMultipleInput;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -446,12 +477,13 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.isEditable, attachmentGridDescriptor.isEditable) &&
         Objects.equals(this.isPaginatorEnabled, attachmentGridDescriptor.isPaginatorEnabled) &&
         Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
-        Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave);
+        Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave) &&
+        Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput);
   }
 
   @Override
@@ -470,6 +502,7 @@ public class AttachmentGridDescriptor {
     sb.append("    isPaginatorEnabled: ").append(toIndentedString(isPaginatorEnabled)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
+    sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
     sb.append("}");
     return sb.toString();
   }
