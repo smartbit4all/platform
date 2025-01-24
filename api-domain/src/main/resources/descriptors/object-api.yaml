@@ -187,6 +187,12 @@ components:
           description: |
             The last modification time in long. It is filled by the retrieve so if we create a new node then it is 
             -1 by default.
+        physicalObjectId:
+          type: string
+          description: |
+            The physical ID of the given object if any. It is the identifier of the object itself as the
+            head of all the versions the object has. So if we have multiple version from the object then
+            this id is still the same.
         state:
           $ref: '#/components/schemas/ObjectNodeState'
         objectAsMap:

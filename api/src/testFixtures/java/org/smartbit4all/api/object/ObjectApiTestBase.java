@@ -1,11 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -71,6 +65,13 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ObjectApiTestBase {
 
@@ -107,6 +108,12 @@ public class ObjectApiTestBase {
 
   @Autowired
   private StorageApi storageApi;
+
+  /**
+   * A flag to check if every {@link ObjectNode} has different physical object id but the same
+   * object has the same.
+   */
+  protected boolean checkPhysicalId = false;
 
   @Test
   void testPredefinedDefinition() throws IOException {
@@ -879,9 +886,12 @@ public class ObjectApiTestBase {
 
     URI uriLatest = objectApi.getLatestUri(uri2);
 
-    nodes = objectApi.loadBatch(Arrays.asList(uri0, uri1, uri2, uriLatest, uri1, uri0, uriLatest));
+    URI uriOther = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("RootOther"));
+
+    nodes = objectApi
+        .loadBatch(Arrays.asList(uri0, uri1, uri2, uriLatest, uri1, uri0, uriLatest, uriOther));
     assertNotNull(nodes);
-    assertEquals(7, nodes.size());
+    assertEquals(8, nodes.size());
     assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
     assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
     assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
@@ -889,8 +899,15 @@ public class ObjectApiTestBase {
     assertEquals("Root1", nodes.get(4).getValueAsString(SampleCategory.NAME));
     assertEquals("Root0", nodes.get(5).getValueAsString(SampleCategory.NAME));
     assertEquals("Root2", nodes.get(6).getValueAsString(SampleCategory.NAME));
+    assertEquals("RootOther", nodes.get(7).getValueAsString(SampleCategory.NAME));
 
 
+    if (checkPhysicalId) {
+      // Assert that all the different nodes has different physical object id. The 8 loaded version
+      // blongs to 2 different object. So we must have two physical object id.
+      assertThat(nodes.stream().map(n -> n.getPhysicalObjectId()).collect(toSet()))
+          .hasSize(2);
+    }
   }
 
 }
