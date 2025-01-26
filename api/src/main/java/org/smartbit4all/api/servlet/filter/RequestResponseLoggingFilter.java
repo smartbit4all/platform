@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,10 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
+/**
+ * Logging out incoming requests and outgoing responses
+ * 
+ */
 public class RequestResponseLoggingFilter implements Filter {
 
   private static final Logger LOGGER =
@@ -32,6 +38,9 @@ public class RequestResponseLoggingFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
+    long startTime = System.currentTimeMillis();
+    String requestId = UUID.randomUUID().toString();
+
     HttpServletResponse httpResponse = (HttpServletResponse) response;
     CustomHttpResponseWrapper responseWrapper = new CustomHttpResponseWrapper(httpResponse);
 
@@ -39,17 +48,91 @@ public class RequestResponseLoggingFilter implements Filter {
     CustomHttpServletRequestWrapper requestWrapper =
         new CustomHttpServletRequestWrapper(httpRequest);
 
-    LOGGER.info("Receive Http request: [path: {}, body: {}]", httpRequest.getRequestURI(),
-        requestWrapper.getRequestBody());
+    logRequest(httpRequest, requestWrapper, requestId);
 
     chain.doFilter(requestWrapper, responseWrapper);
 
-    byte[] responseData = responseWrapper.getResponseData();
-    String responseBody = new String(responseData, httpResponse.getCharacterEncoding());
-    LOGGER.info("Response for {} is: [status: {}, body: {}]", httpRequest.getRequestURI(),
-        httpResponse.getStatus(), responseBody);
+    logResponse(requestWrapper, httpResponse, responseWrapper, requestId, startTime);
+  }
 
-    response.getOutputStream().write(responseData);
+  private void logRequest(HttpServletRequest httpRequest,
+      CustomHttpServletRequestWrapper requestWrapper, String requestId) throws IOException {
+    StringBuilder logBuilder = new StringBuilder();
+
+    // Log method and URI
+    logBuilder.append("Incoming HTTP Request - ").append(requestId).append("\n");
+    logBuilder.append("Method: ").append(httpRequest.getMethod()).append(", ");
+    logBuilder.append("URI: ").append(getURL(httpRequest)).append(", ");
+    logBuilder.append("Headers: [");
+    // Log headers
+    Enumeration<String> headerNames = httpRequest.getHeaderNames();
+    while (headerNames.hasMoreElements()) {
+      String headerName = headerNames.nextElement();
+      logBuilder.append(headerName).append(": ")
+          .append(httpRequest.getHeader(headerName)).append(" ");
+    }
+    logBuilder.append("]");
+
+    // Log body
+    logBuilder.append("Body:\n");
+    String body = requestWrapper.getRequestBody();
+    logBuilder.append(body);
+
+    LOGGER.info(logBuilder.toString());
+  }
+
+  private void logResponse(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+      CustomHttpResponseWrapper responseWrapper, String requestId,
+      long startTime) throws IOException {
+    StringBuilder logBuilder = new StringBuilder();
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
+    // Log method and URI
+    logBuilder.append("Outgoing HTTP Response - ").append(requestId).append("\n");
+    logBuilder.append("URI: ").append(getURL(httpRequest)).append(", ");
+    logBuilder.append("Status: ").append(httpResponse.getStatus()).append(", ");
+    logBuilder.append("Execution time (ms): ").append(duration).append(", ");
+
+    // Log body
+    logBuilder.append("Body:\n");
+    byte[] responseData = responseWrapper.getResponseData();
+    String body = new String(responseData, httpResponse.getCharacterEncoding());
+    logBuilder.append(body);
+
+    LOGGER.info(logBuilder.toString());
+    httpResponse.getOutputStream().write(responseData);
+  }
+
+
+  public static String getURL(HttpServletRequest req) {
+
+    String scheme = req.getScheme(); // http
+    String serverName = req.getServerName(); // hostname.com
+    int serverPort = req.getServerPort(); // 80
+    String contextPath = req.getContextPath(); // /mywebapp
+    String servletPath = req.getServletPath(); // /servlet/MyServlet
+    String pathInfo = req.getPathInfo(); // /a/b;c=123
+    String queryString = req.getQueryString(); // d=789
+
+    // Reconstruct original requesting URL
+    StringBuilder url = new StringBuilder();
+    url.append(scheme).append("://").append(serverName);
+
+    if (serverPort != 80 && serverPort != 443) {
+      url.append(":").append(serverPort);
+    }
+
+    url.append(contextPath).append(servletPath);
+
+    // if (pathInfo != null) {
+    // url.append(pathInfo);
+    // }
+    // if (queryString != null) {
+    // url.append("?").append(queryString);
+    // }
+    return url.toString();
   }
 
   /**
