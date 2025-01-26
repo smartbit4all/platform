@@ -25,7 +25,7 @@ import org.smartbit4all.api.org.bean.User;
 public interface OrgApi {
 
   public static final String SYSTEM_USER = "system";
-  public static final String SYSTEM_USERNAME = "system";
+  public static final String SYSTEM_USERNAME = "System";
 
   /**
    * Get all information of a user.
