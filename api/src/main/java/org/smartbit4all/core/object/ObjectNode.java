@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,6 +28,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -1054,6 +1054,15 @@ public class ObjectNode {
       return data.getAspects();
     }
 
+  }
+
+  /**
+   * @return The physical ID of the given object if any. It is the identifier of the object itself
+   *         as the head of all the versions the object has. So if we have multiple version from the
+   *         object then this id is still the same.
+   */
+  public String getPhysicalObjectId() {
+    return data.getPhysicalObjectId();
   }
 
 }

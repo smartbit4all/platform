@@ -52,6 +52,13 @@ public final class StorageObject<T> {
   private UUID uuid;
 
   /**
+   * The physical ID of the given object if any. It is the identifier of the object itself as the
+   * head of all the versions the object has. So if we have multiple version from the object then
+   * this id is still the same.
+   */
+  private String physicalObjectId;
+
+  /**
    * The {@link ObjectDefinition} of the
    */
   private final ObjectDefinition<T> definition;
@@ -324,6 +331,7 @@ public final class StorageObject<T> {
     result.setUuid(uuid);
     result.setVersion(version);
     result.setLastModified(lastModified);
+    result.setPhysicalObjectId(physicalObjectId);
     // Deep copy of the relations
     result.collections =
         collections != null
@@ -653,6 +661,14 @@ public final class StorageObject<T> {
 
   public final void setAspects(Map<String, ObjectAspect> aspects) {
     this.aspects = aspects;
+  }
+
+  public String getPhysicalObjectId() {
+    return physicalObjectId;
+  }
+
+  public void setPhysicalObjectId(String physicalObjectId) {
+    this.physicalObjectId = physicalObjectId;
   }
 
   @Override

@@ -113,8 +113,7 @@ public class SQLDeleteExecution<E extends EntityDefinition> {
         exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
       }
 
-      jdbcTemplate.update(psc);
-      count++;
+      count += jdbcTemplate.update(psc);
 
     }
 

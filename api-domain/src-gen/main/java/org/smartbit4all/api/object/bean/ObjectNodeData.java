@@ -45,6 +45,7 @@ import javax.validation.Valid;
   ObjectNodeData.VERSION_NR,
   ObjectNodeData.CREATED_AT,
   ObjectNodeData.LAST_MODIFIED,
+  ObjectNodeData.PHYSICAL_OBJECT_ID,
   ObjectNodeData.STATE,
   ObjectNodeData.OBJECT_AS_MAP,
   ObjectNodeData.ASPECTS,
@@ -73,6 +74,9 @@ public class ObjectNodeData {
 
   public static final String LAST_MODIFIED = "lastModified";
   private Long lastModified = -1l;
+
+  public static final String PHYSICAL_OBJECT_ID = "physicalObjectId";
+  private String physicalObjectId;
 
   public static final String STATE = "state";
   private ObjectNodeState state = ObjectNodeState.NOP;
@@ -261,6 +265,33 @@ public class ObjectNodeData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastModified(Long lastModified) {
     this.lastModified = lastModified;
+  }
+
+
+  public ObjectNodeData physicalObjectId(String physicalObjectId) {
+    
+    this.physicalObjectId = physicalObjectId;
+    return this;
+  }
+
+   /**
+   * The physical ID of the given object if any. It is the identifier of the object itself as the head of all the versions the object has. So if we have multiple version from the object then this id is still the same. 
+   * @return physicalObjectId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The physical ID of the given object if any. It is the identifier of the object itself as the head of all the versions the object has. So if we have multiple version from the object then this id is still the same. ")
+  @JsonProperty(PHYSICAL_OBJECT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPhysicalObjectId() {
+    return physicalObjectId;
+  }
+
+
+  @JsonProperty(PHYSICAL_OBJECT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPhysicalObjectId(String physicalObjectId) {
+    this.physicalObjectId = physicalObjectId;
   }
 
 
@@ -507,6 +538,7 @@ public class ObjectNodeData {
         Objects.equals(this.versionNr, objectNodeData.versionNr) &&
         Objects.equals(this.createdAt, objectNodeData.createdAt) &&
         Objects.equals(this.lastModified, objectNodeData.lastModified) &&
+        Objects.equals(this.physicalObjectId, objectNodeData.physicalObjectId) &&
         Objects.equals(this.state, objectNodeData.state) &&
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
         Objects.equals(this.aspects, objectNodeData.aspects) &&
@@ -518,7 +550,7 @@ public class ObjectNodeData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, createdAt, lastModified, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, createdAt, lastModified, physicalObjectId, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -531,6 +563,7 @@ public class ObjectNodeData {
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    lastModified: ").append(toIndentedString(lastModified)).append("\n");
+    sb.append("    physicalObjectId: ").append(toIndentedString(physicalObjectId)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("    aspects: ").append(toIndentedString(aspects)).append("\n");

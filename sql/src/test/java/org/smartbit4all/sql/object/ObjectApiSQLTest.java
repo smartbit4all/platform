@@ -10,4 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 })
 public class ObjectApiSQLTest extends ObjectApiTestBase {
 
+  public ObjectApiSQLTest() {
+    super();
+    checkPhysicalId = true;
+  }
+
 }

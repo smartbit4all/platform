@@ -369,13 +369,15 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @param storage
    * @param objectDefinition
    * @param object
+   * @param physicalId The identifier of the physical storage like id of the database or any other.
    * @return
    */
   protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
-      Map<String, Object> object, ObjectVersion objectVersion) {
+      Map<String, Object> object, ObjectVersion objectVersion, String physicalId) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setObjectAsMapInner(object);
     storageObject.setVersion(objectVersion);
+    storageObject.setPhysicalObjectId(physicalId);
     return storageObject;
   }
 
@@ -388,10 +390,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @param objectDefinition
    * @param objectUri
    * @param data
+   * @param physicalId The identifier of the physical storage like id of the database or any other.
    * @return
    */
   protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
-      URI objectUri, StorageObjectData data) {
+      URI objectUri, StorageObjectData data, String physicalId) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);
     try {
@@ -400,6 +403,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       // do nothing
     }
     storageObject.setVersion(data.getCurrentVersion());
+    storageObject.setPhysicalObjectId(physicalId);
     return storageObject;
   }
 

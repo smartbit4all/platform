@@ -123,12 +123,12 @@ public class ObjectValidationItem {
   }
 
    /**
-   * Get propertyPath
+   * The validation can refer to the property of the object, like the page model. If the object is not a plat object (contains some inline objects) then this path shows the fully qualified path of the property that cause the problem. 
    * @return propertyPath
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "The validation can refer to the property of the object, like the page model. If the object is not a plat object (contains some inline objects) then this path shows the fully qualified path of the property that cause the problem. ")
   @JsonProperty(PROPERTY_PATH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
