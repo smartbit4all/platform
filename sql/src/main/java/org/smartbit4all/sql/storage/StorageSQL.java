@@ -58,6 +58,7 @@ import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
 import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,11 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired
   public IdentifierService identifierService;
+
+  @Autowired(required = false)
+  List<StorageSQLExtensionApi> extensions;
+
+  private final Map<String, StorageSQLExtensionApi> extensionsCache = new HashMap<>();
 
   @Value("${storageSql.maximumCacheSize:81920}")
   private long maximumCacheSize;
@@ -130,6 +136,19 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           // TODO removalListener
           .build();
     }
+    if (extensions != null) {
+      for (StorageSQLExtensionApi e : extensions) {
+        if (e.getManagedObjects() != null) {
+          for (ManagedObject mo : e.getManagedObjects()) {
+            extensionsCache.put(extensionId(mo.schema, mo.qualifiedName), e);
+          }
+        }
+      }
+    }
+  }
+
+  private static final String extensionId(String schema, String qualifiedName) {
+    return schema + StringConstant.COLON + qualifiedName;
   }
 
   @Override
@@ -187,11 +206,18 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    *
    * @param object
    * @param relationBinaryData
-   * @return
+   * @return The version number of the newly saved object.
    */
   private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
+
+    StorageSQLExtensionApi extensionApi =
+        getExtensionApi(object.getStorage().getScheme(), object.definition().getQualifiedName());
+    if (extensionApi != null) {
+      return extensionApi.saveObject(object, relationBinaryData);
+    }
+
     DataRow objectRow;
     try {
       String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
@@ -301,7 +327,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
-  private final String getUriString(URI uri) {
+  public static final String getUriString(URI uri) {
     return uri == null ? null : uri.toString();
   }
 
@@ -536,7 +562,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
-  private class UriInfo {
+  public class UriInfo {
     final URI uri;
     final String baseUri;
     final Long originalVersion;
@@ -571,6 +597,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     List<UriInfo> uriInfos = uris.stream()
         .map(UriInfo::new)
         .collect(Collectors.toList());
+
+    if (clazz != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storage.getScheme(), clazz.getName());
+      if (extensionApi != null) {
+        return extensionApi.loadBatch(storage, uriInfos, clazz, options);
+      }
+    }
 
     // batch query object entries
     Map<String, DataRow> objectEntryRows = queryObjectEntries(uriInfos);
@@ -1130,47 +1163,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         name);
   }
 
-  // @Override
-  // public StoredSequence getSequence(String schema, String name) {
-  // return new StoredSequence() {
-  //
-  // @Override
-  // public List<Long> next(int count) {
-  // List<Long> result = new ArrayList<>();
-  // for (int i = 0; i < count; i++) {
-  // NextIdentifier next = identifierService.next();
-  // next.setInput(name);
-  // try {
-  // next.execute();
-  // } catch (Exception e) {
-  // throw new IllegalStateException(
-  // "Unable to retreive new identifier from database " + name + " sequence",
-  // e);
-  // }
-  // result.add(next.output());
-  // }
-  // return result;
-  // }
-  //
-  // @Override
-  // public Long next() {
-  // return next(1).get(0);
-  // }
-  //
-  // @Override
-  // public Long current() {
-  // CurrentIdentifier current = identifierService.current();
-  // current.setInput(name);
-  // try {
-  // current.execute();
-  // } catch (Exception e) {
-  // throw new IllegalStateException(
-  // "Unable to retreive the current value from database " + name + " sequence",
-  // e);
-  // }
-  // return current.output();
-  // }
-  // };
-  // }
+  private final StorageSQLExtensionApi getExtensionApi(String shema, String qualifiedName) {
+    if (extensions != null) {
+      return extensionsCache.get(extensionId(shema, qualifiedName));
+    }
+    return null;
+  }
+
 
 }

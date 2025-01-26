@@ -14,9 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.sql.storage;
 
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.OffsetDateTime;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
@@ -54,21 +52,24 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
 
   @OwnProperty(name = URI, columnName = URI_COL)
   @Id
-  Property<URI> uri();
+  Property<String> uri();
 
   @OwnProperty(name = UUID, columnName = UUID_COL)
-  Property<UUID> uuid();
+  Property<String> uuid();
+
+  @OwnProperty(name = BASEURL, columnName = BASEURL_COL)
+  Property<String> baseUrl();
 
   @OwnProperty(name = STARTUPTIME, columnName = STARTUPTIME_COL)
-  Property<LocalDateTime> startupTime();
+  Property<OffsetDateTime> startupTime();
 
   @OwnProperty(name = STOPTIME, columnName = STOPTIME_COL)
-  Property<LocalDateTime> stopTime();
+  Property<OffsetDateTime> stopTime();
 
   @OwnProperty(name = TIMEOFFSET, columnName = TIMEOFFSET_COL)
-  Property<LocalDateTime> timeOffset();
+  Property<Long> timeOffset();
 
   @OwnProperty(name = LASTTOUCHTIME, columnName = LASTTOUCHTIME_COL)
-  Property<LocalDateTime> lastTouchTime();
+  Property<OffsetDateTime> lastTouchTime();
 
 }
