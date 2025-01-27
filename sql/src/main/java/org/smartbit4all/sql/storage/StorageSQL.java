@@ -13,8 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,6 +65,8 @@ import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -89,6 +93,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired
   ObjectVersionDef objectVersionDef;
+
+  @Autowired
+  ObjectEntryLockDef objectEntryLockDef;
 
   @Autowired
   public IdentifierService identifierService;
@@ -157,36 +164,84 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return super.physicalLockSupplier(objectUri);
     }
 
-    // return () -> {
-    // StorageTransaction transaction =
-    // transactionManager != null ? transactionManager.getCurrentTransaction() : null;
-    // FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
-    // transaction != null ? transaction.getData().getUri().toString() : null);
-    // try {
-    // FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
-    // } catch (Exception e) {
-    // throw new IllegalStateException("Unable to lock object " + objectUri, e);
-    // }
-    // return new StorageObjectPhysicalLock(objectUri);
-    // };
-    return null;
+    return () -> {
+      try {
+        return lockObject(getUriWithoutVersion(objectUri), -1);
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to lock object " + objectUri, e);
+      }
+    };
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  private final StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+    long start = System.currentTimeMillis();
+    String objectUriString = objectUri.toString();
+    UUID currentRuntime = runtimeApi().self().getUuid();
+    while (true) {
+      try {
+        DataRow objectLockRow;
+        try {
+          objectLockRow = Crud.read(objectEntryLockDef)
+              .select(objectEntryLockDef.allProperties())
+              .where(objectEntryLockDef.objectUri().eq(objectUriString)).lock()
+              .onlyOne()
+              .orElse(null);
+        } catch (Exception e) {
+          objectLockRow = null;
+        }
+
+        if (objectLockRow != null) {
+          // If it is not null and this runtime is the owneer then we can return. Else we must wait.
+          UUID runtimeUUID =
+              UUID.fromString(objectLockRow.get(objectEntryLockDef.applicationRuntime()));
+          if (Objects.equals(runtimeUUID, currentRuntime)) {
+            return new StorageObjectPhysicalLock(objectUri);
+          }
+        } else {
+          Crud.create(TableDatas
+              .builder(objectEntryLockDef, objectEntryLockDef.objectUri(),
+                  objectEntryLockDef.applicationRuntime(), objectEntryLockDef.createdAt())
+              .addRow()
+              .set(objectEntryLockDef.objectUri(),
+                  objectUriString)
+              .set(objectEntryLockDef.applicationRuntime(), currentRuntime.toString())
+              .set(objectEntryLockDef.createdAt(), OffsetDateTime.now())
+              .build());
+          return new StorageObjectPhysicalLock(objectUri);
+        }
+
+      } catch (Exception e) {
+        long currentTimeMillis = System.currentTimeMillis();
+        if (log.isTraceEnabled()) {
+          log.trace("Unable to lock " + objectUri, e);
+        }
+        if (!(waitUntil == -1 || (currentTimeMillis - start) < waitUntil)) {
+          throw new IllegalStateException("Unable to lock " + objectUri, e);
+        }
+      }
+    }
   }
 
   @Override
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    // if (runtimeApi() == null || runtimeApi().self() == null) {
-    // return super.physicalLockReleaser();
-    // }
-    // return l -> {
-    // if (l != null) {
-    // try {
-    // FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
-    // } catch (Exception e) {
-    // throw new IllegalStateException("Unable to lock object " + l.getObjectUri(), e);
-    // }
-    // }
-    // };
-    return null;
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return super.physicalLockReleaser();
+    }
+    return l -> {
+      if (l != null) {
+        try {
+          Crud.delete(TableDatas
+              .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
+              .addRow()
+              .set(objectEntryLockDef.objectUri(),
+                  getUriString(getUriWithoutVersion(l.getObjectUri())))
+              .build());
+        } catch (Exception e) {
+          throw new IllegalStateException("Unable to unlock object " + l.getObjectUri(), e);
+        }
+      }
+    };
   }
 
   /**

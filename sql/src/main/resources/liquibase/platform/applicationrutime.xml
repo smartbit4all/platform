@@ -1,0 +1,38 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-applicationruntime-table" author="yourname">
+        <createTable tableName="APPLICATIONRUNTIME">
+            <column name="URI" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)"/>
+            <column name="BASEURL" type="VARCHAR(500)"/>
+            <column name="SERVER_PORT" type="NUMBER(18)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTUPTIME" type="NUMBER(38)"/>
+            <column name="STOPTIME" type="NUMBER(38)"/>
+            <column name="TIMEOFFSET" type="NUMBER(38)"/>
+            <column name="LASTTOUCHTIME" type="NUMBER(38)"/>
+            <column name="OBJECT_CONTENT" type="BLOB"/>
+        </createTable>
+
+        <!-- Add primary key to the URI column -->
+        <addPrimaryKey columnNames="URI" tableName="APPLICATIONRUNTIME"/>
+
+        <!-- Create unique index for multiple columns -->
+        <createIndex indexName="APPLICATIONRUNTIME_IDX_1" tableName="APPLICATIONRUNTIME" unique="true">
+            <column name="URI"/>
+            <column name="UUID"/>
+            <column name="BASEURL"/>
+            <column name="SERVER_PORT"/>
+            <column name="STARTUPTIME"/>
+            <column name="STOPTIME"/>
+            <column name="TIMEOFFSET"/>
+            <column name="LASTTOUCHTIME"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

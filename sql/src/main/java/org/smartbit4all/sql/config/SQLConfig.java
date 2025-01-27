@@ -20,6 +20,8 @@ import java.util.Map;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.sql.service.query.SQLCrudExecutionApi;
+import org.smartbit4all.sql.storage.ApplicationRuntimeSQLExtApi;
+import org.smartbit4all.sql.storage.StorageSQLExtensionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,6 +75,11 @@ public class SQLConfig implements InitializingBean {
     SQLCrudExecutionApi api = new SQLCrudExecutionApi(jdbcTemplate, objectApi);
     api.setSqlDbParameter(sqldbParameter);
     return api;
+  }
+
+  @Bean
+  StorageSQLExtensionApi applicationRuntimeSQLExtApi() {
+    return new ApplicationRuntimeSQLExtApi();
   }
 
 }

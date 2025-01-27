@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.sql.storage;
 
-import java.time.OffsetDateTime;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
@@ -38,6 +38,9 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   String BASEURL = "BASEURL";
   String BASEURL_COL = "BASEURL";
 
+  String SERVERPORT = "SERVER_PORT";
+  String SERVERPORT_COL = "SERVER_PORT";
+
   String STARTUPTIME = "STARTUPTIME";
   String STARTUPTIME_COL = "STARTUPTIME";
 
@@ -50,6 +53,9 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   String LASTTOUCHTIME = "LASTTOUCHTIME";
   String LASTTOUCHTIME_COL = "LASTTOUCHTIME";
 
+  String OBJECT_CONTENT = "objectcontent";
+  String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
+
   @OwnProperty(name = URI, columnName = URI_COL)
   @Id
   Property<String> uri();
@@ -60,16 +66,23 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   @OwnProperty(name = BASEURL, columnName = BASEURL_COL)
   Property<String> baseUrl();
 
+  @OwnProperty(name = SERVERPORT, columnName = SERVERPORT_COL)
+  Property<Long> serverPort();
+
   @OwnProperty(name = STARTUPTIME, columnName = STARTUPTIME_COL)
-  Property<OffsetDateTime> startupTime();
+  Property<Long> startupTime();
 
   @OwnProperty(name = STOPTIME, columnName = STOPTIME_COL)
-  Property<OffsetDateTime> stopTime();
+  Property<Long> stopTime();
 
   @OwnProperty(name = TIMEOFFSET, columnName = TIMEOFFSET_COL)
   Property<Long> timeOffset();
 
   @OwnProperty(name = LASTTOUCHTIME, columnName = LASTTOUCHTIME_COL)
-  Property<OffsetDateTime> lastTouchTime();
+  Property<Long> lastTouchTime();
+
+  @OwnProperty(name = OBJECT_CONTENT, columnName = OBJECT_CONTENT_COL, mandatory = true)
+  Property<BinaryData> objectContent();
+
 
 }
