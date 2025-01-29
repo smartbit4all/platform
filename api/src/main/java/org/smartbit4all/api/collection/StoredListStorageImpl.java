@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -24,6 +26,8 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
+
+  private static final Logger log = LoggerFactory.getLogger(StoredListStorageImpl.class);
 
   private OperationMode operationMode = OperationMode.NORMAL;
 
@@ -47,6 +51,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
       StoredListData data = objectNode.getObject(StoredListData.class);
       return data.getUris();
     } catch (ObjectNotFoundException e) {
+      log.warn("No StoredList found with uri: " + uri, e);
       return Collections.emptyList();
     }
   }
