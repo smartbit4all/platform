@@ -9,8 +9,8 @@ import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
-import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class StoredSequenceStorageImpl implements StoredSequence {
 
@@ -26,13 +26,13 @@ public class StoredSequenceStorageImpl implements StoredSequence {
   }
 
   @Override
-  @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Long next() {
     return next(1).get(0);
   }
 
   @Override
-  @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public List<Long> next(int count) {
     Objects.requireNonNull(uri, "The uri of the sequence is missing.");
     if (count <= 0) {

@@ -551,17 +551,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         newVersionUri,
         object.getObject(),
         object.definition().getClazz());
-    // TODO Add transaction managed post commit!
-    // if (transactionManager != null && transactionManager.isInTransaction()) {
-    // transactionManager.addOnSucceed(object, event);
-    // } else {
-    invokeOnSucceedFunctions(object, event);
-    // }
-  }
-
-  void invokeOnSucceedFunctionsFS(StorageObject<?> object,
-      StorageSaveEvent storageSaveEvent) {
-    invokeOnSucceedFunctions(object, storageSaveEvent);
+    handleStorageSaveEvent(object, event);
   }
 
   @Override

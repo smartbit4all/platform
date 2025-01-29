@@ -2,6 +2,7 @@ package org.smartbit4all.domain.data.storage;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * The abstract basic implementation of the {@link ObjectStorage}.
@@ -41,6 +44,11 @@ import org.springframework.context.ApplicationContextAware;
 public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationContextAware {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
+
+  /**
+   * resource identifier for StorageSaveEvent transaction handler
+   */
+  private static final String STORAGE_SAVE_EVENTS_HANDLER = "STORAGE_SAVE_EVENTS_HANDLER";
 
   /**
    * Regex pattern for only numbers used for versioning. With no starting zeros.
@@ -615,6 +623,64 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
   }
 
+  /**
+   * Invoke the on succeed functions depending on having a transaction or not. If we have an active
+   * transaction then the functions is going to be called at the successful transaction end.
+   *
+   * @param object
+   * @param event
+   */
+  protected void handleStorageSaveEvent(StorageObject<?> object, StorageSaveEvent event) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      saveEvents.get()
+          .computeIfAbsent(object, o -> new ArrayList<>())
+          .add(event);
+      registerSaveEventTransactionHandler();
+    } else {
+      invokeOnSucceedFunctions(object, event);
+    }
+  }
+
+  /**
+   * The StorageSaveEvent list attached to the current transaction.
+   */
+  protected ThreadLocal<Map<StorageObject<?>, List<StorageSaveEvent>>> saveEvents =
+      ThreadLocal.withInitial(() -> new HashMap<>());
+
+  protected void registerSaveEventTransactionHandler() {
+    if (!TransactionSynchronizationManager.hasResource(STORAGE_SAVE_EVENTS_HANDLER)) {
+      TransactionSynchronizationManager
+          .registerSynchronization(new SaveEventTransactionHandler());
+      TransactionSynchronizationManager.bindResource(STORAGE_SAVE_EVENTS_HANDLER, true);
+    }
+  }
+
+  protected final class SaveEventTransactionHandler implements TransactionSynchronization {
+
+    @Override
+    public void afterCompletion(int status) {
+      if (status == TransactionSynchronization.STATUS_COMMITTED) {
+        // after commit, invoke saveEvent handling
+        Map<StorageObject<?>, List<StorageSaveEvent>> events = saveEvents.get();
+        if (events != null) {
+          for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : events.entrySet()) {
+            if (entry.getValue() != null) {
+              for (StorageSaveEvent event : entry.getValue()) {
+                if (event != null) {
+                  invokeOnSucceedFunctions(entry.getKey(), event);
+                }
+              }
+            }
+          }
+        }
+      } else if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      // remove saveEvents regardless of status
+      saveEvents.remove();
+      TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
+    }
+  }
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
@@ -692,5 +758,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return getUriWithoutVersion(uri).getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX);
   }
+
 
 }

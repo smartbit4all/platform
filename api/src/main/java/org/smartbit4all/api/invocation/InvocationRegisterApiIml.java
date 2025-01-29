@@ -62,11 +62,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.CollectionUtils;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
   private static final Logger log = LoggerFactory.getLogger(InvocationRegisterApiIml.class);
+
+  private static final String ASYNC_REQUESTS_HANDLER = "ASYNC_REQUESTS_HANDLER";
+
+  /**
+   * The async invocation list attached to the current transaction.
+   */
+  private ThreadLocal<List<AsyncInvocationRequestEntry>> asyncInvocationRequests =
+      ThreadLocal.withInitial(() -> new ArrayList<>());
 
   /**
    * The URI of the global registry.
@@ -193,10 +203,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   @Value("${InvocationRegisterApi.readScheduledInvocations.maximumPoolSize:10}")
   private int maximumPoolSize = 10;
-  
+
   @Value("${invocationregistry.refresh.fixeddelay:30000}")
   private int refreshFrequency = 30_000;
-  
+
   @Value("{invocationregistry.refresh-async-channels.fixeddelay:60000")
   private String asyncChannelRefreshFrequency = "60000";
 
@@ -536,6 +546,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
 
       Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+      log.debug("saveAndEnqueueInvocationRequest, add invocation request item {} - {}",
+          asyncInvocationChannel.getName(),
+          asyncInvocationChannel.getUri());
       storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
         if (requestUris != null) {
           requestUris.forEach(
@@ -574,10 +587,40 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * @param asyncInvocationRequestEntry
    */
   private final void enqueueAsyncRequest(AsyncInvocationRequestEntry asyncInvocationRequestEntry) {
-    if (transactionManager != null && transactionManager.isInTransaction()) {
-      transactionManager.addOnSucceed(asyncInvocationRequestEntry);
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      asyncInvocationRequests.get().add(asyncInvocationRequestEntry);
+      registerAsyncRequestTransactionHandler();
     } else {
       asyncInvocationRequestEntry.invoke();
+    }
+  }
+
+  private void registerAsyncRequestTransactionHandler() {
+    if (!TransactionSynchronizationManager.hasResource(ASYNC_REQUESTS_HANDLER)) {
+      TransactionSynchronizationManager
+          .registerSynchronization(new AsyncRequestTransactionHandler());
+      TransactionSynchronizationManager.bindResource(ASYNC_REQUESTS_HANDLER, true);
+    }
+  }
+
+  private final class AsyncRequestTransactionHandler
+      implements TransactionSynchronization {
+    @Override
+    public void afterCompletion(int status) {
+      if (status == TransactionSynchronization.STATUS_COMMITTED) {
+        // execute asyncInvocationRequests
+        List<AsyncInvocationRequestEntry> list = asyncInvocationRequests.get();
+        if (list != null) {
+          for (AsyncInvocationRequestEntry asyncInvocation : list) {
+            asyncInvocation.invoke();
+          }
+        }
+      } else if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      // remove asyncInvocationRequests regardless of status
+      asyncInvocationRequests.remove();
+      TransactionSynchronizationManager.unbindResource(ASYNC_REQUESTS_HANDLER);
     }
   }
 
@@ -633,7 +676,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * Adds the given {@link ApiData} to the local in memory register. It can be the startup of this
    * runtime from the {@link #initRegistry()} call or it can be a {@link #refreshRegistry()} when
    * the available apis are read from the storage.
-   * 
+   *
    * @param apiData
    * @return
    */
@@ -787,6 +830,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         // Save the request to remember to execute if this runtime fails.
         // We save the given invocation into a list related to the application runtime.
         Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+        log.debug("saveAndEnqueueAsyncInvocationRequest, add invocation request item {} - {}",
+            channel, channelUri);
         storageAsyncReg.update(channelUri, RuntimeAsyncChannel.class, rac -> {
           return rac
               .addInvocationRequestsItem(objectApi.getLatestUri(asyncInvocationRequest.getUri()));
@@ -900,6 +945,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     if (applicationRuntimeApi != null) {
       // We remove the given request from the list related to the application runtime.
       Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+      log.debug("saveAsyncInvocationResult, remove invocation request item {} - {}",
+          requestEntry.channel.getName(),
+          requestEntry.channel.getUri());
       storageAsyncReg.update(requestEntry.channel.getUri(), RuntimeAsyncChannel.class, rac -> {
         /*
          * Looks a bit not optimal but don't forget the ordered execution of the requests. If we

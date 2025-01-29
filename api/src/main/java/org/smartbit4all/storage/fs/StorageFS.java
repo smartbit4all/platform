@@ -433,7 +433,7 @@ public class StorageFS extends ObjectStorageImpl {
    * @param newVersionUri
    * @param objectVersionBasePath
    */
-  void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
+  private void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
       URI oldVersionUri, URI newVersionUri, File objectVersionBasePath) {
     StorageSaveEvent event = new StorageSaveEvent(
         () -> {
@@ -453,16 +453,7 @@ public class StorageFS extends ObjectStorageImpl {
         newVersionUri,
         object.getObject(),
         object.definition().getClazz());
-    if (transactionManager != null && transactionManager.isInTransaction()) {
-      transactionManager.addOnSucceed(object, event);
-    } else {
-      invokeOnSucceedFunctions(object, event);
-    }
-  }
-
-  void invokeOnSucceedFunctionsFS(StorageObject<?> object,
-      StorageSaveEvent storageSaveEvent) {
-    invokeOnSucceedFunctions(object, storageSaveEvent);
+    handleStorageSaveEvent(object, event);
   }
 
   private final void saveObjectData(StorageObject<?> object, File objectDataFile,
