@@ -136,17 +136,22 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
     HttpStatusCode statusCode = ex.getStatusCode();
     // Handle specific cases
     if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
+      IllegalArgumentException result = null;
       // Extract response body
       String responseBody = ex.getResponseBodyAsString();
       if (responseBody != null) {
         try {
           InvocationError error = objectMapper.readValue(responseBody, InvocationError.class);
-          IllegalArgumentException result = new IllegalArgumentException();
+          // Create a new instance using the default constructor
+          result = new IllegalArgumentException(error.getMessage());
           result.setStackTrace(Invocations.stackTraceElementsFromString(error.getStackTrace()));
 
         } catch (Exception e) {
           log.error("Unable to read InvocationError object from the response body.", e);
         }
+      }
+      if (result != null) {
+        throw result;
       }
       throw new IllegalArgumentException(ex.getMessage(), ex);
     } else if (statusCode == HttpStatus.NOT_FOUND) {

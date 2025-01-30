@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,7 +23,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The developer api for the invocation.
@@ -54,8 +54,6 @@ public class Invocations {
   private static final String regexStackTrace = "^(.*)\\.([^(]+)\\(([^:]*):?([0-9]*)\\)$";
 
   private static final Pattern pattern = Pattern.compile(regexStackTrace);
-
-  public static final StackTraceElement[] STACK_TRACE_ELEMENTS = new StackTraceElement[0];
 
   private Invocations() {
     super();
@@ -552,8 +550,9 @@ public class Invocations {
 
   public static StackTraceElement[] stackTraceElementsFromString(
       List<String> stackTraceStringList) {
-    return stackTraceStringList.stream().map(Invocations::stackTraceElementFromString)
-        .collect(toList()).toArray(STACK_TRACE_ELEMENTS);
+    return stackTraceStringList.stream()
+        .map(Invocations::stackTraceElementFromString)
+        .toArray(StackTraceElement[]::new);
   }
 
   public static List<String> listOfStackTrace(
