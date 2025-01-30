@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
@@ -19,12 +23,16 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.BodyBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,6 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Peter Boros
  */
 public class InvocationExecutionApiRestclient implements InvocationExecutionApi {
+
+  private static final Logger log = LoggerFactory.getLogger(InvocationExecutionApiRestclient.class);
 
   // This key is used to get the apikey header key from the ServiceConnection.parameters map
   public static final String API_KEY_HEADER_KEY = "apiKeyHeader";
@@ -46,7 +56,7 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
 
   @Override
   public InvocationParameter invoke(ServiceConnection serviceConnection,
-      InvocationRequest request) {
+      InvocationRequest request) throws ApiNotFoundException {
 
     String url = serviceConnection.getEndpoint();
 
@@ -84,10 +94,17 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
         requestBuilder.body(getBody(request, binaryDataInputList));
 
 
-    InvocationParameter respParam;
+    InvocationParameter respParam = null;
     if (binaryResult) {
-      ResponseEntity<Resource> resp =
-          restTemplate.exchange(requestEntity, Resource.class);
+      ResponseEntity<Resource> resp = null;
+      try {
+        resp =
+            restTemplate.exchange(requestEntity, Resource.class);
+      } catch (HttpStatusCodeException ex) {
+        throwProperException(request, ex);
+      } catch (RestClientException e) {
+        throw new IllegalArgumentException(e.getMessage(), e);
+      }
       if (resp.getBody() != null) {
         try {
           respParam = new InvocationParameter().typeClass(BinaryData.class.getName())
@@ -99,13 +116,44 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
         respParam = new InvocationParameter().typeClass(BinaryData.class.getName()).value(null);
       }
     } else {
-      ResponseEntity<InvocationParameter> resp =
-          restTemplate.exchange(requestEntity, InvocationParameter.class);
-      respParam = resp.getBody();
-      Invocations.resolveParam(objectMapper, respParam);
+      ResponseEntity<InvocationParameter> resp;
+      try {
+        resp = restTemplate.exchange(requestEntity, InvocationParameter.class);
+        respParam = resp.getBody();
+        Invocations.resolveParam(objectMapper, respParam);
+      } catch (HttpStatusCodeException ex) {
+        throwProperException(request, ex);
+      } catch (RestClientException e) {
+        throw new IllegalArgumentException(e.getMessage(), e);
+      }
     }
 
     return respParam;
+  }
+
+  private void throwProperException(InvocationRequest request, HttpStatusCodeException ex)
+      throws ApiNotFoundException {
+    HttpStatusCode statusCode = ex.getStatusCode();
+    // Handle specific cases
+    if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
+      // Extract response body
+      String responseBody = ex.getResponseBodyAsString();
+      if (responseBody != null) {
+        try {
+          InvocationError error = objectMapper.readValue(responseBody, InvocationError.class);
+          IllegalArgumentException result = new IllegalArgumentException();
+          result.setStackTrace(Invocations.stackTraceElementsFromString(error.getStackTrace()));
+
+        } catch (Exception e) {
+          log.error("Unable to read InvocationError object from the response body.", e);
+        }
+      }
+      throw new IllegalArgumentException(ex.getMessage(), ex);
+    } else if (statusCode == HttpStatus.NOT_FOUND) {
+      throw new ApiNotFoundException(request);
+    } else {
+      throw new IllegalArgumentException(ex.getMessage(), ex);
+    }
   }
 
   private Object getBody(InvocationRequest request, List<BinaryData> binaryDataInputList) {

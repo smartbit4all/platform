@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation.restserver;
 
+import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import java.util.UUID;
@@ -32,6 +33,7 @@ public interface InvocationApiDelegate {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeApi
      */
@@ -40,6 +42,11 @@ public interface InvocationApiDelegate {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"name\" : \"name\", \"typeClass\" : \"typeClass\", \"innerTypeClass\" : \"innerTypeClass\", \"value\" : \"{}\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"definition\" : \"definition\", \"stackTrace\" : [ \"stackTrace\", \"stackTrace\" ], \"message\" : \"message\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -54,11 +61,21 @@ public interface InvocationApiDelegate {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
      * @see InvocationApi#invokeDownload
      */
     default ResponseEntity<org.springframework.core.io.Resource> invokeDownload(InvocationRequest invocationRequest) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"definition\" : \"definition\", \"stackTrace\" : [ \"stackTrace\", \"stackTrace\" ], \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -71,6 +88,7 @@ public interface InvocationApiDelegate {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
      * @see InvocationApi#invokeUploadDownloadMultiple
@@ -78,6 +96,15 @@ public interface InvocationApiDelegate {
     default ResponseEntity<org.springframework.core.io.Resource> invokeUploadDownloadMultiple(UUID uuid,
         String invocationRequest,
         List<MultipartFile> contents) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"definition\" : \"definition\", \"stackTrace\" : [ \"stackTrace\", \"stackTrace\" ], \"message\" : \"message\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -90,6 +117,7 @@ public interface InvocationApiDelegate {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeUploadMultiple
      */
@@ -100,6 +128,11 @@ public interface InvocationApiDelegate {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"name\" : \"name\", \"typeClass\" : \"typeClass\", \"innerTypeClass\" : \"innerTypeClass\", \"value\" : \"{}\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"definition\" : \"definition\", \"stackTrace\" : [ \"stackTrace\", \"stackTrace\" ], \"message\" : \"message\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

@@ -33,11 +33,16 @@ public class InvocationApiDelegateImpl implements InvocationApiDelegate {
 
   @Override
   public ResponseEntity<InvocationParameter> invokeApi(
-      InvocationRequest body) throws Exception {
+      InvocationRequest body) throws InvocationRestException {
 
-    InvocationParameter result = invokeBase(body);
+    InvocationParameter result;
+    try {
+      result = invokeBase(body);
+      return ResponseEntity.ok(result);
+    } catch (Exception e) {
+      throw new InvocationRestException(body, e);
+    }
 
-    return ResponseEntity.ok(result);
   }
 
   private InvocationParameter invokeBase(InvocationRequest body) throws ApiNotFoundException {

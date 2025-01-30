@@ -19,6 +19,7 @@ public interface InvocationExecutionApi {
    * @param request
    * @return
    */
-  InvocationParameter invoke(ServiceConnection serviceConnection, InvocationRequest request);
+  InvocationParameter invoke(ServiceConnection serviceConnection, InvocationRequest request)
+      throws ApiNotFoundException;
 
 }

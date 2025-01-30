@@ -62,6 +62,7 @@ import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -110,6 +111,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   private Cache<String, DataRow> versionContentCache = null;
 
   @Autowired
+  @Lazy
   private StorageApi self;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {

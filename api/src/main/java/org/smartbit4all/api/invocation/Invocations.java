@@ -8,9 +8,13 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
@@ -18,6 +22,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The developer api for the invocation.
@@ -45,6 +50,12 @@ public class Invocations {
    * The logical schema of the api registry.
    */
   public static final String APIREGISTRATION_SCHEME = "apis";
+
+  private static final String regexStackTrace = "^(.*)\\.([^(]+)\\(([^:]*):?([0-9]*)\\)$";
+
+  private static final Pattern pattern = Pattern.compile(regexStackTrace);
+
+  public static final StackTraceElement[] STACK_TRACE_ELEMENTS = new StackTraceElement[0];
 
   private Invocations() {
     super();
@@ -518,6 +529,42 @@ public class Invocations {
         | InvocationTargetException e) {
       throw new IllegalArgumentException("Unable to find call the " + request, e);
     }
+  }
+
+  public static StackTraceElement stackTraceElementFromString(String stackTraceString) {
+    if (stackTraceString == null || stackTraceString.isEmpty()) {
+      throw new IllegalArgumentException("Stack trace string cannot be null or empty");
+    }
+    Matcher matcher = pattern.matcher(stackTraceString);
+
+    if (!matcher.matches()) {
+      return new StackTraceElement(stackTraceString, StringConstant.UNKNOWN, StringConstant.UNKNOWN,
+          -1);
+    }
+
+    String className = matcher.group(1);
+    String methodName = matcher.group(2);
+    String fileName = matcher.group(3).equals("Unknown Source") ? null : matcher.group(3);
+    int lineNumber = matcher.group(4).isEmpty() ? -1 : Integer.parseInt(matcher.group(4));
+
+    return new StackTraceElement(className, methodName, fileName, lineNumber);
+  }
+
+  public static StackTraceElement[] stackTraceElementsFromString(
+      List<String> stackTraceStringList) {
+    return stackTraceStringList.stream().map(Invocations::stackTraceElementFromString)
+        .collect(toList()).toArray(STACK_TRACE_ELEMENTS);
+  }
+
+  public static List<String> listOfStackTrace(
+      Exception ex) {
+    List<String> result;
+    if (ex.getStackTrace() != null) {
+      result = Stream.of(ex.getStackTrace()).map(s -> s.toString()).collect(toList());
+    } else {
+      result = Collections.emptyList();
+    }
+    return result;
   }
 
 }

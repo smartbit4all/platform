@@ -5,6 +5,7 @@
  */
 package org.smartbit4all.api.invocation.restserver;
 
+import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import java.util.UUID;
@@ -44,6 +45,7 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      */
     @Operation(
@@ -53,6 +55,9 @@ public interface InvocationApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found.")
         }
@@ -76,6 +81,7 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
      */
@@ -85,7 +91,12 @@ public interface InvocationApi {
         tags = { "Invocation" },
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
-                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class)),
+                @Content(mediaType = "application/json", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "", content = {
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = InvocationError.class)),
+                @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found."),
             @ApiResponse(responseCode = "500", description = "Error occured while fetching the downloadable item")
@@ -94,7 +105,7 @@ public interface InvocationApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/invokeDownload",
-        produces = { "application/octet-stream" },
+        produces = { "application/octet-stream", "application/json" },
         consumes = { "application/json" }
     )
     
@@ -113,6 +124,7 @@ public interface InvocationApi {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
      */
@@ -122,7 +134,12 @@ public interface InvocationApi {
         tags = { "Invocation" },
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
-                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class)),
+                @Content(mediaType = "application/json", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "", content = {
+                @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = InvocationError.class)),
+                @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found."),
             @ApiResponse(responseCode = "500", description = "Error occured while fetching the downloadable item")
@@ -131,7 +148,7 @@ public interface InvocationApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/invokeUploadDownloadMultiple",
-        produces = { "application/octet-stream" },
+        produces = { "application/octet-stream", "application/json" },
         consumes = { "multipart/form-data" }
     )
     
@@ -152,6 +169,7 @@ public interface InvocationApi {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
+     *         or  (status code 400)
      *         or The api was not found. (status code 404)
      */
     @Operation(
@@ -161,6 +179,9 @@ public interface InvocationApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found.")
         }

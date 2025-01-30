@@ -4,6 +4,7 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.restserver.InvocationApiController;
 import org.smartbit4all.api.invocation.restserver.InvocationApiDelegate;
 import org.smartbit4all.api.invocation.restserver.impl.InvocationApiDelegateImpl;
+import org.smartbit4all.api.invocation.restserver.impl.InvocationRestExceptionRestHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,11 @@ public class InvocationSrvRestConfig {
   public ObjectMapper objectMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper;
+  }
+
+  @Bean
+  public InvocationRestExceptionRestHandler invocationRestExceptionRestHandler() {
+    return new InvocationRestExceptionRestHandler();
   }
 
 }
