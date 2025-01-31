@@ -51,7 +51,6 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
       StoredListData data = objectNode.getObject(StoredListData.class);
       return data.getUris();
     } catch (ObjectNotFoundException e) {
-      log.warn("No StoredList found with uri: " + uri, e);
       return Collections.emptyList();
     }
   }
