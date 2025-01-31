@@ -140,4 +140,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     return null;
   }
 
+  @Override
+  protected ObjectStorage self() {
+    return this;
+  }
 }

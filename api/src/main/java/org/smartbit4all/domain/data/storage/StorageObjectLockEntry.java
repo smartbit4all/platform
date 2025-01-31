@@ -13,7 +13,7 @@ import org.smartbit4all.core.utility.ListBasedMap;
 
 /**
  * This entry is the common lock entry for the {@link ObjectStorage} implementations.
- * 
+ *
  * @author Peter Boros
  */
 final class StorageObjectLockEntry {
@@ -28,6 +28,11 @@ final class StorageObjectLockEntry {
     WeakReference<StorageObjectLock> instance;
 
   }
+
+  /**
+   * ObjectStorage API which will be used to unlock locks at the end of transaction.
+   */
+  private final ObjectStorage objectStorage;
 
   /**
    * The URI of the object the lock belongs to.
@@ -90,17 +95,18 @@ final class StorageObjectLockEntry {
   /**
    * Constructs an object lock owned by the actual thread first. The current thread won't be
    * blocked.
-   * 
+   *
    * @param objectURI
    * @param acquire This supplier can be injected by the given {@link ObjectStorage} implementation.
    *        When constructing a {@link StorageObjectLock} this function will acquire a physical lock
    *        on the storage to give an exclusive access to the given object and avoid parallel
    *        modification and inconsistency.
-   * 
+   *
    */
   StorageObjectLockEntry(URI objectURI,
       Supplier<StorageObjectPhysicalLock> acquire,
-      Consumer<StorageObjectPhysicalLock> releaser) {
+      Consumer<StorageObjectPhysicalLock> releaser,
+      ObjectStorage objectStorage) {
     super();
     this.objectURI = objectURI;
     if (acquire != null) {
@@ -109,14 +115,15 @@ final class StorageObjectLockEntry {
             "Unable to initate the StorageObjectLock, the the physical lock release method is missing.");
       }
       this.releaser = releaser;
-      acquirePhysicalLock = acquire;
+      this.acquirePhysicalLock = acquire;
     }
+    this.objectStorage = objectStorage;
   }
 
   /**
    * Register a new instance to the entry. This doesn't mean lock because the lock can be placed
    * with {@link StorageObjectLock#lock()}.
-   * 
+   *
    * @return The new lock instance.
    * @throws InterruptedException, InterruptedException
    */
@@ -131,7 +138,7 @@ final class StorageObjectLockEntry {
     }
     try {
       Long id = idSequence++;
-      StorageObjectLock result = new StorageObjectLock(this, id);
+      StorageObjectLock result = new StorageObjectLock(this, id, objectStorage);
       instanceRegister.put(id, new InstanceEntry(result));
       return result;
     } finally {
@@ -160,7 +167,7 @@ final class StorageObjectLockEntry {
    * The leave operation release the lock. If this thread is last one then this will execute the
    * cleanup and release the physical lock if any.
    */
-  public void releaseLock(StorageObjectLock lock) {
+  void releaseLock(StorageObjectLock lock) {
     if (lock == null) {
       return;
     }

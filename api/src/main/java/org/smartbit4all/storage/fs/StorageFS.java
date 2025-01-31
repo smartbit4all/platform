@@ -967,4 +967,9 @@ public class StorageFS extends ObjectStorageImpl {
         name);
   }
 
+  @Override
+  protected ObjectStorage self() {
+    return self;
+  }
+
 }

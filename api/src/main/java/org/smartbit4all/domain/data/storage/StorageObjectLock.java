@@ -1,9 +1,12 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import org.smartbit4all.api.invocation.AsyncInvocationRequestEntry;
 
 /**
  * The {@link StorageObjectLock} is a memory lock for the object URIs managed by an
@@ -12,11 +15,11 @@ import java.util.concurrent.locks.Lock;
  * specialty of this lock is that the given implementation can extend with a physical lock that is
  * acquired by the OS level process. In a simple situation when there is only one instance from an
  * application there is no need to apply the physical locking.
- * 
- * 
+ *
+ *
  * One time usage!!!
- * 
- * 
+ *
+ *
  * @author Peter Boros
  */
 public final class StorageObjectLock implements Lock {
@@ -31,10 +34,13 @@ public final class StorageObjectLock implements Lock {
    */
   private final Long id;
 
-  StorageObjectLock(StorageObjectLockEntry entry, Long id) {
+  private final ObjectStorage objectStorage;
+
+  StorageObjectLock(StorageObjectLockEntry entry, Long id, ObjectStorage objectStorage) {
     super();
     this.entry = entry;
     this.id = id;
+    this.objectStorage = objectStorage;
   }
 
   public final URI getObjectURI() {
@@ -69,16 +75,11 @@ public final class StorageObjectLock implements Lock {
   @Override
   public void unlock() {
     check();
-    entry.getMutex().unlock();
-    release();
+    objectStorage.unlock(this);
   }
 
-  /**
-   * Use the normal lock instead.
-   */
-  @Deprecated
-  public final void unlockAndRelease() {
-    unlock();
+  void unlockInternal() {
+    entry.getMutex().unlock();
     release();
   }
 
@@ -97,7 +98,7 @@ public final class StorageObjectLock implements Lock {
 
   /**
    * The unique identifier of the given lock instance.
-   * 
+   *
    * @return
    */
   final Long getId() {
@@ -107,7 +108,7 @@ public final class StorageObjectLock implements Lock {
   /**
    * Release the given object. We won't be able to use it again.
    */
-  public final void release() {
+  final void release() {
     if (entry != null) {
       entry.releaseLock(this);
       entry = null;

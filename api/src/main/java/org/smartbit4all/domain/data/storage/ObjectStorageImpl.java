@@ -50,6 +50,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   private static final String STORAGE_SAVE_EVENTS_HANDLER = "STORAGE_SAVE_EVENTS_HANDLER";
 
   /**
+   * resource identifier for StorageObjectLock unlock handler
+   */
+  private static final String UNLOCK_HANDLER = "UNLOCK_HANDLER";
+
+  /**
    * Regex pattern for only numbers used for versioning. With no starting zeros.
    */
   private static final String REGEX_ONLYNUMBERS = "^0|[1-9]\\d*$";
@@ -191,7 +196,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         if (entry == null) {
           final StorageObjectLockEntry newEntry =
               new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                  physicalLockReleaser());
+                  physicalLockReleaser(),
+                  self());
           newEntry.setLockRemover(uri -> {
             lockMutex.lock();
             try {
@@ -216,6 +222,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return null;
   }
+
+  protected abstract ObjectStorage self();
 
   @Override
   public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,
@@ -747,6 +755,45 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return getUriWithoutVersion(uri).getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX);
   }
+
+
+  @Override
+  public void unlock(StorageObjectLock lock) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      locksToUnlock.get().add(lock);
+      registerUnlockTransactionHandler();
+    } else {
+      lock.unlockInternal();
+    }
+  }
+
+  /**
+   * The StorageSaveEvent list attached to the current transaction.
+   */
+  protected ThreadLocal<List<StorageObjectLock>> locksToUnlock =
+      ThreadLocal.withInitial(() -> new ArrayList<>());
+
+  protected void registerUnlockTransactionHandler() {
+    if (!TransactionSynchronizationManager.hasResource(UNLOCK_HANDLER)) {
+      TransactionSynchronizationManager
+          .registerSynchronization(new UnlockTransactionHandler());
+      TransactionSynchronizationManager.bindResource(UNLOCK_HANDLER, true);
+    }
+  }
+
+  protected final class UnlockTransactionHandler implements TransactionSynchronization {
+
+    @Override
+    public void afterCompletion(int status) {
+      locksToUnlock.get().forEach(lock -> unlock(lock));
+      locksToUnlock.remove();
+      if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
+    }
+  }
+
 
 
 }

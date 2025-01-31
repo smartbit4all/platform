@@ -200,18 +200,20 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           UUID runtimeUUID =
               UUID.fromString(objectLockRow.get(objectEntryLockDef.applicationRuntime()));
           if (Objects.equals(runtimeUUID, currentRuntime)) {
+            // it's us, return lock
             return new StorageObjectPhysicalLock(objectUri);
           }
+          if (runtimeApi().getActiveRuntimes().stream()
+              .anyMatch(r -> Objects.equals(runtimeUUID, r.getUuid()))) {
+            // it's someone active, continue waiting
+            continue;
+          }
+          // inactive runtime detected, update runtime (claim to me)
+          Crud.update(createLockRecord(objectUriString, currentRuntime));
+          return new StorageObjectPhysicalLock(objectUri);
         } else {
-          Crud.create(TableDatas
-              .builder(objectEntryLockDef, objectEntryLockDef.objectUri(),
-                  objectEntryLockDef.applicationRuntime(), objectEntryLockDef.createdAt())
-              .addRow()
-              .set(objectEntryLockDef.objectUri(),
-                  objectUriString)
-              .set(objectEntryLockDef.applicationRuntime(), currentRuntime.toString())
-              .set(objectEntryLockDef.createdAt(), OffsetDateTime.now())
-              .build());
+          // lock didn't exist or we deleted it -> create new on
+          Crud.create(createLockRecord(objectUriString, currentRuntime));
           return new StorageObjectPhysicalLock(objectUri);
         }
 
@@ -225,6 +227,19 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         }
       }
     }
+  }
+
+  private TableData<ObjectEntryLockDef> createLockRecord(String objectUriString,
+      UUID currentRuntime) {
+    return TableDatas
+        .builder(objectEntryLockDef, objectEntryLockDef.objectUri(),
+            objectEntryLockDef.applicationRuntime(), objectEntryLockDef.createdAt())
+        .addRow()
+        .set(objectEntryLockDef.objectUri(),
+            objectUriString)
+        .set(objectEntryLockDef.applicationRuntime(), currentRuntime.toString())
+        .set(objectEntryLockDef.createdAt(), OffsetDateTime.now())
+        .build();
   }
 
   @Override
@@ -1238,5 +1253,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return null;
   }
 
-
+  @Override
+  protected ObjectStorage self() {
+    return self;
+  }
 }
