@@ -33,7 +33,7 @@ public interface InvocationApiDelegate {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeApi
      */
@@ -61,9 +61,8 @@ public interface InvocationApiDelegate {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
-     *         or Error occured while fetching the downloadable item (status code 500)
      * @see InvocationApi#invokeDownload
      */
     default ResponseEntity<org.springframework.core.io.Resource> invokeDownload(InvocationRequest invocationRequest) throws Exception {
@@ -117,7 +116,7 @@ public interface InvocationApiDelegate {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeUploadMultiple
      */

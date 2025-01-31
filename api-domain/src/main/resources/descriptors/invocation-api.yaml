@@ -28,7 +28,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvocationParameter'
-        '400':
+        '500':
           description: ''
           content:
             application/json:
@@ -56,7 +56,7 @@ paths:
               schema:
                 type: string
                 format: binary
-        '400':
+        '500':
           description: ''
           content:
             application/json:
@@ -64,8 +64,6 @@ paths:
                 $ref: '#/components/schemas/InvocationError'
         '404':
           description: 'The api was not found.'
-        '500':
-          description: 'Error occured while fetching the downloadable item'
   /invokeUploadMultiple:
     post:
       tags:
@@ -103,7 +101,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvocationParameter'
-        '400':
+        '500':
           description: ''
           content:
             application/json:

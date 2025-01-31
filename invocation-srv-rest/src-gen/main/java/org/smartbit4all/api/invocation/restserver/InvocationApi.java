@@ -45,7 +45,7 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
      */
     @Operation(
@@ -56,7 +56,7 @@ public interface InvocationApi {
             @ApiResponse(responseCode = "200", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
             }),
-            @ApiResponse(responseCode = "400", description = "", content = {
+            @ApiResponse(responseCode = "500", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found.")
@@ -81,9 +81,8 @@ public interface InvocationApi {
      *
      * @param invocationRequest  (required)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
-     *         or Error occured while fetching the downloadable item (status code 500)
      */
     @Operation(
         operationId = "invokeDownload",
@@ -94,12 +93,11 @@ public interface InvocationApi {
                 @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = org.springframework.core.io.Resource.class)),
                 @Content(mediaType = "application/json", schema = @Schema(implementation = org.springframework.core.io.Resource.class))
             }),
-            @ApiResponse(responseCode = "400", description = "", content = {
+            @ApiResponse(responseCode = "500", description = "", content = {
                 @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = InvocationError.class)),
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
-            @ApiResponse(responseCode = "404", description = "The api was not found."),
-            @ApiResponse(responseCode = "500", description = "Error occured while fetching the downloadable item")
+            @ApiResponse(responseCode = "404", description = "The api was not found.")
         }
     )
     @RequestMapping(
@@ -169,7 +167,7 @@ public interface InvocationApi {
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
-     *         or  (status code 400)
+     *         or  (status code 500)
      *         or The api was not found. (status code 404)
      */
     @Operation(
@@ -180,7 +178,7 @@ public interface InvocationApi {
             @ApiResponse(responseCode = "200", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationParameter.class))
             }),
-            @ApiResponse(responseCode = "400", description = "", content = {
+            @ApiResponse(responseCode = "500", description = "", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = InvocationError.class))
             }),
             @ApiResponse(responseCode = "404", description = "The api was not found.")
