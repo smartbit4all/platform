@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -19,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
@@ -45,6 +47,7 @@ import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -70,9 +73,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -123,7 +123,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   private Cache<String, DataRow> versionContentCache = null;
 
   @Autowired
-  private StorageApi self;
+  private StorageApi storageApi;
+
+  @Autowired
+  private ObjectStorage self;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -166,15 +169,16 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     return () -> {
       try {
-        return lockObject(getUriWithoutVersion(objectUri), -1);
+        return self.lockObject(getUriWithoutVersion(objectUri), -1);
       } catch (Exception e) {
         throw new IllegalStateException("Unable to lock object " + objectUri, e);
       }
     };
   }
 
+  @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  private final StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
     long start = System.currentTimeMillis();
     String objectUriString = objectUri.toString();
     UUID currentRuntime = runtimeApi().self().getUuid();
@@ -242,6 +246,11 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         }
       }
     };
+  }
+
+  @Override
+  protected boolean lockOnSave() {
+    return false;
   }
 
   /**
@@ -646,7 +655,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (clazz != null) {
       StorageSQLExtensionApi extensionApi = getExtensionApi(storage.getScheme(), clazz.getName());
       if (extensionApi != null) {
-        return extensionApi.loadBatch(storage, uriInfos, clazz, options);
+        return extensionApi.loadBatch(self, storage, uriInfos, clazz, options);
       }
     }
 
@@ -838,12 +847,26 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
-      Function<URI, O> reader) {
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    List<URI> uris = readAllUris(storage, setName, clazz);
+    return loadBatch(storage, uris, clazz).stream()
+        .map(StorageObject::getObject)
+        .collect(toList());
+  }
+
+  @Override
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
     // Check if the given directory exists or not.
     ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
 
-    String storageScheme = getStorageScheme(storage);
+    String storageScheme = storage.getScheme();
+    if (clazz != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storageScheme, clazz.getName());
+      if (extensionApi != null) {
+        return extensionApi.readAllUris(self, storage, setName, clazz);
+      }
+    }
+
     String setPath =
         storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
             + (Strings.isBlank(setName) ? StringConstant.EMPTY
@@ -856,13 +879,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         log.trace("readAll: setName={}", setName);
       }
       objectList = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
+          .select(objectEntryDef.uri())
           .where(
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
-      List<O> result = objectList.rows().stream()
-          .map(r -> reader.apply(UriUtils.asUri(r.get(objectEntryDef.uri()))))
+      List<URI> result = objectList.rows().stream()
+          .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
           .collect(toList());
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={} size{}", setName, result.size());
@@ -1203,7 +1226,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Override
   public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequenceStorageImpl(self,
+    return new StoredSequenceStorageImpl(storageApi,
         CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
         name);
   }

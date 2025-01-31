@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
-import org.smartbit4all.sql.service.identifier.SQLIdentifierService;
 import org.smartbit4all.sql.service.identifier.SQLIdentifierServiceH2;
 import org.smartbit4all.sql.storage.StorageSQL;
 import org.smartbit4all.sql.util.EmptyDatabasePopulator;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @Import({
     SQLConfig.class,
-    SQLIdentifierService.class,
     SQLObjectStorageEntityConfiguration.class
 })
 @EnableTransactionManagement

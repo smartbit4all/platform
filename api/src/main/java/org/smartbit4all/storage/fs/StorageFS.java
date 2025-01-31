@@ -118,7 +118,10 @@ public class StorageFS extends ObjectStorageImpl {
   private BlobObjectStorageAccessApi storageAccessApi;
 
   @Autowired
-  private StorageApi self;
+  private StorageApi storageApi;
+
+  @Autowired
+  private ObjectStorage self;
 
   /**
    * @param rootFolder The root folder, in which the storage place the files.
@@ -217,17 +220,26 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     return () -> {
-      StorageTransaction transaction =
-          transactionManager != null ? transactionManager.getCurrentTransaction() : null;
-      FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
-          transaction != null ? transaction.getData().getUri().toString() : null);
       try {
-        FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
+        return self.lockObject(getUriWithoutVersion(objectUri), -1);
       } catch (Exception e) {
         throw new IllegalStateException("Unable to lock object " + objectUri, e);
       }
-      return new StorageObjectPhysicalLock(objectUri);
     };
+  }
+
+  @Override
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+    StorageTransaction transaction =
+        transactionManager != null ? transactionManager.getCurrentTransaction() : null;
+    FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
+        transaction != null ? transaction.getData().getUri().toString() : null);
+    try {
+      FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to lock object " + objectUri, e);
+    }
+    return new StorageObjectPhysicalLock(objectUri);
   }
 
   /**
@@ -609,12 +621,21 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> u);
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
+  }
+
   protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
       Function<URI, O> reader) {
     // Check if the given directory exists or not.
     ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
 
-    String storageScheme = getStorageScheme(storage);
+    String storageScheme = storage.getScheme();
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()
         + (Strings.isBlank(setName) ? StringConstant.EMPTY
             : StringConstant.SLASH
@@ -730,9 +751,7 @@ public class StorageFS extends ObjectStorageImpl {
         } else {
           dataObject = null;
         }
-        @SuppressWarnings("unchecked")
-        ObjectDefinition<T> definition =
-            getObjectDefinition(uri, dataObject, clazz);
+        ObjectDefinition<T> definition = getObjectDefinition(uri, dataObject, clazz);
 
         Map<String, Object> obj = null;
         if (dataParts.get(1).length() != 0) {
@@ -943,7 +962,7 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Override
   public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequenceStorageImpl(self,
+    return new StoredSequenceStorageImpl(storageApi,
         CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
         name);
   }

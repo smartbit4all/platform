@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -242,7 +241,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Override
   public StorageObject<?> save(StorageObject<?> object) {
-    StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
+    boolean doLock = lockOnSave() && !object.isSkipLock();
+    StorageObjectLock storageObjectLock = doLock ? getLock(object.getUri()) : null;
 
     if (storageObjectLock != null) {
       storageObjectLock.lock();
@@ -269,6 +269,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return object;
   }
+
+  protected boolean lockOnSave() {
+    return true;
+  }
+
 
   /**
    * This save the object as a single object. It's is faster but we don't have the previous
@@ -329,10 +334,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return (ObjectDefinition<T>) objectDefinition;
   }
 
-  protected String getStorageScheme(Storage storage) {
-    return storage.getScheme();
-  }
-
   @Override
   public <T> T read(Storage storage, URI uri, Class<T> clazz) {
     return load(storage, uri, clazz).getObject();
@@ -349,19 +350,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return load.stream().map(s -> s.getObject()).filter(o -> o != null)
         .collect(Collectors.toList());
   }
-
-  @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> u);
-  }
-
-  @Override
-  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
-  }
-
-  protected abstract <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
-      Function<URI, O> reader);
 
   @Override
   public boolean move(URI uri, URI targetUri) {
@@ -401,7 +389,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @param physicalId The identifier of the physical storage like id of the database or any other.
    * @return
    */
-  protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
+  @Override
+  public <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
       URI objectUri, StorageObjectData data, String physicalId) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);

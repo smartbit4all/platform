@@ -1,7 +1,9 @@
 package org.smartbit4all.sql.storage;
 
+import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -33,7 +35,7 @@ public interface StorageSQLExtensionApi {
 
   /**
    * Can be delegated here to load the objects from sepcial table.
-   * 
+   *
    * @param <T>
    * @param storage
    * @param uriInfos
@@ -41,8 +43,21 @@ public interface StorageSQLExtensionApi {
    * @param options
    * @return
    */
-  <T> List<StorageObject<T>> loadBatch(Storage storage, List<UriInfo> uriInfos, Class<T> clazz,
+  <T> List<StorageObject<T>> loadBatch(ObjectStorage objectStorage, Storage storage,
+      List<UriInfo> uriInfos, Class<T> clazz,
       StorageLoadOption... options);
+
+  /**
+   * Reads all uris from set.
+   *
+   * @param <T>
+   * @param storage
+   * @param setName
+   * @param clazz
+   * @return
+   */
+  <T> List<URI> readAllUris(ObjectStorage objectStorage, Storage storage, String setName,
+      Class<T> clazz);
 
   /**
    * In case of the database the save process is almost the same. We select the object record for

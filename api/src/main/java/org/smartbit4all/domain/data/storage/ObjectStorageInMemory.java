@@ -101,7 +101,16 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> u);
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
+  }
+
+  private <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
       Function<URI, O> reader) {
     // TODO Auto-generated method stub
     return Collections.emptyList();
@@ -121,6 +130,12 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
 
   @Override
   public StoredSequence getSequence(String schema, String name) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
     // TODO Auto-generated method stub
     return null;
   }

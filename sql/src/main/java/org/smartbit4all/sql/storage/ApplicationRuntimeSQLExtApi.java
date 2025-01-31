@@ -1,23 +1,31 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
+import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApiStorageImpl;
 import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -38,7 +46,7 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
   private ObjectDefinition<ApplicationRuntimeData> applicationRuntimeDataDef;
 
   private final List<ManagedObject> managedObjects =
-      Arrays.asList(new ManagedObject(ApplicationRuntimeApiStorageImpl.CLUSTER,
+      Arrays.asList(new ManagedObject(ApplicationRuntimeApiStorageImpl.SCHEMA,
           ApplicationRuntimeData.class.getName()));
 
   @Override
@@ -46,7 +54,7 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
     return managedObjects;
   }
 
-  private final ObjectDefinition<ApplicationRuntimeData> getDefintion() {
+  private final ObjectDefinition<ApplicationRuntimeData> getDefinition() {
     if (applicationRuntimeDataDef == null) {
       applicationRuntimeDataDef = objectDefinitionApi.definition(ApplicationRuntimeData.class);
     }
@@ -54,7 +62,8 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
   }
 
   @Override
-  public <T> List<StorageObject<T>> loadBatch(Storage storage, List<UriInfo> uriInfos,
+  public <T> List<StorageObject<T>> loadBatch(ObjectStorage objectStorage, Storage storage,
+      List<UriInfo> uriInfos,
       Class<T> clazz,
       StorageLoadOption... options) {
     Set<String> uniqueBaseUris = uriInfos.stream()
@@ -75,7 +84,7 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
     List<StorageObject<T>> result = new ArrayList<>();
     for (UriInfo uriInfo : uriInfos) {
       StorageObject<T> storageObject =
-          readFromRow(storage, objectEntryRows.get(uriInfo.uri.toString()), clazz);
+          readFromRow(objectStorage, storage, objectEntryRows.get(uriInfo.uri.toString()), clazz);
       if (storageObject == null) {
         throw new ObjectNotFoundException(uniqueBaseUris, clazz, "Object not found.");
       }
@@ -84,13 +93,20 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
     return result;
   }
 
-  private final <T> StorageObject<T> readFromRow(Storage storage, DataRow r, Class<T> clazz) {
+  private final <T> StorageObject<T> readFromRow(ObjectStorage objectStorage, Storage storage,
+      DataRow r, Class<T> clazz) {
     try {
-      StorageObject<T> storageObject = storage.instanceOf(clazz);
-      storageObject
-          .setLastModified(r.get(applicationRuntimeDef.lastTouchTime()));
-      storageObject.setObjectAsMap(getDefintion().deserializeAsMap(
-          r.get(applicationRuntimeDef.objectContent())));
+      URI uri = URI.create(r.get(applicationRuntimeDef.uri()));
+      StorageObjectData storageObjectData = new StorageObjectData()
+          .className(clazz.getName())
+          .uri(uri);
+      @SuppressWarnings("unchecked") // it's always ApplicationRuntimeData
+      StorageObject<T> storageObject = (StorageObject<T>) objectStorage.instanceOf(
+          storage, getDefinition(), uri, storageObjectData, null);
+
+      storageObject.setLastModified(r.get(applicationRuntimeDef.lastTouchTime()));
+      storageObject.setObjectAsMap(
+          getDefinition().deserializeAsMap(r.get(applicationRuntimeDef.objectContent())));
       return storageObject;
 
     } catch (Exception e) {
@@ -101,8 +117,43 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
 
 
   @Override
+  public <T> List<URI> readAllUris(ObjectStorage objectStorage, Storage storage, String setName,
+      Class<T> clazz) {
+    // Check if the given directory exists or not.
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+
+    String storageScheme = storage.getScheme();
+    String setPath =
+        storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
+            + (Strings.isBlank(setName) ? StringConstant.EMPTY
+                : StringConstant.SLASH + setName);
+
+    TableData<ApplicationRuntimeDef> objectList;
+    try {
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={}", setName);
+      }
+      objectList = Crud.read(applicationRuntimeDef)
+          .select(applicationRuntimeDef.uri())
+          .where(
+              applicationRuntimeDef.uri().like(setPath + StringConstant.PERCENT))
+          .listData();
+      List<URI> result = objectList.rows().stream()
+          .map(r -> UriUtils.asUri(r.get(applicationRuntimeDef.uri())))
+          .collect(toList());
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={} size{}", setName, result.size());
+      }
+      return result;
+    } catch (Exception e) {
+      log.debug("Unable to read all the objects from the set.", e);
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
   public Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
-    ApplicationRuntimeData runtimeData = getDefintion().fromMap(object.getObjectAsMap());
+    ApplicationRuntimeData runtimeData = getDefinition().fromMap(object.getObjectAsMap());
     DataRow objectRow;
     try {
       String uriString = object.getUri().toString();
