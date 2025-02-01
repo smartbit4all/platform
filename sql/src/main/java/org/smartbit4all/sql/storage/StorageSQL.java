@@ -683,9 +683,20 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (entryRow != null) {
         // surely will exist, queryObjectEntries will throw an exception if not
         info.entryId = entryRow.get(objectEntryDef.id());
+        Long entryVersion = entryRow.get(objectEntryDef.version());
         info.calculatedVersion =
             info.originalVersion != null ? info.originalVersion
-                : entryRow.get(objectEntryDef.version());
+                : entryVersion;
+        if (info.originalVersion != null
+            && entryVersion != null
+            && entryVersion < info.originalVersion) {
+          if (log.isErrorEnabled()) {
+            log.error("Error when trying to query {}! latestVersion ({}) < requestedVersion ({})",
+                info.uri, entryVersion, info.originalVersion);
+            log.error("Using latest version instead!", new Exception());
+          }
+          info.calculatedVersion = entryVersion;
+        }
         info.versionId = createVersionId(info.entryId, info.calculatedVersion);
       }
     }
