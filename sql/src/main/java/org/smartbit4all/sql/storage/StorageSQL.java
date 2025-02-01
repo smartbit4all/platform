@@ -68,8 +68,10 @@ import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -127,6 +129,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired
   private ObjectStorage self;
+
+  @Autowired(required = false)
+  private TransactionTemplate transactionTemplate;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -291,12 +296,20 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
 
+    if (transactionTemplate != null) {
+      return transactionTemplate
+          .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
+    }
+    return saveObjectInTransaction(null, object, relationBinaryData);
+  }
+
+  private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
+      BinaryData relationBinaryData) {
     StorageSQLExtensionApi extensionApi =
         getExtensionApi(object.getStorage().getScheme(), object.definition().getQualifiedName());
     if (extensionApi != null) {
       return extensionApi.saveObject(object, relationBinaryData);
     }
-
     DataRow objectRow;
     try {
       String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
@@ -311,7 +324,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     } catch (Exception e) {
       objectRow = null;
     }
-
     BuilderWithFixProperties<ObjectVersionDef> builderVersion = TableDatas
         .builder(objectVersionDef, objectVersionDef.versionId(),
             objectVersionDef.entryId(), objectVersionDef.version(),
@@ -378,7 +390,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
               objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
               objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
-              objectEntryDef.version(), objectEntryDef.refVersion(), objectEntryDef.singleVersion())
+              objectEntryDef.version(), objectEntryDef.refVersion(),
+              objectEntryDef.singleVersion())
           .addRow()
           .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
@@ -653,6 +666,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  @Transactional
   @Override
   public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
