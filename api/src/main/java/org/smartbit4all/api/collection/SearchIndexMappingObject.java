@@ -294,6 +294,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return this;
   }
 
+  public String getPrimaryKey() {
+    return primaryKey;
+  }
 
   public SearchIndexMappingObject detail(String propertyName, String uniqueIdName) {
     String masterReferenceQualified = propertyName + "parent";
@@ -431,15 +434,17 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
 
     // Create detail TableDatas
-    for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
-        .entrySet()) {
-      TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
-      detailData.addColumns(entry.getValue().detail.definition.allProperties());
-      SearchEntityTableDataResult detailResult = new SearchEntityTableDataResult()
-          .searchEntityDefinition(entry.getValue().detail)
-          .result(detailData);
+    if (result.manageDetails) {
+      for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+          .entrySet()) {
+        TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
+        detailData.addColumns(entry.getValue().detail.definition.allProperties());
+        SearchEntityTableDataResult detailResult = new SearchEntityTableDataResult()
+            .searchEntityDefinition(entry.getValue().detail)
+            .result(detailData);
 
-      result.detailResults.put(entry.getKey(), detailResult);
+        result.detailResults.put(entry.getKey(), detailResult);
+      }
     }
 
     // Fill the TableDatas
@@ -460,49 +465,52 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         }
       }
       // Read all the details also.
-      for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
-          .entrySet()) {
-        SearchEntityTableDataResult detailResult = result.detailResults.get(entry.getKey());
-        SearchIndexMappingObject detailObjectMapping =
-            ((SearchIndexMappingObject) mappingsByPropertyName
-                .get(entry.getKey()));
-        if (detailObjectMapping.isInlineValueObjects()) {
-          TableData<?> tableDataDetail = detailResult.result;
-          Map<DataColumn<?>, Object> masterIdValues =
-              entry.getValue().masterJoin.getReferences().get(0)
-                  .joins().stream()
-                  .collect(toMap(
-                      j -> tableDataDetail.getColumn(detailObjectMapping.getDefinition().definition
-                          .getProperty(j.getSourceProperty().getName())),
-                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
+      if (result.manageDetails) {
+        for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+            .entrySet()) {
+          SearchEntityTableDataResult detailResult = result.detailResults.get(entry.getKey());
+          SearchIndexMappingObject detailObjectMapping =
+              ((SearchIndexMappingObject) mappingsByPropertyName
+                  .get(entry.getKey()));
+          if (detailObjectMapping.isInlineValueObjects()) {
+            TableData<?> tableDataDetail = detailResult.result;
+            Map<DataColumn<?>, Object> masterIdValues =
+                entry.getValue().masterJoin.getReferences().get(0)
+                    .joins().stream()
+                    .collect(toMap(
+                        j -> tableDataDetail
+                            .getColumn(detailObjectMapping.getDefinition().definition
+                                .getProperty(j.getSourceProperty().getName())),
+                        j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
 
-          List<?> valueAsList = null;
-          if (detailObjectMapping.path != null && detailObjectMapping.complexProcessor == null) {
-            valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
-                detailObjectMapping.path);
-          } else if (detailObjectMapping.complexProcessor != null) {
-            valueAsList = detailObjectMapping.complexProcessor.apply(n);
-          }
-          if (valueAsList != null) {
-            DataColumn<?> valueColumn = tableDataDetail.getColumn(
-                detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
-            for (Object valueObject : valueAsList) {
-              DataRow detailRow = tableDataDetail.addRow();
-              // Set the master ids
-              masterIdValues.entrySet().stream().forEach(e -> {
-                tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
-              });
-              tableDataDetail.setObject(valueColumn, detailRow, valueObject);
+            List<?> valueAsList = null;
+            if (detailObjectMapping.path != null && detailObjectMapping.complexProcessor == null) {
+              valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
+                  detailObjectMapping.path);
+            } else if (detailObjectMapping.complexProcessor != null) {
+              valueAsList = detailObjectMapping.complexProcessor.apply(n);
             }
+            if (valueAsList != null) {
+              DataColumn<?> valueColumn = tableDataDetail.getColumn(
+                  detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
+              for (Object valueObject : valueAsList) {
+                DataRow detailRow = tableDataDetail.addRow();
+                // Set the master ids
+                masterIdValues.entrySet().stream().forEach(e -> {
+                  tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
+                });
+                tableDataDetail.setObject(valueColumn, detailRow, valueObject);
+              }
+            }
+          } else {
+            detailObjectMapping.readObjectNodes(
+                n.list(detailObjectMapping.path).nodes(),
+                detailResult,
+                entry.getValue().masterJoin.getReferences().get(0).joins().stream()
+                    .collect(toMap(j -> j.getSourceProperty().getName(),
+                        j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
+                useLength);
           }
-        } else {
-          detailObjectMapping.readObjectNodes(
-              n.list(detailObjectMapping.path).nodes(),
-              detailResult,
-              entry.getValue().masterJoin.getReferences().get(0).joins().stream()
-                  .collect(toMap(j -> j.getSourceProperty().getName(),
-                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
-              useLength);
         }
       }
     });
@@ -701,7 +709,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             TableData<?> tdNotExisting = TableDatas.copyRows(updateResult.result, notExitingRows);
             Crud.create(tdNotExisting);
           }
-          mergeDetails(updateResult);
+          if (updateResult.manageDetails) {
+            mergeDetails(updateResult);
+          }
         } catch (Exception e) {
           log.error("Unable to check the existing record for the " + getLogicalSchema()
               + StringConstant.DOT + getName() + " search index", e);
@@ -799,6 +809,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             mappingObject.entityDefinition.masterRef.joins().get(0).getTargetProperty();
         DataColumn<?> masterRefTargetColumn =
             updateResult.result.getColumn(masterRefTargetProperty);
+
         List<Object> masterRefValues =
             updateResult.result.values(masterRefTargetColumn).stream()
                 .distinct()

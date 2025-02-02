@@ -219,7 +219,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
       Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
-          propertiesToQuery);
+          propertiesToQuery, false);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
@@ -340,10 +340,6 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     }
   }
 
-  private final SearchEntityTableDataResult constructResult() {
-    return constructResult(null);
-  }
-
   private final SearchEntityTableDataResult constructResult(Collection<Property<?>> properties) {
     return new SearchEntityTableDataResult()
         .searchEntityDefinition(getDefinition())
@@ -351,8 +347,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   }
 
   private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris,
-      Stream<ObjectNode> objectNodes, Collection<Property<?>> properties) {
-    return readAllObjects(constructResult(properties), objectUris, objectNodes);
+      Stream<ObjectNode> objectNodes, Collection<Property<?>> properties, boolean manageDetails) {
+    SearchEntityTableDataResult result = constructResult(properties);
+    result.manageDetails = manageDetails;
+    return readAllObjects(result, objectUris, objectNodes);
   }
 
 
@@ -380,21 +378,54 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
 
   private SearchEntityTableDataResult createUpdateResult() {
-    Collection<Property<?>> ownedProperties = getDefinition().definition.allProperties().stream()
+    return createUpdateResult(Collections.emptyList());
+  }
+
+  private SearchEntityTableDataResult createUpdateResult(List<String> columns) {
+    EntityDefinition entityDef = getDefinition().definition;
+    if (columns == null || columns.isEmpty()) {
+      return constructResult(getOwnedPropertiesToUpdate(entityDef));
+    }
+
+    List<Property<?>> properties =
+        Stream.concat(Stream.of(getMapping().getPrimaryKey()), columns.stream())
+            .distinct()
+            .map(f -> entityDef.getProperty(f))
+            .filter(Objects::nonNull)
+            .filter(p -> !getMapping().isCalculatedProperty(p.getName()))
+            .collect(toList());
+
+    if (properties.isEmpty()) {
+      properties = getOwnedPropertiesToUpdate(entityDef);
+    }
+
+    SearchEntityTableDataResult updateResult = constructResult(properties);
+    updateResult.manageDetails = false;
+    return updateResult;
+  }
+
+
+  protected List<Property<?>> getOwnedPropertiesToUpdate(EntityDefinition entityDef) {
+    List<Property<?>> properties;
+    properties = entityDef.allProperties().stream()
         .filter(p -> !getMapping().isCalculatedProperty(p.getName()))
         .collect(toList());
-    SearchEntityTableDataResult updateResult = constructResult(ownedProperties);
-    return updateResult;
+    return properties;
   }
 
   @Override
   public void updateIndex(List<URI> changeList) {
+    updateIndex(changeList, null);
+  }
+
+  @Override
+  public void updateIndex(List<URI> changeList, List<String> columns) {
     if (ObjectUtils.isEmpty(changeList)) {
       return;
     }
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
-      SearchEntityTableDataResult updateResult = createUpdateResult();
+      SearchEntityTableDataResult updateResult = createUpdateResult(columns);
       objectMapping.readObjectNodes(
           objectApi.loadBatch(changeList),
           updateResult,

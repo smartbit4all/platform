@@ -189,6 +189,14 @@ public interface SearchIndex<O> {
 
   void updateIndex(List<URI> changeList);
 
+  /**
+   * Update the specified columns of the searchIndex only. Details will not be updated.
+   * 
+   * @param changeList
+   * @param columns
+   */
+  void updateIndex(List<URI> changeList, List<String> columns);
+
   void updateIndexWithData(List<SearchIndexObject> changeList);
 
   /**
