@@ -283,10 +283,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
 
-    if (transactionTemplate != null) {
-      return transactionTemplate
-          .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
-    }
+    // if (transactionTemplate != null) {
+    // return transactionTemplate
+    // .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
+    // }
     return saveObjectInTransaction(null, object, relationBinaryData);
   }
 
@@ -653,7 +653,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
-  @Transactional
+  // @Transactional
   @Override
   public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {

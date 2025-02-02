@@ -61,7 +61,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.CollectionUtils;
@@ -777,7 +776,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
   }
 
-//  @Transactional
+  // @Transactional
   @Override
   public AsyncInvocationRequestEntry saveAndEnqueueAsyncInvocationRequest(InvocationRequest request,
       String channel) {
@@ -850,7 +849,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     return null;
   }
 
-//  @Transactional
+  // @Transactional
   @Override
   public AsyncInvocationRequestEntry saveAndEnqueueAsyncInvocationRequest(ObjectNode asynRequest) {
     AsyncInvocationChannel asyncInvocationChannel =
@@ -876,7 +875,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     return result;
   }
 
-//  @Transactional
+  // @Transactional
   @Override
   public AsyncInvocationRequest saveAndScheduleAsyncInvocationRequest(
       InvocationRequest request, String channelName, OffsetDateTime executeAt) {
@@ -933,7 +932,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     return asyncInvocationChannel;
   }
 
-//  @Transactional
+  // @Transactional
   @Override
   public void saveAsyncInvocationResult(AsyncInvocationRequestEntry requestEntry,
       InvocationResult result) {

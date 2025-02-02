@@ -495,12 +495,15 @@ public class InvocationApiImpl implements InvocationApi {
     }
   }
 
-  @Transactional
+  //@Transactional // TODO
   @Override
   public void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
     AsyncInvocationRequest request = requestEntry.request;
     InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
     try {
+      if (log.isDebugEnabled()) {
+        log.debug("Executing: {}", requestEntry.toLog());
+      }
       result.returnValue(self.invoke(request.getRequest()).getValue());
     } catch (Exception e) {
       log.warn("Exception occured while executing the " + requestEntry, e);
