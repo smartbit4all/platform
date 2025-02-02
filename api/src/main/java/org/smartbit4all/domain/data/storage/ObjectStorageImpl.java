@@ -797,7 +797,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     @Override
     public void afterCompletion(int status) {
-      locksToUnlock.get().forEach(lock -> unlock(lock));
+      locksToUnlock.get().forEach(lock -> lock.unlockInternal());
       locksToUnlock.remove();
       if (status == TransactionSynchronization.STATUS_UNKNOWN) {
         log.warn("Transaction state is STATUS_UNKNOWN!");
@@ -805,7 +805,5 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
     }
   }
-
-
 
 }
