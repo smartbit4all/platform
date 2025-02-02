@@ -7,10 +7,8 @@ import org.smartbit4all.sql.storage.ObjectEntryDef;
 import org.smartbit4all.sql.storage.ObjectEntryLockDef;
 import org.smartbit4all.sql.storage.ObjectVersionDef;
 import org.smartbit4all.sql.storage.StorageSQLExtensionApi;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 
 @Configuration
 public class SQLObjectStorageEntityConfiguration extends EntityConfiguration {
@@ -35,10 +33,10 @@ public class SQLObjectStorageEntityConfiguration extends EntityConfiguration {
     return createEntityProxy(ApplicationRuntimeDef.class);
   }
 
-  @EventListener(ApplicationReadyEvent.class)
-  public void setupStorageEntities(ApplicationReadyEvent event) throws Exception {
-    setupEntityDefinitions(event.getApplicationContext());
-  }
+  // @EventListener(ApplicationReadyEvent.class)
+  // public void setupStorageEntities(ApplicationReadyEvent event) throws Exception {
+  // setupEntityDefinitions(event.getApplicationContext());
+  // }
 
   @Bean
   StorageSQLExtensionApi applicationRuntimeSQLExtApi() {
