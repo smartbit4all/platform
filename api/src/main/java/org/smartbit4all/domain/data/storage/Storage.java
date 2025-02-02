@@ -820,44 +820,49 @@ public final class Storage {
    */
   public final <T> StorageObject<T> getOrCreateReferenceObject(URI objectUri,
       Consumer<T> parameterSetters, Class<T> clazz, String referenceName) {
-    StorageObjectLock objectLock = getLock(objectUri);
-    objectLock.lock();
-    try {
-      StorageObject<?> storageObject =
-          load(objectUri, StorageLoadOption.skipData());
-      StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
-      StorageObject<T> newObjectSo;
-      if (referenceEntry == null) {
-        // Construct the ObjectMap.
-        newObjectSo = instanceOf(clazz);
-        T newObject;
-        try {
-          newObject = clazz.getConstructor().newInstance();
-        } catch (Exception e) {
-          throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+    StorageObject<?> storageObject =
+        load(objectUri, StorageLoadOption.skipData());
+    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
+    StorageObject<T> newObjectSo;
+    if (referenceEntry == null) {
+      StorageObjectLock objectLock = getLock(objectUri);
+      objectLock.lock();
+      try {
+        // read again, in locked state
+        storageObject = load(objectUri, StorageLoadOption.skipData());
+        referenceEntry = storageObject.getReference(referenceName);
+        if (referenceEntry == null) {
+          // Construct the ObjectMap.
+          newObjectSo = instanceOf(clazz);
+          T newObject;
+          try {
+            newObject = clazz.getConstructor().newInstance();
+          } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+          }
+          if (parameterSetters != null) {
+            parameterSetters.accept(newObject);
+          }
+          newObjectSo.setObject(newObject);
+          URI uri = save(newObjectSo);
+          storageObject.setReference(referenceName,
+              new ObjectReference().uri(uri).referenceId(referenceName));
+          storageObject.setStrictVersionCheck(true);
+          try {
+            save(storageObject);
+          } catch (ObjectModificationException e) {
+            // If the given object is modified in the mean time then we must retry the whole
+            // function.
+            return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
+          }
+          return newObjectSo;
         }
-        if (parameterSetters != null) {
-          parameterSetters.accept(newObject);
-        }
-        newObjectSo.setObject(newObject);
-        URI uri = save(newObjectSo);
-        storageObject.setReference(referenceName,
-            new ObjectReference().uri(uri).referenceId(referenceName));
-        storageObject.setStrictVersionCheck(true);
-        try {
-          save(storageObject);
-        } catch (ObjectModificationException e) {
-          // If the given object is modified in the mean time then we must retry the whole function.
-          return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
-        }
-        return newObjectSo;
-      } else {
-        ObjectReference referenceData = referenceEntry.getReferenceData();
-        return load(referenceData.getUri(), clazz);
+      } finally {
+        objectLock.unlock();
       }
-    } finally {
-      objectLock.unlock();
     }
+    ObjectReference referenceData = referenceEntry.getReferenceData();
+    return load(referenceData.getUri(), clazz);
   }
 
   /**

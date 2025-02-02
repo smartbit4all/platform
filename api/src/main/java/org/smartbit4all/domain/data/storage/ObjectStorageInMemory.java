@@ -140,4 +140,9 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     return null;
   }
 
+  @Override
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    return null;
+  }
+
 }
