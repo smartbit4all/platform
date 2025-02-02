@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -338,77 +340,99 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Scheduled(initialDelayString = "${invocationregistry.refresh-async-channels.fixeddelay:60000}",
       fixedDelayString = "${invocationregistry.refresh-async-channels.fixeddelay:60000}")
   public void refreshAsyncChannlers() {
-    try {
-      maintainLatch.await();
-    } catch (InterruptedException e) {
-      log.error("Wait for maintain interrupted.", e);
+    URI lockUri =
+        UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
+            "refreshAsyncChannlers");
+    Lock lock = objectApi.getLock(lockUri);
+    if (!lock.tryLock()) {
+      return;
     }
-    manageAsyncChannels(applicationRuntimeApi.getActiveRuntimes());
+    try {
+      try {
+        maintainLatch.await();
+      } catch (InterruptedException e) {
+        log.error("Wait for maintain interrupted.", e);
+      }
+      manageAsyncChannels(applicationRuntimeApi.getActiveRuntimes());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Override
   public void refreshRegistry() {
-    if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
-      return;
-    }
-    if (applicationRuntimeApi == null) {
-      // if there is ApplicationRuntimeApi, then we can't refresh the apis
-      return;
-    }
-    UUID myRuntimeUUID = applicationRuntimeApi.self().getUuid();
 
-    Set<URI> activeApis = new HashSet<>();
-    Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
-    // First of all fill our own apis. We don't need the getApis call to know what we are providing.
-    for (URI api : apiInstanceByApiDataUri.keySet()) {
-      List<UUID> runtimes =
-          activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
-      runtimes.add(myRuntimeUUID);
-    }
-
-    // Add our apis to the active apis. They are obviously active ones.
-    activeApis.addAll(apiInstanceByApiDataUri.keySet());
-
-    // Get apis from all active runtime. The current instance is an exception because we know what
-    // we are providing.
-    List<ApplicationRuntime> activeOtherRuntimes = applicationRuntimeApi.getActiveRuntimes()
-        .stream()
-        .filter(r -> !r.getUuid().equals(myRuntimeUUID)).collect(toList());
-    for (ApplicationRuntime applicationRuntime : activeOtherRuntimes) {
-      List<URI> runtimeApis = applicationRuntimeApi.getApis(applicationRuntime.getUuid());
-
-      if (!CollectionUtils.isEmpty(runtimeApis)) {
-        for (URI api : runtimeApis) {
-          List<UUID> runtimes =
-              activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
-          runtimes.add(applicationRuntime.getUuid());
-        }
-
-        activeApis.addAll(runtimeApis);
+    URI lockUri =
+        UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
+            "refreshRegistry");
+    Lock lock = objectApi.getLock(lockUri);
+    lock.lock();
+    try {
+      if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
+        return;
       }
+      if (applicationRuntimeApi == null) {
+        // if there is ApplicationRuntimeApi, then we can't refresh the apis
+        return;
+      }
+      UUID myRuntimeUUID = applicationRuntimeApi.self().getUuid();
+
+      Set<URI> activeApis = new HashSet<>();
+      Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
+      // First of all fill our own apis. We don't need the getApis call to know what we are
+      // providing.
+      for (URI api : apiInstanceByApiDataUri.keySet()) {
+        List<UUID> runtimes =
+            activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
+        runtimes.add(myRuntimeUUID);
+      }
+
+      // Add our apis to the active apis. They are obviously active ones.
+      activeApis.addAll(apiInstanceByApiDataUri.keySet());
+
+      // Get apis from all active runtime. The current instance is an exception because we know what
+      // we are providing.
+      List<ApplicationRuntime> activeOtherRuntimes = applicationRuntimeApi.getActiveRuntimes()
+          .stream()
+          .filter(r -> !r.getUuid().equals(myRuntimeUUID)).collect(toList());
+      for (ApplicationRuntime applicationRuntime : activeOtherRuntimes) {
+        List<URI> runtimeApis = applicationRuntimeApi.getApis(applicationRuntime.getUuid());
+
+        if (!CollectionUtils.isEmpty(runtimeApis)) {
+          for (URI api : runtimeApis) {
+            List<UUID> runtimes =
+                activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
+            runtimes.add(applicationRuntime.getUuid());
+          }
+
+          activeApis.addAll(runtimeApis);
+        }
+      }
+
+      runtimesByApis = activeRuntimesByApisMap;
+
+      // Add the MDM registered apis to the active apis.
+      activeApis.addAll(collectionApi.list(apiRegistryList).uris());
+
+      List<URI> currentActiveApiUris = apiRegister.values().stream()
+          .flatMap(m -> m.values().stream().map(ad -> ad.getApiData().getUri())).collect(toList());
+
+      // apis that become active
+      Set<URI> apisToAdd = new HashSet<>(activeApis);
+      apisToAdd.removeAll(currentActiveApiUris);
+
+      // apis that are not active anymore
+      Set<URI> apisToRemove = new HashSet<>(currentActiveApiUris);
+      apisToRemove.removeAll(activeApis);
+
+      // apis = activeApis;
+      addApis(apisToAdd);
+      removeApis(apisToRemove);
+      // At last we manage the channels of the
+      maintainLatch.countDown();
+    } finally {
+      lock.unlock();
     }
-
-    runtimesByApis = activeRuntimesByApisMap;
-
-    // Add the MDM registered apis to the active apis.
-    activeApis.addAll(collectionApi.list(apiRegistryList).uris());
-
-    List<URI> currentActiveApiUris = apiRegister.values().stream()
-        .flatMap(m -> m.values().stream().map(ad -> ad.getApiData().getUri())).collect(toList());
-
-    // apis that become active
-    Set<URI> apisToAdd = new HashSet<>(activeApis);
-    apisToAdd.removeAll(currentActiveApiUris);
-
-    // apis that are not active anymore
-    Set<URI> apisToRemove = new HashSet<>(currentActiveApiUris);
-    apisToRemove.removeAll(activeApis);
-
-    // apis = activeApis;
-    addApis(apisToAdd);
-    removeApis(apisToRemove);
-    // At last we manage the channels of the
-    maintainLatch.countDown();
   }
 
   /**
@@ -475,18 +499,29 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Scheduled(
       fixedDelayString = "${InvocationRegisterApi.readScheduledInvocations.fixeddelay:5000}")
   public void readScheduledInvocations() {
-    if (executorService != null && channels != null) {
-      channels.stream().map(c -> executorService.submit(() -> {
-        enqueueScheduledInvocations(c);
-      })).forEach(f -> {
-        try {
-          f.get();
-        } catch (InterruptedException e) {
-          log.error("The scheduled request processing was interrupted.", e);
-        } catch (ExecutionException e) {
-          log.error("The scheduled request processing produced exception.", e);
-        }
-      });
+    URI lockUri =
+        UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
+            "readScheduledInvocations");
+    Lock lock = objectApi.getLock(lockUri);
+    if (!lock.tryLock()) {
+      return;
+    }
+    try {
+      if (executorService != null && channels != null) {
+        channels.stream().map(c -> executorService.submit(() -> {
+          enqueueScheduledInvocations(c);
+        })).forEach(f -> {
+          try {
+            f.get();
+          } catch (InterruptedException e) {
+            log.error("The scheduled request processing was interrupted.", e);
+          } catch (ExecutionException e) {
+            log.error("The scheduled request processing produced exception.", e);
+          }
+        });
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
