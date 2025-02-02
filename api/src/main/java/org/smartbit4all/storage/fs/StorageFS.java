@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,9 +119,6 @@ public class StorageFS extends ObjectStorageImpl {
   @Autowired
   private StorageApi storageApi;
 
-  @Autowired
-  private ObjectStorage self;
-
   /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
@@ -214,22 +210,7 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockSupplier(objectUri);
-    }
-
-    return () -> {
-      try {
-        return self.lockObject(getUriWithoutVersion(objectUri), -1);
-      } catch (Exception e) {
-        throw new IllegalStateException("Unable to lock object " + objectUri, e);
-      }
-    };
-  }
-
-  @Override
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
     StorageTransaction transaction =
         transactionManager != null ? transactionManager.getCurrentTransaction() : null;
     FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
@@ -274,7 +255,7 @@ public class StorageFS extends ObjectStorageImpl {
         try {
           FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
         } catch (Exception e) {
-          throw new IllegalStateException("Unable to lock object " + l.getObjectUri(), e);
+          throw new IllegalStateException("Unable to unlock object " + l.getObjectUri(), e);
         }
       }
     };
@@ -965,11 +946,6 @@ public class StorageFS extends ObjectStorageImpl {
     return new StoredSequenceStorageImpl(storageApi,
         CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
         name);
-  }
-
-  @Override
-  protected ObjectStorage self() {
-    return self;
   }
 
 }

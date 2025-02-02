@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -167,23 +166,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockSupplier(objectUri);
-    }
-
-    return () -> {
-      try {
-        return self.lockObject(getUriWithoutVersion(objectUri), -1);
-      } catch (Exception e) {
-        throw new IllegalStateException("Unable to lock object " + objectUri, e);
-      }
-    };
-  }
-
-  @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
     long start = System.currentTimeMillis();
     String objectUriString = objectUri.toString();
     UUID currentRuntime = runtimeApi().self().getUuid();
@@ -210,7 +194,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           }
           if (runtimeApi().getActiveRuntimes().stream()
               .anyMatch(r -> Objects.equals(runtimeUUID, r.getUuid()))) {
-            // it's someone active, continue waiting
+            // it's someone active, continue waiting, except if nowait
+            if (nowait) {
+              return null;
+            }
             continue;
           }
           // inactive runtime detected, update runtime (claim to me)
@@ -1276,10 +1263,5 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return extensionsCache.get(extensionId(shema, qualifiedName));
     }
     return null;
-  }
-
-  @Override
-  protected ObjectStorage self() {
-    return self;
   }
 }

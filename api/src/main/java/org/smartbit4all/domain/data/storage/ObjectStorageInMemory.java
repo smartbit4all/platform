@@ -135,13 +135,9 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil) {
+  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  @Override
-  protected ObjectStorage self() {
-    return this;
-  }
 }

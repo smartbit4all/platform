@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -67,6 +68,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   protected static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
 
   protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+  @Autowired
+  protected ObjectStorage self;
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -150,8 +154,18 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    *
    * @return The supplier
    */
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    return null;
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return null;
+    }
+
+    return (nowait) -> {
+      try {
+        return self.lockObject(getUriWithoutVersion(objectUri), -1, nowait);
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to lock object " + objectUri, e);
+      }
+    };
   }
 
   /**
@@ -197,7 +211,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
           final StorageObjectLockEntry newEntry =
               new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
                   physicalLockReleaser(),
-                  self());
+                  self);
           newEntry.setLockRemover(uri -> {
             lockMutex.lock();
             try {
@@ -222,8 +236,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return null;
   }
-
-  protected abstract ObjectStorage self();
 
   @Override
   public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,

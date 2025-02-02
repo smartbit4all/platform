@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import org.smartbit4all.core.utility.ListBasedMap;
 
 /**
@@ -64,9 +64,9 @@ final class StorageObjectLockEntry {
 
   /**
    * This is a supplier for the physical lock. Can be used to acquire the physical lock when the
-   * first {@link StorageObjectLock} is activated via an operation.
+   * first {@link StorageObjectLock} is activated via an operation. Boolean para
    */
-  private Supplier<StorageObjectPhysicalLock> acquirePhysicalLock;
+  private Function<Boolean, StorageObjectPhysicalLock> acquirePhysicalLock;
 
   /**
    * If the given {@link ObjectStorage} implementation supports then this object holds the physical.
@@ -104,7 +104,7 @@ final class StorageObjectLockEntry {
    *
    */
   StorageObjectLockEntry(URI objectURI,
-      Supplier<StorageObjectPhysicalLock> acquire,
+      Function<Boolean, StorageObjectPhysicalLock> acquire,
       Consumer<StorageObjectPhysicalLock> releaser,
       ObjectStorage objectStorage) {
     super();
@@ -149,14 +149,14 @@ final class StorageObjectLockEntry {
   /**
    * This function is lately ensure that we own the physical lock for an object.
    */
-  void ensurePhysicalLock() {
+  void ensurePhysicalLock(boolean nowait) {
     if (acquirePhysicalLock == null) {
       return;
     }
     mutexInstanceRegister.lock();
     try {
       if (physicalLock == null) {
-        physicalLock = acquirePhysicalLock.get();
+        physicalLock = acquirePhysicalLock.apply(nowait);
       }
     } finally {
       mutexInstanceRegister.unlock();

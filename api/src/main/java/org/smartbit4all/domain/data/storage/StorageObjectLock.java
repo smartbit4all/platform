@@ -1,12 +1,9 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import org.smartbit4all.api.invocation.AsyncInvocationRequestEntry;
 
 /**
  * The {@link StorageObjectLock} is a memory lock for the object URIs managed by an
@@ -62,7 +59,7 @@ public final class StorageObjectLock implements Lock {
 
   @Override
   public boolean tryLock() {
-    check();
+    check(true);
     return entry.getMutex().tryLock();
   }
 
@@ -84,10 +81,14 @@ public final class StorageObjectLock implements Lock {
   }
 
   private final void check() {
+    check(false);
+  }
+
+  private final void check(boolean nowait) {
     if (entry == null) {
       throw new IllegalStateException("The lock has been released already.");
     }
-    entry.ensurePhysicalLock();
+    entry.ensurePhysicalLock(nowait);
   }
 
   @Override
