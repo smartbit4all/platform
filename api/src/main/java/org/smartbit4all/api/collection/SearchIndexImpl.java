@@ -218,8 +218,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
         || readFromStorage) {
 
       Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
+      // TODO check if expression contains detail related properties, and query only those
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
-          propertiesToQuery, false);
+          propertiesToQuery, true);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
