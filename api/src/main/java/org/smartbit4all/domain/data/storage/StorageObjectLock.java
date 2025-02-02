@@ -59,8 +59,11 @@ public final class StorageObjectLock implements Lock {
 
   @Override
   public boolean tryLock() {
-    check(true);
-    return entry.getMutex().tryLock();
+    if (check(true)) {
+      return entry.getMutex().tryLock();
+    }
+    // physical lock not acquired, don't wait for it
+    return false;
   }
 
   @Override
@@ -84,11 +87,11 @@ public final class StorageObjectLock implements Lock {
     check(false);
   }
 
-  private final void check(boolean nowait) {
+  private final boolean check(boolean nowait) {
     if (entry == null) {
       throw new IllegalStateException("The lock has been released already.");
     }
-    entry.ensurePhysicalLock(nowait);
+    return entry.ensurePhysicalLock(nowait);
   }
 
   @Override

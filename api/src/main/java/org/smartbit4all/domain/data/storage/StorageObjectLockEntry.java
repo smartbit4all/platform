@@ -148,10 +148,13 @@ final class StorageObjectLockEntry {
 
   /**
    * This function is lately ensure that we own the physical lock for an object.
+   *
+   * @return returns if physical lock acquired
    */
-  void ensurePhysicalLock(boolean nowait) {
+  boolean ensurePhysicalLock(boolean nowait) {
     if (acquirePhysicalLock == null) {
-      return;
+      // no acquire callback, assume physical lock is always present
+      return true;
     }
     mutexInstanceRegister.lock();
     try {
@@ -161,6 +164,7 @@ final class StorageObjectLockEntry {
     } finally {
       mutexInstanceRegister.unlock();
     }
+    return physicalLock != null;
   }
 
   /**
