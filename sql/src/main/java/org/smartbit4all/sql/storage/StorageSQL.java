@@ -68,9 +68,12 @@ import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -199,7 +202,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         return new StorageObjectPhysicalLock(objectUri);
       }
       // lock didn't exist -> create new one
-      Crud.create(createLockRecord(objectUriString, currentRuntime));
+      try {
+        Crud.create(createLockRecord(objectUriString, currentRuntime));
+      } catch (DataAccessException e) {
+        // other node already created the lock
+        log.info("other node already created the lock");
+        return null;
+      }
       return new StorageObjectPhysicalLock(objectUri);
     } catch (Exception e) {
       throw new IllegalStateException("Unable to lock " + objectUri, e);
@@ -245,6 +254,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
     Function<Boolean, StorageObjectPhysicalLock> result = super.physicalLockSupplier(objectUri);
     if (result == null) {
+      // TODO move to super, if runtime if available
       throw new IllegalStateException("No physicalLockSupplier for object " + objectUri);
     }
     return result;
@@ -840,6 +850,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               log.trace("Cache - load, size:{} ", versionContentCache.size());
             }
             versionContentCache.put(id, row);
+            addedToCache(id);
           }
         });
       }
@@ -851,6 +862,47 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     versionRows.putAll(cachedVersions);
 
     return versionRows;
+  }
+
+  private void addedToCache(String id) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      cachedInTransaction.get().add(id);
+      registerStorageCacheTransactionHandler();
+    }
+  }
+
+  /**
+   * resource identifier for StorageObjectLock unlock handler
+   */
+  private static final String STORAGE_CACHE_HANDLER = "STORAGE_CACHE_HANDLER";
+
+  protected ThreadLocal<Set<String>> cachedInTransaction =
+      ThreadLocal.withInitial(() -> new HashSet<>());
+
+  protected void registerStorageCacheTransactionHandler() {
+    if (!TransactionSynchronizationManager.hasResource(STORAGE_CACHE_HANDLER)) {
+      TransactionSynchronizationManager
+          .registerSynchronization(new StorageCacheTransactionHandler());
+      TransactionSynchronizationManager.bindResource(STORAGE_CACHE_HANDLER, true);
+    }
+  }
+
+  protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
+
+    @Override
+    public void afterCompletion(int status) {
+      if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+        if (!cachedInTransaction.get().isEmpty()) {
+          versionContentCache.invalidateAll(cachedInTransaction.get());
+        }
+      }
+      cachedInTransaction.remove();
+
+      if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      TransactionSynchronizationManager.unbindResource(STORAGE_CACHE_HANDLER);
+    }
   }
 
   private Map<String, DataRow> queryObjectEntries(List<UriInfo> uriInfos) {
@@ -1020,7 +1072,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               if (log.isTraceEnabled()) {
                 log.trace("Cache - load, size:{} ", versionContentCache.size());
               }
-              return queryObjectVersionInner(id, version, skipContent);
+              DataRow row = queryObjectVersionInner(id, version, skipContent);
+              addedToCache(cacheId);
+              return row;
             });
       } catch (ExecutionException e) {
         log.warn("Unable to load to cache", e);
