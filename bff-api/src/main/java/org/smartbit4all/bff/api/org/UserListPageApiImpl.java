@@ -74,7 +74,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected void addActionsToRow(GridRow row) {
-    row.getActions().addAll(getUserRowActions());
+    row.getActions().addAll(getUserRowActions(row));
   }
 
   protected void refreshGrid(UUID viewUuid) {
@@ -104,7 +104,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
   }
 
-  protected List<UiAction> getUserRowActions() {
+  protected List<UiAction> getUserRowActions(GridRow row) {
     return Arrays.asList(
         new UiAction().code(OPEN_USER_EDITOR_PAGE));
   }
