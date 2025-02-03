@@ -345,6 +345,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             "refreshAsyncChannlers");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
+      if (lock instanceof StorageObjectLock) {
+        ((StorageObjectLock) lock).release();
+      }
       return;
     }
     try {
@@ -499,68 +502,71 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   @Scheduled(
       fixedDelayString = "${InvocationRegisterApi.readScheduledInvocations.fixeddelay:5000}")
   public void readScheduledInvocations() {
-    if (executorService != null && channels != null) {
-      channels.stream().map(c -> executorService.submit(() -> {
-        enqueueScheduledInvocations(c);
-      })).forEach(f -> {
-        try {
-          f.get();
-        } catch (InterruptedException e) {
-          log.error("The scheduled request processing was interrupted.", e);
-        } catch (ExecutionException e) {
-          log.error("The scheduled request processing produced exception.", e);
-        }
-      });
-    }
-  }
-
-  public void enqueueScheduledInvocations(AsyncInvocationChannel channel) {
     URI lockUri =
         UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
-            "readScheduledInvocations-" + channel.getName());
+            "readScheduledInvocations-");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
+      if (lock instanceof StorageObjectLock) {
+        ((StorageObjectLock) lock).release();
+      }
       return;
     }
     try {
-
-      StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
-          collectionApi.reference(Invocations.INVOCATION_SCHEME,
-              scheduledInvocationReferenceName(channel.getName()),
-              AsyncChannelScheduledInvocationList.class);
-      OffsetDateTime limitTime = OffsetDateTime.now().minusSeconds(5);
-      if (refScheduled.exists()) {
-        refScheduled.update(scheduledList -> {
-          // check if list exists
-          scheduledList =
-              scheduledList == null ? new AsyncChannelScheduledInvocationList() : scheduledList;
-          // The list of invocation is always ordered by the schedule time.
-          List<ScheduledInvocationRequest> toExecute = new ArrayList<>();
-          for (int idx = 0; idx < scheduledList.getInvocationRequests().size(); idx++) {
-            ScheduledInvocationRequest scheduledInvocationRequest =
-                scheduledList.getInvocationRequests().get(idx);
-            if (scheduledInvocationRequest.getScheduledAt().isAfter(limitTime)) {
-              // If we found the first scheduled invocation that before the limit time then we stop
-              // because until this item we had all the requests to be enqueued. The idx is now on
-              // the
-              // first request that shouldn't be enqueued.
-              break;
-            }
-            toExecute.add(scheduledInvocationRequest);
+      if (executorService != null && channels != null) {
+        channels.stream().map(c -> executorService.submit(() -> {
+          enqueueScheduledInvocations(c);
+        })).forEach(f -> {
+          try {
+            f.get();
+          } catch (InterruptedException e) {
+            log.error("The scheduled request processing was interrupted.", e);
+          } catch (ExecutionException e) {
+            log.error("The scheduled request processing produced exception.", e);
           }
-          if (!toExecute.isEmpty()) {
-            // We have a list of requests to be executed immediately. Remove them from the scheduled
-            // list.
-            scheduledList.getInvocationRequests().subList(0, toExecute.size()).clear();
-            saveAndEnqueueInvocationRequest(channel,
-                toExecute.stream().map(si -> objectApi.getLatestUri(si.getRequestUri()))
-                    .collect(toList()));
-          }
-          return scheduledList;
         });
       }
     } finally {
       lock.unlock();
+    }
+  }
+
+  public void enqueueScheduledInvocations(AsyncInvocationChannel channel) {
+
+    StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
+        collectionApi.reference(Invocations.INVOCATION_SCHEME,
+            scheduledInvocationReferenceName(channel.getName()),
+            AsyncChannelScheduledInvocationList.class);
+    OffsetDateTime limitTime = OffsetDateTime.now().minusSeconds(5);
+    if (refScheduled.exists()) {
+      refScheduled.update(scheduledList -> {
+        // check if list exists
+        scheduledList =
+            scheduledList == null ? new AsyncChannelScheduledInvocationList() : scheduledList;
+        // The list of invocation is always ordered by the schedule time.
+        List<ScheduledInvocationRequest> toExecute = new ArrayList<>();
+        for (int idx = 0; idx < scheduledList.getInvocationRequests().size(); idx++) {
+          ScheduledInvocationRequest scheduledInvocationRequest =
+              scheduledList.getInvocationRequests().get(idx);
+          if (scheduledInvocationRequest.getScheduledAt().isAfter(limitTime)) {
+            // If we found the first scheduled invocation that before the limit time then we stop
+            // because until this item we had all the requests to be enqueued. The idx is now on
+            // the
+            // first request that shouldn't be enqueued.
+            break;
+          }
+          toExecute.add(scheduledInvocationRequest);
+        }
+        if (!toExecute.isEmpty()) {
+          // We have a list of requests to be executed immediately. Remove them from the scheduled
+          // list.
+          scheduledList.getInvocationRequests().subList(0, toExecute.size()).clear();
+          saveAndEnqueueInvocationRequest(channel,
+              toExecute.stream().map(si -> objectApi.getLatestUri(si.getRequestUri()))
+                  .collect(toList()));
+        }
+        return scheduledList;
+      });
     }
   }
 
