@@ -112,7 +112,7 @@ public final class StorageObjectLock implements Lock {
   /**
    * Release the given object. We won't be able to use it again.
    */
-  final void release() {
+  public final void release() {
     if (entry != null) {
       entry.releaseLock(this);
       entry = null;
