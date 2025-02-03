@@ -161,8 +161,19 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     return (nowait) -> {
       try {
-        return self.lockObject(getUriWithoutVersion(objectUri), -1, nowait);
+        URI uri = getUriWithoutVersion(objectUri);
+        while (true) {
+          StorageObjectPhysicalLock lockObject =
+              self.lockPhysicalObject(uri, -1);
+          if (lockObject != null || Boolean.TRUE.equals(nowait)) {
+            return lockObject;
+          }
+          Thread.sleep(10); // TODO timeout handling?
+        }
       } catch (Exception e) {
+        if (Boolean.TRUE.equals(nowait)) {
+          return null;
+        }
         throw new IllegalStateException("Unable to lock object " + objectUri, e);
       }
     };
@@ -175,7 +186,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @return The consumer
    */
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    return null;
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return null;
+    }
+    return lock -> {
+      self.unlockPhysicalObject(lock);
+    };
   }
 
   /**

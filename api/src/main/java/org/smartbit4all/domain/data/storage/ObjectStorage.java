@@ -218,7 +218,9 @@ public interface ObjectStorage {
    */
   StoredSequence getSequence(String schema, String name);
 
-  StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait);
+  StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil);
+
+  void unlockPhysicalObject(StorageObjectPhysicalLock lock);
 
   /**
    * We have this constructor method to avoid having public setters in the {@link StorageObject}.

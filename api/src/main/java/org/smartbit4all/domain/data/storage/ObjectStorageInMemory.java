@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -135,9 +136,14 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    // TODO Auto-generated method stub
   }
 
   @Override
@@ -145,4 +151,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     return null;
   }
 
+  @Override
+  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
+    return null;
+  }
 }

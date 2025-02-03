@@ -9,6 +9,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.utility.ListBasedMap;
 
 /**
@@ -17,6 +19,8 @@ import org.smartbit4all.core.utility.ListBasedMap;
  * @author Peter Boros
  */
 final class StorageObjectLockEntry {
+
+  private static final Logger log = LoggerFactory.getLogger(StorageObjectLockEntry.class);
 
   private static class InstanceEntry {
 
@@ -161,10 +165,10 @@ final class StorageObjectLockEntry {
       if (physicalLock == null) {
         physicalLock = acquirePhysicalLock.apply(nowait);
       }
+      return physicalLock != null;
     } finally {
       mutexInstanceRegister.unlock();
     }
-    return physicalLock != null;
   }
 
   /**

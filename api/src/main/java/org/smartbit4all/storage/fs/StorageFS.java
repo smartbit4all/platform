@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -210,7 +209,7 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
     StorageTransaction transaction =
         transactionManager != null ? transactionManager.getCurrentTransaction() : null;
     FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
@@ -246,19 +245,14 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockReleaser();
-    }
-    return l -> {
-      if (l != null) {
-        try {
-          FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
-        } catch (Exception e) {
-          throw new IllegalStateException("Unable to unlock object " + l.getObjectUri(), e);
-        }
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    if (lock != null) {
+      try {
+        FileIO.unlockObjectFile(getObjectLockFile(lock.getObjectUri()), -1);
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
       }
-    };
+    }
   }
 
   /**

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -167,57 +168,41 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public StorageObjectPhysicalLock lockObject(URI objectUri, long waitUntil, boolean nowait) {
-    long start = System.currentTimeMillis();
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
     String objectUriString = objectUri.toString();
     UUID currentRuntime = runtimeApi().self().getUuid();
-    while (true) {
-      try {
-        DataRow objectLockRow;
-        try {
-          objectLockRow = Crud.read(objectEntryLockDef)
-              .select(objectEntryLockDef.allProperties())
-              .where(objectEntryLockDef.objectUri().eq(objectUriString)).lock()
-              .onlyOne()
-              .orElse(null);
-        } catch (Exception e) {
-          objectLockRow = null;
-        }
-
-        if (objectLockRow != null) {
-          // If it is not null and this runtime is the owneer then we can return. Else we must wait.
-          UUID runtimeUUID =
-              UUID.fromString(objectLockRow.get(objectEntryLockDef.applicationRuntime()));
-          if (Objects.equals(runtimeUUID, currentRuntime)) {
-            // it's us, return lock
-            return new StorageObjectPhysicalLock(objectUri);
-          }
-          if (runtimeApi().getActiveRuntimes().stream()
-              .anyMatch(r -> Objects.equals(runtimeUUID, r.getUuid()))) {
-            // it's someone active, continue waiting, except if nowait
-            if (nowait) {
-              return null;
-            }
-            continue;
-          }
-          // inactive runtime detected, update runtime (claim to me)
-          Crud.update(createLockRecord(objectUriString, currentRuntime));
-          return new StorageObjectPhysicalLock(objectUri);
-        } else {
-          // lock didn't exist or we deleted it -> create new on
-          Crud.create(createLockRecord(objectUriString, currentRuntime));
+    DataRow objectLockRow;
+    try {
+      objectLockRow = Crud.read(objectEntryLockDef)
+          .select(objectEntryLockDef.allProperties())
+          .where(objectEntryLockDef.objectUri().eq(objectUriString)).lock()
+          .onlyOne()
+          .orElse(null);
+    } catch (Exception e) {
+      objectLockRow = null;
+    }
+    try {
+      if (objectLockRow != null) {
+        UUID runtimeUUID =
+            UUID.fromString(objectLockRow.get(objectEntryLockDef.applicationRuntime()));
+        if (Objects.equals(runtimeUUID, currentRuntime)) {
+          // it's us, return lock
           return new StorageObjectPhysicalLock(objectUri);
         }
-
-      } catch (Exception e) {
-        long currentTimeMillis = System.currentTimeMillis();
-        if (log.isTraceEnabled()) {
-          log.trace("Unable to lock " + objectUri, e);
+        if (runtimeApi().getActiveRuntimes().stream()
+            .anyMatch(r -> Objects.equals(runtimeUUID, r.getUuid()))) {
+          // it's someone active, no success this time
+          return null;
         }
-        if (!(waitUntil == -1 || (currentTimeMillis - start) < waitUntil)) {
-          throw new IllegalStateException("Unable to lock " + objectUri, e);
-        }
+        // inactive runtime detected, update runtime (claim to me)
+        Crud.update(createLockRecord(objectUriString, currentRuntime));
+        return new StorageObjectPhysicalLock(objectUri);
       }
+      // lock didn't exist -> create new one
+      Crud.create(createLockRecord(objectUriString, currentRuntime));
+      return new StorageObjectPhysicalLock(objectUri);
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to lock " + objectUri, e);
     }
   }
 
@@ -235,29 +220,43 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockReleaser();
-    }
-    return l -> {
-      if (l != null) {
-        try {
-          Crud.delete(TableDatas
-              .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
-              .addRow()
-              .set(objectEntryLockDef.objectUri(),
-                  getUriString(getUriWithoutVersion(l.getObjectUri())))
-              .build());
-        } catch (Exception e) {
-          throw new IllegalStateException("Unable to unlock object " + l.getObjectUri(), e);
-        }
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    if (lock != null) {
+      try {
+        Crud.delete(TableDatas
+            .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
+            .addRow()
+            .set(objectEntryLockDef.objectUri(),
+                getUriString(getUriWithoutVersion(lock.getObjectUri())))
+            .build());
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
       }
-    };
+    }
   }
 
   @Override
   protected boolean lockOnSave() {
     return false;
+  }
+
+  @Override
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    Function<Boolean, StorageObjectPhysicalLock> result = super.physicalLockSupplier(objectUri);
+    if (result == null) {
+      throw new IllegalStateException("No physicalLockSupplier for object " + objectUri);
+    }
+    return result;
+  }
+
+  @Override
+  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
+    Consumer<StorageObjectPhysicalLock> result = super.physicalLockReleaser();
+    if (result == null) {
+      throw new IllegalStateException("No physicalLockReleaser");
+    }
+    return result;
   }
 
   /**
