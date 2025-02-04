@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.data.storage;
 
-import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -30,6 +29,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -102,6 +102,12 @@ public final class Storage {
    */
   private static final Pattern validUriPattern = Pattern.compile(
       "[A-Za-z0-9\\-._~!$&'()*+,;=:@ÁáÉéÍíÓóÖöŐőÚúÜüŰűÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜüŸÿÇç]*");
+
+  /**
+   * Set true to use the second to construct the URI in the
+   * {@link #constructUri(ObjectDefinition, UUID, String)} function.
+   */
+  private Boolean useSecondInUri = false;
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
@@ -664,6 +670,8 @@ public final class Storage {
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
         + now.getMinute() + StringConstant.SLASH
+        + (Boolean.TRUE.equals(useSecondInUri) ? now.getSecond() + StringConstant.SLASH
+            : StringConstant.EMPTY)
         + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? SINGLE_VERSION_URI_POSTFIX
             : StringConstant.EMPTY));
   }
@@ -894,6 +902,14 @@ public final class Storage {
 
   public StoredSequence getSequence(String schema, String name) {
     return objectStorage.getSequence(schema, name);
+  }
+
+  public final Boolean getUseSecondInUri() {
+    return useSecondInUri;
+  }
+
+  public final void setUseSecondInUri(Boolean useSecondInUri) {
+    this.useSecondInUri = useSecondInUri;
   }
 
 }

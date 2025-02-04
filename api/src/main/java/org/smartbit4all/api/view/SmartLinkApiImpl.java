@@ -152,6 +152,9 @@ public class SmartLinkApiImpl implements SmartLinkApi {
               getMigrationStatusName(channel),
               SmartLinkMigrationStatus.class);
       refMigrationStatus.update(s -> {
+        if (s == null) {
+          s = new SmartLinkMigrationStatus();
+        }
         return s.channel(channel);
       });
       Lock migrationLock = objectApi.getLock(refMigrationStatus.getUri());
