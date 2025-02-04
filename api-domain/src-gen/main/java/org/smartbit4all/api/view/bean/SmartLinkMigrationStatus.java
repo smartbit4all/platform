@@ -20,19 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * A reference object to store if the given application is already updated the storage schema of the smartlink. 
  */
-@ApiModel(description = "A reference object to store if the given application is already updated the storage schema of the smartlink. ")
+@Schema(description = "A reference object to store if the given application is already updated the storage schema of the smartlink. ")
 @JsonPropertyOrder({
   SmartLinkMigrationStatus.STATUS,
   SmartLinkMigrationStatus.CHANNEL,
@@ -40,8 +39,7 @@ import javax.validation.Valid;
   SmartLinkMigrationStatus.FINISHED_AT,
   SmartLinkMigrationStatus.ERROR
 })
-@JsonTypeName("SmartLinkMigrationStatus")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartLinkMigrationStatus {
   /**
    * Gets or Sets status
@@ -95,7 +93,7 @@ public class SmartLinkMigrationStatus {
   public static final String ERROR = "error";
   private InvocationError error = null;
 
-  public SmartLinkMigrationStatus() { 
+  public SmartLinkMigrationStatus() {
   }
 
   public SmartLinkMigrationStatus status(StatusEnum status) {
@@ -104,12 +102,13 @@ public class SmartLinkMigrationStatus {
     return this;
   }
 
-   /**
+  /**
    * Get status
    * @return status
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(STATUS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,19 +123,19 @@ public class SmartLinkMigrationStatus {
     this.status = status;
   }
 
-
   public SmartLinkMigrationStatus channel(String channel) {
     
     this.channel = channel;
     return this;
   }
 
-   /**
+  /**
    * The name fo the channel the migration was running on.
    * @return channel
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name fo the channel the migration was running on.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name fo the channel the migration was running on.")
   @JsonProperty(CHANNEL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -151,20 +150,20 @@ public class SmartLinkMigrationStatus {
     this.channel = channel;
   }
 
-
   public SmartLinkMigrationStatus startAt(OffsetDateTime startAt) {
     
     this.startAt = startAt;
     return this;
   }
 
-   /**
+  /**
    * The exact time of the migration start.
    * @return startAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The exact time of the migration start.")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The exact time of the migration start.")
   @JsonProperty(START_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -179,20 +178,20 @@ public class SmartLinkMigrationStatus {
     this.startAt = startAt;
   }
 
-
   public SmartLinkMigrationStatus finishedAt(OffsetDateTime finishedAt) {
     
     this.finishedAt = finishedAt;
     return this;
   }
 
-   /**
+  /**
    * The exact time of the migration finish.
    * @return finishedAt
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The exact time of the migration finish.")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The exact time of the migration finish.")
   @JsonProperty(FINISHED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -207,20 +206,20 @@ public class SmartLinkMigrationStatus {
     this.finishedAt = finishedAt;
   }
 
-
   public SmartLinkMigrationStatus error(InvocationError error) {
     
     this.error = error;
     return this;
   }
 
-   /**
+  /**
    * The error during the migration if any.
    * @return error
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The error during the migration if any.")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The error during the migration if any.")
   @JsonProperty(ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -234,7 +233,6 @@ public class SmartLinkMigrationStatus {
   public void setError(InvocationError error) {
     this.error = error;
   }
-
 
   @Override
   public boolean equals(Object o) {

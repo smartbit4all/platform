@@ -20,25 +20,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * This is a generic container object that can be saved based on the id property. The referred object uri points to the data object itself. 
  */
-@ApiModel(description = "This is a generic container object that can be saved based on the id property. The referred object uri points to the data object itself. ")
+@Schema(description = "This is a generic container object that can be saved based on the id property. The referred object uri points to the data object itself. ")
 @JsonPropertyOrder({
   ObjectReferenceById.URI,
   ObjectReferenceById.ID,
   ObjectReferenceById.REF_OBJECT_URI
 })
-@JsonTypeName("ObjectReferenceById")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectReferenceById {
   public static final String URI = "uri";
   private URI uri;
@@ -49,7 +47,7 @@ public class ObjectReferenceById {
   public static final String REF_OBJECT_URI = "refObjectUri";
   private URI refObjectUri;
 
-  public ObjectReferenceById() { 
+  public ObjectReferenceById() {
   }
 
   public ObjectReferenceById uri(URI uri) {
@@ -58,13 +56,14 @@ public class ObjectReferenceById {
     return this;
   }
 
-   /**
+  /**
    * Get uri
    * @return uri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,19 +78,19 @@ public class ObjectReferenceById {
     this.uri = uri;
   }
 
-
   public ObjectReferenceById id(String id) {
     
     this.id = id;
     return this;
   }
 
-   /**
+  /**
    * The identifier string for the reference that can be used to create URI (no special characters are included).
    * @return id
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The identifier string for the reference that can be used to create URI (no special characters are included).")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The identifier string for the reference that can be used to create URI (no special characters are included).")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -106,20 +105,20 @@ public class ObjectReferenceById {
     this.id = id;
   }
 
-
   public ObjectReferenceById refObjectUri(URI refObjectUri) {
     
     this.refObjectUri = refObjectUri;
     return this;
   }
 
-   /**
+  /**
    * Get refObjectUri
    * @return refObjectUri
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REF_OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -133,7 +132,6 @@ public class ObjectReferenceById {
   public void setRefObjectUri(URI refObjectUri) {
     this.refObjectUri = refObjectUri;
   }
-
 
   @Override
   public boolean equals(Object o) {
