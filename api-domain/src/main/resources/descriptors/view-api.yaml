@@ -1219,6 +1219,27 @@ components:
           description: If the user who clicked the link, is not part of the acl, an error page will open.
           type: string
           format: uri
+    SmartLinkMigrationStatus:
+      description: |
+        A reference object to store if the given application is already updated the storage schema of the smartlink.
+      type: object
+      properties:
+        status:
+          enum: [RUNNING, FAILED, DONE]
+        channel:
+          description: The name fo the channel the migration was running on.
+          type: string
+        startAt:
+          description: The exact time of the migration start.
+          type: string
+          format: date-time
+        finishedAt:
+          description: The exact time of the migration finish.
+          type: string
+          format: date-time
+        error:
+          description: The error during the migration if any.
+          type: InvocationError
     # UiAction descriptors
     UiActionDescriptor:
       type: object

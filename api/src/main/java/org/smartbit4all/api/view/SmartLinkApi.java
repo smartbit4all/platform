@@ -73,4 +73,11 @@ public interface SmartLinkApi {
    */
   ObjectNode getSmartLink(String channel, UUID smartLinkUuid);
 
+  /**
+   * Do the migration for a channel of smart link.
+   * 
+   * @param channel The name of the channel to migrate.
+   */
+  void migrate(String channel);
+
 }

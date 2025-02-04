@@ -19,6 +19,7 @@ import org.smartbit4all.api.value.bean.ValueSetDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -61,11 +62,17 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
 
+  @Value("${storage.useSecondInUri:false}")
+  private boolean useSecondInUri = false;
+
   @Override
   public void afterPropertiesSet() throws Exception {
     if (storages != null) {
       for (Storage storage : storages) {
         storagesByScheme.put(storage.getScheme(), storage);
+        if (storage.getUseSecondInUri() == null) {
+          storage.setUseSecondInUri(useSecondInUri);
+        }
       }
     }
     if (objectStorages != null) {
@@ -106,6 +113,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
         storage = storagesByScheme.get(scheme);
         if (storage == null) {
           storage = new Storage(scheme, objectDefinitionApi, defaultObjectStorage);
+          storage.setUseSecondInUri(useSecondInUri);
           storagesByScheme.put(scheme, storage);
         }
       } finally {

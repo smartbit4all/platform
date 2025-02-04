@@ -1026,3 +1026,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ObjectValue'
+    ObjectReferenceById:
+      description: |
+        This is a generic container object that can be saved based on the id property. The referred object uri points to the data object itself.
+      type: object
+      required: [objectAsMap]
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          description: The identifier string for the reference that can be used to create URI (no special characters are included).
+          type: string
+        refObjectUri:
+          type: string
+          format: uri
