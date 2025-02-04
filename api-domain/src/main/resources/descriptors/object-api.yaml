@@ -406,6 +406,17 @@ components:
           format: uri
         data:
           type: object
+    ObjectContainerById:
+      type: object
+      required: [uri, id]
+      properties:
+        uri:
+          type: string
+          format: uri
+        id:
+          type: string
+        data:
+          type: object
     ObjectPropertyResolverContext:
       type: object
       description: |

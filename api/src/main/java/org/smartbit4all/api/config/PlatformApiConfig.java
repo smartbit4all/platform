@@ -76,6 +76,7 @@ import org.smartbit4all.api.object.SubscriptionConfigApi;
 import org.smartbit4all.api.object.SubscriptionConfigApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
+import org.smartbit4all.api.object.bean.ObjectContainerById;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ObjectReferenceById;
 import org.smartbit4all.api.object.bean.ObjectValidationOperation;
@@ -333,6 +334,12 @@ public class PlatformApiConfig {
   public ObjectDefinition<ObjectReferenceById> objectDefinitionObjectReferenceById() {
     return ObjectDefinitionApiImpl.constructDefinitionBase(ObjectReferenceById.class)
         .idPath(ObjectReferenceById.ID);
+  }
+
+  @Bean
+  public ObjectDefinition<ObjectContainerById> objectDefinitionObjectContainerById() {
+    return ObjectDefinitionApiImpl.constructDefinitionBase(ObjectContainerById.class)
+        .idPath(ObjectContainerById.ID);
   }
 
   @Bean
