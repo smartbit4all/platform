@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import org.smartbit4all.core.object.ObjectApi;
 
 /**
  * The {@link StorageObjectLock} is a memory lock for the object URIs managed by an
@@ -81,6 +82,17 @@ public final class StorageObjectLock implements Lock {
   void unlockInternal() {
     entry.getMutex().unlock();
     release();
+  }
+
+  /**
+   * Use this very carefully! It will unlock this lock and if it was the last lock for this
+   * objectUri, it will also release the phyiscal lock! One known usage is
+   * {@link ObjectApi#lockAll(java.util.List)}, where if a tryLock succeeds, but later tryLock
+   * fails, previous locks should be unlock right now, don't wait till the end of transaction.
+   */
+  public void unlockIgnoreTransaction() {
+    check();
+    unlockInternal();
   }
 
   private final void check() {
