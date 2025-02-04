@@ -48,9 +48,9 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   public UserEditingModel initModel(View view) {
     UserEditingModel pageModel = new UserEditingModel();
 
-    view.actions(getUserEditorActions());
 
     URI userUri = view.getObjectUri();
+    view.actions(getUserEditorActions(userUri));
 
     if (userUri != null) {
       pageModel.user(orgApi.getUser(userUri));
@@ -159,10 +159,18 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     return OrgViewNames.USER_LIST_PAGE;
   }
 
-  protected List<UiAction> getUserEditorActions() {
-    return Arrays.asList(new UiAction().code(SAVE_USER).submit(true),
-        new UiAction().code(CANCEL),
-        new UiAction().code(CHANGE_PASSWORD).input2Type(UiActionInputType.TEXTFIELD));
+  protected List<UiAction> getUserEditorActions(URI userUri) {
+    List<UiAction> uiActions = new ArrayList<>();
+    uiActions.add(new UiAction().code(SAVE_USER).submit(true));
+    uiActions.add(new UiAction().code(CANCEL));
+    if (userUri != null) {
+      String ssoUser =
+          objectApi.loadLatest(userUri).getObject(User.class).getAttributes().get(OrgApi.SSO_USER);
+      if (!Boolean.TRUE.toString().equals(ssoUser)) {
+        uiActions.add(new UiAction().code(CHANGE_PASSWORD).input2Type(UiActionInputType.TEXTFIELD));
+      }
+    }
+    return uiActions;
   }
 
 }

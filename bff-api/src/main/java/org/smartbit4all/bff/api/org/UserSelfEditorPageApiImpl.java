@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.org;
 
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,16 +10,19 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.userselector.bean.UserSelfEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageType;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,6 +52,20 @@ public class UserSelfEditorPageApiImpl extends PageApiImpl<UserSelfEditingModel>
     view.actions(getUserEditorActions());
 
     User user = sessionApi.getUser();
+    String isSsoUser = user.getAttributes().get(OrgApi.SSO_USER);
+    if (Boolean.TRUE.toString().equals(isSsoUser)) {
+      ViewConstraint viewConstraint = new ViewConstraint().componentConstraints(Arrays.asList(
+          new ComponentConstraint()
+              .dataName(widgetKey(UserSelfEditingModel.NEW_PASSWORD1))
+              .enabled(false).mandatory(false).visible(false),
+          new ComponentConstraint()
+              .dataName(widgetKey(UserSelfEditingModel.OLD_PASSWORD))
+              .enabled(false).mandatory(false).visible(false),
+          new ComponentConstraint()
+              .dataName(widgetKey(UserSelfEditingModel.NEW_PASSWORD2))
+              .enabled(false).mandatory(false).visible(false)));
+      view.constraint(viewConstraint);
+    }
     return new UserSelfEditingModel()
         .email(user.getEmail())
         .name(user.getName())

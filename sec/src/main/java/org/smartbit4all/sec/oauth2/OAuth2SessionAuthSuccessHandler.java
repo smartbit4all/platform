@@ -7,10 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
@@ -39,6 +35,10 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * On OAuth2 Authorization success:
@@ -297,7 +297,8 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
         log.warn(
             "A user logined with sso but there was no mathcing local User object. Creating a new one...");
         return orgApi.saveUser(new User()
-            .username(oauthToken.getName()));
+            .username(oauthToken.getName())
+            .putAttributesItem(OrgApi.SSO_USER, Boolean.TRUE.toString()));
       } else {
         return null;
       }

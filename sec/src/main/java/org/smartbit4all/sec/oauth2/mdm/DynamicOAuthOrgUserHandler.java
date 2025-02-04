@@ -55,7 +55,8 @@ public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
     Objects.requireNonNull(oauthToken, "oauthToken can not be null!");
 
     User user = new User()
-        .username(oauthToken.getName());
+        .username(oauthToken.getName())
+        .putAttributesItem(OrgApi.SSO_USER, Boolean.TRUE.toString());
 
     OAuthClientProperties clientProperties = getClientProperties(oauthToken);
     setPropertiesOnUser(oauthToken, user, clientProperties);

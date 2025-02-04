@@ -26,6 +26,7 @@ public interface OrgApi {
 
   public static final String SYSTEM_USER = "system";
   public static final String SYSTEM_USERNAME = "System";
+  public static final String SSO_USER = "sso_user";
 
   /**
    * Get all information of a user.
