@@ -157,8 +157,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
                     .type(MessageOptionType.CONFIRM))));
         return;
       }
-      orgApi.updateUsername(userNode.getObject(User.class),
-          user.getUsername());
+      if (!ObjectUtils.isEmpty(userNode)) {
+        orgApi.updateUsername(userNode.getObject(User.class),
+            user.getUsername());
+      }
     }
 
     if (orgApi.getActiveUsers().stream().map(User::getUri).collect(toList())
