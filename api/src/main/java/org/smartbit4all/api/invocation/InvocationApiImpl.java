@@ -46,7 +46,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Strings;
 
 /**
@@ -495,7 +494,7 @@ public class InvocationApiImpl implements InvocationApi {
     }
   }
 
-  //@Transactional // TODO
+  // @Transactional // TODO ??
   @Override
   public void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
     AsyncInvocationRequest request = requestEntry.request;
