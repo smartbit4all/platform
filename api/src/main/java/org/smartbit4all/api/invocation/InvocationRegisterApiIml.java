@@ -560,8 +560,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
               new AsyncInvocationRequestEntry(asyncInvocationChannel,
                   soRequest.getObject().uri(storageRequest.save(soRequest))));
         } catch (Exception e) {
-          log.error("Error during InvocationRequest enqueue: {}", asyncRequestUri);
-          throw e;
+          // TODO temporary solution only
+          log.error("Error during InvocationRequest enqueue: " + asyncRequestUri, e);
         } finally {
           lockRequest.unlock();
         }
