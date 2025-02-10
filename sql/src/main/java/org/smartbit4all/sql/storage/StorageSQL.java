@@ -217,6 +217,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (objectRow != null) {
       // It is an already existing object so it is an update
       OffsetDateTime now = OffsetDateTime.now();
+      String objectUri = objectRow.get(objectEntryDef.uri());
       if (object.isSingleVersion()) {
         // If it is a single version then we update the one and only one version of the object.
         Long newVersion = FIRST_VERSION;
@@ -248,7 +249,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           newRefVersion = currentRefVersion;
         }
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
-        Crud.create(builderVersion
+        TableData<ObjectVersionDef> tableData = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -257,7 +258,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
-            .build());
+            .build();
+        try {
+          Crud.create(tableData);
+        } catch (Exception e) {
+          log.error(
+              "Error while creating version for {} object with {} version. Apply update rather.",
+              objectUri, newVersion, e);
+          Crud.update(tableData);
+        }
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
