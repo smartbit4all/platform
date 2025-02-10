@@ -656,6 +656,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           saveAndEnqueueAsyncInvocationRequestInternal((ObjectNode) request);
         }
       }
+    }
+
+    @Override
+    public void beforeCompletion() {
       requestsToSaveAndEnqueue.remove();
     }
 
