@@ -2,20 +2,13 @@ package org.smartbit4all.storage.fs;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.invocation.AsyncInvocationRequestEntry;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -40,8 +33,6 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
 
   @Autowired
   private StorageApi storageApi;
-
-  private StorageFS storageFS;
 
   /**
    * The logical scheme for the transactions.
@@ -69,21 +60,13 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
    */
   private ThreadLocal<StorageTransaction> storageTransactionObject = new ThreadLocal<>();
 
-  /**
-   * The transaction attached to the current {@link Thread}.
-   */
-  private ThreadLocal<List<AsyncInvocationRequestEntry>> invocations = new ThreadLocal<>();
-
-  public StorageTransactionManagerFS(StorageFS storageFS) {
-    super();
-    this.storageFS = storageFS;
+  public StorageTransactionManagerFS() {
+    // only here to be able to instantiate without FS reference
   }
 
-  /**
-   * @return true of the current thread has an active transaction.
-   */
-  public boolean isInTransaction() {
-    return storageTransactionObject.get() != null;
+  @Deprecated
+  public StorageTransactionManagerFS(StorageFS storageFS) {
+    this();
   }
 
   /**
@@ -98,37 +81,6 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
       transaction.getData().setUri(transactionUri);
     }
     return transaction;
-  }
-
-  /**
-   * Adds an on succeed event to the actual transaction. Or creates a new transaction if it's not
-   * exists.
-   *
-   * @param object
-   * @param event
-   */
-  public void addOnSucceed(StorageObject<?> object, StorageSaveEvent event) {
-
-    StorageTransaction storageTransaction = storageTransactionObject.get();
-    if (storageTransaction == null) {
-      storageTransaction = new StorageTransaction(null);
-      storageTransactionObject.set(storageTransaction);
-    }
-    storageTransaction.addSaveEventItem(object, event);
-  }
-
-  /**
-   * Adds an on succeed invocation to the actual transaction.
-   *
-   * @param request
-   */
-  public void addOnSucceed(AsyncInvocationRequestEntry request) {
-    List<AsyncInvocationRequestEntry> invocationList = invocations.get();
-    if (invocationList == null) {
-      invocationList = new ArrayList<>();
-      invocations.set(invocationList);
-    }
-    invocationList.add(request);
   }
 
   @Override
@@ -146,7 +98,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     if (transaction instanceof StorageTransaction) {
       StorageTransaction storageTransaction = (StorageTransaction) transaction;
       storageTransactionObject.set(storageTransaction);
-      log.debug("Begin the {1} transaction", storageTransaction);
+      log.debug("Begin the {} transaction", storageTransaction);
     }
   }
 
@@ -154,28 +106,6 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
     if (status.getTransaction() instanceof StorageTransaction) {
       finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.SUCC);
-      // Call invocations
-      List<AsyncInvocationRequestEntry> list = invocations.get();
-      if (list != null) {
-        for (AsyncInvocationRequestEntry asyncInvocation : list) {
-          asyncInvocation.invoke();
-        }
-      }
-      invocations.remove();
-      // Call the events.
-      Map<StorageObject<?>, List<StorageSaveEvent>> events =
-          ((StorageTransaction) status.getTransaction()).getSaveEvents();
-      if (events != null && storageFS != null) {
-        for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : events.entrySet()) {
-          if (entry.getValue() != null) {
-            for (StorageSaveEvent event : entry.getValue()) {
-              if (event != null) {
-                storageFS.invokeOnSucceedFunctionsFS(entry.getKey(), event);
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -183,7 +113,6 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
     if (status.getTransaction() instanceof StorageTransaction) {
       finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.FAIL);
-      invocations.remove();
     }
   }
 

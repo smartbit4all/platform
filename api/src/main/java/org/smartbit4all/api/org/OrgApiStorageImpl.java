@@ -18,11 +18,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.gateway.SecurityGateways;
 import org.smartbit4all.api.org.bean.BulkUpdateOperation;
 import org.smartbit4all.api.org.bean.Group;
@@ -43,6 +46,7 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
+import org.smartbit4all.api.value.bean.KeyValuePair;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -54,6 +58,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.base.Objects;
@@ -65,6 +70,8 @@ public class OrgApiStorageImpl implements OrgApi {
   private static final Logger log = LoggerFactory.getLogger(OrgApiStorageImpl.class);
 
   public static final String ORG_SCHEME = "org";
+
+  private final String ORG_API_LAST_UPDATETIME = "orgApiLastUpdateTime";
 
   private final String USER_OBJECTMAP_REFERENCE = "userList";
   private final String INACTIVE_USER_OBJECTMAP_REFERENCE = "inactiveUserList";
@@ -81,6 +88,11 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
+
+  private AtomicLong lastUpdateTime = new AtomicLong();
 
   private Supplier<Storage> storage = new Supplier<Storage>() {
 
@@ -147,16 +159,69 @@ public class OrgApiStorageImpl implements OrgApi {
 
   private List<Group> allGroups;
 
+  private StoredReference<KeyValuePair> getLastUpdateTimeRef() {
+    StoredReference<KeyValuePair> ref = collectionApi.reference(
+        ORG_SCHEME,
+        ORG_API_LAST_UPDATETIME,
+        KeyValuePair.class);
+    if (!objectApi.exists(ref.getUri())) {
+      // initialize with 0, if doesn't exist
+      ref.update(pair -> {
+        return pair == null ? initLastUpdateTime() : pair;
+      });
+    }
+    return ref;
+  }
+
+  private KeyValuePair initLastUpdateTime() {
+    return new KeyValuePair().value(0l);
+  }
+
+  private void increaseLastUpdatedTime() {
+    StoredReference<KeyValuePair> ref = getLastUpdateTimeRef();
+    ref.update(pair -> {
+      if (pair == null) {
+        pair = initLastUpdateTime();
+      }
+      Long currTime = objectApi.asType(Long.class, pair.getValue());
+      Long newTime = currTime == null ? 1l : currTime + 1;
+      lastUpdateTime.set(newTime);
+      return pair.value(newTime);
+    });
+  }
+
   /**
-   * Invalidate the cache after modification.
+   * Invalidate the cache after modification, and increases logical update time.
    */
   private final synchronized void invalidateCache() {
+    invalidateCacheOnly();
+    increaseLastUpdatedTime();
+  }
+
+  /**
+   * Invalidate the caches (no effect on logical update time).
+   */
+  private final synchronized void invalidateCacheOnly() {
     groupsOfUserCache.invalidateAll();
     directGroupsOfUserCache.invalidateAll();
     usersOfGroupCache.invalidateAll();
     usersOfGroupAndParentGroupsCache.invalidateAll();
     groupByNameCache.invalidateAll();
     allGroups = null;
+  }
+
+  @Scheduled(
+      initialDelayString = "${org.api.checkupdates.initialdelay:30000}",
+      fixedDelayString = "${org.api.checkupdates.fixeddelay:30000}")
+  protected synchronized void checkUpdates() {
+    StoredReference<KeyValuePair> ref = getLastUpdateTimeRef();
+
+    Long storedUpdateTimeL = objectApi.asType(Long.class, ref.get().getValue());
+    long stored = storedUpdateTimeL == null ? 0 : storedUpdateTimeL;
+    if (stored > lastUpdateTime.get()) {
+      invalidateCacheOnly();
+      lastUpdateTime.set(stored);
+    }
   }
 
   /**
@@ -1075,15 +1140,17 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public void bulkUpdate(OrgBulkUpdate update) {
-    bulkUpdateGroups(update);
-    bulkUpdateUsers(update);
-    bulkUpdateGroupsOfGroups(update);
-    bulkUpdateUsersOfGroups(update);
+    boolean groupsUpdated = bulkUpdateGroups(update);
+    boolean usersUpdated = bulkUpdateUsers(update);
+    boolean groupsOfGroupsUpdated = bulkUpdateGroupsOfGroups(update);
+    boolean usersOfGroupsUpdated = bulkUpdateUsersOfGroups(update);
 
-    invalidateCache();
+    if (groupsUpdated || usersUpdated || groupsOfGroupsUpdated || usersOfGroupsUpdated) {
+      invalidateCache();
+    }
   }
 
-  private void bulkUpdateUsersOfGroups(OrgBulkUpdate update) {
+  private boolean bulkUpdateUsersOfGroups(OrgBulkUpdate update) {
     // load users of group
     StorageObject<UsersOfGroupCollection> usersOfGRoupCollectionSO =
         loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
@@ -1146,10 +1213,12 @@ public class OrgApiStorageImpl implements OrgApi {
       storage.get().save(usersOfGRoupCollectionSO);
       storage.get().save(groupsOfUserCollectionSO);
     }
+    return !update.getUsersOfGroup().isEmpty();
   }
 
-  private void bulkUpdateGroupsOfGroups(OrgBulkUpdate update) {
+  private boolean bulkUpdateGroupsOfGroups(OrgBulkUpdate update) {
     Map<String, URI> groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE).getUris();
+    boolean anyChange = false;
     for (GroupOfGroupUpdate groupsOfGroup : update.getGroupsOfGroup()) {
       Group parentGroup = groupsOfGroup.getParentGroup();
       Group childGroup = groupsOfGroup.getChildGroup();
@@ -1167,6 +1236,7 @@ public class OrgApiStorageImpl implements OrgApi {
         }
         storage.get().update(parentGroupUri, Group.class,
             g -> g.addChildrenItem(childGroupUri));
+        anyChange = true;
       } else if (groupsOfGroup.getOperation() == BulkUpdateOperation.DELETE) {
         if (parentGroup.getChildren().contains(childGroupUri)) {
           storage.get().update(parentGroupUri, Group.class,
@@ -1174,12 +1244,14 @@ public class OrgApiStorageImpl implements OrgApi {
                 g.getChildren().remove(childGroupUri);
                 return g;
               });
+          anyChange = true;
         }
       }
     }
+    return anyChange;
   }
 
-  private void bulkUpdateUsers(OrgBulkUpdate update) {
+  private boolean bulkUpdateUsers(OrgBulkUpdate update) {
     // collect new and deleted users
     List<User> newUsers = new ArrayList<>();
     List<User> deletedUsers = new ArrayList<>();
@@ -1284,6 +1356,7 @@ public class OrgApiStorageImpl implements OrgApi {
       storage.get().save(usersOfGroupCollectionReference);
       storage.get().save(groupsOfUserCollectionSO);
     }
+    return userAdded || userDeleted || !update.getUsers().isEmpty();
   }
 
   private boolean checkNewUsername(String oldUsername, String newUsername,
@@ -1315,7 +1388,7 @@ public class OrgApiStorageImpl implements OrgApi {
     return true;
   }
 
-  private void bulkUpdateGroups(OrgBulkUpdate update) {
+  private boolean bulkUpdateGroups(OrgBulkUpdate update) {
     List<Group> newGroups = new ArrayList<>();
     List<Group> deletedGroups = new ArrayList<>();
 
@@ -1394,6 +1467,7 @@ public class OrgApiStorageImpl implements OrgApi {
       storage.get().save(usersOfGroupCollectionReference);
       storage.get().save(groupsOfUserCollectionSO);
     }
+    return groupAdded || groupDeleted || !update.getGroups().isEmpty();
   }
 
   @Override
@@ -1452,4 +1526,6 @@ public class OrgApiStorageImpl implements OrgApi {
       throw new IllegalArgumentException("User object is not exists!");
     }
   }
+
+
 }

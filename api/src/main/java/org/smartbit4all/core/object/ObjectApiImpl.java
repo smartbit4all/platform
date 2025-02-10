@@ -37,6 +37,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -614,7 +615,13 @@ public class ObjectApiImpl implements ObjectApi {
         if (lock.tryLock()) {
           result.add(lock);
         } else {
-          result.stream().forEach(l -> l.unlock());
+          result.stream().forEach(l -> {
+            if (l instanceof StorageObjectLock) {
+              ((StorageObjectLock) l).unlockIgnoreTransaction();
+            } else {
+              l.unlock();
+            }
+          });
           result.clear();
           break;
         }

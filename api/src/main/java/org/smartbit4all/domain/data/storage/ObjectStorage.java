@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import org.smartbit4all.api.collection.StoredSequence;
+import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
@@ -216,5 +217,26 @@ public interface ObjectStorage {
    * @return The {@link StoredSequence} instance.
    */
   StoredSequence getSequence(String schema, String name);
+
+  StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil);
+
+  void unlockPhysicalObject(StorageObjectPhysicalLock lock);
+
+  /**
+   * We have this constructor method to avoid having public setters in the {@link StorageObject}.
+   * This can be used by the implementations of the {@link ObjectStorage}.
+   *
+   * @param <T>
+   * @param storage
+   * @param objectDefinition
+   * @param objectUri
+   * @param data
+   * @param physicalId The identifier of the physical storage like id of the database or any other.
+   * @return
+   */
+  <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
+      URI objectUri, StorageObjectData data, String physicalId);
+
+  void unlock(StorageObjectLock lock);
 
 }

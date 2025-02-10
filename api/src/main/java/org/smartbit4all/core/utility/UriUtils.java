@@ -1,19 +1,21 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -24,8 +26,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public abstract class UriUtils {
 
@@ -105,7 +105,7 @@ public abstract class UriUtils {
 
   /**
    * Convert from Object to URI, handles only String and URI as input type.
-   * 
+   *
    * @param o
    * @return
    */
@@ -155,4 +155,12 @@ public abstract class UriUtils {
     return StringConstant.EMPTY;
   }
 
+  public static final URI constructMethodUri(String schema, Class<?> clazz, String method) {
+    return UriUtils.createUri(
+        schema,
+        null,
+        StringConstant.SLASH + clazz.getName().replace('.', '_')
+            + StringConstant.SLASH + method,
+        null);
+  }
 }

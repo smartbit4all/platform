@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import org.smartbit4all.core.object.ObjectApi;
 
 /**
  * The {@link StorageObjectLock} is a memory lock for the object URIs managed by an
@@ -12,11 +13,11 @@ import java.util.concurrent.locks.Lock;
  * specialty of this lock is that the given implementation can extend with a physical lock that is
  * acquired by the OS level process. In a simple situation when there is only one instance from an
  * application there is no need to apply the physical locking.
- * 
- * 
+ *
+ *
  * One time usage!!!
- * 
- * 
+ *
+ *
  * @author Peter Boros
  */
 public final class StorageObjectLock implements Lock {
@@ -31,10 +32,13 @@ public final class StorageObjectLock implements Lock {
    */
   private final Long id;
 
-  StorageObjectLock(StorageObjectLockEntry entry, Long id) {
+  private final ObjectStorage objectStorage;
+
+  StorageObjectLock(StorageObjectLockEntry entry, Long id, ObjectStorage objectStorage) {
     super();
     this.entry = entry;
     this.id = id;
+    this.objectStorage = objectStorage;
   }
 
   public final URI getObjectURI() {
@@ -56,8 +60,11 @@ public final class StorageObjectLock implements Lock {
 
   @Override
   public boolean tryLock() {
-    check();
-    return entry.getMutex().tryLock();
+    if (check(true)) {
+      return entry.getMutex().tryLock();
+    }
+    // physical lock not acquired, don't wait for it
+    return false;
   }
 
   @Override
@@ -69,24 +76,34 @@ public final class StorageObjectLock implements Lock {
   @Override
   public void unlock() {
     check();
+    objectStorage.unlock(this);
+  }
+
+  void unlockInternal() {
     entry.getMutex().unlock();
     release();
   }
 
   /**
-   * Use the normal lock instead.
+   * Use this very carefully! It will unlock this lock and if it was the last lock for this
+   * objectUri, it will also release the phyiscal lock! One known usage is
+   * {@link ObjectApi#lockAll(java.util.List)}, where if a tryLock succeeds, but later tryLock
+   * fails, previous locks should be unlock right now, don't wait till the end of transaction.
    */
-  @Deprecated
-  public final void unlockAndRelease() {
-    unlock();
-    release();
+  public void unlockIgnoreTransaction() {
+    check();
+    unlockInternal();
   }
 
   private final void check() {
+    check(false);
+  }
+
+  private final boolean check(boolean nowait) {
     if (entry == null) {
       throw new IllegalStateException("The lock has been released already.");
     }
-    entry.ensurePhysicalLock();
+    return entry.ensurePhysicalLock(nowait);
   }
 
   @Override
@@ -97,7 +114,7 @@ public final class StorageObjectLock implements Lock {
 
   /**
    * The unique identifier of the given lock instance.
-   * 
+   *
    * @return
    */
   final Long getId() {

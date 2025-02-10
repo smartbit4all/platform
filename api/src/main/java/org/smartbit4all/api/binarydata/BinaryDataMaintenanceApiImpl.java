@@ -39,6 +39,8 @@ public class BinaryDataMaintenanceApiImpl implements BinaryDataMaintenanceApi {
   @Override
   @Scheduled(fixedDelayString = "${binarydata.purge.fixeddelay:5000}")
   public void purge() {
+    // no lock here, as every application instances manages its own temporary data files, and is
+    // responsible for purging them regularly:
     BinaryData.purgeDataFiles();
   }
 

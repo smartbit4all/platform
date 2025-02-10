@@ -19,6 +19,8 @@ class SearchEntityTableDataResult {
 
   Map<String, SearchEntityTableDataResult> detailResults = new HashMap<>();
 
+  boolean manageDetails = true;
+
   final SearchEntityTableDataResult searchEntityDefinition(
       SearchEntityDefinition searchEntityDefinition) {
     this.searchEntityDefinition = searchEntityDefinition;
