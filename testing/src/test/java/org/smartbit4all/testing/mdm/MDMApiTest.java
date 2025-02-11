@@ -109,7 +109,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
-    "applicationruntime.maintain.fixeddelay=2000"
+    "applicationruntime.maintain.fixeddelay=2000",
+    "applicationsetup.schedule.fixeddelay=200"
 })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -1769,7 +1770,7 @@ class MDMApiTest {
   @Test
   @Order(200)
   void testApplicationSetup() throws Exception {
-    Thread.sleep(10000);
+    Thread.sleep(1000);
     Assertions.assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
     Assertions.assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3);
   }
