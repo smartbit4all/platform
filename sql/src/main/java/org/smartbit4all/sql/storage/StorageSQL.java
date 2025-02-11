@@ -196,7 +196,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         Crud.create(createLockRecord(objectUriString, currentRuntime));
       } catch (DataAccessException e) {
         // other node already created the lock
-        log.info("other node already created the lock");
+        log.debug("other node already created the lock");
         return null;
       }
       return new StorageObjectPhysicalLock(objectUri);
