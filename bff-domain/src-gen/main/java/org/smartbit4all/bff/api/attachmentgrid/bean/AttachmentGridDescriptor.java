@@ -50,7 +50,8 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.PAGE_SIZE,
   AttachmentGridDescriptor.CLOSE_ON_SAVE,
   AttachmentGridDescriptor.IS_MULTIPLE_INPUT,
-  AttachmentGridDescriptor.DIALOG_TITLE
+  AttachmentGridDescriptor.DIALOG_TITLE,
+  AttachmentGridDescriptor.UPLOAD_FORMATS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
@@ -95,6 +96,9 @@ public class AttachmentGridDescriptor {
 
   public static final String DIALOG_TITLE = "dialogTitle";
   private String dialogTitle;
+
+  public static final String UPLOAD_FORMATS = "uploadFormats";
+  private String uploadFormats;
 
   public AttachmentGridDescriptor() {
   }
@@ -488,6 +492,33 @@ public class AttachmentGridDescriptor {
     this.dialogTitle = dialogTitle;
   }
 
+  public AttachmentGridDescriptor uploadFormats(String uploadFormats) {
+    
+    this.uploadFormats = uploadFormats;
+    return this;
+  }
+
+  /**
+   * Get uploadFormats
+   * @return uploadFormats
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(UPLOAD_FORMATS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUploadFormats() {
+    return uploadFormats;
+  }
+
+
+  @JsonProperty(UPLOAD_FORMATS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUploadFormats(String uploadFormats) {
+    this.uploadFormats = uploadFormats;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -510,12 +541,13 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
         Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave) &&
         Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput) &&
-        Objects.equals(this.dialogTitle, attachmentGridDescriptor.dialogTitle);
+        Objects.equals(this.dialogTitle, attachmentGridDescriptor.dialogTitle) &&
+        Objects.equals(this.uploadFormats, attachmentGridDescriptor.uploadFormats);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle, uploadFormats);
   }
 
   @Override
@@ -536,6 +568,7 @@ public class AttachmentGridDescriptor {
     sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
     sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
     sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
+    sb.append("    uploadFormats: ").append(toIndentedString(uploadFormats)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -54,3 +54,5 @@ components:
                     default: true
                 dialogTitle:
                     type: string
+                uploadFormats:
+                    type: string

@@ -36,6 +36,7 @@ import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import org.smartbit4all.api.view.bean.UploadedFile;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
@@ -344,7 +345,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
 
   public UiAction getAddAttachmentAction(AttachmentGridDescriptor descriptor) {
-    return new UiAction()
+    UiAction action = new UiAction()
         .input2Type(
             Boolean.TRUE.equals(descriptor.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
                 : UiActionInputType.FILE)
@@ -361,6 +362,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
                     .cancelButton(new UiActionButtonDescriptor()
                         .caption(localeSettingApi.get("close"))
                         .color(UiActions.Color.SECONDARY))));
+
+    if (!ObjectUtils.isEmpty(descriptor.getUploadFormats())) {
+      action.getDescriptor()
+          .setUpload(new UiActionUploadDescriptor().formats(descriptor.getUploadFormats()));
+    }
+
+    return action;
   }
 
   public UiAction getRefreshToOriginalGridAction(AttachmentGridDescriptor descriptor) {
