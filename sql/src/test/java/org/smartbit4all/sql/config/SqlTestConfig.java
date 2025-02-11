@@ -2,14 +2,10 @@ package org.smartbit4all.sql.config;
 
 import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
-import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
-import org.smartbit4all.sql.service.identifier.SQLIdentifierService;
 import org.smartbit4all.sql.service.identifier.SQLIdentifierServiceH2;
 import org.smartbit4all.sql.storage.StorageSQL;
 import org.smartbit4all.sql.util.EmptyDatabasePopulator;
-import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,21 +17,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @Import({
     SQLConfig.class,
-    SQLIdentifierService.class,
     SQLObjectStorageEntityConfiguration.class
 })
 @EnableTransactionManagement
 public class SqlTestConfig {
 
-  @Bean(Storage.STORAGETX)
-  @ConditionalOnMissingBean()
-  public StorageTransactionManagerFS transactionManager() {
-    return new StorageTransactionManagerFS(null);
+  @Bean
+  public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
   }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)

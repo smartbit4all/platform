@@ -8,15 +8,19 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.utility.ListBasedMap;
 
 /**
  * This entry is the common lock entry for the {@link ObjectStorage} implementations.
- * 
+ *
  * @author Peter Boros
  */
 final class StorageObjectLockEntry {
+
+  private static final Logger log = LoggerFactory.getLogger(StorageObjectLockEntry.class);
 
   private static class InstanceEntry {
 
@@ -28,6 +32,11 @@ final class StorageObjectLockEntry {
     WeakReference<StorageObjectLock> instance;
 
   }
+
+  /**
+   * ObjectStorage API which will be used to unlock locks at the end of transaction.
+   */
+  private final ObjectStorage objectStorage;
 
   /**
    * The URI of the object the lock belongs to.
@@ -59,9 +68,9 @@ final class StorageObjectLockEntry {
 
   /**
    * This is a supplier for the physical lock. Can be used to acquire the physical lock when the
-   * first {@link StorageObjectLock} is activated via an operation.
+   * first {@link StorageObjectLock} is activated via an operation. Boolean para
    */
-  private Supplier<StorageObjectPhysicalLock> acquirePhysicalLock;
+  private Function<Boolean, StorageObjectPhysicalLock> acquirePhysicalLock;
 
   /**
    * If the given {@link ObjectStorage} implementation supports then this object holds the physical.
@@ -90,17 +99,18 @@ final class StorageObjectLockEntry {
   /**
    * Constructs an object lock owned by the actual thread first. The current thread won't be
    * blocked.
-   * 
+   *
    * @param objectURI
    * @param acquire This supplier can be injected by the given {@link ObjectStorage} implementation.
    *        When constructing a {@link StorageObjectLock} this function will acquire a physical lock
    *        on the storage to give an exclusive access to the given object and avoid parallel
    *        modification and inconsistency.
-   * 
+   *
    */
   StorageObjectLockEntry(URI objectURI,
-      Supplier<StorageObjectPhysicalLock> acquire,
-      Consumer<StorageObjectPhysicalLock> releaser) {
+      Function<Boolean, StorageObjectPhysicalLock> acquire,
+      Consumer<StorageObjectPhysicalLock> releaser,
+      ObjectStorage objectStorage) {
     super();
     this.objectURI = objectURI;
     if (acquire != null) {
@@ -109,14 +119,15 @@ final class StorageObjectLockEntry {
             "Unable to initate the StorageObjectLock, the the physical lock release method is missing.");
       }
       this.releaser = releaser;
-      acquirePhysicalLock = acquire;
+      this.acquirePhysicalLock = acquire;
     }
+    this.objectStorage = objectStorage;
   }
 
   /**
    * Register a new instance to the entry. This doesn't mean lock because the lock can be placed
    * with {@link StorageObjectLock#lock()}.
-   * 
+   *
    * @return The new lock instance.
    * @throws InterruptedException, InterruptedException
    */
@@ -131,7 +142,7 @@ final class StorageObjectLockEntry {
     }
     try {
       Long id = idSequence++;
-      StorageObjectLock result = new StorageObjectLock(this, id);
+      StorageObjectLock result = new StorageObjectLock(this, id, objectStorage);
       instanceRegister.put(id, new InstanceEntry(result));
       return result;
     } finally {
@@ -141,16 +152,20 @@ final class StorageObjectLockEntry {
 
   /**
    * This function is lately ensure that we own the physical lock for an object.
+   *
+   * @return returns if physical lock acquired
    */
-  void ensurePhysicalLock() {
+  boolean ensurePhysicalLock(boolean nowait) {
     if (acquirePhysicalLock == null) {
-      return;
+      // no acquire callback, assume physical lock is always present
+      return true;
     }
     mutexInstanceRegister.lock();
     try {
       if (physicalLock == null) {
-        physicalLock = acquirePhysicalLock.get();
+        physicalLock = acquirePhysicalLock.apply(nowait);
       }
+      return physicalLock != null;
     } finally {
       mutexInstanceRegister.unlock();
     }
@@ -160,7 +175,7 @@ final class StorageObjectLockEntry {
    * The leave operation release the lock. If this thread is last one then this will execute the
    * cleanup and release the physical lock if any.
    */
-  public void releaseLock(StorageObjectLock lock) {
+  void releaseLock(StorageObjectLock lock) {
     if (lock == null) {
       return;
     }

@@ -4,6 +4,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Propagation;
 
 public class StorageTestApiImpl implements StorageTestApi {
@@ -12,6 +13,7 @@ public class StorageTestApiImpl implements StorageTestApi {
   StorageApi storageApi;
 
   @Autowired
+  @Lazy
   StorageTestApi self;
 
   @Override

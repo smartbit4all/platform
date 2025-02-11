@@ -30,7 +30,7 @@ public class TestApplicationRuntime {
   private ScheduledFuture<?> scheduleAtFixedRate;
 
   public TestApplicationRuntime(StorageApi storageApi) {
-    storageCluster = storageApi.get(ApplicationRuntimeApiStorageImpl.CLUSTER);
+    storageCluster = storageApi.get(ApplicationRuntimeApiStorageImpl.SCHEMA);
     storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
   }
 

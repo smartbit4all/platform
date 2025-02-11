@@ -1,7 +1,6 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -11,12 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationError;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.invocation.bean.InvocationResult;
-import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
-import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
@@ -106,70 +99,20 @@ public final class AsyncInvocationChannelImpl
   @Override
   public void invoke(AsyncInvocationRequestEntry requestEntry) {
     executorService.submit(() -> {
+      AsyncInvocationRequest request = requestEntry.request;
       // decorate the thread of given call.
-      if (Boolean.TRUE.equals(requestEntry.request.getRequest().getInheritSession())
-          && requestEntry.request.getRequest().getSessionUri() != null) {
-        sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
+      if (Boolean.TRUE.equals(request.getRequest().getInheritSession())
+          && request.getRequest().getSessionUri() != null) {
+        sessionManagementApi.setSession(request.getRequest().getSessionUri());
       } else {
         URI userUri = getTechnicalUserUri();
-        if (userUri != null && sessionManagementApi != null) {
+        if (userUri != null) {
           ensureUriTechnicalSession();
-        } else if (requestEntry.request.getRequest().getSessionUri() != null) {
-          sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
+        } else if (request.getRequest().getSessionUri() != null) {
+          sessionManagementApi.setSession(request.getRequest().getSessionUri());
         }
       }
-      InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
-      try {
-        result.returnValue(invocationApi.invoke(requestEntry.request.getRequest()).getValue());
-      } catch (Exception e) {
-        log.warn("Exception occured while executing the " + requestEntry, e);
-        result.error(
-            new InvocationError().definition(e.getClass().getName()).message(e.getMessage()));
-      } finally {
-        result.endTime(OffsetDateTime.now());
-        // Let's make a decision about the next step
-        InvocationResultDecision decision = null;
-        InvocationRequest evaluate = requestEntry.request.getEvaluate();
-        if (evaluate != null) {
-          // We set the request and the result parameters for the call when they are present in the
-          // signature.
-          for (InvocationParameter parameter : evaluate.getParameters()) {
-            if (AsyncInvocationRequest.class.getName().equals(parameter.getTypeClass())) {
-              parameter.setValue(requestEntry.request);
-            } else if (InvocationResult.class.getName().equals(parameter.getTypeClass())) {
-              parameter.setValue(result);
-            }
-          }
-          try {
-            // TODO This is an object read it with ObjectDefinition!
-            decision = (InvocationResultDecision) invocationApi.invoke(evaluate).getValue();
-          } catch (Exception e) {
-            log.error("Exception occured while trying to evaluate the " + result + " for the "
-                + requestEntry.request, e);
-          }
-        }
-        if (decision == null) {
-          // Make a hard wired decision if there was error then abort, if we have andThen then
-          // continue.
-          decision = new InvocationResultDecision()
-              .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
-        } else {
-          int size = requestEntry.request.getResults() == null ? 0
-              : requestEntry.request.getResults().size();
-          int gradient = size / 50;
-          gradient = gradient * gradient;
-          OffsetDateTime now = OffsetDateTime.now();
-          OffsetDateTime requiredScheduledAt = now.plusSeconds(gradient * 5);
-          if ((decision.getScheduledAt() != null
-              && requiredScheduledAt.isAfter(decision.getScheduledAt()))
-              || decision.getScheduledAt() == null) {
-            decision.scheduledAt(requiredScheduledAt);
-          }
-        }
-        result.decision(decision);
-        // Save the result into the asynchronous request. It will result a call to the listeners.
-        invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
-      }
+      invocationApi.executeAsyncInvocationRequest(requestEntry);
     });
   }
 

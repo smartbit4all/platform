@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -101,7 +102,16 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> u);
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
+  }
+
+  private <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
       Function<URI, O> reader) {
     // TODO Auto-generated method stub
     return Collections.emptyList();
@@ -125,4 +135,24 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     return null;
   }
 
+  @Override
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    return null;
+  }
+
+  @Override
+  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
+    return null;
+  }
 }

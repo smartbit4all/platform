@@ -445,7 +445,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @EventListener(ContextRefreshedEvent.class)
-  private void initViews(ContextRefreshedEvent applicationPreparedEvent) {
+  protected void initViews(ContextRefreshedEvent applicationPreparedEvent) {
     apiByViewName.clear();
     ctx.getBeansWithAnnotation(ViewApi.class).values()
         .forEach(this::setupScreenApi);
@@ -1190,7 +1190,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public final void finishServerRequest() {
+  public void finishServerRequest() {
     ServerRequestTrack serverRequest = getServerRequest();
     if (serverRequest == null) {
       return;
@@ -1251,7 +1251,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public final String getExecutionStatJSON() {
+  public String getExecutionStatJSON() {
     ObjectSerializer serializer =
         objectApi.definition(ServerRequestExecutionStat.class).getDefaultSerializer();
     rwlExecutionStat.readLock().lock();
