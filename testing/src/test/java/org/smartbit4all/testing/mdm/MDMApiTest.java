@@ -1769,9 +1769,9 @@ class MDMApiTest {
   @Test
   @Order(200)
   void testApplicationSetup() throws Exception {
-    Thread.sleep(3500);
+    Thread.sleep(5000);
     Assertions.assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
     Assertions.assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3);
   }
-  
+
 }
