@@ -57,6 +57,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ObjectUtils;
@@ -90,6 +91,7 @@ public class OrgApiStorageImpl implements OrgApi {
   private ObjectApi objectApi;
 
   @Autowired
+  @Lazy
   private CollectionApi collectionApi;
 
   private AtomicLong lastUpdateTime = new AtomicLong();
@@ -108,6 +110,7 @@ public class OrgApiStorageImpl implements OrgApi {
   };
 
   @Autowired
+  @Lazy
   private OrgApi self;
 
   @Autowired(required = false)

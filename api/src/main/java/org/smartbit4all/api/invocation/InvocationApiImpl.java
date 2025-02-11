@@ -46,6 +46,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import com.google.common.base.Strings;
 
 /**
@@ -69,6 +70,7 @@ public class InvocationApiImpl implements InvocationApi {
   private static final Logger log = LoggerFactory.getLogger(InvocationApiImpl.class);
 
   @Autowired
+  @Lazy
   private InvocationRegisterApi invocationRegisterApi;
 
   @Autowired(required = false)
@@ -98,6 +100,7 @@ public class InvocationApiImpl implements InvocationApi {
   private CollectionApi collectionApi;
 
   @Autowired
+  @Lazy
   private InvocationApi self;
 
   /**

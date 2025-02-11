@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,10 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Peter Boros
  */
-public class CollectionApiStorageImpl implements CollectionApi, InitializingBean {
+public class CollectionApiStorageImpl implements CollectionApi {
 
   private static final Logger log = LoggerFactory.getLogger(CollectionApiStorageImpl.class);
 
@@ -60,8 +60,10 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
    */
   private Map<String, Storage> storagesBySchema = new HashMap<>();
 
-  @Autowired(required = false)
-  private List<SearchIndex<?>> searchIndices;
+  @Autowired
+  private ApplicationContext ctx;
+
+  private boolean searchIndexesInitialized = false;
 
   private Map<String, SearchIndex<?>> searchIndexByName = new HashMap<>();
 
@@ -204,6 +206,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Override
   public <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject) {
+    initSearchIndexesFromContext();
     @SuppressWarnings("unchecked")
     SearchIndex<O> result =
         (SearchIndex<O>) searchIndexByName.get(getQualifiedName(logicalSchema, name));
@@ -213,6 +216,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @Override
   public SearchIndex<?> searchIndex(String logicalSchema, String name) {
+    initSearchIndexesFromContext();
     SearchIndex<?> result =
         searchIndexByName.get(getQualifiedName(logicalSchema, name));
     Objects.requireNonNull(result, "The " + name + " search index is not available.");
@@ -222,6 +226,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public <O, F> SearchIndexWithFilterBean<O, F> searchIndex(String logicalSchema, String name,
       Class<O> indexedObject, Class<F> filterObject) {
+    initSearchIndexesFromContext();
     @SuppressWarnings("unchecked")
     SearchIndexWithFilterBean<O, F> result =
         (SearchIndexWithFilterBean<O, F>) searchIndexByName
@@ -288,16 +293,13 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
     return result;
   }
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    if (searchIndices == null) {
-      return;
-    }
-
-    for (SearchIndex<?> searchIndex : searchIndices) {
-      searchIndexByName.put(
-          getQualifiedName(searchIndex.logicalSchema(), searchIndex.name()),
-          searchIndex);
+  private void initSearchIndexesFromContext() {
+    if (!searchIndexesInitialized) {
+      ctx.getBeansOfType(SearchIndex.class).values().stream()
+          .forEach(searchIndex -> searchIndexByName.put(
+              getQualifiedName(searchIndex.logicalSchema(), searchIndex.name()),
+              searchIndex));
+      searchIndexesInitialized = true;
     }
   }
 
@@ -305,6 +307,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Override
   public <T> SearchIndex<T> searchIndexComputeIfAbsent(String logicalSchema, String name,
       Supplier<SearchIndex<T>> searchIndexSupplier, Class<T> clazz) {
+    initSearchIndexesFromContext();
     return (SearchIndex<T>) searchIndexByName.computeIfAbsent(
         getQualifiedName(logicalSchema, name),
         s -> (SearchIndex<T>) searchIndexSupplier.get());

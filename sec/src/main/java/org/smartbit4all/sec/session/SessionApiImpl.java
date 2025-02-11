@@ -20,10 +20,10 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SessionApiImpl implements SessionApi {
 
@@ -33,13 +33,12 @@ public class SessionApiImpl implements SessionApi {
   private static final String ERR_NULLVALUE = "value cannot be null";
 
   @Autowired
+  @Lazy
   private SessionManagementApi sessionManagementApi;
 
   @Autowired
+  @Lazy
   private OrgApi orgApi;
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Autowired
   private TimeManagementService timeService;

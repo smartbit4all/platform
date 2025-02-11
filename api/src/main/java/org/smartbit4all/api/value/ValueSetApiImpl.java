@@ -28,6 +28,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class ValueSetApiImpl implements ValueSetApi {
 
@@ -38,6 +39,7 @@ public class ValueSetApiImpl implements ValueSetApi {
   public static final String GLOBAL_VALUESETS = "globalValueSets";
 
   @Autowired
+  @Lazy
   private CollectionApi collectionApi;
 
   @Autowired

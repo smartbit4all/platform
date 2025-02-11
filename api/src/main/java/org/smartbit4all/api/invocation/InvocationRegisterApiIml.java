@@ -55,11 +55,13 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
+import org.smartbit4all.domain.data.storage.TransactionUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -72,18 +74,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private static final Logger log = LoggerFactory.getLogger(InvocationRegisterApiIml.class);
 
   private static final String ASYNC_REQUESTS_HANDLER = "ASYNC_REQUESTS_HANDLER";
-
-  /**
-   * The async invocation list attached to the current transaction.
-   */
-  private ThreadLocal<List<AsyncInvocationRequestEntry>> requestsToInvoke =
-      ThreadLocal.withInitial(() -> new ArrayList<>());
-
-  /**
-   * The async invocation list attached to the current transaction.
-   */
-  private ThreadLocal<List<Object>> requestsToSaveAndEnqueue =
-      ThreadLocal.withInitial(() -> new ArrayList<>());
 
   /**
    * The URI of the global registry.
@@ -120,6 +110,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private ObjectApi objectApi;
 
   @Autowired
+  @Lazy
   private InvocationRegisterApi self;
 
   /**
@@ -628,59 +619,287 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    */
   private final void enqueueAsyncRequest(AsyncInvocationRequestEntry asyncInvocationRequestEntry) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      requestsToInvoke.get().add(asyncInvocationRequestEntry);
-      registerAsyncRequestTransactionHandler();
+      getAsyncRequestTransactionHandler().addRequestToInvoke(asyncInvocationRequestEntry);
     } else {
       asyncInvocationRequestEntry.invoke();
     }
   }
 
-  private void registerAsyncRequestTransactionHandler() {
-    if (!TransactionSynchronizationManager.hasResource(ASYNC_REQUESTS_HANDLER)) {
-      TransactionSynchronizationManager
-          .registerSynchronization(new AsyncRequestTransactionHandler());
-      TransactionSynchronizationManager.bindResource(ASYNC_REQUESTS_HANDLER, true);
-    }
+  private AsyncRequestTransactionHandler getAsyncRequestTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        ASYNC_REQUESTS_HANDLER,
+        AsyncRequestTransactionHandler.class,
+        () -> new AsyncRequestTransactionHandler());
   }
+
+  private static class ChannelInfo {
+    String name;
+    URI uri;
+    URI runtimeUri;
+    AsyncInvocationChannel localChannel;
+    List<URI> requestsToAdd = new ArrayList<>();
+  }
+
+  private static class ScheduledRequestsForChannel {
+    String channelName;
+    List<ScheduledRequests> requests = new ArrayList<>();
+  }
+
+  private static class ScheduledRequests {
+    List<URI> requestUris = new ArrayList<>();
+    OffsetDateTime executeAt;
+  }
+
 
   private final class AsyncRequestTransactionHandler
       implements TransactionSynchronization {
 
+    private final List<Object> requestsToSaveAndEnqueue = new ArrayList<>();
+    private final List<AsyncInvocationRequestEntry> requestsToInvoke =
+        new ArrayList<>();
+
+    public void addRequestToSaveAndEnqueue(Object request) {
+      requestsToSaveAndEnqueue.add(request);
+    }
+
+    public void addRequestToInvoke(AsyncInvocationRequestEntry request) {
+      requestsToInvoke.add(request);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(ASYNC_REQUESTS_HANDLER);
+      log.trace("async suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(ASYNC_REQUESTS_HANDLER, true);
+      log.trace("async resume");
+    }
+
     @Override
     public void beforeCommit(boolean readOnly) {
-      List<Object> list = requestsToSaveAndEnqueue.get();
-      for (Object request : list) {
-        if (request instanceof AsyncInvocationRequest) {
-          saveAndEnqueueAsyncInvocationRequestInternal((AsyncInvocationRequest) request);
-        } else if (request instanceof ObjectNode) {
-          saveAndEnqueueAsyncInvocationRequestInternal((ObjectNode) request);
-        }
-      }
+      saveAndEnqueuAsyncRequests(requestsToSaveAndEnqueue);
     }
 
     @Override
     public void beforeCompletion() {
-      requestsToSaveAndEnqueue.remove();
+      requestsToSaveAndEnqueue.clear();
     }
 
     @Override
     public void afterCompletion(int status) {
       if (status == TransactionSynchronization.STATUS_COMMITTED) {
         // execute asyncInvocationRequests
-        List<AsyncInvocationRequestEntry> list = requestsToInvoke.get();
-        if (list != null) {
-          for (AsyncInvocationRequestEntry asyncInvocation : list) {
-            asyncInvocation.invoke();
-          }
+        for (AsyncInvocationRequestEntry asyncInvocation : requestsToInvoke) {
+          asyncInvocation.invoke();
         }
       } else if (status == TransactionSynchronization.STATUS_UNKNOWN) {
         log.warn("Transaction state is STATUS_UNKNOWN!");
       }
       // remove asyncInvocationRequests regardless of status
-      requestsToInvoke.remove();
+      requestsToInvoke.clear();
       TransactionSynchronizationManager.unbindResource(ASYNC_REQUESTS_HANDLER);
     }
   }
+
+  private void saveAndEnqueuAsyncRequests(List<Object> requests) {
+    // self applicationRuntimeUri
+    // gather all channel and runtime infos
+    Map<String, ChannelInfo> channelInfos = readChannelInfos(requests);
+    // save all asyncRequests
+    saveRequestObjects(requests, channelInfos);
+    // save requests to local channels - order doesn't matter
+    saveRequestsIntoChannels(channelInfos);
+    // run or "schedule" requests in order
+    enqueueOrScheduleRequest(requests, channelInfos);
+  }
+
+  private Map<String, ChannelInfo> readChannelInfos(List<Object> requestsToSaveAndEnqueue) {
+    Map<String, ChannelInfo> channelInfos = new HashMap<>();
+    List<ChannelInfo> remoteChannels = new ArrayList<>();
+    // collect all channel names
+    Set<String> channelNames = collectChannelNames(requestsToSaveAndEnqueue);
+    // local channels
+    readLocalChannels(channelInfos, remoteChannels, channelNames);
+    // remote channels
+    readRemoteChannels(channelInfos, remoteChannels);
+    return channelInfos;
+  }
+
+  private Set<String> collectChannelNames(List<Object> requestsToSaveAndEnqueue) {
+    Set<String> channelNames = new HashSet<>();
+    for (Object request : requestsToSaveAndEnqueue) {
+      if (request instanceof AsyncInvocationRequest) {
+        channelNames.add(
+            ((AsyncInvocationRequest) request).getChannel());
+      } else if (request instanceof ObjectNode) {
+        channelNames.add(
+            ((ObjectNode) request).getValueAsString(AsyncInvocationRequest.CHANNEL));
+      } else if (request instanceof ScheduledRequestsForChannel) {
+        channelNames.add(
+            ((ScheduledRequestsForChannel) request).channelName);
+      }
+    }
+    return channelNames;
+  }
+
+  private void readLocalChannels(Map<String, ChannelInfo> channelInfos,
+      List<ChannelInfo> remoteChannels,
+      Set<String> channelNames) {
+    URI applicationRuntimeUri = null;
+    if (applicationRuntimeApi != null) {
+      applicationRuntimeUri = applicationRuntimeApi.self().getUri();
+    }
+    for (String channel : channelNames) {
+      ChannelInfo info = new ChannelInfo();
+      info.name = channel;
+      AsyncInvocationChannel localChannel = getLocalChannel(info.name);
+      if (localChannel != null) {
+        info.localChannel = localChannel;
+        info.uri = localChannel.getUri();
+        info.runtimeUri = applicationRuntimeUri;
+        channelInfos.put(channel, info);
+      } else {
+        remoteChannels.add(info);
+      }
+    }
+  }
+
+  private void readRemoteChannels(Map<String, ChannelInfo> channelInfos,
+      List<ChannelInfo> remoteChannels) {
+    if (!remoteChannels.isEmpty()) {
+      RuntimeAsyncChannelRegistry runtimeAsyncChannelRegistry = collectionApi
+          .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
+              RuntimeAsyncChannelRegistry.class)
+          .get();
+      runtimeAsyncChannelRegistry.getRuntimes();
+      for (ChannelInfo channel : remoteChannels) {
+        ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
+            .filter(racr -> racr.getChannels().containsKey(channel.name)).findFirst()
+            .map(racr -> racr.getChannels().get(channel.name))
+            .map(cUri -> objectApi.loadLatest(cUri))
+            .orElseThrow(
+                // no channel found in local nor in external runtimes -> exception
+                () -> new IllegalStateException("There is no channel available: " + channel));
+        channel.uri = objectApi.getLatestUri(channelNode.getObjectUri());
+        channel.runtimeUri = channelNode.getValue(URI.class, RuntimeAsyncChannel.RUNTIME_URI);
+        channelInfos.put(channel.name, channel);
+      }
+    }
+  }
+
+  private void saveRequestObjects(List<Object> requests, Map<String, ChannelInfo> channelInfos) {
+    if (applicationRuntimeApi != null) {
+      for (Object obj : requests) {
+        if (obj instanceof AsyncInvocationRequest) {
+          AsyncInvocationRequest request = (AsyncInvocationRequest) obj;
+          ChannelInfo channel = channelInfos.get(request.getChannel());
+          request.runtimeUri(channel.runtimeUri);
+          request
+              .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
+          channel.requestsToAdd.add(objectApi.getLatestUri(request.getUri()));
+        } else if (obj instanceof ObjectNode) {
+          ObjectNode request = (ObjectNode) obj;
+          ChannelInfo channel =
+              channelInfos.get(request.getValueAsString(AsyncInvocationRequest.CHANNEL));
+          request.setValue(channel.runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
+          URI uri = objectApi.save(request);
+          channel.requestsToAdd.add(objectApi.getLatestUri(uri));
+        }
+      }
+    }
+  }
+
+  private void saveRequestsIntoChannels(Map<String, ChannelInfo> channelInfos) {
+    List<URI> channelUris = channelInfos.values().stream()
+        .filter(ch -> ch.localChannel != null)
+        .map(ch -> ch.uri)
+        .collect(toList());
+    List<Lock> channelLocks = objectApi.lockAll(channelUris);
+    try {
+      for (ChannelInfo channel : channelInfos.values()) {
+        if (channel.localChannel != null) {
+          Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+          log.debug("saveRequestsToChannel {} - {}", channel.name, channel.uri);
+          storageAsyncReg.update(channel.uri, RuntimeAsyncChannel.class, rac -> {
+            if (rac.getInvocationRequests() == null) {
+              rac.setInvocationRequests(new ArrayList<>());
+            }
+            rac.getInvocationRequests().addAll(channel.requestsToAdd);
+            return rac;
+          });
+        }
+      }
+    } finally {
+      objectApi.unlockAll(channelLocks);
+    }
+  }
+
+  private void enqueueOrScheduleRequest(List<Object> requests,
+      Map<String, ChannelInfo> channelInfos) {
+    OffsetDateTime now = OffsetDateTime.now();
+    // we keep all scheduled requests for channel in this map
+    Map<String, ScheduledRequestsForChannel> scheduledRequests =
+        new HashMap<>();
+    for (Object obj : requests) {
+      AsyncInvocationRequest request = null;
+      if (obj instanceof AsyncInvocationRequest) {
+        request = (AsyncInvocationRequest) obj;
+      } else if (obj instanceof ObjectNode) {
+        request = objectApi.read(((ObjectNode) obj).getResultUri(), AsyncInvocationRequest.class);
+      } else if (obj instanceof ScheduledRequestsForChannel) {
+        // this is originally requested from outside
+        ScheduledRequestsForChannel req = (ScheduledRequestsForChannel) obj;
+        ScheduledRequestsForChannel schReq =
+            getScheduledRequestForChannel(scheduledRequests, req.channelName);
+        schReq.requests.addAll(req.requests);
+      }
+      if (request != null) {
+        ChannelInfo channel = channelInfos.get(request.getChannel());
+        if (channel.localChannel != null) {
+          enqueueAsyncRequest(new AsyncInvocationRequestEntry(channel.localChannel, request));
+        } else {
+          // "remote" execution is to schedule this request immediately
+          ScheduledRequestsForChannel schReq =
+              getScheduledRequestForChannel(scheduledRequests, channel.name);
+          ScheduledRequests schReqs = new ScheduledRequests();
+          schReqs.requestUris = Arrays.asList(request.getUri());
+          schReqs.executeAt = now;
+          schReq.requests.add(schReqs);
+        }
+      }
+    }
+    Map<String, StoredReference<AsyncChannelScheduledInvocationList>> refsByChannel =
+        scheduledRequests.keySet().stream()
+            .collect(toMap(
+                ch -> ch,
+                this::getScheduledInvocationsRef));
+    List<URI> refUris = refsByChannel.values().stream()
+        .map(StoredReference::getUri)
+        .collect(toList());
+    List<Lock> refLocks = objectApi.lockAll(refUris);
+    try {
+      for (ScheduledRequestsForChannel schReq : scheduledRequests.values()) {
+        scheduleAsyncInvocationRequestInternal(
+            refsByChannel.get(schReq.channelName),
+            schReq);
+      }
+    } finally {
+      objectApi.unlockAll(refLocks);
+    }
+  }
+
+  private ScheduledRequestsForChannel getScheduledRequestForChannel(
+      Map<String, ScheduledRequestsForChannel> scheduledRequests, String channelName) {
+    return scheduledRequests.computeIfAbsent(channelName, ch -> {
+      ScheduledRequestsForChannel result = new ScheduledRequestsForChannel();
+      result.channelName = ch;
+      return result;
+    });
+  }
+
 
   private void fillPrimaryApiMap() {
     primaryApisByContributionClass = new HashMap<>();
@@ -856,109 +1075,111 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         .request(request)
         .channel(channel);
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      requestsToSaveAndEnqueue.get().add(asyncInvocationRequest);
-      registerAsyncRequestTransactionHandler();
+      getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(asyncInvocationRequest);
     } else {
-      saveAndEnqueueAsyncInvocationRequestInternal(asyncInvocationRequest);
+      // saveAndEnqueueAsyncInvocationRequestInternal(asyncInvocationRequest);
+      saveAndEnqueuAsyncRequests(Arrays.asList(asyncInvocationRequest));
     }
   }
 
-  private void saveAndEnqueueAsyncInvocationRequestInternal(AsyncInvocationRequest request) {
-    String channel = request.getChannel();
-    AsyncInvocationChannel localAsyncInvocationChannel = getLocalChannel(channel);
-    if (applicationRuntimeApi != null) {
-      // we may have other runtimes available
-      ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
-      URI channelUri = null;
-      URI runtimeUri = null;
-      if (localAsyncInvocationChannel == null) {
-        // no local channel found with the given name -> check other runtimes
-        RuntimeAsyncChannelRegistry runtimeAsyncChannelRegistry = collectionApi
-            .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
-                RuntimeAsyncChannelRegistry.class)
-            .get();
-        ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
-            .filter(racr -> racr.getChannels().containsKey(channel)).findFirst()
-            .map(racr -> racr.getChannels().get(channel))
-            .map(cUri -> objectApi.loadLatest(cUri))
-            .orElseThrow(
-                // no channel found in local nor in external runtimes -> exception
-                () -> new IllegalStateException("There is no channel available: " + channel));
-        // channel found in other runtime
-        channelUri = objectApi.getLatestUri(channelNode.getObjectUri());
-        runtimeUri = channelNode.getValue(URI.class, RuntimeAsyncChannel.RUNTIME_URI);
-      } else {
-        // set up the with local channel and local runtime
-        channelUri = localAsyncInvocationChannel.getUri();
-        runtimeUri = applicationRuntime.getUri();
-      }
-      // We set the runtime identifier to see which runtime is responsible for the invocation
-      // currently.
-      request.runtimeUri(runtimeUri);
-      request
-          .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
-
-
-      if (runtimeUri.equals(applicationRuntime.getUri())) {
-        // Save the request to remember to execute if this runtime fails.
-        // We save the given invocation into a list related to the application runtime.
-        Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
-        log.debug(
-            "saveAndEnqueueAsyncInvocationRequestInternal, add invocation request item {} - {}",
-            channel, channelUri);
-        storageAsyncReg.update(channelUri, RuntimeAsyncChannel.class, rac -> {
-          return rac
-              .addInvocationRequestsItem(objectApi.getLatestUri(request.getUri()));
-        });
-      } else {
-        // when the channel is in an other runtime, we add it as an instant scheduled request
-        scheduleAsyncInvocationRequest(channel,
-            Arrays.asList(request.getUri()), OffsetDateTime.now());
-      }
-    }
-
-    if (localAsyncInvocationChannel != null) {
-      // when we have a local channel, try to run it right now
-      AsyncInvocationRequestEntry result =
-          new AsyncInvocationRequestEntry(localAsyncInvocationChannel, request);
-      enqueueAsyncRequest(result);
-    }
-  }
+  // private void saveAndEnqueueAsyncInvocationRequestInternal(AsyncInvocationRequest request) {
+  // String channel = request.getChannel();
+  // AsyncInvocationChannel localAsyncInvocationChannel = getLocalChannel(channel);
+  // if (applicationRuntimeApi != null) {
+  // // we may have other runtimes available
+  // ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
+  // URI channelUri = null;
+  // URI runtimeUri = null;
+  // if (localAsyncInvocationChannel == null) {
+  // // no local channel found with the given name -> check other runtimes
+  // RuntimeAsyncChannelRegistry runtimeAsyncChannelRegistry = collectionApi
+  // .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
+  // RuntimeAsyncChannelRegistry.class)
+  // .get();
+  // ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
+  // .filter(racr -> racr.getChannels().containsKey(channel)).findFirst()
+  // .map(racr -> racr.getChannels().get(channel))
+  // .map(cUri -> objectApi.loadLatest(cUri))
+  // .orElseThrow(
+  // // no channel found in local nor in external runtimes -> exception
+  // () -> new IllegalStateException("There is no channel available: " + channel));
+  // // channel found in other runtime
+  // channelUri = objectApi.getLatestUri(channelNode.getObjectUri());
+  // runtimeUri = channelNode.getValue(URI.class, RuntimeAsyncChannel.RUNTIME_URI);
+  // } else {
+  // // set up the with local channel and local runtime
+  // channelUri = localAsyncInvocationChannel.getUri();
+  // runtimeUri = applicationRuntime.getUri();
+  // }
+  // // We set the runtime identifier to see which runtime is responsible for the invocation
+  // // currently.
+  // request.runtimeUri(runtimeUri);
+  // request
+  // .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
+  //
+  //
+  // if (runtimeUri.equals(applicationRuntime.getUri())) {
+  // // Save the request to remember to execute if this runtime fails.
+  // // We save the given invocation into a list related to the application runtime.
+  // Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+  // log.debug(
+  // "saveAndEnqueueAsyncInvocationRequestInternal, add invocation request item {} - {}",
+  // channel, channelUri);
+  // storageAsyncReg.update(channelUri, RuntimeAsyncChannel.class, rac -> {
+  // return rac
+  // .addInvocationRequestsItem(objectApi.getLatestUri(request.getUri()));
+  // });
+  // } else {
+  // // when the channel is in an other runtime, we add it as an instant scheduled request
+  // scheduleAsyncInvocationRequest(channel,
+  // Arrays.asList(request.getUri()), OffsetDateTime.now());
+  // }
+  // }
+  //
+  // if (localAsyncInvocationChannel != null) {
+  // // when we have a local channel, try to run it right now
+  // AsyncInvocationRequestEntry result =
+  // new AsyncInvocationRequestEntry(localAsyncInvocationChannel, request);
+  // enqueueAsyncRequest(result);
+  // }
+  // }
 
   // @Transactional
   @Override
-  public void saveAndEnqueueAsyncInvocationRequest(ObjectNode asynRequest) {
+  public void saveAndEnqueueAsyncInvocationRequest(ObjectNode asyncRequest) {
+    // TODO make sure ObjectNode based requests are only local channel??
+    // checkLocalChannel(asyncRequest.getValueAsString(AsyncInvocationRequest.CHANNEL));
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      requestsToSaveAndEnqueue.get().add(asynRequest);
-      registerAsyncRequestTransactionHandler();
+      getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(asyncRequest);
     } else {
-      saveAndEnqueueAsyncInvocationRequestInternal(asynRequest);
+      // saveAndEnqueueAsyncInvocationRequestInternal(asyncRequest);
+      saveAndEnqueuAsyncRequests(Arrays.asList(asyncRequest));
     }
-
   }
 
-  private void saveAndEnqueueAsyncInvocationRequestInternal(ObjectNode asynRequest) {
-    AsyncInvocationChannel asyncInvocationChannel =
-        checkLocalChannel(asynRequest.getValueAsString(AsyncInvocationRequest.CHANNEL));
-    AsyncInvocationRequest asyncInvocationRequest = null;
-    if (applicationRuntimeApi != null) {
-      ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
-      asynRequest.setValue(applicationRuntime.getUri(), AsyncInvocationRequest.RUNTIME_URI);
-      URI uri = objectApi.save(asynRequest);
-      asyncInvocationRequest = objectApi.read(uri, AsyncInvocationRequest.class);
-      Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
-      storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
-        return rac
-            .addInvocationRequestsItem(objectApi.getLatestUri(uri));
-      });
-    } else {
-      asyncInvocationRequest = asynRequest.getObject(AsyncInvocationRequest.class);
-    }
-
-    AsyncInvocationRequestEntry result =
-        new AsyncInvocationRequestEntry(asyncInvocationChannel, asyncInvocationRequest);
-    enqueueAsyncRequest(result);
-  }
+  // private void saveAndEnqueueAsyncInvocationRequestInternal(ObjectNode asyncRequest) {
+  //
+  // AsyncInvocationChannel asyncInvocationChannel =
+  // checkLocalChannel(asyncRequest.getValueAsString(AsyncInvocationRequest.CHANNEL));
+  // AsyncInvocationRequest asyncInvocationRequest = null;
+  // if (applicationRuntimeApi != null) {
+  // ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
+  // asyncRequest.setValue(applicationRuntime.getUri(), AsyncInvocationRequest.RUNTIME_URI);
+  // URI uri = objectApi.save(asyncRequest);
+  // asyncInvocationRequest = objectApi.read(uri, AsyncInvocationRequest.class);
+  // Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+  // storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
+  // return rac
+  // .addInvocationRequestsItem(objectApi.getLatestUri(uri));
+  // });
+  // } else {
+  // asyncInvocationRequest = asyncRequest.getObject(AsyncInvocationRequest.class);
+  // }
+  //
+  // AsyncInvocationRequestEntry result =
+  // new AsyncInvocationRequestEntry(asyncInvocationChannel, asyncInvocationRequest);
+  // enqueueAsyncRequest(result);
+  // }
 
   // @Transactional
   @Override
@@ -981,27 +1202,53 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     if (requestUris == null || requestUris.isEmpty()) {
       return;
     }
-    // TODO lock channel.uri
+    ScheduledRequestsForChannel request = new ScheduledRequestsForChannel();
+    request.channelName = channelName;
+    ScheduledRequests requests = new ScheduledRequests();
+    requests.requestUris = requestUris;
+    requests.executeAt = executeAt;
+    request.requests.add(requests);
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(request);
+    } else {
+      scheduleAsyncInvocationRequest(request);
+    }
+  }
+
+  private final void scheduleAsyncInvocationRequest(ScheduledRequestsForChannel request) {
     StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
-        collectionApi.reference(Invocations.INVOCATION_SCHEME,
-            scheduledInvocationReferenceName(channelName),
-            AsyncChannelScheduledInvocationList.class);
-    // TODO move it to before commit?
+        getScheduledInvocationsRef(request.channelName);
+    scheduleAsyncInvocationRequestInternal(refScheduled, request);
+  }
+
+  private StoredReference<AsyncChannelScheduledInvocationList> getScheduledInvocationsRef(
+      String channelName) {
+    return collectionApi.reference(Invocations.INVOCATION_SCHEME,
+        scheduledInvocationReferenceName(channelName),
+        AsyncChannelScheduledInvocationList.class);
+  }
+
+  private final void scheduleAsyncInvocationRequestInternal(
+      StoredReference<AsyncChannelScheduledInvocationList> refScheduled,
+      ScheduledRequestsForChannel request) {
     refScheduled.update(scheduledList -> {
       AsyncChannelScheduledInvocationList updatedList =
           scheduledList == null ? new AsyncChannelScheduledInvocationList() : scheduledList;
-      ListIterator<ScheduledInvocationRequest> iterList =
-          updatedList.getInvocationRequests().listIterator();
-      while (iterList.hasNext()) {
-        ScheduledInvocationRequest scheduledInvocationRequest =
-            iterList.next();
-        if (scheduledInvocationRequest.getScheduledAt().isAfter(executeAt)) {
-          iterList.previous(); // have to move one step back
-          break;
+      for (ScheduledRequests requests : request.requests) {
+        ListIterator<ScheduledInvocationRequest> iterList =
+            updatedList.getInvocationRequests().listIterator();
+        while (iterList.hasNext()) {
+          ScheduledInvocationRequest scheduledInvocationRequest =
+              iterList.next();
+          if (scheduledInvocationRequest.getScheduledAt().isAfter(requests.executeAt)) {
+            iterList.previous(); // have to move one step back
+            break;
+          }
         }
+        requests.requestUris
+            .forEach(u -> iterList.add(new ScheduledInvocationRequest().requestUri(u)
+                .scheduledAt(requests.executeAt)));
       }
-      requestUris.forEach(u -> iterList.add(new ScheduledInvocationRequest().requestUri(u)
-          .scheduledAt(executeAt)));
       return updatedList;
     });
   }

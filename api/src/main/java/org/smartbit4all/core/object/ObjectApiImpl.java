@@ -39,6 +39,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
@@ -55,6 +56,7 @@ public class ObjectApiImpl implements ObjectApi {
   private RetrievalApi retrievalApi;
 
   @Autowired
+  @Lazy
   private ObjectApi self;
 
   @Autowired

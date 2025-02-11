@@ -14,6 +14,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @author Peter Boros
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DatabaseDefinitionApiImpl implements DatabaseDefinitionApi {
 
   @Autowired
+  @Lazy
   private DatabaseDefinitionApi databaseDefinitionApi;
 
   @Override

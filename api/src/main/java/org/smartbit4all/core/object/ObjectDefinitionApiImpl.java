@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
 
@@ -135,6 +135,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   private StorageApi storageApi;
 
   @Autowired
+  @Lazy
   private ObjectDefinitionApi self;
 
   private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -403,7 +404,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
    * Some properties may define outgoing reference since they define the referred types and referred
    * properties. And on the other hand the outgoing references should be applied onto the properties
    * to contain this information.
-   * 
+   *
    * @param definitionData
    * @return
    */

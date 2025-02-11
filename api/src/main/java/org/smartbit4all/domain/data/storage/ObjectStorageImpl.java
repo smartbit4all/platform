@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,6 +17,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -29,10 +33,13 @@ import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
+import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -70,7 +77,16 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
   @Autowired
+  @Lazy
   protected ObjectStorage self;
+
+  @Autowired
+  @Lazy
+  protected StorageApi storageApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private PlatformTransactionManager transactionManager;
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -657,43 +673,50 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    */
   protected void handleStorageSaveEvent(StorageObject<?> object, StorageSaveEvent event) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      saveEvents.get()
-          .computeIfAbsent(object, o -> new ArrayList<>())
-          .add(event);
-      registerSaveEventTransactionHandler();
+      getSaveEventTransactionHandler().addSaveEvents(object, event);
     } else {
       invokeOnSucceedFunctions(object, event);
     }
   }
 
-  /**
-   * The StorageSaveEvent list attached to the current transaction.
-   */
-  protected ThreadLocal<Map<StorageObject<?>, List<StorageSaveEvent>>> saveEvents =
-      ThreadLocal.withInitial(() -> new HashMap<>());
-
-  protected void registerSaveEventTransactionHandler() {
-    if (!TransactionSynchronizationManager.hasResource(STORAGE_SAVE_EVENTS_HANDLER)) {
-      TransactionSynchronizationManager
-          .registerSynchronization(new SaveEventTransactionHandler());
-      TransactionSynchronizationManager.bindResource(STORAGE_SAVE_EVENTS_HANDLER, true);
-    }
+  protected SaveEventTransactionHandler getSaveEventTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        STORAGE_SAVE_EVENTS_HANDLER,
+        SaveEventTransactionHandler.class,
+        () -> new SaveEventTransactionHandler());
   }
 
   protected final class SaveEventTransactionHandler implements TransactionSynchronization {
+
+    private final Map<StorageObject<?>, List<StorageSaveEvent>> saveEvents = new HashMap<>();
+
+    public void addSaveEvents(StorageObject<?> object, StorageSaveEvent event) {
+      saveEvents
+          .computeIfAbsent(object, o -> new ArrayList<>())
+          .add(event);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
+      log.trace("async suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(STORAGE_SAVE_EVENTS_HANDLER, true);
+      log.trace("async resume");
+    }
 
     @Override
     public void afterCompletion(int status) {
       if (status == TransactionSynchronization.STATUS_COMMITTED) {
         // after commit, invoke saveEvent handling
-        Map<StorageObject<?>, List<StorageSaveEvent>> events = saveEvents.get();
-        if (events != null) {
-          for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : events.entrySet()) {
-            if (entry.getValue() != null) {
-              for (StorageSaveEvent event : entry.getValue()) {
-                if (event != null) {
-                  invokeOnSucceedFunctions(entry.getKey(), event);
-                }
+        for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : saveEvents.entrySet()) {
+          if (entry.getValue() != null) {
+            for (StorageSaveEvent event : entry.getValue()) {
+              if (event != null) {
+                invokeOnSucceedFunctions(entry.getKey(), event);
               }
             }
           }
@@ -702,7 +725,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         log.warn("Transaction state is STATUS_UNKNOWN!");
       }
       // remove saveEvents regardless of status
-      saveEvents.remove();
+      saveEvents.clear();
       TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
     }
   }
@@ -788,38 +811,65 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   @Override
   public void unlock(StorageObjectLock lock) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      locksToUnlock.get().add(lock);
-      registerUnlockTransactionHandler();
+      getUnlockTransactionHandler().addRequestToSaveAndEnqueue(lock);
     } else {
       lock.unlockInternal();
     }
   }
 
-  /**
-   * The StorageSaveEvent list attached to the current transaction.
-   */
-  protected ThreadLocal<List<StorageObjectLock>> locksToUnlock =
-      ThreadLocal.withInitial(() -> new ArrayList<>());
-
-  protected void registerUnlockTransactionHandler() {
-    if (!TransactionSynchronizationManager.hasResource(UNLOCK_HANDLER)) {
-      TransactionSynchronizationManager
-          .registerSynchronization(new UnlockTransactionHandler());
-      TransactionSynchronizationManager.bindResource(UNLOCK_HANDLER, true);
-    }
+  protected UnlockTransactionHandler getUnlockTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        UNLOCK_HANDLER,
+        UnlockTransactionHandler.class,
+        () -> new UnlockTransactionHandler());
   }
 
   protected final class UnlockTransactionHandler implements TransactionSynchronization {
 
+    protected final List<StorageObjectLock> locksToUnlock = new ArrayList<>();
+
+    public void addRequestToSaveAndEnqueue(StorageObjectLock lock) {
+      locksToUnlock.add(lock);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
+      log.trace("unlock suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(UNLOCK_HANDLER, true);
+      log.trace("unlock resume");
+    }
+
     @Override
     public void afterCompletion(int status) {
-      locksToUnlock.get().forEach(lock -> lock.unlockInternal());
-      locksToUnlock.remove();
+      if (log.isTraceEnabled()) {
+        String lockTrace = locksToUnlock.stream()
+            .filter(Objects::nonNull)
+            .map(lock -> lock.getObjectURI())
+            .filter(Objects::nonNull)
+            .map(uri -> uri.toString())
+            .collect(Collectors.joining(","));
+        log.trace("unlock afterCompletion, unlocking {} locks: {}", locksToUnlock.size(),
+            lockTrace);
+      }
+      locksToUnlock.forEach(lock -> lock.unlockInternal());
+      locksToUnlock.clear();
       if (status == TransactionSynchronization.STATUS_UNKNOWN) {
         log.warn("Transaction state is STATUS_UNKNOWN!");
       }
       TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
     }
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    return new StoredSequenceStorageImpl(transactionManager, storageApi,
+        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
+        name);
   }
 
 }

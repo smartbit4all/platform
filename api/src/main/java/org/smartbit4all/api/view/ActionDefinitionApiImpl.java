@@ -20,6 +20,7 @@ import org.smartbit4all.api.toolbar.bean.ActionDefinition;
 import org.smartbit4all.api.toolbar.bean.ViewEvaluationContext;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class ActionDefinitionApiImpl implements ActionDefinitionApi {
 
@@ -31,11 +32,16 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
    */
   @Autowired(required = false)
   private List<ActionProviderApi> providers;
+
   @Autowired
+  @Lazy
   private MasterDataManagementApi masterDataManagementApi;
+
   @Autowired
   private ObjectApi objectApi;
+
   @Autowired
+  @Lazy
   private InvocationApi invocationApi;
 
   @Override

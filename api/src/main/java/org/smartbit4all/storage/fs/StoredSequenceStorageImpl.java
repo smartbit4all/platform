@@ -9,8 +9,9 @@ import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class StoredSequenceStorageImpl implements StoredSequence {
 
@@ -18,26 +19,40 @@ public class StoredSequenceStorageImpl implements StoredSequence {
 
   StorageApi storageApi;
 
+  private PlatformTransactionManager transactionManager;
+
   private static final Long START_VALUE = Long.valueOf(0);
 
-  public StoredSequenceStorageImpl(StorageApi storageApi, URI uri, String name) {
+  public StoredSequenceStorageImpl(PlatformTransactionManager transactionManager,
+      StorageApi storageApi, URI uri, String name) {
+    this.transactionManager = transactionManager;
     this.uri = uri;
     this.storageApi = storageApi;
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Long next() {
     return next(1).get(0);
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public List<Long> next(int count) {
     Objects.requireNonNull(uri, "The uri of the sequence is missing.");
     if (count <= 0) {
       throw new IllegalArgumentException("The next must be called with positive number");
     }
+    if (transactionManager != null) {
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+      return transaction.execute(status -> {
+        return nextInternal(count);
+      });
+    } else {
+      return nextInternal(count);
+    }
+  }
+
+  private List<Long> nextInternal(int count) {
     Storage storage = storageApi.getStorage(uri);
     Objects.requireNonNull(storage,
         "Unable to identify the storage for the " + uri + " sequence.");

@@ -6,11 +6,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.smartbit4all.domain.service.identifier.CurrentIdentifier;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SQLIdentifierServiceH2 extends SQLIdentifierService {
 
   @Autowired
+  @Lazy
   SQLIdentifierServiceH2 self;
 
   public SQLIdentifierServiceH2(JdbcTemplate jdbcTemplate) {

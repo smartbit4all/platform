@@ -29,9 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
-import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.CollectionApiStorageImpl;
-import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -47,7 +44,6 @@ import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -64,17 +60,16 @@ import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
-import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -128,13 +123,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   private Cache<String, DataRow> versionContentCache = null;
 
   @Autowired
+  @Lazy
   private StorageApi storageApi;
-
-  @Autowired
-  private ObjectStorage self;
-
-  @Autowired(required = false)
-  private TransactionTemplate transactionTemplate;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -1302,13 +1292,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           "Unable to retreive new identifier from database " + SEQUENCE_NAME + " sequence", e);
     }
     return next.output();
-  }
-
-  @Override
-  public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequenceStorageImpl(storageApi,
-        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
-        name);
   }
 
   private final StorageSQLExtensionApi getExtensionApi(String shema, String qualifiedName) {

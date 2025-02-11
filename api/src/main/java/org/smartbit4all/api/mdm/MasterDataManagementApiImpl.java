@@ -71,6 +71,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
@@ -91,6 +92,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private boolean optionsSaved = false;
 
   @Autowired
+  @Lazy
   private CollectionApi collectionApi;
 
   @Autowired
@@ -121,6 +123,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private FilterExpressionApi filterExpressionApi;
 
   @Autowired
+  @Lazy
   private InvocationApi invocationApi;
 
   @Autowired
@@ -133,6 +136,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private OrgApi orgApi;
 
   @Autowired
+  @Lazy
   private MasterDataManagementApi self;
 
   @Autowired
