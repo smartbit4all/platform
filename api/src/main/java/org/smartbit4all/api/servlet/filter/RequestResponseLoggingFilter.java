@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ReadListener;
@@ -34,6 +36,8 @@ public class RequestResponseLoggingFilter implements Filter {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(RequestResponseLoggingFilter.class);
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -77,6 +81,11 @@ public class RequestResponseLoggingFilter implements Filter {
     logBuilder.append("Body:\n");
     String body = requestWrapper.getRequestBody();
     logBuilder.append(body);
+    if (isJsonRequest(httpRequest)) {
+      logBody(body, logBuilder);
+    } else {
+      logBuilder.append(body);
+    }
 
     LOGGER.info(logBuilder.toString());
   }
@@ -99,12 +108,18 @@ public class RequestResponseLoggingFilter implements Filter {
     logBuilder.append("Body:\n");
     byte[] responseData = responseWrapper.getResponseData();
     String body = new String(responseData, httpResponse.getCharacterEncoding());
-    logBuilder.append(body);
+    if (isJsonResponse(httpResponse)) {
+      logBody(body, logBuilder);
+    } else if (isOctetStreamResponse(httpResponse)) {
+      // don't log out octet-stream response body
+      logBuilder.append("");
+    } else {
+      logBuilder.append(body);
+    }
 
     LOGGER.info(logBuilder.toString());
     httpResponse.getOutputStream().write(responseData);
   }
-
 
   public static String getURL(HttpServletRequest req) {
 
@@ -247,5 +262,32 @@ public class RequestResponseLoggingFilter implements Filter {
         return reader.lines().collect(Collectors.joining(System.lineSeparator()));
       }
     }
+  }
+
+
+
+  private void logBody(String body, StringBuilder logBuilder) {
+    try {
+      Object json = objectMapper.readValue(body, Object.class);
+      String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+      logBuilder.append(prettyJson);
+    } catch (JsonProcessingException e) {
+      logBuilder.append(body);
+    }
+  }
+
+  private boolean isJsonRequest(HttpServletRequest request) {
+    return request.getContentType() != null
+        && request.getContentType().startsWith("application/json");
+  }
+
+  private boolean isJsonResponse(HttpServletResponse response) {
+    return response.getContentType() != null
+        && response.getContentType().startsWith("application/json");
+  }
+
+  private boolean isOctetStreamResponse(HttpServletResponse response) {
+    return response.getContentType() != null
+        && response.getContentType().startsWith("application/octet-stream");
   }
 }

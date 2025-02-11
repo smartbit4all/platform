@@ -8,14 +8,47 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Log outgoing HTTP request and responses for it. It has to be registered to a {@link RestTemplate}
+ * or through a {@link RestTemplateCustomizer}.
+ * <p>
+ * When registered the RequestFactory also has to be changed. Cause the body can only be read once
+ * {@link BufferingClientHttpRequestFactory}
+ * </p>
+ * <p>
+ * For example:
+ * 
+ * <pre>
+ * {@code
+ *
+ * public RestTemplateCustomizer restTemplateCustomizer() {
+ *   return restTemplate -> {
+ *     restTemplate.getInterceptors().add(new LoggingInterceptor());
+ *     restTemplate.setRequestFactory(
+ *         new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+ *   };
+ * }
+ * }
+ * </pre>
+ * 
+ * </p>
+ */
 public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
   private static Logger LOGGER = LoggerFactory.getLogger(LoggingInterceptor.class);
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
   public ClientHttpResponse intercept(
@@ -54,7 +87,11 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
         new BufferedReader(new InputStreamReader(response.getBody(), StandardCharsets.UTF_8))
             .lines()
             .collect(Collectors.joining("\n"));
-    logBuilder.append(body);
+    if (isJsonResponse(response)) {
+      logBody(body, logBuilder);
+    } else {
+      logBuilder.append(body);
+    }
 
     LOGGER.info(logBuilder.toString());
 
@@ -75,7 +112,35 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
     logBuilder.append("Body:\n");
     String body = new String(reqBody, StandardCharsets.UTF_8);
     logBuilder.append(body);
+    if (isJsonRequest(req)) {
+      logBody(body, logBuilder);
+    } else {
+      logBuilder.append(body);
+    }
 
     LOGGER.info(logBuilder.toString());
+  }
+
+  private void logBody(String body, StringBuilder logBuilder) {
+    try {
+      Object json = objectMapper.readValue(body, Object.class);
+      String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+      logBuilder.append(prettyJson);
+    } catch (JsonProcessingException e) {
+      logBuilder.append(body);
+    }
+  }
+
+  private boolean isJsonRequest(HttpRequest request) {
+
+    return request.getHeaders() != null
+        && request.getHeaders().getContentType() != null
+        && request.getHeaders().getContentType().equals(MediaType.APPLICATION_JSON);
+  }
+
+  private boolean isJsonResponse(ClientHttpResponse response) {
+    return response.getHeaders() != null
+        && response.getHeaders().getContentType() != null
+        && response.getHeaders().getContentType().equals(MediaType.APPLICATION_JSON);
   }
 }
