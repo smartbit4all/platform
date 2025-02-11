@@ -151,6 +151,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
       gridViewDescriptor.setPreserveSelectionOnPageChange(false);
     }
 
+    gridModel.qualifier(ctx.pageConfig.getQualifier());
     gridModelApi.initGridInView(ctx.viewUUID, WIDGET_RESULT_GRID, gridModel);
     if (ctx.gridPageRenderCallback != null) {
       gridModelApi.addGridPageCallback(
