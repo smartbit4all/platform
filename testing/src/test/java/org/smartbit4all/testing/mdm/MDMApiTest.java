@@ -1769,7 +1769,7 @@ class MDMApiTest {
   @Test
   @Order(200)
   void testApplicationSetup() throws Exception {
-    Thread.sleep(5000);
+    Thread.sleep(10000);
     Assertions.assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
     Assertions.assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3);
   }
