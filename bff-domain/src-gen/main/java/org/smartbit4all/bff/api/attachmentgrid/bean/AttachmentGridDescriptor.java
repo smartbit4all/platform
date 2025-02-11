@@ -49,7 +49,8 @@ import javax.validation.Valid;
   AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
   AttachmentGridDescriptor.PAGE_SIZE,
   AttachmentGridDescriptor.CLOSE_ON_SAVE,
-  AttachmentGridDescriptor.IS_MULTIPLE_INPUT
+  AttachmentGridDescriptor.IS_MULTIPLE_INPUT,
+  AttachmentGridDescriptor.DIALOG_TITLE
 })
 @JsonTypeName("AttachmentGridDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -92,6 +93,9 @@ public class AttachmentGridDescriptor {
 
   public static final String IS_MULTIPLE_INPUT = "isMultipleInput";
   private Boolean isMultipleInput = true;
+
+  public static final String DIALOG_TITLE = "dialogTitle";
+  private String dialogTitle;
 
   public AttachmentGridDescriptor() { 
   }
@@ -458,6 +462,33 @@ public class AttachmentGridDescriptor {
   }
 
 
+  public AttachmentGridDescriptor dialogTitle(String dialogTitle) {
+    
+    this.dialogTitle = dialogTitle;
+    return this;
+  }
+
+   /**
+   * Get dialogTitle
+   * @return dialogTitle
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(DIALOG_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDialogTitle() {
+    return dialogTitle;
+  }
+
+
+  @JsonProperty(DIALOG_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDialogTitle(String dialogTitle) {
+    this.dialogTitle = dialogTitle;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -479,12 +510,13 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.isPaginatorEnabled, attachmentGridDescriptor.isPaginatorEnabled) &&
         Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
         Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave) &&
-        Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput);
+        Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput) &&
+        Objects.equals(this.dialogTitle, attachmentGridDescriptor.dialogTitle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle);
   }
 
   @Override
@@ -504,6 +536,7 @@ public class AttachmentGridDescriptor {
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
     sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
+    sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
     sb.append("}");
     return sb.toString();
   }

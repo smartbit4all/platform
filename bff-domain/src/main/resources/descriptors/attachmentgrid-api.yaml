@@ -52,3 +52,5 @@ components:
         isMultipleInput:
           type: boolean
           default: true
+        dialogTitle:
+          type: string
