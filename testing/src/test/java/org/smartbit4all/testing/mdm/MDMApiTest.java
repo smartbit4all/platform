@@ -3,6 +3,7 @@ package org.smartbit4all.testing.mdm;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
@@ -1771,9 +1773,25 @@ class MDMApiTest {
   @Test
   @Order(200)
   void testApplicationSetup() throws Exception {
-    Thread.sleep(3000);
-    Assertions.assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
-    Assertions.assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3);
+    with()
+        .pollInterval(100L, TimeUnit.MILLISECONDS)
+        .and()
+        .with()
+        .pollDelay(1_000L, TimeUnit.MILLISECONDS) // worst case scenario: The Gradle cache concludes
+                                                  // none of the other test have to run, so this one
+                                                  // is run as the first and only -> we must wait
+                                                  // for _at least_ the application setup mgmt
+        .await()
+        .atMost(5_000L, TimeUnit.MILLISECONDS)
+        .untilAsserted(() -> {
+          System.out.println("Checking value: " + MDMApiTestSetupv1.executionCounter);
+          assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
+        });
+    with()
+        .pollInterval(100L, TimeUnit.MILLISECONDS)
+        .await()
+        .atMost(5_000L, TimeUnit.MILLISECONDS)
+        .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3));
   }
 
 }

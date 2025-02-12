@@ -9,11 +9,12 @@ public class MDMApiTestSetupv1 extends ApplicationSetupApiImpl {
     super(clazz);
   }
 
-  public static int executionCounter = 0;
+  // should mark as volatile as multiple threads are going to mutate/observe the value
+  public static volatile int executionCounter = 0;
 
   @Override
   public void execute() {
-    executionCounter++;
+    executionCounter = 1;
   }
 
 }
