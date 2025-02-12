@@ -1,22 +1,18 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.with;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -77,6 +73,7 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
+import org.smartbit4all.api.sample.bean.SampleTimeBasedData;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
@@ -103,11 +100,24 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summarizingDouble;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
@@ -161,6 +171,9 @@ class MDMApiTest {
 
   @Autowired
   ValueSetApi valueSetApi;
+
+  @Autowired
+  StorageApi storageApi;
 
   @Autowired
   private LocalAuthenticationService authService;
@@ -1790,6 +1803,55 @@ class MDMApiTest {
         .await()
         .atMost(5_000L, TimeUnit.MILLISECONDS)
         .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3));
+  }
+
+  @Test
+  @Order(300)
+  void testTimeSeries() throws Exception {
+    OffsetDateTime now = OffsetDateTime.now();
+    // Construct data to check.
+    Random rnd = new Random();
+    int minutes = 10;
+    List<Double> sumOfMinutes = new ArrayList<>();
+    for (int i = 1; i <= minutes; i++) {
+      double sumOfMinute = 0.0;
+      for (int j = 0; j < 5; j++) {
+        double value = rnd.nextInt(100);
+        objectApi.saveAsNew(SCHEMA,
+            new SampleTimeBasedData().name("T1").value(value).timeOf(now.minusMinutes(i)));
+        sumOfMinute += value;
+      }
+      sumOfMinutes.add(sumOfMinute);
+    }
+    Collections.reverse(sumOfMinutes);
+    // Read all the saved objects
+    Storage storage = storageApi.get(SCHEMA);
+    {
+      Stream<List<URI>> timeSeries =
+          storage.streamOfTimeSeries(null, SampleTimeBasedData.class.getName(),
+              now.minusMinutes(10).toLocalDateTime(),
+              now.toLocalDateTime(), ChronoUnit.MINUTES);
+      Map<String, DoubleSummaryStatistics> result = timeSeries
+          .flatMap(l -> l.stream().map(u -> objectApi.loadLatest(u)))
+          .collect(groupingBy(n -> n.getValueAsString(SampleTimeBasedData.NAME))).entrySet()
+          .stream()
+          .collect(toMap(Entry::getKey, e -> e.getValue().stream()
+              .collect(
+                  summarizingDouble(n -> n.getValue(Double.class, SampleTimeBasedData.VALUE)))));
+      System.out.println(result);
+    }
+    {
+      Stream<List<URI>> timeSeries =
+          storage.streamOfTimeSeries(null, SampleTimeBasedData.class.getName(),
+              now.minusMinutes(10).toLocalDateTime(),
+              now.toLocalDateTime(), ChronoUnit.MINUTES);
+      List<DoubleSummaryStatistics> statisticList = timeSeries
+          .map(l -> l.stream().map(u -> objectApi.loadLatest(u))
+              .collect(summarizingDouble(n -> n.getValue(Double.class, SampleTimeBasedData.VALUE))))
+          .collect(toList());
+      assertThat(statisticList.stream().map(s -> s.getSum()).collect(toList()))
+          .containsExactlyElementsOf(sumOfMinutes);
+    }
   }
 
 }

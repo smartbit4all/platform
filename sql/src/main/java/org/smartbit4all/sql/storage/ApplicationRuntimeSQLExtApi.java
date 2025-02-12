@@ -1,6 +1,5 @@
 package org.smartbit4all.sql.storage;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.storage.StorageSQL.UriInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
 
@@ -118,9 +118,9 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
 
   @Override
   public <T> List<URI> readAllUris(ObjectStorage objectStorage, Storage storage, String setName,
-      Class<T> clazz) {
+      String clazzName) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
 
     String storageScheme = storage.getScheme();
     String setPath =

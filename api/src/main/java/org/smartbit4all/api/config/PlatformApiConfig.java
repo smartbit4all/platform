@@ -1,5 +1,6 @@
 package org.smartbit4all.api.config;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
@@ -89,6 +90,7 @@ import org.smartbit4all.api.org.SubjectManagementApiImpl;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
+import org.smartbit4all.api.sample.bean.SampleTimeBasedData;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -333,6 +335,12 @@ public class PlatformApiConfig {
   public ObjectDefinition<ObjectReferenceById> objectDefinitionObjectReferenceById() {
     return ObjectDefinitionApiImpl.constructDefinitionBase(ObjectReferenceById.class)
         .idPath(ObjectReferenceById.ID);
+  }
+
+  @Bean
+  public ObjectDefinition<SampleTimeBasedData> sampleTimeBasedDataObjectDefinition() {
+    return ObjectDefinitionApiImpl.constructDefinitionBase(SampleTimeBasedData.class)
+        .timePath(SampleTimeBasedData.TIME_OF).timeClazz(OffsetDateTime.class);
   }
 
   @Bean

@@ -1,8 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +53,9 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 public class CollectionApiTestBase {
 

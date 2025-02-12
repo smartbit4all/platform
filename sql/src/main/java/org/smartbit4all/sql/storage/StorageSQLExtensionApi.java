@@ -56,8 +56,22 @@ public interface StorageSQLExtensionApi {
    * @param clazz
    * @return
    */
+  default <T> List<URI> readAllUris(ObjectStorage objectStorage, Storage storage, String setName,
+      Class<T> clazz) {
+    return readAllUris(objectStorage, storage, setName, clazz.getName());
+  }
+
+  /**
+   * Reads all uris from set.
+   *
+   * @param <T>
+   * @param storage
+   * @param setName
+   * @param clazzName
+   * @return
+   */
   <T> List<URI> readAllUris(ObjectStorage objectStorage, Storage storage, String setName,
-      Class<T> clazz);
+      String clazzName);
 
   /**
    * In case of the database the save process is almost the same. We select the object record for

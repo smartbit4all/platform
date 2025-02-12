@@ -616,19 +616,19 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> u);
+  public List<URI> readAllUris(Storage storage, String setName, String clazzName) {
+    return readAll(storage, setName, clazzName, u -> u);
   }
 
   @Override
   public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
+    return readAll(storage, setName, clazz.getName(), u -> read(storage, u, clazz));
   }
 
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+  protected <O> List<O> readAll(Storage storage, String setName, String clazzName,
       Function<URI, O> reader) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
 
     String storageScheme = storage.getScheme();
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()

@@ -2,6 +2,8 @@ package org.smartbit4all.domain.data.storage;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -401,6 +404,20 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     List<StorageObject<T>> load = loadBatch(storage, uris, clazz);
     return load.stream().map(s -> s.getObject()).filter(o -> o != null)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAllUris(storage, setName, clazz.getName());
+  }
+
+  @Override
+  public Stream<List<URI>> streamOfTimeSeries(Storage storage, String setName,
+      String clazzName,
+      LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {
+    return Stream
+        .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient))
+        .takeWhile(l -> l != null);
   }
 
   @Override

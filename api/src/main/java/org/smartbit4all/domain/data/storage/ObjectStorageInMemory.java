@@ -102,8 +102,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> u);
+  public List<URI> readAllUris(Storage storage, String setName, String clazzName) {
+    return Collections.emptyList();
   }
 
   @Override

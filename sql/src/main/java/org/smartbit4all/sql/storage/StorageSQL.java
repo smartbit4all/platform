@@ -1,8 +1,5 @@
 package org.smartbit4all.sql.storage;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -73,6 +70,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -923,15 +923,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+  public List<URI> readAllUris(Storage storage, String setName, String clazzName) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
 
     String storageScheme = storage.getScheme();
-    if (clazz != null) {
-      StorageSQLExtensionApi extensionApi = getExtensionApi(storageScheme, clazz.getName());
+    if (clazzName != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storageScheme, clazzName);
       if (extensionApi != null) {
-        return extensionApi.readAllUris(self, storage, setName, clazz);
+        return extensionApi.readAllUris(self, storage, setName, clazzName);
       }
     }
 
