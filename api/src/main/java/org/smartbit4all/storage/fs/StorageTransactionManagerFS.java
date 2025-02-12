@@ -11,6 +11,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -32,6 +33,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   private static final Logger log = LoggerFactory.getLogger(StorageTransactionManagerFS.class);
 
   @Autowired
+  @Lazy
   private StorageApi storageApi;
 
   /**

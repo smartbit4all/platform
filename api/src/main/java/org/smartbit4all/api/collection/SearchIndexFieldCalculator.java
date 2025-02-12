@@ -35,6 +35,13 @@ public class SearchIndexFieldCalculator {
     row.set(column, value);
   }
 
+  public void addColumn(TableData<?> tableData) {
+    Property property = entityDefintion.getProperty(joinDot(prefix, propertyName));
+    DataColumn column = tableData.getColumn(property);
+    if (column == null) {
+      column = tableData.addColumn(property);
+    }
+  }
 
 
 }

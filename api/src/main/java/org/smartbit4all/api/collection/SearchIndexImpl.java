@@ -269,6 +269,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private void processCalculators(TableData<?> tableData,
       List<SearchIndexFieldCalculator> calculators) {
+    calculators.forEach(calc -> calc.addColumn(tableData));
+
     tableData.rows().forEach(row -> {
       calculators.forEach(calc -> calc.calculate(row));
     });
