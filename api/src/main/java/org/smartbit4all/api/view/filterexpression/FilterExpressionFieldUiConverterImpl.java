@@ -30,8 +30,10 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
     SmartLayoutDefinition layoutDefinition = new SmartLayoutDefinition();
     if (field.getWidgetType() != null) {
 
-      if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE) || field
-          .getExpressionData().getCurrentOperation().equals(FilterExpressionOperation.BETWEEN)) {
+      if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.RANGE) || (field
+          .getExpressionData().getCurrentOperation() != null && field
+              .getExpressionData().getCurrentOperation()
+              .equals(FilterExpressionOperation.BETWEEN))) {
         layoutDefinition.widgets(convertRangeFilter(field));
       } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT)
           || field.getWidgetType().equals(FilterExpressionFieldWidgetType.RADIO_BUTTON)) {
