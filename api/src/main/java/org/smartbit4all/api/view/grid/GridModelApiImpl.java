@@ -678,6 +678,10 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   private Map<String, String> getSortOrderPropertyReplace(GridModel model) {
+    if (model == null || model.getView() == null || model.getView().getDescriptor() == null
+        || model.getView().getDescriptor().getColumns() == null) {
+      return Collections.emptyMap();
+    }
     return model.getView().getDescriptor().getColumns().stream()
         .filter(col -> StringUtils.hasLength(col.getSortOrderPropertyName()))
         .collect(toMap(
