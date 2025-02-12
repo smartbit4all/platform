@@ -110,6 +110,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
     "applicationruntime.maintain.fixeddelay=2000",
+    "applicationsetup.schedule.initdelay=1000",
     "applicationsetup.schedule.fixeddelay=200"
 })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
