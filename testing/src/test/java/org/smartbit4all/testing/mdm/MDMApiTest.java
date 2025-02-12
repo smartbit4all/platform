@@ -1780,13 +1780,11 @@ class MDMApiTest {
         .pollDelay(1_000L, TimeUnit.MILLISECONDS) // worst case scenario: The Gradle cache concludes
                                                   // none of the other test have to run, so this one
                                                   // is run as the first and only -> we must wait
-                                                  // for _at least_ the application setup mgmt
+                                                  // for _at least_ the application setup mgmt API
+                                                  // to start initialising the Setup APIs...
         .await()
         .atMost(5_000L, TimeUnit.MILLISECONDS)
-        .untilAsserted(() -> {
-          System.out.println("Checking value: " + MDMApiTestSetupv1.executionCounter);
-          assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1);
-        });
+        .untilAsserted(() -> assertThat(MDMApiTestSetupv1.executionCounter).isEqualTo(1));
     with()
         .pollInterval(100L, TimeUnit.MILLISECONDS)
         .await()
