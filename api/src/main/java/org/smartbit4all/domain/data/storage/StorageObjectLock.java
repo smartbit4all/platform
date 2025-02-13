@@ -42,7 +42,7 @@ public final class StorageObjectLock implements Lock {
   /**
    * The unique identifier inside the {@link #entry}.
    */
-  private final Long id;
+  private Long id;
 
   private final URI objectUri;
 
@@ -145,6 +145,10 @@ public final class StorageObjectLock implements Lock {
    */
   final Long getId() {
     return id;
+  }
+
+  final void setId(Long id) {
+    this.id = id;
   }
 
   /**

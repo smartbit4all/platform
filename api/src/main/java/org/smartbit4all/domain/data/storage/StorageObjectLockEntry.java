@@ -201,16 +201,27 @@ final class StorageObjectLockEntry {
   void reattachLock(StorageObjectLock lock) {
     mutexInstanceRegister.lock();
     try {
-      if (!instanceRegister.containsKey(lock.getId())) {
-        instanceRegister.put(lock.getId(), new InstanceEntry(lock));
+      Long id = lock.getId();
+      // check if lock.id is below this entry's idSequence. if not, generate new id
+      if (id >= idSequence) {
+        id = idSequence++;
+        lock.setId(id);
+      }
+      if (!instanceRegister.containsKey(id)) {
+        // removed already, put it back
+        instanceRegister.put(id, new InstanceEntry(lock));
       } else {
-        InstanceEntry instanceEntry = instanceRegister.get(lock.getId());
+        // not removed yet, may be conflict
+        InstanceEntry instanceEntry = instanceRegister.get(id);
         StorageObjectLock existingLock = instanceEntry.instance.get();
-        instanceEntry.instance = new WeakReference<>(lock);
-        if (existingLock != null) {
-          log.warn(
-              "reattachLock overwrites already existing and registered lock with the same id. existingUri: {}, newUri: {}",
-              existingLock.getObjectURI(), lock.getObjectURI());
+        if (existingLock == null) {
+          // weakRef gone, replace existing instance
+          instanceEntry.instance = new WeakReference<>(lock);
+        } else {
+          // existing lock with id, probably it's a new StorageObjectLockEntry, with different ids
+          id = idSequence++;
+          lock.setId(id);
+          instanceRegister.put(id, new InstanceEntry(lock));
         }
       }
     } finally {
