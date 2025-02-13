@@ -34,11 +34,6 @@ final class StorageObjectLockEntry {
   }
 
   /**
-   * ObjectStorage API which will be used to unlock locks at the end of transaction.
-   */
-  private final ObjectStorage objectStorage;
-
-  /**
    * The URI of the object the lock belongs to.
    */
   private final URI objectURI;
@@ -90,6 +85,10 @@ final class StorageObjectLockEntry {
    */
   private Consumer<URI> lockRemover;
 
+  private Consumer<StorageObjectLock> unlocker;
+
+  private Function<StorageObjectLock, StorageObjectLockEntry> lockReattacher;
+
   /**
    * Implies that the given lock entry is removing currently. So the threads trying to get lock has
    * to restart the get lock function.
@@ -110,7 +109,8 @@ final class StorageObjectLockEntry {
   StorageObjectLockEntry(URI objectURI,
       Function<Boolean, StorageObjectPhysicalLock> acquire,
       Consumer<StorageObjectPhysicalLock> releaser,
-      ObjectStorage objectStorage) {
+      Consumer<StorageObjectLock> unlocker,
+      Function<StorageObjectLock, StorageObjectLockEntry> lockReattacher) {
     super();
     this.objectURI = objectURI;
     if (acquire != null) {
@@ -121,7 +121,8 @@ final class StorageObjectLockEntry {
       this.releaser = releaser;
       this.acquirePhysicalLock = acquire;
     }
-    this.objectStorage = objectStorage;
+    this.unlocker = unlocker;
+    this.lockReattacher = lockReattacher;
   }
 
   /**
@@ -142,7 +143,8 @@ final class StorageObjectLockEntry {
     }
     try {
       Long id = idSequence++;
-      StorageObjectLock result = new StorageObjectLock(this, id, objectStorage);
+      StorageObjectLock result =
+          new StorageObjectLock(this, id, objectURI, unlocker, lockReattacher);
       instanceRegister.put(id, new InstanceEntry(result));
       return result;
     } finally {
@@ -190,6 +192,26 @@ final class StorageObjectLockEntry {
           releaser.accept(physicalLock);
         }
         lockRemover.accept(objectURI);
+      }
+    } finally {
+      mutexInstanceRegister.unlock();
+    }
+  }
+
+  void reattachLock(StorageObjectLock lock) {
+    mutexInstanceRegister.lock();
+    try {
+      if (!instanceRegister.containsKey(lock.getId())) {
+        instanceRegister.put(lock.getId(), new InstanceEntry(lock));
+      } else {
+        InstanceEntry instanceEntry = instanceRegister.get(lock.getId());
+        StorageObjectLock existingLock = instanceEntry.instance.get();
+        instanceEntry.instance = new WeakReference<>(lock);
+        if (existingLock != null) {
+          log.warn(
+              "reattachLock overwrites already existing and registered lock with the same id. existingUri: {}, newUri: {}",
+              existingLock.getObjectURI(), lock.getObjectURI());
+        }
       }
     } finally {
       mutexInstanceRegister.unlock();

@@ -269,6 +269,4 @@ public interface ObjectStorage {
   <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
       URI objectUri, StorageObjectData data, String physicalId);
 
-  void unlock(StorageObjectLock lock);
-
 }

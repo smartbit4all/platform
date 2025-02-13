@@ -342,9 +342,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             "refreshAsyncChannlers");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
-      if (lock instanceof StorageObjectLock) {
-        ((StorageObjectLock) lock).release();
-      }
       return;
     }
     try {
@@ -504,9 +501,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             "readScheduledInvocations-");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
-      if (lock instanceof StorageObjectLock) {
-        ((StorageObjectLock) lock).release();
-      }
       return;
     }
     try {
@@ -705,13 +699,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   private void saveAndEnqueuAsyncRequests(List<Object> requests) {
-    // self applicationRuntimeUri
     // gather all channel and runtime infos
     Map<String, ChannelInfo> channelInfos = readChannelInfos(requests);
     // save all asyncRequests
     saveRequestObjects(requests, channelInfos);
     // save requests to local channels - order doesn't matter
-    saveRequestsIntoChannels(channelInfos);
+    saveRequestsIntoLocalChannels(channelInfos);
     // run or "schedule" requests in order
     enqueueOrScheduleRequest(requests, channelInfos);
   }
@@ -774,7 +767,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
               RuntimeAsyncChannelRegistry.class)
           .get();
-      runtimeAsyncChannelRegistry.getRuntimes();
       for (ChannelInfo channel : remoteChannels) {
         ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
             .filter(racr -> racr.getChannels().containsKey(channel.name)).findFirst()
@@ -812,7 +804,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
   }
 
-  private void saveRequestsIntoChannels(Map<String, ChannelInfo> channelInfos) {
+  private void saveRequestsIntoLocalChannels(Map<String, ChannelInfo> channelInfos) {
     List<URI> channelUris = channelInfos.values().stream()
         .filter(ch -> ch.localChannel != null)
         .map(ch -> ch.uri)

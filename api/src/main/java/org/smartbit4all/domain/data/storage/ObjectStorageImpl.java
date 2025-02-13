@@ -245,25 +245,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       tryAgain = false;
       lockMutex.lock();
       try {
-        StorageObjectLockEntry entry = locks.get(objectUri);
-        if (entry == null) {
-          final StorageObjectLockEntry newEntry =
-              new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                  physicalLockReleaser(),
-                  self);
-          newEntry.setLockRemover(uri -> {
-            lockMutex.lock();
-            try {
-              if (newEntry.isEmpty()) {
-                locks.remove(uri);
-              }
-            } finally {
-              lockMutex.unlock();
-            }
-          });
-          locks.put(objectUri, newEntry);
-          entry = newEntry;
-        }
+        StorageObjectLockEntry entry = getOrCreateLockEntry(objectUri);
         return entry.getLock();
       } catch (StorageObjectLockEntryRemovingException e) {
         tryAgain = true;
@@ -274,6 +256,41 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       }
     }
     return null;
+  }
+
+  private StorageObjectLockEntry getOrCreateLockEntry(URI objectUri) {
+    StorageObjectLockEntry entry = locks.get(objectUri);
+    if (entry == null) {
+      final StorageObjectLockEntry newEntry =
+          new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
+              physicalLockReleaser(),
+              this::unlock,
+              this::reattachLock);
+      newEntry.setLockRemover(uri -> {
+        lockMutex.lock();
+        try {
+          if (newEntry.isEmpty()) {
+            locks.remove(uri);
+          }
+        } finally {
+          lockMutex.unlock();
+        }
+      });
+      locks.put(objectUri, newEntry);
+      entry = newEntry;
+    }
+    return entry;
+  }
+
+  protected StorageObjectLockEntry reattachLock(StorageObjectLock lock) {
+    lockMutex.lock();
+    try {
+      StorageObjectLockEntry entry = getOrCreateLockEntry(lock.getObjectURI());
+      entry.reattachLock(lock);
+      return entry;
+    } finally {
+      lockMutex.unlock();
+    }
   }
 
   @Override
@@ -868,10 +885,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
 
-  @Override
-  public void unlock(StorageObjectLock lock) {
+  protected void unlock(StorageObjectLock lock) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      getUnlockTransactionHandler().addRequestToSaveAndEnqueue(lock);
+      getUnlockTransactionHandler().addLockToUnlock(lock);
     } else {
       lock.unlockInternal();
     }
@@ -888,7 +904,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     protected final List<StorageObjectLock> locksToUnlock = new ArrayList<>();
 
-    public void addRequestToSaveAndEnqueue(StorageObjectLock lock) {
+    public void addLockToUnlock(StorageObjectLock lock) {
       locksToUnlock.add(lock);
     }
 
