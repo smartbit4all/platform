@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SessionApiImpl implements SessionApi {
 
@@ -40,9 +39,6 @@ public class SessionApiImpl implements SessionApi {
   @Autowired
   @Lazy
   private OrgApi orgApi;
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Autowired
   private TimeManagementService timeService;

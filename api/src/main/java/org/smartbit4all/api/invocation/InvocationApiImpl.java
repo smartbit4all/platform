@@ -31,6 +31,8 @@ import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
@@ -55,7 +57,7 @@ import com.google.common.base.Strings;
  *
  * @author Peter Boros
  */
-public final class InvocationApiImpl implements InvocationApi {
+public class InvocationApiImpl implements InvocationApi {
 
   public static final String INVOKE_API = "/invokeApi";
 
@@ -495,4 +497,64 @@ public final class InvocationApiImpl implements InvocationApi {
     }
   }
 
+  // @Transactional // TODO ??
+  @Override
+  public void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
+    AsyncInvocationRequest request = requestEntry.request;
+    InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
+    try {
+      if (log.isDebugEnabled()) {
+        log.debug("Executing: {}", requestEntry.toLog());
+      }
+      result.returnValue(self.invoke(request.getRequest()).getValue());
+    } catch (Exception e) {
+      log.warn("Exception occured while executing the " + requestEntry, e);
+      result.error(
+          new InvocationError().definition(e.getClass().getName()).message(e.getMessage()));
+    } finally {
+      result.endTime(OffsetDateTime.now());
+      // Let's make a decision about the next step
+      InvocationResultDecision decision = null;
+      InvocationRequest evaluate = request.getEvaluate();
+      if (evaluate != null) {
+        // We set the request and the result parameters for the call when they are present in the
+        // signature.
+        for (InvocationParameter parameter : evaluate.getParameters()) {
+          if (AsyncInvocationRequest.class.getName().equals(parameter.getTypeClass())) {
+            parameter.setValue(request);
+          } else if (InvocationResult.class.getName().equals(parameter.getTypeClass())) {
+            parameter.setValue(result);
+          }
+        }
+        try {
+          // TODO This is an object read it with ObjectDefinition!
+          decision = (InvocationResultDecision) self.invoke(evaluate).getValue();
+        } catch (Exception e) {
+          log.error("Exception occured while trying to evaluate the " + result + " for the "
+              + request, e);
+        }
+      }
+      if (decision == null) {
+        // Make a hard wired decision if there was error then abort, if we have andThen then
+        // continue.
+        decision = new InvocationResultDecision()
+            .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
+      } else {
+        int size = request.getResults() == null ? 0
+            : request.getResults().size();
+        int gradient = size / 50;
+        gradient = gradient * gradient;
+        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime requiredScheduledAt = now.plusSeconds(gradient * 5);
+        if ((decision.getScheduledAt() != null
+            && requiredScheduledAt.isAfter(decision.getScheduledAt()))
+            || decision.getScheduledAt() == null) {
+          decision.scheduledAt(requiredScheduledAt);
+        }
+      }
+      result.decision(decision);
+      // Save the result into the asynchronous request. It will result a call to the listeners.
+      invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
+    }
+  }
 }

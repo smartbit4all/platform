@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
@@ -214,7 +216,7 @@ public final class Storage {
     UUID uuid = UUID.randomUUID();
     storageObject.setUuid(uuid);
     if (!objectDefinition.isExplicitUri()) {
-      storageObject.setUri(constructUri(objectDefinition, uuid, setName));
+      storageObject.setUri(constructUri(objectDefinition, uuid, setName, LocalDateTime.now()));
     }
     return storageObject;
   }
@@ -501,6 +503,16 @@ public final class Storage {
     return objectStorage.readAllUris(this, setName, clazz);
   }
 
+  public List<URI> readAllUris(String setName, String clazzName) {
+    return objectStorage.readAllUris(this, setName, clazzName);
+  }
+
+  public Stream<List<URI>> streamOfTimeSeries(String setName,
+      String clazzName,
+      LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {
+    return objectStorage.streamOfTimeSeries(this, setName, clazzName, from, to, gradient);
+  }
+
   /**
    * This will read all the references from the storage set.
    *
@@ -662,18 +674,48 @@ public final class Storage {
    * year/month/day/hour/min format. The final item is a UUID that should be unique individually
    * also. In a running application this URI always identifies a given object.
    */
-  private final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid, String setName) {
-    LocalDateTime now = LocalDateTime.now();
+  public final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid, String setName,
+      LocalDateTime time) {
     return URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
         + objectDefinition.getAlias() + StringConstant.SLASH
         + (setName == null ? StringConstant.EMPTY : setName + StringConstant.SLASH)
-        + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
-        + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
-        + now.getMinute() + StringConstant.SLASH
-        + (Boolean.TRUE.equals(useSecondInUri) ? now.getSecond() + StringConstant.SLASH
+        + time.getYear() + StringConstant.SLASH + time.getMonthValue() + StringConstant.SLASH
+        + time.getDayOfMonth() + StringConstant.SLASH + time.getHour() + StringConstant.SLASH
+        + time.getMinute() + StringConstant.SLASH
+        + (Boolean.TRUE.equals(useSecondInUri) ? time.getSecond() + StringConstant.SLASH
             : StringConstant.EMPTY)
         + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? SINGLE_VERSION_URI_POSTFIX
             : StringConstant.EMPTY));
+  }
+
+  public String constructTimePath(LocalDateTime time, ChronoUnit gradient) {
+    StringBuilder sb = new StringBuilder();
+    if (compareChronoUnits(gradient, ChronoUnit.YEARS) <= 0) {
+      sb.append(time.getYear());
+    }
+    if (compareChronoUnits(gradient, ChronoUnit.MONTHS) <= 0) {
+      sb.append(StringConstant.SLASH).append(time.getMonthValue());
+    }
+    if (compareChronoUnits(gradient, ChronoUnit.DAYS) <= 0) {
+      sb.append(StringConstant.SLASH).append(time.getDayOfMonth());
+    }
+    if (compareChronoUnits(gradient, ChronoUnit.HOURS) <= 0) {
+      sb.append(StringConstant.SLASH).append(time.getHour());
+    }
+    if (compareChronoUnits(gradient, ChronoUnit.MINUTES) <= 0) {
+      sb.append(StringConstant.SLASH).append(time.getMinute());
+    }
+    if (Boolean.TRUE.equals(useSecondInUri)
+        && compareChronoUnits(gradient, ChronoUnit.SECONDS) <= 0) {
+      sb.append(StringConstant.SLASH).append(time.getSecond());
+    }
+    return sb.toString();
+  }
+
+  public static int compareChronoUnits(ChronoUnit u1, ChronoUnit u2) {
+    long d1 = u1.getDuration().toNanos();
+    long d2 = u2.getDuration().toNanos();
+    return Long.compare(d1, d2);
   }
 
   public final URI constructUriForSet(URI uri, String setName) {
@@ -828,44 +870,49 @@ public final class Storage {
    */
   public final <T> StorageObject<T> getOrCreateReferenceObject(URI objectUri,
       Consumer<T> parameterSetters, Class<T> clazz, String referenceName) {
-    StorageObjectLock objectLock = getLock(objectUri);
-    objectLock.lock();
-    try {
-      StorageObject<?> storageObject =
-          load(objectUri, StorageLoadOption.skipData());
-      StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
-      StorageObject<T> newObjectSo;
-      if (referenceEntry == null) {
-        // Construct the ObjectMap.
-        newObjectSo = instanceOf(clazz);
-        T newObject;
-        try {
-          newObject = clazz.getConstructor().newInstance();
-        } catch (Exception e) {
-          throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+    StorageObject<?> storageObject =
+        load(objectUri, StorageLoadOption.skipData());
+    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
+    StorageObject<T> newObjectSo;
+    if (referenceEntry == null) {
+      StorageObjectLock objectLock = getLock(objectUri);
+      objectLock.lock();
+      try {
+        // read again, in locked state
+        storageObject = load(objectUri, StorageLoadOption.skipData());
+        referenceEntry = storageObject.getReference(referenceName);
+        if (referenceEntry == null) {
+          // Construct the ObjectMap.
+          newObjectSo = instanceOf(clazz);
+          T newObject;
+          try {
+            newObject = clazz.getConstructor().newInstance();
+          } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+          }
+          if (parameterSetters != null) {
+            parameterSetters.accept(newObject);
+          }
+          newObjectSo.setObject(newObject);
+          URI uri = save(newObjectSo);
+          storageObject.setReference(referenceName,
+              new ObjectReference().uri(uri).referenceId(referenceName));
+          storageObject.setStrictVersionCheck(true);
+          try {
+            save(storageObject);
+          } catch (ObjectModificationException e) {
+            // If the given object is modified in the mean time then we must retry the whole
+            // function.
+            return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
+          }
+          return newObjectSo;
         }
-        if (parameterSetters != null) {
-          parameterSetters.accept(newObject);
-        }
-        newObjectSo.setObject(newObject);
-        URI uri = save(newObjectSo);
-        storageObject.setReference(referenceName,
-            new ObjectReference().uri(uri).referenceId(referenceName));
-        storageObject.setStrictVersionCheck(true);
-        try {
-          save(storageObject);
-        } catch (ObjectModificationException e) {
-          // If the given object is modified in the mean time then we must retry the whole function.
-          return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
-        }
-        return newObjectSo;
-      } else {
-        ObjectReference referenceData = referenceEntry.getReferenceData();
-        return load(referenceData.getUri(), clazz);
+      } finally {
+        objectLock.unlock();
       }
-    } finally {
-      objectLock.unlock();
     }
+    ObjectReference referenceData = referenceEntry.getReferenceData();
+    return load(referenceData.getUri(), clazz);
   }
 
   /**

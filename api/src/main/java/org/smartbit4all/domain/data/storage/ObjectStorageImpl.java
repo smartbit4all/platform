@@ -2,19 +2,31 @@ package org.smartbit4all.domain.data.storage;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Spliterators;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -28,10 +40,15 @@ import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
+import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * The abstract basic implementation of the {@link ObjectStorage}.
@@ -41,6 +58,16 @@ import org.springframework.context.ApplicationContextAware;
 public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationContextAware {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
+
+  /**
+   * resource identifier for StorageSaveEvent transaction handler
+   */
+  private static final String STORAGE_SAVE_EVENTS_HANDLER = "STORAGE_SAVE_EVENTS_HANDLER";
+
+  /**
+   * resource identifier for StorageObjectLock unlock handler
+   */
+  private static final String UNLOCK_HANDLER = "UNLOCK_HANDLER";
 
   /**
    * Regex pattern for only numbers used for versioning. With no starting zeros.
@@ -55,6 +82,18 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   protected static final int SINGLEVERSION_MEMORYLIMIT = 0x40000; // 256k
 
   protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+  @Autowired
+  @Lazy
+  protected ObjectStorage self;
+
+  @Autowired
+  @Lazy
+  protected StorageApi storageApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private PlatformTransactionManager transactionManager;
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -138,8 +177,29 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    *
    * @return The supplier
    */
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    return null;
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return null;
+    }
+
+    return (nowait) -> {
+      try {
+        URI uri = getUriWithoutVersion(objectUri);
+        while (true) {
+          StorageObjectPhysicalLock lockObject =
+              self.lockPhysicalObject(uri, -1);
+          if (lockObject != null || Boolean.TRUE.equals(nowait)) {
+            return lockObject;
+          }
+          Thread.sleep(10); // TODO timeout handling?
+        }
+      } catch (Exception e) {
+        if (Boolean.TRUE.equals(nowait)) {
+          return null;
+        }
+        throw new IllegalStateException("Unable to lock object " + objectUri, e);
+      }
+    };
   }
 
   /**
@@ -149,7 +209,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @return The consumer
    */
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    return null;
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return null;
+    }
+    return lock -> {
+      self.unlockPhysicalObject(lock);
+    };
   }
 
   /**
@@ -184,7 +249,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         if (entry == null) {
           final StorageObjectLockEntry newEntry =
               new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                  physicalLockReleaser());
+                  physicalLockReleaser(),
+                  self);
           newEntry.setLockRemover(uri -> {
             lockMutex.lock();
             try {
@@ -234,7 +300,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Override
   public StorageObject<?> save(StorageObject<?> object) {
-    StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
+    boolean doLock = lockOnSave() && !object.isSkipLock();
+    StorageObjectLock storageObjectLock = doLock ? getLock(object.getUri()) : null;
 
     if (storageObjectLock != null) {
       storageObjectLock.lock();
@@ -261,6 +328,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     return object;
   }
+
+  protected boolean lockOnSave() {
+    return true;
+  }
+
 
   /**
    * This save the object as a single object. It's is faster but we don't have the previous
@@ -321,10 +393,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return (ObjectDefinition<T>) objectDefinition;
   }
 
-  protected String getStorageScheme(Storage storage) {
-    return storage.getScheme();
-  }
-
   @Override
   public <T> T read(Storage storage, URI uri, Class<T> clazz) {
     return load(storage, uri, clazz).getObject();
@@ -344,16 +412,56 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Override
   public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> u);
+    return readAllUris(storage, setName, clazz.getName());
   }
 
   @Override
-  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
-    return readAll(storage, setName, clazz, u -> read(storage, u, clazz));
+  public Stream<List<URI>> streamOfTimeSeries(Storage storage, String setName,
+      String clazzName,
+      LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {
+    // return Stream
+    // .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient))
+    // .takeWhile(l -> l != null);
+    return takeWhile(Stream
+        .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient)),
+        l -> l != null);
   }
 
-  protected abstract <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
-      Function<URI, O> reader);
+  /**
+   * Utility function in older JDK for takeWhile. Should be removed later.
+   * 
+   * @param <T>
+   * @param stream
+   * @param predicate
+   * @return
+   */
+  public static <T> Stream<T> takeWhile(Stream<T> stream, Predicate<T> predicate) {
+    Iterator<T> iterator = stream.iterator();
+    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new Iterator<T>() {
+      T nextItem;
+      boolean finished = false;
+
+      @Override
+      public boolean hasNext() {
+        if (finished)
+          return false;
+        if (iterator.hasNext()) {
+          nextItem = iterator.next();
+          if (!predicate.test(nextItem)) {
+            finished = true;
+            return false;
+          }
+          return true;
+        }
+        return false;
+      }
+
+      @Override
+      public T next() {
+        return nextItem;
+      }
+    }, 0), false);
+  }
 
   @Override
   public boolean move(URI uri, URI targetUri) {
@@ -393,7 +501,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
    * @param physicalId The identifier of the physical storage like id of the database or any other.
    * @return
    */
-  protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
+  @Override
+  public <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
       URI objectUri, StorageObjectData data, String physicalId) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);
@@ -615,6 +724,71 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
   }
 
+  /**
+   * Invoke the on succeed functions depending on having a transaction or not. If we have an active
+   * transaction then the functions is going to be called at the successful transaction end.
+   *
+   * @param object
+   * @param event
+   */
+  protected void handleStorageSaveEvent(StorageObject<?> object, StorageSaveEvent event) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      getSaveEventTransactionHandler().addSaveEvents(object, event);
+    } else {
+      invokeOnSucceedFunctions(object, event);
+    }
+  }
+
+  protected SaveEventTransactionHandler getSaveEventTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        STORAGE_SAVE_EVENTS_HANDLER,
+        SaveEventTransactionHandler.class,
+        () -> new SaveEventTransactionHandler());
+  }
+
+  protected final class SaveEventTransactionHandler implements TransactionSynchronization {
+
+    private final Map<StorageObject<?>, List<StorageSaveEvent>> saveEvents = new HashMap<>();
+
+    public void addSaveEvents(StorageObject<?> object, StorageSaveEvent event) {
+      saveEvents
+          .computeIfAbsent(object, o -> new ArrayList<>())
+          .add(event);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
+      log.trace("async suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(STORAGE_SAVE_EVENTS_HANDLER, true);
+      log.trace("async resume");
+    }
+
+    @Override
+    public void afterCompletion(int status) {
+      if (status == TransactionSynchronization.STATUS_COMMITTED) {
+        // after commit, invoke saveEvent handling
+        for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : saveEvents.entrySet()) {
+          if (entry.getValue() != null) {
+            for (StorageSaveEvent event : entry.getValue()) {
+              if (event != null) {
+                invokeOnSucceedFunctions(entry.getKey(), event);
+              }
+            }
+          }
+        }
+      } else if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      // remove saveEvents regardless of status
+      saveEvents.clear();
+      TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
+    }
+  }
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
@@ -691,6 +865,71 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       return false;
     }
     return getUriWithoutVersion(uri).getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX);
+  }
+
+
+  @Override
+  public void unlock(StorageObjectLock lock) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      getUnlockTransactionHandler().addRequestToSaveAndEnqueue(lock);
+    } else {
+      lock.unlockInternal();
+    }
+  }
+
+  protected UnlockTransactionHandler getUnlockTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        UNLOCK_HANDLER,
+        UnlockTransactionHandler.class,
+        () -> new UnlockTransactionHandler());
+  }
+
+  protected final class UnlockTransactionHandler implements TransactionSynchronization {
+
+    protected final List<StorageObjectLock> locksToUnlock = new ArrayList<>();
+
+    public void addRequestToSaveAndEnqueue(StorageObjectLock lock) {
+      locksToUnlock.add(lock);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
+      log.trace("unlock suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(UNLOCK_HANDLER, true);
+      log.trace("unlock resume");
+    }
+
+    @Override
+    public void afterCompletion(int status) {
+      if (log.isTraceEnabled()) {
+        String lockTrace = locksToUnlock.stream()
+            .filter(Objects::nonNull)
+            .map(lock -> lock.getObjectURI())
+            .filter(Objects::nonNull)
+            .map(uri -> uri.toString())
+            .collect(Collectors.joining(","));
+        log.trace("unlock afterCompletion, unlocking {} locks: {}", locksToUnlock.size(),
+            lockTrace);
+      }
+      locksToUnlock.forEach(lock -> lock.unlockInternal());
+      locksToUnlock.clear();
+      if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      TransactionSynchronizationManager.unbindResource(UNLOCK_HANDLER);
+    }
+  }
+
+  @Override
+  public StoredSequence getSequence(String schema, String name) {
+    return new StoredSequenceStorageImpl(transactionManager, storageApi,
+        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
+        name);
   }
 
 }

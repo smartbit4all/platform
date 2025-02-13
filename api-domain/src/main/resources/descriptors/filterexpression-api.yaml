@@ -425,6 +425,8 @@ components:
           type: array
           items:
             type: string
+        qualifier:
+          type: string
     SmartFilterType:
       type: string
       enum: [SIMPLE, ADVANCED]

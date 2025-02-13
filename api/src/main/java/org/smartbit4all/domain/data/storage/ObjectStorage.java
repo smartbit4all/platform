@@ -1,9 +1,14 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Stream;
 import org.smartbit4all.api.collection.StoredSequence;
+import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
@@ -142,6 +147,34 @@ public interface ObjectStorage {
 
   <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz);
 
+  List<URI> readAllUris(Storage storage, String setName, String clazzName);
+
+  /**
+   * The object storage is normally organized as a time series. This is the easiest way to construct
+   * fragments of object storages. The time of the construction could be a time of original save but
+   * also some business data also. This approach forms a time series of the objects managed by the
+   * object storage that could be used to process the time series for any purpose.
+   * 
+   * @param <T>
+   * @param storage The logical storage of the given operation.
+   * @param setName The name of the set that the given call is looking for. If there is no item in
+   *        the set or the set itself doesn't exist an empty list is going to be returned.
+   * @param clazzQualifiedName The class of the object to load. Based on this class we can easily
+   *        identify the {@link ObjectDefinition} responsible for this type of objects.
+   * @param from The from time that is mandatory to define the starting point of the read.
+   * @param to The to time that is optional to define the end point of the read. If empty then all
+   *        the objects are read from the time series from the starting point.
+   * @param gradient The gradient defines the time unit of the from and to time that is used to
+   *        identify the set of objects. If it is {@link ChronoUnit#HOURS} then the from time hour
+   *        will be the first set to read.
+   * @return Return a stream of List<URI> to process by the gradient parameter. If the gradient is
+   *         {@link TimeUnit#MINUTES} then we get back a stream that contains the {@link List} of
+   *         URIs for every minutes in the range defined by the from-to parameters.
+   */
+  <T> Stream<List<URI>> streamOfTimeSeries(Storage storage, String setName,
+      String clazzQualifiedName,
+      LocalDateTime from, LocalDateTime to, ChronoUnit gradient);
+
   /**
    * Move the given object inside the object storage.
    *
@@ -216,5 +249,26 @@ public interface ObjectStorage {
    * @return The {@link StoredSequence} instance.
    */
   StoredSequence getSequence(String schema, String name);
+
+  StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil);
+
+  void unlockPhysicalObject(StorageObjectPhysicalLock lock);
+
+  /**
+   * We have this constructor method to avoid having public setters in the {@link StorageObject}.
+   * This can be used by the implementations of the {@link ObjectStorage}.
+   *
+   * @param <T>
+   * @param storage
+   * @param objectDefinition
+   * @param objectUri
+   * @param data
+   * @param physicalId The identifier of the physical storage like id of the database or any other.
+   * @return
+   */
+  <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
+      URI objectUri, StorageObjectData data, String physicalId);
+
+  void unlock(StorageObjectLock lock);
 
 }

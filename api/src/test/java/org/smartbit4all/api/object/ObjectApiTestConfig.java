@@ -2,10 +2,13 @@ package org.smartbit4all.api.object;
 
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @Import({
@@ -17,6 +20,11 @@ public class ObjectApiTestConfig extends ObjectApiTestConfigBase {
   public void clearFS(ContextRefreshedEvent event) throws Exception {
     TestFileUtil.clearTestDirectory();
     System.out.println("Test FS cleared...");
+  }
+
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    return new StorageTransactionManagerFS();
   }
 
 }

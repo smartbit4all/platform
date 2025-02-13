@@ -63,6 +63,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import com.google.common.base.Strings;
 
 public class GridModelApiImpl implements GridModelApi {
@@ -333,10 +334,7 @@ public class GridModelApiImpl implements GridModelApi {
       }
       if (!ignoreOrderByList) {
         List<FilterExpressionOrderBy> orderByList = gridModel.getView().getOrderByList();
-        if (orderByList != null && !orderByList.isEmpty()) {
-          tableDataApi.sortByFilterExpression(data, orderByList);
-          tableDataApi.save(data);
-        }
+        sortTableData(gridModel, data, orderByList);
       }
       if (data.getUri() == null) {
         tableDataApi.save(data);
@@ -579,7 +577,7 @@ public class GridModelApiImpl implements GridModelApi {
       Integer pageSize = newPageSize.applyAsInt(model);
       model.setPageSize(pageSize);
 
-      List<Integer> pageSizeOptions = new ArrayList<Integer>(model.getPageSizeOptions());
+      List<Integer> pageSizeOptions = new ArrayList<>(model.getPageSizeOptions());
       if (!pageSizeOptions.contains(pageSize)) {
         pageSizeOptions.add(pageSize);
         Collections.sort(pageSizeOptions);
@@ -641,10 +639,8 @@ public class GridModelApiImpl implements GridModelApi {
       }
       if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
         TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-        if (update.getOrderByList() != null && !update.getOrderByList().isEmpty()) {
-          tableDataApi.sortByFilterExpression(data, update.getOrderByList());
-          tableDataApi.save(data);
-        }
+        List<FilterExpressionOrderBy> orderByList = update.getOrderByList();
+        sortTableData(model, data, orderByList);
         model.getAccessConfig().dataUri(data.getUri());
         int lowerBound = model.getPage().getLowerBound();
         int upperBound = model.getPage().getUpperBound();
@@ -658,6 +654,40 @@ public class GridModelApiImpl implements GridModelApi {
     model.getView().setOrderByList(update.getOrderByList());
 
     return updateModified;
+  }
+
+  private void sortTableData(GridModel model, TableData<?> data,
+      List<FilterExpressionOrderBy> orderByList) {
+    if (orderByList != null && !orderByList.isEmpty()) {
+      Map<String, String> propertyToReplace = getSortOrderPropertyReplace(model);
+      List<FilterExpressionOrderBy> finalOrderByList = propertyToReplace.isEmpty() ? orderByList
+          : orderByList.stream()
+              .map(order -> {
+                String col = order.getPropertyName();
+                if (propertyToReplace.containsKey(col)) {
+                  col = propertyToReplace.get(col);
+                }
+                return new FilterExpressionOrderBy()
+                    .propertyName(col)
+                    .order(order.getOrder());
+              })
+              .collect(toList());
+      tableDataApi.sortByFilterExpression(data, finalOrderByList);
+      tableDataApi.save(data);
+    }
+  }
+
+  private Map<String, String> getSortOrderPropertyReplace(GridModel model) {
+    if (model == null || model.getView() == null || model.getView().getDescriptor() == null
+        || model.getView().getDescriptor().getColumns() == null) {
+      return Collections.emptyMap();
+    }
+    return model.getView().getDescriptor().getColumns().stream()
+        .filter(col -> StringUtils.hasLength(col.getSortOrderPropertyName()))
+        .collect(toMap(
+            col -> col.getPropertyName(),
+            col -> col.getSortOrderPropertyName(),
+            (col1, col2) -> col1));
   }
 
   private void saveGridDataToUser(UUID viewUuid, String gridId, GridModel gridModel,

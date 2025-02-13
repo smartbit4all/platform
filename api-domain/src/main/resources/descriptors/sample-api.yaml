@@ -318,3 +318,19 @@ components:
         address:
           type: string
           format: uri
+    SampleTimeBasedData:
+      description: |
+        An example time based data to test the time based save and time series processing.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        timeOf:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+        name:
+          type: string

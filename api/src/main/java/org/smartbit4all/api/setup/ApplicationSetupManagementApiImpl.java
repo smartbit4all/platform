@@ -1,10 +1,14 @@
 package org.smartbit4all.api.setup;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -13,11 +17,9 @@ import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.ApplicationSetup;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.UriUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<ApplicationSetupApi>
     implements ApplicationSetupManagementApi {
@@ -40,32 +42,41 @@ public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<Applicatio
   @Scheduled(initialDelayString = "${applicationsetup.schedule.initdelay:2000}",
       fixedDelayString = "${applicationsetup.schedule.fixeddelay:60000}")
   public void scheduleSetup() {
-    StoredMap map = collectionApi.map(MasterDataManagementApi.SCHEMA, SETUP_MAP);
-    Map<String, URI> alreadyExecuted = map.uris();
+    URI lockUri =
+        UriUtils.constructMethodUri(MasterDataManagementApi.SCHEMA,
+            ApplicationSetupManagementApi.class,
+            "scheduleSetup");
+    Lock lock = objectApi.getLock(lockUri);
+    lock.lock();
+    try {
+      StoredMap map = collectionApi.map(MasterDataManagementApi.SCHEMA, SETUP_MAP);
+      Map<String, URI> alreadyExecuted = map.uris();
 
-    Map<String, ApplicationSetupApi> setups =
-        getContributionApis().values().stream()
-            .filter(setup -> {
-              boolean already = alreadyExecuted.containsKey(setup.getData().getName());
-              return !already || setup.checkRunAgain();
-            })
-            .collect(toMap(a -> a.getApiName(), a -> a));
-    Map<String, Set<String>> setupPreRequisites =
-        setups.entrySet().stream().collect(toMap(e -> e.getKey(),
-            e -> e.getValue().getData().getPreRequisites().stream().collect(toSet())));
-    List<ApplicationSetupApi> sortedList = setups.entrySet().stream()
-        .sorted((e1, e2) -> setupPreRequisites.get(e1.getKey()).contains(e2.getKey()) ? 1 : 0)
-        .map(Entry::getValue).collect(toList());
-    for (ApplicationSetupApi setupApi : sortedList) {
-      try {
-        URI uri = objectApi.saveAsNew(MasterDataManagementApi.SCHEMA,
-            new ApplicationSetup().data(setupApi.getData()));
-        setupApi.execute();
-        map.put(setupApi.getData().getName(), uri);
-      } catch (Exception e) {
-        log.error("Failed to execute " + setupApi.getData() + " setup api.", e);
+      Map<String, ApplicationSetupApi> setups =
+          getContributionApis().values().stream()
+              .filter(setup -> {
+                boolean already = alreadyExecuted.containsKey(setup.getData().getName());
+                return !already || setup.checkRunAgain();
+              })
+              .collect(toMap(a -> a.getApiName(), a -> a));
+      Map<String, Set<String>> setupPreRequisites =
+          setups.entrySet().stream().collect(toMap(e -> e.getKey(),
+              e -> e.getValue().getData().getPreRequisites().stream().collect(toSet())));
+      List<ApplicationSetupApi> sortedList = setups.entrySet().stream()
+          .sorted((e1, e2) -> setupPreRequisites.get(e1.getKey()).contains(e2.getKey()) ? 1 : 0)
+          .map(Entry::getValue).collect(toList());
+      for (ApplicationSetupApi setupApi : sortedList) {
+        try {
+          URI uri = objectApi.saveAsNew(MasterDataManagementApi.SCHEMA,
+              new ApplicationSetup().data(setupApi.getData()));
+          setupApi.execute();
+          map.put(setupApi.getData().getName(), uri);
+        } catch (Exception e) {
+          log.error("Failed to execute " + setupApi.getData() + " setup api.", e);
+        }
       }
+    } finally {
+      lock.unlock();
     }
   }
-
 }

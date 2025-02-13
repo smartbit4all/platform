@@ -9,6 +9,7 @@ dependencies {
 	implementation project(':sec')
 	implementation project(':sql')
 	testImplementation 'org.smartbit4all.platform:api'
+	testImplementation 'org.awaitility:awaitility:4.2.2'
 	testImplementation testFixtures(project(':api'))
 	testImplementation testFixtures(project(':sec'))
 	testImplementation testFixtures(project(':sql'))

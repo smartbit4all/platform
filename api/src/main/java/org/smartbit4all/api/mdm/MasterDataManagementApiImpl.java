@@ -92,6 +92,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private boolean optionsSaved = false;
 
   @Autowired
+  @Lazy
   private CollectionApi collectionApi;
 
   @Autowired
@@ -122,6 +123,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   private FilterExpressionApi filterExpressionApi;
 
   @Autowired
+  @Lazy
   private InvocationApi invocationApi;
 
   @Autowired

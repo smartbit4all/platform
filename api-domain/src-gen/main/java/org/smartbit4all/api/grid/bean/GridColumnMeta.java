@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   GridColumnMeta.LABEL,
   GridColumnMeta.PROPERTY_NAME,
+  GridColumnMeta.SORT_ORDER_PROPERTY_NAME,
   GridColumnMeta.TYPE_CLASS,
   GridColumnMeta.TYPE_FORMAT,
   GridColumnMeta.ALWAYS_HIDDEN,
@@ -49,6 +50,9 @@ public class GridColumnMeta {
 
   public static final String PROPERTY_NAME = "propertyName";
   private String propertyName;
+
+  public static final String SORT_ORDER_PROPERTY_NAME = "sortOrderPropertyName";
+  private String sortOrderPropertyName;
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
@@ -128,6 +132,33 @@ public class GridColumnMeta {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPropertyName(String propertyName) {
     this.propertyName = propertyName;
+  }
+
+  public GridColumnMeta sortOrderPropertyName(String sortOrderPropertyName) {
+    
+    this.sortOrderPropertyName = sortOrderPropertyName;
+    return this;
+  }
+
+  /**
+   * Get sortOrderPropertyName
+   * @return sortOrderPropertyName
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(SORT_ORDER_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSortOrderPropertyName() {
+    return sortOrderPropertyName;
+  }
+
+
+  @JsonProperty(SORT_ORDER_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSortOrderPropertyName(String sortOrderPropertyName) {
+    this.sortOrderPropertyName = sortOrderPropertyName;
   }
 
   public GridColumnMeta typeClass(String typeClass) {
@@ -332,6 +363,7 @@ public class GridColumnMeta {
     GridColumnMeta gridColumnMeta = (GridColumnMeta) o;
     return Objects.equals(this.label, gridColumnMeta.label) &&
         Objects.equals(this.propertyName, gridColumnMeta.propertyName) &&
+        Objects.equals(this.sortOrderPropertyName, gridColumnMeta.sortOrderPropertyName) &&
         Objects.equals(this.typeClass, gridColumnMeta.typeClass) &&
         Objects.equals(this.typeFormat, gridColumnMeta.typeFormat) &&
         Objects.equals(this.alwaysHidden, gridColumnMeta.alwaysHidden) &&
@@ -343,7 +375,7 @@ public class GridColumnMeta {
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, hideLabel, contentType, style);
+    return Objects.hash(label, propertyName, sortOrderPropertyName, typeClass, typeFormat, alwaysHidden, alwaysShow, hideLabel, contentType, style);
   }
 
   @Override
@@ -352,6 +384,7 @@ public class GridColumnMeta {
     sb.append("class GridColumnMeta {\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    propertyName: ").append(toIndentedString(propertyName)).append("\n");
+    sb.append("    sortOrderPropertyName: ").append(toIndentedString(sortOrderPropertyName)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
     sb.append("    typeFormat: ").append(toIndentedString(typeFormat)).append("\n");
     sb.append("    alwaysHidden: ").append(toIndentedString(alwaysHidden)).append("\n");

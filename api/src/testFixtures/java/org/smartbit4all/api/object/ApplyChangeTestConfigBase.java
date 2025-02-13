@@ -15,10 +15,6 @@ import org.smartbit4all.api.sample.bean.SampleGenericContainer;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.storage.fs.StorageFS;
-import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -30,12 +26,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ApplyChangeTestConfigBase {
 
   public static final String SHADOW_ITEMS = "shadowItems";
-
-  @Bean(Storage.STORAGETX)
-  public StorageTransactionManagerFS transactionManager(
-      @Autowired(required = false) StorageFS storageFS) {
-    return new StorageTransactionManagerFS(storageFS);
-  }
 
   @Bean
   public ObjectReferenceConfigs refDefs() {

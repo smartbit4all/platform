@@ -32,12 +32,16 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
    */
   @Autowired(required = false)
   private List<ActionProviderApi> providers;
+
   @Autowired
   @Lazy
   private MasterDataManagementApi masterDataManagementApi;
+
   @Autowired
   private ObjectApi objectApi;
+
   @Autowired
+  @Lazy
   private InvocationApi invocationApi;
 
   @Override

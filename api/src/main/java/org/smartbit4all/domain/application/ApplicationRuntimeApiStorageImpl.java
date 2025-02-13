@@ -31,17 +31,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * The application runtime api implementation via {@link StorageApi}.
- * 
+ *
  * TODO Should solve the problem of system startup where we have to wait for the available self
  * instance.
- * 
+ *
  * @author Peter Boros
  */
 public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, InitializingBean {
 
+  private static final String SET_ACTIVE = "active";
+
   private static final Logger log = LoggerFactory.getLogger(ApplicationRuntimeApiStorageImpl.class);
 
-  public static final String CLUSTER = "cluster";
+  public static final String SCHEMA = "cluster";
 
   /**
    * The self bean of this application instance. It can be used after property set time. This is
@@ -138,7 +140,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       runtimeData.setLastTouchTime(currentTimeMillis);
       maintaining.set(Boolean.TRUE);
       try {
-        runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
+        runtimeUri = storageCluster.saveAsNew(runtimeData, SET_ACTIVE);
       } finally {
         maintaining.remove();
       }
@@ -181,7 +183,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
-        storageCluster.readAll("active", ApplicationRuntimeData.class);
+        storageCluster.readAll(SET_ACTIVE, ApplicationRuntimeData.class);
     // Manage the invalid runtimes, move them into the archive set.
     List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
     Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
@@ -205,11 +207,14 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Override
   public void afterPropertiesSet() throws Exception {
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
-        .baseUrl(getBaseUrl()).ipAddress(InetAddress.getLocalHost().getHostAddress())
-        .serverPort(getPort()).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
+        .baseUrl(getBaseUrl())
+        .ipAddress(InetAddress.getLocalHost().getHostAddress())
+        .serverPort(getPort())
+        .uuid(UUID.randomUUID())
+        .startupTime(System.currentTimeMillis());
     myRuntime = new ApplicationRuntime(runtimeData);
     try {
-      storageCluster = storageApi.get(CLUSTER);
+      storageCluster = storageApi.get(SCHEMA);
       storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     } catch (Exception e) {
       log.error("Couldn't create Storage", e);
@@ -238,7 +243,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   /**
    * Constructs the {@link ApplicationRuntimeData} for the storage. The URI is calculated to store
    * the runtime into the active set. The URI is hierarchical so it can define a set.
-   * 
+   *
    * @return The application runtime data
    */
   public static final ApplicationRuntime runtimeOf(ApplicationRuntimeData runtimeData) {

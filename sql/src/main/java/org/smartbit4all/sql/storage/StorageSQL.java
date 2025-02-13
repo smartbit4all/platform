@@ -13,21 +13,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
-import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.CollectionApiStorageImpl;
-import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -58,11 +56,17 @@ import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
-import org.smartbit4all.storage.fs.StoredSequenceStorageImpl;
+import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -91,7 +95,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   ObjectVersionDef objectVersionDef;
 
   @Autowired
+  ObjectEntryLockDef objectEntryLockDef;
+
+  @Autowired
   public IdentifierService identifierService;
+
+  @Autowired(required = false)
+  List<StorageSQLExtensionApi> extensions;
+
+  private final Map<String, StorageSQLExtensionApi> extensionsCache = new HashMap<>();
 
   @Value("${storageSql.maximumCacheSize:81920}")
   private long maximumCacheSize;
@@ -112,7 +124,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired
   @Lazy
-  private StorageApi self;
+  private StorageApi storageApi;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -132,44 +144,119 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           // TODO removalListener
           .build();
     }
+    if (extensions != null) {
+      for (StorageSQLExtensionApi e : extensions) {
+        if (e.getManagedObjects() != null) {
+          for (ManagedObject mo : e.getManagedObjects()) {
+            extensionsCache.put(extensionId(mo.schema, mo.qualifiedName), e);
+          }
+        }
+      }
+    }
+  }
+
+  private static final String extensionId(String schema, String qualifiedName) {
+    return schema + StringConstant.COLON + qualifiedName;
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockSupplier(objectUri);
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
+    String objectUriString = objectUri.toString();
+    UUID currentRuntime = runtimeApi().self().getUuid();
+    DataRow objectLockRow;
+    try {
+      objectLockRow = Crud.read(objectEntryLockDef)
+          .select(objectEntryLockDef.allProperties())
+          .where(objectEntryLockDef.objectUri().eq(objectUriString)).lock()
+          .onlyOne()
+          .orElse(null);
+    } catch (Exception e) {
+      objectLockRow = null;
     }
+    try {
+      if (objectLockRow != null) {
+        UUID runtimeUUID =
+            UUID.fromString(objectLockRow.get(objectEntryLockDef.applicationRuntime()));
+        if (Objects.equals(runtimeUUID, currentRuntime)) {
+          // it's us, return lock
+          return new StorageObjectPhysicalLock(objectUri);
+        }
+        if (runtimeApi().getActiveRuntimes().stream()
+            .anyMatch(r -> Objects.equals(runtimeUUID, r.getUuid()))) {
+          // it's someone active, no success this time
+          return null;
+        }
+        // inactive runtime detected, update runtime (claim to me)
+        Crud.update(createLockRecord(objectUriString, currentRuntime));
+        return new StorageObjectPhysicalLock(objectUri);
+      }
+      // lock didn't exist -> create new one
+      try {
+        Crud.create(createLockRecord(objectUriString, currentRuntime));
+      } catch (DataAccessException e) {
+        // other node already created the lock
+        log.debug("other node already created the lock");
+        return null;
+      }
+      return new StorageObjectPhysicalLock(objectUri);
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to lock " + objectUri, e);
+    }
+  }
 
-    // return () -> {
-    // StorageTransaction transaction =
-    // transactionManager != null ? transactionManager.getCurrentTransaction() : null;
-    // FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
-    // transaction != null ? transaction.getData().getUri().toString() : null);
-    // try {
-    // FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
-    // } catch (Exception e) {
-    // throw new IllegalStateException("Unable to lock object " + objectUri, e);
-    // }
-    // return new StorageObjectPhysicalLock(objectUri);
-    // };
-    return null;
+  private TableData<ObjectEntryLockDef> createLockRecord(String objectUriString,
+      UUID currentRuntime) {
+    return TableDatas
+        .builder(objectEntryLockDef, objectEntryLockDef.objectUri(),
+            objectEntryLockDef.applicationRuntime(), objectEntryLockDef.createdAt())
+        .addRow()
+        .set(objectEntryLockDef.objectUri(),
+            objectUriString)
+        .set(objectEntryLockDef.applicationRuntime(), currentRuntime.toString())
+        .set(objectEntryLockDef.createdAt(), OffsetDateTime.now())
+        .build();
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    if (lock != null) {
+      try {
+        Crud.delete(TableDatas
+            .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
+            .addRow()
+            .set(objectEntryLockDef.objectUri(),
+                getUriString(getUriWithoutVersion(lock.getObjectUri())))
+            .build());
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
+      }
+    }
+  }
+
+  @Override
+  protected boolean lockOnSave() {
+    return false;
+  }
+
+  @Override
+  protected Function<Boolean, StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    Function<Boolean, StorageObjectPhysicalLock> result = super.physicalLockSupplier(objectUri);
+    if (result == null) {
+      // TODO move to super, if runtime if available
+      throw new IllegalStateException("No physicalLockSupplier for object " + objectUri);
+    }
+    return result;
   }
 
   @Override
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    // if (runtimeApi() == null || runtimeApi().self() == null) {
-    // return super.physicalLockReleaser();
-    // }
-    // return l -> {
-    // if (l != null) {
-    // try {
-    // FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
-    // } catch (Exception e) {
-    // throw new IllegalStateException("Unable to lock object " + l.getObjectUri(), e);
-    // }
-    // }
-    // };
-    return null;
+    Consumer<StorageObjectPhysicalLock> result = super.physicalLockReleaser();
+    if (result == null) {
+      throw new IllegalStateException("No physicalLockReleaser");
+    }
+    return result;
   }
 
   /**
@@ -189,11 +276,26 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    *
    * @param object
    * @param relationBinaryData
-   * @return
+   * @return The version number of the newly saved object.
    */
   private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
+
+    // if (transactionTemplate != null) {
+    // return transactionTemplate
+    // .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
+    // }
+    return saveObjectInTransaction(null, object, relationBinaryData);
+  }
+
+  private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
+      BinaryData relationBinaryData) {
+    StorageSQLExtensionApi extensionApi =
+        getExtensionApi(object.getStorage().getScheme(), object.definition().getQualifiedName());
+    if (extensionApi != null) {
+      return extensionApi.saveObject(object, relationBinaryData);
+    }
     DataRow objectRow;
     try {
       String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
@@ -208,7 +310,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     } catch (Exception e) {
       objectRow = null;
     }
-
     BuilderWithFixProperties<ObjectVersionDef> builderVersion = TableDatas
         .builder(objectVersionDef, objectVersionDef.versionId(),
             objectVersionDef.entryId(), objectVersionDef.version(),
@@ -284,7 +385,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
               objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
               objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
-              objectEntryDef.version(), objectEntryDef.refVersion(), objectEntryDef.singleVersion())
+              objectEntryDef.version(), objectEntryDef.refVersion(),
+              objectEntryDef.singleVersion())
           .addRow()
           .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
@@ -312,7 +414,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
-  private final String getUriString(URI uri) {
+  public static final String getUriString(URI uri) {
     return uri == null ? null : uri.toString();
   }
 
@@ -481,17 +583,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         newVersionUri,
         object.getObject(),
         object.definition().getClazz());
-    // TODO Add transaction managed post commit!
-    // if (transactionManager != null && transactionManager.isInTransaction()) {
-    // transactionManager.addOnSucceed(object, event);
-    // } else {
-    invokeOnSucceedFunctions(object, event);
-    // }
-  }
-
-  void invokeOnSucceedFunctionsFS(StorageObject<?> object,
-      StorageSaveEvent storageSaveEvent) {
-    invokeOnSucceedFunctions(object, storageSaveEvent);
+    handleStorageSaveEvent(object, event);
   }
 
   @Override
@@ -547,7 +639,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
-  private class UriInfo {
+  public class UriInfo {
     final URI uri;
     final String baseUri;
     final Long originalVersion;
@@ -569,6 +661,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  // @Transactional
   @Override
   public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
@@ -583,6 +676,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         .map(UriInfo::new)
         .collect(Collectors.toList());
 
+    if (clazz != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storage.getScheme(), clazz.getName());
+      if (extensionApi != null) {
+        return extensionApi.loadBatch(self, storage, uriInfos, clazz, options);
+      }
+    }
+
     // batch query object entries
     Map<String, DataRow> objectEntryRows = queryObjectEntries(uriInfos);
 
@@ -592,9 +692,20 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (entryRow != null) {
         // surely will exist, queryObjectEntries will throw an exception if not
         info.entryId = entryRow.get(objectEntryDef.id());
+        Long entryVersion = entryRow.get(objectEntryDef.version());
         info.calculatedVersion =
             info.originalVersion != null ? info.originalVersion
-                : entryRow.get(objectEntryDef.version());
+                : entryVersion;
+        if (info.originalVersion != null
+            && entryVersion != null
+            && entryVersion < info.originalVersion) {
+          if (log.isErrorEnabled()) {
+            log.error("Error when trying to query {}! latestVersion ({}) < requestedVersion ({})",
+                info.uri, entryVersion, info.originalVersion);
+            log.error("Using latest version instead!", new Exception());
+          }
+          info.calculatedVersion = entryVersion;
+        }
         info.versionId = createVersionId(info.entryId, info.calculatedVersion);
       }
     }
@@ -738,6 +849,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               log.trace("Cache - load, size:{} ", versionContentCache.size());
             }
             versionContentCache.put(id, row);
+            addedToCache(id);
           }
         });
       }
@@ -749,6 +861,47 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     versionRows.putAll(cachedVersions);
 
     return versionRows;
+  }
+
+  private void addedToCache(String id) {
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      cachedInTransaction.get().add(id);
+      registerStorageCacheTransactionHandler();
+    }
+  }
+
+  /**
+   * resource identifier for StorageObjectLock unlock handler
+   */
+  private static final String STORAGE_CACHE_HANDLER = "STORAGE_CACHE_HANDLER";
+
+  protected ThreadLocal<Set<String>> cachedInTransaction =
+      ThreadLocal.withInitial(() -> new HashSet<>());
+
+  protected void registerStorageCacheTransactionHandler() {
+    if (!TransactionSynchronizationManager.hasResource(STORAGE_CACHE_HANDLER)) {
+      TransactionSynchronizationManager
+          .registerSynchronization(new StorageCacheTransactionHandler());
+      TransactionSynchronizationManager.bindResource(STORAGE_CACHE_HANDLER, true);
+    }
+  }
+
+  protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
+
+    @Override
+    public void afterCompletion(int status) {
+      if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+        if (!cachedInTransaction.get().isEmpty()) {
+          versionContentCache.invalidateAll(cachedInTransaction.get());
+        }
+      }
+      cachedInTransaction.remove();
+
+      if (status == TransactionSynchronization.STATUS_UNKNOWN) {
+        log.warn("Transaction state is STATUS_UNKNOWN!");
+      }
+      TransactionSynchronizationManager.unbindResource(STORAGE_CACHE_HANDLER);
+    }
   }
 
   private Map<String, DataRow> queryObjectEntries(List<UriInfo> uriInfos) {
@@ -771,12 +924,26 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
-      Function<URI, O> reader) {
-    // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    List<URI> uris = readAllUris(storage, setName, clazz);
+    return loadBatch(storage, uris, clazz).stream()
+        .map(StorageObject::getObject)
+        .collect(toList());
+  }
 
-    String storageScheme = getStorageScheme(storage);
+  @Override
+  public List<URI> readAllUris(Storage storage, String setName, String clazzName) {
+    // Check if the given directory exists or not.
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
+
+    String storageScheme = storage.getScheme();
+    if (clazzName != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storageScheme, clazzName);
+      if (extensionApi != null) {
+        return extensionApi.readAllUris(self, storage, setName, clazzName);
+      }
+    }
+
     String setPath =
         storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
             + (Strings.isBlank(setName) ? StringConstant.EMPTY
@@ -789,13 +956,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         log.trace("readAll: setName={}", setName);
       }
       objectList = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
+          .select(objectEntryDef.uri())
           .where(
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
-      List<O> result = objectList.rows().stream()
-          .map(r -> reader.apply(UriUtils.asUri(r.get(objectEntryDef.uri()))))
+      List<URI> result = objectList.rows().stream()
+          .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
           .collect(toList());
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={} size{}", setName, result.size());
@@ -904,7 +1071,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               if (log.isTraceEnabled()) {
                 log.trace("Cache - load, size:{} ", versionContentCache.size());
               }
-              return queryObjectVersionInner(id, version, skipContent);
+              DataRow row = queryObjectVersionInner(id, version, skipContent);
+              addedToCache(cacheId);
+              return row;
             });
       } catch (ExecutionException e) {
         log.warn("Unable to load to cache", e);
@@ -1134,54 +1303,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return next.output();
   }
 
-  @Override
-  public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequenceStorageImpl(self,
-        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
-        name);
+  private final StorageSQLExtensionApi getExtensionApi(String shema, String qualifiedName) {
+    if (extensions != null) {
+      return extensionsCache.get(extensionId(shema, qualifiedName));
+    }
+    return null;
   }
-
-  // @Override
-  // public StoredSequence getSequence(String schema, String name) {
-  // return new StoredSequence() {
-  //
-  // @Override
-  // public List<Long> next(int count) {
-  // List<Long> result = new ArrayList<>();
-  // for (int i = 0; i < count; i++) {
-  // NextIdentifier next = identifierService.next();
-  // next.setInput(name);
-  // try {
-  // next.execute();
-  // } catch (Exception e) {
-  // throw new IllegalStateException(
-  // "Unable to retreive new identifier from database " + name + " sequence",
-  // e);
-  // }
-  // result.add(next.output());
-  // }
-  // return result;
-  // }
-  //
-  // @Override
-  // public Long next() {
-  // return next(1).get(0);
-  // }
-  //
-  // @Override
-  // public Long current() {
-  // CurrentIdentifier current = identifierService.current();
-  // current.setInput(name);
-  // try {
-  // current.execute();
-  // } catch (Exception e) {
-  // throw new IllegalStateException(
-  // "Unable to retreive the current value from database " + name + " sequence",
-  // e);
-  // }
-  // return current.output();
-  // }
-  // };
-  // }
-
 }

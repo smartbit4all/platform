@@ -56,7 +56,8 @@ import jakarta.validation.Valid;
   SearchPageConfig.NO_RESULT_TEXT,
   SearchPageConfig.GRID_VIEW_OPTIONS,
   SearchPageConfig.DEFAULT_ROW_ACTIONS,
-  SearchPageConfig.FIELDS_TO_QUERY
+  SearchPageConfig.FIELDS_TO_QUERY,
+  SearchPageConfig.QUALIFIER
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SearchPageConfig {
@@ -113,6 +114,9 @@ public class SearchPageConfig {
 
   public static final String FIELDS_TO_QUERY = "fieldsToQuery";
   private List<String> fieldsToQuery = new ArrayList<>();
+
+  public static final String QUALIFIER = "qualifier";
+  private String qualifier;
 
   public SearchPageConfig() {
   }
@@ -635,6 +639,33 @@ public class SearchPageConfig {
     this.fieldsToQuery = fieldsToQuery;
   }
 
+  public SearchPageConfig qualifier(String qualifier) {
+    
+    this.qualifier = qualifier;
+    return this;
+  }
+
+  /**
+   * Get qualifier
+   * @return qualifier
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(QUALIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getQualifier() {
+    return qualifier;
+  }
+
+
+  @JsonProperty(QUALIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setQualifier(String qualifier) {
+    this.qualifier = qualifier;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -661,12 +692,13 @@ public class SearchPageConfig {
         Objects.equals(this.noResultText, searchPageConfig.noResultText) &&
         Objects.equals(this.gridViewOptions, searchPageConfig.gridViewOptions) &&
         Objects.equals(this.defaultRowActions, searchPageConfig.defaultRowActions) &&
-        Objects.equals(this.fieldsToQuery, searchPageConfig.fieldsToQuery);
+        Objects.equals(this.fieldsToQuery, searchPageConfig.fieldsToQuery) &&
+        Objects.equals(this.qualifier, searchPageConfig.qualifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, pageTitle, filterModel, filterConfig, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions, fieldsToQuery);
+    return Objects.hash(uri, pageTitle, filterModel, filterConfig, searchIndexSchema, searchIndexName, container, historyObjectUri, historyLowerBound, historyUpperBound, historyLoadAllLimit, historyPageSize, pageSize, skipInitialQuery, noResultText, gridViewOptions, defaultRowActions, fieldsToQuery, qualifier);
   }
 
   @Override
@@ -691,6 +723,7 @@ public class SearchPageConfig {
     sb.append("    gridViewOptions: ").append(toIndentedString(gridViewOptions)).append("\n");
     sb.append("    defaultRowActions: ").append(toIndentedString(defaultRowActions)).append("\n");
     sb.append("    fieldsToQuery: ").append(toIndentedString(fieldsToQuery)).append("\n");
+    sb.append("    qualifier: ").append(toIndentedString(qualifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,9 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.sql.storage;
 
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
@@ -40,6 +38,9 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   String BASEURL = "BASEURL";
   String BASEURL_COL = "BASEURL";
 
+  String SERVERPORT = "SERVER_PORT";
+  String SERVERPORT_COL = "SERVER_PORT";
+
   String STARTUPTIME = "STARTUPTIME";
   String STARTUPTIME_COL = "STARTUPTIME";
 
@@ -52,23 +53,36 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   String LASTTOUCHTIME = "LASTTOUCHTIME";
   String LASTTOUCHTIME_COL = "LASTTOUCHTIME";
 
+  String OBJECT_CONTENT = "objectcontent";
+  String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
+
   @OwnProperty(name = URI, columnName = URI_COL)
   @Id
-  Property<URI> uri();
+  Property<String> uri();
 
   @OwnProperty(name = UUID, columnName = UUID_COL)
-  Property<UUID> uuid();
+  Property<String> uuid();
+
+  @OwnProperty(name = BASEURL, columnName = BASEURL_COL)
+  Property<String> baseUrl();
+
+  @OwnProperty(name = SERVERPORT, columnName = SERVERPORT_COL)
+  Property<Long> serverPort();
 
   @OwnProperty(name = STARTUPTIME, columnName = STARTUPTIME_COL)
-  Property<LocalDateTime> startupTime();
+  Property<Long> startupTime();
 
   @OwnProperty(name = STOPTIME, columnName = STOPTIME_COL)
-  Property<LocalDateTime> stopTime();
+  Property<Long> stopTime();
 
   @OwnProperty(name = TIMEOFFSET, columnName = TIMEOFFSET_COL)
-  Property<LocalDateTime> timeOffset();
+  Property<Long> timeOffset();
 
   @OwnProperty(name = LASTTOUCHTIME, columnName = LASTTOUCHTIME_COL)
-  Property<LocalDateTime> lastTouchTime();
+  Property<Long> lastTouchTime();
+
+  @OwnProperty(name = OBJECT_CONTENT, columnName = OBJECT_CONTENT_COL, mandatory = true)
+  Property<BinaryData> objectContent();
+
 
 }

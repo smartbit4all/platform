@@ -176,7 +176,6 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
         ? localeSettingApi.get("attachment.grid.dialog.title")
         : descriptor.getDialogTitle();
 
-
     return ObjectLayoutBuilder.container(LayoutDirection.VERTICAL)
         .addComponentsItem(ObjectLayoutBuilder.form(LayoutDirection.HORIZONTAL,
             ObjectLayoutBuilder.label("label", title)

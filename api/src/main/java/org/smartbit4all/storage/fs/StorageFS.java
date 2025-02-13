@@ -18,21 +18,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
-import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.collection.CollectionApiStorageImpl;
-import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
+import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.io.utility.FileLockData;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -237,24 +233,18 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockSupplier(objectUri);
+  public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
+    StorageTransaction transaction =
+        getTransactionManagerFS() != null ? getTransactionManagerFS().getCurrentTransaction()
+            : null;
+    FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
+        transaction != null ? transaction.getData().getUri().toString() : null);
+    try {
+      FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to lock object " + objectUri, e);
     }
-
-    return () -> {
-      StorageTransaction transaction =
-          getTransactionManagerFS() != null ? getTransactionManagerFS().getCurrentTransaction()
-              : null;
-      FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
-          transaction != null ? transaction.getData().getUri().toString() : null);
-      try {
-        FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
-      } catch (Exception e) {
-        throw new IllegalStateException("Unable to lock object " + objectUri, e);
-      }
-      return new StorageObjectPhysicalLock(objectUri);
-    };
+    return new StorageObjectPhysicalLock(objectUri);
   }
 
   /**
@@ -280,19 +270,14 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    if (runtimeApi() == null || runtimeApi().self() == null) {
-      return super.physicalLockReleaser();
-    }
-    return l -> {
-      if (l != null) {
-        try {
-          FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
-        } catch (Exception e) {
-          throw new IllegalStateException("Unable to lock object " + l.getObjectUri(), e);
-        }
+  public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
+    if (lock != null) {
+      try {
+        FileIO.unlockObjectFile(getObjectLockFile(lock.getObjectUri()), -1);
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
       }
-    };
+    }
   }
 
   /**
@@ -445,8 +430,10 @@ public class StorageFS extends ObjectStorageImpl {
     ObjectVersion oldVersion = currentVersion;
     updateStorageObjectWithVersion(object, newVersion);
     URI newVersionUri = object.getVersionUri();
-    addInvokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
-        objectVersionBasePath);
+    if (!TransactionData.class.equals(object.definition().getClazz())) {
+      addInvokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
+          objectVersionBasePath);
+    }
     return newVersionUri;
   }
 
@@ -460,7 +447,7 @@ public class StorageFS extends ObjectStorageImpl {
    * @param newVersionUri
    * @param objectVersionBasePath
    */
-  void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
+  private void addInvokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
       URI oldVersionUri, URI newVersionUri, File objectVersionBasePath) {
     StorageSaveEvent event = new StorageSaveEvent(
         () -> {
@@ -480,16 +467,7 @@ public class StorageFS extends ObjectStorageImpl {
         newVersionUri,
         object.getObject(),
         object.definition().getClazz());
-    if (getTransactionManagerFS() != null && getTransactionManagerFS().isInTransaction()) {
-      getTransactionManagerFS().addOnSucceed(object, event);
-    } else {
-      invokeOnSucceedFunctions(object, event);
-    }
-  }
-
-  void invokeOnSucceedFunctionsFS(StorageObject<?> object,
-      StorageSaveEvent storageSaveEvent) {
-    invokeOnSucceedFunctions(object, storageSaveEvent);
+    handleStorageSaveEvent(object, event);
   }
 
   private final void saveObjectData(StorageObject<?> object, File objectDataFile,
@@ -645,12 +623,21 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+  public List<URI> readAllUris(Storage storage, String setName, String clazzName) {
+    return readAll(storage, setName, clazzName, u -> u);
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz.getName(), u -> read(storage, u, clazz));
+  }
+
+  protected <O> List<O> readAll(Storage storage, String setName, String clazzName,
       Function<URI, O> reader) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
 
-    String storageScheme = getStorageScheme(storage);
+    String storageScheme = storage.getScheme();
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()
         + (Strings.isBlank(setName) ? StringConstant.EMPTY
             : StringConstant.SLASH
@@ -766,9 +753,7 @@ public class StorageFS extends ObjectStorageImpl {
         } else {
           dataObject = null;
         }
-        @SuppressWarnings("unchecked")
-        ObjectDefinition<T> definition =
-            getObjectDefinition(uri, dataObject, clazz);
+        ObjectDefinition<T> definition = getObjectDefinition(uri, dataObject, clazz);
 
         Map<String, Object> obj = null;
         if (dataParts.get(1).length() != 0) {
@@ -975,13 +960,6 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
-  }
-
-  @Override
-  public StoredSequence getSequence(String schema, String name) {
-    return new StoredSequenceStorageImpl(self,
-        CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
-        name);
   }
 
 }

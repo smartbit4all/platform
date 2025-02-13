@@ -2,6 +2,7 @@ package org.smartbit4all.core.object;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,19 @@ public final class ObjectDefinition<T> {
    * stands for the characters of the identifier string.
    */
   private String[] idPath = null;
+
+  /**
+   * The time path is the path of the business time property that must be a LocalDateTime or
+   * OffsetDateTime the uri generation is based on. If it is null then the normal URI is generated
+   * during the save. If it is set then the value is extracted from the object and the URI will be
+   * generated where the date time stands for the time part of the URI. Everything remains the same.
+   */
+  private String[] timePath = null;
+
+  /**
+   * Defines the type of the time value.
+   */
+  private Class<?> timeClazz = LocalDateTime.class;
 
   /**
    * The outgoing references of the given object mapped by the name of the referrer property.
@@ -512,6 +526,27 @@ public final class ObjectDefinition<T> {
       explicitUri = true;
     }
     this.idPath = idPathes;
+    return this;
+  }
+
+  public final String[] getTimePath() {
+    return timePath;
+  }
+
+  public final ObjectDefinition<T> timePath(String... timePathes) {
+    if (timePathes != null) {
+      explicitUri = true;
+    }
+    this.timePath = timePathes;
+    return this;
+  }
+
+  public final Class<?> getTimeClazz() {
+    return timeClazz;
+  }
+
+  public ObjectDefinition<T> timeClazz(Class<?> timeClazz) {
+    this.timeClazz = timeClazz;
     return this;
   }
 

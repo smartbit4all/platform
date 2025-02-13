@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toMap;
 import jakarta.validation.constraints.NotNull;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
@@ -143,6 +146,10 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   @Autowired
   @Lazy
   private ObjectExtensionApi objectExtensionApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private PlatformTransactionManager transactionManager;
 
   private static BeanMeta getMeta(Class<?> apiClass) {
     if (apiClass == null) {
@@ -373,6 +380,19 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   @Override
   public void saveDefinitionData(ObjectDefinition<?> definition) {
+    if (transactionManager != null) {
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+      transaction.execute(status -> {
+        saveDefinitionDataInternal(definition);
+        return null;
+      });
+    } else {
+      saveDefinitionDataInternal(definition);
+    }
+  }
+
+  private void saveDefinitionDataInternal(ObjectDefinition<?> definition) {
     Storage storage = getStorageApi().get(SCHEMA);
     ObjectDefinitionData definitionData = definition.getDefinitionData();
     if (storage.exists(definitionData.getUri())) {
