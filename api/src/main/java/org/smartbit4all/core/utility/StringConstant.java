@@ -14,11 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.joining;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.joining;
 
 /**
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
@@ -91,6 +91,8 @@ public class StringConstant {
   public static final String HTML_PARAGRAPH_END = "</p>";
 
   public static final String HYPHEN = "-";
+
+  public static final String HYPHEN_SPACE = "- ";
 
   public static final String[] INVALID_FILE_CHARS =
       {"\"", "/", "*", ":", "<", ">", "?", "\\", "|", new String(new byte[] {(byte) 0x7F}), "\000"};
