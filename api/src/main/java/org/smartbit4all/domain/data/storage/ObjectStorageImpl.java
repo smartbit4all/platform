@@ -93,7 +93,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Autowired(required = false)
   @Lazy
-  private PlatformTransactionManager transactionManager;
+  protected PlatformTransactionManager transactionManager;
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -446,7 +446,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   /**
    * Utility function in older JDK for takeWhile. Should be removed later.
-   * 
+   *
    * @param <T>
    * @param stream
    * @param predicate

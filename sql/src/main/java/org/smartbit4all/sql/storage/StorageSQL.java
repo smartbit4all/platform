@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -67,12 +70,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -281,12 +282,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
-
-    // if (transactionTemplate != null) {
-    // return transactionTemplate
-    // .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
-    // }
-    return saveObjectInTransaction(null, object, relationBinaryData);
+    if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
+      // no transactionManager or already in transaction
+      return saveObjectInTransaction(null, object, relationBinaryData);
+    } else {
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      return transaction
+          .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
+    }
   }
 
   private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
