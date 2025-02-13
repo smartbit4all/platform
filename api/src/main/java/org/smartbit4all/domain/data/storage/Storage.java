@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
+import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -31,7 +32,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
-import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -107,7 +107,7 @@ public final class Storage {
 
   /**
    * Set true to use the second to construct the URI in the
-   * {@link #constructUri(ObjectDefinition, UUID, String)} function.
+   * {@link #constructUri(ObjectDefinition, UUID, String, LocalDateTime)} function.
    */
   private Boolean useSecondInUri = false;
 
