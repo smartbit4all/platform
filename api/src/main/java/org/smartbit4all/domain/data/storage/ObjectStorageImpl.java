@@ -6,18 +6,22 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Spliterators;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -415,9 +419,48 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   public Stream<List<URI>> streamOfTimeSeries(Storage storage, String setName,
       String clazzName,
       LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {
-    return Stream
-        .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient))
-        .takeWhile(l -> l != null);
+    // return Stream
+    // .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient))
+    // .takeWhile(l -> l != null);
+    return takeWhile(Stream
+        .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient)),
+        l -> l != null);
+  }
+
+  /**
+   * Utility function in older JDK for takeWhile. Should be removed later.
+   * 
+   * @param <T>
+   * @param stream
+   * @param predicate
+   * @return
+   */
+  public static <T> Stream<T> takeWhile(Stream<T> stream, Predicate<T> predicate) {
+    Iterator<T> iterator = stream.iterator();
+    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new Iterator<T>() {
+      T nextItem;
+      boolean finished = false;
+
+      @Override
+      public boolean hasNext() {
+        if (finished)
+          return false;
+        if (iterator.hasNext()) {
+          nextItem = iterator.next();
+          if (!predicate.test(nextItem)) {
+            finished = true;
+            return false;
+          }
+          return true;
+        }
+        return false;
+      }
+
+      @Override
+      public T next() {
+        return nextItem;
+      }
+    }, 0), false);
   }
 
   @Override
