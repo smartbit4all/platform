@@ -612,7 +612,18 @@ public class ObjectApiImpl implements ObjectApi {
     // Try to retrieve all the locks but release the already retrieved ones if there is any lock
     // that is unavailable. Wait a little bit and try again.
     List<Lock> result = new ArrayList<>();
+    boolean firstRun = true;
     while (result.size() != locks.size()) {
+      if (!firstRun) {
+        // don't sleep on first run
+        try {
+          Thread.sleep(150);
+        } catch (InterruptedException e) {
+          throw new IllegalStateException(
+              "Unable to retrieve all locks for the following objects (" + uris + ")", e);
+        }
+      }
+      firstRun = false;
       for (Lock lock : locks) {
         if (lock.tryLock()) {
           result.add(lock);
@@ -627,12 +638,6 @@ public class ObjectApiImpl implements ObjectApi {
           result.clear();
           break;
         }
-      }
-      try {
-        Thread.sleep(150);
-      } catch (InterruptedException e) {
-        throw new IllegalStateException(
-            "Unable to retrieve all locks for the following objects (" + uris + ")", e);
       }
     }
     return result;
