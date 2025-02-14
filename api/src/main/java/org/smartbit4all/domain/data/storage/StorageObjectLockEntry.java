@@ -183,18 +183,24 @@ final class StorageObjectLockEntry {
     }
     mutexInstanceRegister.lock();
     try {
+      if (removing) {
+        // this should never happen, it's here to guard against multiple physical lock removal
+        return;
+      }
       // Remove ourself from the register and if we were the last one then release the in memory and
       // the physical lock also.
       instanceRegister.remove(lock.getId());
       if (instanceRegister.isEmpty()) {
         removing = true;
-        if (releaser != null && physicalLock != null) {
-          releaser.accept(physicalLock);
-        }
-        lockRemover.accept(objectURI);
       }
     } finally {
       mutexInstanceRegister.unlock();
+    }
+    if (removing) {
+      if (releaser != null && physicalLock != null) {
+        releaser.accept(physicalLock);
+      }
+      lockRemover.accept(objectURI);
     }
   }
 
