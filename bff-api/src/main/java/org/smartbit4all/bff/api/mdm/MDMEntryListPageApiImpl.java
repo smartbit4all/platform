@@ -991,21 +991,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       String icon;
       Map<String, Object> map = (Map<String, Object>) row.getData();
       BranchingStateEnum state = (BranchingStateEnum) map.get(BranchedObjectEntry.BRANCHING_STATE);
-      switch (state) {
-        case NEW:
-          icon = "add_circle";
-          break;
-        case MODIFIED:
-          icon = "tag";
-          break;
-        case DELETED:
-          icon = "cancel";
-          break;
-
-        default:
-          icon = "radio_button_unchecked";
-          break;
-      }
+      icon = setIconToEntry(state);
       if (icon != null) {
         row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
             Arrays.asList(new ImageResource()
@@ -1033,6 +1019,26 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       }
     });
     return page;
+  }
+
+  protected String setIconToEntry(BranchingStateEnum state) {
+    String icon;
+    switch (state) {
+      case NEW:
+        icon = "add_circle";
+        break;
+      case MODIFIED:
+        icon = "tag";
+        break;
+      case DELETED:
+        icon = "cancel";
+        break;
+
+      default:
+        icon = "radio_button_unchecked";
+        break;
+    }
+    return icon;
   }
 
   private UiAction createUiActionWithDescriptor(String actionCode) {
