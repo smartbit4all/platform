@@ -14,6 +14,7 @@ public class MDMApiTestSetupv1 extends ApplicationSetupApiImpl {
 
   @Override
   public void execute() {
+    // the Class itself may not be unloaded between test runs!!! This one may set the value only!
     executionCounter = 1;
   }
 

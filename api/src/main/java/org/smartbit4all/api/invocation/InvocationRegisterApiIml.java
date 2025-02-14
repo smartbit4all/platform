@@ -437,7 +437,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * channels managed by the runtimes. The current implementation detects the inactive runtimes and
    * pick up their lost invocations.
    *
-   * @param activeRuntimes
+   * @param activeRuntimes the currently known active {@link ApplicationRuntime}s, not null
    */
   private void manageAsyncChannels(List<ApplicationRuntime> activeRuntimes) {
     URI runtimeUri = applicationRuntimeApi.self().getUri();
@@ -520,6 +520,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     } finally {
       lock.unlock();
     }
+  }
+
+  public List<AsyncInvocationChannel> getChannels() {
+    return Collections.unmodifiableList(channels);
   }
 
   public void enqueueScheduledInvocations(AsyncInvocationChannel channel) {
@@ -609,7 +613,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * transaction then the execution starts at the successful finish of the transaction (onCommit).
    * Else the execution starts right now.
    *
-   * @param asyncInvocationRequestEntry
+   * @param asyncInvocationRequestEntry the {@link AsyncInvocationRequestEntry} to enqueue, not null
    */
   private final void enqueueAsyncRequest(AsyncInvocationRequestEntry asyncInvocationRequestEntry) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -963,8 +967,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * runtime from the {@link #initRegistry()} call or it can be a {@link #refreshRegistry()} when
    * the available apis are read from the storage.
    *
-   * @param apiData
-   * @return
+   * @param apiData the {@link ApiData} of a service interface to enable remote access, not null
+   * @return the {@link ApiDescriptor} describing a remotely callable service interface
    */
   private ApiDescriptor addToApiRegister(ApiData apiData) {
     Map<String, ApiDescriptor> apisByName =
@@ -988,7 +992,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   /**
    * If the api is a {@link ContributionApi}, then register to his {@link PrimaryApi}
    *
-   * @param apiData
+   * @param apiData the {@link ApiData} of the contribution API to register, not null
    */
   private void registerToPrimaryApi(ApiData apiData) {
 
