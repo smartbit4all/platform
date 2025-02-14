@@ -631,12 +631,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     URI uri;
     URI runtimeUri;
     AsyncInvocationChannel localChannel;
-    List<URI> requestsToAdd = new ArrayList<>();
+    final List<URI> requestsToAdd = new ArrayList<>();
   }
 
   private static class ScheduledRequestsForChannel {
     String channelName;
-    List<ScheduledRequests> requests = new ArrayList<>();
+    final List<ScheduledRequests> requests = new ArrayList<>();
   }
 
   private static class ScheduledRequests {
@@ -799,6 +799,23 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           request.setValue(channel.runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
           URI uri = objectApi.save(request);
           channel.requestsToAdd.add(objectApi.getLatestUri(uri));
+        } else if (obj instanceof ScheduledRequestsForChannel) {
+          ScheduledRequestsForChannel schReq = (ScheduledRequestsForChannel) obj;
+          ChannelInfo channel = channelInfos.get(schReq.channelName);
+          List<URI> uris = schReq.requests.stream()
+              .flatMap(req -> req.requestUris.stream())
+              .distinct()
+              .map(objectApi::getLatestUri)
+              .collect(toList());
+          List<ObjectNode> reqNodes = objectApi.loadLatestBatch(uris);
+          for (ObjectNode req : reqNodes) {
+            URI currentRuntimeUri = req.getValue(URI.class, AsyncInvocationRequest.RUNTIME_URI);
+            if (!objectApi.equalsIgnoreVersion(currentRuntimeUri, channel.runtimeUri)) {
+              req.setValue(channel.runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
+              objectApi.save(req);
+            }
+          }
+          channel.requestsToAdd.addAll(uris);
         }
       }
     }
@@ -1203,15 +1220,16 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
       getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(request);
     } else {
-      scheduleAsyncInvocationRequest(request);
+      saveAndEnqueuAsyncRequests(Arrays.asList(request));
+      // scheduleAsyncInvocationRequest(request);
     }
   }
 
-  private final void scheduleAsyncInvocationRequest(ScheduledRequestsForChannel request) {
-    StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
-        getScheduledInvocationsRef(request.channelName);
-    scheduleAsyncInvocationRequestInternal(refScheduled, request);
-  }
+  // private final void scheduleAsyncInvocationRequest(ScheduledRequestsForChannel request) {
+  // StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
+  // getScheduledInvocationsRef(request.channelName);
+  // scheduleAsyncInvocationRequestInternal(refScheduled, request);
+  // }
 
   private StoredReference<AsyncChannelScheduledInvocationList> getScheduledInvocationsRef(
       String channelName) {
@@ -1258,7 +1276,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     return asyncInvocationChannel;
   }
 
-  // @Transactional
   @Override
   public void saveAsyncInvocationResult(AsyncInvocationRequestEntry requestEntry,
       InvocationResult result) {
