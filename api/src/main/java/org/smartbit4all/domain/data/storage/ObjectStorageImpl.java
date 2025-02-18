@@ -13,7 +13,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -117,7 +119,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   /**
    * The operations on the locks are exclusive.
    */
-  private ReadWriteLock lockMutex = new ReentrantReadWriteLock(true);
+  private Lock lockMutex = new ReentrantLock(true);
 
   /**
    * The application context.
@@ -252,6 +254,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
           break;
         }
       }
+      lockMutex.lock();
       try {
         StorageObjectLockEntry entry = getOrCreateLockEntry(objectUri);
         return entry.getLock();
@@ -260,53 +263,46 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         count++;
       } catch (InterruptedException e) {
         throw new IllegalStateException("Unable to get lock, the thread was interrupted.", e);
+      } finally {
+        lockMutex.unlock();
       }
     }
     return null;
   }
 
   private StorageObjectLockEntry getOrCreateLockEntry(URI objectUri) {
-    lockMutex.readLock().lock();
-    StorageObjectLockEntry entry;
-    try {
-      entry = locks.get(objectUri);
-    } finally {
-      lockMutex.readLock().unlock();
-    }
+    StorageObjectLockEntry entry = locks.get(objectUri);
     if (entry == null) {
-      lockMutex.writeLock().lock();
-      entry = locks.get(objectUri);
-      if (entry == null) {
+      final StorageObjectLockEntry newEntry =
+          new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
+              physicalLockReleaser(),
+              this::unlock,
+              this::reattachLock);
+      newEntry.setLockRemover(uri -> {
+        lockMutex.lock();
         try {
-          final StorageObjectLockEntry newEntry =
-              new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                  physicalLockReleaser(),
-                  this::unlock,
-                  this::reattachLock);
-          newEntry.setLockRemover(uri -> {
-            lockMutex.writeLock().lock();
-            try {
-              if (newEntry.isEmpty()) {
-                locks.remove(uri);
-              }
-            } finally {
-              lockMutex.writeLock().unlock();
-            }
-          });
-          locks.put(objectUri, newEntry);
-          entry = newEntry;
+          if (newEntry.isEmpty()) {
+            locks.remove(uri);
+          }
         } finally {
-          lockMutex.writeLock().unlock();
+          lockMutex.unlock();
         }
-      }
+      });
+      locks.put(objectUri, newEntry);
+      entry = newEntry;
     }
     return entry;
   }
 
   protected StorageObjectLockEntry reattachLock(StorageObjectLock lock) {
-    StorageObjectLockEntry entry = getOrCreateLockEntry(lock.getObjectURI());
-    entry.reattachLock(lock);
-    return entry;
+    lockMutex.lock();
+    try {
+      StorageObjectLockEntry entry = getOrCreateLockEntry(lock.getObjectURI());
+      entry.reattachLock(lock);
+      return entry;
+    } finally {
+      lockMutex.unlock();
+    }
   }
 
   @Override
