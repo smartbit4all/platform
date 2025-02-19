@@ -62,9 +62,10 @@ public class PlatformEventApiSuccesTest {
               .message(MESSAGE)
               .addRelatedItem(RELATED_KEY, RELATED_VALUE)
               .publish());
-
+      StoredList storedList = getStoredList();
       PlatformEvent event =
-          objectApi.loadLatest(getStoredList().uris().getLast()).getObject(PlatformEvent.class);
+          objectApi.loadLatest(storedList.uris().get(storedList.uris().size() - 1))
+              .getObject(PlatformEvent.class);
       assertThat(event)
           .satisfies(e -> {
             assertNotNull(e.getEventCode());
