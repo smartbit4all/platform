@@ -8,6 +8,12 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 
 public interface UserEditorPageApi extends PageApi<UserEditingModel> {
 
+  static final String API =
+      "org.smartbit4all.bff.api.org.UserEditorPageApi";
+
+  static final String USER_REGISTERED = "userRegistered";
+
+
   public static final String SAVE_USER = "SAVE_USER";
   public static final String CANCEL = "CANCEL";
   public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";

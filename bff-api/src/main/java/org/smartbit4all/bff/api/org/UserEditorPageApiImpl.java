@@ -12,9 +12,12 @@ import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.OrgSubscriberApi;
 import org.smartbit4all.api.org.OrgUtils;
+import org.smartbit4all.api.org.UserSecurityCheckerApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -49,6 +52,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   protected PasswordEncoder passwordEncoder;
   @Autowired
   LocaleSettingApi localeSettingApi;
+  @Autowired
+  private UserSecurityCheckerApi userSecurityCheckerApi;
   @Autowired
   private InvocationApi invocationApi;
 
@@ -136,6 +141,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       String password =
           passwordEncoder == null ? clientPassword : passwordEncoder.encode(clientPassword);
       user.password(password);
+
     } else {
       userNode = objectApi.loadLatest(user.getUri());
       user.password(userNode.getValueAsString(User.PASSWORD));
@@ -163,11 +169,19 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       }
     }
 
-    if (orgApi.getActiveUsers().stream().map(User::getUri).collect(toList())
-        .contains(user.getUri())) {
+    if (orgApi.getActiveUsers().stream()
+        .map(activeUser -> objectApi.getLatestUri(activeUser.getUri()))
+        .collect(toList())
+        .contains(objectApi.getLatestUri(user.getUri()))) {
       updateUserWithGroups(clientModel, user);
     } else {
       userUri = orgApi.saveUser(user);
+      userUri = userSecurityCheckerApi.updateOrCreateUserLastAccess(userUri,
+          UserLastAccess.REGISTRATION_DATE);
+      invocationApi
+          .publisher(UserEditorPageApi.class,
+              OrgSubscriberApi.class, USER_REGISTERED)
+          .publish(api -> api.userRegisteredEvent(user.getUri()));
       updateUserWithGroups(clientModel, objectApi.loadLatest(userUri).getObject(User.class));
     }
 

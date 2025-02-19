@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.UserSecurityCheckerApi;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.userselector.bean.UserSelfEditingModel;
@@ -41,6 +43,9 @@ public class UserSelfEditorPageApiImpl extends PageApiImpl<UserSelfEditingModel>
 
   @Autowired
   private LocaleSettingApi localeApi;
+
+  @Autowired
+  private UserSecurityCheckerApi userSecurityCheckerApi;
 
   public UserSelfEditorPageApiImpl() {
     super(UserSelfEditingModel.class);
@@ -127,6 +132,10 @@ public class UserSelfEditorPageApiImpl extends PageApiImpl<UserSelfEditingModel>
       return;
     }
 
+    if (hasPasswordChange) {
+      userSecurityCheckerApi.updateOrCreateUserLastAccess(userNode,
+          UserLastAccess.LAST_PASSWORD_CHANGE);
+    }
     objectApi.save(userNode);
     handleSuccessfulSave(viewUuid, hasPasswordChange);
     log.debug("User self editing successfull on user: {}", user);

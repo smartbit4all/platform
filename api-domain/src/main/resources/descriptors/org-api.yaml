@@ -650,4 +650,39 @@ components:
         apiName:
           type: string
           description: |
-            The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add 
+            The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add
+    UserLastAccess:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        lastLogin:
+          type: string
+          format: date-time
+        lastPasswordChange:
+          type: string
+          format: date-time
+        registrationDate:
+          type: string
+          format: date-time
+    UserSecurityPolicy:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        inactivityLockoutDays:
+          type: integer
+          format: int64
+        passwordExpirationDays:
+          type: integer
+          format: int64
+        passwordReminderDays:
+          type: integer
+          format: int64
+        userGroups:
+            type: string
+            format: uri

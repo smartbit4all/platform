@@ -88,7 +88,11 @@ import org.smartbit4all.api.org.SubjectContributionByGroup;
 import org.smartbit4all.api.org.SubjectContributionByUser;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.SubjectManagementApiImpl;
+import org.smartbit4all.api.org.UserSecurityCheckerApi;
+import org.smartbit4all.api.org.UserSecurityCheckerApiImpl;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.org.bean.UserLastAccess;
+import org.smartbit4all.api.org.bean.UserSecurityPolicy;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.sample.bean.SampleTimeBasedData;
@@ -278,6 +282,18 @@ public class PlatformApiConfig {
   @Primary
   public TreeSetupApi treeSetupApi() {
     return new TreeSetupApiImpl();
+  }
+
+  @Bean
+  UserSecurityCheckerApi userSecurityCheckerApi() {
+    return new UserSecurityCheckerApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<UserSecurityCheckerApi> userSecurityCheckerApiProvider(
+      UserSecurityCheckerApi api) {
+    return Invocations.asProvider(UserSecurityCheckerApi.class,
+        UserSecurityCheckerApi.class.getName(), api);
   }
 
   @Bean
@@ -729,6 +745,44 @@ public class PlatformApiConfig {
               .addPathItem(SearchConfigHierarchy.CODE));
       result.addDescriptor(entry);
     }
+
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(UserSecurityCheckerApi.USER_SECURITY_POLICIES)
+          .name(UserSecurityCheckerApi.MDM_NAME)
+          .adminGroupName(PlatformSecurityOption.userSecurityPolicyEditor.getName())
+          .editorViewName(PlatformViewNames.SECURITY_POLICY_EDITOR)
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .path(
+                  Arrays.asList(UserSecurityPolicy.NAME)))
+          .displayNameList(new LangString().defaultValue("User Security Policies")
+              .putValueByLocaleItem("hu", "Felhasználói biztonsági szabályzatok")
+              .putValueByLocaleItem("en", "User Security Policies"))
+          .displayNameForm(new LangString().defaultValue("User Security Policy")
+              .putValueByLocaleItem("hu", "Felhasználói biztonsági szabályzat")
+              .putValueByLocaleItem("en", "User Security Policy"))
+          .order(8L)
+          .typeQualifiedName(UserSecurityPolicy.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Name")
+                  .addPathItem(UserSecurityPolicy.NAME))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("inactivityLockoutDays")
+                  .addPathItem(UserSecurityPolicy.INACTIVITY_LOCKOUT_DAYS))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("passwordExpirationDays")
+                  .addPathItem(UserSecurityPolicy.PASSWORD_EXPIRATION_DAYS))
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("passwordReminderDays")
+                  .addPathItem(UserSecurityPolicy.PASSWORD_REMINDER_DAYS));
+      result.addDescriptor(entry);
+    }
     return result;
   }
 
@@ -950,6 +1004,11 @@ public class PlatformApiConfig {
   @Bean
   public ObjectReferenceConfigs objectReferenceConfigsPlatform() {
     return new ObjectReferenceConfigs()
+        .ref(User.class,
+            UserSecurityCheckerApi.LAST_ACCESS_IN_ORG,
+            UserLastAccess.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE)
         .ref(MDMDefinition.class,
             MDMDefinition.STATE,
             MDMDefinitionState.class,

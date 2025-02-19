@@ -106,6 +106,12 @@ public class PlatformSecurityOption implements SecurityOption {
           .description("Platform filter hierarchy descriptor editor")
           .subgroup(admin)
           .builtIn(true);
+  public static final SecurityGroup userSecurityPolicyEditor =
+      SecurityGroup.of(name("userSecurityPolicyEditor"))
+          .title("Platform user security policy editor")
+          .description("Plaform level user security policy editor")
+          .subgroup(admin)
+          .builtIn(true);
 
 
 }
