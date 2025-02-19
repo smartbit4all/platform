@@ -2,8 +2,8 @@ package org.smartbit4all.api.platformevent;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -104,7 +104,7 @@ public class PlatformEventBuilder {
     if (!ObjectUtils.isEmpty(this.exception)) {
       event.eventMessage(this.exception.getMessage());
       event.stackTrace(
-          List.of(exception.getStackTrace())
+          Arrays.asList(exception.getStackTrace())
               .stream()
               .map(StackTraceElement::toString)
               .collect(Collectors.toList()));
