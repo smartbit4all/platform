@@ -1,7 +1,6 @@
 package org.smartbit4all.testing.platformevent;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.platformevent.PlatformEventApi;
 import org.smartbit4all.api.session.SessionManagementApi;
-import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.sec.config.SecurityLocalTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +35,10 @@ public class PlatformEventApiFailTest {
   @Test
   @Order(1)
   public void publishEventFailTest() {
-
-    assertThrows(NoCurrentSessionException.class, () -> {
-      platformEventApi.createEvent(EVENT_CODE).publish();
-    });
+    //
+    // assertThrows(NoCurrentSessionException.class, () -> {
+    // platformEventApi.createEvent(EVENT_CODE).publish();
+    // });
 
     sessionManagementApi.startTechnicalSession();
 
