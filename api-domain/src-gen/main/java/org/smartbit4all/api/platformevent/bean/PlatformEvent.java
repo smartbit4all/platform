@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class PlatformEvent {
   private String eventMessage;
 
   public static final String STACK_TRACE = "stackTrace";
-  private String stackTrace;
+  private List<String> stackTrace = null;
 
   public static final String LEVEL = "level";
   private String level;
@@ -280,9 +281,17 @@ public class PlatformEvent {
   }
 
 
-  public PlatformEvent stackTrace(String stackTrace) {
+  public PlatformEvent stackTrace(List<String> stackTrace) {
     
     this.stackTrace = stackTrace;
+    return this;
+  }
+
+  public PlatformEvent addStackTraceItem(String stackTraceItem) {
+    if (this.stackTrace == null) {
+      this.stackTrace = new ArrayList<>();
+    }
+    this.stackTrace.add(stackTraceItem);
     return this;
   }
 
@@ -295,14 +304,14 @@ public class PlatformEvent {
   @JsonProperty(STACK_TRACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getStackTrace() {
+  public List<String> getStackTrace() {
     return stackTrace;
   }
 
 
   @JsonProperty(STACK_TRACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStackTrace(String stackTrace) {
+  public void setStackTrace(List<String> stackTrace) {
     this.stackTrace = stackTrace;
   }
 

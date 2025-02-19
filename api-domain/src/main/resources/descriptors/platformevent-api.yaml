@@ -33,7 +33,9 @@ components:
                 eventMessage:
                     type: string
                 stackTrace:
-                    type: string
+                    type: array
+                    items:
+                        type: string
                 level:
                     type: string
                 parameters:

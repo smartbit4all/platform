@@ -3,8 +3,10 @@ package org.smartbit4all.api.platformevent;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.platformevent.bean.PlatformEvent;
 import org.smartbit4all.api.session.SessionApi;
@@ -99,14 +101,18 @@ public class PlatformEventBuilder {
       event.eventCategory(this.eventCategory);
     }
 
-    if (!ObjectUtils.isEmpty(this.eventMessage)) {
-      event.eventMessage(this.eventMessage);
-    }
-
-    // Set exception, overwrite message if it was set
     if (!ObjectUtils.isEmpty(this.exception)) {
       event.eventMessage(this.exception.getMessage());
-      event.stackTrace(this.exception.getStackTrace().toString());
+      event.stackTrace(
+          List.of(exception.getStackTrace())
+              .stream()
+              .map(StackTraceElement::toString)
+              .collect(Collectors.toList()));
+    }
+
+    // Overwrite message if it was set by exception
+    if (!ObjectUtils.isEmpty(this.eventMessage)) {
+      event.eventMessage(this.eventMessage);
     }
 
     event.parameters(this.parameters);
