@@ -1,0 +1,47 @@
+openapi: 3.0.1
+info:
+    title: PlatformEvent api
+    description: PlatformEvent api...
+    termsOfService: ""
+    contact:
+        email: info@it4all.hu
+    version: 1.0.0
+tags:
+    - name: PlatformEvent
+paths: {}
+components:
+    schemas:
+        PlatformEvent:
+            type: object
+            properties:
+                uri:
+                    type: string
+                    format: uri
+                sessionUri:
+                    type: string
+                    format: uri
+                userUri:
+                    type: string
+                    format: uri
+                timestamp:
+                    type: string
+                    format: date-time
+                eventCode:
+                    type: string
+                eventCategory:
+                    type: string
+                eventMessage:
+                    type: string
+                stackTrace:
+                    type: string
+                level:
+                    type: string
+                parameters:
+                    type: object
+                    additionalProperties:
+                        type: object
+                relatedObjects:
+                    type: object
+                    additionalProperties:
+                        type: string
+                        format: uri
