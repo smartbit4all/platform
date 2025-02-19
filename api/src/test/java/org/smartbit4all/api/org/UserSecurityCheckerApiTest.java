@@ -50,13 +50,13 @@ class UserSecurityCheckerApiTest {
 
   @AfterAll
   static void tearDownAfterClass() throws Exception {
-    TestFileUtil.initTestDirectory();
+    TestFileUtil.clearTestDirectory();
   }
 
 
   @BeforeAll
   void init() throws IOException {
-    TestFileUtil.initTestDirectory();
+    TestFileUtil.clearTestDirectory();
   }
 
   @Test
