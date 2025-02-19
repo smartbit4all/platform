@@ -4,7 +4,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
-import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.platformevent.bean.PlatformEvent;
 import org.smartbit4all.api.session.SessionApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,7 @@ public class PlatformEventApiImpl
 
   private static final Logger log = LoggerFactory.getLogger(PlatformEventApiImpl.class);
 
-  @Autowired
-  private OrgApi orgApi;
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -44,7 +41,7 @@ public class PlatformEventApiImpl
   @Override
   public PlatformEventBuilder createEvent(String eventCode) {
 
-    PlatformEventBuilder platformEventBuilder = new PlatformEventBuilder(orgApi, sessionApi, this);
+    PlatformEventBuilder platformEventBuilder = new PlatformEventBuilder(sessionApi, this);
     platformEventBuilder.create(eventCode);
 
     return platformEventBuilder;

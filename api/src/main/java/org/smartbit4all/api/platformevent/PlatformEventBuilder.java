@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.platformevent.bean.PlatformEvent;
 import org.smartbit4all.api.session.SessionApi;
 import org.springframework.util.ObjectUtils;
 
 public class PlatformEventBuilder {
 
-  private final OrgApi orgApi;
   private final SessionApi sessionApi;
   private final PlatformEventApi platformEventApi;
 
@@ -30,13 +28,10 @@ public class PlatformEventBuilder {
   private Map<String, URI> relatedObjects;
 
 
-  PlatformEventBuilder(OrgApi orgApi, SessionApi sessionApi,
+  PlatformEventBuilder(SessionApi sessionApi,
       PlatformEventApi platformEventApi) {
-    Objects.requireNonNull(orgApi, "orgApi cannot be null!");
-    Objects.requireNonNull(sessionApi, "sessionApi cannot be null!");
     Objects.requireNonNull(platformEventApi, "platformEventApi cannot be null!");
 
-    this.orgApi = orgApi;
     this.sessionApi = sessionApi;
     this.platformEventApi = platformEventApi;
 
@@ -92,8 +87,11 @@ public class PlatformEventBuilder {
     Objects.requireNonNull(this.eventCode, "eventCode cannot be null!");
     PlatformEvent event = new PlatformEvent();
 
-    event.setSessionUri(this.sessionApi.getSessionUri());
-    event.setUserUri(this.sessionApi.getUserUri());
+    if (sessionApi != null) {
+      event.setSessionUri(this.sessionApi.getSessionUri());
+      event.setUserUri(this.sessionApi.getUserUri());
+    }
+
     event.setTimestamp(OffsetDateTime.now());
     event.eventCode(this.eventCode);
 
