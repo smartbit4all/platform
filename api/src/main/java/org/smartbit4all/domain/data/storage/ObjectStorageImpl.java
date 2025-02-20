@@ -14,9 +14,7 @@ import java.util.Objects;
 import java.util.Spliterators;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -472,8 +470,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
       @Override
       public boolean hasNext() {
-        if (finished)
+        if (finished) {
           return false;
+        }
         if (iterator.hasNext()) {
           nextItem = iterator.next();
           if (!predicate.test(nextItem)) {

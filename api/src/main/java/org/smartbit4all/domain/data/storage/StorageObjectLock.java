@@ -122,12 +122,30 @@ public final class StorageObjectLock implements Lock {
     if (entry == null) {
       if (entryReleased) {
         log.debug("released lock check, reattaching ({})", objectUri);
-        entry = lockReattacher.apply(this);
-        entryReleased = false;
+        boolean tryAgain = true;
+        int count = 0;
+        while (tryAgain) {
+          tryAgain = false;
+          if (count > 0) {
+            try {
+              Thread.sleep(2);
+            } catch (InterruptedException e) {
+              // NOP
+              break;
+            }
+          }
+          try {
+            entry = lockReattacher.apply(this);
+          } catch (StorageObjectLockEntryRemovingException e) {
+            count++;
+            tryAgain = true;
+          }
+        }
       }
       if (entry == null) {
         throw new IllegalStateException("The lock has been released already.");
       }
+      entryReleased = false;
     }
     return entry.ensurePhysicalLock(nowait);
   }

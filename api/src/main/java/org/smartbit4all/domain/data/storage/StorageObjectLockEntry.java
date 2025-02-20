@@ -133,15 +133,12 @@ final class StorageObjectLockEntry {
    * @throws InterruptedException, InterruptedException
    */
   StorageObjectLock getLock() throws StorageObjectLockEntryRemovingException, InterruptedException {
-    if (removing) {
-      throw new StorageObjectLockEntryRemovingException();
-    }
+    checkIfRemoving();
     while (!mutexInstanceRegister.tryLock(10, TimeUnit.MILLISECONDS)) {
-      if (removing) {
-        throw new StorageObjectLockEntryRemovingException();
-      }
+      checkIfRemoving();
     }
     try {
+      checkIfRemoving();
       Long id = idSequence++;
       StorageObjectLock result =
           new StorageObjectLock(this, id, objectURI, unlocker, lockReattacher);
@@ -149,6 +146,12 @@ final class StorageObjectLockEntry {
       return result;
     } finally {
       mutexInstanceRegister.unlock();
+    }
+  }
+
+  private void checkIfRemoving() {
+    if (removing) {
+      throw new StorageObjectLockEntryRemovingException();
     }
   }
 
@@ -193,20 +196,21 @@ final class StorageObjectLockEntry {
       if (instanceRegister.isEmpty()) {
         removing = true;
       }
+      if (removing) {
+        if (releaser != null && physicalLock != null) {
+          releaser.accept(physicalLock);
+        }
+        lockRemover.accept(objectURI);
+      }
     } finally {
       mutexInstanceRegister.unlock();
-    }
-    if (removing) {
-      if (releaser != null && physicalLock != null) {
-        releaser.accept(physicalLock);
-      }
-      lockRemover.accept(objectURI);
     }
   }
 
   void reattachLock(StorageObjectLock lock) {
     mutexInstanceRegister.lock();
     try {
+      checkIfRemoving();
       Long id = lock.getId();
       // check if lock.id is below this entry's idSequence. if not, generate new id
       if (id >= idSequence) {
