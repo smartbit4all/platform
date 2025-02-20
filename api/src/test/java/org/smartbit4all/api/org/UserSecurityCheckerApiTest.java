@@ -57,6 +57,8 @@ class UserSecurityCheckerApiTest {
   @BeforeAll
   void init() throws IOException {
     TestFileUtil.clearTestDirectory();
+    TestFileUtil.initTestDirectory();
+    orgApi.getActiveUsers().stream().forEach(user -> orgApi.removeUser(user.getUri()));;
   }
 
   @Test
