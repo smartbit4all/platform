@@ -17,7 +17,6 @@ import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.org.UserSecurityCheckerApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -176,8 +175,6 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       updateUserWithGroups(clientModel, user);
     } else {
       userUri = orgApi.saveUser(user);
-      userUri = userSecurityCheckerApi.updateOrCreateUserLastAccess(userUri,
-          UserLastAccess.REGISTRATION_DATE);
       invocationApi
           .publisher(UserEditorPageApi.class,
               OrgSubscriberApi.class, USER_REGISTERED)

@@ -25,12 +25,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(classes = {
     OrgApiTestConfig.class
-})
+
+}, properties = {"user.security.policy.scheduling:43200000"})
 
 class UserSecurityCheckerApiTest {
 
   @Autowired
   private UserSecurityCheckerApi userSecurityCheckerApi;
+
+  @Autowired
+  private UserSecurityCheckerSchedulingApi userSecurityCheckerSchedulingApi;
 
   @Autowired
   private OrgApi orgApi;
@@ -85,23 +89,23 @@ class UserSecurityCheckerApiTest {
 
     userSecurityCheckerApi.updateOrCreateUserLastAccess(testUserUriWithouthLogin,
         UserLastAccess.REGISTRATION_DATE);
-    userSecurityCheckerApi.checkUsersBySecurityPolicy();
+    userSecurityCheckerSchedulingApi.checkUsersBySecurityPolicy();
 
     assertEquals(2, orgApi.getActiveUsers().size());
     OffsetDateTime now = OffsetDateTime.now(timeManagementService.getSynchronizedClock());
     updateUserWithoutLogin(now);
-    userSecurityCheckerApi.checkUsersBySecurityPolicy();
+    userSecurityCheckerSchedulingApi.checkUsersBySecurityPolicy();
 
     assertEquals(1, orgApi.getActiveUsers().size());
 
     updateUserWithLogin(now);
 
-    userSecurityCheckerApi.checkUsersBySecurityPolicy();
+    userSecurityCheckerSchedulingApi.checkUsersBySecurityPolicy();
     assertEquals(1, orgApi.getActiveUsers().size());
 
     updateUserWithExpiredPassword(now);
 
-    userSecurityCheckerApi.checkUsersBySecurityPolicy();
+    userSecurityCheckerSchedulingApi.checkUsersBySecurityPolicy();
     assertEquals(0, orgApi.getActiveUsers().size());
   }
 

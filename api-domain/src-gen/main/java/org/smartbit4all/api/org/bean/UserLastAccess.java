@@ -35,7 +35,10 @@ import jakarta.validation.Valid;
   UserLastAccess.URI,
   UserLastAccess.LAST_LOGIN,
   UserLastAccess.LAST_PASSWORD_CHANGE,
-  UserLastAccess.REGISTRATION_DATE
+  UserLastAccess.REGISTRATION_DATE,
+  UserLastAccess.LOGIN_ATTEMPT_COUNTER,
+  UserLastAccess.LAST_LOGIN_ATTEMPT,
+  UserLastAccess.BLOCKING_DATE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UserLastAccess {
@@ -50,6 +53,15 @@ public class UserLastAccess {
 
   public static final String REGISTRATION_DATE = "registrationDate";
   private OffsetDateTime registrationDate;
+
+  public static final String LOGIN_ATTEMPT_COUNTER = "loginAttemptCounter";
+  private Long loginAttemptCounter;
+
+  public static final String LAST_LOGIN_ATTEMPT = "lastLoginAttempt";
+  private OffsetDateTime lastLoginAttempt;
+
+  public static final String BLOCKING_DATE = "blockingDate";
+  private OffsetDateTime blockingDate;
 
   public UserLastAccess() {
   }
@@ -166,6 +178,89 @@ public class UserLastAccess {
     this.registrationDate = registrationDate;
   }
 
+  public UserLastAccess loginAttemptCounter(Long loginAttemptCounter) {
+    
+    this.loginAttemptCounter = loginAttemptCounter;
+    return this;
+  }
+
+  /**
+   * Get loginAttemptCounter
+   * @return loginAttemptCounter
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(LOGIN_ATTEMPT_COUNTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getLoginAttemptCounter() {
+    return loginAttemptCounter;
+  }
+
+
+  @JsonProperty(LOGIN_ATTEMPT_COUNTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLoginAttemptCounter(Long loginAttemptCounter) {
+    this.loginAttemptCounter = loginAttemptCounter;
+  }
+
+  public UserLastAccess lastLoginAttempt(OffsetDateTime lastLoginAttempt) {
+    
+    this.lastLoginAttempt = lastLoginAttempt;
+    return this;
+  }
+
+  /**
+   * Get lastLoginAttempt
+   * @return lastLoginAttempt
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(LAST_LOGIN_ATTEMPT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getLastLoginAttempt() {
+    return lastLoginAttempt;
+  }
+
+
+  @JsonProperty(LAST_LOGIN_ATTEMPT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLastLoginAttempt(OffsetDateTime lastLoginAttempt) {
+    this.lastLoginAttempt = lastLoginAttempt;
+  }
+
+  public UserLastAccess blockingDate(OffsetDateTime blockingDate) {
+    
+    this.blockingDate = blockingDate;
+    return this;
+  }
+
+  /**
+   * Get blockingDate
+   * @return blockingDate
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(BLOCKING_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getBlockingDate() {
+    return blockingDate;
+  }
+
+
+  @JsonProperty(BLOCKING_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBlockingDate(OffsetDateTime blockingDate) {
+    this.blockingDate = blockingDate;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -178,12 +273,15 @@ public class UserLastAccess {
     return Objects.equals(this.uri, userLastAccess.uri) &&
         Objects.equals(this.lastLogin, userLastAccess.lastLogin) &&
         Objects.equals(this.lastPasswordChange, userLastAccess.lastPasswordChange) &&
-        Objects.equals(this.registrationDate, userLastAccess.registrationDate);
+        Objects.equals(this.registrationDate, userLastAccess.registrationDate) &&
+        Objects.equals(this.loginAttemptCounter, userLastAccess.loginAttemptCounter) &&
+        Objects.equals(this.lastLoginAttempt, userLastAccess.lastLoginAttempt) &&
+        Objects.equals(this.blockingDate, userLastAccess.blockingDate);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, lastLogin, lastPasswordChange, registrationDate);
+    return Objects.hash(uri, lastLogin, lastPasswordChange, registrationDate, loginAttemptCounter, lastLoginAttempt, blockingDate);
   }
 
   @Override
@@ -194,6 +292,9 @@ public class UserLastAccess {
     sb.append("    lastLogin: ").append(toIndentedString(lastLogin)).append("\n");
     sb.append("    lastPasswordChange: ").append(toIndentedString(lastPasswordChange)).append("\n");
     sb.append("    registrationDate: ").append(toIndentedString(registrationDate)).append("\n");
+    sb.append("    loginAttemptCounter: ").append(toIndentedString(loginAttemptCounter)).append("\n");
+    sb.append("    lastLoginAttempt: ").append(toIndentedString(lastLoginAttempt)).append("\n");
+    sb.append("    blockingDate: ").append(toIndentedString(blockingDate)).append("\n");
     sb.append("}");
     return sb.toString();
   }

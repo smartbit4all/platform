@@ -2,6 +2,7 @@ package org.smartbit4all.api.localauthentication.restserver.impl;
 
 import org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest;
 import org.smartbit4all.api.localauthentication.restserver.LocalAuthenticationApiDelegate;
+import org.smartbit4all.sec.localauth.BruteForceLockException;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,8 @@ public class LocalAuthenticationApiDelegateImpl implements LocalAuthenticationAp
       localAuthentication.login(username, password);
     } catch (BadCredentialsException e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    } catch (BruteForceLockException e) {
+      return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

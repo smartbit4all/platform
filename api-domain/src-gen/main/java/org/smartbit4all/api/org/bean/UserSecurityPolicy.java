@@ -36,6 +36,8 @@ import jakarta.validation.Valid;
   UserSecurityPolicy.INACTIVITY_LOCKOUT_DAYS,
   UserSecurityPolicy.PASSWORD_EXPIRATION_DAYS,
   UserSecurityPolicy.PASSWORD_REMINDER_DAYS,
+  UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT,
+  UserSecurityPolicy.LOGIN_LOCKOUT_PERIOD,
   UserSecurityPolicy.USER_GROUPS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -54,6 +56,12 @@ public class UserSecurityPolicy {
 
   public static final String PASSWORD_REMINDER_DAYS = "passwordReminderDays";
   private Long passwordReminderDays;
+
+  public static final String LOGIN_ATTEMPT_LIMIT = "loginAttemptLimit";
+  private Long loginAttemptLimit;
+
+  public static final String LOGIN_LOCKOUT_PERIOD = "loginLockoutPeriod";
+  private Long loginLockoutPeriod;
 
   public static final String USER_GROUPS = "userGroups";
   private URI userGroups;
@@ -197,6 +205,60 @@ public class UserSecurityPolicy {
     this.passwordReminderDays = passwordReminderDays;
   }
 
+  public UserSecurityPolicy loginAttemptLimit(Long loginAttemptLimit) {
+    
+    this.loginAttemptLimit = loginAttemptLimit;
+    return this;
+  }
+
+  /**
+   * Get loginAttemptLimit
+   * @return loginAttemptLimit
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(LOGIN_ATTEMPT_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getLoginAttemptLimit() {
+    return loginAttemptLimit;
+  }
+
+
+  @JsonProperty(LOGIN_ATTEMPT_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLoginAttemptLimit(Long loginAttemptLimit) {
+    this.loginAttemptLimit = loginAttemptLimit;
+  }
+
+  public UserSecurityPolicy loginLockoutPeriod(Long loginLockoutPeriod) {
+    
+    this.loginLockoutPeriod = loginLockoutPeriod;
+    return this;
+  }
+
+  /**
+   * Get loginLockoutPeriod
+   * @return loginLockoutPeriod
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(LOGIN_LOCKOUT_PERIOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getLoginLockoutPeriod() {
+    return loginLockoutPeriod;
+  }
+
+
+  @JsonProperty(LOGIN_LOCKOUT_PERIOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLoginLockoutPeriod(Long loginLockoutPeriod) {
+    this.loginLockoutPeriod = loginLockoutPeriod;
+  }
+
   public UserSecurityPolicy userGroups(URI userGroups) {
     
     this.userGroups = userGroups;
@@ -239,12 +301,14 @@ public class UserSecurityPolicy {
         Objects.equals(this.inactivityLockoutDays, userSecurityPolicy.inactivityLockoutDays) &&
         Objects.equals(this.passwordExpirationDays, userSecurityPolicy.passwordExpirationDays) &&
         Objects.equals(this.passwordReminderDays, userSecurityPolicy.passwordReminderDays) &&
+        Objects.equals(this.loginAttemptLimit, userSecurityPolicy.loginAttemptLimit) &&
+        Objects.equals(this.loginLockoutPeriod, userSecurityPolicy.loginLockoutPeriod) &&
         Objects.equals(this.userGroups, userSecurityPolicy.userGroups);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, inactivityLockoutDays, passwordExpirationDays, passwordReminderDays, userGroups);
+    return Objects.hash(uri, name, inactivityLockoutDays, passwordExpirationDays, passwordReminderDays, loginAttemptLimit, loginLockoutPeriod, userGroups);
   }
 
   @Override
@@ -256,6 +320,8 @@ public class UserSecurityPolicy {
     sb.append("    inactivityLockoutDays: ").append(toIndentedString(inactivityLockoutDays)).append("\n");
     sb.append("    passwordExpirationDays: ").append(toIndentedString(passwordExpirationDays)).append("\n");
     sb.append("    passwordReminderDays: ").append(toIndentedString(passwordReminderDays)).append("\n");
+    sb.append("    loginAttemptLimit: ").append(toIndentedString(loginAttemptLimit)).append("\n");
+    sb.append("    loginLockoutPeriod: ").append(toIndentedString(loginLockoutPeriod)).append("\n");
     sb.append("    userGroups: ").append(toIndentedString(userGroups)).append("\n");
     sb.append("}");
     return sb.toString();

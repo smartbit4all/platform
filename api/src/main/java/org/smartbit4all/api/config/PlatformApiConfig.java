@@ -90,6 +90,8 @@ import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.SubjectManagementApiImpl;
 import org.smartbit4all.api.org.UserSecurityCheckerApi;
 import org.smartbit4all.api.org.UserSecurityCheckerApiImpl;
+import org.smartbit4all.api.org.UserSecurityCheckerSchedulingApi;
+import org.smartbit4all.api.org.UserSecurityCheckerSchedulingApiImpl;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.org.bean.UserSecurityPolicy;
@@ -167,6 +169,7 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -294,6 +297,20 @@ public class PlatformApiConfig {
       UserSecurityCheckerApi api) {
     return Invocations.asProvider(UserSecurityCheckerApi.class,
         UserSecurityCheckerApi.class.getName(), api);
+  }
+
+  @Bean
+  @ConditionalOnProperty("user.security.policy.scheduling")
+  UserSecurityCheckerSchedulingApi userSecurityCheckerSchedulingApi() {
+    return new UserSecurityCheckerSchedulingApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnProperty("user.security.policy.scheduling")
+  public ProviderApiInvocationHandler<UserSecurityCheckerSchedulingApi> userSecurityCheckerSchedulingApiProvider(
+      UserSecurityCheckerSchedulingApi api) {
+    return Invocations.asProvider(UserSecurityCheckerSchedulingApi.class,
+        UserSecurityCheckerSchedulingApi.class.getName(), api);
   }
 
   @Bean

@@ -5,6 +5,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.UserSecurityCheckerApi;
 import org.smartbit4all.api.org.bean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,6 +23,9 @@ import org.springframework.util.ObjectUtils;
  */
 public class LocalAuthenticationProvider implements AuthenticationProvider {
 
+  public static final String LOGIN_FAILED =
+      "Unknown or inactivated user or invalid password!";
+
   private static final Logger log = LoggerFactory.getLogger(LocalAuthenticationProvider.class);
 
   @Autowired
@@ -29,6 +33,9 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private UserSecurityCheckerApi userSecurityCheckerApi;
 
   private Function<User, Collection<GrantedAuthority>> roleProvider =
       u -> AuthorityUtils.NO_AUTHORITIES;
@@ -40,11 +47,19 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
 
     User user = orgApi.getUserByUsername(username);
 
+    if (userSecurityCheckerApi.isUserBlocked(user.getUri())) {
+      log.debug(
+          "Login attempt has failed because user blocked [{}].",
+          username);
+      throw new BruteForceLockException("User blocked!");
+
+    }
+
     if (isUserWithPasswordInvalid(user, password)) {
       log.debug(
           "Login attempt has failed because of bad credentials with user [{}]. Or user is inactivated or does not exist.",
           username);
-      throw new BadCredentialsException("Unknown or inactivated user or invalid password!");
+      throw new BadCredentialsException(LOGIN_FAILED);
     }
 
     return new UsernamePasswordAuthenticationToken(user, "", roleProvider.apply(user));

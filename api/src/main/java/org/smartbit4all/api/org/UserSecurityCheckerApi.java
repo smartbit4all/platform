@@ -24,9 +24,16 @@ public interface UserSecurityCheckerApi {
 
   void updateOrCreateUserLastAccess(ObjectNode userNode, String path);
 
+  URI resetLoginAttemptAndBlockDate(URI userUri);
+
   boolean shouldRemindToChangePassword(URI userUri);
 
   void checkUsersBySecurityPolicy();
+
+  boolean isUserBlocked(URI userUri);
+
+  URI increaseLoginAttemptAndCheck(String userName);
+
 
 
 }

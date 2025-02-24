@@ -18,7 +18,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ObjectUtils;
 
 public class UserSecurityCheckerApiImpl implements UserSecurityCheckerApi {
@@ -61,7 +60,6 @@ public class UserSecurityCheckerApiImpl implements UserSecurityCheckerApi {
     accessRef.set(lastAccessNode);
   }
 
-
   @Override
   public boolean shouldRemindToChangePassword(URI userUri) {
     MDMEntryApi mdmEntryApi =
@@ -89,7 +87,155 @@ public class UserSecurityCheckerApiImpl implements UserSecurityCheckerApi {
   }
 
   @Override
-  @Scheduled(fixedDelayString = "${user.security.policy.scheduling:43200000}")
+  public URI resetLoginAttemptAndBlockDate(URI userUri) {
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    ObjectNodeReference accessRef = userNode.ref(LAST_ACCESS_IN_ORG);
+    ObjectNode lastAccessNode;
+    if (accessRef.isPresent()) {
+      lastAccessNode = accessRef.get();
+    } else {
+      lastAccessNode =
+          objectApi.create(SCHEMA, new UserLastAccess());
+    }
+    lastAccessNode.setValue(OffsetDateTime.now(timeManagementService.getSynchronizedClock()),
+        UserLastAccess.LAST_LOGIN);
+    setBlockingValues(lastAccessNode);
+    accessRef.set(lastAccessNode);
+    return objectApi.save(userNode);
+  }
+
+  private void setBlockingValues(ObjectNode lastAccessNode) {
+    lastAccessNode.setValue(null,
+        UserLastAccess.BLOCKING_DATE);
+    lastAccessNode.setValue(0l,
+        UserLastAccess.LOGIN_ATTEMPT_COUNTER);
+  }
+
+  @Override
+  public boolean isUserBlocked(URI userUri) {
+    MDMEntryApi mdmEntryApi =
+        mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            MDM_NAME);
+
+    if (!mdmEntryApi.getList().exists() || ObjectUtils.isEmpty(mdmEntryApi.getList().uris())) {
+      return false;
+    }
+
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    List<ObjectNode> possiblePoliciesList = getPoliciesByUser(userUri, mdmEntryApi);
+
+    ObjectNode highSecurityPolicy =
+        getHighSecurityPolicy(possiblePoliciesList, UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT);
+
+    if (ObjectUtils.isEmpty(highSecurityPolicy)) {
+      return false;
+    }
+    ObjectNodeReference accessRef = userNode.ref(LAST_ACCESS_IN_ORG);
+    if (accessRef.isPresent()) {
+      ObjectNode lastAccessNode = accessRef.get();
+      OffsetDateTime blockingDate =
+          lastAccessNode.getValue(OffsetDateTime.class, UserLastAccess.BLOCKING_DATE);
+      if (blockingDate == null) {
+        return false;
+      }
+      Long lockoutPeriod =
+          highSecurityPolicy.getValue(Long.class, UserSecurityPolicy.LOGIN_LOCKOUT_PERIOD)
+              .longValue();
+
+      OffsetDateTime currentDate = OffsetDateTime.now(timeManagementService.getSynchronizedClock());
+      long minutesSinceUserBlocked = ChronoUnit.MINUTES.between(blockingDate, currentDate);
+      if (minutesSinceUserBlocked <= lockoutPeriod) {
+        return true;
+      }
+
+      setBlockingValues(lastAccessNode);
+      accessRef.set(lastAccessNode);
+      objectApi.save(userNode);
+    }
+    return false;
+  }
+
+
+
+  @Override
+  public URI increaseLoginAttemptAndCheck(String userName) {
+    User user = orgApi.getUserByUsername(userName);
+    if (user != null && Boolean.FALSE.equals(user.getInactive())) {
+      MDMEntryApi mdmEntryApi =
+          mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+              MDM_NAME);
+
+      if (!mdmEntryApi.getList().exists() || ObjectUtils.isEmpty(mdmEntryApi.getList().uris())) {
+        return null;
+      }
+
+      URI userUri = user.getUri();
+      ObjectNode userNode = objectApi.loadLatest(userUri);
+      List<ObjectNode> possiblePoliciesList = getPoliciesByUser(userUri, mdmEntryApi);
+
+      ObjectNode highSecurityPolicy =
+          getHighSecurityPolicy(possiblePoliciesList, UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT);
+
+      if (ObjectUtils.isEmpty(highSecurityPolicy)) {
+        return null;
+      }
+      ObjectNodeReference accessRef = userNode.ref(LAST_ACCESS_IN_ORG);
+      if (accessRef.isPresent()) {
+        ObjectNode lastAccessNode = accessRef.get();
+
+        Long loginAttemptCounter =
+            calculateLoginAttemptNumber(lastAccessNode, highSecurityPolicy);
+        Long loginAttemptLimit =
+            highSecurityPolicy.getValue(Long.class, UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT);
+        if (ObjectUtils.isEmpty(loginAttemptLimit)) {
+          return null;
+        }
+        int compareResult = Long.compare(loginAttemptCounter, loginAttemptLimit);
+        if (compareResult == 0 || compareResult > 0) {
+          lastAccessNode.setValue(OffsetDateTime.now(timeManagementService.getSynchronizedClock()),
+              UserLastAccess.BLOCKING_DATE);
+        }
+
+        lastAccessNode.setValue(loginAttemptCounter, UserLastAccess.LOGIN_ATTEMPT_COUNTER);
+        lastAccessNode.setValue(OffsetDateTime.now(timeManagementService.getSynchronizedClock()),
+            UserLastAccess.LAST_LOGIN_ATTEMPT);
+        accessRef.set(lastAccessNode);
+        return objectApi.save(userNode);
+      }
+    }
+    return null;
+  }
+
+  private Long calculateLoginAttemptNumber(ObjectNode lastAccessNode,
+      ObjectNode highSecurityPolicy) {
+    Long loginAttemptCounter =
+        lastAccessNode.getValue(Long.class, UserLastAccess.LOGIN_ATTEMPT_COUNTER);
+    OffsetDateTime lastLoginAttempt =
+        lastAccessNode.getValue(OffsetDateTime.class, UserLastAccess.LAST_LOGIN_ATTEMPT);
+
+    if (!ObjectUtils.isEmpty(lastLoginAttempt)) {
+      Long lockoutPeriod =
+          highSecurityPolicy.getValue(Long.class, UserSecurityPolicy.LOGIN_LOCKOUT_PERIOD);
+      if (lockoutPeriod != null) {
+        long minutesSinceUserBlocked = ChronoUnit.MINUTES.between(lastLoginAttempt,
+            OffsetDateTime.now(timeManagementService.getSynchronizedClock()));
+        if (minutesSinceUserBlocked >= lockoutPeriod) {
+          return 1L;
+        }
+      }
+
+    }
+
+    if (loginAttemptCounter == null) {
+      loginAttemptCounter = 1L;
+    } else {
+      loginAttemptCounter++;
+    }
+    return loginAttemptCounter;
+  }
+
+
+  @Override
   public void checkUsersBySecurityPolicy() {
     MDMEntryApi mdmEntryApi =
         mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,

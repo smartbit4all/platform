@@ -54,6 +54,12 @@ public class UserSecurityPolicyEditorPageApiImpl extends MDMEntryEditPageApiImpl
             ObjectLayoutBuilder
                 .textfieldNumber(UserSecurityPolicy.PASSWORD_REMINDER_DAYS,
                     localeSettingApi.get(UserSecurityPolicy.PASSWORD_REMINDER_DAYS)),
+            ObjectLayoutBuilder
+                .textfieldNumber(UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT,
+                    localeSettingApi.get(UserSecurityPolicy.LOGIN_ATTEMPT_LIMIT)),
+            ObjectLayoutBuilder
+                .textfieldNumber(UserSecurityPolicy.LOGIN_LOCKOUT_PERIOD,
+                    localeSettingApi.get(UserSecurityPolicy.LOGIN_LOCKOUT_PERIOD)),
             ObjectLayoutBuilder.multiSelectCombobox(
                 widgetKey(UserSecurityPolicy.USER_GROUPS),
                 localeSettingApi.get(UserSecurityPolicy.USER_GROUPS),

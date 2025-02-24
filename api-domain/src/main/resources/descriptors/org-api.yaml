@@ -666,6 +666,15 @@ components:
         registrationDate:
           type: string
           format: date-time
+        loginAttemptCounter:
+          type: integer
+          format: int64
+        lastLoginAttempt:
+          type: string
+          format: date-time
+        blockingDate:
+          type: string
+          format: date-time
     UserSecurityPolicy:
       type: object
       properties:
@@ -681,6 +690,12 @@ components:
           type: integer
           format: int64
         passwordReminderDays:
+          type: integer
+          format: int64
+        loginAttemptLimit:
+          type: integer
+          format: int64
+        loginLockoutPeriod:
           type: integer
           format: int64
         userGroups:
