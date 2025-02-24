@@ -260,7 +260,13 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Override
   public void invokeAsync(InvocationRequest request, String channel) {
-    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel);
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, null);
+  }
+
+  @Override
+  public void invokeAsyncAndWait(InvocationRequest request, String channel,
+      AsyncCompletableFuture future) {
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, future);
   }
 
   @Override
@@ -333,7 +339,7 @@ public class InvocationApiImpl implements InvocationApi {
   @Override
   public void invokeAsyncBatch(InvocationRequestBatch batch, String channel) {
     batch.getRequests().stream().forEach(r -> {
-      invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel);
+      invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel, null);
     });
   }
 

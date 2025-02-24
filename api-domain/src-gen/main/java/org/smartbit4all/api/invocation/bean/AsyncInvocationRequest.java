@@ -64,7 +64,7 @@ public class AsyncInvocationRequest {
   private InvocationRequest evaluate;
 
   public static final String AND_THEN = "andThen";
-  private List<URI> andThen = null;
+  private List<URI> andThen = new ArrayList<>();
 
   public static final String RESULTS = "results";
   private List<InvocationResult> results = null;
@@ -82,11 +82,12 @@ public class AsyncInvocationRequest {
    * Get uri
    * @return uri
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getUri() {
     return uri;
@@ -94,7 +95,7 @@ public class AsyncInvocationRequest {
 
 
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -138,10 +139,11 @@ public class AsyncInvocationRequest {
    * The name of the channel handles the given invocation.
    * @return channel
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the channel handles the given invocation.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the channel handles the given invocation.")
   @JsonProperty(CHANNEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getChannel() {
     return channel;
@@ -149,7 +151,7 @@ public class AsyncInvocationRequest {
 
 
   @JsonProperty(CHANNEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setChannel(String channel) {
     this.channel = channel;
   }
@@ -165,11 +167,12 @@ public class AsyncInvocationRequest {
    * Get request
    * @return request
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(REQUEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public InvocationRequest getRequest() {
     return request;
@@ -177,7 +180,7 @@ public class AsyncInvocationRequest {
 
 
   @JsonProperty(REQUEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRequest(InvocationRequest request) {
     this.request = request;
   }
@@ -218,9 +221,6 @@ public class AsyncInvocationRequest {
   }
 
   public AsyncInvocationRequest addAndThenItem(URI andThenItem) {
-    if (this.andThen == null) {
-      this.andThen = new ArrayList<>();
-    }
     this.andThen.add(andThenItem);
     return this;
   }
@@ -229,11 +229,12 @@ public class AsyncInvocationRequest {
    * The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. 
    * @return andThen
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. ")
+  @ApiModelProperty(required = true, value = "The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. ")
   @JsonProperty(AND_THEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<URI> getAndThen() {
     return andThen;
@@ -241,7 +242,7 @@ public class AsyncInvocationRequest {
 
 
   @JsonProperty(AND_THEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAndThen(List<URI> andThen) {
     this.andThen = andThen;
   }

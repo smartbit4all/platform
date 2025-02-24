@@ -1,6 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ public class AsyncInvocationRequestEntry {
 
   AsyncInvocationChannel channel;
   AsyncInvocationRequest request;
-  CompletableFuture<InvocationResult> future;
+  AsyncCompletableFuture future;
 
 
   public AsyncInvocationRequestEntry(AsyncInvocationChannel channel,
@@ -28,7 +27,7 @@ public class AsyncInvocationRequestEntry {
   }
 
   public AsyncInvocationRequestEntry(AsyncInvocationChannel channel,
-      AsyncInvocationRequest request, CompletableFuture<InvocationResult> future) {
+      AsyncInvocationRequest request, AsyncCompletableFuture future) {
     this.channel = channel;
     this.request = request;
     this.future = future;
@@ -38,6 +37,9 @@ public class AsyncInvocationRequestEntry {
     if (channel != null && request != null) {
       if (log.isDebugEnabled()) {
         log.debug("Invoking: {}", toLog());
+      }
+      if (future != null) {
+        future.setReadyToWait(true);
       }
       Future<InvocationResult> invokeFuture = channel.invoke(this);
       if (future != null) {
