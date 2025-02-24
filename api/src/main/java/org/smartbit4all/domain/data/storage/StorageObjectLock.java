@@ -147,7 +147,12 @@ public final class StorageObjectLock implements Lock {
       }
       entryReleased = false;
     }
-    return entry.ensurePhysicalLock(nowait);
+    try {
+      return entry.ensurePhysicalLock(nowait);
+    } catch (StorageObjectLockEntryRemovingException e) {
+      release();
+      return check(nowait);
+    }
   }
 
   @Override
