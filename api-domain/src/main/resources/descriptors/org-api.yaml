@@ -675,21 +675,31 @@ components:
         lastLogin:
           type: string
           format: date-time
+          description: |
+            Last success login date
         lastPasswordChange:
           type: string
           format: date-time
+          description: |
+            Last password change date
         registrationDate:
           type: string
           format: date-time
         loginAttemptCounter:
           type: integer
           format: int64
+          description: |
+            Number of failed logins. If login is successful, the counter is reset
         lastLoginAttempt:
           type: string
           format: date-time
+          description: |
+            Date of last failed login. If login is successful, this is reset
         blockingDate:
           type: string
           format: date-time
+          description: |
+            Start date of the ban.
     UserSecurityPolicy:
       type: object
       properties:
@@ -713,6 +723,8 @@ components:
         loginLockoutPeriod:
           type: integer
           format: int64
+          description: |
+            This period must be given in minutes.
         userGroups:
             type: string
             format: uri
