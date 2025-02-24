@@ -302,6 +302,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     setSessionParameterInternal(sessionUri, key, value, String.class);
   }
 
+  @Override
+  public void setSessionParameters(URI sessionUri, Map<String, String> parameters) {
+    setSessionParametersInternal(sessionUri, parameters, String.class);
+  }
+
   private void setSessionParameterInternal(URI sessionUri, String key, String value,
       Class<?> clazz) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
@@ -309,6 +314,21 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     updateSession(sessionUri, s -> s
         .putParametersItem(key, value)
         .putParameterClassesItem(key, clazz.getName()));
+  }
+
+  private void setSessionParametersInternal(URI sessionUri, Map<String, String> parameters,
+      Class<?> clazz) {
+    if (parameters == null || parameters.isEmpty()) {
+      return;
+    }
+
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    updateSession(sessionUri, s -> {
+      parameters.entrySet().stream().forEach(e -> s
+          .putParametersItem(e.getKey(), e.getValue())
+          .putParameterClassesItem(e.getKey(), clazz.getName()));
+      return s;
+    });
   }
 
   @Override

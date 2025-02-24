@@ -54,6 +54,9 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired(required = false)
+  private RestInvocationRequestCustApi customizer;
+
   @Override
   public InvocationParameter invoke(ServiceConnection serviceConnection,
       InvocationRequest request) throws ApiNotFoundException {
@@ -81,6 +84,10 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
       String str = username + ":" + (password == null ? "" : password);
       headers.add(HttpHeaders.AUTHORIZATION,
           "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    if (customizer != null) {
+      customizer.customizeRequest(request, headers);
     }
 
     final BodyBuilder requestBuilder = RequestEntity
