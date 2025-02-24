@@ -44,7 +44,7 @@ public interface InvocationRegisterApi {
    * @param channel The channel to use for saving.
    */
   void saveAndEnqueueAsyncInvocationRequest(InvocationRequest request,
-      String channel);
+      String channel, AsyncCompletableFuture future);
 
   /**
    * Save the invocation request into the asynchronous channel for persisted execution if it is

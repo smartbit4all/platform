@@ -47,6 +47,7 @@ import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Strings;
 
 /**
@@ -259,7 +260,13 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Override
   public void invokeAsync(InvocationRequest request, String channel) {
-    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel);
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, null);
+  }
+
+  @Override
+  public void invokeAsyncAndWait(InvocationRequest request, String channel,
+      AsyncCompletableFuture future) {
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, future);
   }
 
   @Override
@@ -331,8 +338,8 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Override
   public void invokeAsyncBatch(InvocationBatchRequest batch, String channel) {
-    batch.getRequests().forEach(r -> {
-      invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel);
+    batch.getRequests().stream().forEach(r -> {
+      invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel, null);
     });
   }
 
@@ -497,9 +504,9 @@ public class InvocationApiImpl implements InvocationApi {
     }
   }
 
-  // @Transactional // TODO ??
+  @Transactional
   @Override
-  public void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
+  public InvocationResult executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
     AsyncInvocationRequest request = requestEntry.request;
     InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
     try {
@@ -556,5 +563,6 @@ public class InvocationApiImpl implements InvocationApi {
       // Save the result into the asynchronous request. It will result a call to the listeners.
       invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
     }
+    return result;
   }
 }

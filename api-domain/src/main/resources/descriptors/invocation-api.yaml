@@ -351,6 +351,7 @@ components:
         object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed
         then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is
         awaited by a logic then it can subscribe for the execution result.
+      required: [uri, channel, request, andThen, result]
       properties:
         uri:
           type: string

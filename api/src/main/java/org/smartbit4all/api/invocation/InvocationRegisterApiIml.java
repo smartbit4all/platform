@@ -338,9 +338,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             "refreshAsyncChannlers");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
-      if (lock instanceof StorageObjectLock) {
-        ((StorageObjectLock) lock).release();
-      }
       return;
     }
     try {
@@ -439,7 +436,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * channels managed by the runtimes. The current implementation detects the inactive runtimes and
    * pick up their lost invocations.
    *
-   * @param activeRuntimes
+   * @param activeRuntimes the currently known active {@link ApplicationRuntime}s, not null
    */
   private void manageAsyncChannels(List<ApplicationRuntime> activeRuntimes) {
     URI runtimeUri = applicationRuntimeApi.self().getUri();
@@ -503,9 +500,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             "readScheduledInvocations-");
     Lock lock = objectApi.getLock(lockUri);
     if (!lock.tryLock()) {
-      if (lock instanceof StorageObjectLock) {
-        ((StorageObjectLock) lock).release();
-      }
       return;
     }
     try {
@@ -525,6 +519,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     } finally {
       lock.unlock();
     }
+  }
+
+  public List<AsyncInvocationChannel> getChannels() {
+    return Collections.unmodifiableList(channels);
   }
 
   public void enqueueScheduledInvocations(AsyncInvocationChannel channel) {
@@ -614,7 +612,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * transaction then the execution starts at the successful finish of the transaction (onCommit).
    * Else the execution starts right now.
    *
-   * @param asyncInvocationRequestEntry
+   * @param asyncInvocationRequestEntry the {@link AsyncInvocationRequestEntry} to enqueue, not null
    */
   private final void enqueueAsyncRequest(AsyncInvocationRequestEntry asyncInvocationRequestEntry) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -636,12 +634,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     URI uri;
     URI runtimeUri;
     AsyncInvocationChannel localChannel;
-    List<URI> requestsToAdd = new ArrayList<>();
+    final List<URI> requestsToAdd = new ArrayList<>();
   }
 
   private static class ScheduledRequestsForChannel {
     String channelName;
-    List<ScheduledRequests> requests = new ArrayList<>();
+    final List<ScheduledRequests> requests = new ArrayList<>();
   }
 
   private static class ScheduledRequests {
@@ -704,13 +702,12 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   private void saveAndEnqueuAsyncRequests(List<Object> requests) {
-    // self applicationRuntimeUri
     // gather all channel and runtime infos
     Map<String, ChannelInfo> channelInfos = readChannelInfos(requests);
     // save all asyncRequests
     saveRequestObjects(requests, channelInfos);
     // save requests to local channels - order doesn't matter
-    saveRequestsIntoChannels(channelInfos);
+    saveRequestsIntoLocalChannels(channelInfos);
     // run or "schedule" requests in order
     enqueueOrScheduleRequest(requests, channelInfos);
   }
@@ -730,9 +727,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private Set<String> collectChannelNames(List<Object> requestsToSaveAndEnqueue) {
     Set<String> channelNames = new HashSet<>();
     for (Object request : requestsToSaveAndEnqueue) {
-      if (request instanceof AsyncInvocationRequest) {
+      if (request instanceof AsyncInvocationRequestEntry) {
         channelNames.add(
-            ((AsyncInvocationRequest) request).getChannel());
+            ((AsyncInvocationRequestEntry) request).request.getChannel());
       } else if (request instanceof ObjectNode) {
         channelNames.add(
             ((ObjectNode) request).getValueAsString(AsyncInvocationRequest.CHANNEL));
@@ -773,7 +770,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
               RuntimeAsyncChannelRegistry.class)
           .get();
-      runtimeAsyncChannelRegistry.getRuntimes();
       for (ChannelInfo channel : remoteChannels) {
         ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
             .filter(racr -> racr.getChannels().containsKey(channel.name)).findFirst()
@@ -792,8 +788,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private void saveRequestObjects(List<Object> requests, Map<String, ChannelInfo> channelInfos) {
     if (applicationRuntimeApi != null) {
       for (Object obj : requests) {
-        if (obj instanceof AsyncInvocationRequest) {
-          AsyncInvocationRequest request = (AsyncInvocationRequest) obj;
+        if (obj instanceof AsyncInvocationRequestEntry) {
+          AsyncInvocationRequest request = ((AsyncInvocationRequestEntry) obj).request;
           ChannelInfo channel = channelInfos.get(request.getChannel());
           request.runtimeUri(channel.runtimeUri);
           request
@@ -806,12 +802,29 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           request.setValue(channel.runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
           URI uri = objectApi.save(request);
           channel.requestsToAdd.add(objectApi.getLatestUri(uri));
+        } else if (obj instanceof ScheduledRequestsForChannel) {
+          ScheduledRequestsForChannel schReq = (ScheduledRequestsForChannel) obj;
+          ChannelInfo channel = channelInfos.get(schReq.channelName);
+          List<URI> uris = schReq.requests.stream()
+              .flatMap(req -> req.requestUris.stream())
+              .distinct()
+              .map(objectApi::getLatestUri)
+              .collect(toList());
+          List<ObjectNode> reqNodes = objectApi.loadLatestBatch(uris);
+          for (ObjectNode req : reqNodes) {
+            URI currentRuntimeUri = req.getValue(URI.class, AsyncInvocationRequest.RUNTIME_URI);
+            if (!objectApi.equalsIgnoreVersion(currentRuntimeUri, channel.runtimeUri)) {
+              req.setValue(channel.runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
+              objectApi.save(req);
+            }
+          }
+          channel.requestsToAdd.addAll(uris);
         }
       }
     }
   }
 
-  private void saveRequestsIntoChannels(Map<String, ChannelInfo> channelInfos) {
+  private void saveRequestsIntoLocalChannels(Map<String, ChannelInfo> channelInfos) {
     List<URI> channelUris = channelInfos.values().stream()
         .filter(ch -> ch.localChannel != null)
         .map(ch -> ch.uri)
@@ -844,8 +857,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         new HashMap<>();
     for (Object obj : requests) {
       AsyncInvocationRequest request = null;
-      if (obj instanceof AsyncInvocationRequest) {
-        request = (AsyncInvocationRequest) obj;
+      AsyncCompletableFuture future = null;
+      if (obj instanceof AsyncInvocationRequestEntry) {
+        request = ((AsyncInvocationRequestEntry) obj).request;
+        future = ((AsyncInvocationRequestEntry) obj).future;
       } else if (obj instanceof ObjectNode) {
         request = objectApi.read(((ObjectNode) obj).getResultUri(), AsyncInvocationRequest.class);
       } else if (obj instanceof ScheduledRequestsForChannel) {
@@ -858,7 +873,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       if (request != null) {
         ChannelInfo channel = channelInfos.get(request.getChannel());
         if (channel.localChannel != null) {
-          enqueueAsyncRequest(new AsyncInvocationRequestEntry(channel.localChannel, request));
+          enqueueAsyncRequest(
+              new AsyncInvocationRequestEntry(channel.localChannel, request, future));
         } else {
           // "remote" execution is to schedule this request immediately
           ScheduledRequestsForChannel schReq =
@@ -953,8 +969,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * runtime from the {@link #initRegistry()} call or it can be a {@link #refreshRegistry()} when
    * the available apis are read from the storage.
    *
-   * @param apiData
-   * @return
+   * @param apiData the {@link ApiData} of a service interface to enable remote access, not null
+   * @return the {@link ApiDescriptor} describing a remotely callable service interface
    */
   private ApiDescriptor addToApiRegister(ApiData apiData) {
     Map<String, ApiDescriptor> apisByName =
@@ -978,7 +994,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   /**
    * If the api is a {@link ContributionApi}, then register to his {@link PrimaryApi}
    *
-   * @param apiData
+   * @param apiData the {@link ApiData} of the contribution API to register, not null
    */
   private void registerToPrimaryApi(ApiData apiData) {
 
@@ -1064,84 +1080,32 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   @Override
   public void saveAndEnqueueAsyncInvocationRequest(InvocationRequest request,
-      String channel) {
+      String channel, AsyncCompletableFuture future) {
     AsyncInvocationChannel localAsyncInvocationChannel = getLocalChannel(channel);
     if (applicationRuntimeApi == null && localAsyncInvocationChannel == null) {
       // no channel was found, and no other runtime is present too search in
       throw new IllegalStateException("There is no channel available: " + channel);
     }
+    // if (future != null && localAsyncInvocationChannel == null && applicationRuntimeApi == null) {
+    // // no channel was found, and no other runtime is present too search in
+    // throw new IllegalStateException(
+    // "The future to wait for the execution result can be passed only for local channel: "
+    // + channel + " <- " + request);
+    // }
     AsyncInvocationRequest asyncInvocationRequest = new AsyncInvocationRequest()
         .request(request)
         .channel(channel);
+    AsyncInvocationRequestEntry requestEntry = new AsyncInvocationRequestEntry(
+        localAsyncInvocationChannel, asyncInvocationRequest, future);
+    requestEntry.channel = localAsyncInvocationChannel;
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(asyncInvocationRequest);
+      getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(requestEntry);
     } else {
       // saveAndEnqueueAsyncInvocationRequestInternal(asyncInvocationRequest);
-      saveAndEnqueuAsyncRequests(Arrays.asList(asyncInvocationRequest));
+      // TODO use requestEntry instead of asyncInvocationRequest
+      saveAndEnqueuAsyncRequests(Arrays.asList(requestEntry));
     }
   }
-
-  // private void saveAndEnqueueAsyncInvocationRequestInternal(AsyncInvocationRequest request) {
-  // String channel = request.getChannel();
-  // AsyncInvocationChannel localAsyncInvocationChannel = getLocalChannel(channel);
-  // if (applicationRuntimeApi != null) {
-  // // we may have other runtimes available
-  // ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
-  // URI channelUri = null;
-  // URI runtimeUri = null;
-  // if (localAsyncInvocationChannel == null) {
-  // // no local channel found with the given name -> check other runtimes
-  // RuntimeAsyncChannelRegistry runtimeAsyncChannelRegistry = collectionApi
-  // .reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
-  // RuntimeAsyncChannelRegistry.class)
-  // .get();
-  // ObjectNode channelNode = runtimeAsyncChannelRegistry.getRuntimes().stream()
-  // .filter(racr -> racr.getChannels().containsKey(channel)).findFirst()
-  // .map(racr -> racr.getChannels().get(channel))
-  // .map(cUri -> objectApi.loadLatest(cUri))
-  // .orElseThrow(
-  // // no channel found in local nor in external runtimes -> exception
-  // () -> new IllegalStateException("There is no channel available: " + channel));
-  // // channel found in other runtime
-  // channelUri = objectApi.getLatestUri(channelNode.getObjectUri());
-  // runtimeUri = channelNode.getValue(URI.class, RuntimeAsyncChannel.RUNTIME_URI);
-  // } else {
-  // // set up the with local channel and local runtime
-  // channelUri = localAsyncInvocationChannel.getUri();
-  // runtimeUri = applicationRuntime.getUri();
-  // }
-  // // We set the runtime identifier to see which runtime is responsible for the invocation
-  // // currently.
-  // request.runtimeUri(runtimeUri);
-  // request
-  // .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
-  //
-  //
-  // if (runtimeUri.equals(applicationRuntime.getUri())) {
-  // // Save the request to remember to execute if this runtime fails.
-  // // We save the given invocation into a list related to the application runtime.
-  // Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
-  // log.debug(
-  // "saveAndEnqueueAsyncInvocationRequestInternal, add invocation request item {} - {}",
-  // channel, channelUri);
-  // storageAsyncReg.update(channelUri, RuntimeAsyncChannel.class, rac -> {
-  // return rac
-  // .addInvocationRequestsItem(objectApi.getLatestUri(request.getUri()));
-  // });
-  // } else {
-  // // when the channel is in an other runtime, we add it as an instant scheduled request
-  // scheduleAsyncInvocationRequest(channel,
-  // Arrays.asList(request.getUri()), OffsetDateTime.now());
-  // }
-  // }
-  //
-  // if (localAsyncInvocationChannel != null) {
-  // // when we have a local channel, try to run it right now
-  // AsyncInvocationRequestEntry result =
-  // new AsyncInvocationRequestEntry(localAsyncInvocationChannel, request);
-  // enqueueAsyncRequest(result);
-  // }
-  // }
 
   // @Transactional
   @Override
@@ -1155,30 +1119,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       saveAndEnqueuAsyncRequests(Arrays.asList(asyncRequest));
     }
   }
-
-  // private void saveAndEnqueueAsyncInvocationRequestInternal(ObjectNode asyncRequest) {
-  //
-  // AsyncInvocationChannel asyncInvocationChannel =
-  // checkLocalChannel(asyncRequest.getValueAsString(AsyncInvocationRequest.CHANNEL));
-  // AsyncInvocationRequest asyncInvocationRequest = null;
-  // if (applicationRuntimeApi != null) {
-  // ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
-  // asyncRequest.setValue(applicationRuntime.getUri(), AsyncInvocationRequest.RUNTIME_URI);
-  // URI uri = objectApi.save(asyncRequest);
-  // asyncInvocationRequest = objectApi.read(uri, AsyncInvocationRequest.class);
-  // Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
-  // storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
-  // return rac
-  // .addInvocationRequestsItem(objectApi.getLatestUri(uri));
-  // });
-  // } else {
-  // asyncInvocationRequest = asyncRequest.getObject(AsyncInvocationRequest.class);
-  // }
-  //
-  // AsyncInvocationRequestEntry result =
-  // new AsyncInvocationRequestEntry(asyncInvocationChannel, asyncInvocationRequest);
-  // enqueueAsyncRequest(result);
-  // }
 
   // @Transactional
   @Override
@@ -1210,14 +1150,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
       getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(request);
     } else {
-      scheduleAsyncInvocationRequest(request);
+      saveAndEnqueuAsyncRequests(Arrays.asList(request));
+      // scheduleAsyncInvocationRequest(request);
     }
-  }
-
-  private final void scheduleAsyncInvocationRequest(ScheduledRequestsForChannel request) {
-    StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
-        getScheduledInvocationsRef(request.channelName);
-    scheduleAsyncInvocationRequestInternal(refScheduled, request);
   }
 
   private StoredReference<AsyncChannelScheduledInvocationList> getScheduledInvocationsRef(
@@ -1265,7 +1200,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     return asyncInvocationChannel;
   }
 
-  // @Transactional
   @Override
   public void saveAsyncInvocationResult(AsyncInvocationRequestEntry requestEntry,
       InvocationResult result) {
@@ -1293,15 +1227,14 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     objectApi.save(requestNode);
     if (result.getDecision().getDecision() == DecisionEnum.CONTINUE
         && result.getDecision().getScheduledAt() == null
-        && !requestEntry.request.getAndThen().isEmpty()) {
+        && !CollectionUtils.isEmpty(requestEntry.request.getAndThen())) {
       // If we can continue and we have and then invocations without scheduling we enqueue
       // immediately
       applyAsyncInvocationParameter(requestEntry.request.getAndThen(), result.getReturnValue());
       saveAndEnqueueInvocationRequest(requestEntry.channel, requestEntry.request.getAndThen());
     } else if (result.getDecision().getDecision() == DecisionEnum.CONTINUE
         && result.getDecision().getScheduledAt() != null
-        && requestEntry.request.getAndThen() != null
-        && !requestEntry.request.getAndThen().isEmpty()) {
+        && !CollectionUtils.isEmpty(requestEntry.request.getAndThen())) {
       applyAsyncInvocationParameter(requestEntry.request.getAndThen(), result.getReturnValue());
       scheduleAsyncInvocationRequest(requestEntry.channel.getName(),
           requestEntry.request.getAndThen(),

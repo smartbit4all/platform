@@ -93,7 +93,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   @Autowired(required = false)
   @Lazy
-  private PlatformTransactionManager transactionManager;
+  protected PlatformTransactionManager transactionManager;
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -241,32 +241,24 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   public StorageObjectLock getLock(URI objectUri) {
     objectUri = getUriWithoutVersion(objectUri);
     boolean tryAgain = true;
+    int count = 0;
     while (tryAgain) {
       tryAgain = false;
+      if (count > 0) {
+        try {
+          Thread.sleep(2);
+        } catch (InterruptedException e) {
+          // NOP
+          break;
+        }
+      }
       lockMutex.lock();
       try {
-        StorageObjectLockEntry entry = locks.get(objectUri);
-        if (entry == null) {
-          final StorageObjectLockEntry newEntry =
-              new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                  physicalLockReleaser(),
-                  self);
-          newEntry.setLockRemover(uri -> {
-            lockMutex.lock();
-            try {
-              if (newEntry.isEmpty()) {
-                locks.remove(uri);
-              }
-            } finally {
-              lockMutex.unlock();
-            }
-          });
-          locks.put(objectUri, newEntry);
-          entry = newEntry;
-        }
+        StorageObjectLockEntry entry = getOrCreateLockEntry(objectUri);
         return entry.getLock();
       } catch (StorageObjectLockEntryRemovingException e) {
         tryAgain = true;
+        count++;
       } catch (InterruptedException e) {
         throw new IllegalStateException("Unable to get lock, the thread was interrupted.", e);
       } finally {
@@ -274,6 +266,41 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       }
     }
     return null;
+  }
+
+  private StorageObjectLockEntry getOrCreateLockEntry(URI objectUri) {
+    StorageObjectLockEntry entry = locks.get(objectUri);
+    if (entry == null) {
+      final StorageObjectLockEntry newEntry =
+          new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
+              physicalLockReleaser(),
+              this::unlock,
+              this::reattachLock);
+      newEntry.setLockRemover(uri -> {
+        lockMutex.lock();
+        try {
+          if (newEntry.isEmpty()) {
+            locks.remove(uri);
+          }
+        } finally {
+          lockMutex.unlock();
+        }
+      });
+      locks.put(objectUri, newEntry);
+      entry = newEntry;
+    }
+    return entry;
+  }
+
+  protected StorageObjectLockEntry reattachLock(StorageObjectLock lock) {
+    lockMutex.lock();
+    try {
+      StorageObjectLockEntry entry = getOrCreateLockEntry(lock.getObjectURI());
+      entry.reattachLock(lock);
+      return entry;
+    } finally {
+      lockMutex.unlock();
+    }
   }
 
   @Override
@@ -429,7 +456,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
   /**
    * Utility function in older JDK for takeWhile. Should be removed later.
-   * 
+   *
    * @param <T>
    * @param stream
    * @param predicate
@@ -443,8 +470,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
       @Override
       public boolean hasNext() {
-        if (finished)
+        if (finished) {
           return false;
+        }
         if (iterator.hasNext()) {
           nextItem = iterator.next();
           if (!predicate.test(nextItem)) {
@@ -868,10 +896,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
 
-  @Override
-  public void unlock(StorageObjectLock lock) {
+  protected void unlock(StorageObjectLock lock) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      getUnlockTransactionHandler().addRequestToSaveAndEnqueue(lock);
+      getUnlockTransactionHandler().addLockToUnlock(lock);
     } else {
       lock.unlockInternal();
     }
@@ -888,7 +915,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     protected final List<StorageObjectLock> locksToUnlock = new ArrayList<>();
 
-    public void addRequestToSaveAndEnqueue(StorageObjectLock lock) {
+    public void addLockToUnlock(StorageObjectLock lock) {
       locksToUnlock.add(lock);
     }
 

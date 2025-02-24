@@ -2,7 +2,6 @@ package org.smartbit4all.domain.data.storage;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,14 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.archive.bean.ArchiveConfigData;
-import org.smartbit4all.api.archive.bean.BeforeVersionData;
-import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 
 /*
  * Delete unnecessary files from file system
@@ -33,42 +27,42 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
   @Override
   public void startArchive(String archiveConfigFile) {
 
-    if (!ObjectUtils.isEmpty(archiveConfigFile)) {
-      try {
-
-        final File file = new File(archiveConfigFile);
-
-        ObjectDefinition<ArchiveConfigData> objectDefinition =
-            objectApi.definition(ArchiveConfigData.class);
-        ArchiveConfigData archiveConfigData =
-            objectDefinition.deserialize(BinaryData.of(new FileInputStream(file))).get();
-
-        String folder = archiveConfigData.getRootDir();
-
-        List<String> deleteAll = archiveConfigData.getDeleteAll();
-
-        for (String path : deleteAll) {
-          String deletePath = concatenatePath(folder, path);
-          deleteFiles(deletePath);
-        }
-        // "/linked-changes/org_smartbit4all_api_storage_bean_StorageSaveEventObject/2022"
-        // "/SB4STARTER/org_smartbit4all_api_binarydata_BinaryDataObject/2022"
-        // "/transaction/org_smartbit4all_api_storage_bean_TransactionData/2022"
-
-        List<BeforeVersionData> deleteBeforeVersion = archiveConfigData.getDeleteBeforeVersion();
-
-        for (BeforeVersionData data : deleteBeforeVersion) {
-          String deletePath = concatenatePath(folder, data.getPath());
-          int version = data.getVersion();
-          deleteOldVersions(deletePath, version);
-        }
-        // "/linked-changes/org_smartbit4all_api_storage_bean_ObjectMap"
-        // "/utemezes/hu_it4all_nmhh_lrl_domain_settings_model_UtemezettFutas"
-
-      } catch (Exception e) {
-        log.error(e.getMessage());
-      }
-    }
+    // if (!ObjectUtils.isEmpty(archiveConfigFile)) {
+    // try {
+    //
+    // final File file = new File(archiveConfigFile);
+    //
+    // ObjectDefinition<ArchiveConfigData> objectDefinition =
+    // objectApi.definition(ArchiveConfigData.class);
+    // ArchiveConfigData archiveConfigData =
+    // objectDefinition.deserialize(BinaryData.of(new FileInputStream(file))).get();
+    //
+    // String folder = archiveConfigData.getRootDir();
+    //
+    // List<String> deleteAll = archiveConfigData.getDeleteAll();
+    //
+    // for (String path : deleteAll) {
+    // String deletePath = concatenatePath(folder, path);
+    // deleteFiles(deletePath);
+    // }
+    // // "/linked-changes/org_smartbit4all_api_storage_bean_StorageSaveEventObject/2022"
+    // // "/SB4STARTER/org_smartbit4all_api_binarydata_BinaryDataObject/2022"
+    // // "/transaction/org_smartbit4all_api_storage_bean_TransactionData/2022"
+    //
+    // List<BeforeVersionData> deleteBeforeVersion = archiveConfigData.getDeleteBeforeVersion();
+    //
+    // for (BeforeVersionData data : deleteBeforeVersion) {
+    // String deletePath = concatenatePath(folder, data.getPath());
+    // int version = data.getVersion();
+    // deleteOldVersions(deletePath, version);
+    // }
+    // // "/linked-changes/org_smartbit4all_api_storage_bean_ObjectMap"
+    // // "/utemezes/hu_it4all_nmhh_lrl_domain_settings_model_UtemezettFutas"
+    //
+    // } catch (Exception e) {
+    // log.error(e.getMessage());
+    // }
+    // }
 
   }
 

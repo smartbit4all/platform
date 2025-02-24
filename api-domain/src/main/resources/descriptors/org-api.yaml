@@ -173,6 +173,21 @@ components:
           type: string
           format: uri
           description: The reference to the primary account if any.
+    UserEntry:
+      type: object
+      required: [uri, attributes]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the UserEntry'
+        userUri:
+          type: string
+          format: uri
+          description: 'The uri of the user'
+        userIdentifier: 
+          type: string
+          description: 'The identifier of the user.'
     Group:
       type: object
       required: [uri, name, kind, children]
@@ -650,7 +665,7 @@ components:
         apiName:
           type: string
           description: |
-            The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add
+            The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add 
     UserLastAccess:
       type: object
       properties:

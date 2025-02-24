@@ -93,7 +93,7 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
       logBuilder.append(body);
     }
 
-    LOGGER.info(logBuilder.toString());
+    LOGGER.debug(logBuilder.toString());
 
   }
 
@@ -118,7 +118,7 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
       logBuilder.append(body);
     }
 
-    LOGGER.info(logBuilder.toString());
+    LOGGER.debug(logBuilder.toString());
   }
 
   private void logBody(String body, StringBuilder logBuilder) {

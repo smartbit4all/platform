@@ -95,6 +95,8 @@ import org.smartbit4all.api.org.UserSecurityCheckerSchedulingApiImpl;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.org.bean.UserSecurityPolicy;
+import org.smartbit4all.api.platformevent.PlatformEventApi;
+import org.smartbit4all.api.platformevent.PlatformEventApiImpl;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.sample.bean.SampleTimeBasedData;
@@ -1122,6 +1124,11 @@ public class PlatformApiConfig {
   @Bean
   public CacheService cacheService() {
     return new CacheServiceImpl();
+  }
+
+  @Bean
+  public PlatformEventApi platformEventApi() {
+    return new PlatformEventApiImpl();
   }
 
 }

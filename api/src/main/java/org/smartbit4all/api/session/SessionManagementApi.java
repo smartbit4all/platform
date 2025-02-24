@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.session.bean.AccountInfo;
@@ -52,6 +53,8 @@ public interface SessionManagementApi {
   Session initCurrentSession(URI sessionUri);
 
   void setSessionParameter(URI sessionUri, String key, String value);
+
+  void setSessionParameters(URI sessionUri, Map<String, String> parameters);
 
   <T> void setSessionParameterObject(URI sessionUri, String key, T value);
 

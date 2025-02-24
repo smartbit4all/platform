@@ -154,6 +154,18 @@ components:
         createdAt:
           type: string
           format: date-time
+    SessionEntry:
+      type: object
+      required: [authentications, parameters, viewContexts]
+      properties:
+        uri:
+          type: string
+          format: uri
+        sessionUri:
+          type: string
+          format: uri
+        sessionId:
+          type: string
 
     SessionInfoData:
       type: object

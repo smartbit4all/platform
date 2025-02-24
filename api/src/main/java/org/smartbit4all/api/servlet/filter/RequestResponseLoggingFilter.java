@@ -87,7 +87,7 @@ public class RequestResponseLoggingFilter implements Filter {
       logBuilder.append(body);
     }
 
-    LOGGER.info(logBuilder.toString());
+    LOGGER.debug(logBuilder.toString());
   }
 
   private void logResponse(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
@@ -117,7 +117,7 @@ public class RequestResponseLoggingFilter implements Filter {
       logBuilder.append(body);
     }
 
-    LOGGER.info(logBuilder.toString());
+    LOGGER.debug(logBuilder.toString());
     httpResponse.getOutputStream().write(responseData);
   }
 
