@@ -649,21 +649,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
     Map<String, Object> map = (Map<String, Object>) row.getData();
     BranchingStateEnum brancingState =
         BranchingStateEnum.valueOf(map.get(BranchedObjectEntry.BRANCHING_STATE).toString());
-    switch (brancingState) {
-      case NEW:
-        icon = "add_circle";
-        break;
-      case MODIFIED:
-        icon = "tag";
-        break;
-      case DELETED:
-        icon = "cancel";
-        break;
-
-      default:
-        icon = "radio_button_unchecked";
-        break;
-    }
+    icon = setIconToEntry(brancingState);
     if (icon != null) {
       row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
           Arrays.asList(new ImageResource()
@@ -709,6 +695,26 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
 
     row.getActions().clear();
     UiActions.add(row.getActions(), builder.build());
+  }
+
+  protected String setIconToEntry(BranchingStateEnum brancingState) {
+    String icon;
+    switch (brancingState) {
+      case NEW:
+        icon = "add_circle";
+        break;
+      case MODIFIED:
+        icon = "tag";
+        break;
+      case DELETED:
+        icon = "cancel";
+        break;
+
+      default:
+        icon = "radio_button_unchecked";
+        break;
+    }
+    return icon;
   }
 
   private URI getObjectUri(GridRow row) {

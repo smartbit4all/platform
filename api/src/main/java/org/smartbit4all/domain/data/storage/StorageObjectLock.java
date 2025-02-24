@@ -4,6 +4,10 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.object.ObjectApi;
 
 /**
@@ -22,28 +26,40 @@ import org.smartbit4all.core.object.ObjectApi;
  */
 public final class StorageObjectLock implements Lock {
 
+  private static final Logger log = LoggerFactory.getLogger(StorageObjectLock.class);
+
   /**
    * The lock entry held be the {@link ObjectStorage} implementation.
    */
   private StorageObjectLockEntry entry;
 
+  private boolean entryReleased;
+
+  private final Consumer<StorageObjectLock> unlocker;
+
+  private final Function<StorageObjectLock, StorageObjectLockEntry> lockReattacher;
+
   /**
    * The unique identifier inside the {@link #entry}.
    */
-  private final Long id;
+  private Long id;
 
-  private final ObjectStorage objectStorage;
+  private final URI objectUri;
 
-  StorageObjectLock(StorageObjectLockEntry entry, Long id, ObjectStorage objectStorage) {
+  StorageObjectLock(StorageObjectLockEntry entry, Long id, URI objectUri,
+      Consumer<StorageObjectLock> unlocker,
+      Function<StorageObjectLock, StorageObjectLockEntry> lockReattacher) {
     super();
     this.entry = entry;
+    this.entryReleased = false;
     this.id = id;
-    this.objectStorage = objectStorage;
+    this.unlocker = unlocker;
+    this.lockReattacher = lockReattacher;
+    this.objectUri = objectUri;
   }
 
   public final URI getObjectURI() {
-    check();
-    return entry.getObjectURI();
+    return objectUri;
   }
 
   @Override
@@ -63,12 +79,15 @@ public final class StorageObjectLock implements Lock {
     if (check(true)) {
       return entry.getMutex().tryLock();
     }
-    // physical lock not acquired, don't wait for it
+    // physical lock not acquired, don't wait for it, and release entry as well
+    log.debug("tryLock failed, releasing ({})", objectUri);
+    release();
     return false;
   }
 
   @Override
   public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+    // TODO like tryLock(), but with timeout... check(false) should have a timeout
     check();
     return entry.getMutex().tryLock(time, unit);
   }
@@ -76,7 +95,7 @@ public final class StorageObjectLock implements Lock {
   @Override
   public void unlock() {
     check();
-    objectStorage.unlock(this);
+    unlocker.accept(this);
   }
 
   void unlockInternal() {
@@ -101,7 +120,32 @@ public final class StorageObjectLock implements Lock {
 
   private final boolean check(boolean nowait) {
     if (entry == null) {
-      throw new IllegalStateException("The lock has been released already.");
+      if (entryReleased) {
+        log.debug("released lock check, reattaching ({})", objectUri);
+        boolean tryAgain = true;
+        int count = 0;
+        while (tryAgain) {
+          tryAgain = false;
+          if (count > 0) {
+            try {
+              Thread.sleep(2);
+            } catch (InterruptedException e) {
+              // NOP
+              break;
+            }
+          }
+          try {
+            entry = lockReattacher.apply(this);
+          } catch (StorageObjectLockEntryRemovingException e) {
+            count++;
+            tryAgain = true;
+          }
+        }
+      }
+      if (entry == null) {
+        throw new IllegalStateException("The lock has been released already.");
+      }
+      entryReleased = false;
     }
     return entry.ensurePhysicalLock(nowait);
   }
@@ -121,13 +165,18 @@ public final class StorageObjectLock implements Lock {
     return id;
   }
 
+  final void setId(Long id) {
+    this.id = id;
+  }
+
   /**
    * Release the given object. We won't be able to use it again.
    */
-  public final void release() {
+  final void release() {
     if (entry != null) {
       entry.releaseLock(this);
       entry = null;
+      entryReleased = true;
     }
   }
 
