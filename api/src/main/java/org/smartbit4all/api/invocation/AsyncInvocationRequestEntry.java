@@ -1,8 +1,11 @@
 package org.smartbit4all.api.invocation;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 
 /**
  * This entry encapsulate the {@link AsyncInvocationRequest} and the {@link AsyncInvocationChannel}
@@ -16,12 +19,19 @@ public class AsyncInvocationRequestEntry {
 
   AsyncInvocationChannel channel;
   AsyncInvocationRequest request;
+  CompletableFuture<InvocationResult> future;
+
 
   public AsyncInvocationRequestEntry(AsyncInvocationChannel channel,
       AsyncInvocationRequest request) {
-    super();
+    this(channel, request, null);
+  }
+
+  public AsyncInvocationRequestEntry(AsyncInvocationChannel channel,
+      AsyncInvocationRequest request, CompletableFuture<InvocationResult> future) {
     this.channel = channel;
     this.request = request;
+    this.future = future;
   }
 
   public void invoke() {
@@ -29,7 +39,15 @@ public class AsyncInvocationRequestEntry {
       if (log.isDebugEnabled()) {
         log.debug("Invoking: {}", toLog());
       }
-      channel.invoke(this);
+      Future<InvocationResult> invokeFuture = channel.invoke(this);
+      if (future != null) {
+        try {
+          InvocationResult result = invokeFuture.get();
+          future.complete(result);
+        } catch (Exception e) {
+          future.completeExceptionally(e);
+        }
+      }
     } else {
       log.error("Unable to execute async call.");
     }

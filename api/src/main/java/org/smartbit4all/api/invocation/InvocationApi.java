@@ -14,6 +14,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
@@ -277,6 +278,6 @@ public interface InvocationApi {
    */
   void signalFuture(String scheme, String id, Object... parameters);
 
-  void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry);
+  InvocationResult executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry);
 
 }

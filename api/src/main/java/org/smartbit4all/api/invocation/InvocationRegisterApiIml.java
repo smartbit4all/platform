@@ -1087,10 +1087,15 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     AsyncInvocationRequest asyncInvocationRequest = new AsyncInvocationRequest()
         .request(request)
         .channel(channel);
+    // TODO
+    // CompletableFuture<InvocationResult> future = new CompletableFuture<InvocationResult>();
+    // AsyncInvocationRequestEntry requestEntry = new AsyncInvocationRequestEntry(
+    // localAsyncInvocationChannel, asyncInvocationRequest, future);
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
       getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(asyncInvocationRequest);
     } else {
       // saveAndEnqueueAsyncInvocationRequestInternal(asyncInvocationRequest);
+      // TODO use requestEntry instead of asyncInvocationRequest
       saveAndEnqueuAsyncRequests(Arrays.asList(asyncInvocationRequest));
     }
   }
