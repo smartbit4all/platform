@@ -1,8 +1,10 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
+import java.util.concurrent.Future;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 
 /**
@@ -21,7 +23,7 @@ public interface AsyncInvocationChannel {
    * 
    * @param request
    */
-  void invoke(AsyncInvocationRequestEntry request);
+  Future<InvocationResult> invoke(AsyncInvocationRequestEntry request);
 
   /**
    * @return The name of the channel to identify when calling the

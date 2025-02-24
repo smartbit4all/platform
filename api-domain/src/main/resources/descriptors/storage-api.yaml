@@ -378,3 +378,104 @@ components:
           format: uri
           description: |
             The uri of the original object refrred by the reference object.  
+    StorageArchiveProcessConfig:
+      type: object
+      description: |
+        This object is configuring the archival process parameters for one or more storage and object type. This
+        configuration has its master data management entry. If the entry is set and the archival mechanism is working
+        (the necessary job is scheduled) then the archival process is arised periodically. These configurations are
+        allocated to servers by locking it when a server is working on am archival config. The archival is a two phase
+        operation. In the first round it gathers a set of object uri or uri and version to archive. The second round is
+        the archival (deletion) process itself. The archival batch defined by the first phase is saved for the configuration
+        as scoped object. If a server fails to execute the archival batch then later on another server can retry to execute it.
+        So the batch must be implemented in a way to be able to continue whereever it was interrupted.
+      properties:
+        uri:
+          type: string
+          format: uri
+        storage:
+          description: |
+            The name of the storage to archive. All the storages should be managed by individual configuration so
+            there can be only one storage denoted. If we archive type classes then this is mandatory to set. 
+          type: string
+        typeClassNames:
+          description: |
+            A list of object types can be set. These types are archived in this process.
+          type: array
+          items:
+            type: string
+        beforeDurationInMillis:
+          description: |
+            We must set this duration to prevent archiving the object closer to current time then this duration. There is a second
+            line of protection because the archival api prevent the objects younger then a day (24 hours).
+          type: integer
+          format: int64
+        collections:
+          description: |
+            A list of collection uri. These collection should be explored to identify the objects to archive in the gathering
+            phase of the archival. If these collections are defined then the process will examine the referred uris of these 
+            collections and decide if the given object should be deleted or not. The collections itself is never archived.
+          type: array
+          items:
+            type: string
+            format: uri
+        archiveVersionsOnly:
+          description: |
+            If the flag is true then only the versions of the relevant objects are going to included in the archival batch.
+            By default we delete the whole object not only its versions. If we delete the versions then the process collects
+            the objects and then identify the versions to delete.
+          type: boolean
+          default: false
+        objectPredicate:
+          description: |
+            If this invocation request is set then the invocation is called for every object to decide if it can be archived or not.
+            As a predicate it returns true if the object can be archived and false if not.
+          type: InvocationRequest
+        versionSelector:
+          description: |
+            If this invocation request is set then the invocation is called for every object to decide what range of versions should be
+            archive during the batch. If it is set then it returns a StorageVersionRangeList object. If it is null then the given object is
+            not included in the archival batch.
+          type: InvocationRequest
+    StorageArchiveBatch:
+      type: object
+      description: |
+        This object contains the objects and its versions to archive. The archival process itself can be configured on its own. The default 
+        behavior is to delet the objects and versions to archive.
+      properties:
+        uri:
+          type: string
+          format: uri
+    StorageArchiveBatchEntry:
+      type: object
+      description: |
+        This entry contains the latest uri of the object that is archived. If only given range of versions should be included in the
+        process then we can set ranges of versions to archive.
+      properties:
+        objectUri:
+          description: The latest uri of the object to remove.
+          type: string
+          format: uri
+        versionRanges:
+          description: The version ranges to include in the archival. Could be empty if the whole object should be archived.
+          $ref: '#/components/schemas/StorageVersionRangeList'
+    StorageVersionRangeList:
+      type: object
+      description: |
+        A list of range where the from version adn to version is set.
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StorageVersionRange'
+    StorageVersionRange:
+      type: object
+      description: |
+        A range of version with from and to indices both are inclusive..
+      properties:
+        from:
+          type: integer
+          format: int64
+        to:
+          type: integer
+          format: int64

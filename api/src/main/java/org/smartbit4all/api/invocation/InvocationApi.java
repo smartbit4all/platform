@@ -14,6 +14,7 @@ import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
@@ -113,6 +114,8 @@ public interface InvocationApi {
    *        then it will be created with default parameters.
    */
   void invokeAsync(InvocationRequest request, String channel);
+
+  void invokeAsyncAndWait(InvocationRequest request, String channel, AsyncCompletableFuture future);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the
@@ -277,6 +280,6 @@ public interface InvocationApi {
    */
   void signalFuture(String scheme, String id, Object... parameters);
 
-  void executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry);
+  InvocationResult executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry);
 
 }

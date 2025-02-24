@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.net.URI;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
@@ -97,8 +99,8 @@ public final class AsyncInvocationChannelImpl
   }
 
   @Override
-  public void invoke(AsyncInvocationRequestEntry requestEntry) {
-    executorService.submit(() -> {
+  public Future<InvocationResult> invoke(AsyncInvocationRequestEntry requestEntry) {
+    return executorService.submit(() -> {
       AsyncInvocationRequest request = requestEntry.request;
       // decorate the thread of given call.
       if (Boolean.TRUE.equals(request.getRequest().getInheritSession())
@@ -112,7 +114,7 @@ public final class AsyncInvocationChannelImpl
           sessionManagementApi.setSession(request.getRequest().getSessionUri());
         }
       }
-      invocationApi.executeAsyncInvocationRequest(requestEntry);
+      return invocationApi.executeAsyncInvocationRequest(requestEntry);
     });
   }
 

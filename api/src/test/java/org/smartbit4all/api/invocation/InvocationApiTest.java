@@ -5,6 +5,8 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest(classes = {
     InvocationTestConfig.class,
@@ -25,6 +27,10 @@ class InvocationApiTest {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired(required = false)
+  @Lazy
+  protected PlatformTransactionManager transactionManager;
 
   @Test
   void testPrimary() throws Exception {
@@ -93,6 +99,17 @@ class InvocationApiTest {
   @Test
   void testSignalFutureAwait() throws Exception {
     InvocationApiTestStatic.testSignalFutureAwait(invocationApi, collectionApi, objectApi);
+  }
+
+  @Test
+  void testWaitImmediate() throws Exception {
+    InvocationApiTestStatic.testWaitImmediate(invocationApi, collectionApi, objectApi);
+  }
+
+  @Test
+  void testWaitImmediateInTransaction() throws Exception {
+    InvocationApiTestStatic.testWaitImmediateInTransaction(invocationApi, collectionApi, objectApi,
+        transactionManager);
   }
 
 }

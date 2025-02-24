@@ -34,6 +34,8 @@ import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static java.util.stream.Collectors.toList;
@@ -102,7 +104,7 @@ public class InvocationApiTestStatic {
 
     for (int i = 0; i < TestApi.scheduleCounter; i++) {
       invocationApi.invokeAt(request, InvocationTestConfig.GLOBAL_ASYNC_CHANNEL,
-          OffsetDateTime.now().plus(i * 2, ChronoUnit.SECONDS));
+          OffsetDateTime.now().plus(i * 200, ChronoUnit.MILLIS));
     }
     assertDoesNotThrow(
         () -> TestApi.scheduledLatch.await(TestApi.scheduleCounter * 2 + 5, TimeUnit.SECONDS));
@@ -361,6 +363,70 @@ public class InvocationApiTestStatic {
     ObjectNode categoryNode = objectApi.loadLatest(categoryUri);
 
     Assertions.assertEquals("Modified 1", categoryNode.getValueAsString(SampleCategory.NAME));
+
+  }
+
+  static void testWaitImmediate(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first to store the result of the future.
+
+    URI categoryUri = objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN));
+
+
+    InvocationRequest originalRequest = invocationApi.builder(TestApi.class)
+        .build(a -> a.applyParentNamChangeForCategory(categoryUri, "Category 1 - modified"));
+
+    AsyncCompletableFuture future = new AsyncCompletableFuture();
+    invocationApi.invokeAsyncAndWait(originalRequest, InvocationTestConfig.SECOND_ASYNC_CHANNEL,
+        future);
+
+    // Wait for the result of the execution
+    future.get();
+
+    ObjectNode categoryNode = objectApi.loadLatest(categoryUri);
+    Assertions.assertEquals("Category 1 - modified",
+        categoryNode.getValueAsString(SampleCategory.NAME));
+
+  }
+
+  static void testWaitImmediateInTransaction(InvocationApi invocationApi,
+      CollectionApi collectionApi,
+      ObjectApi objectApi, PlatformTransactionManager transactionManager)
+      throws Exception {
+
+    // Save some objects first to store the result of the future.
+    if (transactionManager != null) {
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      AsyncCompletableFuture future = new AsyncCompletableFuture();
+      URI resultUri = transaction
+          .execute(status -> {
+            URI categoryUri = objectApi.saveAsNew(INVOCATIONTEST,
+                new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN));
+
+
+            InvocationRequest originalRequest = invocationApi.builder(TestApi.class)
+                .build(
+                    a -> a.applyParentNamChangeForCategory(categoryUri, "Category 1 - modified"));
+
+            invocationApi.invokeAsyncAndWait(originalRequest,
+                InvocationTestConfig.SECOND_ASYNC_CHANNEL,
+                future);
+
+            Assertions.assertThrows(IllegalStateException.class, () -> future.get());
+
+            return categoryUri;
+          });
+      future.get();
+      // Wait for the result of the execution
+
+      ObjectNode categoryNode = objectApi.loadLatest(resultUri);
+      Assertions.assertEquals("Category 1 - modified",
+          categoryNode.getValueAsString(SampleCategory.NAME));
+    }
+
 
   }
 
