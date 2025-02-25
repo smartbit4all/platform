@@ -114,8 +114,6 @@ import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.value.ValueTransformationApi;
 import org.smartbit4all.api.value.ValueTransformationApiImpl;
-import org.smartbit4all.api.value.bean.ValueTransformationConfig;
-import org.smartbit4all.api.value.bean.ValueTransformationConfigData;
 import org.smartbit4all.api.view.ActionDefinitionApi;
 import org.smartbit4all.api.view.ActionDefinitionApiImpl;
 import org.smartbit4all.api.view.ActionManagementApi;
@@ -684,40 +682,6 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("Authentication token")
                   .addPathItem(ServiceConnection.AUTH_TOKEN));
-      result.addDescriptor(entry);
-    }
-    {
-      MDMEntryDescriptor entry = new MDMEntryDescriptor()
-          .schema(MasterDataManagementApi.SCHEMA)
-          .publishedListName(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
-          .name(ValueTransformationApi.MDM_ENTRY_VALUETRANSFORMATIONCONFIG)
-          .adminGroupName(PlatformSecurityOption.valueTransformationEditor.getName())
-          .addConstraintsItem(new MDMEntryConstraint()
-              .kind(KindEnum.UNIQUECASEINSENSITIVE)
-              .path(
-                  Arrays.asList(ValueTransformationConfig.DATA,
-                      ValueTransformationConfigData.NAME)))
-          .editorViewName(PlatformViewNames.VALUE_TRANSFORMATION_EDITOR)
-          .displayNameList(new LangString().defaultValue("Value transformations")
-              .putValueByLocaleItem("hu", "Érték átalakítások")
-              .putValueByLocaleItem("en", "Value transformations"))
-          .displayNameForm(new LangString().defaultValue("Value transformations")
-              .putValueByLocaleItem("hu", "Érték átalakítások")
-              .putValueByLocaleItem("en", "Value transformations"))
-          .order(200l)
-          .typeQualifiedName(ValueTransformationConfig.class.getName())
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Name")
-                  .path(
-                      Arrays.asList(ValueTransformationConfig.DATA,
-                          ValueTransformationConfigData.NAME)))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Kind")
-                  .path(
-                      Arrays.asList(ValueTransformationConfig.DATA,
-                          ValueTransformationConfigData.KIND)));
       result.addDescriptor(entry);
     }
     {

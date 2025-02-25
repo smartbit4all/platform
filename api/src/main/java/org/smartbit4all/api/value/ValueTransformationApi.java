@@ -25,7 +25,8 @@ public interface ValueTransformationApi {
    * @param inputValues The input values where we get back the
    * @return The transformed values in very the same order then the input parameter list.
    */
-  List<ValueTransformationResult> transform(String configName, List<Object> inputValues);
+  List<ValueTransformationResult> transform(String configName, List<Object> inputValues,
+      String mdmType);
 
   /**
    * Execute the transformation based on the configuration that must be set before in the MDM entry
@@ -36,10 +37,11 @@ public interface ValueTransformationApi {
    * @param inputValue The input values where we get back the
    * @return The transformed value.
    */
-  default ValueTransformationResult transform(String configName, Object inputValue) {
+  default ValueTransformationResult transform(String configName, Object inputValue,
+      String mdmType) {
     List<Object> param = new ArrayList<>();
     param.add(inputValue);
-    return transform(configName, param).get(0);
+    return transform(configName, param, mdmType).get(0);
   }
 
 }

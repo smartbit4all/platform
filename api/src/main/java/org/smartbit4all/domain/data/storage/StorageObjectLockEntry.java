@@ -165,8 +165,10 @@ final class StorageObjectLockEntry {
       // no acquire callback, assume physical lock is always present
       return true;
     }
+    checkIfRemoving();
     mutexInstanceRegister.lock();
     try {
+      checkIfRemoving();
       if (physicalLock == null) {
         physicalLock = acquirePhysicalLock.apply(nowait);
       }
@@ -196,18 +198,19 @@ final class StorageObjectLockEntry {
       if (instanceRegister.isEmpty()) {
         removing = true;
       }
-      if (removing) {
-        if (releaser != null && physicalLock != null) {
-          releaser.accept(physicalLock);
-        }
-        lockRemover.accept(objectURI);
-      }
     } finally {
       mutexInstanceRegister.unlock();
+    }
+    if (removing) {
+      if (releaser != null && physicalLock != null) {
+        releaser.accept(physicalLock);
+      }
+      lockRemover.accept(objectURI);
     }
   }
 
   void reattachLock(StorageObjectLock lock) {
+    checkIfRemoving();
     mutexInstanceRegister.lock();
     try {
       checkIfRemoving();
