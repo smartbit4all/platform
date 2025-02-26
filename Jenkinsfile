@@ -15,7 +15,13 @@ pipeline {
                 checkout scm
             }
         }
-
+        stage('Trivy Dependecy Scan') {
+            steps {
+                script {
+                  sh label: 'Trivy Dependecy Scan', script: "$TRIVY_DEPENDENCY_SCAN --scanDir $WORKSPACE --pipelineBlock No"
+                }
+            }
+        }
         stage('Build & Unit test') {
             steps {
                 withMaven(maven: "${maven}") {
@@ -60,6 +66,9 @@ pipeline {
     post {
         failure {
             mail to: "csaba2.csegedi@kh.hu", subject: "[JENKINS] ${env.JOB_NAME} #${env.BUILD_NUMBER} failed", body: "Build failed (see ${BUILD_URL})"
+        }
+        always {
+            archiveArtifacts artifacts: "security/trivy/dependencies/*.csv", allowEmptyArchive: true
         }
 		cleanup {
 			cleanWs()
