@@ -90,6 +90,8 @@ public class StringConstant {
 
   public static final String HTML_PARAGRAPH_END = "</p>";
 
+  public static final String HTML_NEW_LINE = "<br>";
+
   public static final String HYPHEN = "-";
 
   public static final String HYPHEN_SPACE = "- ";
