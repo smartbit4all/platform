@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.LangString;
@@ -31,7 +32,6 @@ import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import com.google.common.base.Strings;
 
 public final class ObjectValidations {
 
@@ -458,7 +458,7 @@ public final class ObjectValidations {
   private static boolean hasValue(ObjectNode node, String... path) {
     final Object value = node.getValue(path);
     if (value instanceof String) {
-      return !Strings.isNullOrEmpty((String) value);
+      return !Strings.isBlank((String) value);
     } else {
       return value != null;
     }
