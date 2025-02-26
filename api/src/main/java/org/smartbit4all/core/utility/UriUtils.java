@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -26,6 +24,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public abstract class UriUtils {
 
@@ -132,6 +132,12 @@ public abstract class UriUtils {
             e -> asUri(e.getValue())));
   }
 
+  /**
+   * Works only for the latest URI.
+   * 
+   * @param uri
+   * @return
+   */
   public static final String getUUID(URI uri) {
     if (uri == null) {
       return StringConstant.EMPTY;

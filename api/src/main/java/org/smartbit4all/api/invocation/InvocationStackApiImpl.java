@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.bean.InvocationStackEntry;
 import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 import org.smartbit4all.core.object.ObjectApi;
@@ -16,8 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class InvocationStackApiImpl implements InvocationStackApi {
 
+  private static final Logger log = LoggerFactory.getLogger(InvocationStackApiImpl.class);
+
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   private ThreadLocal<Deque<InvocationStack>> stack = new ThreadLocal<>();
 
@@ -61,6 +71,34 @@ public class InvocationStackApiImpl implements InvocationStackApi {
   }
 
   @Override
+  public URI runOnNamedStack(String schema, String stackName, Consumer<InvocationStack> func) {
+    // Lock the export stack.
+    StoredReference<InvocationStackItem> stackRef = collectionApi.reference(
+        schema, stackName,
+        InvocationStackItem.class);
+    Lock lock = objectApi.getLock(stackRef.getUri());
+    try {
+      lock.lock();
+      if (!stackRef.exists()) {
+        stackRef.update(s -> new InvocationStackItem());
+      }
+      try {
+        InvocationStack invocationStack = new InvocationStack(objectApi, stackRef, stackRef.get());
+        set(invocationStack);
+        func.accept(invocationStack);
+        commit();
+      } catch (Exception e) {
+        // Rollback the stack, do not save it.
+        log.error("Failed to run function on stack. " + get().getRootItem(), e);
+        rollback();
+      }
+    } finally {
+      lock.unlock();
+    }
+    return stackRef.getUri();
+  }
+
+  @Override
   public InvocationStack loadStack(URI uri, List<String> path) {
     if (uri == null) {
       return null;
@@ -85,12 +123,17 @@ public class InvocationStackApiImpl implements InvocationStackApi {
       Lock stackLock = objectApi.getLock(currentStack.getUri());
       stackLock.lock();
       try {
-        ObjectNode stackNode = objectApi.loadLatest(currentStack.getUri());
-        stackNode.modify(InvocationStackEntry.class, s -> {
-          s.setRoot(currentStack.getRootItem());
-          return s;
-        });
-        objectApi.save(stackNode);
+        if (currentStack.getStackRef() != null) {
+          // Save into the stored reference.
+          currentStack.getStackRef().update(s -> currentStack.getRootItem());
+        } else {
+          ObjectNode stackNode = objectApi.loadLatest(currentStack.getUri());
+          stackNode.modify(InvocationStackEntry.class, s -> {
+            s.setRoot(currentStack.getRootItem());
+            return s;
+          });
+          objectApi.save(stackNode);
+        }
       } finally {
         stackLock.unlock();
       }

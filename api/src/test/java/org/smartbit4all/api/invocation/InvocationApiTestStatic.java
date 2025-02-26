@@ -25,6 +25,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
@@ -42,6 +43,7 @@ import static java.util.stream.Collectors.toList;
 
 public class InvocationApiTestStatic {
 
+  private static final String MY_STACK = "MyStack";
   static final String INVOCATIONTEST = "invocationTest";
 
   static void testPrimary(InvocationApi invocationApi) throws Exception {
@@ -426,8 +428,17 @@ public class InvocationApiTestStatic {
       Assertions.assertEquals("Category 1 - modified",
           categoryNode.getValueAsString(SampleCategory.NAME));
     }
+  }
 
+  static void testRunOnNamedStack(InvocationApi invocationApi,
+      CollectionApi collectionApi,
+      ObjectApi objectApi, InvocationStackApi stackApi) {
+    stackApi.runOnNamedStack(INVOCATIONTEST, MY_STACK, s -> s.set("myVariable", "value"));
 
+    InvocationStackItem stackItem =
+        collectionApi.reference(INVOCATIONTEST, MY_STACK, InvocationStackItem.class).get();
+    Assertions.assertEquals("value",
+        stackItem.getVariables().get("myVariable"));
   }
 
 }

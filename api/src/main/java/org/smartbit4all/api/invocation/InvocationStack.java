@@ -2,6 +2,8 @@ package org.smartbit4all.api.invocation;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.object.bean.ObjectPropertyValueSet;
@@ -19,20 +21,36 @@ public final class InvocationStack {
    */
   private URI uri;
 
+  StoredReference<InvocationStackItem> stackRef;
+
   private ObjectApi objectApi;
 
   private InvocationStackItem rootItem;
 
   /**
+   * Construct a stack based on a {@link StoredReference}.
+   * 
    * @param objectApi
-   * @param processUri
+   * @param stackRef
    * @param rootItem
    */
-  public InvocationStack(ObjectApi objectApi, URI processUri, InvocationStackItem rootItem) {
+  public InvocationStack(ObjectApi objectApi, StoredReference<InvocationStackItem> stackRef,
+      InvocationStackItem rootItem) {
     super();
+    Objects.requireNonNull(stackRef);
     this.objectApi = objectApi;
-    this.uri = processUri;
     this.rootItem = rootItem;
+    this.stackRef = stackRef;
+    this.uri = stackRef.getUri();
+  }
+
+  public InvocationStack(ObjectApi objectApi, URI stackUri,
+      InvocationStackItem rootItem) {
+    super();
+    Objects.requireNonNull(stackUri);
+    this.objectApi = objectApi;
+    this.rootItem = rootItem;
+    this.uri = stackUri;
   }
 
   public final URI getUri() {
@@ -99,6 +117,10 @@ public final class InvocationStack {
       }
     }
     return this;
+  }
+
+  StoredReference<InvocationStackItem> getStackRef() {
+    return stackRef;
   }
 
 }

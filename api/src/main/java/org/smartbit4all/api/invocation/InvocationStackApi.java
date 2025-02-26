@@ -3,6 +3,8 @@ package org.smartbit4all.api.invocation;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import org.smartbit4all.api.collection.StoredReference;
 
 /**
  * This api is reponsible for the access and modification of the ProcessInstance. It can manage the
@@ -26,6 +28,18 @@ public interface InvocationStackApi {
    */
   URI initiateStack(String code, String name, Map<String, Object> inputParameters,
       Map<String, Object> defaultVariables);
+
+  /**
+   * Run the functionality passed to this method on the stack saved into a {@link StoredReference}.
+   * 
+   * @param schema The schema of the stack.
+   * @param stackName The name of the stack
+   * @param func The functionality to run on the stack. This must return a boolean to decide if we
+   *        have to save the result ir not.
+   * @return The URI of the stack. The stack is a reference in this case. So we can load it and read
+   *         the values if necessary.
+   */
+  URI runOnNamedStack(String schema, String stackName, Consumer<InvocationStack> func);
 
   /**
    * Initiate an active stack for the current thread.

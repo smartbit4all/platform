@@ -28,6 +28,9 @@ class InvocationApiTest {
   @Autowired
   private ObjectApi objectApi;
 
+  @Autowired
+  private InvocationStackApi stackApi;
+
   @Autowired(required = false)
   @Lazy
   protected PlatformTransactionManager transactionManager;
@@ -110,6 +113,12 @@ class InvocationApiTest {
   void testWaitImmediateInTransaction() throws Exception {
     InvocationApiTestStatic.testWaitImmediateInTransaction(invocationApi, collectionApi, objectApi,
         transactionManager);
+  }
+
+  @Test
+  void testRunOnNamedStack() throws Exception {
+    InvocationApiTestStatic.testRunOnNamedStack(invocationApi, collectionApi, objectApi,
+        stackApi);
   }
 
 }
