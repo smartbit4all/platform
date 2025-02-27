@@ -500,6 +500,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   @Scheduled(
+      initialDelayString = "${InvocationRegisterApi.readScheduledInvocations.intialdelay:30000}",
       fixedDelayString = "${InvocationRegisterApi.readScheduledInvocations.fixeddelay:5000}")
   public void readScheduledInvocations() {
     URI lockUri =
@@ -598,35 +599,45 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       AsyncInvocationChannel asyncInvocationChannel, List<URI> requestUris) {
     ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
 
-    // load and update requests if necessary
-    URI runtimeUri = applicationRuntime.getUri();
-    List<ObjectNode> requests = objectApi.loadLatestBatch(requestUris);
-    List<AsyncInvocationRequestEntry> entries = new ArrayList<>();
-    for (ObjectNode node : requests) {
-      AsyncInvocationRequest request = node.getObject(AsyncInvocationRequest.class);
-      if (!objectApi.equalsIgnoreVersion(runtimeUri, request.getRuntimeUri())) {
-        node.setValue(runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
-        // when saveBatch available, use it
-        request.setUri(objectApi.save(node));
+    // URI lockUri =
+    // UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
+    // "saveAndEnqueueInvocationRequest-" + asyncInvocationChannel.getName());
+    // Lock lock = objectApi.getLock(lockUri);
+    Lock lock = objectApi.getLock(asyncInvocationChannel.getUri());
+    lock.lock();
+    try {
+      // load and update requests if necessary
+      URI runtimeUri = applicationRuntime.getUri();
+      List<ObjectNode> requests = objectApi.loadLatestBatch(requestUris);
+      List<AsyncInvocationRequestEntry> entries = new ArrayList<>();
+      for (ObjectNode node : requests) {
+        AsyncInvocationRequest request = node.getObject(AsyncInvocationRequest.class);
+        if (!objectApi.equalsIgnoreVersion(runtimeUri, request.getRuntimeUri())) {
+          node.setValue(runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
+          // when saveBatch available, use it
+          request.setUri(objectApi.save(node));
+        }
+        entries.add(new AsyncInvocationRequestEntry(asyncInvocationChannel, request));
       }
-      entries.add(new AsyncInvocationRequestEntry(asyncInvocationChannel, request));
-    }
-    // update channel, add requests
-    Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
-    log.debug("saveAndEnqueueInvocationRequest, add invocation request item {} - {}",
-        asyncInvocationChannel.getName(),
-        asyncInvocationChannel.getUri());
-    storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
-      if (requestUris != null) {
-        requestUris.forEach(
-            requestUri -> rac.addInvocationRequestsItem(objectApi.getLatestUri(requestUri)));
-      }
-      return rac;
-    });
+      // update channel, add requests
+      Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+      log.debug("saveAndEnqueueInvocationRequest, add invocation request item {} - {}",
+          asyncInvocationChannel.getName(),
+          asyncInvocationChannel.getUri());
+      storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
+        if (requestUris != null) {
+          requestUris.forEach(
+              requestUri -> rac.addInvocationRequestsItem(objectApi.getLatestUri(requestUri)));
+        }
+        return rac;
+      });
 
-    // Now we update all the requests to blongs to this runtime and we enqueue them for the entry.
-    for (AsyncInvocationRequestEntry entry : entries) {
-      enqueueAsyncRequest(entry);
+      // Now we update all the requests to blongs to this runtime and we enqueue them for the entry.
+      for (AsyncInvocationRequestEntry entry : entries) {
+        enqueueAsyncRequest(entry);
+      }
+    } finally {
+      lock.unlock();
     }
     // must return something in transaction
     return null;
