@@ -52,7 +52,6 @@ import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.TransactionUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +61,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -198,6 +200,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   @Value("{invocationregistry.refresh-async-channels.fixeddelay:60000")
   private String asyncChannelRefreshFrequency = "60000";
+
+  @Autowired(required = false)
+  @Lazy
+  protected PlatformTransactionManager transactionManager;
 
   private StoredCollectionDescriptor apiRegistryList =
       new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
@@ -493,6 +499,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   @Scheduled(
+      initialDelayString = "${InvocationRegisterApi.readScheduledInvocations.intialdelay:30000}",
       fixedDelayString = "${InvocationRegisterApi.readScheduledInvocations.fixeddelay:5000}")
   public void readScheduledInvocations() {
     URI lockUri =
@@ -570,13 +577,52 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       // Save the request to remember to execute if this runtime fails. We set the runtime
       // identifier
       // to see which runtime is responsible for the invocation currently.
-      ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
 
+      // start transaction if necessary
+      if (transactionManager == null
+          || TransactionSynchronizationManager.isSynchronizationActive()) {
+        // no transactionManager or already in transaction
+        saveAndEnqueueInvocationRequestInTransaction(null, asyncInvocationChannel,
+            requestUris);
+      } else {
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        transaction
+            .execute(status -> saveAndEnqueueInvocationRequestInTransaction(status,
+                asyncInvocationChannel,
+                requestUris));
+      }
+    }
+  }
+
+  private final Long saveAndEnqueueInvocationRequestInTransaction(TransactionStatus status,
+      AsyncInvocationChannel asyncInvocationChannel, List<URI> requestUris) {
+    ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
+
+    // URI lockUri =
+    // UriUtils.constructMethodUri(Invocations.INVOCATION_SCHEME, InvocationRegisterApi.class,
+    // "saveAndEnqueueInvocationRequest-" + asyncInvocationChannel.getName());
+    // Lock lock = objectApi.getLock(lockUri);
+    Lock lock = objectApi.getLock(asyncInvocationChannel.getUri());
+    lock.lock();
+    try {
+      // load and update requests if necessary
+      URI runtimeUri = applicationRuntime.getUri();
+      List<ObjectNode> requests = objectApi.loadLatestBatch(requestUris);
+      List<AsyncInvocationRequestEntry> entries = new ArrayList<>();
+      for (ObjectNode node : requests) {
+        AsyncInvocationRequest request = node.getObject(AsyncInvocationRequest.class);
+        if (!objectApi.equalsIgnoreVersion(runtimeUri, request.getRuntimeUri())) {
+          node.setValue(runtimeUri, AsyncInvocationRequest.RUNTIME_URI);
+          // when saveBatch available, use it
+          request.setUri(objectApi.save(node));
+        }
+        entries.add(new AsyncInvocationRequestEntry(asyncInvocationChannel, request));
+      }
+      // update channel, add requests
       Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
       log.debug("saveAndEnqueueInvocationRequest, add invocation request item {} - {}",
           asyncInvocationChannel.getName(),
           asyncInvocationChannel.getUri());
-      // TODO move it to before commit
       storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
         if (requestUris != null) {
           requestUris.forEach(
@@ -584,28 +630,18 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         }
         return rac;
       });
+
       // Now we update all the requests to blongs to this runtime and we enqueue them for the entry.
-      for (URI asyncRequestUri : requestUris) {
-
-        Storage storageRequest = storageApi.getStorage(asyncRequestUri);
-        StorageObjectLock lockRequest = storageRequest.getLock(asyncRequestUri);
-        lockRequest.lock();
-        try {
-          StorageObject<AsyncInvocationRequest> soRequest =
-              storageRequest.load(objectApi.getLatestUri(asyncRequestUri),
-                  AsyncInvocationRequest.class);
-          soRequest.asMap().getObjectAsMap().put(AsyncInvocationRequest.RUNTIME_URI,
-              applicationRuntime.getUri());
-          enqueueAsyncRequest(
-              new AsyncInvocationRequestEntry(asyncInvocationChannel,
-                  soRequest.getObject().uri(storageRequest.save(soRequest))));
-        } finally {
-          lockRequest.unlock();
-        }
+      for (AsyncInvocationRequestEntry entry : entries) {
+        enqueueAsyncRequest(entry);
       }
-
+    } finally {
+      lock.unlock();
     }
+    // must return something in transaction
+    return null;
   }
+
 
   /**
    * Enqueue the given entry even if we are in an active transaction or not. If we are in an active
@@ -792,8 +828,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           AsyncInvocationRequest request = ((AsyncInvocationRequestEntry) obj).request;
           ChannelInfo channel = channelInfos.get(request.getChannel());
           request.runtimeUri(channel.runtimeUri);
-          request
-              .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
+          request.uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
           channel.requestsToAdd.add(objectApi.getLatestUri(request.getUri()));
         } else if (obj instanceof ObjectNode) {
           ObjectNode request = (ObjectNode) obj;
@@ -1172,8 +1207,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         ListIterator<ScheduledInvocationRequest> iterList =
             updatedList.getInvocationRequests().listIterator();
         while (iterList.hasNext()) {
-          ScheduledInvocationRequest scheduledInvocationRequest =
-              iterList.next();
+          ScheduledInvocationRequest scheduledInvocationRequest = iterList.next();
           if (scheduledInvocationRequest.getScheduledAt().isAfter(requests.executeAt)) {
             iterList.previous(); // have to move one step back
             break;
@@ -1209,13 +1243,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       log.debug("saveAsyncInvocationResult, remove invocation request item {} - {}",
           requestEntry.channel.getName(),
           requestEntry.channel.getUri());
-      // TODO move it to before commit
       storageAsyncReg.update(requestEntry.channel.getUri(), RuntimeAsyncChannel.class, rac -> {
-        /*
-         * Looks a bit not optimal but don't forget the ordered execution of the requests. If we
-         * have reasonable number of requests in the channel then we usually remove the first ones.
-         */
-        rac.getInvocationRequests().remove(objectApi.getLatestUri(requestEntry.request.getUri()));
+        URI uriToRemove = requestEntry.request.getUri();
+        rac.getInvocationRequests().removeIf(
+            uri -> objectApi.equalsIgnoreVersion(uri, uriToRemove));
         return rac;
       });
     }
