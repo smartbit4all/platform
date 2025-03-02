@@ -66,10 +66,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -122,6 +125,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Value("${storageSql.useCache:true}")
   private boolean useCache;
+
+  @Value("${storageSql.useTransactionCache:true}")
+  private boolean useTransactionCache;
 
   // default cache and className based caches
   private Cache<String, DataRow> defaultCache = null;
@@ -273,6 +279,22 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return result;
   }
 
+  @Override
+  public StorageObject<?> save(StorageObject<?> object) {
+    // in StorageSQL save should be done in transaction
+    if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
+      // no transactionManager or already in transaction
+      return saveInTransaction(null, object);
+    }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> saveInTransaction(status, object));
+  }
+
+  private StorageObject<?> saveInTransaction(TransactionStatus status, StorageObject<?> object) {
+    return super.save(object);
+  }
+
   /**
    * In case of the database the save process is almost the same. We select the object record for
    * update or insert this
@@ -371,9 +393,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        if (trHandler != null) {
-          trHandler.objectEntriesToUpdate.put(uriWithoutVersion, objectEntry);
-          trHandler.objectVersionsToUpdate.put(versionId, objectVersion);
+        if (useTransactionCache && trHandler != null) {
+          trHandler.addObjectEntryToUpdate(uriWithoutVersion, objectEntry);
+          trHandler.addObjectVersionToUpdate(versionId, objectVersion);
         } else {
           Crud.update(objectVersion);
           Crud.update(objectRow.tableData());
@@ -410,9 +432,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        if (trHandler != null) {
-          trHandler.objectEntriesToUpdate.put(uriWithoutVersion, objectEntry);
-          trHandler.objectVersionsToInsert.put(versionId, objectVersion);
+        if (useTransactionCache && trHandler != null) {
+          trHandler.addObjectEntryToUpdate(uriWithoutVersion, objectEntry);
+          trHandler.addObjectVersionToInsert(versionId, objectVersion);
         } else {
           Crud.create(objectVersion);
           Crud.update(objectRow.tableData());
@@ -463,9 +485,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.rebasedFromUri(), null)
           .set(objectVersionDef.transactionId(), null)
           .build();
-      if (trHandler != null) {
-        trHandler.objectEntriesToInsert.put(uriWithoutVersion, objectEntry);
-        trHandler.objectVersionsToInsert.put(versionId, objectVersion);
+      if (useTransactionCache && trHandler != null) {
+        trHandler.addObjectEntryToInsert(uriWithoutVersion, objectEntry);
+        trHandler.addObjectVersionToInsert(versionId, objectVersion);
       } else {
         Crud.create(objectEntry);
         Crud.create(objectVersion);
@@ -477,7 +499,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   private TableData<ObjectEntryDef> getOrQueryObjectEntry(StorageCacheTransactionHandler trHandler,
       String uriWithoutVersion, boolean lock) {
     TableData<ObjectEntryDef> objectEntry = null;
-    if (trHandler != null) {
+    if (useTransactionCache && trHandler != null) {
       objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
     }
     if (objectEntry == null) {
@@ -1021,6 +1043,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private Set<String> fillObjectVersionsFromTransactionCache(Set<String> allIdsToQuery,
       Map<String, DataRow> objectVersionsFromTransactionCache) {
+    if (!useTransactionCache) {
+      return allIdsToQuery;
+    }
     StorageCacheTransactionHandler trHandler =
         TransactionSynchronizationManager.isSynchronizationActive()
             ? getStorageCacheTransactionHandler()
@@ -1044,6 +1069,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private Set<String> fillObjectEntriesFromTransactionCache(Set<String> allUrisToQuery,
       Map<String, DataRow> objectEntriesFromTransactionCache) {
+    if (!useTransactionCache) {
+      return allUrisToQuery;
+    }
     StorageCacheTransactionHandler trHandler =
         TransactionSynchronizationManager.isSynchronizationActive()
             ? getStorageCacheTransactionHandler()
@@ -1106,17 +1134,63 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
 
-    protected Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
+    private Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
 
-    protected Map<String, TableData<ObjectEntryDef>> objectEntriesToInsert = new HashMap<>();
-    protected Map<String, TableData<ObjectEntryDef>> objectEntriesToUpdate = new HashMap<>();
-    protected Map<String, TableData<ObjectVersionDef>> objectVersionsToInsert = new HashMap<>();
-    protected Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
+    private Map<String, TableData<ObjectEntryDef>> objectEntriesToInsert = new HashMap<>();
+    private Map<String, TableData<ObjectEntryDef>> objectEntriesToUpdate = new HashMap<>();
+    private Map<String, TableData<ObjectVersionDef>> objectVersionsToInsert = new HashMap<>();
+    private Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
+
+    boolean isCompleted = false;
 
     public void addVersionToCachedInTransaction(String versionId, String className) {
       cachedKeysPerClass
           .computeIfAbsent(className != null ? className : "", k -> new HashSet<>())
           .add(versionId);
+    }
+
+    public void addObjectEntryToInsert(String uri, TableData<ObjectEntryDef> objectEntry) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.create(objectEntry);
+        }
+      } else {
+        objectEntriesToInsert.put(uri, objectEntry);
+      }
+    }
+
+    public void addObjectEntryToUpdate(String uri, TableData<ObjectEntryDef> objectEntry) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.update(objectEntry);
+        }
+      } else {
+        objectEntriesToUpdate.put(uri, objectEntry);
+      }
+    }
+
+    public void addObjectVersionToInsert(String uri, TableData<ObjectVersionDef> objectVersion) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.create(objectVersion);
+        }
+      } else {
+        objectVersionsToInsert.put(uri, objectVersion);
+      }
+    }
+
+    public void addObjectVersionToUpdate(String uri, TableData<ObjectVersionDef> objectVersion) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.update(objectVersion);
+        }
+      } else {
+        objectVersionsToUpdate.put(uri, objectVersion);
+      }
     }
 
     public TableData<ObjectEntryDef> getObjectEntry(String uriWithourVersion) {
@@ -1134,6 +1208,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     @Override
+    public int getOrder() {
+      // this should run last..
+      return Ordered.LOWEST_PRECEDENCE;
+    }
+
+    @Override
     public void suspend() {
       TransactionSynchronizationManager.unbindResource(STORAGE_CACHE_HANDLER);
       log.trace("StorageCache suspend");
@@ -1147,21 +1227,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     @Override
     public void beforeCommit(boolean readOnly) {
-      // honor readOnly
-      if (!readOnly) {
-        if (!objectEntriesToInsert.isEmpty()) {
-          Crud.create(append(objectEntryDef, objectEntriesToInsert));
-        }
-        if (!objectEntriesToUpdate.isEmpty()) {
-          Crud.update(append(objectEntryDef, objectEntriesToUpdate));
-        }
-        if (!objectVersionsToInsert.isEmpty()) {
-          Crud.create(append(objectVersionDef, objectVersionsToInsert));
-        }
-        if (!objectVersionsToUpdate.isEmpty()) {
-          Crud.update(append(objectVersionDef, objectVersionsToUpdate));
-        }
-      }
+      // after beforeCommit async request can be created, we should execute in beforeCompletion
     }
 
     private <T extends EntityDefinition> TableData<T> append(
@@ -1171,15 +1237,63 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .builder(entityDef, entityDef.allProperties())
           .build();
       tableDatas.values().forEach(td -> TableDatas.append(tabledata, td));
+      if (!useTransactionCache) {
+        log.warn("StorageTransactionHandler in use but useTransactionCache = false");
+      }
+      log.trace("Appended {} rows ({})", tabledata.size(), entityDef.entityDefName());
       return tabledata;
     }
 
     @Override
     public void beforeCompletion() {
-      objectEntriesToInsert.clear();
-      objectEntriesToUpdate.clear();
-      objectVersionsToInsert.clear();
-      objectVersionsToUpdate.clear();
+      boolean rollback = isRollback();
+      if (!rollback) {
+        if (!objectEntriesToInsert.isEmpty()) {
+          Crud.create(append(objectEntryDef, objectEntriesToInsert));
+          objectEntriesToInsert.clear();
+        }
+        if (!objectEntriesToUpdate.isEmpty()) {
+          Crud.update(append(objectEntryDef, objectEntriesToUpdate));
+          objectEntriesToUpdate.clear();
+        }
+        if (!objectVersionsToInsert.isEmpty()) {
+          Crud.create(append(objectVersionDef, objectVersionsToInsert));
+          objectVersionsToInsert.clear();
+        }
+        if (!objectVersionsToUpdate.isEmpty()) {
+          Crud.update(append(objectVersionDef, objectVersionsToUpdate));
+          objectVersionsToUpdate.clear();
+        }
+      }
+      clearIfEmpty(objectEntriesToInsert, "objectEntriesToInsert");
+      clearIfEmpty(objectEntriesToUpdate, "objectEntriesToUpdate");
+      clearIfEmpty(objectVersionsToInsert, "objectVersionsToInsert");
+      clearIfEmpty(objectVersionsToUpdate, "objectVersionsToUpdate");
+      isCompleted = true;
+    }
+
+    private boolean isRollback() {
+      try {
+        return TransactionSynchronizationManager.isActualTransactionActive() &&
+            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+      } catch (NoTransactionException e) {
+        // on startup it might happen
+        return false;
+      }
+    }
+
+    private void clearIfEmpty(Map<?, ?> map, String mapName) {
+      if (!map.isEmpty()) {
+        if (!useTransactionCache) {
+          log.warn(
+              "StorageTransactionHandler in use but useTransactionCache = false! Clearing not saved {} rows from {} before completion",
+              map.size(), mapName);
+        } else {
+          log.debug("Clearing not saved {} rows from {} before completion",
+              map.size(), mapName);
+        }
+        map.clear();
+      }
     }
 
     @Override

@@ -701,6 +701,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
 
     @Override
+    public int getOrder() {
+      return 1000;
+    }
+
+    @Override
     public void suspend() {
       TransactionSynchronizationManager.unbindResource(ASYNC_REQUESTS_HANDLER);
       log.trace("async suspend");

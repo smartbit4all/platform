@@ -785,6 +785,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
 
     @Override
+    public int getOrder() {
+      return 1000;
+    }
+
+    @Override
     public void suspend() {
       TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
       log.trace("async suspend");
@@ -917,6 +922,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     public void addLockToUnlock(StorageObjectLock lock) {
       locksToUnlock.add(lock);
+    }
+
+    @Override
+    public int getOrder() {
+      // this should run among the first ones, to release lock asap
+      return 0;
     }
 
     @Override
