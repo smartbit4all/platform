@@ -54,7 +54,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionUtils;
-import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -298,11 +298,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
       // no transactionManager or already in transaction
       return saveObjectInTransaction(null, object, relationBinaryData);
-    } else {
-      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-      return transaction
-          .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
     }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
   }
 
   private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
@@ -312,17 +311,22 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (extensionApi != null) {
       return extensionApi.saveObject(object, relationBinaryData);
     }
-    DataRow objectRow;
+
+    DataRow objectRow = null;
+    TableData<ObjectEntryDef> objectEntry = null;
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
     try {
-      String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
       if (log.isTraceEnabled()) {
         log.trace("saveObject read: uriWithoutVersion={}", uriWithoutVersion);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(uriWithoutVersion)).lock()
-          .onlyOne()
-          .orElse(null);
+      objectEntry = getOrQueryObjectEntry(trHandler, uriWithoutVersion, true);
+      if (objectEntry.size() == 1) {
+        objectRow = objectEntry.rows().get(0);
+      }
     } catch (Exception e) {
       objectRow = null;
     }
@@ -330,7 +334,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         .builder(objectVersionDef, objectVersionDef.versionId(),
             objectVersionDef.entryId(), objectVersionDef.version(),
             objectVersionDef.createdAt(), objectVersionDef.objectContent(),
-            objectVersionDef.refContent(), objectVersionDef.aspectContent());
+            objectVersionDef.refContent(), objectVersionDef.aspectContent(),
+            // new attributes, TODO where are they used / set?
+            objectVersionDef.commonAncestorUri(),
+            objectVersionDef.createdBy(),
+            objectVersionDef.createdByUri(),
+            objectVersionDef.mergedWithUri(),
+            objectVersionDef.operation(),
+            objectVersionDef.rebasedFromUri(),
+            objectVersionDef.transactionId());
     if (objectRow != null) {
       // It is an already existing object so it is an update
       OffsetDateTime now = OffsetDateTime.now();
@@ -339,7 +351,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         Long newVersion = FIRST_VERSION;
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
         Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
-        Crud.update(builderVersion
+        TableData<ObjectVersionDef> objectVersion = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -348,11 +360,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
-            .build());
+            .set(objectVersionDef.commonAncestorUri(), null)
+            .set(objectVersionDef.createdBy(), null)
+            .set(objectVersionDef.createdByUri(), null)
+            .set(objectVersionDef.mergedWithUri(), null)
+            .set(objectVersionDef.operation(), null)
+            .set(objectVersionDef.rebasedFromUri(), null)
+            .set(objectVersionDef.transactionId(), null)
+            .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        Crud.update(objectRow.tableData());
+        if (trHandler != null) {
+          trHandler.objectEntriesToUpdate.put(uriWithoutVersion, objectEntry);
+          trHandler.objectVersionsToUpdate.put(versionId, objectVersion);
+        } else {
+          Crud.update(objectVersion);
+          Crud.update(objectRow.tableData());
+        }
         return newVersion;
       } else {
         // Update the entry with the new version and insert the new version.
@@ -365,7 +390,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           newRefVersion = currentRefVersion;
         }
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
-        Crud.create(builderVersion
+        TableData<ObjectVersionDef> objectVersion = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -374,11 +399,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
-            .build());
+            .set(objectVersionDef.commonAncestorUri(), null)
+            .set(objectVersionDef.createdBy(), null)
+            .set(objectVersionDef.createdByUri(), null)
+            .set(objectVersionDef.mergedWithUri(), null)
+            .set(objectVersionDef.operation(), null)
+            .set(objectVersionDef.rebasedFromUri(), null)
+            .set(objectVersionDef.transactionId(), null)
+            .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        Crud.update(objectRow.tableData());
+        if (trHandler != null) {
+          trHandler.objectEntriesToUpdate.put(uriWithoutVersion, objectEntry);
+          trHandler.objectVersionsToInsert.put(versionId, objectVersion);
+        } else {
+          Crud.create(objectVersion);
+          Crud.update(objectRow.tableData());
+        }
         return newVersion;
       }
     } else {
@@ -388,12 +426,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       OffsetDateTime now = OffsetDateTime.now();
       Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
       Long newVersion = FIRST_VERSION;
-      Crud.create(TableDatas
-          .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
-              objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
-              objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
-              objectEntryDef.version(), objectEntryDef.refVersion(),
-              objectEntryDef.singleVersion())
+      objectEntry = TableDatas
+          .builder(objectEntryDef, objectEntryDef.allProperties())
+          // .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
+          // objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
+          // objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
+          // objectEntryDef.version(), objectEntryDef.refVersion(),
+          // objectEntryDef.singleVersion())
           .addRow()
           .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
@@ -405,9 +444,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               object.getUuid() == null ? null : object.getUuid().toString())
           .set(objectEntryDef.version(), newVersion)
           .set(objectEntryDef.refVersion(), newRefVersion)
-          .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build());
+          .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build();
       String versionId = createVersionId(nextId, newVersion);
-      Crud.create(builderVersion
+      TableData<ObjectVersionDef> objectVersion = builderVersion
           .addRow()
           .set(objectVersionDef.versionId(), versionId)
           .set(objectVersionDef.entryId(), nextId)
@@ -416,9 +455,44 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.objectContent(), object.serializeMapAware())
           .set(objectVersionDef.refContent(), relationBinaryData)
           .set(objectVersionDef.aspectContent(), object.serializeAspects())
-          .build());
+          .set(objectVersionDef.commonAncestorUri(), null)
+          .set(objectVersionDef.createdBy(), null)
+          .set(objectVersionDef.createdByUri(), null)
+          .set(objectVersionDef.mergedWithUri(), null)
+          .set(objectVersionDef.operation(), null)
+          .set(objectVersionDef.rebasedFromUri(), null)
+          .set(objectVersionDef.transactionId(), null)
+          .build();
+      if (trHandler != null) {
+        trHandler.objectEntriesToInsert.put(uriWithoutVersion, objectEntry);
+        trHandler.objectVersionsToInsert.put(versionId, objectVersion);
+      } else {
+        Crud.create(objectEntry);
+        Crud.create(objectVersion);
+      }
       return newVersion;
     }
+  }
+
+  private TableData<ObjectEntryDef> getOrQueryObjectEntry(StorageCacheTransactionHandler trHandler,
+      String uriWithoutVersion, boolean lock) {
+    TableData<ObjectEntryDef> objectEntry = null;
+    if (trHandler != null) {
+      objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
+    }
+    if (objectEntry == null) {
+      CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
+          .select(objectEntryDef.allProperties())
+          .where(objectEntryDef.uri().eq(uriWithoutVersion));
+      if (lock) {
+        read.lock();
+      }
+      objectEntry = read.listData();
+      if (objectEntry == null || objectEntry.size() > 1) {
+        throw new IllegalArgumentException("Null or more than one objectEntry by uri");
+      }
+    }
+    return objectEntry;
   }
 
   public static final String getUriString(URI uri) {
@@ -466,11 +540,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     URI uriWithoutVersion = getUriWithoutVersion(object.getUri());
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uriWithoutVersion, true);
-    DataRow objectRow = null;
+    DataRow objectRow = queryObjectEntry(uriWithoutVersion, true);
     StorageObjectData storageObjectData = null;
-    if (optObjectRow.isPresent()) {
-      objectRow = optObjectRow.get();
+    if (objectRow != null) {
       storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
           .currentVersion(readObjectVersion(
               objectRow.get(objectEntryDef.id()),
@@ -600,11 +672,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("exists: uri={}", uri);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
-          .onlyOne()
-          .orElse(null);
+      objectRow = queryObjectEntry(uri, false);
     } catch (Exception e) {
       objectRow = null;
     }
@@ -618,11 +686,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("lastModified: uri={}", uri);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
-          .onlyOne()
-          .orElse(null);
+      objectRow = queryObjectEntry(uri, false);
     } catch (Exception e) {
       throw new IllegalStateException("Unable to read the object record.", e);
     }
@@ -896,15 +960,23 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     // query database only for idsToQuery
     if (!allIdsToQuery.isEmpty()) {
+      // check transaction cache is present
+      Map<String, DataRow> objectVersionsFromTransactionCache = new HashMap<>();
+      Set<String> allIdsToQueryFromDB =
+          fillObjectVersionsFromTransactionCache(allIdsToQuery, objectVersionsFromTransactionCache);
+      // read remaining versions from db
       Map<String, DataRow> dbRows = Crud.read(objectVersionDef)
           .select(objectVersionDef.allProperties())
-          .where(objectVersionDef.versionId().in(allIdsToQuery))
+          .where(objectVersionDef.versionId().in(allIdsToQueryFromDB))
           .listData()
           .rows()
           .stream()
           .collect(Collectors.toMap(
               row -> row.get(objectVersionDef.versionId()),
               row -> row));
+      if (!objectVersionsFromTransactionCache.isEmpty()) {
+        dbRows.putAll(objectVersionsFromTransactionCache);
+      }
 
       // add to cache by class
       for (Map.Entry<String, Set<String>> entry : idsToQueryByClass.entrySet()) {
@@ -945,6 +1017,52 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     return versionRows;
+  }
+
+  private Set<String> fillObjectVersionsFromTransactionCache(Set<String> allIdsToQuery,
+      Map<String, DataRow> objectVersionsFromTransactionCache) {
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    Set<String> allIdsToQueryFromDB;
+    if (trHandler != null) {
+      allIdsToQueryFromDB = new HashSet<>();
+      for (String versionId : allIdsToQuery) {
+        TableData<ObjectVersionDef> objectVersion = trHandler.getObjectVersion(versionId);
+        if (objectVersion != null && objectVersion.size() == 1) {
+          objectVersionsFromTransactionCache.put(versionId, objectVersion.rows().get(0));
+        } else {
+          allIdsToQueryFromDB.add(versionId);
+        }
+      }
+    } else {
+      allIdsToQueryFromDB = allIdsToQuery;
+    }
+    return allIdsToQueryFromDB;
+  }
+
+  private Set<String> fillObjectEntriesFromTransactionCache(Set<String> allUrisToQuery,
+      Map<String, DataRow> objectEntriesFromTransactionCache) {
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    Set<String> allUrisToQueryFromDB;
+    if (trHandler != null) {
+      allUrisToQueryFromDB = new HashSet<>();
+      for (String uri : allUrisToQuery) {
+        TableData<ObjectEntryDef> objectEntry = trHandler.getObjectEntry(uri);
+        if (objectEntry != null && objectEntry.size() == 1) {
+          objectEntriesFromTransactionCache.put(uri, objectEntry.rows().get(0));
+        } else {
+          allUrisToQueryFromDB.add(uri);
+        }
+      }
+    } else {
+      allUrisToQueryFromDB = allUrisToQuery;
+    }
+    return allUrisToQueryFromDB;
   }
 
   private long getObjectSize(BinaryData content) {
@@ -990,10 +1108,29 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     protected Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
 
+    protected Map<String, TableData<ObjectEntryDef>> objectEntriesToInsert = new HashMap<>();
+    protected Map<String, TableData<ObjectEntryDef>> objectEntriesToUpdate = new HashMap<>();
+    protected Map<String, TableData<ObjectVersionDef>> objectVersionsToInsert = new HashMap<>();
+    protected Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
+
     public void addVersionToCachedInTransaction(String versionId, String className) {
       cachedKeysPerClass
           .computeIfAbsent(className != null ? className : "", k -> new HashSet<>())
           .add(versionId);
+    }
+
+    public TableData<ObjectEntryDef> getObjectEntry(String uriWithourVersion) {
+      if (objectEntriesToInsert.containsKey(uriWithourVersion)) {
+        return objectEntriesToInsert.get(uriWithourVersion);
+      }
+      return objectEntriesToUpdate.get(uriWithourVersion);
+    }
+
+    public TableData<ObjectVersionDef> getObjectVersion(String versionId) {
+      if (objectVersionsToInsert.containsKey(versionId)) {
+        return objectVersionsToInsert.get(versionId);
+      }
+      return objectVersionsToUpdate.get(versionId);
     }
 
     @Override
@@ -1006,6 +1143,43 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     public void resume() {
       TransactionSynchronizationManager.bindResource(STORAGE_CACHE_HANDLER, true);
       log.trace("StorageCache resume");
+    }
+
+    @Override
+    public void beforeCommit(boolean readOnly) {
+      // honor readOnly
+      if (!readOnly) {
+        if (!objectEntriesToInsert.isEmpty()) {
+          Crud.create(append(objectEntryDef, objectEntriesToInsert));
+        }
+        if (!objectEntriesToUpdate.isEmpty()) {
+          Crud.update(append(objectEntryDef, objectEntriesToUpdate));
+        }
+        if (!objectVersionsToInsert.isEmpty()) {
+          Crud.create(append(objectVersionDef, objectVersionsToInsert));
+        }
+        if (!objectVersionsToUpdate.isEmpty()) {
+          Crud.update(append(objectVersionDef, objectVersionsToUpdate));
+        }
+      }
+    }
+
+    private <T extends EntityDefinition> TableData<T> append(
+        T entityDef,
+        Map<String, TableData<T>> tableDatas) {
+      TableData<T> tabledata = TableDatas
+          .builder(entityDef, entityDef.allProperties())
+          .build();
+      tableDatas.values().forEach(td -> TableDatas.append(tabledata, td));
+      return tabledata;
+    }
+
+    @Override
+    public void beforeCompletion() {
+      objectEntriesToInsert.clear();
+      objectEntriesToUpdate.clear();
+      objectVersionsToInsert.clear();
+      objectVersionsToUpdate.clear();
     }
 
     @Override
@@ -1037,15 +1211,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     Set<String> uniqueBaseUris = uriInfos.stream()
         .map(info -> info.baseUri)
         .collect(Collectors.toSet());
+    Map<String, DataRow> objectEntriesFromTransactionCache = new HashMap<>();
+    Set<String> urisToQueryFromDB =
+        fillObjectEntriesFromTransactionCache(uniqueBaseUris, objectEntriesFromTransactionCache);
     Map<String, DataRow> objectEntryRows = Crud.read(objectEntryDef)
         .select(objectEntryDef.allProperties())
-        .where(objectEntryDef.uri().in(uniqueBaseUris))
+        .where(objectEntryDef.uri().in(urisToQueryFromDB))
         .listData()
         .rows()
         .stream()
         .collect(Collectors.toMap(
             row -> row.get(objectEntryDef.uri()),
             row -> row));
+    if (!objectEntriesFromTransactionCache.isEmpty()) {
+      objectEntryRows.putAll(objectEntriesFromTransactionCache);
+    }
     if (objectEntryRows.size() != uniqueBaseUris.size()) {
       throw new ObjectNotFoundException(uniqueBaseUris, null, "Object not found.");
     }
@@ -1090,6 +1270,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
+      // TODO check if transaction cache is available and uris present only there
       List<URI> result = objectList.rows().stream()
           .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
           .collect(toList());
@@ -1106,9 +1287,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Override
   public boolean move(URI uri, URI targetUri) {
     // It is a simple update...
-    Optional<DataRow> optObjectEntryRow = queryObjectEntry(uri, true);
-    if (optObjectEntryRow.isPresent()) {
-      DataRow objectEntryRow = optObjectEntryRow.get();
+    DataRow objectEntryRow = queryObjectEntry(uri, true);
+    if (objectEntryRow != null) {
       objectEntryRow.set(objectEntryDef.uri(), getUriString(targetUri));
       Crud.update(objectEntryRow.tableData());
       return true;
@@ -1121,21 +1301,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         .uri(objectUri);
   }
 
-  private final Optional<DataRow> queryObjectEntry(URI objectUri, boolean lock) {
-    try {
-      if (log.isTraceEnabled()) {
-        log.trace("queryObjectEntry: objectUri={}, lock: {}", objectUri, lock);
-      }
-      CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(getUriString(objectUri)));
-      if (lock) {
-        read.lock();
-      }
-      return read.onlyOne();
-    } catch (Exception e) {
-      return Optional.empty();
+  private final DataRow queryObjectEntry(URI objectUri, boolean lock) {
+    DataRow objectRow;
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    String uriWithoutVersion = getUriString(getUriWithoutVersion(objectUri));
+    TableData<ObjectEntryDef> objectEntry =
+        getOrQueryObjectEntry(trHandler, uriWithoutVersion, lock);
+    if (objectEntry.size() == 1) {
+      objectRow = objectEntry.rows().get(0);
+    } else {
+      objectRow = null;
     }
+    return objectRow;
   }
 
   /**
@@ -1217,25 +1397,25 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     // return result == null ? Optional.empty() : Optional.of(result);
   }
 
-//  private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
-//    try {
-//      PropertySet properties = objectVersionDef.allProperties();
-//      if (skipContent) {
-//        properties.remove(objectVersionDef.objectContent());
-//      }
-//      String versionId = createVersionId(id, version);
-//
-//      if (log.isTraceEnabled()) {
-//        log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
-//      }
-//      return Crud.read(objectVersionDef)
-//          .select(properties)
-//          .where(objectVersionDef.versionId().eq(versionId))
-//          .onlyOne().get();
-//    } catch (Exception e) {
-//      return null;
-//    }
-//  }
+  // private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
+  // try {
+  // PropertySet properties = objectVersionDef.allProperties();
+  // if (skipContent) {
+  // properties.remove(objectVersionDef.objectContent());
+  // }
+  // String versionId = createVersionId(id, version);
+  //
+  // if (log.isTraceEnabled()) {
+  // log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
+  // }
+  // return Crud.read(objectVersionDef)
+  // .select(properties)
+  // .where(objectVersionDef.versionId().eq(versionId))
+  // .onlyOne().get();
+  // } catch (Exception e) {
+  // return null;
+  // }
+  // }
 
   private final ObjectVersion readObjectVersionFromRow(Long version, DataRow objectRow) {
     return new ObjectVersion()
@@ -1332,11 +1512,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return null;
     }
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (!optObjectRow.isPresent()) {
+    DataRow objectRow = queryObjectEntry(uri, false);
+    if (objectRow == null) {
       return null;
     }
-    DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
         .currentVersion(readObjectVersion(
             objectRow.get(objectEntryDef.id()),
@@ -1379,11 +1558,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return null;
     }
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (!optObjectRow.isPresent()) {
+    DataRow objectRow = queryObjectEntry(uri, false);
+    if (objectRow == null) {
       return null;
     }
-    DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
         .currentVersion(readObjectVersion(
             objectRow.get(objectEntryDef.id()),
