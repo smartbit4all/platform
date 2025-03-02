@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,11 +53,14 @@ import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
+import org.smartbit4all.domain.data.storage.TransactionUtils;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CachePolicy;
+import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CacheSettings;
 import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +123,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Value("${storageSql.useCache:true}")
   private boolean useCache;
 
-  private Cache<String, DataRow> versionContentCache = null;
+  // default cache and className based caches
+  private Cache<String, DataRow> defaultCache = null;
+  private Map<String, Cache<String, DataRow>> classCaches = new HashMap<>();
+
+  @Autowired(required = false)
+  private StorageSQLCacheConfig cacheConfig;
 
   @Autowired
   @Lazy
@@ -133,18 +140,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (useCache) {
-      versionContentCache = CacheBuilder.newBuilder().maximumSize(maximumCacheSize)
+    if (cacheConfig == null) {
+      cacheConfig = new StorageSQLCacheConfig();
+      cacheConfig.setEnabled(useCache);
+    }
+    if (cacheConfig.isEnabled()) {
+      defaultCache = CacheBuilder.newBuilder()
+          .maximumSize(cacheConfig.getDefaultSettings().getMaxSize())
           .concurrencyLevel(cacheConcurrencyLevel)
           .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
           .removalListener((RemovalNotification<String, DataRow> notif) -> {
             if (log.isTraceEnabled()) {
-              log.trace("Cache - evict, {}", notif.getKey());
+              log.trace("Cache - evict from default cache, {}", notif.getKey());
             }
           })
           // TODO removalListener
           .build();
     }
+
     if (extensions != null) {
       for (StorageSQLExtensionApi e : extensions) {
         if (e.getManagedObjects() != null) {
@@ -633,11 +646,44 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
+  private Cache<String, DataRow> getClassCache(String className) {
+    if (cacheConfig == null) {
+      return null;
+    }
+    CacheSettings classCacheSettings = cacheConfig.getSettingsForClass(className);
+    if (classCacheSettings.getPolicy() == CachePolicy.IGNORE) {
+      return null;
+    }
+    if (classCacheSettings == cacheConfig.getDefaultSettings()) {
+      return defaultCache;
+    }
+
+    // cacheSettings exist specifically for this class, and not IGNORE
+    return classCaches.computeIfAbsent(className, (key) -> {
+      long maxSize = cacheConfig.getMaxSize(className);
+      if (log.isDebugEnabled()) {
+        log.debug("Creating cache for class {}, maxSize: {}", className, maxSize);
+      }
+
+      return CacheBuilder.newBuilder()
+          .maximumSize(maxSize)
+          .concurrencyLevel(cacheConcurrencyLevel)
+          .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
+          .removalListener((RemovalNotification<String, DataRow> notif) -> {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - evict from {} cache, {}", className, notif.getKey());
+            }
+          })
+          .build();
+    });
+  }
+
   public class UriInfo {
     final URI uri;
     final String baseUri;
     final Long originalVersion;
     final boolean isSingleVersion;
+    final String className;
 
     Long entryId;
     Long calculatedVersion;
@@ -652,6 +698,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       } else {
         this.originalVersion = getUriVersion(uri);
       }
+      this.className = UriUtils.getClassName(uri);
+    }
+
+    UriInfo(URI uri, Long id, Long version) {
+      this(uri);
+      this.entryId = id;
+      this.calculatedVersion = version;
+      this.versionId = createVersionId(entryId, calculatedVersion);
     }
   }
 
@@ -795,38 +849,56 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     Map<String, DataRow> versionRows = new HashMap<>();
 
+    Map<String, List<UriInfo>> urisByClass = uriInfos.stream()
+        .filter(info -> info.versionId != null)
+        .collect(Collectors.groupingBy(info -> info.className != null ? info.className : ""));
+
     // split entries into cacheable and non-cacheable groups
-    Map<String, DataRow> cachedVersions = new HashMap<>();
-    List<String> idsToQuery = new ArrayList<>();
+    Map<String, Set<String>> idsToQueryByClass = new HashMap<>();
     Set<String> nonCachedIds = new HashSet<>();
 
-    uriInfos.forEach((info) -> {
-      String versionId = info.versionId;
-      boolean isSingleVersion = info.isSingleVersion;
+    for (Map.Entry<String, List<UriInfo>> entry : urisByClass.entrySet()) {
+      String className = entry.getKey();
+      List<UriInfo> classUris = entry.getValue();
 
-      // skip cache for single version objects
-      if (!isSingleVersion && versionContentCache != null) {
-        DataRow cachedRow = versionContentCache.getIfPresent(versionId);
-        if (cachedRow != null) {
-          if (log.isTraceEnabled()) {
-            log.trace("Cache - hit, {}", versionId);
+      Cache<String, DataRow> cache = getClassCache(className);
+      Set<String> idsToQuery = new HashSet<>();
+      classUris.forEach((info) -> {
+        String versionId = info.versionId;
+        boolean isSingleVersion = info.isSingleVersion;
+
+        // skip cache for single version objects
+        if (!isSingleVersion && cache != null) {
+          DataRow cachedRow = cache.getIfPresent(versionId);
+          if (cachedRow != null) {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - hit, {}", versionId);
+            }
+            versionRows.put(versionId, cachedRow);
+            return;
           }
-          cachedVersions.put(versionId, cachedRow);
-          return;
         }
-      }
+        // not found in cache or singleVersion -> we should query this versionId
+        idsToQuery.add(versionId);
+        if (!isSingleVersion) {
+          nonCachedIds.add(versionId);
+        }
+      });
 
-      idsToQuery.add(versionId);
-      if (!isSingleVersion) {
-        nonCachedIds.add(versionId);
+      if (!idsToQuery.isEmpty()) {
+        idsToQueryByClass.put(className, idsToQuery);
       }
-    });
+    }
+
+    Set<String> allIdsToQuery = idsToQueryByClass.values().stream()
+        .flatMap(Set::stream)
+        .collect(Collectors.toSet());
 
     // query database only for idsToQuery
-    if (!idsToQuery.isEmpty()) {
+    if (!allIdsToQuery.isEmpty()) {
       Map<String, DataRow> dbRows = Crud.read(objectVersionDef)
           .select(objectVersionDef.allProperties())
-          .where(objectVersionDef.versionId().in(idsToQuery))
+          .where(objectVersionDef.versionId().in(allIdsToQuery))
           .listData()
           .rows()
           .stream()
@@ -834,33 +906,63 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               row -> row.get(objectVersionDef.versionId()),
               row -> row));
 
-      // add to cache if appropriate
-      if (versionContentCache != null) {
-        dbRows.forEach((id, row) -> {
-          // cache if it was in non-cached set (avoid caching unrelated/singleversion rows)
-          if (nonCachedIds.contains(id)) {
-            if (log.isTraceEnabled()) {
-              log.trace("Cache - load, size:{} ", versionContentCache.size());
-            }
-            versionContentCache.put(id, row);
-            addedToCache(id);
+      // add to cache by class
+      for (Map.Entry<String, Set<String>> entry : idsToQueryByClass.entrySet()) {
+        String className = entry.getKey();
+        Cache<String, DataRow> cache = getClassCache(className);
+        if (cache == null) {
+          continue;
+        }
+        for (String id : entry.getValue()) {
+          if (!nonCachedIds.contains(id)) {
+            continue;
           }
-        });
+          DataRow row = dbRows.get(id);
+          if (row != null) {
+            // check object size // TODO later
+            // long maxObjectSize = cacheConfig.getMaxObjectSize(className);
+            // BinaryData content = row.get(objectVersionDef.objectContent());
+            // long objectSize = content != null ? getObjectSize(content) : 0;
+
+            // if (objectSize <= maxObjectSize) {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - storing for class {}, id: {}",
+                  className, id);
+              // log.trace("Cache - storing for class {}, id: {}, size: {} bytes",
+              // className, id, objectSize);
+            }
+            cache.put(id, row);
+            addedToCache(id, className);
+            // } else if (log.isTraceEnabled()) {
+            // log.trace("Not caching {} for class {} - size {} exceeds limit {}",
+            // id, className, objectSize, maxObjectSize);
+            // }
+          }
+        }
       }
 
       versionRows.putAll(dbRows);
     }
 
-    // merge cached and database results
-    versionRows.putAll(cachedVersions);
-
     return versionRows;
   }
 
-  private void addedToCache(String id) {
+  private long getObjectSize(BinaryData content) {
+    if (content == null) {
+      return 0;
+    }
+
+    try {
+      return content.length();
+    } catch (Exception e) {
+      log.warn("Failed to get object size", e);
+      return 0;
+    }
+  }
+
+  private void addedToCache(String versionId, String className) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      cachedInTransaction.get().add(id);
-      registerStorageCacheTransactionHandler();
+      getStorageCacheTransactionHandler().addVersionToCachedInTransaction(versionId, className);
     }
   }
 
@@ -868,9 +970,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * resource identifier for StorageObjectLock unlock handler
    */
   private static final String STORAGE_CACHE_HANDLER = "STORAGE_CACHE_HANDLER";
-
-  protected ThreadLocal<Set<String>> cachedInTransaction =
-      ThreadLocal.withInitial(() -> new HashSet<>());
 
   protected void registerStorageCacheTransactionHandler() {
     if (!TransactionSynchronizationManager.hasResource(STORAGE_CACHE_HANDLER)) {
@@ -880,16 +979,52 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  private StorageCacheTransactionHandler getStorageCacheTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        STORAGE_CACHE_HANDLER,
+        StorageCacheTransactionHandler.class,
+        () -> new StorageCacheTransactionHandler());
+  }
+
   protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
+
+    protected Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
+
+    public void addVersionToCachedInTransaction(String versionId, String className) {
+      cachedKeysPerClass
+          .computeIfAbsent(className != null ? className : "", k -> new HashSet<>())
+          .add(versionId);
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(STORAGE_CACHE_HANDLER);
+      log.trace("StorageCache suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(STORAGE_CACHE_HANDLER, true);
+      log.trace("StorageCache resume");
+    }
 
     @Override
     public void afterCompletion(int status) {
       if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
-        if (!cachedInTransaction.get().isEmpty()) {
-          versionContentCache.invalidateAll(cachedInTransaction.get());
+        for (Map.Entry<String, Set<String>> entry : cachedKeysPerClass.entrySet()) {
+          String className = entry.getKey();
+          Set<String> keys = entry.getValue();
+          if (!keys.isEmpty()) {
+            Cache<String, DataRow> cache = getClassCache(className);
+            if (cache != null) {
+              cache.invalidateAll(keys);
+            }
+            keys.clear();
+          }
         }
       }
-      cachedInTransaction.remove();
+
+      cachedKeysPerClass.clear();
 
       if (status == TransactionSynchronization.STATUS_UNKNOWN) {
         log.warn("Transaction state is STATUS_UNKNOWN!");
@@ -1012,7 +1147,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    */
   private final ObjectVersion readObjectVersion(Long id, Long version, URI uri) {
 
-    Optional<DataRow> objectRow = queryObjectVersion(id, version, true, isSingleVersion(uri));
+    Optional<DataRow> objectRow = queryObjectVersion(id, version, true, uri);
     if (!objectRow.isPresent()) {
       return null;
     }
@@ -1029,74 +1164,78 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * @return The {@link DataRow}
    */
   private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent,
-      boolean isSingleVersion) {
-    if (versionContentCache == null) {
-      DataRow result = queryObjectVersionInner(id, version, skipContent);
-      return result == null ? Optional.empty() : Optional.of(result);
-    }
-
-    if (id == null || version == null) {
-      return Optional.empty();
-    }
-    if (isSingleVersion) {
-      // skip cache
-      DataRow result = queryObjectVersionInner(id, version, skipContent);
-      return result == null ? Optional.empty() : Optional.of(result);
-    }
-    String cacheId = id + "-" + version;
-    DataRow cachedRow = versionContentCache.getIfPresent(cacheId);
-    if (cachedRow != null) {
-      if (log.isTraceEnabled()) {
-        log.trace("Cache - hit, {} ", cacheId);
-      }
-      return Optional.of(cachedRow);
-    }
-    DataRow result;
-    if (skipContent) {
-      // don't cache when skipContent
-      if (log.isTraceEnabled()) {
-        log.trace("Cache - wont cache, {}", cacheId);
-      }
-      result = queryObjectVersionInner(id, version, skipContent);
-    } else {
-      try {
-        result = versionContentCache.get(cacheId,
-            () -> {
-              if (log.isTraceEnabled()) {
-                log.trace("Cache - load, size:{} ", versionContentCache.size());
-              }
-              DataRow row = queryObjectVersionInner(id, version, skipContent);
-              addedToCache(cacheId);
-              return row;
-            });
-      } catch (ExecutionException e) {
-        log.warn("Unable to load to cache", e);
-        result = null;
-      }
-    }
-
-    return result == null ? Optional.empty() : Optional.of(result);
+      URI uri) {
+    UriInfo uriInfo = new UriInfo(uri, id, version);
+    Map<String, DataRow> rows = queryObjectVersions(Arrays.asList(uriInfo));
+    return Optional.of(rows.get(uriInfo.versionId));
+    // boolean isSingleVersion = isSingleVersion(uri);
+    // if (defaultCache == null) {
+    // DataRow result = queryObjectVersionInner(id, version, skipContent);
+    // return result == null ? Optional.empty() : Optional.of(result);
+    // }
+    //
+    // if (id == null || version == null) {
+    // return Optional.empty();
+    // }
+    // if (isSingleVersion) {
+    // // skip cache
+    // DataRow result = queryObjectVersionInner(id, version, skipContent);
+    // return result == null ? Optional.empty() : Optional.of(result);
+    // }
+    // String cacheId = id + "-" + version;
+    // DataRow cachedRow = versionContentCache.getIfPresent(cacheId);
+    // if (cachedRow != null) {
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - hit, {} ", cacheId);
+    // }
+    // return Optional.of(cachedRow);
+    // }
+    // DataRow result;
+    // if (skipContent) {
+    // // don't cache when skipContent
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - wont cache, {}", cacheId);
+    // }
+    // result = queryObjectVersionInner(id, version, skipContent);
+    // } else {
+    // try {
+    // result = versionContentCache.get(cacheId,
+    // () -> {
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - load, size:{} ", versionContentCache.size());
+    // }
+    // DataRow row = queryObjectVersionInner(id, version, skipContent);
+    // addedToCache(cacheId);
+    // return row;
+    // });
+    // } catch (ExecutionException e) {
+    // log.warn("Unable to load to cache", e);
+    // result = null;
+    // }
+    // }
+    //
+    // return result == null ? Optional.empty() : Optional.of(result);
   }
 
-  private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
-    try {
-      PropertySet properties = objectVersionDef.allProperties();
-      if (skipContent) {
-        properties.remove(objectVersionDef.objectContent());
-      }
-      String versionId = createVersionId(id, version);
-
-      if (log.isTraceEnabled()) {
-        log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
-      }
-      return Crud.read(objectVersionDef)
-          .select(properties)
-          .where(objectVersionDef.versionId().eq(versionId))
-          .onlyOne().get();
-    } catch (Exception e) {
-      return null;
-    }
-  }
+//  private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
+//    try {
+//      PropertySet properties = objectVersionDef.allProperties();
+//      if (skipContent) {
+//        properties.remove(objectVersionDef.objectContent());
+//      }
+//      String versionId = createVersionId(id, version);
+//
+//      if (log.isTraceEnabled()) {
+//        log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
+//      }
+//      return Crud.read(objectVersionDef)
+//          .select(properties)
+//          .where(objectVersionDef.versionId().eq(versionId))
+//          .onlyOne().get();
+//    } catch (Exception e) {
+//      return null;
+//    }
+//  }
 
   private final ObjectVersion readObjectVersionFromRow(Long version, DataRow objectRow) {
     return new ObjectVersion()
@@ -1135,8 +1274,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       Long version,
       URI versionUri) {
 
-    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false,
-        isSingleVersion(versionUri));
+    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false, versionUri);
     if (!optObjectVersion.isPresent()) {
       return null;
     }
@@ -1176,8 +1314,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (relationVersion == null) {
       return null;
     }
-    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersion, false,
-        isSingleVersion(uri));
+    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersion, false, uri);
     if (optObjectVersion.isPresent()) {
       BinaryData binaryData = optObjectVersion.get().get(objectVersionDef.refContent());
       try {
