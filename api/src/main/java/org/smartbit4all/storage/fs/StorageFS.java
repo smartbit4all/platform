@@ -233,7 +233,11 @@ public class StorageFS extends ObjectStorageImpl {
     FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
         transaction != null ? transaction.getData().getUri().toString() : null);
     try {
-      FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
+      String thisRuntime = StringConstant.EMPTY;
+      if (runtimeApi().self() != null && runtimeApi().self().getUuid() != null) {
+        thisRuntime = runtimeApi().self().getUuid().toString();
+      }
+      FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock, thisRuntime);
     } catch (Exception e) {
       throw new IllegalStateException("Unable to lock object " + objectUri, e);
     }

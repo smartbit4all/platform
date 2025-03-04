@@ -23,6 +23,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -359,7 +360,7 @@ public class FileIO {
    */
   public static final FileLockData lockObjectFile(FileLockData newLockData, File lockFile,
       long waitUntil,
-      Predicate<FileLockData> lockValidator)
+      Predicate<FileLockData> lockValidator, String thisRuntime)
       throws FileLocked {
     long start = System.currentTimeMillis();
     while (true) {
@@ -383,6 +384,10 @@ public class FileIO {
             long currentTimeMillis = System.currentTimeMillis();
             if (waitUntil != -1 && (currentTimeMillis - start) > waitUntil) {
               throw new FileLocked(lockData);
+            }
+            // Check if we are the locker then return the lock itself without any modification.
+            if (Objects.equals(thisRuntime, lockData.getRuntimeId())) {
+              return newLockData;
             }
           } else {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
