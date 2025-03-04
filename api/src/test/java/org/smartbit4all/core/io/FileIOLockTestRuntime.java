@@ -78,7 +78,7 @@ public class FileIOLockTestRuntime {
       FileLockData fld = new FileLockData(runtimeId, transactionId);
       FileIO.lockObjectFile(fld, file, -1, l -> {
         return l != null && !Strings.isEmpty(l.getTransactionId());
-      });
+      }, null);
       // Write the log file and the object
       bytes =
           (runtimeId + StringConstant.SEMICOLON + transactionId + StringConstant.SEMICOLON + i
