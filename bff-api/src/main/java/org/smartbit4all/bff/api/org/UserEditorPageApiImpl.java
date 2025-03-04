@@ -94,7 +94,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   }
 
   public void putLayoutIntoView(View view) {
-    List<SmartWidgetDefinition> widgets = new ArrayList<>(List.of(
+    List<SmartWidgetDefinition> widgets = new ArrayList<>(Arrays.asList(
         textfield(widgetKey(UserEditingModel.USER, User.NAME),
             localeSettingApi.get(UserEditingModel.USER, User.NAME)),
         textfield(widgetKey(UserEditingModel.USER, User.USERNAME),
