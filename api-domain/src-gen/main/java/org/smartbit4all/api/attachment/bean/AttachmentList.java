@@ -37,6 +37,7 @@ import javax.validation.Valid;
 @ApiModel(description = "A list of attached contents belongs to and an object. ")
 @JsonPropertyOrder({
   AttachmentList.URI,
+  AttachmentList.NAME,
   AttachmentList.CONTENTS
 })
 @JsonTypeName("AttachmentList")
@@ -44,6 +45,9 @@ import javax.validation.Valid;
 public class AttachmentList {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String NAME = "name";
+  private String name;
 
   public static final String CONTENTS = "contents";
   private List<BinaryContentData> contents = new ArrayList<>();
@@ -77,6 +81,33 @@ public class AttachmentList {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public AttachmentList name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Get name
+   * @return name
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(String name) {
+    this.name = name;
   }
 
 
@@ -124,12 +155,13 @@ public class AttachmentList {
     }
     AttachmentList attachmentList = (AttachmentList) o;
     return Objects.equals(this.uri, attachmentList.uri) &&
+        Objects.equals(this.name, attachmentList.name) &&
         Objects.equals(this.contents, attachmentList.contents);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, contents);
+    return Objects.hash(uri, name, contents);
   }
 
   @Override
@@ -137,6 +169,7 @@ public class AttachmentList {
     StringBuilder sb = new StringBuilder();
     sb.append("class AttachmentList {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    contents: ").append(toIndentedString(contents)).append("\n");
     sb.append("}");
     return sb.toString();
