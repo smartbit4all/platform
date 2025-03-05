@@ -35,6 +35,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.bff.api.mdm.bean.MDMEntryDescriptorPageModel;
+import org.smartbit4all.bff.api.mdm.util.MDMVectorCollectionUtil;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
@@ -164,18 +165,18 @@ public class MDMEntryDescriptorPageApiImpl
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
             .type(SmartFormWidgetType.TEXT_FIELD),
-        new SmartWidgetDefinition()
-            .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION))
-            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION))
-            .type(SmartFormWidgetType.TEXT_FIELD),
-        new SmartWidgetDefinition()
-            .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-                VectorCollectionDescriptor.EMBEDDING_CONNECTION))
-            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                VectorCollectionDescriptor.EMBEDDING_CONNECTION))
-            .type(SmartFormWidgetType.TEXT_FIELD),
+        MDMVectorCollectionUtil.getEmbeddingConnectionWidget(
+            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+                VectorCollectionDescriptor.EMBEDDING_CONNECTION),
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.EMBEDDING_CONNECTION),
+            masterDataManagementApi),
+        MDMVectorCollectionUtil.getVectorDbConnectionWidget(
+            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
+            masterDataManagementApi),
         ObjectLayoutBuilder.textfield(
             ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES),
             localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
