@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.smartbit4all.api.config.PlatformApiConfig;
@@ -138,16 +139,18 @@ public class TableDataSerializerTest {
     for (int i = 0; i < testRowCount; i++) {
       DataRow row = serializer.addRow();
       row.set(userAccountDef.id(), Long.valueOf(testRowCount - i));
-      row.set(userAccountDef.firstname(), "firstname-" + i);
-      row.set(userAccountDef.lastname(), "lastname-" + i / 10);
+      row.set(userAccountDef.firstname(), String.format("firstname-%03d", i));
+      row.set(userAccountDef.lastname(), String.format("lastname-%03d", i / 10));
       row.set(userAccountDef.fullname(), null);
-      row.set(userAccountDef.name(), "firstname lastname" + i % 100);
+      row.set(userAccountDef.name(), String.format("firstname lastname - %03d", i % 100));
       // row.set(userAccountDef.getUri(), URI.create("users:/user#" + i));
     }
     serializer.finish();
 
     TableDataPager<UserAccountDef> pager =
         TableDataPager.create(UserAccountDef.class, tempFile, entityManager, objectApi);
+
+    // System.out.println(TableDatas.toStringAdv(pager.fetch(0, 50)));
 
     List<Integer> sortedIndexes = tableDataApi.getSortedIndexes(pager,
         Collections.singletonList(userAccountDef.id().asc()));
@@ -160,10 +163,16 @@ public class TableDataSerializerTest {
     assertEquals(expectedIndexes, sortedIndexes);
 
     List<Integer> sortedIndexes2 = tableDataApi.getSortedIndexes(pager,
-        Arrays.asList(userAccountDef.lastname().desc(),
+        Arrays.asList(userAccountDef.name().desc(),
             userAccountDef.firstname().asc()));
 
-    System.out.println(sortedIndexes2);
+    ArrayList<Integer> limitedIndices =
+        new ArrayList<>(sortedIndexes2.stream().skip(10).limit(5).collect(Collectors.toList()));
+    TableData<UserAccountDef> sortedTableData = pager.getRows(limitedIndices);
+    // System.out.println(TableDatas.toStringAdv(sortedTableData));
+
+    List<Long> pagedSortedIds = sortedTableData.values(userAccountDef.id());
+    assertEquals(Arrays.asList(902l, 802l, 702l, 602l, 502l), pagedSortedIds);
   }
 
 }
