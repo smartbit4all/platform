@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.StoredReference;
@@ -26,6 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 
 public class SmartLinkApiImpl implements SmartLinkApi {
+
+  private static final Logger log = LoggerFactory.getLogger(SmartLinkApiImpl.class);
 
   private static final String SMAR_LINK_MIGRATION = "smarLinkMigration";
 
@@ -147,6 +151,7 @@ public class SmartLinkApiImpl implements SmartLinkApi {
   @Override
   public void migrate(String channel) {
     if (upgradeStorage) {
+      log.info("Migrating smartLinks in channel {}", channel);
       StoredReference<SmartLinkMigrationStatus> refMigrationStatus =
           collectionApi.reference(ViewContextService.SCHEMA,
               getMigrationStatusName(channel),
@@ -162,21 +167,31 @@ public class SmartLinkApiImpl implements SmartLinkApi {
       try {
         SmartLinkMigrationStatus migrationStatus = refMigrationStatus.get();
         if (migrationStatus.getStatus() == null) {
-          // We have to start the migration hener in this server.
+          // We have to start the migration in this server.
+          log.info("Migrating starts now {}", channel);
           refMigrationStatus.update(
               s -> s.channel(channel).startAt(OffsetDateTime.now()).status(StatusEnum.RUNNING));
           StoredMap linkMap = collectionApi.map(ViewContextService.SCHEMA, channel);
-          for (Entry<String, URI> smartLinkEntry : linkMap.uris().entrySet()) {
+          Map<String, URI> uris = linkMap.uris();
+          log.info("URIs to migrate: {}", uris.size());
+          int counter = 0;
+          for (Entry<String, URI> smartLinkEntry : uris.entrySet()) {
             objectApi.saveAsNew(SCHEMA,
                 new ObjectReferenceById().id(smartLinkEntry.getKey())
                     .refObjectUri(smartLinkEntry.getValue()));
+            counter++;
+            if (counter % 100 == 0) {
+              log.info("Created {} next-gen smartlink", counter);
+            }
           }
+          log.info("Created {} next-gen smartlink", counter);
           refMigrationStatus.update(
               s -> s.finishedAt(OffsetDateTime.now()).status(StatusEnum.DONE));
         }
       } finally {
         migrationLock.unlock();
       }
+      log.info("Migrating finished for smartLinks in channel {}", channel);
     }
   }
 

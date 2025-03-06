@@ -21,11 +21,12 @@ public class ValueTransformationApiImpl implements ValueTransformationApi {
   private MasterDataManagementApi mdmApi;
 
   @Override
-  public List<ValueTransformationResult> transform(String configName, List<Object> inputValues) {
+  public List<ValueTransformationResult> transform(String configName, List<Object> inputValues,
+      String mdmType) {
     if (inputValues == null || inputValues.isEmpty()) {
       return Collections.emptyList();
     }
-    MDMEntryApi api = mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+    MDMEntryApi api = mdmApi.getApi(mdmType,
         MDM_ENTRY_VALUETRANSFORMATIONCONFIG);
     ValueTransformationConfig config = api.lookup().findByUnique(
         new ObjectPropertyValue().addPathItem(ValueTransformationConfig.DATA)

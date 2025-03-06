@@ -115,6 +115,8 @@ public interface InvocationApi {
    */
   void invokeAsync(InvocationRequest request, String channel);
 
+  void invokeAsyncAndWait(InvocationRequest request, String channel, AsyncCompletableFuture future);
+
   /**
    * This call register the invocation for the for execute after the successful commit of the
    * current transaction. But on the other hand it will save the given {@link InvocationRequest}

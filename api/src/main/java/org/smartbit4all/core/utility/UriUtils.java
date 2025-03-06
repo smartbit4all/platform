@@ -163,4 +163,18 @@ public abstract class UriUtils {
             + StringConstant.SLASH + method,
         null);
   }
+
+  public static final String getClassName(URI uri) {
+    if (uri == null) {
+      return StringConstant.EMPTY;
+    }
+    String path = uri.getPath();
+    if (path != null && path.startsWith("/")) {
+      String[] pathParts = path.substring(1).split("/");
+      if (pathParts.length > 0) {
+        return pathParts[0];
+      }
+    }
+    return StringConstant.EMPTY;
+  }
 }

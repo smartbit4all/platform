@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,20 +53,26 @@ import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
-import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.data.storage.TransactionUtils;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CachePolicy;
+import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CacheSettings;
 import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -121,7 +126,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Value("${storageSql.useCache:true}")
   private boolean useCache;
 
-  private Cache<String, DataRow> versionContentCache = null;
+  @Value("${storageSql.useTransactionCache:true}")
+  private boolean useTransactionCache;
+
+  // default cache and className based caches
+  private Cache<String, DataRow> defaultCache = null;
+  private Map<String, Cache<String, DataRow>> classCaches = new HashMap<>();
+
+  @Autowired(required = false)
+  private StorageSQLCacheConfig cacheConfig;
 
   @Autowired
   @Lazy
@@ -133,18 +146,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (useCache) {
-      versionContentCache = CacheBuilder.newBuilder().maximumSize(maximumCacheSize)
+    if (cacheConfig == null) {
+      cacheConfig = new StorageSQLCacheConfig();
+      cacheConfig.setEnabled(useCache);
+    }
+    if (cacheConfig.isEnabled()) {
+      defaultCache = CacheBuilder.newBuilder()
+          .maximumSize(cacheConfig.getDefaultSettings().getMaxSize())
           .concurrencyLevel(cacheConcurrencyLevel)
           .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
           .removalListener((RemovalNotification<String, DataRow> notif) -> {
             if (log.isTraceEnabled()) {
-              log.trace("Cache - evict, {}", notif.getKey());
+              log.trace("Cache - evict from default cache, {}", notif.getKey());
             }
           })
           // TODO removalListener
           .build();
     }
+
     if (extensions != null) {
       for (StorageSQLExtensionApi e : extensions) {
         if (e.getManagedObjects() != null) {
@@ -260,6 +279,22 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return result;
   }
 
+  @Override
+  public StorageObject<?> save(StorageObject<?> object) {
+    // in StorageSQL save should be done in transaction
+    if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
+      // no transactionManager or already in transaction
+      return saveInTransaction(null, object);
+    }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> saveInTransaction(status, object));
+  }
+
+  private StorageObject<?> saveInTransaction(TransactionStatus status, StorageObject<?> object) {
+    return super.save(object);
+  }
+
   /**
    * In case of the database the save process is almost the same. We select the object record for
    * update or insert this
@@ -285,11 +320,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
       // no transactionManager or already in transaction
       return saveObjectInTransaction(null, object, relationBinaryData);
-    } else {
-      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-      return transaction
-          .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
     }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
   }
 
   private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
@@ -299,17 +333,22 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (extensionApi != null) {
       return extensionApi.saveObject(object, relationBinaryData);
     }
-    DataRow objectRow;
+
+    DataRow objectRow = null;
+    TableData<ObjectEntryDef> objectEntry = null;
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
     try {
-      String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
       if (log.isTraceEnabled()) {
         log.trace("saveObject read: uriWithoutVersion={}", uriWithoutVersion);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(uriWithoutVersion)).lock()
-          .onlyOne()
-          .orElse(null);
+      objectEntry = getOrQueryObjectEntry(trHandler, uriWithoutVersion, true);
+      if (objectEntry.size() == 1) {
+        objectRow = objectEntry.rows().get(0);
+      }
     } catch (Exception e) {
       objectRow = null;
     }
@@ -317,7 +356,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         .builder(objectVersionDef, objectVersionDef.versionId(),
             objectVersionDef.entryId(), objectVersionDef.version(),
             objectVersionDef.createdAt(), objectVersionDef.objectContent(),
-            objectVersionDef.refContent(), objectVersionDef.aspectContent());
+            objectVersionDef.refContent(), objectVersionDef.aspectContent(),
+            // new attributes, TODO where are they used / set?
+            objectVersionDef.commonAncestorUri(),
+            objectVersionDef.createdBy(),
+            objectVersionDef.createdByUri(),
+            objectVersionDef.mergedWithUri(),
+            objectVersionDef.operation(),
+            objectVersionDef.rebasedFromUri(),
+            objectVersionDef.transactionId());
     if (objectRow != null) {
       // It is an already existing object so it is an update
       OffsetDateTime now = OffsetDateTime.now();
@@ -326,7 +373,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         Long newVersion = FIRST_VERSION;
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
         Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
-        Crud.update(builderVersion
+        TableData<ObjectVersionDef> objectVersion = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -335,11 +382,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
-            .build());
+            .set(objectVersionDef.commonAncestorUri(), null)
+            .set(objectVersionDef.createdBy(), null)
+            .set(objectVersionDef.createdByUri(), null)
+            .set(objectVersionDef.mergedWithUri(), null)
+            .set(objectVersionDef.operation(), null)
+            .set(objectVersionDef.rebasedFromUri(), null)
+            .set(objectVersionDef.transactionId(), null)
+            .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        Crud.update(objectRow.tableData());
+        if (useTransactionCache && trHandler != null) {
+          trHandler.addObjectEntryToUpdate(uriWithoutVersion, objectEntry);
+          trHandler.addObjectVersionToUpdate(versionId, objectVersion);
+        } else {
+          Crud.update(objectVersion);
+          Crud.update(objectRow.tableData());
+        }
         return newVersion;
       } else {
         // Update the entry with the new version and insert the new version.
@@ -352,7 +412,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           newRefVersion = currentRefVersion;
         }
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
-        Crud.create(builderVersion
+        TableData<ObjectVersionDef> objectVersion = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
@@ -361,11 +421,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
-            .build());
+            .set(objectVersionDef.commonAncestorUri(), null)
+            .set(objectVersionDef.createdBy(), null)
+            .set(objectVersionDef.createdByUri(), null)
+            .set(objectVersionDef.mergedWithUri(), null)
+            .set(objectVersionDef.operation(), null)
+            .set(objectVersionDef.rebasedFromUri(), null)
+            .set(objectVersionDef.transactionId(), null)
+            .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
         objectRow.set(objectEntryDef.modifiedAt(), now);
-        Crud.update(objectRow.tableData());
+        if (useTransactionCache && trHandler != null) {
+          trHandler.addObjectEntryToUpdate(uriWithoutVersion, objectEntry);
+          trHandler.addObjectVersionToInsert(versionId, objectVersion);
+        } else {
+          Crud.create(objectVersion);
+          Crud.update(objectRow.tableData());
+        }
         return newVersion;
       }
     } else {
@@ -375,12 +448,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       OffsetDateTime now = OffsetDateTime.now();
       Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
       Long newVersion = FIRST_VERSION;
-      Crud.create(TableDatas
-          .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
-              objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
-              objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
-              objectEntryDef.version(), objectEntryDef.refVersion(),
-              objectEntryDef.singleVersion())
+      objectEntry = TableDatas
+          .builder(objectEntryDef, objectEntryDef.allProperties())
+          // .builder(objectEntryDef, objectEntryDef.uri(), objectEntryDef.id(),
+          // objectEntryDef.scheme(), objectEntryDef.className(), objectEntryDef.createdAt(),
+          // objectEntryDef.modifiedAt(), objectEntryDef.uuid(),
+          // objectEntryDef.version(), objectEntryDef.refVersion(),
+          // objectEntryDef.singleVersion())
           .addRow()
           .set(objectEntryDef.uri(), getUriString(uri))
           .set(objectEntryDef.id(), nextId)
@@ -392,9 +466,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               object.getUuid() == null ? null : object.getUuid().toString())
           .set(objectEntryDef.version(), newVersion)
           .set(objectEntryDef.refVersion(), newRefVersion)
-          .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build());
+          .set(objectEntryDef.singleVersion(), object.isSingleVersion()).build();
       String versionId = createVersionId(nextId, newVersion);
-      Crud.create(builderVersion
+      TableData<ObjectVersionDef> objectVersion = builderVersion
           .addRow()
           .set(objectVersionDef.versionId(), versionId)
           .set(objectVersionDef.entryId(), nextId)
@@ -403,9 +477,44 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.objectContent(), object.serializeMapAware())
           .set(objectVersionDef.refContent(), relationBinaryData)
           .set(objectVersionDef.aspectContent(), object.serializeAspects())
-          .build());
+          .set(objectVersionDef.commonAncestorUri(), null)
+          .set(objectVersionDef.createdBy(), null)
+          .set(objectVersionDef.createdByUri(), null)
+          .set(objectVersionDef.mergedWithUri(), null)
+          .set(objectVersionDef.operation(), null)
+          .set(objectVersionDef.rebasedFromUri(), null)
+          .set(objectVersionDef.transactionId(), null)
+          .build();
+      if (useTransactionCache && trHandler != null) {
+        trHandler.addObjectEntryToInsert(uriWithoutVersion, objectEntry);
+        trHandler.addObjectVersionToInsert(versionId, objectVersion);
+      } else {
+        Crud.create(objectEntry);
+        Crud.create(objectVersion);
+      }
       return newVersion;
     }
+  }
+
+  private TableData<ObjectEntryDef> getOrQueryObjectEntry(StorageCacheTransactionHandler trHandler,
+      String uriWithoutVersion, boolean lock) {
+    TableData<ObjectEntryDef> objectEntry = null;
+    if (useTransactionCache && trHandler != null) {
+      objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
+    }
+    if (objectEntry == null) {
+      CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
+          .select(objectEntryDef.allProperties())
+          .where(objectEntryDef.uri().eq(uriWithoutVersion));
+      if (lock) {
+        read.lock();
+      }
+      objectEntry = read.listData();
+      if (objectEntry == null || objectEntry.size() > 1) {
+        throw new IllegalArgumentException("Null or more than one objectEntry by uri");
+      }
+    }
+    return objectEntry;
   }
 
   public static final String getUriString(URI uri) {
@@ -453,11 +562,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     URI uriWithoutVersion = getUriWithoutVersion(object.getUri());
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uriWithoutVersion, true);
-    DataRow objectRow = null;
+    DataRow objectRow = queryObjectEntry(uriWithoutVersion, true);
     StorageObjectData storageObjectData = null;
-    if (optObjectRow.isPresent()) {
-      objectRow = optObjectRow.get();
+    if (objectRow != null) {
       storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
           .currentVersion(readObjectVersion(
               objectRow.get(objectEntryDef.id()),
@@ -587,11 +694,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("exists: uri={}", uri);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
-          .onlyOne()
-          .orElse(null);
+      objectRow = queryObjectEntry(uri, false);
     } catch (Exception e) {
       objectRow = null;
     }
@@ -605,11 +708,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("lastModified: uri={}", uri);
       }
-      objectRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.modifiedAt())
-          .where(objectEntryDef.uri().eq(getUriString(getUriWithoutVersion(uri))))
-          .onlyOne()
-          .orElse(null);
+      objectRow = queryObjectEntry(uri, false);
     } catch (Exception e) {
       throw new IllegalStateException("Unable to read the object record.", e);
     }
@@ -633,11 +732,44 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
+  private Cache<String, DataRow> getClassCache(String className) {
+    if (cacheConfig == null) {
+      return null;
+    }
+    CacheSettings classCacheSettings = cacheConfig.getSettingsForClass(className);
+    if (classCacheSettings.getPolicy() == CachePolicy.IGNORE) {
+      return null;
+    }
+    if (classCacheSettings == cacheConfig.getDefaultSettings()) {
+      return defaultCache;
+    }
+
+    // cacheSettings exist specifically for this class, and not IGNORE
+    return classCaches.computeIfAbsent(className, (key) -> {
+      long maxSize = cacheConfig.getMaxSize(className);
+      if (log.isDebugEnabled()) {
+        log.debug("Creating cache for class {}, maxSize: {}", className, maxSize);
+      }
+
+      return CacheBuilder.newBuilder()
+          .maximumSize(maxSize)
+          .concurrencyLevel(cacheConcurrencyLevel)
+          .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
+          .removalListener((RemovalNotification<String, DataRow> notif) -> {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - evict from {} cache, {}", className, notif.getKey());
+            }
+          })
+          .build();
+    });
+  }
+
   public class UriInfo {
     final URI uri;
     final String baseUri;
     final Long originalVersion;
     final boolean isSingleVersion;
+    final String className;
 
     Long entryId;
     Long calculatedVersion;
@@ -652,6 +784,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       } else {
         this.originalVersion = getUriVersion(uri);
       }
+      this.className = UriUtils.getClassName(uri);
+    }
+
+    UriInfo(URI uri, Long id, Long version) {
+      this(uri);
+      this.entryId = id;
+      this.calculatedVersion = version;
+      this.versionId = createVersionId(entryId, calculatedVersion);
     }
   }
 
@@ -795,72 +935,180 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     Map<String, DataRow> versionRows = new HashMap<>();
 
+    Map<String, List<UriInfo>> urisByClass = uriInfos.stream()
+        .filter(info -> info.versionId != null)
+        .collect(Collectors.groupingBy(info -> info.className != null ? info.className : ""));
+
     // split entries into cacheable and non-cacheable groups
-    Map<String, DataRow> cachedVersions = new HashMap<>();
-    List<String> idsToQuery = new ArrayList<>();
+    Map<String, Set<String>> idsToQueryByClass = new HashMap<>();
     Set<String> nonCachedIds = new HashSet<>();
 
-    uriInfos.forEach((info) -> {
-      String versionId = info.versionId;
-      boolean isSingleVersion = info.isSingleVersion;
+    for (Map.Entry<String, List<UriInfo>> entry : urisByClass.entrySet()) {
+      String className = entry.getKey();
+      List<UriInfo> classUris = entry.getValue();
 
-      // skip cache for single version objects
-      if (!isSingleVersion && versionContentCache != null) {
-        DataRow cachedRow = versionContentCache.getIfPresent(versionId);
-        if (cachedRow != null) {
-          if (log.isTraceEnabled()) {
-            log.trace("Cache - hit, {}", versionId);
+      Cache<String, DataRow> cache = getClassCache(className);
+      Set<String> idsToQuery = new HashSet<>();
+      classUris.forEach((info) -> {
+        String versionId = info.versionId;
+        boolean isSingleVersion = info.isSingleVersion;
+
+        // skip cache for single version objects
+        if (!isSingleVersion && cache != null) {
+          DataRow cachedRow = cache.getIfPresent(versionId);
+          if (cachedRow != null) {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - hit, {}", versionId);
+            }
+            versionRows.put(versionId, cachedRow);
+            return;
           }
-          cachedVersions.put(versionId, cachedRow);
-          return;
         }
-      }
+        // not found in cache or singleVersion -> we should query this versionId
+        idsToQuery.add(versionId);
+        if (!isSingleVersion) {
+          nonCachedIds.add(versionId);
+        }
+      });
 
-      idsToQuery.add(versionId);
-      if (!isSingleVersion) {
-        nonCachedIds.add(versionId);
+      if (!idsToQuery.isEmpty()) {
+        idsToQueryByClass.put(className, idsToQuery);
       }
-    });
+    }
+
+    Set<String> allIdsToQuery = idsToQueryByClass.values().stream()
+        .flatMap(Set::stream)
+        .collect(Collectors.toSet());
 
     // query database only for idsToQuery
-    if (!idsToQuery.isEmpty()) {
+    if (!allIdsToQuery.isEmpty()) {
+      // check transaction cache is present
+      Map<String, DataRow> objectVersionsFromTransactionCache = new HashMap<>();
+      Set<String> allIdsToQueryFromDB =
+          fillObjectVersionsFromTransactionCache(allIdsToQuery, objectVersionsFromTransactionCache);
+      // read remaining versions from db
       Map<String, DataRow> dbRows = Crud.read(objectVersionDef)
           .select(objectVersionDef.allProperties())
-          .where(objectVersionDef.versionId().in(idsToQuery))
+          .where(objectVersionDef.versionId().in(allIdsToQueryFromDB))
           .listData()
           .rows()
           .stream()
           .collect(Collectors.toMap(
               row -> row.get(objectVersionDef.versionId()),
               row -> row));
+      if (!objectVersionsFromTransactionCache.isEmpty()) {
+        dbRows.putAll(objectVersionsFromTransactionCache);
+      }
 
-      // add to cache if appropriate
-      if (versionContentCache != null) {
-        dbRows.forEach((id, row) -> {
-          // cache if it was in non-cached set (avoid caching unrelated/singleversion rows)
-          if (nonCachedIds.contains(id)) {
-            if (log.isTraceEnabled()) {
-              log.trace("Cache - load, size:{} ", versionContentCache.size());
-            }
-            versionContentCache.put(id, row);
-            addedToCache(id);
+      // add to cache by class
+      for (Map.Entry<String, Set<String>> entry : idsToQueryByClass.entrySet()) {
+        String className = entry.getKey();
+        Cache<String, DataRow> cache = getClassCache(className);
+        if (cache == null) {
+          continue;
+        }
+        for (String id : entry.getValue()) {
+          if (!nonCachedIds.contains(id)) {
+            continue;
           }
-        });
+          DataRow row = dbRows.get(id);
+          if (row != null) {
+            // check object size // TODO later
+            // long maxObjectSize = cacheConfig.getMaxObjectSize(className);
+            // BinaryData content = row.get(objectVersionDef.objectContent());
+            // long objectSize = content != null ? getObjectSize(content) : 0;
+
+            // if (objectSize <= maxObjectSize) {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - storing for class {}, id: {}",
+                  className, id);
+              // log.trace("Cache - storing for class {}, id: {}, size: {} bytes",
+              // className, id, objectSize);
+            }
+            cache.put(id, row);
+            addedToCache(id, className);
+            // } else if (log.isTraceEnabled()) {
+            // log.trace("Not caching {} for class {} - size {} exceeds limit {}",
+            // id, className, objectSize, maxObjectSize);
+            // }
+          }
+        }
       }
 
       versionRows.putAll(dbRows);
     }
 
-    // merge cached and database results
-    versionRows.putAll(cachedVersions);
-
     return versionRows;
   }
 
-  private void addedToCache(String id) {
+  private Set<String> fillObjectVersionsFromTransactionCache(Set<String> allIdsToQuery,
+      Map<String, DataRow> objectVersionsFromTransactionCache) {
+    if (!useTransactionCache) {
+      return allIdsToQuery;
+    }
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    Set<String> allIdsToQueryFromDB;
+    if (trHandler != null) {
+      allIdsToQueryFromDB = new HashSet<>();
+      for (String versionId : allIdsToQuery) {
+        TableData<ObjectVersionDef> objectVersion = trHandler.getObjectVersion(versionId);
+        if (objectVersion != null && objectVersion.size() == 1) {
+          objectVersionsFromTransactionCache.put(versionId, objectVersion.rows().get(0));
+        } else {
+          allIdsToQueryFromDB.add(versionId);
+        }
+      }
+    } else {
+      allIdsToQueryFromDB = allIdsToQuery;
+    }
+    return allIdsToQueryFromDB;
+  }
+
+  private Set<String> fillObjectEntriesFromTransactionCache(Set<String> allUrisToQuery,
+      Map<String, DataRow> objectEntriesFromTransactionCache) {
+    if (!useTransactionCache) {
+      return allUrisToQuery;
+    }
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    Set<String> allUrisToQueryFromDB;
+    if (trHandler != null) {
+      allUrisToQueryFromDB = new HashSet<>();
+      for (String uri : allUrisToQuery) {
+        TableData<ObjectEntryDef> objectEntry = trHandler.getObjectEntry(uri);
+        if (objectEntry != null && objectEntry.size() == 1) {
+          objectEntriesFromTransactionCache.put(uri, objectEntry.rows().get(0));
+        } else {
+          allUrisToQueryFromDB.add(uri);
+        }
+      }
+    } else {
+      allUrisToQueryFromDB = allUrisToQuery;
+    }
+    return allUrisToQueryFromDB;
+  }
+
+  private long getObjectSize(BinaryData content) {
+    if (content == null) {
+      return 0;
+    }
+
+    try {
+      return content.length();
+    } catch (Exception e) {
+      log.warn("Failed to get object size", e);
+      return 0;
+    }
+  }
+
+  private void addedToCache(String versionId, String className) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      cachedInTransaction.get().add(id);
-      registerStorageCacheTransactionHandler();
+      getStorageCacheTransactionHandler().addVersionToCachedInTransaction(versionId, className);
     }
   }
 
@@ -868,9 +1116,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * resource identifier for StorageObjectLock unlock handler
    */
   private static final String STORAGE_CACHE_HANDLER = "STORAGE_CACHE_HANDLER";
-
-  protected ThreadLocal<Set<String>> cachedInTransaction =
-      ThreadLocal.withInitial(() -> new HashSet<>());
 
   protected void registerStorageCacheTransactionHandler() {
     if (!TransactionSynchronizationManager.hasResource(STORAGE_CACHE_HANDLER)) {
@@ -880,16 +1125,194 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  private StorageCacheTransactionHandler getStorageCacheTransactionHandler() {
+    return TransactionUtils.getTransactionHandler(
+        STORAGE_CACHE_HANDLER,
+        StorageCacheTransactionHandler.class,
+        () -> new StorageCacheTransactionHandler());
+  }
+
   protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
+
+    private Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
+
+    private Map<String, TableData<ObjectEntryDef>> objectEntriesToInsert = new HashMap<>();
+    private Map<String, TableData<ObjectEntryDef>> objectEntriesToUpdate = new HashMap<>();
+    private Map<String, TableData<ObjectVersionDef>> objectVersionsToInsert = new HashMap<>();
+    private Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
+
+    boolean isCompleted = false;
+
+    public void addVersionToCachedInTransaction(String versionId, String className) {
+      cachedKeysPerClass
+          .computeIfAbsent(className != null ? className : "", k -> new HashSet<>())
+          .add(versionId);
+    }
+
+    public void addObjectEntryToInsert(String uri, TableData<ObjectEntryDef> objectEntry) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.create(objectEntry);
+        }
+      } else {
+        objectEntriesToInsert.put(uri, objectEntry);
+      }
+    }
+
+    public void addObjectEntryToUpdate(String uri, TableData<ObjectEntryDef> objectEntry) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.update(objectEntry);
+        }
+      } else {
+        objectEntriesToUpdate.put(uri, objectEntry);
+      }
+    }
+
+    public void addObjectVersionToInsert(String uri, TableData<ObjectVersionDef> objectVersion) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.create(objectVersion);
+        }
+      } else {
+        objectVersionsToInsert.put(uri, objectVersion);
+      }
+    }
+
+    public void addObjectVersionToUpdate(String uri, TableData<ObjectVersionDef> objectVersion) {
+      if (isCompleted || !useTransactionCache) {
+        // after completion there won't be another completion, must execute now
+        if (!isRollback()) {
+          Crud.update(objectVersion);
+        }
+      } else {
+        objectVersionsToUpdate.put(uri, objectVersion);
+      }
+    }
+
+    public TableData<ObjectEntryDef> getObjectEntry(String uriWithourVersion) {
+      if (objectEntriesToInsert.containsKey(uriWithourVersion)) {
+        return objectEntriesToInsert.get(uriWithourVersion);
+      }
+      return objectEntriesToUpdate.get(uriWithourVersion);
+    }
+
+    public TableData<ObjectVersionDef> getObjectVersion(String versionId) {
+      if (objectVersionsToInsert.containsKey(versionId)) {
+        return objectVersionsToInsert.get(versionId);
+      }
+      return objectVersionsToUpdate.get(versionId);
+    }
+
+    @Override
+    public int getOrder() {
+      // this should run last..
+      return Ordered.LOWEST_PRECEDENCE;
+    }
+
+    @Override
+    public void suspend() {
+      TransactionSynchronizationManager.unbindResource(STORAGE_CACHE_HANDLER);
+      log.trace("StorageCache suspend");
+    }
+
+    @Override
+    public void resume() {
+      TransactionSynchronizationManager.bindResource(STORAGE_CACHE_HANDLER, true);
+      log.trace("StorageCache resume");
+    }
+
+    @Override
+    public void beforeCommit(boolean readOnly) {
+      // after beforeCommit async request can be created, we should execute in beforeCompletion
+    }
+
+    private <T extends EntityDefinition> TableData<T> append(
+        T entityDef,
+        Map<String, TableData<T>> tableDatas) {
+      TableData<T> tabledata = TableDatas
+          .builder(entityDef, entityDef.allProperties())
+          .build();
+      tableDatas.values().forEach(td -> TableDatas.append(tabledata, td));
+      if (!useTransactionCache) {
+        log.warn("StorageTransactionHandler in use but useTransactionCache = false");
+      }
+      log.trace("Appended {} rows ({})", tabledata.size(), entityDef.entityDefName());
+      return tabledata;
+    }
+
+    @Override
+    public void beforeCompletion() {
+      boolean rollback = isRollback();
+      if (!rollback) {
+        if (!objectEntriesToInsert.isEmpty()) {
+          Crud.create(append(objectEntryDef, objectEntriesToInsert));
+          objectEntriesToInsert.clear();
+        }
+        if (!objectEntriesToUpdate.isEmpty()) {
+          Crud.update(append(objectEntryDef, objectEntriesToUpdate));
+          objectEntriesToUpdate.clear();
+        }
+        if (!objectVersionsToInsert.isEmpty()) {
+          Crud.create(append(objectVersionDef, objectVersionsToInsert));
+          objectVersionsToInsert.clear();
+        }
+        if (!objectVersionsToUpdate.isEmpty()) {
+          Crud.update(append(objectVersionDef, objectVersionsToUpdate));
+          objectVersionsToUpdate.clear();
+        }
+      }
+      clearIfEmpty(objectEntriesToInsert, "objectEntriesToInsert");
+      clearIfEmpty(objectEntriesToUpdate, "objectEntriesToUpdate");
+      clearIfEmpty(objectVersionsToInsert, "objectVersionsToInsert");
+      clearIfEmpty(objectVersionsToUpdate, "objectVersionsToUpdate");
+      isCompleted = true;
+    }
+
+    private boolean isRollback() {
+      try {
+        return TransactionSynchronizationManager.isActualTransactionActive() &&
+            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+      } catch (NoTransactionException e) {
+        // on startup it might happen
+        return false;
+      }
+    }
+
+    private void clearIfEmpty(Map<?, ?> map, String mapName) {
+      if (!map.isEmpty()) {
+        if (!useTransactionCache) {
+          log.warn(
+              "StorageTransactionHandler in use but useTransactionCache = false! Clearing not saved {} rows from {} before completion",
+              map.size(), mapName);
+        } else {
+          log.debug("Clearing not saved {} rows from {} before completion",
+              map.size(), mapName);
+        }
+        map.clear();
+      }
+    }
 
     @Override
     public void afterCompletion(int status) {
       if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
-        if (!cachedInTransaction.get().isEmpty()) {
-          versionContentCache.invalidateAll(cachedInTransaction.get());
+        for (Map.Entry<String, Set<String>> entry : cachedKeysPerClass.entrySet()) {
+          String className = entry.getKey();
+          Set<String> keys = entry.getValue();
+          if (!keys.isEmpty()) {
+            Cache<String, DataRow> cache = getClassCache(className);
+            if (cache != null) {
+              cache.invalidateAll(keys);
+            }
+            keys.clear();
+          }
         }
       }
-      cachedInTransaction.remove();
+
+      cachedKeysPerClass.clear();
 
       if (status == TransactionSynchronization.STATUS_UNKNOWN) {
         log.warn("Transaction state is STATUS_UNKNOWN!");
@@ -902,15 +1325,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     Set<String> uniqueBaseUris = uriInfos.stream()
         .map(info -> info.baseUri)
         .collect(Collectors.toSet());
+    Map<String, DataRow> objectEntriesFromTransactionCache = new HashMap<>();
+    Set<String> urisToQueryFromDB =
+        fillObjectEntriesFromTransactionCache(uniqueBaseUris, objectEntriesFromTransactionCache);
     Map<String, DataRow> objectEntryRows = Crud.read(objectEntryDef)
         .select(objectEntryDef.allProperties())
-        .where(objectEntryDef.uri().in(uniqueBaseUris))
+        .where(objectEntryDef.uri().in(urisToQueryFromDB))
         .listData()
         .rows()
         .stream()
         .collect(Collectors.toMap(
             row -> row.get(objectEntryDef.uri()),
             row -> row));
+    if (!objectEntriesFromTransactionCache.isEmpty()) {
+      objectEntryRows.putAll(objectEntriesFromTransactionCache);
+    }
     if (objectEntryRows.size() != uniqueBaseUris.size()) {
       throw new ObjectNotFoundException(uniqueBaseUris, null, "Object not found.");
     }
@@ -955,6 +1384,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
           .listData();
+      // TODO check if transaction cache is available and uris present only there
       List<URI> result = objectList.rows().stream()
           .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
           .collect(toList());
@@ -971,9 +1401,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Override
   public boolean move(URI uri, URI targetUri) {
     // It is a simple update...
-    Optional<DataRow> optObjectEntryRow = queryObjectEntry(uri, true);
-    if (optObjectEntryRow.isPresent()) {
-      DataRow objectEntryRow = optObjectEntryRow.get();
+    DataRow objectEntryRow = queryObjectEntry(uri, true);
+    if (objectEntryRow != null) {
       objectEntryRow.set(objectEntryDef.uri(), getUriString(targetUri));
       Crud.update(objectEntryRow.tableData());
       return true;
@@ -986,21 +1415,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         .uri(objectUri);
   }
 
-  private final Optional<DataRow> queryObjectEntry(URI objectUri, boolean lock) {
-    try {
-      if (log.isTraceEnabled()) {
-        log.trace("queryObjectEntry: objectUri={}, lock: {}", objectUri, lock);
-      }
-      CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
-          .select(objectEntryDef.allProperties())
-          .where(objectEntryDef.uri().eq(getUriString(objectUri)));
-      if (lock) {
-        read.lock();
-      }
-      return read.onlyOne();
-    } catch (Exception e) {
-      return Optional.empty();
+  private final DataRow queryObjectEntry(URI objectUri, boolean lock) {
+    DataRow objectRow;
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
+    String uriWithoutVersion = getUriString(getUriWithoutVersion(objectUri));
+    TableData<ObjectEntryDef> objectEntry =
+        getOrQueryObjectEntry(trHandler, uriWithoutVersion, lock);
+    if (objectEntry.size() == 1) {
+      objectRow = objectEntry.rows().get(0);
+    } else {
+      objectRow = null;
     }
+    return objectRow;
   }
 
   /**
@@ -1012,7 +1441,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    */
   private final ObjectVersion readObjectVersion(Long id, Long version, URI uri) {
 
-    Optional<DataRow> objectRow = queryObjectVersion(id, version, true, isSingleVersion(uri));
+    Optional<DataRow> objectRow = queryObjectVersion(id, version, true, uri);
     if (!objectRow.isPresent()) {
       return null;
     }
@@ -1029,74 +1458,78 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * @return The {@link DataRow}
    */
   private Optional<DataRow> queryObjectVersion(Long id, Long version, boolean skipContent,
-      boolean isSingleVersion) {
-    if (versionContentCache == null) {
-      DataRow result = queryObjectVersionInner(id, version, skipContent);
-      return result == null ? Optional.empty() : Optional.of(result);
-    }
-
-    if (id == null || version == null) {
-      return Optional.empty();
-    }
-    if (isSingleVersion) {
-      // skip cache
-      DataRow result = queryObjectVersionInner(id, version, skipContent);
-      return result == null ? Optional.empty() : Optional.of(result);
-    }
-    String cacheId = id + "-" + version;
-    DataRow cachedRow = versionContentCache.getIfPresent(cacheId);
-    if (cachedRow != null) {
-      if (log.isTraceEnabled()) {
-        log.trace("Cache - hit, {} ", cacheId);
-      }
-      return Optional.of(cachedRow);
-    }
-    DataRow result;
-    if (skipContent) {
-      // don't cache when skipContent
-      if (log.isTraceEnabled()) {
-        log.trace("Cache - wont cache, {}", cacheId);
-      }
-      result = queryObjectVersionInner(id, version, skipContent);
-    } else {
-      try {
-        result = versionContentCache.get(cacheId,
-            () -> {
-              if (log.isTraceEnabled()) {
-                log.trace("Cache - load, size:{} ", versionContentCache.size());
-              }
-              DataRow row = queryObjectVersionInner(id, version, skipContent);
-              addedToCache(cacheId);
-              return row;
-            });
-      } catch (ExecutionException e) {
-        log.warn("Unable to load to cache", e);
-        result = null;
-      }
-    }
-
-    return result == null ? Optional.empty() : Optional.of(result);
+      URI uri) {
+    UriInfo uriInfo = new UriInfo(uri, id, version);
+    Map<String, DataRow> rows = queryObjectVersions(Arrays.asList(uriInfo));
+    return Optional.of(rows.get(uriInfo.versionId));
+    // boolean isSingleVersion = isSingleVersion(uri);
+    // if (defaultCache == null) {
+    // DataRow result = queryObjectVersionInner(id, version, skipContent);
+    // return result == null ? Optional.empty() : Optional.of(result);
+    // }
+    //
+    // if (id == null || version == null) {
+    // return Optional.empty();
+    // }
+    // if (isSingleVersion) {
+    // // skip cache
+    // DataRow result = queryObjectVersionInner(id, version, skipContent);
+    // return result == null ? Optional.empty() : Optional.of(result);
+    // }
+    // String cacheId = id + "-" + version;
+    // DataRow cachedRow = versionContentCache.getIfPresent(cacheId);
+    // if (cachedRow != null) {
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - hit, {} ", cacheId);
+    // }
+    // return Optional.of(cachedRow);
+    // }
+    // DataRow result;
+    // if (skipContent) {
+    // // don't cache when skipContent
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - wont cache, {}", cacheId);
+    // }
+    // result = queryObjectVersionInner(id, version, skipContent);
+    // } else {
+    // try {
+    // result = versionContentCache.get(cacheId,
+    // () -> {
+    // if (log.isTraceEnabled()) {
+    // log.trace("Cache - load, size:{} ", versionContentCache.size());
+    // }
+    // DataRow row = queryObjectVersionInner(id, version, skipContent);
+    // addedToCache(cacheId);
+    // return row;
+    // });
+    // } catch (ExecutionException e) {
+    // log.warn("Unable to load to cache", e);
+    // result = null;
+    // }
+    // }
+    //
+    // return result == null ? Optional.empty() : Optional.of(result);
   }
 
-  private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
-    try {
-      PropertySet properties = objectVersionDef.allProperties();
-      if (skipContent) {
-        properties.remove(objectVersionDef.objectContent());
-      }
-      String versionId = createVersionId(id, version);
-
-      if (log.isTraceEnabled()) {
-        log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
-      }
-      return Crud.read(objectVersionDef)
-          .select(properties)
-          .where(objectVersionDef.versionId().eq(versionId))
-          .onlyOne().get();
-    } catch (Exception e) {
-      return null;
-    }
-  }
+  // private DataRow queryObjectVersionInner(Long id, Long version, boolean skipContent) {
+  // try {
+  // PropertySet properties = objectVersionDef.allProperties();
+  // if (skipContent) {
+  // properties.remove(objectVersionDef.objectContent());
+  // }
+  // String versionId = createVersionId(id, version);
+  //
+  // if (log.isTraceEnabled()) {
+  // log.trace("queryObjectVersion: versionId={}, version={}, skipContent={}", versionId);
+  // }
+  // return Crud.read(objectVersionDef)
+  // .select(properties)
+  // .where(objectVersionDef.versionId().eq(versionId))
+  // .onlyOne().get();
+  // } catch (Exception e) {
+  // return null;
+  // }
+  // }
 
   private final ObjectVersion readObjectVersionFromRow(Long version, DataRow objectRow) {
     return new ObjectVersion()
@@ -1135,8 +1568,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       Long version,
       URI versionUri) {
 
-    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false,
-        isSingleVersion(versionUri));
+    Optional<DataRow> optObjectVersion = queryObjectVersion(id, version, false, versionUri);
     if (!optObjectVersion.isPresent()) {
       return null;
     }
@@ -1176,8 +1608,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (relationVersion == null) {
       return null;
     }
-    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersion, false,
-        isSingleVersion(uri));
+    Optional<DataRow> optObjectVersion = queryObjectVersion(entryId, relationVersion, false, uri);
     if (optObjectVersion.isPresent()) {
       BinaryData binaryData = optObjectVersion.get().get(objectVersionDef.refContent());
       try {
@@ -1195,11 +1626,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return null;
     }
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (!optObjectRow.isPresent()) {
+    DataRow objectRow = queryObjectEntry(uri, false);
+    if (objectRow == null) {
       return null;
     }
-    DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
         .currentVersion(readObjectVersion(
             objectRow.get(objectEntryDef.id()),
@@ -1242,11 +1672,10 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return null;
     }
 
-    Optional<DataRow> optObjectRow = queryObjectEntry(uri, false);
-    if (!optObjectRow.isPresent()) {
+    DataRow objectRow = queryObjectEntry(uri, false);
+    if (objectRow == null) {
       return null;
     }
-    DataRow objectRow = optObjectRow.get();
     StorageObjectData objectData = readObjectDataFromRow(uri, objectRow)
         .currentVersion(readObjectVersion(
             objectRow.get(objectEntryDef.id()),

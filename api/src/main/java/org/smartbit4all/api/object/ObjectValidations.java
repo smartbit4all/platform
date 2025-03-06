@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +21,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.object.bean.LangString;
@@ -29,9 +32,10 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
-import com.google.common.base.Strings;
+import com.google.common.base.Functions;
 
 public final class ObjectValidations {
 
@@ -354,15 +358,23 @@ public final class ObjectValidations {
     }
 
     final Predicate<String> widgetKeyPredicate;
+    final Map<String, SmartWidgetDefinition> widgetsByKeys;
     if (layout != null) {
-      widgetKeyPredicate = flattenLayout(layout)
+      List<SmartWidgetDefinition> formWidgets = flattenLayout(layout)
           .flatMap(it -> formWidgets(it))
           // we are not checking toggles (no value on toggles means false):
           .filter(w -> SmartFormWidgetType.TOGGLE != w.getType())
+          .collect(toList());
+      widgetsByKeys = formWidgets.stream()
+          .collect(toMap(SmartWidgetDefinition::getKey,
+              Functions.identity(),
+              (key1, key2) -> key2));
+      widgetKeyPredicate = formWidgets.stream()
           .map(SmartWidgetDefinition::getKey)
           .collect(collectingAndThen(toSet(), keys -> keys::contains));
     } else {
       widgetKeyPredicate = s -> true;
+      widgetsByKeys = new HashMap<>();
     }
 
     final List<String[]> mandatoryProperties = constraints.stream()
@@ -385,7 +397,14 @@ public final class ObjectValidations {
     }
 
     return mandatoryProperties.stream()
-        .filter(path -> !hasValue(viewModel, path))
+        .filter(path -> {
+          SmartWidgetDefinition formDefinition =
+              widgetsByKeys.get(ObjectLayoutBuilder.widgetKey(path));
+          SmartFormWidgetType type = formDefinition != null
+              ? formDefinition.getType()
+              : null;
+          return !hasValue(viewModel, type, path);
+        })
         .map(ObjectValidations::mandatoryItem)
         .collect(collectingAndThen(toList(), ObjectValidations::of));
   }
@@ -455,10 +474,16 @@ public final class ObjectValidations {
     return layout.getForm().stream().filter(Objects::nonNull);
   }
 
-  private static boolean hasValue(ObjectNode node, String... path) {
+  private static boolean hasValue(ObjectNode node, SmartFormWidgetType type, String... path) {
     final Object value = node.getValue(path);
     if (value instanceof String) {
-      return !Strings.isNullOrEmpty((String) value);
+      String strValue = ((String) value);
+      if (SmartFormWidgetType.RICH_TEXT == type) {
+        strValue = strValue.replaceAll(StringConstant.HTML_PARAGRAPH, StringConstant.EMPTY);
+        strValue = strValue.replaceAll(StringConstant.HTML_PARAGRAPH_END, StringConstant.EMPTY);
+        strValue = strValue.replaceAll(StringConstant.HTML_NEW_LINE, StringConstant.EMPTY);
+      }
+      return !Strings.isBlank(strValue);
     } else {
       return value != null;
     }

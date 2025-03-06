@@ -12,6 +12,8 @@ public interface UserEditorPageApi extends PageApi<UserEditingModel> {
   public static final String CANCEL = "CANCEL";
   public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
 
+  public static final String PARAM_GROUPS = "GROUPS";
+
   @ActionHandler(CHANGE_PASSWORD)
   void changePassword(UUID viewUuid, UiActionRequest request);
 
