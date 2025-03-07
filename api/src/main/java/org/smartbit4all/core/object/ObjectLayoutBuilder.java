@@ -172,6 +172,14 @@ public final class ObjectLayoutBuilder {
         .direction(layoutDirection);
   }
 
+  public static SmartComponentLayoutDefinition container(LayoutDirection layoutDirection,
+      String layoutIdentifier) {
+    return new SmartComponentLayoutDefinition()
+        .type(ComponentType.CONTAINER)
+        .direction(layoutDirection)
+        .identifier(layoutIdentifier);
+  }
+
   public static SmartWidgetDefinition label(String key, String label) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.LABEL)
