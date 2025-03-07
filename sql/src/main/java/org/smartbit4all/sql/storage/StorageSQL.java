@@ -1194,17 +1194,17 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     public TableData<ObjectEntryDef> getObjectEntry(String uriWithourVersion) {
-      if (objectEntriesToInsert.containsKey(uriWithourVersion)) {
-        return objectEntriesToInsert.get(uriWithourVersion);
+      if (objectEntriesToUpdate.containsKey(uriWithourVersion)) {
+        return objectEntriesToUpdate.get(uriWithourVersion);
       }
-      return objectEntriesToUpdate.get(uriWithourVersion);
+      return objectEntriesToInsert.get(uriWithourVersion);
     }
 
     public TableData<ObjectVersionDef> getObjectVersion(String versionId) {
-      if (objectVersionsToInsert.containsKey(versionId)) {
-        return objectVersionsToInsert.get(versionId);
+      if (objectVersionsToUpdate.containsKey(versionId)) {
+        return objectVersionsToUpdate.get(versionId);
       }
-      return objectVersionsToUpdate.get(versionId);
+      return objectVersionsToInsert.get(versionId);
     }
 
     @Override
