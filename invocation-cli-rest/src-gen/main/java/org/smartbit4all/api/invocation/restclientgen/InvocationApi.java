@@ -221,14 +221,13 @@ public class InvocationApi {
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      * <p><b>200</b>
      * <p><b>404</b> - The api was not found.
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return InvocationParameter
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public InvocationParameter invokeUploadMultiple(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
-        return invokeUploadMultipleWithHttpInfo(uuid, invocationRequest, contents).getBody();
+    public InvocationParameter invokeUploadMultiple(String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+        return invokeUploadMultipleWithHttpInfo(invocationRequest, contents).getBody();
     }
 
     /**
@@ -236,23 +235,14 @@ public class InvocationApi {
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      * <p><b>200</b>
      * <p><b>404</b> - The api was not found.
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return ResponseEntity&lt;InvocationParameter&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<InvocationParameter> invokeUploadMultipleWithHttpInfo(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+    public ResponseEntity<InvocationParameter> invokeUploadMultipleWithHttpInfo(String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
         Object postBody = null;
         
-        // verify the required parameter 'uuid' is set
-        if (uuid == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'uuid' when calling invokeUploadMultiple");
-        }
-        
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("uuid", uuid);
 
         final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders headerParams = new HttpHeaders();
@@ -276,6 +266,6 @@ public class InvocationApi {
         String[] authNames = new String[] {  };
 
         ParameterizedTypeReference<InvocationParameter> returnType = new ParameterizedTypeReference<InvocationParameter>() {};
-        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, uriVariables, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
+        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
 }

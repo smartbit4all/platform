@@ -62,13 +62,6 @@ paths:
         Performs a generic invocation with contents to upload. These uploaded contents are identified
         by their position by the parameters.
       operationId: 'invokeUploadMultiple'
-      parameters:
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
       requestBody:
         required: true
         content:

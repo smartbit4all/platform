@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
@@ -114,8 +115,15 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
     } else {
       MultipartBodyBuilder mpBuilder = new MultipartBodyBuilder();
       mpBuilder.part("invocationRequest", Invocations.stringifyRequest(objectMapper, request));
-      mpBuilder.part("contents",
-          binaryDataInputList.stream().map(b -> new InputStreamResource(b.inputStream())));
+
+      IntStream.range(0, binaryDataInputList.size())
+          .forEach(i -> {
+            mpBuilder.part("contents",
+                new InputStreamResource(
+                    binaryDataInputList.get(i).inputStream()))
+                .filename("content" + i).contentType(MediaType.APPLICATION_OCTET_STREAM);
+          });
+
       return mpBuilder.build();
     }
   }
