@@ -28,6 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.bean.StoredListData;
+import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.collection.bean.StoredReferenceData;
+import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -485,7 +489,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.rebasedFromUri(), null)
           .set(objectVersionDef.transactionId(), null)
           .build();
-      if (useTransactionCache && trHandler != null) {
+      if (useTransactionCache && trHandler != null
+          && !classesToSkipInsertCache.contains(object.definition().getQualifiedName())) {
         trHandler.addObjectEntryToInsert(uriWithoutVersion, objectEntry);
         trHandler.addObjectVersionToInsert(versionId, objectVersion);
       } else {
@@ -495,6 +500,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return newVersion;
     }
   }
+
+  private final List<String> classesToSkipInsertCache = Arrays.asList(
+      StoredListData.class.getName(),
+      StoredMapData.class.getName(),
+      StoredReferenceData.class.getName(),
+      StoredSequenceData.class.getName());
 
   private TableData<ObjectEntryDef> getOrQueryObjectEntry(StorageCacheTransactionHandler trHandler,
       String uriWithoutVersion, boolean lock) {
