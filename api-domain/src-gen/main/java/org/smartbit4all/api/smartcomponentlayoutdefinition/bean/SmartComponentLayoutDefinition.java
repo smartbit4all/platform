@@ -42,6 +42,8 @@ import javax.validation.Valid;
   SmartComponentLayoutDefinition.TYPE,
   SmartComponentLayoutDefinition.EXPANDABLE,
   SmartComponentLayoutDefinition.EXPANDABLE_SECTION_LABEL,
+  SmartComponentLayoutDefinition.EXPANDABLE_SECTION_SUBTITLE,
+  SmartComponentLayoutDefinition.EXPANDABLE_SECTION_HEADER_TOOLBAR_ID,
   SmartComponentLayoutDefinition.DIRECTION,
   SmartComponentLayoutDefinition.COMPONENTS,
   SmartComponentLayoutDefinition.WIDGET,
@@ -62,6 +64,12 @@ public class SmartComponentLayoutDefinition {
 
   public static final String EXPANDABLE_SECTION_LABEL = "expandableSectionLabel";
   private String expandableSectionLabel;
+
+  public static final String EXPANDABLE_SECTION_SUBTITLE = "expandableSectionSubtitle";
+  private String expandableSectionSubtitle;
+
+  public static final String EXPANDABLE_SECTION_HEADER_TOOLBAR_ID = "expandableSectionHeaderToolbarId";
+  private String expandableSectionHeaderToolbarId;
 
   public static final String DIRECTION = "direction";
   private LayoutDirection direction;
@@ -188,6 +196,60 @@ public class SmartComponentLayoutDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpandableSectionLabel(String expandableSectionLabel) {
     this.expandableSectionLabel = expandableSectionLabel;
+  }
+
+
+  public SmartComponentLayoutDefinition expandableSectionSubtitle(String expandableSectionSubtitle) {
+    
+    this.expandableSectionSubtitle = expandableSectionSubtitle;
+    return this;
+  }
+
+   /**
+   * Get expandableSectionSubtitle
+   * @return expandableSectionSubtitle
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXPANDABLE_SECTION_SUBTITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getExpandableSectionSubtitle() {
+    return expandableSectionSubtitle;
+  }
+
+
+  @JsonProperty(EXPANDABLE_SECTION_SUBTITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExpandableSectionSubtitle(String expandableSectionSubtitle) {
+    this.expandableSectionSubtitle = expandableSectionSubtitle;
+  }
+
+
+  public SmartComponentLayoutDefinition expandableSectionHeaderToolbarId(String expandableSectionHeaderToolbarId) {
+    
+    this.expandableSectionHeaderToolbarId = expandableSectionHeaderToolbarId;
+    return this;
+  }
+
+   /**
+   * Get expandableSectionHeaderToolbarId
+   * @return expandableSectionHeaderToolbarId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXPANDABLE_SECTION_HEADER_TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getExpandableSectionHeaderToolbarId() {
+    return expandableSectionHeaderToolbarId;
+  }
+
+
+  @JsonProperty(EXPANDABLE_SECTION_HEADER_TOOLBAR_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExpandableSectionHeaderToolbarId(String expandableSectionHeaderToolbarId) {
+    this.expandableSectionHeaderToolbarId = expandableSectionHeaderToolbarId;
   }
 
 
@@ -360,6 +422,8 @@ public class SmartComponentLayoutDefinition {
         Objects.equals(this.type, smartComponentLayoutDefinition.type) &&
         Objects.equals(this.expandable, smartComponentLayoutDefinition.expandable) &&
         Objects.equals(this.expandableSectionLabel, smartComponentLayoutDefinition.expandableSectionLabel) &&
+        Objects.equals(this.expandableSectionSubtitle, smartComponentLayoutDefinition.expandableSectionSubtitle) &&
+        Objects.equals(this.expandableSectionHeaderToolbarId, smartComponentLayoutDefinition.expandableSectionHeaderToolbarId) &&
         Objects.equals(this.direction, smartComponentLayoutDefinition.direction) &&
         Objects.equals(this.components, smartComponentLayoutDefinition.components) &&
         Objects.equals(this.widget, smartComponentLayoutDefinition.widget) &&
@@ -369,7 +433,7 @@ public class SmartComponentLayoutDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(identifier, type, expandable, expandableSectionLabel, direction, components, widget, form, style);
+    return Objects.hash(identifier, type, expandable, expandableSectionLabel, expandableSectionSubtitle, expandableSectionHeaderToolbarId, direction, components, widget, form, style);
   }
 
   @Override
@@ -380,6 +444,8 @@ public class SmartComponentLayoutDefinition {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    expandable: ").append(toIndentedString(expandable)).append("\n");
     sb.append("    expandableSectionLabel: ").append(toIndentedString(expandableSectionLabel)).append("\n");
+    sb.append("    expandableSectionSubtitle: ").append(toIndentedString(expandableSectionSubtitle)).append("\n");
+    sb.append("    expandableSectionHeaderToolbarId: ").append(toIndentedString(expandableSectionHeaderToolbarId)).append("\n");
     sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
     sb.append("    components: ").append(toIndentedString(components)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
