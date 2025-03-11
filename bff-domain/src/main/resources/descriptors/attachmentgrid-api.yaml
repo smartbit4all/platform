@@ -70,6 +70,12 @@ components:
             properties:
                 toolbar:
                     type: string
+                identifier:
+                    type: string
+                params:
+                    type: object
+                    additionalProperties:
+                        type: object
                 descriptor:
                     type: UiActionDescriptor
 
