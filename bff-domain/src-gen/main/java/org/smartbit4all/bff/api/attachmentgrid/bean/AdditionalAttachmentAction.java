@@ -20,26 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * Describes an additional action, for the attachment grid.
  */
-@ApiModel(description = "Describes an additional action, for the attachment grid.")
+@Schema(description = "Describes an additional action, for the attachment grid.")
 @JsonPropertyOrder({
   AdditionalAttachmentAction.CODE,
   AdditionalAttachmentAction.DESCRIPTOR,
   AdditionalAttachmentAction.ACTION_INVOCATION_REQUEST
 })
-@JsonTypeName("AdditionalAttachmentAction")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AdditionalAttachmentAction {
   public static final String CODE = "code";
   private String code;
@@ -50,7 +48,7 @@ public class AdditionalAttachmentAction {
   public static final String ACTION_INVOCATION_REQUEST = "actionInvocationRequest";
   private InvocationRequest actionInvocationRequest = null;
 
-  public AdditionalAttachmentAction() { 
+  public AdditionalAttachmentAction() {
   }
 
   public AdditionalAttachmentAction code(String code) {
@@ -59,12 +57,13 @@ public class AdditionalAttachmentAction {
     return this;
   }
 
-   /**
+  /**
    * The title of the action.
    * @return code
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The title of the action.")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The title of the action.")
   @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -79,20 +78,20 @@ public class AdditionalAttachmentAction {
     this.code = code;
   }
 
-
   public AdditionalAttachmentAction descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
   }
 
-   /**
+  /**
    * Get descriptor
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -107,20 +106,20 @@ public class AdditionalAttachmentAction {
     this.descriptor = descriptor;
   }
 
-
   public AdditionalAttachmentAction actionInvocationRequest(InvocationRequest actionInvocationRequest) {
     
     this.actionInvocationRequest = actionInvocationRequest;
     return this;
   }
 
-   /**
+  /**
    * The additional action itself
    * @return actionInvocationRequest
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The additional action itself")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The additional action itself")
   @JsonProperty(ACTION_INVOCATION_REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -134,7 +133,6 @@ public class AdditionalAttachmentAction {
   public void setActionInvocationRequest(InvocationRequest actionInvocationRequest) {
     this.actionInvocationRequest = actionInvocationRequest;
   }
-
 
   @Override
   public boolean equals(Object o) {

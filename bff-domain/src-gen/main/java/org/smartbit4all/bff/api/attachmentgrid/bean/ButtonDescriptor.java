@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * ButtonDescriptor
@@ -35,8 +34,7 @@ import javax.validation.Valid;
   ButtonDescriptor.TOOLBAR,
   ButtonDescriptor.DESCRIPTOR
 })
-@JsonTypeName("ButtonDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ButtonDescriptor {
   public static final String TOOLBAR = "toolbar";
   private String toolbar;
@@ -44,7 +42,7 @@ public class ButtonDescriptor {
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor = null;
 
-  public ButtonDescriptor() { 
+  public ButtonDescriptor() {
   }
 
   public ButtonDescriptor toolbar(String toolbar) {
@@ -53,12 +51,13 @@ public class ButtonDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get toolbar
    * @return toolbar
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TOOLBAR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -73,20 +72,20 @@ public class ButtonDescriptor {
     this.toolbar = toolbar;
   }
 
-
   public ButtonDescriptor descriptor(UiActionDescriptor descriptor) {
     
     this.descriptor = descriptor;
     return this;
   }
 
-   /**
+  /**
    * Get descriptor
    * @return descriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,7 +99,6 @@ public class ButtonDescriptor {
   public void setDescriptor(UiActionDescriptor descriptor) {
     this.descriptor = descriptor;
   }
-
 
   @Override
   public boolean equals(Object o) {

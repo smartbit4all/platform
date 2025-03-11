@@ -103,7 +103,7 @@ public class AttachmentGridDescriptor {
   private String dialogTitle;
 
   public static final String ADDITIONAL_ACTIONS = "additionalActions";
-  private List<AdditionalAttachmentAction> additionalActions = null;
+  private List<@Valid AdditionalAttachmentAction> additionalActions = new ArrayList<>();
 
   public static final String SAVE_BUTTON_DESCRIPTOR = "saveButtonDescriptor";
   private ButtonDescriptor saveButtonDescriptor;
@@ -114,7 +114,7 @@ public class AttachmentGridDescriptor {
   public static final String REFRESH_BUTTON_DESCRIPTOR = "refreshButtonDescriptor";
   private ButtonDescriptor refreshButtonDescriptor;
 
-  public AttachmentGridDescriptor() { 
+  public AttachmentGridDescriptor() {
   }
 
   public AttachmentGridDescriptor attachmentList(List<BinaryContentData> attachmentList) {
@@ -207,7 +207,6 @@ public class AttachmentGridDescriptor {
   public void setViewUuid(UUID viewUuid) {
     this.viewUuid = viewUuid;
   }
-
 
   public AttachmentGridDescriptor logicalSchema(String logicalSchema) {
     
@@ -426,19 +425,19 @@ public class AttachmentGridDescriptor {
     this.closeOnSave = closeOnSave;
   }
 
-
   public AttachmentGridDescriptor autoSave(Boolean autoSave) {
     
     this.autoSave = autoSave;
     return this;
   }
 
-   /**
+  /**
    * Get autoSave
    * @return autoSave
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(AUTO_SAVE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -452,7 +451,6 @@ public class AttachmentGridDescriptor {
   public void setAutoSave(Boolean autoSave) {
     this.autoSave = autoSave;
   }
-
 
   public AttachmentGridDescriptor isMultipleInput(Boolean isMultipleInput) {
     
@@ -508,34 +506,7 @@ public class AttachmentGridDescriptor {
     this.dialogTitle = dialogTitle;
   }
 
-  public AttachmentGridDescriptor uploadFormats(String uploadFormats) {
-    
-    this.uploadFormats = uploadFormats;
-    return this;
-  }
-
-  /**
-   * Get uploadFormats
-   * @return uploadFormats
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(UPLOAD_FORMATS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getUploadFormats() {
-    return uploadFormats;
-  }
-
-
-  @JsonProperty(UPLOAD_FORMATS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUploadFormats(String uploadFormats) {
-    this.uploadFormats = uploadFormats;
-  }
-
-  public AttachmentGridDescriptor additionalActions(List<AdditionalAttachmentAction> additionalActions) {
+  public AttachmentGridDescriptor additionalActions(List<@Valid AdditionalAttachmentAction> additionalActions) {
     
     this.additionalActions = additionalActions;
     return this;
@@ -549,27 +520,27 @@ public class AttachmentGridDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get additionalActions
    * @return additionalActions
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ADDITIONAL_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<AdditionalAttachmentAction> getAdditionalActions() {
+  public List<@Valid AdditionalAttachmentAction> getAdditionalActions() {
     return additionalActions;
   }
 
 
   @JsonProperty(ADDITIONAL_ACTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAdditionalActions(List<AdditionalAttachmentAction> additionalActions) {
+  public void setAdditionalActions(List<@Valid AdditionalAttachmentAction> additionalActions) {
     this.additionalActions = additionalActions;
   }
-
 
   public AttachmentGridDescriptor saveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
     
@@ -577,13 +548,14 @@ public class AttachmentGridDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get saveButtonDescriptor
    * @return saveButtonDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SAVE_BUTTON_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -598,20 +570,20 @@ public class AttachmentGridDescriptor {
     this.saveButtonDescriptor = saveButtonDescriptor;
   }
 
-
   public AttachmentGridDescriptor uploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
     
     this.uploadButtonDescriptor = uploadButtonDescriptor;
     return this;
   }
 
-   /**
+  /**
    * Get uploadButtonDescriptor
    * @return uploadButtonDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(UPLOAD_BUTTON_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -626,20 +598,20 @@ public class AttachmentGridDescriptor {
     this.uploadButtonDescriptor = uploadButtonDescriptor;
   }
 
-
   public AttachmentGridDescriptor refreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
     
     this.refreshButtonDescriptor = refreshButtonDescriptor;
     return this;
   }
 
-   /**
+  /**
    * Get refreshButtonDescriptor
    * @return refreshButtonDescriptor
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(REFRESH_BUTTON_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -653,7 +625,6 @@ public class AttachmentGridDescriptor {
   public void setRefreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
     this.refreshButtonDescriptor = refreshButtonDescriptor;
   }
-
 
   @Override
   public boolean equals(Object o) {
