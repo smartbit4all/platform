@@ -20,10 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,7 +47,7 @@ public class ButtonDescriptor {
   private String identifier;
 
   public static final String PARAMS = "params";
-  private Map<String, Object> params = null;
+  private Map<String, Object> params = new HashMap<>();
 
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor = null;
@@ -84,19 +82,19 @@ public class ButtonDescriptor {
     this.toolbar = toolbar;
   }
 
-
   public ButtonDescriptor identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
-   /**
+  /**
    * Get identifier
    * @return identifier
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -110,7 +108,6 @@ public class ButtonDescriptor {
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
-
 
   public ButtonDescriptor params(Map<String, Object> params) {
     
@@ -126,12 +123,13 @@ public class ButtonDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get params
    * @return params
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -145,7 +143,6 @@ public class ButtonDescriptor {
   public void setParams(Map<String, Object> params) {
     this.params = params;
   }
-
 
   public ButtonDescriptor descriptor(UiActionDescriptor descriptor) {
     
