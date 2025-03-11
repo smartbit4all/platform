@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,18 +34,18 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "Describes an additional action, for the attachment grid.")
 @JsonPropertyOrder({
-  AdditionalAttachmentAction.TITLE,
-  AdditionalAttachmentAction.ICON,
+  AdditionalAttachmentAction.CODE,
+  AdditionalAttachmentAction.DESCRIPTOR,
   AdditionalAttachmentAction.ACTION_INVOCATION_REQUEST
 })
 @JsonTypeName("AdditionalAttachmentAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class AdditionalAttachmentAction {
-  public static final String TITLE = "title";
-  private String title;
+  public static final String CODE = "code";
+  private String code;
 
-  public static final String ICON = "icon";
-  private String icon;
+  public static final String DESCRIPTOR = "descriptor";
+  private UiActionDescriptor descriptor = null;
 
   public static final String ACTION_INVOCATION_REQUEST = "actionInvocationRequest";
   private InvocationRequest actionInvocationRequest = null;
@@ -52,57 +53,58 @@ public class AdditionalAttachmentAction {
   public AdditionalAttachmentAction() { 
   }
 
-  public AdditionalAttachmentAction title(String title) {
+  public AdditionalAttachmentAction code(String code) {
     
-    this.title = title;
+    this.code = code;
     return this;
   }
 
    /**
    * The title of the action.
-   * @return title
+   * @return code
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "The title of the action.")
-  @JsonProperty(TITLE)
+  @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getTitle() {
-    return title;
+  public String getCode() {
+    return code;
   }
 
 
-  @JsonProperty(TITLE)
+  @JsonProperty(CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTitle(String title) {
-    this.title = title;
+  public void setCode(String code) {
+    this.code = code;
   }
 
 
-  public AdditionalAttachmentAction icon(String icon) {
+  public AdditionalAttachmentAction descriptor(UiActionDescriptor descriptor) {
     
-    this.icon = icon;
+    this.descriptor = descriptor;
     return this;
   }
 
    /**
-   * Use with card type grid
-   * @return icon
+   * Get descriptor
+   * @return descriptor
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Use with card type grid")
-  @JsonProperty(ICON)
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getIcon() {
-    return icon;
+  public UiActionDescriptor getDescriptor() {
+    return descriptor;
   }
 
 
-  @JsonProperty(ICON)
+  @JsonProperty(DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIcon(String icon) {
-    this.icon = icon;
+  public void setDescriptor(UiActionDescriptor descriptor) {
+    this.descriptor = descriptor;
   }
 
 
@@ -143,22 +145,22 @@ public class AdditionalAttachmentAction {
       return false;
     }
     AdditionalAttachmentAction additionalAttachmentAction = (AdditionalAttachmentAction) o;
-    return Objects.equals(this.title, additionalAttachmentAction.title) &&
-        Objects.equals(this.icon, additionalAttachmentAction.icon) &&
+    return Objects.equals(this.code, additionalAttachmentAction.code) &&
+        Objects.equals(this.descriptor, additionalAttachmentAction.descriptor) &&
         Objects.equals(this.actionInvocationRequest, additionalAttachmentAction.actionInvocationRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, icon, actionInvocationRequest);
+    return Objects.hash(code, descriptor, actionInvocationRequest);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AdditionalAttachmentAction {\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    actionInvocationRequest: ").append(toIndentedString(actionInvocationRequest)).append("\n");
     sb.append("}");
     return sb.toString();
