@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
+import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -40,8 +42,6 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.ATTACHMENT_LIST,
   AttachmentGridDescriptor.GRID_WIDGET_ID,
   AttachmentGridDescriptor.VIEW_UUID,
-  AttachmentGridDescriptor.BUTTON_COLOR,
-  AttachmentGridDescriptor.BUTTON_TOOLBAR,
   AttachmentGridDescriptor.LOGICAL_SCHEMA,
   AttachmentGridDescriptor.SAVE_REQUEST,
   AttachmentGridDescriptor.IS_PREVIEWABLE,
@@ -50,9 +50,13 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
   AttachmentGridDescriptor.PAGE_SIZE,
   AttachmentGridDescriptor.CLOSE_ON_SAVE,
+  AttachmentGridDescriptor.AUTO_SAVE,
   AttachmentGridDescriptor.IS_MULTIPLE_INPUT,
   AttachmentGridDescriptor.DIALOG_TITLE,
-  AttachmentGridDescriptor.UPLOAD_FORMATS
+  AttachmentGridDescriptor.ADDITIONAL_ACTIONS,
+  AttachmentGridDescriptor.SAVE_BUTTON_DESCRIPTOR,
+  AttachmentGridDescriptor.UPLOAD_BUTTON_DESCRIPTOR,
+  AttachmentGridDescriptor.REFRESH_BUTTON_DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
@@ -64,12 +68,6 @@ public class AttachmentGridDescriptor {
 
   public static final String VIEW_UUID = "viewUuid";
   private UUID viewUuid;
-
-  public static final String BUTTON_COLOR = "buttonColor";
-  private String buttonColor = "primary";
-
-  public static final String BUTTON_TOOLBAR = "buttonToolbar";
-  private String buttonToolbar;
 
   public static final String LOGICAL_SCHEMA = "logicalSchema";
   private String logicalSchema;
@@ -95,16 +93,28 @@ public class AttachmentGridDescriptor {
   public static final String CLOSE_ON_SAVE = "closeOnSave";
   private Boolean closeOnSave = false;
 
+  public static final String AUTO_SAVE = "autoSave";
+  private Boolean autoSave = false;
+
   public static final String IS_MULTIPLE_INPUT = "isMultipleInput";
   private Boolean isMultipleInput = true;
 
   public static final String DIALOG_TITLE = "dialogTitle";
   private String dialogTitle;
 
-  public static final String UPLOAD_FORMATS = "uploadFormats";
-  private String uploadFormats;
+  public static final String ADDITIONAL_ACTIONS = "additionalActions";
+  private List<AdditionalAttachmentAction> additionalActions = null;
 
-  public AttachmentGridDescriptor() {
+  public static final String SAVE_BUTTON_DESCRIPTOR = "saveButtonDescriptor";
+  private ButtonDescriptor saveButtonDescriptor;
+
+  public static final String UPLOAD_BUTTON_DESCRIPTOR = "uploadButtonDescriptor";
+  private ButtonDescriptor uploadButtonDescriptor;
+
+  public static final String REFRESH_BUTTON_DESCRIPTOR = "refreshButtonDescriptor";
+  private ButtonDescriptor refreshButtonDescriptor;
+
+  public AttachmentGridDescriptor() { 
   }
 
   public AttachmentGridDescriptor attachmentList(List<BinaryContentData> attachmentList) {
@@ -196,60 +206,6 @@ public class AttachmentGridDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setViewUuid(UUID viewUuid) {
     this.viewUuid = viewUuid;
-  }
-
-  public AttachmentGridDescriptor buttonColor(String buttonColor) {
-    
-    this.buttonColor = buttonColor;
-    return this;
-  }
-
-  /**
-   * Get buttonColor
-   * @return buttonColor
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(BUTTON_COLOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getButtonColor() {
-    return buttonColor;
-  }
-
-
-  @JsonProperty(BUTTON_COLOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setButtonColor(String buttonColor) {
-    this.buttonColor = buttonColor;
-  }
-
-
-  public AttachmentGridDescriptor buttonToolbar(String buttonToolbar) {
-    
-    this.buttonToolbar = buttonToolbar;
-    return this;
-  }
-
-   /**
-   * Get buttonToolbar
-   * @return buttonToolbar
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(BUTTON_TOOLBAR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getButtonToolbar() {
-    return buttonToolbar;
-  }
-
-
-  @JsonProperty(BUTTON_TOOLBAR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setButtonToolbar(String buttonToolbar) {
-    this.buttonToolbar = buttonToolbar;
   }
 
 
@@ -470,6 +426,34 @@ public class AttachmentGridDescriptor {
     this.closeOnSave = closeOnSave;
   }
 
+
+  public AttachmentGridDescriptor autoSave(Boolean autoSave) {
+    
+    this.autoSave = autoSave;
+    return this;
+  }
+
+   /**
+   * Get autoSave
+   * @return autoSave
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(AUTO_SAVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAutoSave() {
+    return autoSave;
+  }
+
+
+  @JsonProperty(AUTO_SAVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAutoSave(Boolean autoSave) {
+    this.autoSave = autoSave;
+  }
+
+
   public AttachmentGridDescriptor isMultipleInput(Boolean isMultipleInput) {
     
     this.isMultipleInput = isMultipleInput;
@@ -551,6 +535,126 @@ public class AttachmentGridDescriptor {
     this.uploadFormats = uploadFormats;
   }
 
+  public AttachmentGridDescriptor additionalActions(List<AdditionalAttachmentAction> additionalActions) {
+    
+    this.additionalActions = additionalActions;
+    return this;
+  }
+
+  public AttachmentGridDescriptor addAdditionalActionsItem(AdditionalAttachmentAction additionalActionsItem) {
+    if (this.additionalActions == null) {
+      this.additionalActions = new ArrayList<>();
+    }
+    this.additionalActions.add(additionalActionsItem);
+    return this;
+  }
+
+   /**
+   * Get additionalActions
+   * @return additionalActions
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ADDITIONAL_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<AdditionalAttachmentAction> getAdditionalActions() {
+    return additionalActions;
+  }
+
+
+  @JsonProperty(ADDITIONAL_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdditionalActions(List<AdditionalAttachmentAction> additionalActions) {
+    this.additionalActions = additionalActions;
+  }
+
+
+  public AttachmentGridDescriptor saveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
+    
+    this.saveButtonDescriptor = saveButtonDescriptor;
+    return this;
+  }
+
+   /**
+   * Get saveButtonDescriptor
+   * @return saveButtonDescriptor
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SAVE_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ButtonDescriptor getSaveButtonDescriptor() {
+    return saveButtonDescriptor;
+  }
+
+
+  @JsonProperty(SAVE_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSaveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
+    this.saveButtonDescriptor = saveButtonDescriptor;
+  }
+
+
+  public AttachmentGridDescriptor uploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
+    
+    this.uploadButtonDescriptor = uploadButtonDescriptor;
+    return this;
+  }
+
+   /**
+   * Get uploadButtonDescriptor
+   * @return uploadButtonDescriptor
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(UPLOAD_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ButtonDescriptor getUploadButtonDescriptor() {
+    return uploadButtonDescriptor;
+  }
+
+
+  @JsonProperty(UPLOAD_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
+    this.uploadButtonDescriptor = uploadButtonDescriptor;
+  }
+
+
+  public AttachmentGridDescriptor refreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
+    
+    this.refreshButtonDescriptor = refreshButtonDescriptor;
+    return this;
+  }
+
+   /**
+   * Get refreshButtonDescriptor
+   * @return refreshButtonDescriptor
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(REFRESH_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ButtonDescriptor getRefreshButtonDescriptor() {
+    return refreshButtonDescriptor;
+  }
+
+
+  @JsonProperty(REFRESH_BUTTON_DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRefreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
+    this.refreshButtonDescriptor = refreshButtonDescriptor;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -563,8 +667,6 @@ public class AttachmentGridDescriptor {
     return Objects.equals(this.attachmentList, attachmentGridDescriptor.attachmentList) &&
         Objects.equals(this.gridWidgetId, attachmentGridDescriptor.gridWidgetId) &&
         Objects.equals(this.viewUuid, attachmentGridDescriptor.viewUuid) &&
-        Objects.equals(this.buttonColor, attachmentGridDescriptor.buttonColor) &&
-        Objects.equals(this.buttonToolbar, attachmentGridDescriptor.buttonToolbar) &&
         Objects.equals(this.logicalSchema, attachmentGridDescriptor.logicalSchema) &&
         Objects.equals(this.saveRequest, attachmentGridDescriptor.saveRequest) &&
         Objects.equals(this.isPreviewable, attachmentGridDescriptor.isPreviewable) &&
@@ -573,14 +675,18 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.isPaginatorEnabled, attachmentGridDescriptor.isPaginatorEnabled) &&
         Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
         Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave) &&
+        Objects.equals(this.autoSave, attachmentGridDescriptor.autoSave) &&
         Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput) &&
         Objects.equals(this.dialogTitle, attachmentGridDescriptor.dialogTitle) &&
-        Objects.equals(this.uploadFormats, attachmentGridDescriptor.uploadFormats);
+        Objects.equals(this.additionalActions, attachmentGridDescriptor.additionalActions) &&
+        Objects.equals(this.saveButtonDescriptor, attachmentGridDescriptor.saveButtonDescriptor) &&
+        Objects.equals(this.uploadButtonDescriptor, attachmentGridDescriptor.uploadButtonDescriptor) &&
+        Objects.equals(this.refreshButtonDescriptor, attachmentGridDescriptor.refreshButtonDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, buttonToolbar, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, autoSave, isMultipleInput, dialogTitle, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor);
   }
 
   @Override
@@ -590,8 +696,6 @@ public class AttachmentGridDescriptor {
     sb.append("    attachmentList: ").append(toIndentedString(attachmentList)).append("\n");
     sb.append("    gridWidgetId: ").append(toIndentedString(gridWidgetId)).append("\n");
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
-    sb.append("    buttonColor: ").append(toIndentedString(buttonColor)).append("\n");
-    sb.append("    buttonToolbar: ").append(toIndentedString(buttonToolbar)).append("\n");
     sb.append("    logicalSchema: ").append(toIndentedString(logicalSchema)).append("\n");
     sb.append("    saveRequest: ").append(toIndentedString(saveRequest)).append("\n");
     sb.append("    isPreviewable: ").append(toIndentedString(isPreviewable)).append("\n");
@@ -600,9 +704,13 @@ public class AttachmentGridDescriptor {
     sb.append("    isPaginatorEnabled: ").append(toIndentedString(isPaginatorEnabled)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
+    sb.append("    autoSave: ").append(toIndentedString(autoSave)).append("\n");
     sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
     sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
-    sb.append("    uploadFormats: ").append(toIndentedString(uploadFormats)).append("\n");
+    sb.append("    additionalActions: ").append(toIndentedString(additionalActions)).append("\n");
+    sb.append("    saveButtonDescriptor: ").append(toIndentedString(saveButtonDescriptor)).append("\n");
+    sb.append("    uploadButtonDescriptor: ").append(toIndentedString(uploadButtonDescriptor)).append("\n");
+    sb.append("    refreshButtonDescriptor: ").append(toIndentedString(refreshButtonDescriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }
