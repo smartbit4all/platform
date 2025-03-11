@@ -362,27 +362,29 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
                     .cancelButton(new UiActionButtonDescriptor()
                         .caption(localeSettingApi.get("close"))
                         .color(UiActions.Color.SECONDARY))));
-
-    if (!ObjectUtils.isEmpty(descriptor.getUploadFormats())) {
-      action.getDescriptor()
-          .setUpload(new UiActionUploadDescriptor().formats(descriptor.getUploadFormats()));
+    if (!ObjectUtils.isEmpty(descriptor.getButtonToolbar())) {
+      action.toolbar(descriptor.getButtonToolbar());
     }
-
     return action;
   }
 
   public UiAction getRefreshToOriginalGridAction(AttachmentGridDescriptor descriptor) {
-    return new UiAction()
+    UiAction action = new UiAction()
         .code(ATTACHMENT_REFRESH_LIST_HANDLER)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
             .icon("sync").iconPosition(IconPosition.PRE)
             .color(descriptor.getButtonColor()));
+    if (!ObjectUtils.isEmpty(descriptor.getButtonToolbar())) {
+      action.toolbar(descriptor.getButtonToolbar());
+    }
+    return action;
   }
 
   public UiAction getSaveListAction(AttachmentGridDescriptor descriptor) {
-    return new UiAction()
+
+    UiAction action = new UiAction()
         .code(ATTACHMENT_SAVE_LIST_HANDLER)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .disabled(true)
@@ -393,6 +395,11 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .color(descriptor.getButtonColor())
             .feedbackText(localeSettingApi.get("attachment.succesful.save"))
             .feedbackType(UiActionFeedbackType.SNACKBAR));
+
+    if (!ObjectUtils.isEmpty(descriptor.getButtonToolbar())) {
+      action.toolbar(descriptor.getButtonToolbar());
+    }
+    return action;
   }
 
   @Override

@@ -27,6 +27,8 @@ components:
                 buttonColor:
                     type: string
                     default: primary
+                buttonToolbar:
+                    type: string
                 logicalSchema:
                     type: string
                 saveRequest:
@@ -53,6 +55,4 @@ components:
                     type: boolean
                     default: true
                 dialogTitle:
-                    type: string
-                uploadFormats:
                     type: string

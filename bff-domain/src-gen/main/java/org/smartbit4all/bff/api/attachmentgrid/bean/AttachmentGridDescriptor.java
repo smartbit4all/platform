@@ -41,6 +41,7 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.GRID_WIDGET_ID,
   AttachmentGridDescriptor.VIEW_UUID,
   AttachmentGridDescriptor.BUTTON_COLOR,
+  AttachmentGridDescriptor.BUTTON_TOOLBAR,
   AttachmentGridDescriptor.LOGICAL_SCHEMA,
   AttachmentGridDescriptor.SAVE_REQUEST,
   AttachmentGridDescriptor.IS_PREVIEWABLE,
@@ -66,6 +67,9 @@ public class AttachmentGridDescriptor {
 
   public static final String BUTTON_COLOR = "buttonColor";
   private String buttonColor = "primary";
+
+  public static final String BUTTON_TOOLBAR = "buttonToolbar";
+  private String buttonToolbar;
 
   public static final String LOGICAL_SCHEMA = "logicalSchema";
   private String logicalSchema;
@@ -220,6 +224,34 @@ public class AttachmentGridDescriptor {
   public void setButtonColor(String buttonColor) {
     this.buttonColor = buttonColor;
   }
+
+
+  public AttachmentGridDescriptor buttonToolbar(String buttonToolbar) {
+    
+    this.buttonToolbar = buttonToolbar;
+    return this;
+  }
+
+   /**
+   * Get buttonToolbar
+   * @return buttonToolbar
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(BUTTON_TOOLBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getButtonToolbar() {
+    return buttonToolbar;
+  }
+
+
+  @JsonProperty(BUTTON_TOOLBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setButtonToolbar(String buttonToolbar) {
+    this.buttonToolbar = buttonToolbar;
+  }
+
 
   public AttachmentGridDescriptor logicalSchema(String logicalSchema) {
     
@@ -532,6 +564,7 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.gridWidgetId, attachmentGridDescriptor.gridWidgetId) &&
         Objects.equals(this.viewUuid, attachmentGridDescriptor.viewUuid) &&
         Objects.equals(this.buttonColor, attachmentGridDescriptor.buttonColor) &&
+        Objects.equals(this.buttonToolbar, attachmentGridDescriptor.buttonToolbar) &&
         Objects.equals(this.logicalSchema, attachmentGridDescriptor.logicalSchema) &&
         Objects.equals(this.saveRequest, attachmentGridDescriptor.saveRequest) &&
         Objects.equals(this.isPreviewable, attachmentGridDescriptor.isPreviewable) &&
@@ -547,7 +580,7 @@ public class AttachmentGridDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle, uploadFormats);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, buttonColor, buttonToolbar, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, isMultipleInput, dialogTitle);
   }
 
   @Override
@@ -558,6 +591,7 @@ public class AttachmentGridDescriptor {
     sb.append("    gridWidgetId: ").append(toIndentedString(gridWidgetId)).append("\n");
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    buttonColor: ").append(toIndentedString(buttonColor)).append("\n");
+    sb.append("    buttonToolbar: ").append(toIndentedString(buttonToolbar)).append("\n");
     sb.append("    logicalSchema: ").append(toIndentedString(logicalSchema)).append("\n");
     sb.append("    saveRequest: ").append(toIndentedString(saveRequest)).append("\n");
     sb.append("    isPreviewable: ").append(toIndentedString(isPreviewable)).append("\n");
