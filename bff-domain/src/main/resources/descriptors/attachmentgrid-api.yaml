@@ -77,12 +77,11 @@ components:
             type: object
             description: Describes an additional action, for the attachment grid.
             properties:
-                title:
+                code:
                     type: string
                     description: "The title of the action."
-                icon:
-                    type: string
-                    description: "Use with card type grid"
+                descriptor:
+                    type: UiActionDescriptor
                 actionInvocationRequest:
                     description: "The additional action itself"
                     type: InvocationRequest

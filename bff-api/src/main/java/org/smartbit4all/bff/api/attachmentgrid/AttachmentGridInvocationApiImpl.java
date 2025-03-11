@@ -45,6 +45,7 @@ import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
 import org.smartbit4all.core.object.ObjectApi;
@@ -97,6 +98,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .code(ATTACHMENT_REMOVE_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("remove.attachment"))));
+      }
+
+      // Add custom actions
+      for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
+        row.addActionsItem(new UiAction()
+            .code(action.getCode())
+            .descriptor(action.getDescriptor()));
       }
     }
     return page;
@@ -443,58 +451,42 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
     if (Boolean.TRUE.equals(descriptor.getIsEditable())) {
 
-      handlers.add(new ViewEventHandler()
+      ViewEventHandler uploadEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_UPLOAD_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.addAttachment(null, null, gridId))));
-      handlers.add(new ViewEventHandler()
-          .viewEventType(ViewEventTypeEnum.BEFORE)
-          .addPathItem(ViewEventApi.ACTION)
-          .addPathItem(ATTACHMENT_UPLOAD_HANDLER)
-          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.saveModel(null, null))));
+              .build(api -> api.addAttachment(null, null, gridId)));
+      handlers.add(uploadEvent);
+      handlers.add(createSaveModelEvent(uploadEvent));
 
-      handlers.add(new ViewEventHandler()
+      ViewEventHandler removeEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.WIDGET)
           .addPathItem(gridId)
           .addPathItem(ATTACHMENT_REMOVE_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.removeAttachment(null, gridId, null, null))));
-      handlers.add(new ViewEventHandler()
-          .viewEventType(ViewEventTypeEnum.BEFORE)
-          .addPathItem(ViewEventApi.ACTION)
-          .addPathItem(ATTACHMENT_REMOVE_HANDLER)
-          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.saveModel(null, null))));
+              .build(api -> api.removeAttachment(null, gridId, null, null)));
+      handlers.add(removeEvent);
+      handlers.add(createSaveModelGridEvent(removeEvent));
 
-      handlers.add(new ViewEventHandler()
+      ViewEventHandler refreshEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_REFRESH_LIST_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.refreshGridToOriginalState(null, null, gridId))));
-      handlers.add(new ViewEventHandler()
-          .viewEventType(ViewEventTypeEnum.BEFORE)
-          .addPathItem(ViewEventApi.ACTION)
-          .addPathItem(ATTACHMENT_REFRESH_LIST_HANDLER)
-          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.saveModel(null, null))));
+              .build(api -> api.refreshGridToOriginalState(null, null, gridId)));
+      handlers.add(refreshEvent);
+      handlers.add(createSaveModelEvent(refreshEvent));
 
-      handlers.add(new ViewEventHandler()
+      ViewEventHandler saveListEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_SAVE_LIST_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.saveListRequest(null, null, gridId))));
-      handlers.add(new ViewEventHandler()
-          .viewEventType(ViewEventTypeEnum.BEFORE)
-          .addPathItem(ViewEventApi.ACTION)
-          .addPathItem(ATTACHMENT_SAVE_LIST_HANDLER)
-          .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.saveModel(null, null))));
+              .build(api -> api.saveListRequest(null, null, gridId)));
+      handlers.add(saveListEvent);
+      handlers.add(createSaveModelEvent(saveListEvent));
     }
 
     if (Boolean.TRUE.equals(descriptor.getIsDownloadable())) {
@@ -515,9 +507,20 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.openAttachmentFromGrid(null, gridId, null, null))));
     }
+
+    for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
+      ViewEventHandler event = new ViewEventHandler()
+          .viewEventType(ViewEventTypeEnum.INSTEAD)
+          .addPathItem(ViewEventApi.WIDGET)
+          .addPathItem(gridId)
+          .addPathItem(action.getCode())
+          .invocationRequest(action.getActionInvocationRequest());
+      handlers.add(event);
+      handlers.add(createSaveModelGridEvent(event));
+    }
+
     return handlers;
   }
-
 
   private void setGrid(AttachmentGridDescriptor descriptor) {
     AttachmentGridHelper.setGrid(descriptor, gridModelApi, viewApi);
@@ -526,6 +529,35 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   @Override
   public void closeDialogWindow(UUID viewUuid, UiActionRequest request) {
     viewApi.closeView(viewUuid);
+  }
+
+  @Override
+  public void saveModel(UUID viewUuid, UiActionRequest request) {
+    viewApi.getView(viewUuid)
+        .setModel(actionRequestHelper(request)
+            .get(UiActions.MODEL, Object.class));
+  }
+
+
+  @Override
+  public void saveModel(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request) {
+    saveModel(viewUuid, request);
+  }
+
+  private ViewEventHandler createSaveModelEvent(ViewEventHandler event) {
+    return new ViewEventHandler()
+        .viewEventType(ViewEventTypeEnum.BEFORE)
+        .path(event.getPath())
+        .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+            .build(api -> api.saveModel(null, null)));
+  }
+
+  private ViewEventHandler createSaveModelGridEvent(ViewEventHandler event) {
+    return new ViewEventHandler()
+        .viewEventType(ViewEventTypeEnum.BEFORE)
+        .path(event.getPath())
+        .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
+            .build(api -> api.saveModel(null, null, null, null)));
   }
 
   private UiAction setButtonDescriptor(UiAction action, ButtonDescriptor bDescriptor) {
@@ -543,4 +575,5 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
     return action;
   }
+
 }

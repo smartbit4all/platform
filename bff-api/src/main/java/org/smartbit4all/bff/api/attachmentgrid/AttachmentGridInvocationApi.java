@@ -44,6 +44,9 @@ public interface AttachmentGridInvocationApi {
 
   void saveModel(UUID viewUuid, UiActionRequest request);
 
+  void saveModel(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request);
+
   public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor);
 
   public List<ViewEventHandler> getEventHandlers(AttachmentGridDescriptor descriptor);
