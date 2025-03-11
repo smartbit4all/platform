@@ -564,13 +564,23 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     if (bDescriptor.getToolbar() != null) {
       action.toolbar(bDescriptor.getToolbar());
     }
+    if (bDescriptor.getIdentifier() != null) {
+      action.identifier(bDescriptor.getIdentifier());
+    }
+    if (bDescriptor.getParams() != null) {
+      action.params(bDescriptor.getParams());
+    }
 
     if (bDescriptor.getDescriptor() != null) {
       Map<String, Object> oldDesc = objectApi.create(null, action.getDescriptor()).getObjectAsMap();
       oldDesc.putAll(objectApi.create(null, bDescriptor.getDescriptor()).getObjectAsMap());
 
       UiActionDescriptor newDesc = objectApi.asType(UiActionDescriptor.class, oldDesc);
+
+
+
       action.setDescriptor(newDesc);
+
     }
 
     return action;

@@ -20,7 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -32,12 +36,20 @@ import jakarta.validation.Valid;
  */
 @JsonPropertyOrder({
   ButtonDescriptor.TOOLBAR,
+  ButtonDescriptor.IDENTIFIER,
+  ButtonDescriptor.PARAMS,
   ButtonDescriptor.DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ButtonDescriptor {
   public static final String TOOLBAR = "toolbar";
   private String toolbar;
+
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
+
+  public static final String PARAMS = "params";
+  private Map<String, Object> params = null;
 
   public static final String DESCRIPTOR = "descriptor";
   private UiActionDescriptor descriptor = null;
@@ -71,6 +83,69 @@ public class ButtonDescriptor {
   public void setToolbar(String toolbar) {
     this.toolbar = toolbar;
   }
+
+
+  public ButtonDescriptor identifier(String identifier) {
+    
+    this.identifier = identifier;
+    return this;
+  }
+
+   /**
+   * Get identifier
+   * @return identifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+
+  public ButtonDescriptor params(Map<String, Object> params) {
+    
+    this.params = params;
+    return this;
+  }
+
+  public ButtonDescriptor putParamsItem(String key, Object paramsItem) {
+    if (this.params == null) {
+      this.params = new HashMap<>();
+    }
+    this.params.put(key, paramsItem);
+    return this;
+  }
+
+   /**
+   * Get params
+   * @return params
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PARAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getParams() {
+    return params;
+  }
+
+
+  @JsonProperty(PARAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParams(Map<String, Object> params) {
+    this.params = params;
+  }
+
 
   public ButtonDescriptor descriptor(UiActionDescriptor descriptor) {
     
@@ -110,12 +185,14 @@ public class ButtonDescriptor {
     }
     ButtonDescriptor buttonDescriptor = (ButtonDescriptor) o;
     return Objects.equals(this.toolbar, buttonDescriptor.toolbar) &&
+        Objects.equals(this.identifier, buttonDescriptor.identifier) &&
+        Objects.equals(this.params, buttonDescriptor.params) &&
         Objects.equals(this.descriptor, buttonDescriptor.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(toolbar, descriptor);
+    return Objects.hash(toolbar, identifier, params, descriptor);
   }
 
   @Override
@@ -123,6 +200,8 @@ public class ButtonDescriptor {
     StringBuilder sb = new StringBuilder();
     sb.append("class ButtonDescriptor {\n");
     sb.append("    toolbar: ").append(toIndentedString(toolbar)).append("\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();
