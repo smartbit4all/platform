@@ -27,6 +27,8 @@ components:
         buttonColor:
           type: string
           default: primary
+        buttonToolbar:
+          type: string
         logicalSchema:
           type: string
         saveRequest:
