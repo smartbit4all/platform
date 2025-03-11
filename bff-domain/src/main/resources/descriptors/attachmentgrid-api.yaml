@@ -1,58 +1,88 @@
 openapi: 3.0.1
 info:
-  title: Attachment grid api
-  description: Attachment grid api.
-  termsOfService: ''
-  contact:
-    email: info@it4all.hu
-  version: 1.0.0
+    title: Attachment grid api
+    description: Attachment grid api.
+    termsOfService: ""
+    contact:
+        email: info@it4all.hu
+    version: 1.0.0
 tags:
-  - name: AttachmentGrid
+    - name: AttachmentGrid
 paths: {}
 components:
-  schemas:
-    AttachmentGridDescriptor:
-      type: object
-      description: Describes an attachment grid, made up of BinaryContentDatas.
-      properties:
-        attachmentList:
-          type: array
-          items:
-            type: BinaryContentData
-        gridWidgetId:
-          type: string
-        viewUuid:
-          type: string
-          format: uuid
-        buttonColor:
-          type: string
-          default: primary
-        buttonToolbar:
-          type: string
-        logicalSchema:
-          type: string
-        saveRequest:
-          type: InvocationRequest
-        isPreviewable:
-          type: boolean
-          default: true
-        isDownloadable:
-          type: boolean
-          default: true
-        isEditable:
-          type: boolean
-          default: false
-        isPaginatorEnabled:
-          type: boolean
-          default: true
-        pageSize:
-          type: integer
-          format: int32
-        closeOnSave:
-          type: boolean
-          default: false
-        isMultipleInput:
-          type: boolean
-          default: true
-        dialogTitle:
-          type: string
+    schemas:
+        AttachmentGridDescriptor:
+            type: object
+            description: Describes an attachment grid, made up of BinaryContentDatas.
+            properties:
+                attachmentList:
+                    type: array
+                    items:
+                        type: BinaryContentData
+                gridWidgetId:
+                    type: string
+                viewUuid:
+                    type: string
+                    format: uuid
+                logicalSchema:
+                    type: string
+                saveRequest:
+                    type: InvocationRequest
+                isPreviewable:
+                    type: boolean
+                    default: true
+                isDownloadable:
+                    type: boolean
+                    default: true
+                isEditable:
+                    type: boolean
+                    default: false
+                isPaginatorEnabled:
+                    type: boolean
+                    default: true
+                pageSize:
+                    type: integer
+                    format: int32
+                closeOnSave:
+                    type: boolean
+                    default: false
+                autoSave:
+                    type: boolean
+                    default: false
+                isMultipleInput:
+                    type: boolean
+                    default: true
+                dialogTitle:
+                    type: string
+                additionalActions:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/AdditionalAttachmentAction"
+                saveButtonDescriptor:
+                    $ref: "#/components/schemas/ButtonDescriptor"
+                uploadButtonDescriptor:
+                    $ref: "#/components/schemas/ButtonDescriptor"
+                refreshButtonDescriptor:
+                    $ref: "#/components/schemas/ButtonDescriptor"
+
+        ButtonDescriptor:
+            type: object
+            properties:
+                toolbar:
+                    type: string
+                descriptor:
+                    type: UiActionDescriptor
+
+        AdditionalAttachmentAction:
+            type: object
+            description: Describes an additional action, for the attachment grid.
+            properties:
+                title:
+                    type: string
+                    description: "The title of the action."
+                icon:
+                    type: string
+                    description: "Use with card type grid"
+                actionInvocationRequest:
+                    description: "The additional action itself"
+                    type: InvocationRequest
