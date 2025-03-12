@@ -102,10 +102,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       }
 
       // Add custom actions
-      for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
-        row.addActionsItem(new UiAction()
-            .code(action.getCode())
-            .descriptor(action.getDescriptor()));
+      if (!ObjectUtils.isEmpty(descriptor.getAdditionalActions())) {
+        for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
+          row.addActionsItem(new UiAction()
+              .code(action.getCode())
+              .descriptor(action.getDescriptor()));
+        }
       }
     }
     return page;
