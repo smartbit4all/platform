@@ -64,6 +64,10 @@ components:
                     $ref: "#/components/schemas/ButtonDescriptor"
                 refreshButtonDescriptor:
                     $ref: "#/components/schemas/ButtonDescriptor"
+                orderedColumns:
+                    type: array
+                    items:
+                        type: string
 
         ButtonDescriptor:
             type: object

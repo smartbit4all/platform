@@ -54,7 +54,9 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
   private ObjectApi objectApi;
 
   private static List<String> attachmentOrderedColumns =
-      Arrays.asList(BinaryContentData.FILE_NAME, BinaryContentData.DATA_URI,
+      Arrays.asList(
+          BinaryContentData.FILE_NAME,
+          BinaryContentData.DATA_URI,
           BinaryContentData.EXTENSION);
 
   @Override
@@ -136,12 +138,29 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     View view = viewApi.getView(descriptor.getViewUuid());
     String gridId = descriptor.getGridWidgetId();
     List<BinaryContentData> attachmentList = descriptor.getAttachmentList();
+    List<String> orderedColumns = new ArrayList<>();
+    List<String> hiddenColumnsList = new ArrayList<>(Arrays.asList(BinaryContentData.DATA_URI));
+
+    if (!ObjectUtils.isEmpty(descriptor.getOrderedColumns())) {
+      orderedColumns.addAll(descriptor.getOrderedColumns());
+      if (!orderedColumns.contains(BinaryContentData.DATA_URI)) {
+        orderedColumns.add(BinaryContentData.DATA_URI);
+      }
+      if (!orderedColumns.contains(BinaryContentData.EXTENSION)) {
+        orderedColumns.add(BinaryContentData.EXTENSION);
+      }
+      if (!descriptor.getOrderedColumns().contains(BinaryContentData.EXTENSION)) {
+        hiddenColumnsList.add(BinaryContentData.EXTENSION);
+      }
+    } else {
+      orderedColumns = attachmentOrderedColumns;
+      hiddenColumnsList.add(BinaryContentData.EXTENSION);
+    }
 
     GridModel gridModel =
         gridModelApi.createGridModel(BinaryContentData.class,
-            attachmentOrderedColumns, gridId);
-    GridModels.hideColumns(gridModel,
-        Arrays.asList(BinaryContentData.DATA_URI, BinaryContentData.EXTENSION));
+            orderedColumns, gridId);
+    GridModels.hideColumns(gridModel, hiddenColumnsList);
     gridModel.getView().getDescriptor().kind(KindEnum.TABLE);
 
     UUID uuid = view.getUuid();

@@ -23,6 +23,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mimetype.ConverterApi;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewApi;
@@ -70,6 +71,8 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   private InvocationApi invocationApi;
   @Autowired
   private GridModelApi gridModelApi;
+  @Autowired
+  private SessionApi sessionApi;
 
   @Override
   public GridPage extendPageDataForAttachment(GridPage page, UUID viewUuid,
@@ -158,7 +161,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         BinaryContentData bCData = generateUniqueFilename(
             uploadedFile.getFilename(), existingFileNames)
                 .dataUri(objectApi.saveAsNew(
-                    descriptor.getLogicalSchema(), uploadedFile.getData().asObject()));
+                    descriptor.getLogicalSchema(), uploadedFile.getData().asObject()))
+                .created(sessionApi.createActivityLog())
+                .size(uploadedFile.getSize());
         existingFileNames.add(bCData.getFileName());
         return bCData;
 
@@ -169,7 +174,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       BinaryContentData bCData = generateUniqueFilename(
           uploadedFile.getFilename(), existingFileNames)
               .dataUri(objectApi.saveAsNew(
-                  descriptor.getLogicalSchema(), uploadedFile.getData().asObject()));
+                  descriptor.getLogicalSchema(), uploadedFile.getData().asObject()))
+              .created(sessionApi.createActivityLog())
+              .size(uploadedFile.getSize());
       existingFileNames.add(bCData.getFileName());
       newAttachments.add(bCData);
     }

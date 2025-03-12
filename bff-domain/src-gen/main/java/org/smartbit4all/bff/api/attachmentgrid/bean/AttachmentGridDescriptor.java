@@ -56,7 +56,8 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.ADDITIONAL_ACTIONS,
   AttachmentGridDescriptor.SAVE_BUTTON_DESCRIPTOR,
   AttachmentGridDescriptor.UPLOAD_BUTTON_DESCRIPTOR,
-  AttachmentGridDescriptor.REFRESH_BUTTON_DESCRIPTOR
+  AttachmentGridDescriptor.REFRESH_BUTTON_DESCRIPTOR,
+  AttachmentGridDescriptor.ORDERED_COLUMNS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
@@ -114,7 +115,10 @@ public class AttachmentGridDescriptor {
   public static final String REFRESH_BUTTON_DESCRIPTOR = "refreshButtonDescriptor";
   private ButtonDescriptor refreshButtonDescriptor;
 
-  public AttachmentGridDescriptor() {
+  public static final String ORDERED_COLUMNS = "orderedColumns";
+  private List<String> orderedColumns = null;
+
+  public AttachmentGridDescriptor() { 
   }
 
   public AttachmentGridDescriptor attachmentList(List<BinaryContentData> attachmentList) {
@@ -626,6 +630,42 @@ public class AttachmentGridDescriptor {
     this.refreshButtonDescriptor = refreshButtonDescriptor;
   }
 
+
+  public AttachmentGridDescriptor orderedColumns(List<String> orderedColumns) {
+    
+    this.orderedColumns = orderedColumns;
+    return this;
+  }
+
+  public AttachmentGridDescriptor addOrderedColumnsItem(String orderedColumnsItem) {
+    if (this.orderedColumns == null) {
+      this.orderedColumns = new ArrayList<>();
+    }
+    this.orderedColumns.add(orderedColumnsItem);
+    return this;
+  }
+
+   /**
+   * Get orderedColumns
+   * @return orderedColumns
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ORDERED_COLUMNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getOrderedColumns() {
+    return orderedColumns;
+  }
+
+
+  @JsonProperty(ORDERED_COLUMNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrderedColumns(List<String> orderedColumns) {
+    this.orderedColumns = orderedColumns;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -652,12 +692,13 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.additionalActions, attachmentGridDescriptor.additionalActions) &&
         Objects.equals(this.saveButtonDescriptor, attachmentGridDescriptor.saveButtonDescriptor) &&
         Objects.equals(this.uploadButtonDescriptor, attachmentGridDescriptor.uploadButtonDescriptor) &&
-        Objects.equals(this.refreshButtonDescriptor, attachmentGridDescriptor.refreshButtonDescriptor);
+        Objects.equals(this.refreshButtonDescriptor, attachmentGridDescriptor.refreshButtonDescriptor) &&
+        Objects.equals(this.orderedColumns, attachmentGridDescriptor.orderedColumns);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, autoSave, isMultipleInput, dialogTitle, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, autoSave, isMultipleInput, dialogTitle, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor, orderedColumns);
   }
 
   @Override
@@ -682,6 +723,7 @@ public class AttachmentGridDescriptor {
     sb.append("    saveButtonDescriptor: ").append(toIndentedString(saveButtonDescriptor)).append("\n");
     sb.append("    uploadButtonDescriptor: ").append(toIndentedString(uploadButtonDescriptor)).append("\n");
     sb.append("    refreshButtonDescriptor: ").append(toIndentedString(refreshButtonDescriptor)).append("\n");
+    sb.append("    orderedColumns: ").append(toIndentedString(orderedColumns)).append("\n");
     sb.append("}");
     return sb.toString();
   }
