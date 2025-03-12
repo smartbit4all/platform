@@ -509,15 +509,17 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
               .build(api -> api.openAttachmentFromGrid(null, gridId, null, null))));
     }
 
-    for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
-      ViewEventHandler event = new ViewEventHandler()
-          .viewEventType(ViewEventTypeEnum.INSTEAD)
-          .addPathItem(ViewEventApi.WIDGET)
-          .addPathItem(gridId)
-          .addPathItem(action.getCode())
-          .invocationRequest(action.getActionInvocationRequest());
-      handlers.add(event);
-      handlers.add(createSaveModelGridEvent(event));
+    if (!ObjectUtils.isEmpty(descriptor.getAdditionalActions())) {
+      for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
+        ViewEventHandler event = new ViewEventHandler()
+            .viewEventType(ViewEventTypeEnum.INSTEAD)
+            .addPathItem(ViewEventApi.WIDGET)
+            .addPathItem(gridId)
+            .addPathItem(action.getCode())
+            .invocationRequest(action.getActionInvocationRequest());
+        handlers.add(event);
+        handlers.add(createSaveModelGridEvent(event));
+      }
     }
 
     return handlers;
