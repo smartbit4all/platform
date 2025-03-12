@@ -116,9 +116,9 @@ public class AttachmentGridDescriptor {
   private ButtonDescriptor refreshButtonDescriptor;
 
   public static final String ORDERED_COLUMNS = "orderedColumns";
-  private List<String> orderedColumns = null;
+  private List<String> orderedColumns = new ArrayList<>();
 
-  public AttachmentGridDescriptor() { 
+  public AttachmentGridDescriptor() {
   }
 
   public AttachmentGridDescriptor attachmentList(List<BinaryContentData> attachmentList) {
@@ -630,7 +630,6 @@ public class AttachmentGridDescriptor {
     this.refreshButtonDescriptor = refreshButtonDescriptor;
   }
 
-
   public AttachmentGridDescriptor orderedColumns(List<String> orderedColumns) {
     
     this.orderedColumns = orderedColumns;
@@ -645,12 +644,13 @@ public class AttachmentGridDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get orderedColumns
    * @return orderedColumns
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(ORDERED_COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -664,7 +664,6 @@ public class AttachmentGridDescriptor {
   public void setOrderedColumns(List<String> orderedColumns) {
     this.orderedColumns = orderedColumns;
   }
-
 
   @Override
   public boolean equals(Object o) {
