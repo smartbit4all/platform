@@ -34,6 +34,12 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
   @Value("${fs.base.directory:../../dev-fs}")
   private String baseDirectory;
 
+  @Value("${commandexecutor.path.ffmpeg:}")
+  private String path;
+
+  @Value("${commandexecutor.ext.ffmpeg:}")
+  private String ext;
+
   @Autowired
   private ObjectApi objectApi;
 
@@ -41,7 +47,9 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
   public boolean isAvailable() {
     ProcessBuilder processBuilder = getProcessBuilder();
     StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(path);
     commandBuilder.append(FFMPEG);
+    commandBuilder.append(ext);
     commandBuilder.append(SPACE);
     commandBuilder.append("-version");
     processBuilder.command().add(commandBuilder.toString());
