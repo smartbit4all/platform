@@ -37,10 +37,9 @@ public abstract class CommandExecutorApiAbs implements CommandExecutorApi {
     try (InputStream inputStream = process.getInputStream()) {
       byte[] buffer = new byte[8192]; // Buffer size
       while (inputStream.read(buffer) != -1) {
-        if (log.isDebugEnabled()) {
-          log.debug(new String(buffer));
-        }
-
+        String outputString = new String(buffer);
+        log.info("" + outputString.length());
+        log.info(outputString);
       }
     }
   }
