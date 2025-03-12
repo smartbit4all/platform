@@ -10,13 +10,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
@@ -27,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.io.ByteStreams;
 
-public class CommandExecutorFfmpegApi implements CommandExecutorApi {
-
-  private static final Logger log = LoggerFactory.getLogger(CommandExecutorFfmpegApi.class);
+public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements CommandExecutorApi {
 
   @Value("${fs.base.directory:../../dev-fs}")
   private String baseDirectory;
@@ -113,7 +108,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
     // transfer the logging of the process to the standard out
-    transferInputStreamToSysOut(process);
+    logProcessInputStream(process);
     try (InputStream in = Files.newInputStream(uniqueOutputFilePath)) {
       return BinaryData.of(in);
     } catch (IOException e) {
@@ -175,7 +170,7 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     processBuilder.command().add(commandBuilder.toString());
     Process process = processBuilder.start();
     // transfer the logging of the process to the standard out
-    transferInputStreamToSysOut(process);
+    logProcessInputStream(process);
     try (InputStream in = Files.newInputStream(uniqueOutputFilePath)) {
       return BinaryData.of(in);
     } catch (IOException e) {
@@ -238,17 +233,6 @@ public class CommandExecutorFfmpegApi implements CommandExecutorApi {
     } catch (IOException e) {
       log.error(e.getMessage(), e);
       return null;
-    }
-  }
-
-  private void transferInputStreamToSysOut(Process process) throws IOException {
-    OutputStream outputStream = System.out;
-    try (InputStream inputStream = process.getInputStream()) {
-      byte[] buffer = new byte[8192]; // Buffer size
-      int bytesRead;
-      while ((bytesRead = inputStream.read(buffer)) != -1) {
-        outputStream.write(buffer, 0, bytesRead);
-      }
     }
   }
 
