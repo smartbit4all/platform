@@ -73,7 +73,9 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
 
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(path);
     commandBuilder.append(FFMPEG);
+    commandBuilder.append(ext);
     commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
@@ -125,7 +127,9 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
 
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(path);
     commandBuilder.append(FFMPEG);
+    commandBuilder.append(ext);
     commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
@@ -187,7 +191,9 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
 
     // Using StringBuilder
     StringBuilder commandBuilder = new StringBuilder();
+    commandBuilder.append(path);
     commandBuilder.append(FFPROBE);
+    commandBuilder.append(ext);
     commandBuilder.append(SPACE);
 
     // specifying that the next parameter will be the input file
