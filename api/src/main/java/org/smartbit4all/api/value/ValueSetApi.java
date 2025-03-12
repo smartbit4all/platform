@@ -67,7 +67,7 @@ public interface ValueSetApi {
 
   default ValueSetData valuesOf(String namespace, String name) {
     return valuesOf(namespace, name, null, false);
-  };
+  }
 
   /**
    * Retrieve the values of a value set where the set is identified by a unique name in a global
@@ -82,7 +82,7 @@ public interface ValueSetApi {
 
   default ValueSetData valuesOf(ValueSetDefinitionData definitionData) {
     return valuesOf(definitionData, null, false);
-  };
+  }
 
   /**
    * Saves the given value set.
