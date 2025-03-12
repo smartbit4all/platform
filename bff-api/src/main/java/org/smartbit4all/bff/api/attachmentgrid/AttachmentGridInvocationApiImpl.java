@@ -86,18 +86,21 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
       if (Boolean.TRUE.equals(descriptor.getIsPreviewable())) {
         row.addActionsItem(new UiAction()
+            .model(true)
             .code(ATTACHMENT_OPEN_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("open.attachment"))));
       }
       if (Boolean.TRUE.equals(descriptor.getIsDownloadable())) {
         row.addActionsItem(new UiAction()
+            .model(true)
             .code(ATTACHMENT_DOWNLOAD_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("download.attachment"))));
       }
       if (Boolean.TRUE.equals(descriptor.getIsEditable())) {
         row.addActionsItem(new UiAction()
+            .model(true)
             .code(ATTACHMENT_REMOVE_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("remove.attachment"))));
@@ -107,6 +110,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       if (!ObjectUtils.isEmpty(descriptor.getAdditionalActions())) {
         for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
           row.addActionsItem(new UiAction()
+              .model(true)
               .code(action.getCode())
               .descriptor(action.getDescriptor()));
         }
@@ -402,6 +406,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   public UiAction getRefreshToOriginalGridAction(AttachmentGridDescriptor descriptor) {
     UiAction action = new UiAction()
+        .model(true)
         .code(ATTACHMENT_REFRESH_LIST_HANDLER)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
@@ -421,6 +426,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         .code(ATTACHMENT_SAVE_LIST_HANDLER)
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .disabled(true)
+        .submit(true)
         .model(true)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
@@ -544,11 +550,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   @Override
   public void saveModel(UUID viewUuid, UiActionRequest request) {
-    viewApi.getView(viewUuid)
-        .setModel(actionRequestHelper(request)
-            .get(UiActions.MODEL, Object.class));
+    if (actionRequestHelper(request).get(UiActions.MODEL, Object.class) != null) {
+      viewApi.getView(viewUuid)
+          .setModel(actionRequestHelper(request)
+              .get(UiActions.MODEL, Object.class));
+    }
   }
-
 
   @Override
   public void saveModel(UUID viewUuid, String widgetId, String nodeId, UiActionRequest request) {
