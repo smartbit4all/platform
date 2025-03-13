@@ -58,8 +58,9 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
     try (InputStream in = process.getInputStream()) {
       byte[] allBytes = FileIO.readInputStreamToByteArray(in);
       String outputString = new String(allBytes);
-      log.info("" + outputString.length());
-      log.info(outputString);
+      if (log.isDebugEnabled()) {
+        log.info(outputString);
+      }
       return outputString.contains("FFmpeg");
     } catch (IOException e) {
       log.error(e.getMessage(), e);
