@@ -291,6 +291,14 @@ public interface ObjectApi {
    * @see ObjectApi#objectHistoryReverse(URI)
    */
   Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri);
+  
+  Iterator<ObjectNode> objectHistoryReverse(ObjectNode node);
+  
+  Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri, URI branchUri);
+  
+  default Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri) {
+    return objectHistoryReverseExact(objectUri, null);
+  }
 
   /**
    * Returns an iterator of the given object's version list. The returned iterator iterates from the
