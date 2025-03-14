@@ -142,7 +142,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   @Override
   public void addAttachment(UUID viewUuid, UiActionRequest request, String widgetId) {
-
+    if (request.getIdentifier() != null) {
+      widgetId = request.getIdentifier();
+    }
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper actionRequestHelper = actionRequestHelper(request);
     AttachmentGridDescriptor descriptor =
