@@ -103,3 +103,37 @@ components:
           type: string
         comment:
           type: string
+    SubjectAssignerPageModel:
+      type: object
+      properties:
+        subjectChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectChanges'
+    SubjectChanges:
+      type: object
+      properties:
+        subjectGridConfig:
+          $ref: '#/components/schemas/SubjectGridConfig'
+        subjectAssociationModel:
+          type: SubjectAssociationModificationModel
+    SubjectAssignerPageConfig:
+      type: object
+      properties:
+        subjectModel:
+          type: string
+        subjectGridConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectGridConfig'
+    SubjectGridConfig:
+      type: object
+      properties:
+        gridId:
+          type: string
+        selectionMode:
+          type: GridSelectionMode
+        subjectType:
+          type: string
+        searchPageConfig:
+          type: SearchPageConfig
