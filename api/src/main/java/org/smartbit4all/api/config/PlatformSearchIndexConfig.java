@@ -3,6 +3,7 @@ package org.smartbit4all.api.config;
 import static org.smartbit4all.core.utility.StringConstant.joinCamel;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
@@ -16,6 +17,7 @@ import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACLOperationReference;
 import org.smartbit4all.api.org.bean.ACLSubjectSubscription;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModification;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -37,6 +39,8 @@ public class PlatformSearchIndexConfig {
       MDMModification.APPROVED + StringConstant.DOT + UserActivityLog.TIMESTAMP;
   public static final String MODIFICATION_CREATED_AT =
       MDMModification.CREATED + StringConstant.DOT + UserActivityLog.TIMESTAMP;
+  public static final String SUBJECT_DISPLAY_NAME =
+      "SUBJECT_DISPLAY_NAME";
 
   @Bean
   public SearchIndex<ACLSubjectSubscription> searchACLSubjectSubscription(
@@ -162,4 +166,24 @@ public class PlatformSearchIndexConfig {
 
     ;
   }
+
+  @Bean
+  public SearchIndex<SubjectAssociationModification> subjectAssociationModification(
+      SubjectManagementApi subjectManagementApi) {
+    return new SearchIndexImpl<>(PlatformApiConfig.DEFAULT_SCHEME,
+        SubjectAssociationModification.class.getSimpleName(),
+        SubjectManagementApi.SCHEMA,
+        SubjectAssociationModification.class)
+            .map(SubjectAssociationModification.OPERATION, SubjectAssociationModification.OPERATION)
+            .map(SubjectAssociationModification.SUBJECT, SubjectAssociationModification.SUBJECT)
+            .mapComplex(SUBJECT_DISPLAY_NAME, n -> {
+              ArrayList<Subject> subjects = new ArrayList<>();
+              subjects.add(n.getValue(Subject.class, SubjectAssociationModification.SUBJECT));
+              return subjectManagementApi.getDisplayValue(
+                  n.getValueAsString(SubjectAssociationModification.SUBJECT, Subject.MODEL),
+                  subjects).get(0);
+            });
+  }
 }
+
+

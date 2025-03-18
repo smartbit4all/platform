@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.org.bean.SubjectTypeDescriptor;
 import org.smartbit4all.core.utility.StringConstant;
@@ -92,6 +93,9 @@ public interface SubjectManagementApi extends PrimaryApi<SubjectContributionApi>
    * @return
    */
   List<String> getDisplayValue(String modelName, List<Subject> subjects);
+
+  void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel);
 
   default String toString(Subject subject) {
     if (subject == null) {

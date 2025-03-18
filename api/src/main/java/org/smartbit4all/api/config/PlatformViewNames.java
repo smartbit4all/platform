@@ -9,6 +9,7 @@ public class PlatformViewNames {
   public static final String VALIDATION_RESULT_PAGE = "validation-result-page";
   public static final String SUBJECT_SELECTOR_PAGE = "subject-selector-page";
   public static final String USER_SELECTOR_PAGE = "user-selector-page";
+  public static final String SUBJECT_ASSIGNER_PAGE = "subject-assigner-page";
   public static final String ACL_GENERIC_PAGE = "acl-generic-page";
   public static final String ACL_MATRIX_PAGE = "acl-matrix-page";
   public static final String PDF_VIEWER_DIALOG = "PdfViewerDialog";

@@ -10,6 +10,7 @@ import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.org.SubjectContributionApi;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,8 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
 
   @Override
   public List<Subject> getUserSubjects(String modelName, URI userUri) {
-    StoredMap map = collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
+    StoredMap map =
+        collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
     URI subjectUri = map.uris().get(objectApi.getLatestUri(userUri).toString());
     if (subjectUri == null) {
       return Collections.emptyList();
@@ -44,7 +46,8 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
 
   @Override
   public List<Subject> getAllSubjects(String modelName) {
-    StoredMap map = collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
+    StoredMap map =
+        collectionApi.map(ObjectApiTestBase.SCHEMA_ASPECTS, ObjectApiTestBase.USER_CATEGORY);
     return map.uris().values().stream()
         .map(u -> new Subject()
             .model(modelName)
@@ -93,4 +96,10 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
         .collect(toList());
   }
 
+  @Override
+  public void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel) {
+    // TODO Auto-generated method stub
+
+  }
 }

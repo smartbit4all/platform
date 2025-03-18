@@ -651,3 +651,20 @@ components:
           type: string
           description: |
             The name of the api that manages the given subject. We have to provide the necessary apis in advance before we add 
+    SubjectAssociationModificationModel:
+      type: object
+      properties:
+        userUri:
+          type: string
+          format: uri
+        subjectAssociations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectAssociationModification'
+    SubjectAssociationModification:
+      type: object
+      properties:
+        subject:
+          $ref: '#/components/schemas/Subject'
+        operation:
+          enum: [ADD, REMOVE]
