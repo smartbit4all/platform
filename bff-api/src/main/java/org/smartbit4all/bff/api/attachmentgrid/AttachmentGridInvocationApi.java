@@ -10,23 +10,10 @@ import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 
 public interface AttachmentGridInvocationApi {
 
-  public static final String ATTACHMENT_OPEN_HANDLER = "ATTACHMENT_OPEN_HANDLER";
-  public static final String ATTACHMENT_DOWNLOAD_HANDLER = "ATTACHMENT_DOWNLOAD_HANDLER";
-  public static final String ATTACHMENT_REMOVE_HANDLER = "ATTACHMENT_REMOVE_HANDLER";
-
-  public static final String ATTACHMENT_UPLOAD_HANDLER = "ATTACHMENT_UPLOAD_HANDLER";
-  public static final String ATTACHMENT_REFRESH_LIST_HANDLER = "ATTACHMENT_REFRESH_LIST_HANDLER";
-  public static final String ATTACHMENT_SAVE_LIST_HANDLER = "ATTACHMENT_SAVE_LIST_HANDLER";
-
-  public static final String ATTACHMENT_DIALOG_CLOSE_HANDLER = "ATTACHMENT_DIALOG_CLOSE_HANDLER";
-
-  public static final String ATTACHMENT_DOWNLOADBLE_FILE = "ATTACHMENT_DOWNLOADBLE_FILE";
-  public static final String ATTACHMENT_TEMP_SCHEMA = "temp";
-
   GridPage extendPageDataForAttachment(GridPage page, UUID viewUuid,
       String widgetId);
 
-  void addAttachment(UUID viewUuid, UiActionRequest request, String widgetId);
+  void addAttachment(UUID viewUuid, UiActionRequest request);
 
   void refreshGridToOriginalState(UUID viewUuid, UiActionRequest request, String widgetId);
 
