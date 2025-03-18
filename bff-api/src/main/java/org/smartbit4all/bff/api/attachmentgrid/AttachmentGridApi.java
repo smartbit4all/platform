@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.attachmentgrid;
 
+import java.util.List;
+import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 
@@ -11,17 +13,27 @@ public interface AttachmentGridApi {
    * {@link SmartComponentLayoutDefinition}.
    * 
    * @param descriptor
+   * @param gridModel
    */
-  void createAttachmentGrid(AttachmentGridDescriptor descriptor);
+  void createAttachmentGrid(AttachmentGridDescriptor descriptor, GridModel gridModel);
 
   /**
    * Sets up an attachment grid based on the {@link AttachmentGridDescriptor} and opens it in a
    * dialog window. This requires the gridWidgetId.
    * 
    * @param descriptor
+   * @param gridModel
    */
-  void createDialogAttachmentGrid(AttachmentGridDescriptor descriptor);
+  void createDialogAttachmentGrid(AttachmentGridDescriptor descriptor, GridModel gridModel);
 
+  /**
+   * Creates a grid model, used in AttachmentGridBuilder.
+   * 
+   * @param columns
+   * @param descriptor
+   * @return
+   */
+  GridModel createGridModel(List<String> columns, AttachmentGridDescriptor descriptor);
 
 }
 

@@ -1,5 +1,14 @@
 package org.smartbit4all.bff.api.attachmentgrid;
 
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_DOWNLOADBLE_FILE;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_DOWNLOAD_HANDLER;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_OPEN_HANDLER;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_REFRESH_LIST_HANDLER;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_REMOVE_HANDLER;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_SAVE_LIST_HANDLER;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_TEMP_SCHEMA;
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_UPLOAD_HANDLER;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
@@ -48,7 +59,9 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
+import org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridHelper;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
@@ -73,6 +86,8 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   private GridModelApi gridModelApi;
   @Autowired
   private SessionApi sessionApi;
+  @Autowired
+  private CollectionApi collectionApi;
 
 
   @Override
@@ -83,28 +98,40 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(viewApi.getView(viewUuid), widgetId, objectApi);
+    AttachmentGridOptions options = descriptor.getOptions();
+
     for (GridRow row : page.getRows()) {
 
-      if (Boolean.TRUE.equals(descriptor.getIsPreviewable())) {
+      if (Boolean.TRUE.equals(options.getIsPreviewable())) {
         row.addActionsItem(new UiAction()
             .model(true)
             .code(ATTACHMENT_OPEN_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("open.attachment"))));
       }
-      if (Boolean.TRUE.equals(descriptor.getIsDownloadable())) {
+      if (Boolean.TRUE.equals(options.getIsDownloadable())) {
         row.addActionsItem(new UiAction()
             .model(true)
             .code(ATTACHMENT_DOWNLOAD_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("download.attachment"))));
       }
-      if (Boolean.TRUE.equals(descriptor.getIsEditable())) {
+      if (Boolean.TRUE.equals(options.getIsEditable())) {
         row.addActionsItem(new UiAction()
             .model(true)
+            .confirm(true)
             .code(ATTACHMENT_REMOVE_HANDLER)
             .descriptor(new UiActionDescriptor()
-                .title(localeSettingApi.get("remove.attachment"))));
+                .title(localeSettingApi.get("remove.attachment"))
+                .confirmDialog(new UiActionDialogDescriptor()
+                    .title(localeSettingApi.get("remove.attachment.confirm.header"))
+                    .text(localeSettingApi.get("remove.attachment.confirm.text"))
+                    .actionButton(new UiActionButtonDescriptor()
+                        .caption(localeSettingApi.get("remove.attachment.confirm.action"))
+                        .color(UiActions.Color.PRIMARY))
+                    .cancelButton(new UiActionButtonDescriptor()
+                        .caption(localeSettingApi.get("remove.attachment.confirm.cancel"))
+                        .color(UiActions.Color.ACCENT)))));
       }
 
       // Add custom actions
@@ -126,7 +153,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
     Object object = view.getParameters().get(
-        descriptor.getGridWidgetId() + AttachmentGridHelper.ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX);
+        descriptor.getGridWidgetId() + ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX);
     List<BinaryContentData> originalList = objectApi.asType(List.class, object);
 
     if (ObjectUtils.isEmpty(originalList)) {
@@ -141,13 +168,15 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   }
 
   @Override
-  public void addAttachment(UUID viewUuid, UiActionRequest request, String widgetId) {
+  public void addAttachment(UUID viewUuid, UiActionRequest request) {
+
+    String widgetId = request.getIdentifier();
 
     View view = viewApi.getView(viewUuid);
     ObjectMapHelper actionRequestHelper = actionRequestHelper(request);
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
-
+    AttachmentGridOptions options = descriptor.getOptions();
 
     Set<String> existingFileNames;
     if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())) {
@@ -157,7 +186,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       existingFileNames = new HashSet<>();
     }
     List<BinaryContentData> newAttachments = new ArrayList<>();
-    Boolean isMultipleInput = descriptor.getIsMultipleInput();
+    Boolean isMultipleInput = options.getIsMultipleInput();
     if (Boolean.TRUE.equals(isMultipleInput)) {
 
       List<UploadedFile> uploadedFiles =
@@ -195,13 +224,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       descriptor.setAttachmentList(newAttachments);
     }
 
-    if (!descriptor.getAutoSave()) {
+    if (!options.getAutoSave()) {
       UiActions.remove(view, getSaveListAction(descriptor));
       UiActions.add(view, getSaveListAction(descriptor).disabled(false));
     }
     setGrid(descriptor);
 
-    if (descriptor.getAutoSave()) {
+    if (options.getAutoSave()) {
       saveListRequest(viewUuid, request, widgetId);
     }
   }
@@ -253,6 +282,8 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       UiActionRequest request) {
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(viewApi.getView(viewUuid), widgetId, objectApi);
+    AttachmentGridOptions options = descriptor.getOptions();
+
     List<BinaryContentData> currentDocuments = descriptor.getAttachmentList();
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
@@ -266,7 +297,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
     View view = viewApi.getView(viewUuid);
 
-    if (!descriptor.getAutoSave()) {
+    if (!options.getAutoSave()) {
       UiActions.remove(view, getSaveListAction(descriptor));
       UiActions.add(view, getSaveListAction(descriptor).disabled(false));
     }
@@ -303,6 +334,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     View view = viewApi.getView(viewUuid);
     AttachmentGridDescriptor descriptor =
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
+    AttachmentGridOptions options = descriptor.getOptions();
 
     InvocationRequest invocationRequest = descriptor.getSaveRequest();
     invocationRequest.getParameters().get(0).setValue(descriptor.getAttachmentList());
@@ -313,13 +345,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
     AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
 
-    if (!descriptor.getAutoSave()) {
+    if (!options.getAutoSave()) {
       UiActions.remove(view, getSaveListAction(descriptor));
       UiActions.add(view, getSaveListAction(descriptor).disabled(true));
     }
 
     if (viewApi.getView(viewUuid).getType().equals(ViewType.DIALOG)
-        && descriptor.getCloseOnSave().equals(Boolean.TRUE)) {
+        && options.getCloseOnSave().equals(Boolean.TRUE)) {
       viewApi.closeView(viewUuid);
     }
   }
@@ -382,12 +414,15 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
 
   public UiAction getAddAttachmentAction(AttachmentGridDescriptor descriptor) {
+    AttachmentGridOptions options = descriptor.getOptions();
+
     UiAction action = new UiAction()
         .input2Type(
-            Boolean.TRUE.equals(descriptor.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
+            Boolean.TRUE.equals(options.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
                 : UiActionInputType.FILE)
         .code(ATTACHMENT_UPLOAD_HANDLER)
         .model(true)
+        .identifier(descriptor.getGridWidgetId())
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
@@ -446,13 +481,14 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   @Override
   public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor) {
+    AttachmentGridOptions options = descriptor.getOptions();
     List<UiAction> actions = new ArrayList<>();
 
-    if (Boolean.TRUE.equals(descriptor.getIsEditable())
-        && Boolean.TRUE.equals(descriptor.getAutoSave())) {
+    if (Boolean.TRUE.equals(options.getIsEditable())
+        && Boolean.TRUE.equals(options.getAutoSave())) {
       actions.addAll(Arrays.asList(
           getAddAttachmentAction(descriptor)));
-    } else if (Boolean.TRUE.equals(descriptor.getIsEditable())) {
+    } else if (Boolean.TRUE.equals(options.getIsEditable())) {
       actions.addAll(Arrays.asList(
           getAddAttachmentAction(descriptor),
           getRefreshToOriginalGridAction(descriptor),
@@ -463,17 +499,18 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   @Override
   public List<ViewEventHandler> getEventHandlers(AttachmentGridDescriptor descriptor) {
+    AttachmentGridOptions options = descriptor.getOptions();
     List<ViewEventHandler> handlers = new ArrayList<>();
     String gridId = descriptor.getGridWidgetId();
 
-    if (Boolean.TRUE.equals(descriptor.getIsEditable())) {
+    if (Boolean.TRUE.equals(options.getIsEditable())) {
 
       ViewEventHandler uploadEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
           .addPathItem(ATTACHMENT_UPLOAD_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
-              .build(api -> api.addAttachment(null, null, gridId)));
+              .build(api -> api.addAttachment(null, null)));
       handlers.add(uploadEvent);
       handlers.add(createSaveModelEvent(uploadEvent));
 
@@ -506,7 +543,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       handlers.add(createSaveModelEvent(saveListEvent));
     }
 
-    if (Boolean.TRUE.equals(descriptor.getIsDownloadable())) {
+    if (Boolean.TRUE.equals(options.getIsDownloadable())) {
       handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.WIDGET)
@@ -515,7 +552,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.downloadAttachmentFromGrid(null, gridId, null, null))));
     }
-    if (Boolean.TRUE.equals(descriptor.getIsPreviewable())) {
+    if (Boolean.TRUE.equals(options.getIsPreviewable())) {
       handlers.add(new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.WIDGET)
@@ -542,7 +579,36 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   }
 
   private void setGrid(AttachmentGridDescriptor descriptor) {
-    AttachmentGridHelper.setGrid(descriptor, gridModelApi, viewApi);
+
+    if (descriptor.getSearchIndex() != null) {
+      SearchIndex<BinaryContentData> searchIndex =
+          (SearchIndex<BinaryContentData>) collectionApi.searchIndex(
+              descriptor.getSearchIndex().getSchema(),
+              descriptor.getSearchIndex().getName());
+      gridModelApi.setData(
+          descriptor.getViewUuid(),
+          descriptor.getGridWidgetId(),
+          searchIndex.tableDataOfObjects(descriptor.getAttachmentList().stream()));
+
+    } else {
+      gridModelApi.setData(
+          descriptor.getViewUuid(),
+          descriptor.getGridWidgetId(),
+          BinaryContentData.class,
+          descriptor.getAttachmentList());
+    }
+
+    gridModelApi.setPageSize(
+        descriptor.getViewUuid(),
+        descriptor.getGridWidgetId(),
+        (model) -> {
+          if (Boolean.FALSE.equals(model.getPaginator())) {
+            return model.getTotalRowCount();
+          } else {
+            return model.getPageSize();
+          }
+        });
+    AttachmentGridHelper.saveDescriptorToView(descriptor, viewApi);
   }
 
   @Override
@@ -593,17 +659,20 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
     if (bDescriptor.getDescriptor() != null) {
       Map<String, Object> oldDesc = objectApi.create(null, action.getDescriptor()).getObjectAsMap();
-      oldDesc.putAll(objectApi.create(null, bDescriptor.getDescriptor()).getObjectAsMap());
-
-      UiActionDescriptor newDesc = objectApi.asType(UiActionDescriptor.class, oldDesc);
-
+      Map<String, Object> newDesc =
+          objectApi.create(null, bDescriptor.getDescriptor()).getObjectAsMap();
 
 
-      action.setDescriptor(newDesc);
+      oldDesc.forEach((key, value) -> {
+        if (value != null) {
+          newDesc.merge(key, value, (v1, v2) -> v1 != null ? v1 : v2);
+        }
+      });
+      UiActionDescriptor newDescAction = objectApi.asType(UiActionDescriptor.class, newDesc);
 
+      action.setDescriptor(newDescAction);
     }
 
     return action;
   }
-
 }
