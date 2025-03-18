@@ -26,8 +26,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
+import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -44,20 +46,13 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.VIEW_UUID,
   AttachmentGridDescriptor.LOGICAL_SCHEMA,
   AttachmentGridDescriptor.SAVE_REQUEST,
-  AttachmentGridDescriptor.IS_PREVIEWABLE,
-  AttachmentGridDescriptor.IS_DOWNLOADABLE,
-  AttachmentGridDescriptor.IS_EDITABLE,
-  AttachmentGridDescriptor.IS_PAGINATOR_ENABLED,
-  AttachmentGridDescriptor.PAGE_SIZE,
-  AttachmentGridDescriptor.CLOSE_ON_SAVE,
-  AttachmentGridDescriptor.AUTO_SAVE,
-  AttachmentGridDescriptor.IS_MULTIPLE_INPUT,
-  AttachmentGridDescriptor.DIALOG_TITLE,
+  AttachmentGridDescriptor.SEARCH_INDEX,
   AttachmentGridDescriptor.ADDITIONAL_ACTIONS,
   AttachmentGridDescriptor.SAVE_BUTTON_DESCRIPTOR,
   AttachmentGridDescriptor.UPLOAD_BUTTON_DESCRIPTOR,
   AttachmentGridDescriptor.REFRESH_BUTTON_DESCRIPTOR,
-  AttachmentGridDescriptor.ORDERED_COLUMNS
+  AttachmentGridDescriptor.OPTIONS,
+  AttachmentGridDescriptor.COLUMNS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridDescriptor {
@@ -76,32 +71,8 @@ public class AttachmentGridDescriptor {
   public static final String SAVE_REQUEST = "saveRequest";
   private InvocationRequest saveRequest = null;
 
-  public static final String IS_PREVIEWABLE = "isPreviewable";
-  private Boolean isPreviewable = true;
-
-  public static final String IS_DOWNLOADABLE = "isDownloadable";
-  private Boolean isDownloadable = true;
-
-  public static final String IS_EDITABLE = "isEditable";
-  private Boolean isEditable = false;
-
-  public static final String IS_PAGINATOR_ENABLED = "isPaginatorEnabled";
-  private Boolean isPaginatorEnabled = true;
-
-  public static final String PAGE_SIZE = "pageSize";
-  private Integer pageSize;
-
-  public static final String CLOSE_ON_SAVE = "closeOnSave";
-  private Boolean closeOnSave = false;
-
-  public static final String AUTO_SAVE = "autoSave";
-  private Boolean autoSave = false;
-
-  public static final String IS_MULTIPLE_INPUT = "isMultipleInput";
-  private Boolean isMultipleInput = true;
-
-  public static final String DIALOG_TITLE = "dialogTitle";
-  private String dialogTitle;
+  public static final String SEARCH_INDEX = "searchIndex";
+  private SearchIndexDescriptor searchIndex = null;
 
   public static final String ADDITIONAL_ACTIONS = "additionalActions";
   private List<@Valid AdditionalAttachmentAction> additionalActions = new ArrayList<>();
@@ -115,8 +86,11 @@ public class AttachmentGridDescriptor {
   public static final String REFRESH_BUTTON_DESCRIPTOR = "refreshButtonDescriptor";
   private ButtonDescriptor refreshButtonDescriptor;
 
-  public static final String ORDERED_COLUMNS = "orderedColumns";
-  private List<String> orderedColumns = new ArrayList<>();
+  public static final String OPTIONS = "options";
+  private AttachmentGridOptions options;
+
+  public static final String COLUMNS = "columns";
+  private List<String> columns = new ArrayList<>();
 
   public AttachmentGridDescriptor() {
   }
@@ -267,247 +241,32 @@ public class AttachmentGridDescriptor {
     this.saveRequest = saveRequest;
   }
 
-  public AttachmentGridDescriptor isPreviewable(Boolean isPreviewable) {
+  public AttachmentGridDescriptor searchIndex(SearchIndexDescriptor searchIndex) {
     
-    this.isPreviewable = isPreviewable;
+    this.searchIndex = searchIndex;
     return this;
   }
 
   /**
-   * Get isPreviewable
-   * @return isPreviewable
+   * Get searchIndex
+   * @return searchIndex
    */
   @jakarta.annotation.Nullable
+  @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_PREVIEWABLE)
+  @JsonProperty(SEARCH_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Boolean getIsPreviewable() {
-    return isPreviewable;
+  public SearchIndexDescriptor getSearchIndex() {
+    return searchIndex;
   }
 
 
-  @JsonProperty(IS_PREVIEWABLE)
+  @JsonProperty(SEARCH_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsPreviewable(Boolean isPreviewable) {
-    this.isPreviewable = isPreviewable;
-  }
-
-  public AttachmentGridDescriptor isDownloadable(Boolean isDownloadable) {
-    
-    this.isDownloadable = isDownloadable;
-    return this;
-  }
-
-  /**
-   * Get isDownloadable
-   * @return isDownloadable
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_DOWNLOADABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsDownloadable() {
-    return isDownloadable;
-  }
-
-
-  @JsonProperty(IS_DOWNLOADABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsDownloadable(Boolean isDownloadable) {
-    this.isDownloadable = isDownloadable;
-  }
-
-  public AttachmentGridDescriptor isEditable(Boolean isEditable) {
-    
-    this.isEditable = isEditable;
-    return this;
-  }
-
-  /**
-   * Get isEditable
-   * @return isEditable
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_EDITABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsEditable() {
-    return isEditable;
-  }
-
-
-  @JsonProperty(IS_EDITABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsEditable(Boolean isEditable) {
-    this.isEditable = isEditable;
-  }
-
-  public AttachmentGridDescriptor isPaginatorEnabled(Boolean isPaginatorEnabled) {
-    
-    this.isPaginatorEnabled = isPaginatorEnabled;
-    return this;
-  }
-
-  /**
-   * Get isPaginatorEnabled
-   * @return isPaginatorEnabled
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_PAGINATOR_ENABLED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsPaginatorEnabled() {
-    return isPaginatorEnabled;
-  }
-
-
-  @JsonProperty(IS_PAGINATOR_ENABLED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsPaginatorEnabled(Boolean isPaginatorEnabled) {
-    this.isPaginatorEnabled = isPaginatorEnabled;
-  }
-
-  public AttachmentGridDescriptor pageSize(Integer pageSize) {
-    
-    this.pageSize = pageSize;
-    return this;
-  }
-
-  /**
-   * Get pageSize
-   * @return pageSize
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(PAGE_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getPageSize() {
-    return pageSize;
-  }
-
-
-  @JsonProperty(PAGE_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPageSize(Integer pageSize) {
-    this.pageSize = pageSize;
-  }
-
-  public AttachmentGridDescriptor closeOnSave(Boolean closeOnSave) {
-    
-    this.closeOnSave = closeOnSave;
-    return this;
-  }
-
-  /**
-   * Get closeOnSave
-   * @return closeOnSave
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(CLOSE_ON_SAVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getCloseOnSave() {
-    return closeOnSave;
-  }
-
-
-  @JsonProperty(CLOSE_ON_SAVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCloseOnSave(Boolean closeOnSave) {
-    this.closeOnSave = closeOnSave;
-  }
-
-  public AttachmentGridDescriptor autoSave(Boolean autoSave) {
-    
-    this.autoSave = autoSave;
-    return this;
-  }
-
-  /**
-   * Get autoSave
-   * @return autoSave
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(AUTO_SAVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getAutoSave() {
-    return autoSave;
-  }
-
-
-  @JsonProperty(AUTO_SAVE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAutoSave(Boolean autoSave) {
-    this.autoSave = autoSave;
-  }
-
-  public AttachmentGridDescriptor isMultipleInput(Boolean isMultipleInput) {
-    
-    this.isMultipleInput = isMultipleInput;
-    return this;
-  }
-
-  /**
-   * Get isMultipleInput
-   * @return isMultipleInput
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_MULTIPLE_INPUT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsMultipleInput() {
-    return isMultipleInput;
-  }
-
-
-  @JsonProperty(IS_MULTIPLE_INPUT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsMultipleInput(Boolean isMultipleInput) {
-    this.isMultipleInput = isMultipleInput;
-  }
-
-  public AttachmentGridDescriptor dialogTitle(String dialogTitle) {
-    
-    this.dialogTitle = dialogTitle;
-    return this;
-  }
-
-  /**
-   * Get dialogTitle
-   * @return dialogTitle
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(DIALOG_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getDialogTitle() {
-    return dialogTitle;
-  }
-
-
-  @JsonProperty(DIALOG_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDialogTitle(String dialogTitle) {
-    this.dialogTitle = dialogTitle;
+  public void setSearchIndex(SearchIndexDescriptor searchIndex) {
+    this.searchIndex = searchIndex;
   }
 
   public AttachmentGridDescriptor additionalActions(List<@Valid AdditionalAttachmentAction> additionalActions) {
@@ -630,39 +389,67 @@ public class AttachmentGridDescriptor {
     this.refreshButtonDescriptor = refreshButtonDescriptor;
   }
 
-  public AttachmentGridDescriptor orderedColumns(List<String> orderedColumns) {
+  public AttachmentGridDescriptor options(AttachmentGridOptions options) {
     
-    this.orderedColumns = orderedColumns;
-    return this;
-  }
-
-  public AttachmentGridDescriptor addOrderedColumnsItem(String orderedColumnsItem) {
-    if (this.orderedColumns == null) {
-      this.orderedColumns = new ArrayList<>();
-    }
-    this.orderedColumns.add(orderedColumnsItem);
+    this.options = options;
     return this;
   }
 
   /**
-   * Get orderedColumns
-   * @return orderedColumns
+   * Get options
+   * @return options
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public AttachmentGridOptions getOptions() {
+    return options;
+  }
+
+
+  @JsonProperty(OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOptions(AttachmentGridOptions options) {
+    this.options = options;
+  }
+
+  public AttachmentGridDescriptor columns(List<String> columns) {
+    
+    this.columns = columns;
+    return this;
+  }
+
+  public AttachmentGridDescriptor addColumnsItem(String columnsItem) {
+    if (this.columns == null) {
+      this.columns = new ArrayList<>();
+    }
+    this.columns.add(columnsItem);
+    return this;
+  }
+
+  /**
+   * Get columns
+   * @return columns
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(ORDERED_COLUMNS)
+  @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getOrderedColumns() {
-    return orderedColumns;
+  public List<String> getColumns() {
+    return columns;
   }
 
 
-  @JsonProperty(ORDERED_COLUMNS)
+  @JsonProperty(COLUMNS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOrderedColumns(List<String> orderedColumns) {
-    this.orderedColumns = orderedColumns;
+  public void setColumns(List<String> columns) {
+    this.columns = columns;
   }
 
   @Override
@@ -679,25 +466,18 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.viewUuid, attachmentGridDescriptor.viewUuid) &&
         Objects.equals(this.logicalSchema, attachmentGridDescriptor.logicalSchema) &&
         Objects.equals(this.saveRequest, attachmentGridDescriptor.saveRequest) &&
-        Objects.equals(this.isPreviewable, attachmentGridDescriptor.isPreviewable) &&
-        Objects.equals(this.isDownloadable, attachmentGridDescriptor.isDownloadable) &&
-        Objects.equals(this.isEditable, attachmentGridDescriptor.isEditable) &&
-        Objects.equals(this.isPaginatorEnabled, attachmentGridDescriptor.isPaginatorEnabled) &&
-        Objects.equals(this.pageSize, attachmentGridDescriptor.pageSize) &&
-        Objects.equals(this.closeOnSave, attachmentGridDescriptor.closeOnSave) &&
-        Objects.equals(this.autoSave, attachmentGridDescriptor.autoSave) &&
-        Objects.equals(this.isMultipleInput, attachmentGridDescriptor.isMultipleInput) &&
-        Objects.equals(this.dialogTitle, attachmentGridDescriptor.dialogTitle) &&
+        Objects.equals(this.searchIndex, attachmentGridDescriptor.searchIndex) &&
         Objects.equals(this.additionalActions, attachmentGridDescriptor.additionalActions) &&
         Objects.equals(this.saveButtonDescriptor, attachmentGridDescriptor.saveButtonDescriptor) &&
         Objects.equals(this.uploadButtonDescriptor, attachmentGridDescriptor.uploadButtonDescriptor) &&
         Objects.equals(this.refreshButtonDescriptor, attachmentGridDescriptor.refreshButtonDescriptor) &&
-        Objects.equals(this.orderedColumns, attachmentGridDescriptor.orderedColumns);
+        Objects.equals(this.options, attachmentGridDescriptor.options) &&
+        Objects.equals(this.columns, attachmentGridDescriptor.columns);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, isPreviewable, isDownloadable, isEditable, isPaginatorEnabled, pageSize, closeOnSave, autoSave, isMultipleInput, dialogTitle, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor, orderedColumns);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, searchIndex, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor, options, columns);
   }
 
   @Override
@@ -709,20 +489,13 @@ public class AttachmentGridDescriptor {
     sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    logicalSchema: ").append(toIndentedString(logicalSchema)).append("\n");
     sb.append("    saveRequest: ").append(toIndentedString(saveRequest)).append("\n");
-    sb.append("    isPreviewable: ").append(toIndentedString(isPreviewable)).append("\n");
-    sb.append("    isDownloadable: ").append(toIndentedString(isDownloadable)).append("\n");
-    sb.append("    isEditable: ").append(toIndentedString(isEditable)).append("\n");
-    sb.append("    isPaginatorEnabled: ").append(toIndentedString(isPaginatorEnabled)).append("\n");
-    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
-    sb.append("    closeOnSave: ").append(toIndentedString(closeOnSave)).append("\n");
-    sb.append("    autoSave: ").append(toIndentedString(autoSave)).append("\n");
-    sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
-    sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
+    sb.append("    searchIndex: ").append(toIndentedString(searchIndex)).append("\n");
     sb.append("    additionalActions: ").append(toIndentedString(additionalActions)).append("\n");
     sb.append("    saveButtonDescriptor: ").append(toIndentedString(saveButtonDescriptor)).append("\n");
     sb.append("    uploadButtonDescriptor: ").append(toIndentedString(uploadButtonDescriptor)).append("\n");
     sb.append("    refreshButtonDescriptor: ").append(toIndentedString(refreshButtonDescriptor)).append("\n");
-    sb.append("    orderedColumns: ").append(toIndentedString(orderedColumns)).append("\n");
+    sb.append("    options: ").append(toIndentedString(options)).append("\n");
+    sb.append("    columns: ").append(toIndentedString(columns)).append("\n");
     sb.append("}");
     return sb.toString();
   }
