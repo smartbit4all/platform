@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -475,16 +477,39 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           for (Entry<String, URI> entry : removedRuntimeChanelList.getChannels().entrySet()) {
             // First update all of the AsyncRequests to refer this runtime if we can manage the
             // given channel.
-            AsyncInvocationChannel asyncInvocationChannel = channelsByName.get(entry.getKey());
+            String channelName = entry.getKey();
+            AsyncInvocationChannel asyncInvocationChannel = channelsByName.get(channelName);
             if (asyncInvocationChannel != null) {
               RuntimeAsyncChannel runtimeAsyncChannel =
                   storageApi.getStorage(entry.getValue()).read(entry.getValue(),
                       RuntimeAsyncChannel.class);
+              // due to a bug, saved invocationRequest might be scheduled at a later time
+              // we need to filter and ignore these, they will be called when their time comes
 
+              StoredReference<AsyncChannelScheduledInvocationList> refScheduledInvocations =
+                  getScheduledInvocationsRef(channelName);
+
+              List<URI> requests = null;
+              if (refScheduledInvocations.exists()) {
+                List<ScheduledInvocationRequest> scheduledRequests =
+                    refScheduledInvocations.get().getInvocationRequests();
+                if (!ObjectUtils.isEmpty(scheduledRequests)) {
+                  Set<URI> scheduledRequestsUris = scheduledRequests.stream()
+                      .map(req -> req.getRequestUri())
+                      .map(objectApi::getLatestUri)
+                      .collect(toSet());
+                  requests = runtimeAsyncChannel.getInvocationRequests().stream()
+                      .filter(uri -> !scheduledRequestsUris.contains(objectApi.getLatestUri(uri)))
+                      .collect(toList());
+                }
+              }
+              if (requests == null) {
+                requests = runtimeAsyncChannel.getInvocationRequests();
+              }
               saveAndEnqueueInvocationRequest(asyncInvocationChannel,
-                  runtimeAsyncChannel.getInvocationRequests());
+                  requests);
 
-              pickedUpChannels.add(entry.getKey());
+              pickedUpChannels.add(channelName);
             }
           }
           pickedUpChannels.stream().forEach(c -> removedRuntimeChanelList.getChannels().remove(c));
@@ -536,9 +561,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   public void enqueueScheduledInvocations(AsyncInvocationChannel channel) {
 
     StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
-        collectionApi.reference(Invocations.INVOCATION_SCHEME,
-            scheduledInvocationReferenceName(channel.getName()),
-            AsyncChannelScheduledInvocationList.class);
+        getScheduledInvocationsRef(channel.getName());
     OffsetDateTime limitTime = OffsetDateTime.now().minusSeconds(5);
     if (refScheduled.exists()) {
       refScheduled.update(scheduledList -> {
