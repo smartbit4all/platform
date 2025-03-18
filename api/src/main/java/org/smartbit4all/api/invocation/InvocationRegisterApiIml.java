@@ -859,7 +859,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
               objectApi.save(req);
             }
           }
-          channel.requestsToAdd.addAll(uris);
         }
       }
     }
@@ -1192,7 +1191,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       getAsyncRequestTransactionHandler().addRequestToSaveAndEnqueue(request);
     } else {
       saveAndEnqueuAsyncRequests(Arrays.asList(request));
-      // scheduleAsyncInvocationRequest(request);
     }
   }
 
