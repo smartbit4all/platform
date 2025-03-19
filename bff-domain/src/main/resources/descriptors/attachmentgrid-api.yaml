@@ -28,32 +28,8 @@ components:
                     type: string
                 saveRequest:
                     type: InvocationRequest
-                isPreviewable:
-                    type: boolean
-                    default: true
-                isDownloadable:
-                    type: boolean
-                    default: true
-                isEditable:
-                    type: boolean
-                    default: false
-                isPaginatorEnabled:
-                    type: boolean
-                    default: true
-                pageSize:
-                    type: integer
-                    format: int32
-                closeOnSave:
-                    type: boolean
-                    default: false
-                autoSave:
-                    type: boolean
-                    default: false
-                isMultipleInput:
-                    type: boolean
-                    default: true
-                dialogTitle:
-                    type: string
+                searchIndex:
+                    type: SearchIndexDescriptor
                 additionalActions:
                     type: array
                     items:
@@ -64,7 +40,9 @@ components:
                     $ref: "#/components/schemas/ButtonDescriptor"
                 refreshButtonDescriptor:
                     $ref: "#/components/schemas/ButtonDescriptor"
-                orderedColumns:
+                options:
+                    $ref: "#/components/schemas/AttachmentGridOptions"
+                columns:
                     type: array
                     items:
                         type: string
@@ -95,3 +73,27 @@ components:
                 actionInvocationRequest:
                     description: "The additional action itself"
                     type: InvocationRequest
+        AttachmentGridOptions:
+            type: object
+            properties:
+                isPreviewable:
+                    type: boolean
+                    default: true
+                isDownloadable:
+                    type: boolean
+                    default: true
+                isEditable:
+                    type: boolean
+                    default: true
+                closeOnSave:
+                    type: boolean
+                    default: false
+                autoSave:
+                    type: boolean
+                    default: false
+                isMultipleInput:
+                    type: boolean
+                    default: true
+                dialogTitle:
+                    description: The title of the dialog, only used with dialog type.
+                    type: string
