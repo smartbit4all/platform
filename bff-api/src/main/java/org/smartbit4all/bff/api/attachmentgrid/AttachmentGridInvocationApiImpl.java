@@ -138,7 +138,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
           row.addActionsItem(new UiAction()
               .model(true)
-              .code(action.getCode())
+              .code(localeSettingApi.get(action.getCode()))
               .descriptor(action.getDescriptor()));
         }
       }
