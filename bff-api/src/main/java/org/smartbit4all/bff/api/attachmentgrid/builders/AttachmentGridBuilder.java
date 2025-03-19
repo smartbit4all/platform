@@ -157,6 +157,12 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
     return self();
   }
 
+  public T editable(Boolean value) {
+    Objects.requireNonNull(value, "value cannot be null!");
+    this.options.isEditable(value);
+    return self();
+  }
+
   public T beforeInitCallback(UnaryOperator<GridModel> beforeInitCallback) {
     Objects.requireNonNull(beforeInitCallback, "beforeInitCallback cannot be null!");
     this.beforeInitCallback = beforeInitCallback;
