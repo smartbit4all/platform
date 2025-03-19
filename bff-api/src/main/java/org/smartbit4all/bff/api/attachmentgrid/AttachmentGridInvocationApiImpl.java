@@ -127,10 +127,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
                     .text(localeSettingApi.get("remove.attachment.confirm.text"))
                     .actionButton(new UiActionButtonDescriptor()
                         .caption(localeSettingApi.get("remove.attachment.confirm.action"))
-                        .color(UiActions.Color.PRIMARY))
+                        .color(UiActions.Color.WARN))
                     .cancelButton(new UiActionButtonDescriptor()
                         .caption(localeSettingApi.get("remove.attachment.confirm.cancel"))
-                        .color(UiActions.Color.ACCENT)))));
+                        .color(UiActions.Color.PRIMARY)))));
       }
 
       // Add custom actions
