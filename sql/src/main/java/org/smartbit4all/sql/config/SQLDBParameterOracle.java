@@ -14,6 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.sql.config;
 
+import static org.smartbit4all.domain.meta.PropertyFunction.TRUNCATE_PREFIX;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartbit4all.domain.meta.PropertyFunction;
+import org.smartbit4all.domain.meta.PropertyFunction.Builder;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -23,6 +28,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author Peter Boros
  */
 public class SQLDBParameterOracle extends SQLDBParameterBase {
+
+  private static final Logger log = LoggerFactory.getLogger(SQLDBParameterOracle.class);
 
   public SQLDBParameterOracle() {
     super();
@@ -45,6 +52,7 @@ public class SQLDBParameterOracle extends SQLDBParameterBase {
     return sb.toString();
   }
 
+  @Override
   protected void createTemTable(JdbcTemplate jdbcTemplate, String tableName, String columnType) {
     jdbcTemplate.execute("CREATE GLOBAL TEMPORARY TABLE " + tableName
         + " (ID NUMBER(18) NOT NULL, VAL " + columnType + " NULL)");
@@ -53,6 +61,54 @@ public class SQLDBParameterOracle extends SQLDBParameterBase {
     jdbcTemplate.execute("CREATE INDEX " + tableName
         + "_VAL_IDX ON " + tableName + " (VAL)");
 
+  }
+
+  @Override
+  public PropertyFunction convertPropertyFunction(PropertyFunction function) {
+    String functionName = function.getName().toLowerCase();
+    if (functionName.startsWith(TRUNCATE_PREFIX)) {
+      String unitOfTime = functionName.substring(TRUNCATE_PREFIX.length());
+      if (PropertyFunction.SECOND_POSTFIX.equals(unitOfTime)) {
+        // TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS')
+        // @formatter:off
+       return PropertyFunction.build("TO_DATE")
+            .addInnerFunction("TO_CHAR")
+              .selfPropertyParam()
+              .stringParam("YYYY-MM-DD HH24:MI:SS")
+              .closeInnerFunction()
+            .stringParam("YYYY-MM-DD HH24:MI:SS")
+            .build();
+       // @formatter:off
+      } else {
+        Builder truncFunction = PropertyFunction.build("TRUNC")
+            .selfPropertyParam();
+        switch (unitOfTime) {
+          case PropertyFunction.MINUTE_POSTFIX:
+            // TRUNC(SYSDATE, 'MI')
+            truncFunction.stringParam("MI");
+            break;
+          case PropertyFunction.HOUR_POSTFIX:
+            // TRUNC(SYSDATE, 'HH')
+            truncFunction.stringParam("HH");
+            break;
+          case PropertyFunction.MONTH_POSTFIX:
+            // TRUNC(SYSDATE, 'MM')
+            truncFunction.stringParam("MM");
+            break;
+          case PropertyFunction.YEAR_POSTFIX:
+            // TRUNC(SYSDATE, 'YYYY')
+            truncFunction.stringParam("YYYY");
+            break;
+          case PropertyFunction.DAY_POSTFIX:
+          default:
+            // TRUNC(SYSDATE)
+            log.warn("Unrecognised truncate unitOfTime ({}), using day", unitOfTime);
+            break;
+        }
+        return truncFunction.build();
+      }
+    }
+    return super.convertPropertyFunction(function);
   }
 
 }
