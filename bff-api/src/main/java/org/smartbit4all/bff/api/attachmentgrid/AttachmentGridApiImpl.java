@@ -130,10 +130,23 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
       hiddenColumnsList.add(BinaryContentData.EXTENSION);
     }
 
-    GridModel gridModel = gridModelApi.createGridModel(
-        BinaryContentData.class,
-        columnsToShow,
-        descriptor.getGridWidgetId());
+    GridModel gridModel;
+    if (descriptor.getSearchIndex() != null) {
+      SearchIndex<?> searchIndex =
+          collectionApi.searchIndex(
+              descriptor.getSearchIndex().getSchema(),
+              descriptor.getSearchIndex().getName());
+
+      gridModel = gridModelApi.createGridModel(
+          searchIndex.getDefinition().getDefinition(),
+          columnsToShow,
+          descriptor.getGridWidgetId());
+    } else {
+      gridModel = gridModelApi.createGridModel(
+          BinaryContentData.class,
+          columnsToShow,
+          descriptor.getGridWidgetId());
+    }
     GridModels.hideColumns(gridModel, hiddenColumnsList);
 
     gridModel.getView().getDescriptor().kind(KindEnum.TABLE);

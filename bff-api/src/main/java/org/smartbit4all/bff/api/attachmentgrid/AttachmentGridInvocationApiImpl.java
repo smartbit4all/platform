@@ -301,6 +301,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       UiActions.add(view, getSaveListAction(descriptor).disabled(false));
     }
     setGrid(descriptor);
+
+    if (options.getAutoSave()) {
+      saveListRequest(viewUuid, request, widgetId);
+    }
   }
 
   private BinaryContentData generateUniqueFilename(String uploadedFilename,
