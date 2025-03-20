@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -251,5 +252,16 @@ public interface OrgApi {
    * @return URI
    */
   URI getPrimaryAccount(URI userUri);
+
+  /**
+   * Returns all active user's primary account URI.
+   * 
+   * @return
+   */
+  default List<URI> getActivePrimaryAccountUris() {
+    return getActiveUsers().stream()
+        .map(user -> getPrimaryAccount(user.getUri()))
+        .collect(toList());
+  }
 
 }

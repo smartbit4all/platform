@@ -1542,16 +1542,26 @@ public class OrgApiStorageImpl implements OrgApi {
 
     ObjectNode userNode = objectApi.loadLatest(userUri);
     if (userNode != null) {
-      URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
-      if (primaryAccountUri != null) {
-        return primaryAccountUri;
-      } else {
-        return userUri;
-      }
+      return getPrimaryAccountFromObjectNode(userNode);
     } else {
       throw new IllegalArgumentException("User object is not exists!");
     }
   }
 
+  private URI getPrimaryAccountFromObjectNode(ObjectNode userNode) {
+    URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
+    if (primaryAccountUri != null) {
+      return objectApi.getLatestUri(primaryAccountUri);
+    } else {
+      return objectApi.getLatestUri(userNode.getObjectUri());
+    }
+  }
+
+  @Override
+  public List<URI> getActivePrimaryAccountUris() {
+    return objectApi.loadBatch(getActiveUserUris()).stream()
+        .map(this::getPrimaryAccountFromObjectNode)
+        .collect(toList());
+  }
 
 }
