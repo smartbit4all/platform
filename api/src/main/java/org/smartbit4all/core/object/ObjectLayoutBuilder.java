@@ -112,7 +112,7 @@ public final class ObjectLayoutBuilder {
         .direction(layoutDirection)
         .form(formWidgetDefs == null || formWidgetDefs.length == 0
             ? new ArrayList<>()
-            : Arrays.asList(formWidgetDefs));
+            : new ArrayList<>(Arrays.asList(formWidgetDefs)));
   }
 
   /**

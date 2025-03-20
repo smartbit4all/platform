@@ -116,7 +116,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   private final List<String> evaluateACL(ACL acl, List<Subject> subjects, List<String> operations) {
     // Should be cached.
     Map<URI, Subject> subjectMap =
-        subjects.stream().collect(toMap(s -> objectApi.getLatestUri(s.getRef()), s -> s));
+        subjects.stream().collect(toMap(
+            s -> objectApi.getLatestUri(s.getRef()),
+            s -> s,
+            (s1, s2) -> s1));
     Map<SubjectCondition, List<ACLEntry>> entriesByCond =
         acl.getRootEntry().getEntries().stream()
             .filter(e -> subjectMap.containsKey(objectApi.getLatestUri(e.getSubject().getRef())))
@@ -164,7 +167,10 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
     } else {
       List<User> allUsers = orgApi.getAllUsers();
       List<URI> allUserUris = allUsers.stream().map(u -> u.getUri()).collect(toList());
-      result = operations.stream().collect(toMap(o -> o, o -> allUserUris));
+      result = operations.stream().collect(toMap(
+          o -> o,
+          o -> allUserUris,
+          (o1, o2) -> o1));
 
     }
     // Now we have the positive explicitly set operations. We have to remove the forbidden ones.
@@ -184,12 +190,13 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       List<String> operations,
       List<ACLEntry> inList) {
     return operations.stream()
-        .collect(toMap(o -> o, o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
-            .filter(a -> a.getOperations().contains(o))
-            .map(a -> {
-              return a.getSubject();
-            })
-            .collect(toList()))));
+        .collect(toMap(
+            o -> o,
+            o -> subjectManagementApi.getUsersOf(modelName, inList.stream()
+                .filter(a -> a.getOperations().contains(o))
+                .map(ACLEntry::getSubject)
+                .collect(toList())),
+            (o1, o2) -> o1));
   }
 
   @Override
