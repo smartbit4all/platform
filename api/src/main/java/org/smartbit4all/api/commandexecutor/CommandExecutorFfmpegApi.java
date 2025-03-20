@@ -2,7 +2,6 @@ package org.smartbit4all.api.commandexecutor;
 
 import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFMPEG;
 import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.FFPROBE;
-import static org.smartbit4all.api.commandexecutor.CommandExecutorConstants.PROCESS;
 import static org.smartbit4all.core.utility.StringConstant.DOT;
 import static org.smartbit4all.core.utility.StringConstant.DOUBLE_QUOTE;
 import static org.smartbit4all.core.utility.StringConstant.SPACE;
@@ -18,9 +17,7 @@ import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.core.io.utility.FileIO;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.io.ByteStreams;
 
@@ -35,11 +32,8 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
   @Value("${commandexecutor.ext.ffmpeg:}")
   private String ext;
 
-  @Autowired
-  private ObjectApi objectApi;
-
   @Override
-  public boolean isAvailable() {
+  public Boolean isAvailable() {
     ProcessBuilder processBuilder = getProcessBuilder();
     StringBuilder commandBuilder = new StringBuilder();
     commandBuilder.append(path);

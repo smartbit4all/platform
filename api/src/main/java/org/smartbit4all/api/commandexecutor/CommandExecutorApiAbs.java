@@ -6,10 +6,19 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.core.object.ObjectApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class CommandExecutorApiAbs implements CommandExecutorApi {
 
+  protected static final String PROCESS = "process";
+
+  protected static final String STDOUT = "stdout";
+
   protected final Logger log = LoggerFactory.getLogger(getClass());
+
+  @Autowired
+  protected ObjectApi objectApi;
 
   protected ProcessBuilder getProcessBuilder() {
     ProcessBuilder processBuilder = new ProcessBuilder();

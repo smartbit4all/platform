@@ -5,7 +5,7 @@ public class CommandExecutorConstants {
   public static final String FFMPEG = "ffmpeg";
   public static final String FFPROBE = "ffprobe";
 
-  public static final String PROCESS = "process";
+  public static final String TESSERACT = "tesseract";
 
   private CommandExecutorConstants() {}
 }
