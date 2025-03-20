@@ -315,7 +315,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     String extension = uploadedFilename.replaceAll("^.*\\.(.*)$", "$1");
 
     String filename;
-    if (existingFileNames.contains(uploadedFilename) && existingFileNames.isEmpty()) {
+    if (existingFileNames.contains(uploadedFilename)) {
 
       String baseName = originalFilename.replaceAll("(.*)\\.[^.]+$", "$1");
       filename = originalFilename;
