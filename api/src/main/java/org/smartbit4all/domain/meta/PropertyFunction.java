@@ -22,18 +22,26 @@ public final class PropertyFunction {
   public static final PropertyFunction MAX = PropertyFunction.withSelfPropertyArgument("max");
   public static final PropertyFunction FIELD = PropertyFunction.withSelfPropertyArgument("field");
 
+  public static final String TRUNCATE_PREFIX = "truncate_";
+  public static final String SECOND_POSTFIX = "second";
+  public static final String MINUTE_POSTFIX = "minute";
+  public static final String HOUR_POSTFIX = "hour";
+  public static final String DAY_POSTFIX = "day";
+  public static final String MONTH_POSTFIX = "month";
+  public static final String YEAR_POSTFIX = "year";
+
   public static final PropertyFunction TRUNCATE_SECOND =
-      PropertyFunction.withSelfPropertyArgument("truncate_second");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + SECOND_POSTFIX);
   public static final PropertyFunction TRUNCATE_MINUTE =
-      PropertyFunction.withSelfPropertyArgument("truncate_minute");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + MINUTE_POSTFIX);
   public static final PropertyFunction TRUNCATE_HOUR =
-      PropertyFunction.withSelfPropertyArgument("truncate_hour");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + HOUR_POSTFIX);
   public static final PropertyFunction TRUNCATE_DAY =
-      PropertyFunction.withSelfPropertyArgument("truncate_day");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + DAY_POSTFIX);
   public static final PropertyFunction TRUNCATE_MONTH =
-      PropertyFunction.withSelfPropertyArgument("truncate_month");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + MONTH_POSTFIX);
   public static final PropertyFunction TRUNCATE_YEAR =
-      PropertyFunction.withSelfPropertyArgument("truncate_year");
+      PropertyFunction.withSelfPropertyArgument(TRUNCATE_PREFIX + YEAR_POSTFIX);
 
   public static final Map<String, PropertyFunction> basicFunctionsByName = new HashMap<>();
   static {

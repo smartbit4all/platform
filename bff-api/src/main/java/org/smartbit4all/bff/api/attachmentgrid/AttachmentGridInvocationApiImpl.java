@@ -12,11 +12,10 @@ import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstan
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -178,12 +177,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
     AttachmentGridOptions options = descriptor.getOptions();
 
-    Set<String> existingFileNames;
+    List<String> existingFileNames;
     if (!ObjectUtils.isEmpty(descriptor.getAttachmentList())) {
       existingFileNames = descriptor.getAttachmentList().stream().map(a -> a.getFileName())
-          .collect(Collectors.toSet());
+          .collect(Collectors.toList());
     } else {
-      existingFileNames = new HashSet<>();
+      existingFileNames = new ArrayList<>();
     }
     List<BinaryContentData> newAttachments = new ArrayList<>();
     Boolean isMultipleInput = options.getIsMultipleInput();
@@ -302,30 +301,34 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       UiActions.add(view, getSaveListAction(descriptor).disabled(false));
     }
     setGrid(descriptor);
+
+    if (options.getAutoSave()) {
+      saveListRequest(viewUuid, request, widgetId);
+    }
   }
 
   private BinaryContentData generateUniqueFilename(String uploadedFilename,
-      Set<String> existingFileNames) {
+      List<String> existingFileNames) {
 
-    String originalFilename = uploadedFilename;
+    String regex = "^(.*?)(\\s*\\(\\d+\\))*\\s*\\.\\w+$";
+
+    String baseName = uploadedFilename.replaceAll(regex, "$1");
     String extension = uploadedFilename.replaceAll("^.*\\.(.*)$", "$1");
 
-    String filename;
-    if (existingFileNames.contains(uploadedFilename) && existingFileNames.isEmpty()) {
+    List<String> baseFileNames = existingFileNames.stream()
+        .map(filename -> filename.replaceAll(regex, "$1"))
+        .collect(Collectors.toList());
 
-      String baseName = originalFilename.replaceAll("(.*)\\.[^.]+$", "$1");
-      filename = originalFilename;
-      int counter = 1;
-
-      while (existingFileNames.contains(filename)) {
-        filename = String.format("%s(%d).%s", baseName, counter, extension);
-        counter++;
-      }
-    } else {
-      filename = uploadedFilename;
+    if (!baseFileNames.contains(baseName)) {
+      return new BinaryContentData()
+          .fileName(baseName + "." + extension).extension(extension);
     }
+
+    int counter = Collections.frequency(baseFileNames, baseName);
+    String uniqueName = baseName + " (" + counter + ")." + extension;
+
     return new BinaryContentData()
-        .fileName(filename).extension(extension);
+        .fileName(uniqueName).extension(extension);
   }
 
 
