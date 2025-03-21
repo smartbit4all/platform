@@ -636,6 +636,27 @@ public class FileIO {
     }
   }
 
+  public static boolean deleteAll(List<File> files) {
+    boolean result = false;
+    if (files != null) {
+      for (File file : files) {
+        if (file != null) {
+          try {
+            if (file.isDirectory()) {
+              deleteFolder(file.toPath());
+            } else {
+              boolean deleteIfExists = Files.deleteIfExists(file.toPath());
+              result = result || deleteIfExists;
+            }
+          } catch (IOException e) {
+            log.trace("Unable to delete " + file.toPath(), e);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   public static Boolean checkfileName(String name) {
     if (Strings.isNullOrEmpty(name)) {
       return false;
@@ -663,6 +684,26 @@ public class FileIO {
         e.printStackTrace();
       }
     }
+  }
+
+  public static void deleteFolder(Path folderPath) throws IOException {
+    if (!Files.exists(folderPath)) {
+      return;
+    }
+
+    Files.walkFileTree(folderPath, new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file); // Delete files
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.delete(dir); // Delete empty directories after files inside are deleted
+        return FileVisitResult.CONTINUE;
+      }
+    });
   }
 
   public static final byte[] readInputStreamToByteArray(InputStream inputStream)

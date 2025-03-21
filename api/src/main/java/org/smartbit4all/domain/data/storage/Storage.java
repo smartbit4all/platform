@@ -1,12 +1,12 @@
 package org.smartbit4all.domain.data.storage;
 
-import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -586,6 +587,10 @@ public final class Storage {
           : null;
     }
     return null;
+  }
+
+  public List<URI> remove(Collection<URI> urisToRemove) {
+    return objectStorage.remove(urisToRemove);
   }
 
   public URI restoreArchived(URI uri) {

@@ -1,14 +1,12 @@
 package org.smartbit4all.sql.storage;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +38,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
+import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -83,6 +82,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -1419,6 +1421,36 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public List<URI> remove(Collection<URI> urisToRemove) {
+    // Deleting the still existing lock files, then the versions and at last the netry itself.
+    // Select all the entries for update.
+    if (urisToRemove == null) {
+      return Collections.emptyList();
+    }
+    List<String> uris = urisToRemove.stream().filter(Objects::nonNull)
+        .map(u -> getUriWithoutVersion(u).toString()).collect(toList());
+    TableData<ObjectEntryDef> objectEntries =
+        Crud.read(objectEntryDef).select(objectEntryDef.id(), objectEntryDef.uri())
+            .where(objectEntryDef.uri().in(uris))
+            .tryLock().listData();
+    TableData<ObjectEntryLockDef> lockTableData =
+        TableDatas.builder(objectEntryLockDef, objectEntryLockDef.objectUri()).build();
+    DataColumn<String> uriCol = lockTableData.getColumn(objectEntryLockDef.objectUri());
+    for (String uri : uris) {
+      lockTableData.addRow().set(uriCol, uri);
+    }
+    Crud.delete(lockTableData);
+    // Now delete the versions.
+    Crud.delete(Crud.read(objectVersionDef).select(objectVersionDef.versionId())
+        .where(objectVersionDef.entryId().in(objectEntries.values(objectEntryDef.id())))
+        .listData());
+    // And at last delete the object entries.
+    Crud.delete(objectEntries);
+    return objectEntries.values(objectEntryDef.uri()).stream().map(s -> URI.create(s))
+        .collect(toList());
   }
 
   private StorageObjectData readObjectDataFromRow(URI objectUri, DataRow objectRow) {

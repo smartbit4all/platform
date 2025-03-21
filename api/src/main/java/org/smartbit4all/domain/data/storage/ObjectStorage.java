@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -183,6 +184,14 @@ public interface ObjectStorage {
    * @return true if the move was successful.
    */
   boolean move(URI uri, URI targetUri);
+
+  /**
+   * Removes the given uris with all their versions.
+   *
+   * @param urisToRemove A collection of URI to remove from the storage.
+   * @return The uris removed from the storage.
+   */
+  List<URI> remove(Collection<URI> urisToRemove);
 
   /**
    * @return Return true if the given {@link ObjectStorage} is the default one by the configuration.

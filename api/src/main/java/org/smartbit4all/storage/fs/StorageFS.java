@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -719,11 +720,41 @@ public class StorageFS extends ObjectStorageImpl {
     File targetObjectFile = getObjectDataFile(targetUri);
     try {
       FileIO.move(sourceObjectFile, targetObjectFile);
+      // And remove all the temporaray files like lock and transaction.
+      List<File> toDelete = new ArrayList<>(4);
+      toDelete.add(getObjectTransactionFile(uri));
+      toDelete.add(getObjectLockFile(uri));
+      FileIO.deleteAll(toDelete);
       return true;
     } catch (InterruptedException e) {
       log.warn("Unable to move {} --> {}", sourceObjectFile, targetObjectFile);
     }
     return false;
+  }
+
+  @Override
+  public List<URI> remove(Collection<URI> urisToRemove) {
+    if (urisToRemove == null) {
+      return Collections.emptyList();
+    }
+    List<URI> result = new ArrayList<>();
+    for (URI uri : urisToRemove) {
+      if (remove(getUriWithoutVersion(uri))) {
+        result.add(uri);
+      }
+    }
+    return result;
+  }
+
+  private final boolean remove(URI uri) {
+    List<File> toDelete = new ArrayList<>(4);
+    toDelete.add(getObjectDataFile(uri));
+    toDelete.add(getObjectTransactionFile(uri));
+    toDelete.add(getObjectLockFile(uri));
+    if (!isSingleVersion(uri)) {
+      toDelete.add(getObjectVersionBasePath(uri));
+    }
+    return FileIO.deleteAll(toDelete);
   }
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
