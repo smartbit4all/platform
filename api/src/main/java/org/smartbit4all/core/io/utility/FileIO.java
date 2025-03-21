@@ -23,6 +23,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -359,7 +360,7 @@ public class FileIO {
    */
   public static final FileLockData lockObjectFile(FileLockData newLockData, File lockFile,
       long waitUntil,
-      Predicate<FileLockData> lockValidator)
+      Predicate<FileLockData> lockValidator, String thisRuntime)
       throws FileLocked {
     long start = System.currentTimeMillis();
     while (true) {
@@ -383,6 +384,10 @@ public class FileIO {
             long currentTimeMillis = System.currentTimeMillis();
             if (waitUntil != -1 && (currentTimeMillis - start) > waitUntil) {
               throw new FileLocked(lockData);
+            }
+            // Check if we are the locker then return the lock itself without any modification.
+            if (Objects.equals(thisRuntime, lockData.getRuntimeId())) {
+              return newLockData;
             }
           } else {
             // The data is invalid in the file so we can rewrite the lock file for our own purposes.
@@ -631,6 +636,27 @@ public class FileIO {
     }
   }
 
+  public static boolean deleteAll(List<File> files) {
+    boolean result = false;
+    if (files != null) {
+      for (File file : files) {
+        if (file != null) {
+          try {
+            if (file.isDirectory()) {
+              deleteFolder(file.toPath());
+            } else {
+              boolean deleteIfExists = Files.deleteIfExists(file.toPath());
+              result = result || deleteIfExists;
+            }
+          } catch (IOException e) {
+            log.trace("Unable to delete " + file.toPath(), e);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   public static Boolean checkfileName(String name) {
     if (Strings.isNullOrEmpty(name)) {
       return false;
@@ -658,6 +684,26 @@ public class FileIO {
         e.printStackTrace();
       }
     }
+  }
+
+  public static void deleteFolder(Path folderPath) throws IOException {
+    if (!Files.exists(folderPath)) {
+      return;
+    }
+
+    Files.walkFileTree(folderPath, new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file); // Delete files
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.delete(dir); // Delete empty directories after files inside are deleted
+        return FileVisitResult.CONTINUE;
+      }
+    });
   }
 
   public static final byte[] readInputStreamToByteArray(InputStream inputStream)

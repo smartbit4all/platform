@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.View;
 
 public final class UiActions {
@@ -36,6 +37,12 @@ public final class UiActions {
 
   public static final String URI = "uri";
 
+  /**
+   * {@link UiAction#getParams()} key for {@link UiActionInputType#FILE} actions. Integral number
+   * interpreted in megabytes.
+   */
+  public static final String MAX_FILE_SIZE = "maxFileSize";
+
   public static final String TITLE = UiActionDescriptor.TITLE;
 
   public static final String FILES = "_files";
@@ -45,7 +52,7 @@ public final class UiActions {
   public static final String TOOLBAR_SUFFIX = "_toolbar";
 
   public static class Color {
-    private Color() {};
+    private Color() {}
 
     public static final String PRIMARY = "primary";
     public static final String SECONDARY = "secondary";

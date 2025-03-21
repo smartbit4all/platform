@@ -419,20 +419,43 @@ public class OrgApiStorageImpl implements OrgApi {
   }
 
   @Override
+  public List<URI> getActiveUserUris() {
+    return new ArrayList<>(getUserUrisFromObjectMap(USER_OBJECTMAP_REFERENCE));
+  }
+
+  @Override
   public List<User> getInactiveUsers() {
     return getUsersFromObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
   }
 
+  @Override
+  public List<URI> getInactiveUserUris() {
+    return new ArrayList<>(getUserUrisFromObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE));
+  }
+
   private List<User> getUsersFromObjectMap(String objectMapName) {
-    ObjectMap userObjectMap = loadObjectMap(objectMapName);
-    Collection<URI> values = userObjectMap.getUris().values();
+    Collection<URI> values = getUserUrisFromObjectMap(objectMapName);
     return storage.get().read(new ArrayList<>(values), User.class);
+  }
+
+  private Collection<URI> getUserUrisFromObjectMap(String objectMapName) {
+    ObjectMap userObjectMap = loadObjectMap(objectMapName);
+    return userObjectMap.getUris().values();
   }
 
   @Override
   public List<User> getAllUsers() {
     List<User> activeUsers = getActiveUsers();
     List<User> inactiveUsers = getInactiveUsers();
+
+    activeUsers.addAll(inactiveUsers);
+    return activeUsers;
+  }
+
+  @Override
+  public List<URI> getAllUserUris() {
+    List<URI> activeUsers = getActiveUserUris();
+    List<URI> inactiveUsers = getInactiveUserUris();
 
     activeUsers.addAll(inactiveUsers);
     return activeUsers;
@@ -1519,16 +1542,26 @@ public class OrgApiStorageImpl implements OrgApi {
 
     ObjectNode userNode = objectApi.loadLatest(userUri);
     if (userNode != null) {
-      URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
-      if (primaryAccountUri != null) {
-        return primaryAccountUri;
-      } else {
-        return userUri;
-      }
+      return getPrimaryAccountFromObjectNode(userNode);
     } else {
       throw new IllegalArgumentException("User object is not exists!");
     }
   }
 
+  private URI getPrimaryAccountFromObjectNode(ObjectNode userNode) {
+    URI primaryAccountUri = userNode.getValue(URI.class, User.PRIMARY_ACCOUNT);
+    if (primaryAccountUri != null) {
+      return objectApi.getLatestUri(primaryAccountUri);
+    } else {
+      return objectApi.getLatestUri(userNode.getObjectUri());
+    }
+  }
+
+  @Override
+  public List<URI> getActivePrimaryAccountUris() {
+    return objectApi.loadBatch(getActiveUserUris()).stream()
+        .map(this::getPrimaryAccountFromObjectNode)
+        .collect(toList());
+  }
 
 }

@@ -272,11 +272,25 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri) {
     java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
+    
+    final ObjectNode node = loadLatest(objectUri, branchUri);
+    return objectHistoryReverse(node);
+  }
 
-    URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(objectUri);
+  @Override
+  public Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri, URI branchUri) {
+    java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
+    final ObjectNode node = load(objectUri, branchUri);
+    return objectHistoryReverse(node);
+  }
 
-    ObjectNode lastObject = loadLatest(uriWithoutVersion);
-    long lastVersion = lastObject.getVersionNr();
+  @Override
+  public Iterator<ObjectNode> objectHistoryReverse(final ObjectNode node) {
+    Objects.requireNonNull(node, "node cannot be null!");
+    
+    final URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(node.getObjectUri());
+    final URI branchUri = node.getBranchUri();
+    final long lastVersion = node.getVersionNr();
 
     return new Iterator<>() {
 

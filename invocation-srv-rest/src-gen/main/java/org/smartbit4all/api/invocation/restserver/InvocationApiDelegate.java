@@ -112,7 +112,6 @@ public interface InvocationApiDelegate {
      * POST /invokeUploadMultiple
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      *
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
@@ -120,8 +119,7 @@ public interface InvocationApiDelegate {
      *         or The api was not found. (status code 404)
      * @see InvocationApi#invokeUploadMultiple
      */
-    default ResponseEntity<InvocationParameter> invokeUploadMultiple(UUID uuid,
-        String invocationRequest,
+    default ResponseEntity<InvocationParameter> invokeUploadMultiple(String invocationRequest,
         List<MultipartFile> contents) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

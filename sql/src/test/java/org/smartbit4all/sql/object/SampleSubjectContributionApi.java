@@ -11,6 +11,7 @@ import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.object.ObjectApiTestBase;
 import org.smartbit4all.api.org.SubjectContributionApi;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,13 @@ public class SampleSubjectContributionApi extends ContributionApiImpl
         .map(objectApi::loadLatest)
         .map(n -> n.getValueAsString(SampleCategory.NAME))
         .collect(toList());
+  }
+
+  @Override
+  public void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel) {
+    // TODO Auto-generated method stub
+
   }
 
 }

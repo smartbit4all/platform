@@ -112,7 +112,7 @@ public final class ObjectLayoutBuilder {
         .direction(layoutDirection)
         .form(formWidgetDefs == null || formWidgetDefs.length == 0
             ? new ArrayList<>()
-            : Arrays.asList(formWidgetDefs));
+            : new ArrayList<>(Arrays.asList(formWidgetDefs)));
   }
 
   /**
@@ -170,6 +170,14 @@ public final class ObjectLayoutBuilder {
     return new SmartComponentLayoutDefinition()
         .type(ComponentType.CONTAINER)
         .direction(layoutDirection);
+  }
+
+  public static SmartComponentLayoutDefinition container(LayoutDirection layoutDirection,
+      String layoutIdentifier) {
+    return new SmartComponentLayoutDefinition()
+        .type(ComponentType.CONTAINER)
+        .direction(layoutDirection)
+        .identifier(layoutIdentifier);
   }
 
   public static SmartWidgetDefinition label(String key, String label) {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,6 +27,7 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.AccessControlInternalApi;
+import org.smartbit4all.api.object.bean.ObjectReferenceById;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
@@ -33,9 +35,11 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
+import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
+import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -647,6 +651,49 @@ public class StorageTest {
     storageObject.getAspects().values().stream()
         .map(a -> sampleTypeDefinition.fromMap(a.getObjectAsMap()))
         .forEach(s -> Assertions.assertEquals("apple", s.getName()));
+  }
+
+  @Test
+  void removalTest() throws Exception {
+    List<URI> toDelete = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      toDelete.add(objectApi.saveAsNew(StorageTestConfig.TESTSCHEME + "-removal",
+          new FSTestBean("RemovalTest" + i)));
+    }
+
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME + "-removal");
+
+    storage.remove(toDelete);
+
+    Assertions.assertThrows(ObjectNotFoundException.class, () -> objectApi.loadBatch(toDelete));
+
+  }
+
+  @Test
+  void removalTestById() throws Exception {
+    List<URI> toDelete = new ArrayList<>();
+    List<String> ids = new ArrayList<>();
+    for (int i = 1000; i < 1010; i++) {
+      URI uri = objectApi.saveAsNew(StorageTestConfig.TESTSCHEME,
+          new SmartLinkData().uuid(UUID.randomUUID()));
+      String id = Integer.toString(i);
+      ids.add(id);
+      toDelete.add(objectApi.saveAsNew(StorageTestConfig.TESTSCHEME + "-removalbyid",
+          new ObjectReferenceById().id(id).uri(uri)));
+    }
+
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME + "-removalbyid");
+
+    storage.remove(toDelete);
+
+    Assertions.assertThrows(ObjectNotFoundException.class, () -> objectApi.loadBatch(toDelete));
+    ObjectDefinition<ObjectReferenceById> definition =
+        objectApi.definition(ObjectReferenceById.class);
+    for (String id : ids) {
+      Assertions.assertThrows(ObjectNotFoundException.class,
+          () -> objectApi.load(StorageTestConfig.TESTSCHEME + "-removalbyid", definition, id));
+    }
+
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {

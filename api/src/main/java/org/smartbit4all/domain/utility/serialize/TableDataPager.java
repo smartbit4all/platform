@@ -41,7 +41,12 @@ public final class TableDataPager<E extends EntityDefinition> {
   /**
    * The last row index of the original table data that is the size() - 1. row in the active page.
    */
-  private Long activePageLastRowIdx = Long.valueOf(-1l);;
+  private Long activePageLastRowIdx = Long.valueOf(-1l);
+
+  /**
+   * Stored state of the active indices when the tableData is fetched with ordered indices.
+   */
+  private List<Integer> activeIndices = null;
 
   /**
    * True if we have a loaded active page and false if the memory page is empty.
@@ -239,9 +244,7 @@ public final class TableDataPager<E extends EntityDefinition> {
     if (offset == currentOffset && limit == currentLimit) {
       return activePage;
     }
-    activePage.clearRows();
-    activePageFirstRowIdx = -1l;
-    activePageLastRowIdx = -1l;
+    resetActivePage();
 
 
     if (rowIndices.size() <= offset) {
@@ -263,6 +266,48 @@ public final class TableDataPager<E extends EntityDefinition> {
 
     raf.close();
     return activePage;
+  }
+
+  /**
+   * Returns a TableData with rows of the given indices
+   * 
+   * @param indices
+   * @return
+   * @throws Exception
+   */
+  public TableData<E> getRows(List<Integer> indices) throws Exception {
+    if (!hasActivePage) {
+      throw new IllegalStateException("TableDataPager has not been propertly initialized!");
+    }
+    if (indices.equals(activeIndices)) {
+      return activePage;
+    }
+    resetActivePage();
+    if (indices.isEmpty()) {
+      return activePage;
+    }
+
+    RandomAccessFile raf = rafGetter.getRaf();
+    for (int i = 0; i < indices.size(); i++) {
+      int idx = indices.get(i);
+      Long offsetIdx = rowIndices.get(idx);
+      long pointer = offsetIdx.longValue();
+      raf.seek(pointer);
+      readRow(raf);
+      // TODO if the next given index is to one next in line, we shall skip seeking again, but let
+      // the pointer run through
+    }
+
+    raf.close();
+    activeIndices = indices;
+    return activePage;
+  }
+
+  private void resetActivePage() {
+    activePage.clearRows();
+    activePageFirstRowIdx = -1l;
+    activePageLastRowIdx = -1l;
+    activeIndices = null;
   }
 
   private void readRow(RandomAccessFile raf) throws Exception {

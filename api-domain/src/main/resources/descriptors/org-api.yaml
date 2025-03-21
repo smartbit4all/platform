@@ -728,3 +728,20 @@ components:
         userGroups:
             type: string
             format: uri
+    SubjectAssociationModificationModel:
+      type: object
+      properties:
+        userUri:
+          type: string
+          format: uri
+        subjectAssociations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectAssociationModification'
+    SubjectAssociationModification:
+      type: object
+      properties:
+        subject:
+          $ref: '#/components/schemas/Subject'
+        operation:
+          enum: [ADD, REMOVE]

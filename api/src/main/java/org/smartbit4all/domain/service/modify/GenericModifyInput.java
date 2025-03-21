@@ -76,6 +76,12 @@ public abstract class GenericModifyInput<E extends EntityDefinition> {
   E entityDefinition;
 
   /**
+   * The row<b>s</b> of the {@link #tableData}.
+   */
+
+  List<DataRow> rows;
+
+  /**
    * @param tableData The table data of the modification input.
    */
   public GenericModifyInput(TableData<E> tableData) {
@@ -119,7 +125,8 @@ public abstract class GenericModifyInput<E extends EntityDefinition> {
   }
 
   public void start() {
-    iterator = tableData.rows().listIterator();
+    rows = tableData.rows();
+    iterator = rows.listIterator();
   }
 
   public boolean next() {
@@ -146,6 +153,24 @@ public abstract class GenericModifyInput<E extends EntityDefinition> {
    */
   public final E getEntityDefinition() {
     return entityDefinition;
+  }
+
+  public int size() {
+    return tableData.size();
+  }
+
+  public Object getValue(int row, int column) {
+    if (rows == null) {
+      start();
+    }
+    return tableData.get(columns.get(column), rows.get(row));
+  }
+
+  public Object getIdValue(int row, int idColumn) {
+    if (rows == null) {
+      start();
+    }
+    return tableData.get(idColumns.get(idColumn), rows.get(row));
   }
 
 }

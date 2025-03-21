@@ -24,6 +24,8 @@ components:
         uri:
           type: string
           format: uri
+        name:
+          type: string
         contents:
           description: The inline list of the BinaryContentData (it is the the classic attachment).
           type: array

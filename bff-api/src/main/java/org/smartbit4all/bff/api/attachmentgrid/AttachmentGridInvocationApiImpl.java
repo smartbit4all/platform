@@ -450,7 +450,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
-            .icon("sync").iconPosition(IconPosition.PRE)
+            .icon("refresh").iconPosition(IconPosition.PRE)
             .color(UiActions.Color.PRIMARY));
 
     if (descriptor.getRefreshButtonDescriptor() != null) {

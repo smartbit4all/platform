@@ -1,13 +1,11 @@
 package org.smartbit4all.bff.api.org;
 
-import static java.util.stream.Collectors.toList;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.InvocationApi;
@@ -41,6 +39,9 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
@@ -70,8 +71,16 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     if (userUri != null) {
       pageModel.user(orgApi.getUser(userUri));
-      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(Group::getUri)
-          .collect(toList()));
+
+      List<Group> groups = parameters(view).getAsList(PARAM_GROUPS, Group.class);
+      if (!ObjectUtils.isEmpty(groups)) {
+        pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream()
+            .filter(ug -> groups.stream()
+                .anyMatch(g -> objectApi.equalsIgnoreVersion(ug.getUri(), g.getUri())))
+            .map(Group::getUri)
+            .collect(Collectors.toList()));
+      }
+
       putConstraintIntoView(view, false);
     } else {
       pageModel.user(new User().name("").email("").username(""));
@@ -79,7 +88,6 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       putConstraintIntoView(view, true);
     }
     pageModel.getUser().password("");
-    pageModel.possibleGroups(orgApi.getAllGroups());
 
     putLayoutIntoView(view);
 
@@ -98,7 +106,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   }
 
   public void putLayoutIntoView(View view) {
-    SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
+    List<SmartWidgetDefinition> widgets = new ArrayList<>(Arrays.asList(
         textfield(widgetKey(UserEditingModel.USER, User.NAME),
             localeSettingApi.get(UserEditingModel.USER, User.NAME)),
         textfield(widgetKey(UserEditingModel.USER, User.USERNAME),
@@ -106,13 +114,23 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
         textfield(widgetKey(UserEditingModel.USER, User.PASSWORD),
             localeSettingApi.get(UserEditingModel.USER, User.PASSWORD)),
         textfield(widgetKey(UserEditingModel.USER, User.EMAIL),
-            localeSettingApi.get(UserEditingModel.USER, User.EMAIL)),
-        new SmartWidgetDefinition().type(SmartFormWidgetType.SELECT_MULTIPLE)
-            .key(UserEditingModel.ACTUAL_GROUPS)
-            .label(UserEditingModel.ACTUAL_GROUPS)
-            .values(orgApi.getAllGroups().stream()
-                .map(g -> new Value().code(g.getUri().toString()).displayValue(g.getTitle()))
-                .collect(toList())));
+            localeSettingApi.get(UserEditingModel.USER, User.EMAIL))));
+
+    List<Group> groups = parameters(view).getAsList(PARAM_GROUPS, Group.class);
+    if (!ObjectUtils.isEmpty(groups)) {
+
+      List<Value> values = groups.stream()
+          .map(g -> new Value().code(g.getUri().toString()).displayValue(g.getTitle()))
+          .collect(Collectors.toList());
+
+      widgets.add(new SmartWidgetDefinition().type(SmartFormWidgetType.SELECT_MULTIPLE)
+          .key(UserEditingModel.ACTUAL_GROUPS)
+          .label(UserEditingModel.ACTUAL_GROUPS)
+          .values(values));
+    }
+
+    SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
+        widgets.toArray(new SmartWidgetDefinition[widgets.size()]));
     view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout);
   }
 
@@ -173,6 +191,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
         .collect(toList())
         .contains(objectApi.getLatestUri(user.getUri()))) {
       updateUserWithGroups(clientModel, user);
+      userUri = user.getUri();
     } else {
       userUri = orgApi.saveUser(user);
       invocationApi
@@ -182,6 +201,29 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       updateUserWithGroups(clientModel, objectApi.loadLatest(userUri).getObject(User.class));
     }
 
+
+    List<Group> groups = parameters(viewUuid).getAsList(PARAM_GROUPS, Group.class);
+    if (!ObjectUtils.isEmpty(groups)) {
+      List<URI> groupsFromModel = clientModel.getActualGroups();
+      // We remove the user from the unnecessary groups
+      orgApi.getGroupsOfUser(userUri).stream()
+          .filter(ug -> groups.stream()
+              .anyMatch(g -> objectApi.equalsIgnoreVersion(ug.getUri(), g.getUri())))
+          .forEach(g -> {
+            if (groupsFromModel.stream().noneMatch(u -> u.equals(g.getUri()))) {
+              orgApi.removeUserFromGroup(userUri, g.getUri());
+              orgApi.getSubGroups(g.getUri())
+                  .forEach(sg -> orgApi.removeUserFromGroup(userUri, sg.getUri()));
+            }
+          });
+      // We add the user to the necessary groups
+      groupsFromModel.forEach(gu -> {
+        if (orgApi.getUsersOfGroup(gu).stream()
+            .noneMatch(u -> objectApi.equalsIgnoreVersion(u.getUri(), userUri))) {
+          OrgUtils.applyGroupByName(orgApi, orgApi.getGroup(gu), orgApi.getUser(userUri));
+        }
+      });
+    }
     viewApi.closeView(viewUuid);
   }
 

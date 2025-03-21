@@ -101,13 +101,13 @@ public class UserLastAccess {
   }
 
   /**
-   * Get lastLogin
+   * Last success login date 
    * @return lastLogin
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Last success login date ")
   @JsonProperty(LAST_LOGIN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -129,13 +129,13 @@ public class UserLastAccess {
   }
 
   /**
-   * Get lastPasswordChange
+   * Last password change date 
    * @return lastPasswordChange
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Last password change date ")
   @JsonProperty(LAST_PASSWORD_CHANGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -185,12 +185,12 @@ public class UserLastAccess {
   }
 
   /**
-   * Get loginAttemptCounter
+   * Number of failed logins. If login is successful, the counter is reset 
    * @return loginAttemptCounter
    */
   @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Number of failed logins. If login is successful, the counter is reset ")
   @JsonProperty(LOGIN_ATTEMPT_COUNTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -212,13 +212,13 @@ public class UserLastAccess {
   }
 
   /**
-   * Get lastLoginAttempt
+   * Date of last failed login. If login is successful, this is reset 
    * @return lastLoginAttempt
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Date of last failed login. If login is successful, this is reset ")
   @JsonProperty(LAST_LOGIN_ATTEMPT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -240,13 +240,13 @@ public class UserLastAccess {
   }
 
   /**
-   * Get blockingDate
+   * Start date of the ban. 
    * @return blockingDate
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Start date of the ban. ")
   @JsonProperty(BLOCKING_DATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

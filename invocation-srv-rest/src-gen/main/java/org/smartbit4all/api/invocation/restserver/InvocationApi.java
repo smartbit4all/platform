@@ -163,7 +163,6 @@ public interface InvocationApi {
      * POST /invokeUploadMultiple
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      *
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return  (status code 200)
@@ -192,11 +191,10 @@ public interface InvocationApi {
     )
     
     default ResponseEntity<InvocationParameter> invokeUploadMultiple(
-        @Parameter(name = "uuid", description = "", required = true, in = ParameterIn.PATH) @PathVariable("uuid") UUID uuid,
         @Parameter(name = "invocationRequest", description = "Stringify-d InvocationRequest where the upcoming contents are referred by the parameters.") @Valid @RequestParam(value = "invocationRequest", required = false) String invocationRequest,
         @Parameter(name = "contents", description = "") @RequestPart(value = "contents", required = false) List<MultipartFile> contents
     ) throws Exception {
-        return getDelegate().invokeUploadMultiple(uuid, invocationRequest, contents);
+        return getDelegate().invokeUploadMultiple(invocationRequest, contents);
     }
 
 }

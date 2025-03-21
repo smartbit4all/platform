@@ -4,6 +4,7 @@ import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 import org.smartbit4all.api.invocation.restclientgen.util.BaseApi;
 
 import java.io.File;
+import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import java.util.UUID;
@@ -44,6 +45,7 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return InvocationParameter
@@ -57,6 +59,7 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
      * @param invocationRequest  (required)
      * @return ResponseEntity&lt;InvocationParameter&gt;
@@ -94,8 +97,8 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
-     * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param invocationRequest  (required)
      * @return File
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -108,8 +111,8 @@ public class InvocationApi extends BaseApi {
      * 
      * 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
-     * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param invocationRequest  (required)
      * @return ResponseEntity&lt;File&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
@@ -129,7 +132,7 @@ public class InvocationApi extends BaseApi {
         final MultiValueMap<String, Object> localVarFormParams = new LinkedMultiValueMap<String, Object>();
 
         final String[] localVarAccepts = { 
-            "application/octet-stream"
+            "application/octet-stream", "application/json"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
         final String[] localVarContentTypes = { 
@@ -146,6 +149,7 @@ public class InvocationApi extends BaseApi {
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. 
      * <p><b>200</b> - 
+     * <p><b>400</b> - 
      * <p><b>404</b> - The api was not found.
      * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param uuid  (required)
@@ -162,6 +166,7 @@ public class InvocationApi extends BaseApi {
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. The result is a content also. 
      * <p><b>200</b> - 
+     * <p><b>400</b> - 
      * <p><b>404</b> - The api was not found.
      * <p><b>500</b> - Error occured while fetching the downloadable item
      * @param uuid  (required)
@@ -193,7 +198,7 @@ public class InvocationApi extends BaseApi {
             localVarFormParams.addAll("contents", contents.stream().collect(Collectors.toList()));
 
         final String[] localVarAccepts = { 
-            "application/octet-stream"
+            "application/octet-stream", "application/json"
          };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
         final String[] localVarContentTypes = { 
@@ -210,39 +215,31 @@ public class InvocationApi extends BaseApi {
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return InvocationParameter
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public InvocationParameter invokeUploadMultiple(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
-        return invokeUploadMultipleWithHttpInfo(uuid, invocationRequest, contents).getBody();
+    public InvocationParameter invokeUploadMultiple(String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+        return invokeUploadMultipleWithHttpInfo(invocationRequest, contents).getBody();
     }
 
     /**
      * 
      * Performs a generic invocation with contents to upload. These uploaded contents are identified by their position by the parameters. 
      * <p><b>200</b> - 
+     * <p><b>500</b> - 
      * <p><b>404</b> - The api was not found.
-     * @param uuid  (required)
      * @param invocationRequest Stringify-d InvocationRequest where the upcoming contents are referred by the parameters. (optional)
      * @param contents  (optional)
      * @return ResponseEntity&lt;InvocationParameter&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<InvocationParameter> invokeUploadMultipleWithHttpInfo(UUID uuid, String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
+    public ResponseEntity<InvocationParameter> invokeUploadMultipleWithHttpInfo(String invocationRequest, java.util.Collection<org.springframework.core.io.Resource> contents) throws RestClientException {
         Object localVarPostBody = null;
         
-        // verify the required parameter 'uuid' is set
-        if (uuid == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'uuid' when calling invokeUploadMultiple");
-        }
-        
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("uuid", uuid);
 
         final MultiValueMap<String, String> localVarQueryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders localVarHeaderParams = new HttpHeaders();
@@ -266,7 +263,7 @@ public class InvocationApi extends BaseApi {
         String[] localVarAuthNames = new String[] {  };
 
         ParameterizedTypeReference<InvocationParameter> localReturnType = new ParameterizedTypeReference<InvocationParameter>() {};
-        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, uriVariables, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
+        return apiClient.invokeAPI("/invokeUploadMultiple", HttpMethod.POST, Collections.<String, Object>emptyMap(), localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localReturnType);
     }
 
     @Override

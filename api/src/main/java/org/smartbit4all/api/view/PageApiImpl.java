@@ -176,6 +176,15 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
         + StringConstant.SPACE_HYPHEN_SPACE + request.getPath() + " action parameters");
   }
 
+  protected ObjectMapHelper callbacks(UUID viewUuid) {
+    return callbacks(viewApi.getView(viewUuid));
+  }
+
+  protected ObjectMapHelper callbacks(View view) {
+    return new ObjectMapHelper(view.getCallbacks(), objectApi, view.getViewName()
+        + StringConstant.SPACE_HYPHEN_SPACE + view.getUuid() + " view callbacks");
+  }
+
   protected M extractClientModel(UiActionRequest request) {
     return extractParam(getClazz(), UiActions.MODEL, request.getParams());
   }

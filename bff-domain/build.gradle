@@ -28,7 +28,8 @@ smartbit4all {
      "GridSelectionMode": "org.smartbit4all.api.grid.bean.GridSelectionMode",
      "SearchPageConfig": "org.smartbit4all.api.filterexpression.bean.SearchPageConfig",
      "UiActionDescriptor": "org.smartbit4all.api.view.bean.UiActionDescriptor",
-     "SearchIndexDescriptor": "org.smartbit4all.api.collection.bean.SearchIndexDescriptor"
+     "SearchIndexDescriptor": "org.smartbit4all.api.collection.bean.SearchIndexDescriptor",
+     "SubjectAssociationModificationModel": "org.smartbit4all.api.org.bean.SubjectAssociationModificationModel",
     ]
   }
 }

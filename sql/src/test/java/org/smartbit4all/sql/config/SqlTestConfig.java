@@ -55,7 +55,8 @@ public class SqlTestConfig {
     ResourceDatabasePopulator resourceDatabasePopulator = new EmptyDatabasePopulator();
     // Transfer table scripts:
     Resource[] schemaScriptResources =
-        {(new ClassPathResource("script/objectstorage_oracle.sql"))};
+        {(new ClassPathResource("script/objectstorage_oracle.sql")),
+            (new ClassPathResource("script/sb4tables_oracle.sql"))};
     resourceDatabasePopulator.addScripts(schemaScriptResources);
 
     dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
