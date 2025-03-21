@@ -1,6 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import static java.util.stream.Collectors.toList;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +22,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The developer api for the invocation.
@@ -222,11 +222,14 @@ public class Invocations {
     Object value = parameter.getValue();
     if (value != null && !value.getClass().getName().equals(parameter.getTypeClass())) {
       Class<?> typeClass = getTypeClassByName(request, parameter.getTypeClass());
+      // If the innerTypeClass is missing then assume we have strings.
+      String innerType = parameter.getInnerTypeClass() == null ? String.class.getName()
+          : parameter.getInnerTypeClass();
       if (List.class.isAssignableFrom(typeClass)) {
-        value = objectApi.asList(getTypeClassByName(request, parameter.getInnerTypeClass()),
+        value = objectApi.asList(getTypeClassByName(request, innerType),
             (List<?>) value);
       } else if (Map.class.isAssignableFrom(typeClass)) {
-        value = objectApi.asMap(getTypeClassByName(request, parameter.getInnerTypeClass()),
+        value = objectApi.asMap(getTypeClassByName(request, innerType),
             (Map<String, ?>) value);
       } else {
         value = objectApi.asType(typeClass, value);
