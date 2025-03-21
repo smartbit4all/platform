@@ -1,6 +1,8 @@
 package org.smartbit4all.bff.api.attachmentgrid;
 
 import java.util.List;
+import java.util.UUID;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
@@ -34,6 +36,13 @@ public interface AttachmentGridApi {
    * @return
    */
   GridModel createGridModel(List<String> columns, AttachmentGridDescriptor descriptor);
+
+  /**
+   * Sets the list into the descriptor and grid.
+   * 
+   * @param fileList
+   */
+  void refreshGrid(UUID viewUuid, String gridId, List<BinaryContentData> fileList);
 
 }
 
