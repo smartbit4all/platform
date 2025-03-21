@@ -1802,7 +1802,7 @@ class MDMApiTest {
         .pollInterval(100L, TimeUnit.MILLISECONDS)
         .await()
         .atMost(5_000L, TimeUnit.MILLISECONDS)
-        .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3));
+        .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter.get()).isEqualTo(3));
   }
 
   @Test
