@@ -1,5 +1,6 @@
 package org.smartbit4all.testing.mdm;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.smartbit4all.api.setup.ApplicationSetupApi;
 import org.smartbit4all.api.setup.ApplicationSetupApiImpl;
 
@@ -13,20 +14,21 @@ public class MDMApiTestSetupv2 extends ApplicationSetupApiImpl {
   }
 
   // should mark as volatile as multiple threads are going to mutate/observe the value
-  public static volatile int executionCounter = 0;
+  public static final AtomicInteger executionCounter = new AtomicInteger(0);
+  public static final int LIMIT = 3;
 
   @Override
   public void execute() {
     if (!hasRun) {
-      executionCounter = 0;
+      executionCounter.set(0);;
       hasRun = true;
     }
-    executionCounter++;
+    executionCounter.updateAndGet(i -> (i < LIMIT) ? i + 1 : i);
   }
 
   @Override
   public boolean checkRunAgain() {
-    return executionCounter < 3 || !hasRun;
+    return !hasRun || executionCounter.get() < LIMIT;
   }
 
 }
