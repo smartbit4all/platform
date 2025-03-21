@@ -14,9 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.OrgBulkUpdate;
 import org.smartbit4all.api.org.bean.OrgState;
@@ -44,15 +46,51 @@ public interface OrgApi {
   List<User> getAllUsers();
 
   /**
+   * Returns URIs of all active, inactive users.
+   * 
+   * @return
+   */
+  default List<URI> getAllUserUris() {
+    // inefficient default implementation
+    return getAllUsers().stream()
+        .map(User::getUri)
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Returns all the active users.
    */
   List<User> getActiveUsers();
+
+  /**
+   * Returns URIs of all active users.
+   * 
+   * @return
+   */
+  default List<URI> getActiveUserUris() {
+    // inefficient default implementation
+    return getActiveUsers().stream()
+        .map(User::getUri)
+        .collect(Collectors.toList());
+  }
 
   /**
    * Returns all users set to inactive status.
    *
    */
   public List<User> getInactiveUsers();
+
+  /**
+   * Returns URIs of all inactive users.
+   * 
+   * @return
+   */
+  default List<URI> getInactiveUserUris() {
+    // inefficient default implementation
+    return getInactiveUsers().stream()
+        .map(User::getUri)
+        .collect(Collectors.toList());
+  }
 
   /**
    * Returns every group.
@@ -215,5 +253,16 @@ public interface OrgApi {
    * @return URI
    */
   URI getPrimaryAccount(URI userUri);
+
+  /**
+   * Returns all active user's primary account URI.
+   * 
+   * @return
+   */
+  default List<URI> getActivePrimaryAccountUris() {
+    return getActiveUsers().stream()
+        .map(user -> getPrimaryAccount(user.getUri()))
+        .collect(toList());
+  }
 
 }

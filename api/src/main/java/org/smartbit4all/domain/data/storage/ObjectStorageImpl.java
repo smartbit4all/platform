@@ -5,6 +5,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -497,6 +498,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return false;
   }
 
+  @Override
+  public List<URI> remove(Collection<URI> urisToRemove) {
+    // By default it won't return anything. The management of the set is an extra functionality.
+    return null;
+  }
+
   /**
    * We have this constructor method to avoid having public setters in the {@link StorageObject}.
    * This can be used by the implementations of the {@link ObjectStorage}.
@@ -785,6 +792,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
 
     @Override
+    public int getOrder() {
+      return 1000;
+    }
+
+    @Override
     public void suspend() {
       TransactionSynchronizationManager.unbindResource(STORAGE_SAVE_EVENTS_HANDLER);
       log.trace("async suspend");
@@ -917,6 +929,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
 
     public void addLockToUnlock(StorageObjectLock lock) {
       locksToUnlock.add(lock);
+    }
+
+    @Override
+    public int getOrder() {
+      // this should run among the first ones, to release lock asap
+      return 0;
     }
 
     @Override

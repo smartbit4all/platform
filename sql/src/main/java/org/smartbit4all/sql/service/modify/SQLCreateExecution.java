@@ -18,7 +18,8 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import org.smartbit4all.core.object.ObjectApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.PropertyOwned;
@@ -31,8 +32,8 @@ import org.smartbit4all.sql.SQLStatementBuilder;
 import org.smartbit4all.sql.SQLStatementBuilderIF;
 import org.smartbit4all.sql.SQLTableNode;
 import org.smartbit4all.sql.config.SQLDBParameter;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 
 /**
  * The create execution is an object containing all the data and objects for the execution.
@@ -42,6 +43,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  * @param <E>
  */
 public class SQLCreateExecution<E extends EntityDefinition> {
+
+  private static final Logger log = LoggerFactory.getLogger(SQLCreateExecution.class);
 
   /**
    * The input object.
@@ -65,73 +68,31 @@ public class SQLCreateExecution<E extends EntityDefinition> {
 
   /**
    * This is the number of records that are executed at the same time using the
-   * {@link PreparedStatement#addBatch()}. By default it's 1 and it means we don't use
-   * {@link PreparedStatement#executeBatch()} but rather {@link PreparedStatement#execute()}.
+   * {@link PreparedStatement#addBatch()}. Default batch size is defined in SQLBatchUtils. If set to
+   * 1, batch execution is disabled.
    */
-  private int batchExecutionSize = 1;
-
-  private String schema;
+  private int batchExecutionSize = SQLBatchUtils.DEFAULT_BATCH_SIZE;
 
   private SQLDBParameter sqlDBParameter;
 
-  private ObjectApi objectApi;
-
-  public SQLCreateExecution(JdbcTemplate jdbcTemplate, CreateInput<E> input, String schema,
-      SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
+  public SQLCreateExecution(JdbcTemplate jdbcTemplate, CreateInput<E> input,
+      SQLDBParameter sqlDBParameter) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
-    this.schema = schema;
     this.sqlDBParameter = sqlDBParameter;
-    this.objectApi = objectApi;
   }
 
-  // private final class PreparedStatementSetter
-  // implements InterruptibleBatchPreparedStatementSetter {
-  //
-  // List<SQLBindValue> values;
-  //
-  // List<SQLBindValue> identifiers;
-  //
-  // SQLStatementBuilderIF builder;
-  //
-  // boolean hasNext;
-  //
-  // public PreparedStatementSetter(SQLStatementBuilderIF builder, List<SQLBindValue> values,
-  // List<SQLBindValue> identifiers) {
-  // super();
-  // this.builder = builder;
-  // this.values = values;
-  // this.identifiers = identifiers;
-  // // Start reading the source.
-  // input.start();
-  // hasNext = input.next();
-  // }
-  //
-  // @Override
-  // public void setValues(PreparedStatement ps, int idx) throws SQLException {
-  // for (int i = 0; i < values.size(); i++) {
-  // SQLBindValue bindValue = values.get(i);
-  // bindValue.setValue(input.get(i));
-  // }
-  // for (int i = 0; i < identifiers.size(); i++) {
-  // SQLBindValue bindValue = identifiers.get(i);
-  // bindValue.setValue(input.getIdentifier(i));
-  // }
-  // insert.bind(builder, ps);
-  // hasNext = input.next();
-  // }
-  //
-  // @Override
-  // public int getBatchSize() {
-  // return batchExecutionSize;
-  // }
-  //
-  // @Override
-  // public boolean isBatchExhausted(int i) {
-  // return !hasNext;
-  // }
-  //
-  // }
+  /**
+   * Sets the batch execution size.
+   * 
+   * @param batchSize The number of operations to include in a single batch. Set to 1 to disable
+   *        batch operations.
+   * @return This execution instance for chaining.
+   */
+  public SQLCreateExecution<E> setBatchExecutionSize(int batchSize) {
+    this.batchExecutionSize = SQLBatchUtils.validateBatchSize(batchSize);
+    return this;
+  }
 
   public CreateOutput execute() {
     String schema = CrudApis.getCrudApi().getSchema(input.getEntityDefinition());
@@ -140,6 +101,7 @@ public class SQLCreateExecution<E extends EntityDefinition> {
     TableDefinition table = input.getEntityDefinition().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     insert = new SQLInsertStatement(tableNode);
+
     List<SQLBindValue> values = new ArrayList<>();
     for (PropertyOwned<?> property : input.properties()) {
       values.add(insert.addColumn(builder.getColumn(property.getDbExpression()), property));
@@ -150,9 +112,7 @@ public class SQLCreateExecution<E extends EntityDefinition> {
     }
     insert.render(builder);
 
-    // -------------------------
-
-    // Execute the before statements if there are any.
+    // Execute the before statements if there are any
     for (Entry<String, StringBuilder> entry : builder.beforeStatements().entrySet()) {
       String beforeStatement = entry.getValue().toString();
       if (beforeStatement != null) {
@@ -160,96 +120,66 @@ public class SQLCreateExecution<E extends EntityDefinition> {
       }
     }
 
-    // PreparedStatementSetter statementSetter =
-    // new PreparedStatementSetter(builder, values, identifiers);
-    //
-    // while (statementSetter.hasNext) {
-    // jdbcTemplate.batchUpdate(builder.getStatement(),
-    // statementSetter);
-    // }
-
-
-
     input.start();
 
-
-    int count = 0;
-    while (input.next()) {
-      PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, insert);
-
-      for (int i = 0; i < values.size(); i++) {
-        SQLBindValue bindValue = values.get(i);
-
-        Object value = getValue(bindValue, input.get(i));
-        bindValue.setValue(value);
+    // Handle single row operations (no batching)
+    if (input.size() == 1 ||
+        !SQLBatchUtils.useBatchProcessing(batchExecutionSize)) {
+      int totalCount = 0;
+      for (int row = 0; row < input.size(); row++) {
+        SQLPreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, insert);
+        setBindValues(values, identifiers, row);
+        totalCount += jdbcTemplate.update(psc);
       }
-      for (int i = 0; i < identifiers.size(); i++) {
-        SQLBindValue bindValue = identifiers.get(i);
-        bindValue.setValue(input.getIdentifier(i));
-      }
-
-      jdbcTemplate.update(psc);
-      count++;
-
+      return new CreateOutput(totalCount);
     }
 
-    return new CreateOutput(count);
+    // Handle batch operations
+    int totalCount = 0;
+    int offset = 0;
+    int remaining = input.size();
+    while (remaining > 0) {
+      int currentBatchSize = Math.min(batchExecutionSize, remaining);
+      int count = executeBatch(builder, values, identifiers, offset, currentBatchSize);
+      if (count != currentBatchSize) {
+        log.warn("count != currentBatchSize! {} != {}", count, currentBatchSize);
+      }
+      offset += currentBatchSize;
+      remaining -= currentBatchSize;
+      totalCount += count;
 
-
-    // try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-    // PreparedStatement stmt = connection.prepareStatement(builder.getStatement());
-    //
-    // int batchCount = 0;
-    // source.start();
-    // while (source.next()) {
-    //
-    // for (int i = 0; i < values.size(); i++) {
-    // SQLBindValue bindValue = values.get(i);
-    // bindValue.setValue(source.get(i));
-    // }
-    // for (int i = 0; i < identifiers.size(); i++) {
-    // SQLBindValue bindValue = identifiers.get(i);
-    // bindValue.setValue(source.getIdentifier(i));
-    // }
-    // insert.bind(builder, stmt);
-    //
-    // if (batchExecutionSize > 1) {
-    // stmt.addBatch();
-    // batchCount++;
-    //
-    // // If we reached the number of rows defined by the batchExecutionSize then we execute the
-    // // whole batch at once.
-    // if (batchCount == batchExecutionSize) {
-    // executedCount += SQLModifyUtility.executeBatch(stmt);
-    // batchCount = 0;
-    // }
-    // } else {
-    // executedCount += stmt.executeUpdate();
-    // }
-    // }
-    // // At the end of the iteration we check if any batch row left. If yes, then we execute the
-    // // last
-    // // batch.
-    // if (batchCount > 0) {
-    // executedCount += SQLModifyUtility.executeBatch(stmt);
-    // }
-    // }
+    }
+    return new CreateOutput(totalCount);
   }
 
-  private Object getValue(SQLBindValue bindValue, Object value) {
-    // if (value != null
-    // && !URI.class.isInstance(value)
-    // && bindValue.getProperty().jdbcConverter() != null
-    // && !bindValue.getProperty().jdbcConverter().extType().isInstance(value)
-    // && bindValue.getProperty().jdbcConverter().extType().isAssignableFrom(String.class)) {
-    // return objectApi.asString(value);
-    // }
-
-    return value;
+  private void setBindValues(List<SQLBindValue> values,
+      List<SQLBindValue> identifiers, int row) {
+    for (int i = 0; i < values.size(); i++) {
+      SQLBindValue bindValue = values.get(i);
+      bindValue.setValue(input.getValue(row, i));
+    }
+    for (int i = 0; i < identifiers.size(); i++) {
+      SQLBindValue bindValue = identifiers.get(i);
+      bindValue.setValue(input.getIdValue(row, i));
+    }
   }
 
-  protected final CreateOutput getOutput() {
-    return output;
+  private int executeBatch(SQLStatementBuilderIF builder, List<SQLBindValue> values,
+      List<SQLBindValue> identifiers, int offset, int batchSize) {
+
+    return SQLBatchUtils.executeBatch(jdbcTemplate, builder.getStatement(),
+        new BatchPreparedStatementSetter() {
+          @Override
+          public void setValues(PreparedStatement ps, int i) throws java.sql.SQLException {
+            setBindValues(values, identifiers, offset + i);
+            insert.bind(builder, ps);
+          }
+
+          @Override
+          public int getBatchSize() {
+            return batchSize;
+          }
+        });
   }
 
 }

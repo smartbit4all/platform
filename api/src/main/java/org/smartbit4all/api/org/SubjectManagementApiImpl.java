@@ -12,6 +12,7 @@ import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 import org.smartbit4all.api.org.bean.SubjectList;
 import org.smartbit4all.api.org.bean.SubjectModel;
 import org.smartbit4all.api.session.SessionApi;
@@ -180,4 +181,15 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
         .distinct()
         .collect(toList());
   }
+
+  @Override
+  public void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel) {
+    SubjectModel model = getModel(modelName);
+    model.getDescriptors().stream().forEach(d -> getContributionApi(d.getApiName())
+        .processSubjectChanges(modelName, subjectAssociationModel));
+  }
+
+
+
 }

@@ -239,12 +239,12 @@ public class UserSecurityPolicy {
   }
 
   /**
-   * Get loginLockoutPeriod
+   * This period must be given in minutes. 
    * @return loginLockoutPeriod
    */
   @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "This period must be given in minutes. ")
   @JsonProperty(LOGIN_LOCKOUT_PERIOD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

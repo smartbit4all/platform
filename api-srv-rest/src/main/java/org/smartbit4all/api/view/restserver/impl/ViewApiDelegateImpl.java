@@ -150,14 +150,20 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     return objectApi.asType(UiActionRequest.class, request);
   }
 
-  private UploadedFile convertMultipartFileToUploadedFile(MultipartFile file) {
+  protected UploadedFile convertMultipartFileToUploadedFile(MultipartFile file) {
     try {
+      BinaryData binaryData = BinaryData.of(file.getInputStream());
+      checkBinaryData(binaryData, file.getOriginalFilename());
       return new UploadedFile()
           .filename(file.getOriginalFilename())
           .size(file.getSize())
-          .data(BinaryData.of(file.getInputStream()));
+          .data(binaryData);
     } catch (IOException e) {
       throw new IllegalArgumentException("Invalid file", e);
     }
+  }
+
+  protected void checkBinaryData(BinaryData binaryData, String filename) {
+    // nop
   }
 }

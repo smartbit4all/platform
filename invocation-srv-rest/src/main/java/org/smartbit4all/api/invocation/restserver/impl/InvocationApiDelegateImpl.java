@@ -66,7 +66,7 @@ public class InvocationApiDelegateImpl implements InvocationApiDelegate {
   }
 
   @Override
-  public ResponseEntity<InvocationParameter> invokeUploadMultiple(UUID uuid,
+  public ResponseEntity<InvocationParameter> invokeUploadMultiple(
       String invocationRequest, List<MultipartFile> contents) throws Exception {
     InvocationRequest request = resolveMultipartRequest(invocationRequest, contents);
 

@@ -17,7 +17,8 @@ package org.smartbit4all.sql.service.modify;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.core.object.ObjectApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression;
@@ -33,17 +34,19 @@ import org.smartbit4all.sql.SQLTableNode;
 import org.smartbit4all.sql.SQLUpdateStatement;
 import org.smartbit4all.sql.SQLWhere;
 import org.smartbit4all.sql.config.SQLDBParameter;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 
 /**
- * The create execution is an object containing all the data and objects for the execution.
+ * The update execution is an object containing all the data and objects for the execution.
  *
  * @author Peter Boros
  *
  * @param <E>
  */
 public class SQLUpdateExecution<E extends EntityDefinition> {
+
+  private static final Logger log = LoggerFactory.getLogger(SQLUpdateExecution.class);
 
   private UpdateInput<E> input;
 
@@ -59,24 +62,30 @@ public class SQLUpdateExecution<E extends EntityDefinition> {
 
   /**
    * This is the number of records that are executed at the same time using the
-   * {@link PreparedStatement#addBatch()}. By default it's 1 and it means we don't use
-   * {@link PreparedStatement#executeBatch()} but rather {@link PreparedStatement#execute()}.
+   * {@link PreparedStatement#addBatch()}. Default batch size is defined in SQLBatchUtils. If set to
+   * 1, batch execution is disabled.
    */
-  private int batchExecutionSize = 1;
-
-  private String schema;
+  private int batchExecutionSize = SQLBatchUtils.DEFAULT_BATCH_SIZE;
 
   private SQLDBParameter sqlDBParameter;
 
-  private ObjectApi objectApi;
-
-  public SQLUpdateExecution(JdbcTemplate jdbcTemplate, UpdateInput<E> input, String schema,
-      SQLDBParameter sqlDBParameter, ObjectApi objectApi) {
+  public SQLUpdateExecution(JdbcTemplate jdbcTemplate, UpdateInput<E> input,
+      SQLDBParameter sqlDBParameter) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
-    this.schema = schema;
     this.sqlDBParameter = sqlDBParameter;
-    this.objectApi = objectApi;
+  }
+
+  /**
+   * Sets the batch execution size.
+   * 
+   * @param batchSize The number of operations to include in a single batch. Set to 1 to disable
+   *        batch operations.
+   * @return This execution instance for chaining.
+   */
+  public SQLUpdateExecution<E> setBatchExecutionSize(int batchSize) {
+    this.batchExecutionSize = SQLBatchUtils.validateBatchSize(batchSize);
+    return this;
   }
 
   public UpdateOutput execute() {
@@ -86,15 +95,16 @@ public class SQLUpdateExecution<E extends EntityDefinition> {
     TableDefinition table = input.getEntityDefinition().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     update = new SQLUpdateStatement(tableNode);
+
     // First add the values and set the where to have the criterion for the update.
     Expression updateCriterion = null;
-    List<SQLBindValue> values = new ArrayList<>();
+    final List<SQLBindValue> values = new ArrayList<>();
     for (PropertyOwned<?> property : input.properties()) {
       values.add(update.addColumn(property));
     }
 
     List<PropertyOwned<?>> identifiedBy = input.identifiedBy();
-    List<Expression> identifierExpressions = new ArrayList<>(2);
+    final List<Expression> identifierExpressions = new ArrayList<>(identifiedBy.size());
     for (PropertyOwned<?> property : identifiedBy) {
       Expression exp = property.eq(null);
       identifierExpressions.add(exp);
@@ -110,68 +120,69 @@ public class SQLUpdateExecution<E extends EntityDefinition> {
     update.setWhere(where);
     update.render(builder);
 
-
     input.start();
 
-    int updateCount = 0;
+    // Handle single row operations (no batching)
+    if (input.size() == 1 ||
+        !SQLBatchUtils.useBatchProcessing(batchExecutionSize)) {
 
-    while (input.next()) {
-      PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, update);
-
-      for (int i = 0; i < values.size(); i++) {
-        SQLBindValue bindValue = values.get(i);
-        bindValue.setValue(input.get(i));
+      int totalCount = 0;
+      for (int row = 0; row < input.size(); row++) {
+        setBindValues(values, identifierExpressions, row);
+        SQLPreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, update);
+        totalCount += jdbcTemplate.update(psc);
       }
-      for (int i = 0; i < identifierExpressions.size(); i++) {
-        Expression2Operand<?> exp = (Expression2Operand<?>) identifierExpressions.get(i);
-        exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
-      }
-
-      updateCount += jdbcTemplate.update(psc);
-
+      return new UpdateOutput(totalCount);
     }
 
-    return new UpdateOutput(updateCount);
-
-    // TODO use jdbcTemplate methods instead of connection!
-    // try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-    // PreparedStatement stmt = connection.prepareStatement(builder.getStatement());
-    //
-    // int batchCount = 0;
-    // while (input.next()) {
-    //
-    // for (int i = 0; i < values.size(); i++) {
-    // SQLBindValue bindValue = values.get(i);
-    // bindValue.setValue(input.get(i));
-    // }
-    // for (int i = 0; i < identifierExpressions.size(); i++) {
-    // Expression2Operand<?> exp = (Expression2Operand<?>) identifierExpressions.get(i);
-    // exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
-    // }
-    //
-    // update.bind(builder, stmt);
-    //
-    // if (batchExecutionSize > 1) {
-    // stmt.addBatch();
-    // batchCount++;
-    //
-    // // If we reached the number of rows defined by the batchExecutionSize then we execute the
-    // // whole batch at once.
-    // if (batchCount == batchExecutionSize) {
-    // executedCount += SQLModifyUtility.executeBatch(stmt);
-    // batchCount = 0;
-    // }
-    // } else {
-    // executedCount += stmt.executeUpdate();
-    // }
-    // }
-    // // At the end of the iteration we check if any batch row left. If yes, then we execute the
-    // // last
-    // // batch.
-    // if (batchCount > 0) {
-    // executedCount += SQLModifyUtility.executeBatch(stmt);
-    // }
-    // }
+    // Handle batch operations
+    int totalCount = 0;
+    int offset = 0;
+    int remaining = input.size();
+    while (remaining > 0) {
+      int currentBatchSize = Math.min(batchExecutionSize, remaining);
+      int count = executeBatch(builder, values, identifierExpressions, offset, currentBatchSize);
+      if (count != currentBatchSize) {
+        log.warn("count != currentBatchSize! {} != {}", count, currentBatchSize);
+      }
+      offset += currentBatchSize;
+      remaining -= currentBatchSize;
+      totalCount += count;
+    }
+    return new UpdateOutput(totalCount);
   }
 
+  private void setBindValues(final List<SQLBindValue> values,
+      final List<Expression> identifierExpressions, int row) {
+    for (int i = 0; i < values.size(); i++) {
+      SQLBindValue bindValue = values.get(i);
+      bindValue.setValue(input.getValue(row, i));
+    }
+    for (int i = 0; i < identifierExpressions.size(); i++) {
+      Expression2Operand<?> exp = (Expression2Operand<?>) identifierExpressions.get(i);
+      exp.getLiteral().setValueUnchecked(input.getIdValue(row, i));
+    }
+  }
+
+  /**
+   * Executes a batch of UPDATE operations.
+   */
+  private int executeBatch(SQLStatementBuilderIF builder,
+      final List<SQLBindValue> values, final List<Expression> identifierExpressions,
+      int offset, int batchSize) {
+
+    return SQLBatchUtils.executeBatch(jdbcTemplate, builder.getStatement(),
+        new BatchPreparedStatementSetter() {
+          @Override
+          public void setValues(PreparedStatement ps, int i) throws java.sql.SQLException {
+            setBindValues(values, identifierExpressions, offset + i);
+            update.bind(builder, ps);
+          }
+
+          @Override
+          public int getBatchSize() {
+            return batchSize;
+          }
+        });
+  }
 }

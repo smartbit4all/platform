@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,4 +112,12 @@ public class SubjectContributionByGroup extends ContributionApiImpl
         })
         .collect(toList());
   }
+
+  @Override
+  public void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel) {
+    // TODO Auto-generated method stub
+
+  }
+
 }

@@ -1856,4 +1856,29 @@ class MDMApiTest {
     }
   }
 
+  @Test
+  @Order(400)
+  void objectRemoval() throws Exception {
+    OffsetDateTime now = OffsetDateTime.now();
+    // Construct data to check.
+    Random rnd = new Random();
+    int minutes = 10;
+    List<Double> sumOfMinutes = new ArrayList<>();
+    List<URI> objectsToRemove = new ArrayList<>();
+    URI lastUri = null;
+    for (int i = 1; i <= minutes; i++) {
+      double sumOfMinute = 0.0;
+      for (int j = 0; j < 5; j++) {
+        double value = rnd.nextInt(100);
+        lastUri = objectApi.saveAsNew(SCHEMA + "-removal",
+            new SampleCategory().name("T1"));
+        objectsToRemove.add(lastUri);
+        sumOfMinute += value;
+      }
+      sumOfMinutes.add(sumOfMinute);
+    }
+    Storage storage = storageApi.getStorage(lastUri);
+    storage.remove(objectsToRemove);
+  }
+
 }

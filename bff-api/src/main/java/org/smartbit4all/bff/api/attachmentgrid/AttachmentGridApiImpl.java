@@ -32,8 +32,8 @@ import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridHelper;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +55,9 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
   @Autowired
   private LocaleSettingApi localeSettingApi;
   @Autowired
-  private ObjectApi objectApi;
-  @Autowired
   private CollectionApi collectionApi;
+  @Autowired
+  private ObjectApi objectApi;
 
   private static List<String> attachmentOrderedColumns =
       Arrays.asList(
@@ -167,7 +167,14 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     if (ObjectUtils.isEmpty(attachmentList)) {
       attachmentList = new ArrayList<>();
     }
-    gridModelApi.setData(uuid, gridId, BinaryContentData.class, attachmentList);
+
+
+    setGridData(descriptor);
+
+    AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
+  }
+
+  private void setGridData(AttachmentGridDescriptor descriptor) {
 
     if (descriptor.getSearchIndex() != null) {
       SearchIndex<BinaryContentData> searchIndex =
@@ -175,15 +182,13 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
               descriptor.getSearchIndex().getSchema(),
               descriptor.getSearchIndex().getName());
       gridModelApi.setData(
-          view.getUuid(),
-          gridId,
-          searchIndex.tableDataOfObjects(attachmentList.stream()));
-
+          descriptor.getViewUuid(),
+          descriptor.getGridWidgetId(),
+          searchIndex.tableDataOfObjects(descriptor.getAttachmentList().stream()));
     } else {
-      gridModelApi.setData(view.getUuid(), gridId, BinaryContentData.class, attachmentList);
+      gridModelApi.setData(descriptor.getViewUuid(), descriptor.getGridWidgetId(),
+          BinaryContentData.class, descriptor.getAttachmentList());
     }
-
-    AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
   }
 
   private SmartComponentLayoutDefinition createDialogGridLayout(
@@ -210,6 +215,18 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
             .title(localeSettingApi.get("close"))
             .icon("times").iconPosition(IconPosition.PRE)
             .color(UiActions.Color.SECONDARY));
+  }
+
+  @Override
+  public void refreshGrid(UUID viewUuid, String gridId, List<BinaryContentData> fileList) {
+    View view = viewApi.getView(viewUuid);
+    AttachmentGridDescriptor descriptor =
+        AttachmentGridHelper.getDescriptorFromView(view, gridId, objectApi);
+
+    descriptor.setAttachmentList(fileList);
+    setGridData(descriptor);
+
+    AttachmentGridHelper.saveDescriptorToView(descriptor, viewApi);
   }
 
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.org.bean.Subject;
+import org.smartbit4all.api.org.bean.SubjectAssociationModificationModel;
 
 /**
  * The {@link SubjectContributionApi} is responsible for introducing new subjects to the access
@@ -61,5 +62,8 @@ public interface SubjectContributionApi extends ContributionApi {
    * @return
    */
   List<String> getDisplayValue(String modelName, List<URI> subjects);
+
+  void processSubjectChanges(String modelName,
+      SubjectAssociationModificationModel subjectAssociationModel);
 
 }

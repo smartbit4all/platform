@@ -32,6 +32,10 @@ components:
           type: boolean
         expandableSectionLabel:
           type: string
+        expandableSectionSubtitle:
+          type: string
+        expandableSectionHeaderToolbarId:
+          type: string
         direction:
           $ref: '#/components/schemas/LayoutDirection'
         components:
