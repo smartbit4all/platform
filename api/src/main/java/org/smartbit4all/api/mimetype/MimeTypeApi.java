@@ -41,6 +41,10 @@ public class MimeTypeApi implements InitializingBean {
   public static final String CSV_MIMETYPE = "text/csv";
   public static final String WEBP_MIMETYPE = "image/webp";
   public static final String BMP_MIMETYPE = "image/bmp";
+  public static final String PNM_MIMETYPE = "image/x-portable-anymap";
+  public static final String PPM_MIMETYPE = "image/x-portable-pixmap";
+  public static final String PGM_MIMETYPE = "image/x-portable-graymap";
+  public static final String PBM_MIMETYPE = "image/x-portable-bitmap";
   public static final String SVG_MIMETYPE = "image/svg+xml";
   public static final String TIFF_MIMETYPE = "image/tiff";
   public static final String ICON_MIMETYPE = "image/x-icon";
@@ -164,6 +168,10 @@ public class MimeTypeApi implements InitializingBean {
   public static final String CSV_EXT = "csv";
   public static final String WEBP_EXT = "webp";
   public static final String BMP_EXT = "bmp";
+  public static final String PNM_EXT = "pnm";
+  public static final String PPM_EXT = "ppm";
+  public static final String PGM_EXT = "pgm";
+  public static final String PBM_EXT = "pbm";
   public static final String SVG_EXT = "svg";
   public static final String TIFF_EXT = "tiff";
   public static final String ICON_EXT = "ico";

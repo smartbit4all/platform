@@ -18,10 +18,11 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
     implements ContentConversionContributionApi {
 
   @Autowired
-  ObjectApi objectApi;
-
+  protected ObjectApi objectApi;
   @Autowired
-  MasterDataManagementApi mdmApi;
+  protected MasterDataManagementApi mdmApi;
+  @Autowired
+  protected MimeTypeApi mimeTypeApi;
 
   /**
    * This option is set for every conversion api. If set true then the
