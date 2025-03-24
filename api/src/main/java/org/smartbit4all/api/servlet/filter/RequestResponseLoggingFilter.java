@@ -80,7 +80,6 @@ public class RequestResponseLoggingFilter implements Filter {
     // Log body
     logBuilder.append("Body:\n");
     String body = requestWrapper.getRequestBody();
-    logBuilder.append(body);
     if (isJsonRequest(httpRequest)) {
       logBody(body, logBuilder);
     } else {
