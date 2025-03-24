@@ -393,6 +393,10 @@ components:
         uri:
           type: string
           format: uri
+        code:
+          description: |
+            The unique identifier of the configuration to avoid registering the same logic again and again. 
+          type: string
         storage:
           description: |
             The name of the storage to archive. All the storages should be managed by individual configuration so
@@ -446,6 +450,10 @@ components:
         uri:
           type: string
           format: uri
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/StorageArchiveBatchEntry'
     StorageArchiveBatchEntry:
       type: object
       description: |

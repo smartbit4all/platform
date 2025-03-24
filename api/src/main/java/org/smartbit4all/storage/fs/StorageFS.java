@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
 import java.util.ArrayDeque;
@@ -31,6 +32,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.io.utility.FileIO.FolderInfo;
 import org.smartbit4all.core.io.utility.FileLockData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -57,6 +59,7 @@ import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.fasterxml.jackson.core.JsonParseException;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -155,6 +158,38 @@ public class StorageFS extends ObjectStorageImpl {
   private final File getDataFileByUri(URI objectUri, String extension) {
     return new File(rootFolder, objectUri.getScheme() + StringConstant.SLASH + objectUri.getPath()
         + extension);
+  }
+
+  /**
+   * The key function that constructs the {@link File} related to an URI based on the
+   * {@link #rootFolder} and the structure of the URI.
+   *
+   * @param file The file inside the root of the storage.
+   * @return The URI if the file denotes a valid object file.
+   */
+  public final URI getUriByFile(File file) {
+    if (file == null) {
+      return null;
+    }
+    String filePathString = file.getPath();
+    if (!filePathString.endsWith(SO_FILEEXTENSION)) {
+      return null;
+    }
+    Path rootPath = rootFolder.toPath();
+    Path filePath =
+        Paths.get(filePathString.substring(0, filePathString.length() - SO_FILEEXTENSION.length()));
+    if (!filePath.startsWith(rootPath) && filePath.getNameCount() > (rootPath.getNameCount() + 1)) {
+      return null;
+    }
+    Path schemName = filePath.getName(rootPath.getNameCount());
+    Path relativePath = filePath.subpath(rootPath.getNameCount() + 1, filePath.getNameCount());
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < relativePath.getNameCount(); i++) {
+      sb.append(StringConstant.SLASH);
+      sb.append(relativePath.getName(i));
+    }
+    String uriString = schemName.toString() + StringConstant.COLON + sb.toString();
+    return URI.create(uriString);
   }
 
   /**
@@ -710,6 +745,27 @@ public class StorageFS extends ObjectStorageImpl {
       return objects;
     }
 
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<URI> readOldests(Storage storage, String setName, String clazzName) {
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
+
+    String storageScheme = storage.getScheme();
+    String setPath = StringConstant.SLASH + objectDefinition.getAlias()
+        + (Strings.isBlank(setName) ? StringConstant.EMPTY
+            : StringConstant.SLASH
+                + setName);
+    File setFolder =
+        new File(rootFolder,
+            storageScheme + setPath);
+    Path setFolderPath = setFolder.toPath();
+    Optional<FolderInfo> oldestFolderWithOFile = FileIO.findOldestFolderWithOFile(setFolderPath);
+    if (oldestFolderWithOFile.isPresent()) {
+      List<File> objectFiles = oldestFolderWithOFile.get().getObjectFiles();
+      return objectFiles.stream().map(f -> getUriByFile(f)).collect(toList());
+    }
     return Collections.emptyList();
   }
 

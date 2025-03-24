@@ -3,9 +3,13 @@ package org.smartbit4all.domain.data.storage;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +39,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -444,6 +449,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
   @Override
+  public List<URI> readOldests(Storage storage, String setName, String clazzName) {
+    return Collections.emptyList();
+  }
+
+  @Override
   public Stream<List<URI>> streamOfTimeSeries(Storage storage, String setName,
       String clazzName,
       LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {
@@ -730,6 +740,30 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     return uriWithoutVersion != null ? URI
         .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber)
         : null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static final <T extends Temporal> T getTimeOf(ObjectDefinition<?> objectDefinition,
+      ObjectNode objectNode, Class<? extends Temporal> clazz) {
+    Object timeValueObject =
+        objectNode.getValue(objectDefinition.getTimeClazz(), objectDefinition.getTimePath());
+
+    T result = null;
+    if (clazz.isInstance(timeValueObject)) {
+      return (T) timeValueObject;
+    }
+    if (LocalDateTime.class.equals(clazz)) {
+      result = (T) ((OffsetDateTime) timeValueObject).toLocalDateTime();
+    } else if (OffsetDateTime.class.equals(clazz)) {
+      result = (T) ((LocalDateTime) timeValueObject).atOffset(ZoneOffset.UTC);
+    } else {
+      if (LocalDateTime.class.equals(clazz)) {
+        result = (T) LocalDateTime.now();
+      } else if (OffsetDateTime.class.equals(clazz)) {
+        result = (T) OffsetDateTime.now();
+      }
+    }
+    return result;
   }
 
   protected <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,

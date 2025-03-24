@@ -1,8 +1,8 @@
 package org.smartbit4all.api.config;
 
-import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.SecurityOption;
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
 
 public class PlatformSecurityOption implements SecurityOption {
 
@@ -104,6 +104,12 @@ public class PlatformSecurityOption implements SecurityOption {
       SecurityGroup.of(name("filterHierarchyEditor"))
           .title("Platform filter hierarchy descriptor editor")
           .description("Platform filter hierarchy descriptor editor")
+          .subgroup(admin)
+          .builtIn(true);
+  public static final SecurityGroup storageArchiveConfigEditor =
+      SecurityGroup.of(name("storageArchiveConfigEditor"))
+          .title("Platform storage archive configuration editor")
+          .description("Platform storage archive configuration editor")
           .subgroup(admin)
           .builtIn(true);
 
