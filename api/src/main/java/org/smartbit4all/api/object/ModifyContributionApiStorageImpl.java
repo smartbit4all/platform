@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -29,16 +30,10 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
     // If we have an explicit uri and the id path is set then we construct th uri for the storage.
     if (objectDefinition.getTimePath() != null) {
       // Read the string value from the map
-      LocalDateTime timeValue;
-      Object timeValueObject =
-          objectNode.getValue(objectDefinition.getTimeClazz(), objectDefinition.getTimePath());
-      if (timeValueObject instanceof LocalDateTime) {
-        timeValue = (LocalDateTime) timeValueObject;
-      } else if (timeValueObject instanceof OffsetDateTime) {
-        timeValue = ((OffsetDateTime) timeValueObject).toLocalDateTime();
-      } else {
-        timeValue = LocalDateTime.now();
-      }
+      LocalDateTime timeValue =
+          ObjectStorageImpl.getTimeOf(objectDefinition, objectNode, LocalDateTime.class);
+      storageObject.setCreatedAt(
+          ObjectStorageImpl.getTimeOf(objectDefinition, objectNode, OffsetDateTime.class));
       objectNode.setValue(
           storage.constructUri(objectDefinition, storageObject.getUuid(), null, timeValue),
           ObjectDefinition.URI_PROPERTY);

@@ -20,10 +20,13 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,6 +40,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
+import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
 /**
@@ -45,6 +49,10 @@ import com.google.common.primitives.Longs;
  * @author Peter Boros
  */
 public class FileIO {
+
+  private static final int LARGEST_DATE_TIME_SEGMENT = 5000;
+
+  public static final String SO_FILEEXTENSION = ".o";
 
   private FileIO() {
     // static utility
@@ -720,5 +728,99 @@ public class FileIO {
     return buffer.toByteArray();
   }
 
+  public static Optional<FolderInfo> findOldestFolderWithOFile(Path root) {
 
+    return findOldestFolderWithOFileRec(root.toFile(), new ArrayList<>());
+
+  }
+
+  private static Optional<FolderInfo> findOldestFolderWithOFileRec(File currentFile,
+      List<Integer> dateTimePath) {
+    int dateTimePosition = dateTimePath.size();
+    if (dateTimePosition > 6) {
+      // We are deeper then the expected date time precision.
+      return Optional.empty();
+    }
+    // Try to find an object file or identify the next folder to examine.
+    File[] files = currentFile.listFiles();
+    int smallestDirectoryNumber = Integer.MAX_VALUE;
+    File smallestNumericDirectory = null;
+    List<File> objectFiles = new ArrayList<>();
+    for (int i = 0; i < files.length; i++) {
+      if (files[i].isDirectory()) {
+        Integer directoryNumber = Ints.tryParse(files[i].getName());
+        if (directoryNumber != null && 0 <= directoryNumber
+            && directoryNumber <= LARGEST_DATE_TIME_SEGMENT) {
+          List<Integer> proposedDatetTimePath = new ArrayList<>();
+          proposedDatetTimePath.addAll(dateTimePath);
+          proposedDatetTimePath.add(directoryNumber);
+          if (smallestNumericDirectory == null
+              || directoryNumber < smallestDirectoryNumber
+                  && getDateTime(proposedDatetTimePath) != null) {
+            smallestDirectoryNumber = directoryNumber;
+            smallestNumericDirectory = files[i];
+          }
+        }
+      } else if (files[i].isFile() && files[i].getName().endsWith(SO_FILEEXTENSION)) {
+        objectFiles.add(files[i]);
+      }
+    }
+    if (!objectFiles.isEmpty()) {
+      if (dateTimePath.isEmpty()) {
+        throw new IllegalStateException(
+            "Unable to find the oldest objects. The object files appear in the root directory");
+      }
+      return Optional
+          .of(new FolderInfo(smallestNumericDirectory, getDateTime(dateTimePath), objectFiles));
+    }
+    if (smallestNumericDirectory != null) {
+      // We continue traversal with the smallest directory
+      dateTimePath.add(smallestDirectoryNumber);
+      return findOldestFolderWithOFileRec(smallestNumericDirectory, dateTimePath);
+    }
+    return Optional.empty();
+  }
+
+  private static LocalDateTime getDateTime(List<Integer> dateTimePath) {
+    int[] dc = new int[] {0, 1, 1, 0, 0, 0, 0};
+    int i = 0;
+    for (Integer integer : dateTimePath) {
+      dc[i++] = integer;
+    }
+    try {
+      return LocalDateTime.of(dc[0], dc[1], dc[2], dc[3], dc[4], dc[5], dc[6]);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public static class FolderInfo {
+    private final File path;
+    private final LocalDateTime dateTime;
+    private final List<File> objectFiles;
+
+    public FolderInfo(File path, LocalDateTime dateTime, List<File> objectFiles) {
+      this.path = path;
+      this.dateTime = dateTime;
+      this.objectFiles = objectFiles;
+    }
+
+    public File getPath() {
+      return path;
+    }
+
+    public LocalDateTime getDateTime() {
+      return dateTime;
+    }
+
+    public List<File> getObjectFiles() {
+      return objectFiles;
+    }
+
+    @Override
+    public String toString() {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+      return path + " (" + dateTime.format(formatter) + ")";
+    }
+  }
 }

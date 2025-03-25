@@ -466,7 +466,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectEntryDef.id(), nextId)
           .set(objectEntryDef.scheme(), uri.getScheme())
           .set(objectEntryDef.className(), object.definition().getAlias())
-          .set(objectEntryDef.createdAt(), now)
+          .set(objectEntryDef.createdAt(),
+              object.getCreatedAt() != null ? object.getCreatedAt() : now)
           .set(objectEntryDef.modifiedAt(), now)
           .set(objectEntryDef.uuid(),
               object.getUuid() == null ? null : object.getUuid().toString())
@@ -1396,6 +1397,61 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .where(
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
+          .listData();
+      // TODO check if transaction cache is available and uris present only there
+      List<URI> result = objectList.rows().stream()
+          .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
+          .collect(toList());
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={} size{}", setName, result.size());
+      }
+      return result;
+    } catch (Exception e) {
+      log.debug("Unable to read all the objects from the set.", e);
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
+  public List<URI> readOldests(Storage storage, String setName, String clazzName) {
+    // Check if the given directory exists or not.
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
+
+    String storageScheme = storage.getScheme();
+    if (clazzName != null) {
+      StorageSQLExtensionApi extensionApi = getExtensionApi(storageScheme, clazzName);
+      if (extensionApi != null) {
+        throw new UnsupportedOperationException(
+            "The readOldests is not implemented for " + extensionApi);
+      }
+    }
+
+    String setPath =
+        storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
+            + (Strings.isBlank(setName) ? StringConstant.EMPTY
+                : StringConstant.SLASH
+                    + setName);
+
+    try {
+      if (log.isTraceEnabled()) {
+        log.trace("readAll: setName={}", setName);
+      }
+      Optional<DataRow> oldestRow = Crud.read(objectEntryDef)
+          .select(objectEntryDef.createdAt().min())
+          .where(
+              objectEntryDef.scheme().eq(storageScheme)
+                  .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
+          .firstRow();
+      if (!oldestRow.isPresent()) {
+        return Collections.emptyList();
+      }
+      OffsetDateTime minCreatedAt = oldestRow.get().get(objectEntryDef.createdAt().min());
+      TableData<ObjectEntryDef> objectList = Crud.read(objectEntryDef)
+          .select(objectEntryDef.uri())
+          .where(
+              objectEntryDef.scheme().eq(storageScheme)
+                  .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT))
+                  .AND(objectEntryDef.createdAt().eq(minCreatedAt)))
           .listData();
       // TODO check if transaction cache is available and uris present only there
       List<URI> result = objectList.rows().stream()

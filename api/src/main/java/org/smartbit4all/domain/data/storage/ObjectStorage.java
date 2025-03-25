@@ -151,6 +151,18 @@ public interface ObjectStorage {
   List<URI> readAllUris(Storage storage, String setName, String clazzName);
 
   /**
+   * Identify the oldest URIs in the storage and set from the given type identified by the qualified
+   * class name.
+   * 
+   * @param storage The storage
+   * @param setName The name of the set.
+   * @param clazzName The qualified name of class.
+   * @return The list of URI located in the oldest storage segment. Can be used to figure out the
+   *         oldest time when objects are created in the storage.
+   */
+  List<URI> readOldests(Storage storage, String setName, String clazzName);
+
+  /**
    * The object storage is normally organized as a time series. This is the easiest way to construct
    * fragments of object storages. The time of the construction could be a time of original save but
    * also some business data also. This approach forms a time series of the objects managed by the
