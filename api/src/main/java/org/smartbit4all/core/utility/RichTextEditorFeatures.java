@@ -42,6 +42,11 @@ public final class RichTextEditorFeatures {
   }
 
 
+  private static final Map<String, Object> QUILL_EMPTY = map(StrObjPair.of(
+      "quillModules", map(StrObjPair.of(
+          "toolbar", map(StrObjPair.of(
+              "container", Collections.emptyList()))))));
+
   private static final Map<String, Object> QUILL_BASIC = map(StrObjPair.of(
       "quillModules", map(StrObjPair.of(
           "toolbar", map(StrObjPair.of(
@@ -105,6 +110,14 @@ public final class RichTextEditorFeatures {
 
   public enum Quill implements Properties {
 
+    EMPTY {
+
+      @Override
+      public Map<String, Object> asMap() {
+        return QUILL_EMPTY;
+      }
+
+    },
     BASIC {
 
       @Override
