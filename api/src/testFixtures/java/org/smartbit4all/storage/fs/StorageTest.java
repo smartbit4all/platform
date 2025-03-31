@@ -36,6 +36,7 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.core.object.ObjectApi;
@@ -45,6 +46,7 @@ import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageArchiveApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
@@ -117,6 +119,9 @@ public class StorageTest {
 
   @Autowired
   protected StorageTestApi testApi;
+
+  @Autowired
+  protected StorageArchiveApi archiveApi;
 
   protected URI collectionsTestUri;
 
@@ -741,6 +746,45 @@ public class StorageTest {
     List<URI> currentOldests = storage.readOldests(null, SampleTimeBasedData.class.getName());
     org.assertj.core.api.Assertions.assertThat(currentOldests)
         .containsExactlyInAnyOrderElementsOf(oldests);
+  }
+
+  @Test
+  void archiveOldestObjectsDays() throws Exception {
+    List<URI> oldests = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusDays(i);
+      for (int j = 0; j < 5; j++) {
+        URI uri = objectApi.saveAsNew(storageScheme,
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds));
+        if (i == 10) {
+          oldests.add(objectApi.getLatestUri(uri));
+        }
+      }
+    }
+    StorageArchiveProcessConfig config = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
+        .cronExpression("0 0 0 * * *");
+    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+
+    Storage storage = storageApi.get(storageScheme);
+    {
+      List<SampleTimeBasedData> all = storage.readAll(SampleTimeBasedData.class);
+      org.assertj.core.api.Assertions.assertThat(all)
+          .hasSize(50);
+    }
+
+    int executeArchive = archiveApi.executeArchive(configUri);
+    Assertions.assertEquals(50, executeArchive);
+
+    {
+      List<SampleTimeBasedData> all = storage.readAll(SampleTimeBasedData.class);
+      org.assertj.core.api.Assertions.assertThat(all)
+          .isEmpty();
+    }
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {

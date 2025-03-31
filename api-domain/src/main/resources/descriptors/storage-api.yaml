@@ -389,6 +389,7 @@ components:
         the archival (deletion) process itself. The archival batch defined by the first phase is saved for the configuration
         as scoped object. If a server fails to execute the archival batch then later on another server can retry to execute it.
         So the batch must be implemented in a way to be able to continue whereever it was interrupted.
+      required: [storage, typeClassNames, beforeDurationInMillis]
       properties:
         uri:
           type: string
@@ -441,6 +442,49 @@ components:
             archive during the batch. If it is set then it returns a StorageVersionRangeList object. If it is null then the given object is
             not included in the archival batch.
           type: InvocationRequest
+        cronExpression:
+          description: |
+            The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object.
+            The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going 
+            to be executed when the next run arrives.
+          type: string
+        execution:
+          description: |
+            Reference to the execution of the given configuration. It contains the current execution state and refer to the
+            object batch archived.
+          type: string
+          format: uri
+    StorageArchiveProcessExecution:
+      type: object
+      description: |
+        This object belongs to the archive configuration and represents the execution of the configuration. The execution instances are the 
+        versions of this object. The state machine is the following: READY - ready to execute by the time of the next execution. COLLECTING -
+        when the process is under execution and collecting the objects to archive. ARCHIVING - when the objects to archive are saved into a
+        StorageArchiveBatch and this batch is about to archive (delete all the relevant contents).
+      properties:
+        uri:
+          type: string
+          format: uri
+        config:
+          description: Reference to the StorageArchiveProcessConfig the execution belongs to.
+          type: string
+          format: uri
+        runtime:
+          description: Reference to the application runtime the given archival is executed by.
+          type: string
+          format: uuid
+        state:
+          description: |
+            The state of the archival execution.
+          enum: [READY, COLLECTING, ARCHIVING]
+        nextRunAt:
+          description: The computed time of the next run.
+          type: string
+          format: date-time
+        archiveBatch:
+          description: Reference to the last batch executed by the configuration.
+          type: string
+          format: uri
     StorageArchiveBatch:
       type: object
       description: |
@@ -450,6 +494,11 @@ components:
         uri:
           type: string
           format: uri
+        storage:
+          description: |
+            The name of the storage to archive. All the storages should be managed by individual configuration so
+            there can be only one storage denoted. If we archive type classes then this is mandatory to set. 
+          type: string
         entries:
           type: array
           items:

@@ -37,6 +37,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This object contains the objects and its versions to archive. The archival process itself can be configured on its own. The default  behavior is to delet the objects and versions to archive. ")
 @JsonPropertyOrder({
   StorageArchiveBatch.URI,
+  StorageArchiveBatch.STORAGE,
   StorageArchiveBatch.ENTRIES
 })
 @JsonTypeName("StorageArchiveBatch")
@@ -44,6 +45,9 @@ import javax.validation.Valid;
 public class StorageArchiveBatch {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String STORAGE = "storage";
+  private String storage;
 
   public static final String ENTRIES = "entries";
   private List<StorageArchiveBatchEntry> entries = null;
@@ -76,6 +80,33 @@ public class StorageArchiveBatch {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public StorageArchiveBatch storage(String storage) {
+    
+    this.storage = storage;
+    return this;
+  }
+
+   /**
+   * The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  
+   * @return storage
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  ")
+  @JsonProperty(STORAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getStorage() {
+    return storage;
+  }
+
+
+  @JsonProperty(STORAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStorage(String storage) {
+    this.storage = storage;
   }
 
 
@@ -125,12 +156,13 @@ public class StorageArchiveBatch {
     }
     StorageArchiveBatch storageArchiveBatch = (StorageArchiveBatch) o;
     return Objects.equals(this.uri, storageArchiveBatch.uri) &&
+        Objects.equals(this.storage, storageArchiveBatch.storage) &&
         Objects.equals(this.entries, storageArchiveBatch.entries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, entries);
+    return Objects.hash(uri, storage, entries);
   }
 
   @Override
@@ -138,6 +170,7 @@ public class StorageArchiveBatch {
     StringBuilder sb = new StringBuilder();
     sb.append("class StorageArchiveBatch {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    storage: ").append(toIndentedString(storage)).append("\n");
     sb.append("    entries: ").append(toIndentedString(entries)).append("\n");
     sb.append("}");
     return sb.toString();

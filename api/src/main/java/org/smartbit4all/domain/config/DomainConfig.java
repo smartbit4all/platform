@@ -24,10 +24,16 @@ import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.LangString;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.storage.bean.StorageArchiveBatch;
 import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessExecution;
 import org.smartbit4all.core.config.CoreConfig;
+import org.smartbit4all.core.object.ObjectReferenceConfigs;
+import org.smartbit4all.domain.data.storage.StorageArchiveApi;
 import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +65,7 @@ public class DomainConfig {
         new MDMDefinitionOption(mdmDefinition);
     {
       MDMEntryDescriptor entry = new MDMEntryDescriptor()
-          .schema(MasterDataManagementApi.SCHEMA)
+          .schema(StorageArchiveApi.SCHEMA_ARCHIVAL)
           .publishedListName(ENTRY_ARCHIVE_CONFIGS)
           .name(ENTRY_ARCHIVE_CONFIGS)
           .adminGroupName(PlatformSecurityOption.storageArchiveConfigEditor.getName())
@@ -87,4 +93,20 @@ public class DomainConfig {
     }
     return result;
   }
+
+  @Bean
+  public ObjectReferenceConfigs objectReferenceConfigsPlatformDomain() {
+    return new ObjectReferenceConfigs()
+        .ref(StorageArchiveProcessExecution.class,
+            StorageArchiveProcessExecution.CONFIG,
+            StorageArchiveProcessConfig.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE)
+        .ref(StorageArchiveProcessExecution.class,
+            StorageArchiveProcessExecution.ARCHIVE_BATCH,
+            StorageArchiveBatch.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE);
+  }
+
 }

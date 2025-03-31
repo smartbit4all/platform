@@ -44,7 +44,9 @@ import javax.validation.Valid;
   StorageArchiveProcessConfig.COLLECTIONS,
   StorageArchiveProcessConfig.ARCHIVE_VERSIONS_ONLY,
   StorageArchiveProcessConfig.OBJECT_PREDICATE,
-  StorageArchiveProcessConfig.VERSION_SELECTOR
+  StorageArchiveProcessConfig.VERSION_SELECTOR,
+  StorageArchiveProcessConfig.CRON_EXPRESSION,
+  StorageArchiveProcessConfig.EXECUTION
 })
 @JsonTypeName("StorageArchiveProcessConfig")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -59,7 +61,7 @@ public class StorageArchiveProcessConfig {
   private String storage;
 
   public static final String TYPE_CLASS_NAMES = "typeClassNames";
-  private List<String> typeClassNames = null;
+  private List<String> typeClassNames = new ArrayList<>();
 
   public static final String BEFORE_DURATION_IN_MILLIS = "beforeDurationInMillis";
   private Long beforeDurationInMillis;
@@ -75,6 +77,12 @@ public class StorageArchiveProcessConfig {
 
   public static final String VERSION_SELECTOR = "versionSelector";
   private InvocationRequest versionSelector = null;
+
+  public static final String CRON_EXPRESSION = "cronExpression";
+  private String cronExpression;
+
+  public static final String EXECUTION = "execution";
+  private URI execution;
 
   public StorageArchiveProcessConfig() { 
   }
@@ -144,10 +152,11 @@ public class StorageArchiveProcessConfig {
    * The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  
    * @return storage
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  ")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  ")
   @JsonProperty(STORAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getStorage() {
     return storage;
@@ -155,7 +164,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(STORAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStorage(String storage) {
     this.storage = storage;
   }
@@ -168,9 +177,6 @@ public class StorageArchiveProcessConfig {
   }
 
   public StorageArchiveProcessConfig addTypeClassNamesItem(String typeClassNamesItem) {
-    if (this.typeClassNames == null) {
-      this.typeClassNames = new ArrayList<>();
-    }
     this.typeClassNames.add(typeClassNamesItem);
     return this;
   }
@@ -179,10 +185,11 @@ public class StorageArchiveProcessConfig {
    * A list of object types can be set. These types are archived in this process. 
    * @return typeClassNames
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "A list of object types can be set. These types are archived in this process. ")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "A list of object types can be set. These types are archived in this process. ")
   @JsonProperty(TYPE_CLASS_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getTypeClassNames() {
     return typeClassNames;
@@ -190,7 +197,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(TYPE_CLASS_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTypeClassNames(List<String> typeClassNames) {
     this.typeClassNames = typeClassNames;
   }
@@ -206,10 +213,11 @@ public class StorageArchiveProcessConfig {
    * We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). 
    * @return beforeDurationInMillis
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). ")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). ")
   @JsonProperty(BEFORE_DURATION_IN_MILLIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Long getBeforeDurationInMillis() {
     return beforeDurationInMillis;
@@ -217,7 +225,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(BEFORE_DURATION_IN_MILLIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBeforeDurationInMillis(Long beforeDurationInMillis) {
     this.beforeDurationInMillis = beforeDurationInMillis;
   }
@@ -342,6 +350,61 @@ public class StorageArchiveProcessConfig {
   }
 
 
+  public StorageArchiveProcessConfig cronExpression(String cronExpression) {
+    
+    this.cronExpression = cronExpression;
+    return this;
+  }
+
+   /**
+   * The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object. The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going  to be executed when the next run arrives. 
+   * @return cronExpression
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object. The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going  to be executed when the next run arrives. ")
+  @JsonProperty(CRON_EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCronExpression() {
+    return cronExpression;
+  }
+
+
+  @JsonProperty(CRON_EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCronExpression(String cronExpression) {
+    this.cronExpression = cronExpression;
+  }
+
+
+  public StorageArchiveProcessConfig execution(URI execution) {
+    
+    this.execution = execution;
+    return this;
+  }
+
+   /**
+   * Reference to the execution of the given configuration. It contains the current execution state and refer to the object batch archived. 
+   * @return execution
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Reference to the execution of the given configuration. It contains the current execution state and refer to the object batch archived. ")
+  @JsonProperty(EXECUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getExecution() {
+    return execution;
+  }
+
+
+  @JsonProperty(EXECUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExecution(URI execution) {
+    this.execution = execution;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -359,12 +422,14 @@ public class StorageArchiveProcessConfig {
         Objects.equals(this.collections, storageArchiveProcessConfig.collections) &&
         Objects.equals(this.archiveVersionsOnly, storageArchiveProcessConfig.archiveVersionsOnly) &&
         Objects.equals(this.objectPredicate, storageArchiveProcessConfig.objectPredicate) &&
-        Objects.equals(this.versionSelector, storageArchiveProcessConfig.versionSelector);
+        Objects.equals(this.versionSelector, storageArchiveProcessConfig.versionSelector) &&
+        Objects.equals(this.cronExpression, storageArchiveProcessConfig.cronExpression) &&
+        Objects.equals(this.execution, storageArchiveProcessConfig.execution);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector);
+    return Objects.hash(uri, code, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector, cronExpression, execution);
   }
 
   @Override
@@ -380,6 +445,8 @@ public class StorageArchiveProcessConfig {
     sb.append("    archiveVersionsOnly: ").append(toIndentedString(archiveVersionsOnly)).append("\n");
     sb.append("    objectPredicate: ").append(toIndentedString(objectPredicate)).append("\n");
     sb.append("    versionSelector: ").append(toIndentedString(versionSelector)).append("\n");
+    sb.append("    cronExpression: ").append(toIndentedString(cronExpression)).append("\n");
+    sb.append("    execution: ").append(toIndentedString(execution)).append("\n");
     sb.append("}");
     return sb.toString();
   }

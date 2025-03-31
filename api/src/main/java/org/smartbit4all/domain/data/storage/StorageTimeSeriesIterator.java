@@ -48,7 +48,7 @@ final class StorageTimeSeriesIterator implements Supplier<List<URI>> {
     }
     String setToRead =
         (setName == null ? StringConstant.EMPTY : (setName + StringConstant.SLASH + setName))
-            + storage.constructTimePath(currentFragment, gradient);
+            + storage.constructTimePath(currentFragment, gradient) + StringConstant.SLASH;
     List<URI> allUris = storage.readAllUris(setToRead, clazzName);
     LocalDateTime nextFragment = currentFragment.plus(1, gradient);
     if ((to != null && (nextFragment.isEqual(to) || nextFragment.isAfter(to)))

@@ -384,7 +384,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
-            .set(objectVersionDef.createdAt(), now)
+            .set(objectVersionDef.createdAt(), objectRow.get(objectVersionDef.createdAt()))
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
@@ -423,7 +423,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
-            .set(objectVersionDef.createdAt(), now)
+            .set(objectVersionDef.createdAt(), objectRow.get(objectVersionDef.createdAt()))
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
@@ -480,7 +480,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.versionId(), versionId)
           .set(objectVersionDef.entryId(), nextId)
           .set(objectVersionDef.version(), newVersion)
-          .set(objectVersionDef.createdAt(), now)
+          .set(objectVersionDef.createdAt(),
+              object.getCreatedAt() != null ? object.getCreatedAt() : now)
           .set(objectVersionDef.objectContent(), object.serializeMapAware())
           .set(objectVersionDef.refContent(), relationBinaryData)
           .set(objectVersionDef.aspectContent(), object.serializeAspects())
@@ -628,7 +629,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     // object.
     // TODO Inject transaction!
     newVersion.transactionId(object.getTransactionId().toString())
-        .createdAt(OffsetDateTime.now());
+        .createdAt(object.getCreatedAt() == null ? OffsetDateTime.now() : object.getCreatedAt());
     newVersion.setCreatedBy(versionCreatedBy.get());
     Map<String, ObjectAspect> aspects = object.getAspects();
     if (aspects != null) {
@@ -1436,33 +1437,38 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={}", setName);
       }
-      Optional<DataRow> oldestRow = Crud.read(objectEntryDef)
-          .select(objectEntryDef.createdAt().min())
+      TableData<ObjectEntryDef> objectList = Crud.read(objectEntryDef)
+          .select(objectEntryDef.uri(), objectEntryDef.createdAt())
           .where(
               objectEntryDef.scheme().eq(storageScheme)
                   .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT)))
-          .firstRow();
-      if (!oldestRow.isPresent()) {
-        return Collections.emptyList();
-      }
-      OffsetDateTime minCreatedAt = oldestRow.get().get(objectEntryDef.createdAt().min());
-      TableData<ObjectEntryDef> objectList = Crud.read(objectEntryDef)
-          .select(objectEntryDef.uri())
-          .where(
-              objectEntryDef.scheme().eq(storageScheme)
-                  .AND(objectEntryDef.uri().like(setPath + StringConstant.PERCENT))
-                  .AND(objectEntryDef.createdAt().eq(minCreatedAt)))
+          .order(objectEntryDef.createdAt())
+          .limit(500)
           .listData();
       // TODO check if transaction cache is available and uris present only there
-      List<URI> result = objectList.rows().stream()
-          .map(r -> UriUtils.asUri(r.get(objectEntryDef.uri())))
-          .collect(toList());
-      if (log.isTraceEnabled()) {
-        log.trace("readAll: setName={} size{}", setName, result.size());
+      if (objectList.isEmpty()) {
+        return Collections.emptyList();
+      }
+      OffsetDateTime firstCreatedAt = null;
+      List<URI> result = new ArrayList<>();
+      for (DataRow row : objectList.rows()) {
+        if (firstCreatedAt == null) {
+          firstCreatedAt = row.get(objectEntryDef.createdAt());
+        }
+        OffsetDateTime createdAt = row.get(objectEntryDef.createdAt());
+        if (firstCreatedAt.getYear() == createdAt.getYear()
+            && firstCreatedAt.getMonth() == createdAt.getMonth()
+            && firstCreatedAt.getDayOfMonth() == createdAt.getDayOfMonth()
+            && firstCreatedAt.getHour() == createdAt.getHour()
+            && firstCreatedAt.getMinute() == createdAt.getMinute()
+            && firstCreatedAt.getSecond() == createdAt.getSecond()) {
+          result.add(URI.create(row.get(objectEntryDef.uri())));
+        } else {
+          break;
+        }
       }
       return result;
     } catch (Exception e) {
-      log.debug("Unable to read all the objects from the set.", e);
       return Collections.emptyList();
     }
   }

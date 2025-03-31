@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -279,6 +280,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       log.error("Wait for maintain interrupted.", e);
     }
     return runtimes.values().stream().collect(Collectors.toList());
+  }
+
+  @Override
+  public boolean isActive(UUID runtime) {
+    return getActiveRuntimes().stream().anyMatch(r -> Objects.equals(r.getUuid(), runtime));
   }
 
   @Override
