@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: value api
   description: value api
-  termsOfService: ''
+  termsOfService: ""
   contact:
     email: info@it4all.hu
   version: 1.0.0
@@ -14,23 +14,23 @@ paths:
       tags:
         - Value
       summary: Returns the possible value set for the given URI
-      operationId: 'possibleValues'
+      operationId: "possibleValues"
       parameters:
         - in: path
           name: objectUri
           schema:
             type: string
           required: true
-          description: 'The URI of the field the possible values are requested for'
+          description: "The URI of the field the possible values are requested for"
       responses:
-        '200':
-          description: 'The requested possible values'
+        "200":
+          description: "The requested possible values"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Value'
+                  $ref: "#/components/schemas/Value"
 components:
   schemas:
     Value:
@@ -40,16 +40,16 @@ components:
         objectUri:
           type: string
           format: uri
-          description: 'The uri the object of the value can be accessed.'
+          description: "The uri the object of the value can be accessed."
         code:
           type: string
           description: The logical code of the selectable value.
         displayValue:
           type: string
-          description: 'The string value that can be shown on ui. It might be a label code or the exact label.'
+          description: "The string value that can be shown on ui. It might be a label code or the exact label."
         iconCode:
           type: string
-          description: 'The code of icon that can be associatied with the value. It may be a uri.'
+          description: "The code of icon that can be associatied with the value. It may be a uri."
     ValueSetData:
       type: object
       required: [qualifiedName, properties, values]
@@ -96,13 +96,13 @@ components:
           type: string
           format: uri
         data:
-          $ref: '#/components/schemas/ValueSetDefinitionData'
+          $ref: "#/components/schemas/ValueSetDefinitionData"
     ValueSetDefinitionData:
       type: object
       required: [kind, qualifiedName]
       properties:
         kind:
-          $ref: '#/components/schemas/ValueSetDefinitionKind'
+          $ref: "#/components/schemas/ValueSetDefinitionKind"
         qualifiedName:
           type: string
           description: |
@@ -141,22 +141,33 @@ components:
           items:
             type: object
         expression:
-          $ref: '#/components/schemas/ValueSetExpression'
+          $ref: "#/components/schemas/ValueSetExpression"
     ValueSetDefinitionKind:
-      enum: [ENUM, INLINE, LIST, MAP, ALLOF, SETOF, SEARCHINDEXBASED, COMPOSITE, UNDEFINED]
+      enum:
+        [
+          ENUM,
+          INLINE,
+          LIST,
+          MAP,
+          ALLOF,
+          SETOF,
+          SEARCHINDEXBASED,
+          COMPOSITE,
+          UNDEFINED,
+        ]
     ValueSetExpression:
       type: object
       required: [operation, ignoreVersion, operands]
       properties:
         operation:
-          $ref: '#/components/schemas/ValueSetOperation'
+          $ref: "#/components/schemas/ValueSetOperation"
         ignoreVersion:
           type: boolean
           default: false
         operands:
           type: array
           items:
-            $ref: '#/components/schemas/ValueSetOperand'
+            $ref: "#/components/schemas/ValueSetOperand"
     ValueSetOperand:
       type: object
       required: [namespace, name]
@@ -170,9 +181,9 @@ components:
           description: |
             The name of the referred value set.
         data:
-          $ref: '#/components/schemas/ValueSetDefinitionData'
+          $ref: "#/components/schemas/ValueSetDefinitionData"
         expression:
-          $ref: '#/components/schemas/ValueSetExpression'
+          $ref: "#/components/schemas/ValueSetExpression"
     ValueSetOperation:
       enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]
     GenericValue:
@@ -221,6 +232,13 @@ components:
           type: string
         value:
           type: object
+    ListEntry:
+      type: object
+      properties:
+        index:
+          type: integer
+        value:
+          type: object
     ValueTransformationConfig:
       description: |
         This object is a configuration to define the transformation from an input value set to an output
@@ -235,7 +253,7 @@ components:
           type: string
           format: uri
         data:
-          $ref: '#/components/schemas/ValueTransformationConfigData'
+          $ref: "#/components/schemas/ValueTransformationConfigData"
     ValueTransformationConfigData:
       description: |
         This object is a configuration to define the transformation from an input value set to an output
@@ -250,11 +268,11 @@ components:
           description: The unique name of the transformation configuration. It matters only if it is managed by MDM.
           type: string
         kind:
-          $ref: '#/components/schemas/ValueTransformationKind'
+          $ref: "#/components/schemas/ValueTransformationKind"
         mappings:
           type: array
           items:
-            $ref: '#/components/schemas/ValueTransformationMappingItem'
+            $ref: "#/components/schemas/ValueTransformationMappingItem"
         mdmDefinition:
           description: If the kind is a resolution by MDM entry then this is the name of MDM definition.
           type: string
