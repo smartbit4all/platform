@@ -880,11 +880,24 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     }
     b.append(SQLConstant.EXISTS);
     b.append(StringConstant.LEFT_PARENTHESIS);
+
+    String valString = "val";
+    Operand<?> operand = expression.getOperand();
+    if (operand instanceof OperandProperty) {
+      OperandProperty<?> propertyOperand = ((OperandProperty<?>) operand);
+      PropertyFunction propertyFunction = propertyOperand.property().getPropertyFunction();
+      if (propertyFunction != null) {
+        valString = getFunctionAdjustedColumnName(propertyOperand, valString, propertyFunction);
+      }
+    }
+
     b.append("select 1 from ");
     b.append(expression.getDataSetEntry().getTemporaryTableName());
-    b.append(" tmp where val = ");
+    b.append(" tmp where ");
+    b.append(valString);
+    b.append(" = ");
 
-    append(result, expression.getOperand());
+    append(result, operand);
 
     b.append(" and id = ");
     result.add(appendLiteral(new OperandLiteral(expression.getDataSetEntry().getId(),
