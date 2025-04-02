@@ -62,4 +62,7 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
   BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
       String logicalSchema, Map<String, Object> parameters);
 
+  BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
+      String logicalSchema, Map<String, Object> parameters, String apiName);
+
 }
