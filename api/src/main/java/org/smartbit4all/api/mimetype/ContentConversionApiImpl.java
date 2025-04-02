@@ -120,9 +120,22 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
         .orElse(null);
   }
 
+  private final String getConverterApiName(String fromMimeType,
+      String toMimeType) {
+    ContentConversionContributionApi converterApi = getConverterApi(fromMimeType, toMimeType);
+    return converterApi != null ? converterApi.getApiName() : null;
+  }
+
   @Override
   public BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
       String logicalSchema, Map<String, Object> parameters) {
+    return convert(binaryContentData, toMimeType, logicalSchema, parameters,
+        getConverterApiName(binaryContentData.getMimeType(), toMimeType));
+  }
+
+  @Override
+  public BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
+      String logicalSchema, Map<String, Object> parameters, String apiName) {
     Objects.requireNonNull(binaryContentData);
     Objects.requireNonNull(toMimeType);
     Objects.requireNonNull(logicalSchema);
@@ -132,7 +145,7 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
           "The conversion of " + binaryContentData + " to " + toMimeType + " is not available.");
     }
     ContentConversionContributionApi api =
-        getConverterApi(binaryContentData.getMimeType(), toMimeType);
+        getContributionApi(apiName);
     if (api != null) {
       URI dataUri = api.convert(binaryContentData,
           toMimeType, logicalSchema, parameters);

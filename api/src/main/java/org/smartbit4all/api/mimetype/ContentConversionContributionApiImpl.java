@@ -62,6 +62,15 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
   protected abstract BinaryData convertInternal(BinaryContentData content, String toMimeType,
       Map<String, Object> parameters);
 
+  protected void mergeParams(Map<String, Object> params) {
+    ServiceConnection serviceConnection = getServiceConnection();
+    if (serviceConnection == null) {
+      return;
+    }
+    serviceConnection.getParameters().entrySet()
+        .forEach(e -> params.putIfAbsent(e.getKey(), e.getValue()));
+  }
+
   @Override
   public URI convert(BinaryContentData content, String toMimeType,
       String logicalSchema, Map<String, Object> parameters) {
