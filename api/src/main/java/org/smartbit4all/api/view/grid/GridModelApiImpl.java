@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -65,6 +64,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import com.google.common.base.Strings;
+import jakarta.validation.constraints.NotNull;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -1136,14 +1136,14 @@ public class GridModelApiImpl implements GridModelApi {
         .toolbar(descriptor.getButtonToolbar() != null
             ? descriptor.getButtonToolbar()
             : gridId + UiActions.TOOLBAR_SUFFIX)
-        .descriptor(new UiActionDescriptor()
-            .type(UiActionButtonType.FLAT)
-            .icon(descriptor.getButtonIcon() != null
-                ? descriptor.getButtonIcon()
-                : "file-export")
-            .iconPosition(IconPosition.PRE)
-            .color(descriptor.getButtonColor())
-            .title(localeSettingApi.get("grid.export.button.title")));
+        .descriptor(descriptor.getUiActionDescriptor() != null
+            ? descriptor.getUiActionDescriptor()
+            : new UiActionDescriptor()
+                .type(UiActionButtonType.FLAT)
+                .icon("file-export")
+                .iconPosition(IconPosition.PRE)
+                .color(UiActions.Color.ACCENT)
+                .title(localeSettingApi.get("grid.export.button.title")));
 
     UiActions.add(view, button);
 

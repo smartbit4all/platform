@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -36,9 +37,8 @@ import jakarta.validation.Valid;
   GridExportDescriptor.IS_EXPORTABLE,
   GridExportDescriptor.EXPORT_MIME_TYPE,
   GridExportDescriptor.COLUMNS_TO_EXPORT,
-  GridExportDescriptor.BUTTON_COLOR,
   GridExportDescriptor.BUTTON_TOOLBAR,
-  GridExportDescriptor.BUTTON_ICON
+  GridExportDescriptor.UI_ACTION_DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridExportDescriptor {
@@ -51,14 +51,11 @@ public class GridExportDescriptor {
   public static final String COLUMNS_TO_EXPORT = "columnsToExport";
   private List<String> columnsToExport = new ArrayList<>();
 
-  public static final String BUTTON_COLOR = "buttonColor";
-  private String buttonColor = "primary";
-
   public static final String BUTTON_TOOLBAR = "buttonToolbar";
   private String buttonToolbar;
 
-  public static final String BUTTON_ICON = "buttonIcon";
-  private String buttonIcon;
+  public static final String UI_ACTION_DESCRIPTOR = "uiActionDescriptor";
+  private UiActionDescriptor uiActionDescriptor = null;
 
   public GridExportDescriptor() {
   }
@@ -153,33 +150,6 @@ public class GridExportDescriptor {
     this.columnsToExport = columnsToExport;
   }
 
-  public GridExportDescriptor buttonColor(String buttonColor) {
-    
-    this.buttonColor = buttonColor;
-    return this;
-  }
-
-  /**
-   * Get buttonColor
-   * @return buttonColor
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(BUTTON_COLOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getButtonColor() {
-    return buttonColor;
-  }
-
-
-  @JsonProperty(BUTTON_COLOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setButtonColor(String buttonColor) {
-    this.buttonColor = buttonColor;
-  }
-
   public GridExportDescriptor buttonToolbar(String buttonToolbar) {
     
     this.buttonToolbar = buttonToolbar;
@@ -207,31 +177,32 @@ public class GridExportDescriptor {
     this.buttonToolbar = buttonToolbar;
   }
 
-  public GridExportDescriptor buttonIcon(String buttonIcon) {
+  public GridExportDescriptor uiActionDescriptor(UiActionDescriptor uiActionDescriptor) {
     
-    this.buttonIcon = buttonIcon;
+    this.uiActionDescriptor = uiActionDescriptor;
     return this;
   }
 
   /**
-   * Get buttonIcon
-   * @return buttonIcon
+   * Get uiActionDescriptor
+   * @return uiActionDescriptor
    */
   @jakarta.annotation.Nullable
+  @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(BUTTON_ICON)
+  @JsonProperty(UI_ACTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getButtonIcon() {
-    return buttonIcon;
+  public UiActionDescriptor getUiActionDescriptor() {
+    return uiActionDescriptor;
   }
 
 
-  @JsonProperty(BUTTON_ICON)
+  @JsonProperty(UI_ACTION_DESCRIPTOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setButtonIcon(String buttonIcon) {
-    this.buttonIcon = buttonIcon;
+  public void setUiActionDescriptor(UiActionDescriptor uiActionDescriptor) {
+    this.uiActionDescriptor = uiActionDescriptor;
   }
 
   @Override
@@ -246,14 +217,13 @@ public class GridExportDescriptor {
     return Objects.equals(this.isExportable, gridExportDescriptor.isExportable) &&
         Objects.equals(this.exportMimeType, gridExportDescriptor.exportMimeType) &&
         Objects.equals(this.columnsToExport, gridExportDescriptor.columnsToExport) &&
-        Objects.equals(this.buttonColor, gridExportDescriptor.buttonColor) &&
         Objects.equals(this.buttonToolbar, gridExportDescriptor.buttonToolbar) &&
-        Objects.equals(this.buttonIcon, gridExportDescriptor.buttonIcon);
+        Objects.equals(this.uiActionDescriptor, gridExportDescriptor.uiActionDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isExportable, exportMimeType, columnsToExport, buttonColor, buttonToolbar, buttonIcon);
+    return Objects.hash(isExportable, exportMimeType, columnsToExport, buttonToolbar, uiActionDescriptor);
   }
 
   @Override
@@ -263,9 +233,8 @@ public class GridExportDescriptor {
     sb.append("    isExportable: ").append(toIndentedString(isExportable)).append("\n");
     sb.append("    exportMimeType: ").append(toIndentedString(exportMimeType)).append("\n");
     sb.append("    columnsToExport: ").append(toIndentedString(columnsToExport)).append("\n");
-    sb.append("    buttonColor: ").append(toIndentedString(buttonColor)).append("\n");
     sb.append("    buttonToolbar: ").append(toIndentedString(buttonToolbar)).append("\n");
-    sb.append("    buttonIcon: ").append(toIndentedString(buttonIcon)).append("\n");
+    sb.append("    uiActionDescriptor: ").append(toIndentedString(uiActionDescriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }
