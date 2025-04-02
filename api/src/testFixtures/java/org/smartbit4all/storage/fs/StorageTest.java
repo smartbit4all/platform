@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.object.bean.ObjectReferenceById;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
+import org.smartbit4all.api.sample.bean.SampleTimeBasedData;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
@@ -38,6 +40,7 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -696,6 +699,50 @@ public class StorageTest {
 
   }
 
+  @Test
+  void findOldestObjectsMinutes() throws Exception {
+    List<URI> oldests = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusMinutes(i);
+      for (int j = 0; j < 5; j++) {
+        URI uri = objectApi.saveAsNew(StorageTestConfig.TESTSCHEME + "-findMinutes",
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds));
+        if (i == 10) {
+          oldests.add(objectApi.getLatestUri(uri));
+        }
+      }
+    }
+
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME + "-findMinutes");
+    List<URI> currentOldests = storage.readOldests(null, SampleTimeBasedData.class.getName());
+    org.assertj.core.api.Assertions.assertThat(currentOldests)
+        .containsExactlyInAnyOrderElementsOf(oldests);
+  }
+
+  @Test
+  void findOldestObjectsDays() throws Exception {
+    List<URI> oldests = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusDays(i);
+      for (int j = 0; j < 5; j++) {
+        URI uri = objectApi.saveAsNew(StorageTestConfig.TESTSCHEME + "-findDays",
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds));
+        if (i == 10) {
+          oldests.add(objectApi.getLatestUri(uri));
+        }
+      }
+    }
+
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME + "-findDays");
+    List<URI> currentOldests = storage.readOldests(null, SampleTimeBasedData.class.getName());
+    org.assertj.core.api.Assertions.assertThat(currentOldests)
+        .containsExactlyInAnyOrderElementsOf(oldests);
+  }
+
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {
     ObjectMap attachedMap = storage.getAttachedMap(uri, MY_MAP);
 
@@ -731,3 +778,4 @@ public class StorageTest {
   }
 
 }
+

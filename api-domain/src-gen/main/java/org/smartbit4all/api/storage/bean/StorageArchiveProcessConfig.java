@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 @Schema(description = "This object is configuring the archival process parameters for one or more storage and object type. This configuration has its master data management entry. If the entry is set and the archival mechanism is working (the necessary job is scheduled) then the archival process is arised periodically. These configurations are allocated to servers by locking it when a server is working on am archival config. The archival is a two phase operation. In the first round it gathers a set of object uri or uri and version to archive. The second round is the archival (deletion) process itself. The archival batch defined by the first phase is saved for the configuration as scoped object. If a server fails to execute the archival batch then later on another server can retry to execute it. So the batch must be implemented in a way to be able to continue whereever it was interrupted. ")
 @JsonPropertyOrder({
   StorageArchiveProcessConfig.URI,
+  StorageArchiveProcessConfig.CODE,
   StorageArchiveProcessConfig.STORAGE,
   StorageArchiveProcessConfig.TYPE_CLASS_NAMES,
   StorageArchiveProcessConfig.BEFORE_DURATION_IN_MILLIS,
@@ -49,6 +50,9 @@ import jakarta.validation.Valid;
 public class StorageArchiveProcessConfig {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String CODE = "code";
+  private String code;
 
   public static final String STORAGE = "storage";
   private String storage;
@@ -100,6 +104,33 @@ public class StorageArchiveProcessConfig {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public StorageArchiveProcessConfig code(String code) {
+    
+    this.code = code;
+    return this;
+  }
+
+  /**
+   * The unique identifier of the configuration to avoid registering the same logic again and again.  
+   * @return code
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The unique identifier of the configuration to avoid registering the same logic again and again.  ")
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCode() {
+    return code;
+  }
+
+
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public StorageArchiveProcessConfig storage(String storage) {
@@ -320,6 +351,7 @@ public class StorageArchiveProcessConfig {
     }
     StorageArchiveProcessConfig storageArchiveProcessConfig = (StorageArchiveProcessConfig) o;
     return Objects.equals(this.uri, storageArchiveProcessConfig.uri) &&
+        Objects.equals(this.code, storageArchiveProcessConfig.code) &&
         Objects.equals(this.storage, storageArchiveProcessConfig.storage) &&
         Objects.equals(this.typeClassNames, storageArchiveProcessConfig.typeClassNames) &&
         Objects.equals(this.beforeDurationInMillis, storageArchiveProcessConfig.beforeDurationInMillis) &&
@@ -331,7 +363,7 @@ public class StorageArchiveProcessConfig {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector);
+    return Objects.hash(uri, code, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector);
   }
 
   @Override
@@ -339,6 +371,7 @@ public class StorageArchiveProcessConfig {
     StringBuilder sb = new StringBuilder();
     sb.append("class StorageArchiveProcessConfig {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    storage: ").append(toIndentedString(storage)).append("\n");
     sb.append("    typeClassNames: ").append(toIndentedString(typeClassNames)).append("\n");
     sb.append("    beforeDurationInMillis: ").append(toIndentedString(beforeDurationInMillis)).append("\n");

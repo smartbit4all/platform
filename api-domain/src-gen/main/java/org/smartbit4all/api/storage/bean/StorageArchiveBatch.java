@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.smartbit4all.api.storage.bean.StorageArchiveBatchEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -32,12 +36,16 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "This object contains the objects and its versions to archive. The archival process itself can be configured on its own. The default  behavior is to delet the objects and versions to archive. ")
 @JsonPropertyOrder({
-  StorageArchiveBatch.URI
+  StorageArchiveBatch.URI,
+  StorageArchiveBatch.ENTRIES
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageArchiveBatch {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String ENTRIES = "entries";
+  private List<@Valid StorageArchiveBatchEntry> entries = new ArrayList<>();
 
   public StorageArchiveBatch() {
   }
@@ -70,6 +78,42 @@ public class StorageArchiveBatch {
     this.uri = uri;
   }
 
+  public StorageArchiveBatch entries(List<@Valid StorageArchiveBatchEntry> entries) {
+    
+    this.entries = entries;
+    return this;
+  }
+
+  public StorageArchiveBatch addEntriesItem(StorageArchiveBatchEntry entriesItem) {
+    if (this.entries == null) {
+      this.entries = new ArrayList<>();
+    }
+    this.entries.add(entriesItem);
+    return this;
+  }
+
+  /**
+   * Get entries
+   * @return entries
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid StorageArchiveBatchEntry> getEntries() {
+    return entries;
+  }
+
+
+  @JsonProperty(ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEntries(List<@Valid StorageArchiveBatchEntry> entries) {
+    this.entries = entries;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -79,12 +123,13 @@ public class StorageArchiveBatch {
       return false;
     }
     StorageArchiveBatch storageArchiveBatch = (StorageArchiveBatch) o;
-    return Objects.equals(this.uri, storageArchiveBatch.uri);
+    return Objects.equals(this.uri, storageArchiveBatch.uri) &&
+        Objects.equals(this.entries, storageArchiveBatch.entries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri);
+    return Objects.hash(uri, entries);
   }
 
   @Override
@@ -92,6 +137,7 @@ public class StorageArchiveBatch {
     StringBuilder sb = new StringBuilder();
     sb.append("class StorageArchiveBatch {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    entries: ").append(toIndentedString(entries)).append("\n");
     sb.append("}");
     return sb.toString();
   }

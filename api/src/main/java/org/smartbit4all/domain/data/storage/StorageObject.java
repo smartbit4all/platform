@@ -2,6 +2,7 @@ package org.smartbit4all.domain.data.storage;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -192,6 +193,12 @@ public final class StorageObject<T> {
   private List<Consumer<StorageSaveEvent>> onSucceedFunctionList = null;
 
   private boolean skipLock = false;
+
+  /**
+   * The created at time that can be null. The null means that it will be set at the time of the
+   * save. Else if we set this then the save operation will keep this time as creation time.
+   */
+  private OffsetDateTime createdAt = null;
 
   /**
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
@@ -675,6 +682,14 @@ public final class StorageObject<T> {
   public String toString() {
     return "StorageObject: " + uri + " ("
         + (definition != null ? definition : StringConstant.UNKNOWN) + ")";
+  }
+
+  public final OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public final void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
 }

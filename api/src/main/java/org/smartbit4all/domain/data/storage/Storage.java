@@ -508,6 +508,10 @@ public final class Storage {
     return objectStorage.readAllUris(this, setName, clazzName);
   }
 
+  public List<URI> readOldests(String setName, String clazzName) {
+    return objectStorage.readOldests(this, setName, clazzName);
+  }
+
   public Stream<List<URI>> streamOfTimeSeries(String setName,
       String clazzName,
       LocalDateTime from, LocalDateTime to, ChronoUnit gradient) {

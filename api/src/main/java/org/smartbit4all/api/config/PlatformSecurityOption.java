@@ -1,8 +1,8 @@
 package org.smartbit4all.api.config;
 
-import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.SecurityOption;
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
 
 public class PlatformSecurityOption implements SecurityOption {
 
@@ -110,6 +110,12 @@ public class PlatformSecurityOption implements SecurityOption {
       SecurityGroup.of(name("userSecurityPolicyEditor"))
           .title("Platform user security policy editor")
           .description("Plaform level user security policy editor")
+          .subgroup(admin)
+          .builtIn(true);
+  public static final SecurityGroup storageArchiveConfigEditor =
+      SecurityGroup.of(name("storageArchiveConfigEditor"))
+          .title("Platform storage archive configuration editor")
+          .description("Platform storage archive configuration editor")
           .subgroup(admin)
           .builtIn(true);
 

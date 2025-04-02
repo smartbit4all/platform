@@ -215,6 +215,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return null;
   }
 
+  public SearchIndexMappingObject unmap(String propertyName) {
+    mappingsByPropertyName.remove(propertyName);
+    return this;
+  }
+
   public SearchIndexMappingObject map(String propertyName, Class<?> dataType, int length,
       String... pathes) {
     return map(propertyName, dataType, length, null, pathes);

@@ -1804,7 +1804,7 @@ class MDMApiTest {
         .pollInterval(100L, TimeUnit.MILLISECONDS)
         .await()
         .atMost(5_000L, TimeUnit.MILLISECONDS)
-        .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter).isEqualTo(3));
+        .untilAsserted(() -> assertThat(MDMApiTestSetupv2.executionCounter.get()).isEqualTo(3));
   }
 
   @Test
@@ -1815,12 +1815,16 @@ class MDMApiTest {
     Random rnd = new Random();
     int minutes = 10;
     List<Double> sumOfMinutes = new ArrayList<>();
+    List<URI> oldestUris = new ArrayList<>();
     for (int i = 1; i <= minutes; i++) {
       double sumOfMinute = 0.0;
       for (int j = 0; j < 5; j++) {
         double value = rnd.nextInt(100);
-        objectApi.saveAsNew(SCHEMA,
+        URI uri = objectApi.saveAsNew(SCHEMA,
             new SampleTimeBasedData().name("T1").value(value).timeOf(now.minusMinutes(i)));
+        if (i == minutes) {
+          oldestUris.add(objectApi.getLatestUri(uri));
+        }
         sumOfMinute += value;
       }
       sumOfMinutes.add(sumOfMinute);
@@ -1853,6 +1857,10 @@ class MDMApiTest {
           .collect(toList());
       assertThat(statisticList.stream().map(s -> s.getSum()).collect(toList()))
           .containsExactlyElementsOf(sumOfMinutes);
+    }
+    {
+      List<URI> oldests = storage.readOldests(null, SampleTimeBasedData.class.getName());
+      assertThat(oldests).containsExactlyInAnyOrderElementsOf(oldestUris);
     }
   }
 
