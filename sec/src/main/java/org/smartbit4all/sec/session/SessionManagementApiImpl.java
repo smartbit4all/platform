@@ -123,7 +123,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     URI sessionUri = storage.get().saveAsNew(session);
 
     // Save it into the active sessions list
-    collectionApi.list(SCHEMA, ACTIVE_SESSIONS).add(sessionUri);
+    // TODO Don't add sessionuri to ACTIVE_SESSIONS until the schedule job for purging expired
+    // sessions is created
+    // collectionApi.list(SCHEMA, ACTIVE_SESSIONS).add(sessionUri);
 
     log.debug("Session saved!\n{}", session);
 
