@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.config.PlatformViewNames;
+import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.setting.LocaleSettingApi;
@@ -20,18 +21,22 @@ import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
 import org.smartbit4all.api.view.bean.ViewEventHandler.ViewEventTypeEnum;
 import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BffUtilsApiImpl implements BffUtilsApi {
 
   @Autowired
+  private ObjectApi objectApi;
+  @Autowired
   private ViewApi viewApi;
   @Autowired
   private LocaleSettingApi localeSettingApi;
   @Autowired
-  InvocationApi invocationApi;
+  private InvocationApi invocationApi;
 
   @Override
   public void showMapEntryEditor(UUID viewUuid, String gridId, KeyValuePair pageModel,
@@ -61,6 +66,15 @@ public class BffUtilsApiImpl implements BffUtilsApi {
             .addPathItem(ViewEventApi.ACTION)
             .addPathItem("SAVE")
             .invocationRequest(saveRequest))));
+  }
+
+  @Override
+  public <T> T getValueFromGridRow(UUID viewUuid, String widgetId, String nodeId, String key,
+      Class<T> clazz) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
+    return objectApi
+        .asType(clazz,
+            GridModels.getValueFromGridRow(gridModel, nodeId, key));
   }
 
 }

@@ -9,4 +9,6 @@ public interface BffUtilsApi {
   void showMapEntryEditor(UUID viewUuid, String gridId, KeyValuePair pageModel,
       boolean keyEditable, InvocationRequest saveRequest);
 
+  <T> T getValueFromGridRow(UUID viewUuid, String widgetId, String nodeId, String key,
+      Class<T> clazz);
 }
