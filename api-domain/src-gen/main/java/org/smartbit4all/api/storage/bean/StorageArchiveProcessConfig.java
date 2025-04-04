@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,11 +39,11 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   StorageArchiveProcessConfig.URI,
   StorageArchiveProcessConfig.CODE,
+  StorageArchiveProcessConfig.MODE,
   StorageArchiveProcessConfig.STORAGE,
   StorageArchiveProcessConfig.TYPE_CLASS_NAMES,
   StorageArchiveProcessConfig.BEFORE_DURATION_IN_MILLIS,
   StorageArchiveProcessConfig.COLLECTIONS,
-  StorageArchiveProcessConfig.ARCHIVE_VERSIONS_ONLY,
   StorageArchiveProcessConfig.OBJECT_PREDICATE,
   StorageArchiveProcessConfig.VERSION_SELECTOR,
   StorageArchiveProcessConfig.CRON_EXPRESSION,
@@ -57,6 +58,44 @@ public class StorageArchiveProcessConfig {
   public static final String CODE = "code";
   private String code;
 
+  /**
+   * The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list&lt;URI&gt; to the function. The result is the List&lt;URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. 
+   */
+  public enum ModeEnum {
+    OBJECTS_BY_CREATION_TIME("OBJECTS_BY_CREATION_TIME"),
+    
+    LIST_BY_PREDICATE("LIST_BY_PREDICATE");
+
+    private String value;
+
+    ModeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ModeEnum fromValue(String value) {
+      for (ModeEnum b : ModeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String MODE = "mode";
+  private ModeEnum mode;
+
   public static final String STORAGE = "storage";
   private String storage;
 
@@ -67,10 +106,7 @@ public class StorageArchiveProcessConfig {
   private Long beforeDurationInMillis;
 
   public static final String COLLECTIONS = "collections";
-  private List<URI> collections = null;
-
-  public static final String ARCHIVE_VERSIONS_ONLY = "archiveVersionsOnly";
-  private Boolean archiveVersionsOnly = false;
+  private List<StoredCollectionDescriptor> collections = null;
 
   public static final String OBJECT_PREDICATE = "objectPredicate";
   private InvocationRequest objectPredicate = null;
@@ -139,6 +175,33 @@ public class StorageArchiveProcessConfig {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCode(String code) {
     this.code = code;
+  }
+
+
+  public StorageArchiveProcessConfig mode(ModeEnum mode) {
+    
+    this.mode = mode;
+    return this;
+  }
+
+   /**
+   * The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list&lt;URI&gt; to the function. The result is the List&lt;URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. 
+   * @return mode
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list<URI> to the function. The result is the List<URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. ")
+  @JsonProperty(MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ModeEnum getMode() {
+    return mode;
+  }
+
+
+  @JsonProperty(MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMode(ModeEnum mode) {
+    this.mode = mode;
   }
 
 
@@ -231,13 +294,13 @@ public class StorageArchiveProcessConfig {
   }
 
 
-  public StorageArchiveProcessConfig collections(List<URI> collections) {
+  public StorageArchiveProcessConfig collections(List<StoredCollectionDescriptor> collections) {
     
     this.collections = collections;
     return this;
   }
 
-  public StorageArchiveProcessConfig addCollectionsItem(URI collectionsItem) {
+  public StorageArchiveProcessConfig addCollectionsItem(StoredCollectionDescriptor collectionsItem) {
     if (this.collections == null) {
       this.collections = new ArrayList<>();
     }
@@ -255,42 +318,15 @@ public class StorageArchiveProcessConfig {
   @JsonProperty(COLLECTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<URI> getCollections() {
+  public List<StoredCollectionDescriptor> getCollections() {
     return collections;
   }
 
 
   @JsonProperty(COLLECTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCollections(List<URI> collections) {
+  public void setCollections(List<StoredCollectionDescriptor> collections) {
     this.collections = collections;
-  }
-
-
-  public StorageArchiveProcessConfig archiveVersionsOnly(Boolean archiveVersionsOnly) {
-    
-    this.archiveVersionsOnly = archiveVersionsOnly;
-    return this;
-  }
-
-   /**
-   * If the flag is true then only the versions of the relevant objects are going to included in the archival batch. By default we delete the whole object not only its versions. If we delete the versions then the process collects the objects and then identify the versions to delete. 
-   * @return archiveVersionsOnly
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the flag is true then only the versions of the relevant objects are going to included in the archival batch. By default we delete the whole object not only its versions. If we delete the versions then the process collects the objects and then identify the versions to delete. ")
-  @JsonProperty(ARCHIVE_VERSIONS_ONLY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getArchiveVersionsOnly() {
-    return archiveVersionsOnly;
-  }
-
-
-  @JsonProperty(ARCHIVE_VERSIONS_ONLY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setArchiveVersionsOnly(Boolean archiveVersionsOnly) {
-    this.archiveVersionsOnly = archiveVersionsOnly;
   }
 
 
@@ -416,11 +452,11 @@ public class StorageArchiveProcessConfig {
     StorageArchiveProcessConfig storageArchiveProcessConfig = (StorageArchiveProcessConfig) o;
     return Objects.equals(this.uri, storageArchiveProcessConfig.uri) &&
         Objects.equals(this.code, storageArchiveProcessConfig.code) &&
+        Objects.equals(this.mode, storageArchiveProcessConfig.mode) &&
         Objects.equals(this.storage, storageArchiveProcessConfig.storage) &&
         Objects.equals(this.typeClassNames, storageArchiveProcessConfig.typeClassNames) &&
         Objects.equals(this.beforeDurationInMillis, storageArchiveProcessConfig.beforeDurationInMillis) &&
         Objects.equals(this.collections, storageArchiveProcessConfig.collections) &&
-        Objects.equals(this.archiveVersionsOnly, storageArchiveProcessConfig.archiveVersionsOnly) &&
         Objects.equals(this.objectPredicate, storageArchiveProcessConfig.objectPredicate) &&
         Objects.equals(this.versionSelector, storageArchiveProcessConfig.versionSelector) &&
         Objects.equals(this.cronExpression, storageArchiveProcessConfig.cronExpression) &&
@@ -429,7 +465,7 @@ public class StorageArchiveProcessConfig {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector, cronExpression, execution);
+    return Objects.hash(uri, code, mode, storage, typeClassNames, beforeDurationInMillis, collections, objectPredicate, versionSelector, cronExpression, execution);
   }
 
   @Override
@@ -438,11 +474,11 @@ public class StorageArchiveProcessConfig {
     sb.append("class StorageArchiveProcessConfig {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
     sb.append("    storage: ").append(toIndentedString(storage)).append("\n");
     sb.append("    typeClassNames: ").append(toIndentedString(typeClassNames)).append("\n");
     sb.append("    beforeDurationInMillis: ").append(toIndentedString(beforeDurationInMillis)).append("\n");
     sb.append("    collections: ").append(toIndentedString(collections)).append("\n");
-    sb.append("    archiveVersionsOnly: ").append(toIndentedString(archiveVersionsOnly)).append("\n");
     sb.append("    objectPredicate: ").append(toIndentedString(objectPredicate)).append("\n");
     sb.append("    versionSelector: ").append(toIndentedString(versionSelector)).append("\n");
     sb.append("    cronExpression: ").append(toIndentedString(cronExpression)).append("\n");
