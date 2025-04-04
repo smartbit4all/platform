@@ -172,6 +172,15 @@ public final class ObjectNodeList {
     return list.add(ref);
   }
 
+  public boolean add(final int idx, final URI uri) {
+    Objects.requireNonNull(uri, "URI must be not null!");
+    ObjectNodeReference ref =
+        new ObjectNodeReference(referrerNode, referenceDefinition, null, null);
+    ref.set(uri);
+    list.add(idx, ref);
+    return true;
+  }
+
   public boolean addAll(Collection<URI> uris) {
     if (uris == null || uris.isEmpty()) {
       return false;
