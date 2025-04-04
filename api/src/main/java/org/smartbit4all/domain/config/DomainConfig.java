@@ -15,8 +15,7 @@
 package org.smartbit4all.domain.config;
 
 import org.smartbit4all.api.config.PlatformSecurityOption;
-import org.smartbit4all.api.invocation.bean.ServiceConnection;
-import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -72,7 +71,7 @@ public class DomainConfig {
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(StorageArchiveProcessConfig.CODE))
-          .editorViewName(MDMConstants.MDM_EDIT)
+          .editorViewName(PlatformViewNames.STORAGE_ARCHIVE_PROCESS_EDITOR)
           .displayNameList(new LangString().defaultValue("Storage archive configurations")
               .putValueByLocaleItem("hu", "Archiválási beállítások")
               .putValueByLocaleItem("en", "Storage archive configurations"))
@@ -80,7 +79,7 @@ public class DomainConfig {
               .putValueByLocaleItem("hu", "Archiválási beállítás")
               .putValueByLocaleItem("en", "Storage archive configuration"))
           .order(200l)
-          .typeQualifiedName(ServiceConnection.class.getName())
+          .typeQualifiedName(StorageArchiveProcessConfig.class.getName())
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("Code")

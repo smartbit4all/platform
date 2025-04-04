@@ -29,6 +29,8 @@ import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApi;
+import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApi;
@@ -211,6 +213,17 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<DynamicOAuthPropertiesEditorPageApi> dynamicOAuthPropertiesEditorPageApiProvider(
       DynamicOAuthPropertiesEditorPageApi api) {
     return Invocations.asProvider(DynamicOAuthPropertiesEditorPageApi.class, api);
+  }
+
+  @Bean
+  StorageArchiceProcessEditorPageApi storageArchiceProcessEditorPageApi() {
+    return new StorageArchiceProcessEditorPageApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<StorageArchiceProcessEditorPageApi> storageArchiceProcessEditorPageApiProvider(
+      StorageArchiceProcessEditorPageApi api) {
+    return Invocations.asProvider(StorageArchiceProcessEditorPageApi.class, api);
   }
 
   @Bean
