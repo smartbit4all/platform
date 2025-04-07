@@ -11,7 +11,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.UriUtils;
 
-abstract class AbstractStoredContainerStorageImpl {
+abstract class AbstractStoredContainerStorageImpl implements StoredContainer {
 
   protected URI uri;
 
@@ -89,6 +89,11 @@ abstract class AbstractStoredContainerStorageImpl {
 
   public Long getLastModified() {
     return objectApi.getLastModified(uri);
+  }
+
+  @Override
+  public StoredCollectionDescriptor getDescriptor() {
+    return descriptor;
   }
 
 }

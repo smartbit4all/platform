@@ -43,6 +43,14 @@ public interface CollectionApi {
   StoredMap map(URI scopeObjectUri, String logicalSchema, String mapName);
 
   /**
+   * A common problem to store object references mapped by a string.
+   * 
+   * @param descriptor The descriptor of the container.
+   * @return The StoredMap as a collection of {@link ObjectNodeReference}.
+   */
+  StoredMap map(StoredCollectionDescriptor descriptor);
+
+  /**
    * A common problem to store object uri list.
    * 
    * @param logicalSchema The logical schema of the map. Helps the implementation to have a good
@@ -72,6 +80,14 @@ public interface CollectionApi {
    * @return The StoredList.
    */
   StoredList list(StoredCollectionDescriptor descriptor);
+
+  /**
+   * Generic load for the {@link CollectionApi} managed containers.
+   * 
+   * @param descriptor
+   * @return
+   */
+  StoredContainer container(StoredCollectionDescriptor descriptor);
 
   /**
    * Lock all collections to lock at once.

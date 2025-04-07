@@ -12,7 +12,7 @@ import org.smartbit4all.core.object.ObjectNode;
  *
  * @author Peter Boros
  */
-public interface StoredMap {
+public interface StoredMap extends StoredContainer {
 
   /**
    * The uris stored in the given container. Be careful this function reads the given collection
@@ -47,6 +47,8 @@ public interface StoredMap {
   void remove(String key);
 
   void remove(Collection<String> keys);
+
+  boolean removeAll(Collection<URI> uris);
 
   void remove(Stream<String> keys);
 

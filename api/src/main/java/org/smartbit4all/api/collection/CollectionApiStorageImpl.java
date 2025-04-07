@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -92,6 +92,12 @@ public class CollectionApiStorageImpl implements CollectionApi {
   }
 
   @Override
+  public StoredMap map(StoredCollectionDescriptor descriptor) {
+    return descriptor.getScopeUri() == null ? map(descriptor.getSchema(), descriptor.getName())
+        : map(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
+  }
+
+  @Override
   public StoredList list(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(schema, constructGlobalUri(schema, name, STOREDLIST),
@@ -112,6 +118,19 @@ public class CollectionApiStorageImpl implements CollectionApi {
   public StoredList list(StoredCollectionDescriptor descriptor) {
     return descriptor.getScopeUri() == null ? list(descriptor.getSchema(), descriptor.getName())
         : list(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
+  }
+
+  @Override
+  public StoredContainer container(StoredCollectionDescriptor descriptor) {
+    if (descriptor == null) {
+      return null;
+    }
+    if (descriptor.getCollectionType() == CollectionTypeEnum.LIST) {
+      return list(descriptor);
+    } else if (descriptor.getCollectionType() == CollectionTypeEnum.MAP) {
+      return map(descriptor);
+    }
+    return null;
   }
 
   @Override

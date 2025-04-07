@@ -389,7 +389,7 @@ components:
         the archival (deletion) process itself. The archival batch defined by the first phase is saved for the configuration
         as scoped object. If a server fails to execute the archival batch then later on another server can retry to execute it.
         So the batch must be implemented in a way to be able to continue whereever it was interrupted.
-      required: [storage, typeClassNames, beforeDurationInMillis]
+      required: [storage, typeClassNames, collections]
       properties:
         uri:
           type: string
@@ -406,7 +406,8 @@ components:
             LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list<URI> to the
             function. The result is the List<URI to remove from the list. The removal is executed by the archival framework within a
             StoredList.update operation.
-          enum: [OBJECTS_BY_CREATION_TIME, LIST_BY_PREDICATE]
+          enum: [OBJECTS_BY_CREATION_TIME, COLLECTION_BY_PREDICATE]
+          default: OBJECTS_BY_CREATION_TIME
         storage:
           description: |
             The name of the storage to archive. All the storages should be managed by individual configuration so
@@ -514,6 +515,15 @@ components:
           description: The latest uri of the object to remove.
           type: string
           format: uri
+        collection:
+          description: The collection to cleanup.
+          type: StoredCollectionDescriptor
+        toRemove:
+          description: The list of URI to remove from the collection to cleanup.
+          type: array
+          items:
+            type: string
+            format: uri
         versionRanges:
           description: The version ranges to include in the archival. Could be empty if the whole object should be archived.
           $ref: '#/components/schemas/StorageVersionRangeList'

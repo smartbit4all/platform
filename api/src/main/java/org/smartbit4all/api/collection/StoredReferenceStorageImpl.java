@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
@@ -72,6 +73,11 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
   @Override
   public void clear() {
     set(null);
+  }
+
+  @Override
+  public boolean removeAll(Collection<URI> uris) {
+    throw new IllegalArgumentException();
   }
 
 }

@@ -13,7 +13,7 @@ import org.smartbit4all.core.object.ObjectNode;
  * 
  * @author Peter Boros
  */
-public interface StoredList {
+public interface StoredList extends StoredContainer {
 
   List<URI> uris();
 

@@ -11,19 +11,28 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredContainer;
+import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.storage.bean.StorageArchiveBatch;
 import org.smartbit4all.api.storage.bean.StorageArchiveBatchEntry;
 import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig.ModeEnum;
 import org.smartbit4all.api.storage.bean.StorageArchiveProcessExecution;
 import org.smartbit4all.api.storage.bean.StorageArchiveProcessExecution.StateEnum;
 import org.smartbit4all.core.io.utility.FileIO;
@@ -32,6 +41,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.utility.CronExpressionUtility;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
+import org.smartbit4all.domain.config.DomainConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
 
@@ -53,8 +63,21 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
   @Autowired
   private InvocationApi invocationApi;
 
+  @Autowired
+  private CollectionApi collectionApi;
+
   @Override
-  public void scheduleArchival() {}
+  public void scheduleArchival() {
+    StoredList archivalConfigs =
+        collectionApi.list(StorageArchiveApi.SCHEMA_ARCHIVAL, DomainConfig.ENTRY_ARCHIVE_CONFIGS);
+    if (archivalConfigs != null) {
+      for (URI configUri : archivalConfigs.uris()) {
+        executeArchive(configUri);
+      }
+    } else {
+      log.error("The archival config entry list was no found.");
+    }
+  }
 
   @Override
   public int executeArchive(URI config) {
@@ -124,17 +147,32 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
     StorageArchiveBatch archiveBatch =
         executionNode.ref(StorageArchiveProcessExecution.ARCHIVE_BATCH).get()
             .getObject(StorageArchiveBatch.class);
-    Storage storage = storageApi.get(archiveBatch.getStorage());
-    List<URI> toRemove = null;
-    if (storage != null) {
-      toRemove = archiveBatch.getEntries().stream()
-          .filter(e -> e.getVersionRanges() == null).map(e -> e.getObjectUri()).collect(toList());
-      log.debug(toRemove.toString());
-      storage.remove(toRemove);
+    StorageArchiveProcessConfig config = executionNode.ref(StorageArchiveProcessExecution.CONFIG)
+        .get().getObject(StorageArchiveProcessConfig.class);
+    if (config.getMode() == ModeEnum.OBJECTS_BY_CREATION_TIME) {
+      Storage storage = storageApi.get(archiveBatch.getStorage());
+      List<URI> toRemove = null;
+      if (storage != null) {
+        toRemove = archiveBatch.getEntries().stream()
+            .filter(e -> e.getVersionRanges() == null).map(e -> e.getObjectUri()).collect(toList());
+        if (log.isDebugEnabled()) {
+          log.debug(toRemove.toString());
+        }
+        storage.remove(toRemove);
+      }
+      setReady(executionNode);
+      objectApi.save(executionNode);
+      return toRemove == null ? 0 : toRemove.size();
+    } else if (config.getMode() == ModeEnum.COLLECTION_BY_PREDICATE) {
+      for (StorageArchiveBatchEntry batchEntry : archiveBatch.getEntries()) {
+        StoredCollectionDescriptor collection = batchEntry.getCollection();
+        if (collection != null) {
+          StoredContainer container = collectionApi.container(collection);
+          container.removeAll(batchEntry.getToRemove());
+        }
+      }
     }
-    setReady(executionNode);
-    objectApi.save(executionNode);
-    return toRemove == null ? 0 : toRemove.size();
+    return 0;
   }
 
   private void collecting(ObjectNode executionNode) {
@@ -179,7 +217,8 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
         executionNode.ref(StorageArchiveProcessExecution.CONFIG).get()
             .getObject(StorageArchiveProcessConfig.class);
     Storage storage = storageApi.get(archiveProcessConfig.getStorage());
-    if (archiveProcessConfig.getBeforeDurationInMillis() != null) {
+    if (archiveProcessConfig.getMode() == ModeEnum.OBJECTS_BY_CREATION_TIME
+        && archiveProcessConfig.getBeforeDurationInMillis() != null) {
       OffsetDateTime now = OffsetDateTime.now();
       OffsetDateTime endOfArchival =
           now.minus(archiveProcessConfig.getBeforeDurationInMillis(), ChronoUnit.MILLIS);
@@ -201,8 +240,34 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
         }
       }
       return result;
+    } else if (archiveProcessConfig.getMode() == ModeEnum.OBJECTS_BY_CREATION_TIME
+        && !archiveProcessConfig.getCollections().isEmpty()
+        && archiveProcessConfig.getObjectPredicate() != null) {
+      // We collect the items to archive from the collections.
+      return archiveProcessConfig.getCollections().stream().map(collectionApi::container)
+          .filter(Objects::nonNull).map(c -> collectContainer(archiveProcessConfig, c))
+          .filter(Objects::nonNull)
+          .collect(toList());
     }
     return Collections.emptyList();
+  }
+
+  private StorageArchiveBatchEntry collectContainer(
+      StorageArchiveProcessConfig archiveProcessConfig, StoredContainer c) {
+    List<URI> toRemove;
+    InvocationRequest objectPredicate = archiveProcessConfig.getObjectPredicate();
+    Collection<URI> uris = null;
+    if (c.getDescriptor().getCollectionType() == CollectionTypeEnum.LIST) {
+      uris = ((StoredList) c).uris();
+    } else if (c.getDescriptor().getCollectionType() == CollectionTypeEnum.MAP) {
+      uris = ((StoredMap) c).uris().values();
+    }
+    if (uris != null) {
+      toRemove =
+          uris.stream().filter(u -> invokePredicate(objectPredicate, u)).collect(toList());
+      return new StorageArchiveBatchEntry().collection(c.getDescriptor()).toRemove(toRemove);
+    }
+    return null;
   }
 
   private boolean invokePredicate(InvocationRequest objectPredicate, URI u) {

@@ -64,7 +64,7 @@ public class StorageArchiveProcessConfig {
   public enum ModeEnum {
     OBJECTS_BY_CREATION_TIME("OBJECTS_BY_CREATION_TIME"),
     
-    LIST_BY_PREDICATE("LIST_BY_PREDICATE");
+    COLLECTION_BY_PREDICATE("COLLECTION_BY_PREDICATE");
 
     private String value;
 
@@ -94,7 +94,7 @@ public class StorageArchiveProcessConfig {
   }
 
   public static final String MODE = "mode";
-  private ModeEnum mode;
+  private ModeEnum mode = ModeEnum.OBJECTS_BY_CREATION_TIME;
 
   public static final String STORAGE = "storage";
   private String storage;
@@ -106,7 +106,7 @@ public class StorageArchiveProcessConfig {
   private Long beforeDurationInMillis;
 
   public static final String COLLECTIONS = "collections";
-  private List<StoredCollectionDescriptor> collections = null;
+  private List<StoredCollectionDescriptor> collections = new ArrayList<>();
 
   public static final String OBJECT_PREDICATE = "objectPredicate";
   private InvocationRequest objectPredicate = null;
@@ -276,11 +276,10 @@ public class StorageArchiveProcessConfig {
    * We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). 
    * @return beforeDurationInMillis
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). ")
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "We must set this duration to prevent archiving the object closer to current time then this duration. There is a second line of protection because the archival api prevent the objects younger then a day (24 hours). ")
   @JsonProperty(BEFORE_DURATION_IN_MILLIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public Long getBeforeDurationInMillis() {
     return beforeDurationInMillis;
@@ -288,7 +287,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(BEFORE_DURATION_IN_MILLIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBeforeDurationInMillis(Long beforeDurationInMillis) {
     this.beforeDurationInMillis = beforeDurationInMillis;
   }
@@ -301,9 +300,6 @@ public class StorageArchiveProcessConfig {
   }
 
   public StorageArchiveProcessConfig addCollectionsItem(StoredCollectionDescriptor collectionsItem) {
-    if (this.collections == null) {
-      this.collections = new ArrayList<>();
-    }
     this.collections.add(collectionsItem);
     return this;
   }
@@ -312,11 +308,12 @@ public class StorageArchiveProcessConfig {
    * A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. 
    * @return collections
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. ")
+  @ApiModelProperty(required = true, value = "A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. ")
   @JsonProperty(COLLECTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<StoredCollectionDescriptor> getCollections() {
     return collections;
@@ -324,7 +321,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(COLLECTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCollections(List<StoredCollectionDescriptor> collections) {
     this.collections = collections;
   }
