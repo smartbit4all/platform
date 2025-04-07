@@ -1,5 +1,8 @@
 package org.smartbit4all.bff.api.org;
 
+import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +42,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
@@ -168,7 +168,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     if ((!ObjectUtils.isEmpty(userNode)
         && !userNode.getValueAsString(User.USERNAME).equals(user.getUsername()))
         || ObjectUtils.isEmpty(userNode)) {
-      if (orgApi.getUserByUsername(user.getUsername()) != null) {
+      if (orgApi.getUserByUsername(user.getUsername()) != null && user.getUri() == null) {
         viewApi.showMessage(new MessageData()
             .viewUuid(viewUuid)
             .type(MessageType.WARNING)
