@@ -213,24 +213,36 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     separateCalculatedFieldsInQueryInput(queryInput, calculators);
 
     queryInput = process(queryInput, queryInputPreProcessors);
-    if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
-        && !isUseDatabase())
-        || readFromStorage) {
-
+    boolean executeSearchInMemory =
+        (!crudApi.isExecutionApiExists(queryInput.getEntityDef()) && !isUseDatabase())
+            || readFromStorage;
+    if (executeSearchInMemory) {
       Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
       // TODO check if expression contains detail related properties, and query only those
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
           propertiesToQuery, true);
       if (queryInput.where() == null) {
-        TableData<?> result = allObjects.result;
-        if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
-          tableDataApi.sort(result, queryInput.orderBys());
-        }
-        result = process(result, postProcessor);
-        return result;
+        // TableData<?> result = allObjects.result;
+        // // no query, only sort
+        // if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
+        // tableDataApi.sort(result, queryInput.orderBys());
+        // }
+        // result = process(result, postProcessor);
+        // return result;
       }
+      allObjects.result = process(allObjects.result, postProcessor);
       setupExists(queryInput, allObjects, Collections.emptyList());
       queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+      if (queryInput.where() == null) {
+        queryInput.where(Expression.TRUE());
+      }
+      if (log.isTraceEnabled()) {
+        log.trace("Executing query...: {}", queryInput.where());
+      }
+      TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+      processCalculators(result, calculators);
+      return result;
+
     }
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
