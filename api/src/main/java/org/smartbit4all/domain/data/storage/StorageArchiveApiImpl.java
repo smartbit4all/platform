@@ -168,7 +168,9 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
         StoredCollectionDescriptor collection = batchEntry.getCollection();
         if (collection != null) {
           StoredContainer container = collectionApi.container(collection);
-          container.removeAll(batchEntry.getToRemove());
+          if (container != null) {
+            container.removeAll(batchEntry.getToRemove());
+          }
         }
       }
     }
