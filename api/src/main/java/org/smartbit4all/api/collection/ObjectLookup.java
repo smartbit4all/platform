@@ -75,6 +75,8 @@ public abstract class ObjectLookup {
       Map<String, Object> toMap;
       if (object instanceof ObjectNode) {
         toMap = ((ObjectNode) object).getObjectAsMap();
+      } else if (object instanceof String) {
+        toMap = new HashMap<>();
       } else {
         toMap = (Map<String, Object>) object;
       }
