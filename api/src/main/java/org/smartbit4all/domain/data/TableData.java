@@ -716,9 +716,12 @@ public final class TableData<E extends EntityDefinition> {
   public boolean isUseRefTables() {
     return useRefTables;
   }
-  
+
   public void hideRows(List<DataRow> rows) {
     this.rowModel.hideRows(rows);
   }
 
+  public DataColumn<?> removeColumn(String propertyName) {
+    return columnMap.remove(propertyName);
+  }
 }
