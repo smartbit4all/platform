@@ -24,12 +24,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -743,8 +746,7 @@ public class FileIO {
     }
     // Try to find an object file or identify the next folder to examine.
     File[] files = currentFile.listFiles();
-    int smallestDirectoryNumber = Integer.MAX_VALUE;
-    File smallestNumericDirectory = null;
+    Map<LocalDateTime, File> directoriesByTime = new HashMap<>();
     List<File> objectFiles = new ArrayList<>();
     for (int i = 0; i < files.length; i++) {
       if (files[i].isDirectory()) {
@@ -754,11 +756,9 @@ public class FileIO {
           List<Integer> proposedDatetTimePath = new ArrayList<>();
           proposedDatetTimePath.addAll(dateTimePath);
           proposedDatetTimePath.add(directoryNumber);
-          if (smallestNumericDirectory == null
-              || directoryNumber < smallestDirectoryNumber
-                  && getDateTime(proposedDatetTimePath) != null) {
-            smallestDirectoryNumber = directoryNumber;
-            smallestNumericDirectory = files[i];
+          LocalDateTime time = getDateTime(proposedDatetTimePath);
+          if (time != null) {
+            directoriesByTime.put(time, files[i]);
           }
         }
       } else if (files[i].isFile() && files[i].getName().endsWith(SO_FILEEXTENSION)) {
@@ -771,12 +771,23 @@ public class FileIO {
             "Unable to find the oldest objects. The object files appear in the root directory");
       }
       return Optional
-          .of(new FolderInfo(smallestNumericDirectory, getDateTime(dateTimePath), objectFiles));
+          .of(new FolderInfo(getDateTime(dateTimePath), objectFiles));
     }
-    if (smallestNumericDirectory != null) {
+    if (!directoriesByTime.isEmpty()) {
       // We continue traversal with the smallest directory
-      dateTimePath.add(smallestDirectoryNumber);
-      return findOldestFolderWithOFileRec(smallestNumericDirectory, dateTimePath);
+      List<File> sortedDirectories = directoriesByTime.entrySet().stream()
+          .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+          .map(e -> e.getValue()).collect(Collectors.toList());
+      for (File subDir : sortedDirectories) {
+        List<Integer> dateTimePathList = new ArrayList<>(dateTimePath);
+        dateTimePathList.add(Integer.valueOf(subDir.toPath().getFileName().toString()));
+        Optional<FolderInfo> oldestFolderWithOFileRec =
+            findOldestFolderWithOFileRec(subDir, dateTimePathList);
+        if (oldestFolderWithOFileRec.isPresent()) {
+          return oldestFolderWithOFileRec;
+        }
+      }
+      return Optional.empty();
     }
     return Optional.empty();
   }
@@ -795,18 +806,12 @@ public class FileIO {
   }
 
   public static class FolderInfo {
-    private final File path;
     private final LocalDateTime dateTime;
     private final List<File> objectFiles;
 
-    public FolderInfo(File path, LocalDateTime dateTime, List<File> objectFiles) {
-      this.path = path;
+    public FolderInfo(LocalDateTime dateTime, List<File> objectFiles) {
       this.dateTime = dateTime;
       this.objectFiles = objectFiles;
-    }
-
-    public File getPath() {
-      return path;
     }
 
     public LocalDateTime getDateTime() {
@@ -820,7 +825,7 @@ public class FileIO {
     @Override
     public String toString() {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-      return path + " (" + dateTime.format(formatter) + ")";
+      return " (" + dateTime.format(formatter) + ")";
     }
   }
 }
