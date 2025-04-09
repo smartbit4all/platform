@@ -23,10 +23,17 @@ abstract class AbstractStoredContainerStorageImpl implements StoredContainer {
 
   protected StoredCollectionDescriptor descriptor;
 
-  protected AbstractStoredContainerStorageImpl(StoredCollectionDescriptor descriptor, URI uri) {
+  protected StoredCollectionDescriptor publicDescriptor;
+
+  protected AbstractStoredContainerStorageImpl(String logicalSchema,
+      StoredCollectionDescriptor descriptor, URI uri) {
     super();
     this.uri = uri;
     this.descriptor = descriptor;
+    this.publicDescriptor =
+        new StoredCollectionDescriptor().collectionType(descriptor.getCollectionType())
+            .name(descriptor.getName()).schema(logicalSchema).scopeUri(descriptor.getScopeUri())
+            .singleVersion(descriptor.getSingleVersion());
   }
 
   public final URI getUri() {
@@ -93,7 +100,7 @@ abstract class AbstractStoredContainerStorageImpl implements StoredContainer {
 
   @Override
   public StoredCollectionDescriptor getDescriptor() {
-    return descriptor;
+    return publicDescriptor;
   }
 
 }

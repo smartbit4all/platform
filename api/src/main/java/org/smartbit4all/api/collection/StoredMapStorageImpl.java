@@ -1,5 +1,7 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +20,6 @@ import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Peter Boros
@@ -27,11 +27,14 @@ import static java.util.stream.Collectors.toSet;
  */
 public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl implements StoredMap {
 
-  StoredMapStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+  StoredMapStorageImpl(String logicalSchema, String storageSchema, URI uri, String name,
+      URI scopeUri,
       ObjectApi objectApi,
       BranchApi branchApi) {
-    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
-        .collectionType(CollectionTypeEnum.MAP), uri);
+    super(logicalSchema,
+        new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+            .collectionType(CollectionTypeEnum.MAP),
+        uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
   }

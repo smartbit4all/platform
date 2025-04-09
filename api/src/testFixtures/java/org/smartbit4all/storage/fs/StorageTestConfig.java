@@ -1,6 +1,8 @@
 package org.smartbit4all.storage.fs;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -37,6 +39,12 @@ public class StorageTestConfig {
   @Bean
   public StorageTestApi storageTestApi() {
     return new StorageTestApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<StorageTestApi> storageTestPageApiProvider(
+      StorageTestApi api) {
+    return Invocations.asProvider(StorageTestApi.class, api);
   }
 
 }

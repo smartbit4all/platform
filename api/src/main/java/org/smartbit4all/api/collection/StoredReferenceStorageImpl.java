@@ -18,11 +18,14 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   private ObjectDefinition<T> def;
 
-  protected StoredReferenceStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+  protected StoredReferenceStorageImpl(String logicalSchema, String storageSchema, URI uri,
+      String name, URI scopeUri,
       ObjectDefinition<T> def, ObjectApi objectApi,
       BranchApi branchApi) {
-    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
-        .collectionType(CollectionTypeEnum.REFERENCE), uri);
+    super(logicalSchema,
+        new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+            .collectionType(CollectionTypeEnum.REFERENCE),
+        uri);
     this.def = def;
     this.objectApi = objectApi;
     this.branchApi = branchApi;

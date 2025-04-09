@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
+import static java.util.stream.Collectors.toList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,6 @@ import org.smartbit4all.core.utility.CronExpressionUtility;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 /*
  * Delete unnecessary files from file system
@@ -170,6 +171,7 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
           StoredContainer container = collectionApi.container(collection);
           if (container != null) {
             container.removeAll(batchEntry.getToRemove());
+            return batchEntry.getToRemove() == null ? 0 : batchEntry.getToRemove().size();
           }
         }
       }
@@ -242,14 +244,14 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
         }
       }
       return result;
-    } else if (archiveProcessConfig.getMode() == ModeEnum.OBJECTS_BY_CREATION_TIME
+    } else if (archiveProcessConfig.getMode() == ModeEnum.COLLECTION_BY_PREDICATE
         && !archiveProcessConfig.getCollections().isEmpty()
         && archiveProcessConfig.getObjectPredicate() != null) {
       // We collect the items to archive from the collections.
       return archiveProcessConfig.getCollections().stream().map(collectionApi::container)
           .filter(Objects::nonNull).map(c -> collectContainer(archiveProcessConfig, c))
           .filter(Objects::nonNull)
-          .collect(toList());
+          .collect(Collectors.toList());
     }
     return Collections.emptyList();
   }
