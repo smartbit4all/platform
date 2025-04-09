@@ -32,6 +32,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.PathProcessor;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.TriFunction;
+import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -210,27 +211,35 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
     List<SearchIndexFieldCalculator> calculators = new ArrayList<>();
+    Set<String> currentProperties = queryInput.properties()
+        .stream()
+        .map(Property::getName)
+        .collect(toSet());
     separateCalculatedFieldsInQueryInput(queryInput, calculators);
 
     queryInput = process(queryInput, queryInputPreProcessors);
-    if ((!crudApi.isExecutionApiExists(queryInput.getEntityDef())
-        && !isUseDatabase())
-        || readFromStorage) {
-
+    boolean executeSearchInMemory =
+        (!crudApi.isExecutionApiExists(queryInput.getEntityDef()) && !isUseDatabase())
+            || readFromStorage;
+    if (executeSearchInMemory) {
       Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
       // TODO check if expression contains detail related properties, and query only those
       SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
           propertiesToQuery, true);
-      if (queryInput.where() == null) {
-        TableData<?> result = allObjects.result;
-        if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
-          tableDataApi.sort(result, queryInput.orderBys());
-        }
-        result = process(result, postProcessor);
-        return result;
-      }
+      allObjects.result = process(allObjects.result, postProcessor);
       setupExists(queryInput, allObjects, Collections.emptyList());
       queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+      if (queryInput.where() == null) {
+        queryInput.where(Expression.TRUE());
+      }
+      if (log.isTraceEnabled()) {
+        log.trace("Executing query...: {}", queryInput.where());
+      }
+      TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+      processCalculators(result, calculators);
+      removeUnnecessaryColumns(currentProperties, result);
+      return result;
+
     }
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
@@ -246,7 +255,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
     result = process(result, postProcessor);
 
+    removeUnnecessaryColumns(currentProperties, result);
+
     return result;
+  }
+
+
+  private void removeUnnecessaryColumns(Set<String> currentProperties, TableData<?> result) {
+    List<String> columnsToRemove = result.columns().stream()
+        .map(DataColumn::getName)
+        .filter(name -> !currentProperties.contains(name))
+        .collect(toList());
+    columnsToRemove.stream().forEach(result::removeColumn);
   }
 
   protected Collection<Property<?>> getPropertiesToQueryInMemory(QueryInput queryInput) {

@@ -685,7 +685,7 @@ public final class StorageObject<T> {
   }
 
   public final OffsetDateTime getCreatedAt() {
-    return createdAt;
+    return createdAt == null ? (version != null ? version.getCreatedAt() : null) : createdAt;
   }
 
   public final void setCreatedAt(OffsetDateTime createdAt) {

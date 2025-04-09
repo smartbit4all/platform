@@ -117,6 +117,12 @@ public interface OrgApi {
    */
   List<Group> getDirectGroupsOfUser(URI userUri);
 
+  default List<List<Group>> getDirectGroupsOfUsers(List<URI> userUris) {
+    return userUris.stream()
+        .map(this::getDirectGroupsOfUser)
+        .collect(toList());
+  }
+
   /**
    * Get all information of a group.
    */

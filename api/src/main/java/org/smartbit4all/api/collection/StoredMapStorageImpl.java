@@ -1,12 +1,16 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
@@ -23,11 +27,14 @@ import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
  */
 public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl implements StoredMap {
 
-  StoredMapStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+  StoredMapStorageImpl(String logicalSchema, String storageSchema, URI uri, String name,
+      URI scopeUri,
       ObjectApi objectApi,
       BranchApi branchApi) {
-    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
-        .collectionType(CollectionTypeEnum.MAP), uri);
+    super(logicalSchema,
+        new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+            .collectionType(CollectionTypeEnum.MAP),
+        uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
   }
@@ -96,6 +103,23 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
         return data;
       });
     });
+  }
+
+  @Override
+  public boolean removeAll(Collection<URI> uris) {
+    if (uris == null || uris.isEmpty()) {
+      return false;
+    }
+    Set<URI> uriToRemove = uris.stream().map(u -> objectApi.getLatestUri(u)).collect(toSet());
+    modifyOnBranch(on -> {
+      on.modify(StoredMapData.class, data -> {
+        data.uris(data.getUris().entrySet().stream()
+            .filter(e -> !uriToRemove.contains(objectApi.getLatestUri(e.getValue())))
+            .collect(toMap(Entry::getKey, Entry<String, URI>::getValue)));
+        return data;
+      });
+    });
+    return true;
   }
 
   @Override

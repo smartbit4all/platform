@@ -77,7 +77,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
 
   @Override
   public StoredMap map(String logicalSchema, String mapName) {
-    return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
+    return new StoredMapStorageImpl(logicalSchema, constructCollectionShemaName(logicalSchema),
         constructGlobalUri(constructCollectionShemaName(logicalSchema), mapName, STOREDMAP),
         mapName, null, objectApi,
         branchApi);
@@ -85,7 +85,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
 
   @Override
   public StoredMap map(URI scopeObjectUri, String logicalSchema, String mapName) {
-    return new StoredMapStorageImpl(constructCollectionShemaName(logicalSchema),
+    return new StoredMapStorageImpl(logicalSchema, constructCollectionShemaName(logicalSchema),
         constructScopedUri(constructCollectionShemaName(logicalSchema),
             mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP),
         mapName, scopeObjectUri,
@@ -94,9 +94,16 @@ public class CollectionApiStorageImpl implements CollectionApi {
   }
 
   @Override
+  public StoredMap map(StoredCollectionDescriptor descriptor) {
+    return descriptor.getScopeUri() == null ? map(descriptor.getSchema(), descriptor.getName())
+        : map(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
+  }
+
+  @Override
   public StoredList list(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredListStorageImpl(schema, constructGlobalUri(schema, name, STOREDLIST),
+    return new StoredListStorageImpl(logicalSchema, schema,
+        constructGlobalUri(schema, name, STOREDLIST),
         name, null, objectApi,
         branchApi, getListCacheEntry(logicalSchema, name));
   }
@@ -104,7 +111,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
   @Override
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
-    return new StoredListStorageImpl(schema, constructScopedUri(schema,
+    return new StoredListStorageImpl(logicalSchema, schema, constructScopedUri(schema,
         name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name,
         scopeObjectUri, objectApi,
         branchApi, getListCacheEntry(logicalSchema, name));
@@ -114,6 +121,19 @@ public class CollectionApiStorageImpl implements CollectionApi {
   public StoredList list(StoredCollectionDescriptor descriptor) {
     return descriptor.getScopeUri() == null ? list(descriptor.getSchema(), descriptor.getName())
         : list(descriptor.getScopeUri(), descriptor.getSchema(), descriptor.getName());
+  }
+
+  @Override
+  public StoredContainer container(StoredCollectionDescriptor descriptor) {
+    if (descriptor == null) {
+      return null;
+    }
+    if (descriptor.getCollectionType() == CollectionTypeEnum.LIST) {
+      return list(descriptor);
+    } else if (descriptor.getCollectionType() == CollectionTypeEnum.MAP) {
+      return map(descriptor);
+    }
+    return null;
   }
 
   @Override
@@ -180,7 +200,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
       Class<T> clazz,
       boolean singleVersion) {
     String schema = constructCollectionShemaName(logicalSchema, singleVersion);
-    return new StoredReferenceStorageImpl<>(schema,
+    return new StoredReferenceStorageImpl<>(logicalSchema, schema,
         constructGlobalUri(schema, name, STOREDREF, singleVersion), name, null,
         objectApi.definition(clazz),
         objectApi,
@@ -190,7 +210,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
   private final <T> StoredReference<T> referenceInner(URI scopeObjectUri, String logicalSchema,
       String name, Class<T> clazz, boolean singleVersion) {
     String schema = constructCollectionShemaName(logicalSchema, singleVersion);
-    return new StoredReferenceStorageImpl<>(schema,
+    return new StoredReferenceStorageImpl<>(logicalSchema, schema,
         constructScopedUri(schema,
             name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF, singleVersion),
         name, scopeObjectUri, objectApi.definition(clazz), objectApi, branchApi);
@@ -201,7 +221,7 @@ public class CollectionApiStorageImpl implements CollectionApi {
     Storage storage = storageApi.getStorage(refUri);
     String logicalSchema = storage.getScheme();
     String schema = constructCollectionShemaName(logicalSchema, singleVersion);
-    return new StoredReferenceStorageImpl<>(schema,
+    return new StoredReferenceStorageImpl<>(logicalSchema, schema,
         refUri,
         clazz.getName(), null, objectApi.definition(clazz), objectApi, branchApi);
   }

@@ -11,7 +11,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.UriUtils;
 
-abstract class AbstractStoredContainerStorageImpl {
+abstract class AbstractStoredContainerStorageImpl implements StoredContainer {
 
   protected URI uri;
 
@@ -23,10 +23,17 @@ abstract class AbstractStoredContainerStorageImpl {
 
   protected StoredCollectionDescriptor descriptor;
 
-  protected AbstractStoredContainerStorageImpl(StoredCollectionDescriptor descriptor, URI uri) {
+  protected StoredCollectionDescriptor publicDescriptor;
+
+  protected AbstractStoredContainerStorageImpl(String logicalSchema,
+      StoredCollectionDescriptor descriptor, URI uri) {
     super();
     this.uri = uri;
     this.descriptor = descriptor;
+    this.publicDescriptor =
+        new StoredCollectionDescriptor().collectionType(descriptor.getCollectionType())
+            .name(descriptor.getName()).schema(logicalSchema).scopeUri(descriptor.getScopeUri())
+            .singleVersion(descriptor.getSingleVersion());
   }
 
   public final URI getUri() {
@@ -89,6 +96,11 @@ abstract class AbstractStoredContainerStorageImpl {
 
   public Long getLastModified() {
     return objectApi.getLastModified(uri);
+  }
+
+  @Override
+  public StoredCollectionDescriptor getDescriptor() {
+    return publicDescriptor;
   }
 
 }

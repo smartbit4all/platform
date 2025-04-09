@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.storage.bean.StorageVersionRangeList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -34,12 +38,20 @@ import jakarta.validation.Valid;
 @Schema(description = "This entry contains the latest uri of the object that is archived. If only given range of versions should be included in the process then we can set ranges of versions to archive. ")
 @JsonPropertyOrder({
   StorageArchiveBatchEntry.OBJECT_URI,
+  StorageArchiveBatchEntry.COLLECTION,
+  StorageArchiveBatchEntry.TO_REMOVE,
   StorageArchiveBatchEntry.VERSION_RANGES
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageArchiveBatchEntry {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
+
+  public static final String COLLECTION = "collection";
+  private StoredCollectionDescriptor collection = null;
+
+  public static final String TO_REMOVE = "toRemove";
+  private List<URI> toRemove = new ArrayList<>();
 
   public static final String VERSION_RANGES = "versionRanges";
   private StorageVersionRangeList versionRanges;
@@ -73,6 +85,70 @@ public class StorageArchiveBatchEntry {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setObjectUri(URI objectUri) {
     this.objectUri = objectUri;
+  }
+
+  public StorageArchiveBatchEntry collection(StoredCollectionDescriptor collection) {
+    
+    this.collection = collection;
+    return this;
+  }
+
+  /**
+   * The collection to cleanup.
+   * @return collection
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The collection to cleanup.")
+  @JsonProperty(COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StoredCollectionDescriptor getCollection() {
+    return collection;
+  }
+
+
+  @JsonProperty(COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCollection(StoredCollectionDescriptor collection) {
+    this.collection = collection;
+  }
+
+  public StorageArchiveBatchEntry toRemove(List<URI> toRemove) {
+    
+    this.toRemove = toRemove;
+    return this;
+  }
+
+  public StorageArchiveBatchEntry addToRemoveItem(URI toRemoveItem) {
+    if (this.toRemove == null) {
+      this.toRemove = new ArrayList<>();
+    }
+    this.toRemove.add(toRemoveItem);
+    return this;
+  }
+
+  /**
+   * The list of URI to remove from the collection to cleanup.
+   * @return toRemove
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The list of URI to remove from the collection to cleanup.")
+  @JsonProperty(TO_REMOVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<URI> getToRemove() {
+    return toRemove;
+  }
+
+
+  @JsonProperty(TO_REMOVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setToRemove(List<URI> toRemove) {
+    this.toRemove = toRemove;
   }
 
   public StorageArchiveBatchEntry versionRanges(StorageVersionRangeList versionRanges) {
@@ -113,12 +189,14 @@ public class StorageArchiveBatchEntry {
     }
     StorageArchiveBatchEntry storageArchiveBatchEntry = (StorageArchiveBatchEntry) o;
     return Objects.equals(this.objectUri, storageArchiveBatchEntry.objectUri) &&
+        Objects.equals(this.collection, storageArchiveBatchEntry.collection) &&
+        Objects.equals(this.toRemove, storageArchiveBatchEntry.toRemove) &&
         Objects.equals(this.versionRanges, storageArchiveBatchEntry.versionRanges);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, versionRanges);
+    return Objects.hash(objectUri, collection, toRemove, versionRanges);
   }
 
   @Override
@@ -126,6 +204,8 @@ public class StorageArchiveBatchEntry {
     StringBuilder sb = new StringBuilder();
     sb.append("class StorageArchiveBatchEntry {\n");
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    collection: ").append(toIndentedString(collection)).append("\n");
+    sb.append("    toRemove: ").append(toIndentedString(toRemove)).append("\n");
     sb.append("    versionRanges: ").append(toIndentedString(versionRanges)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -29,6 +29,13 @@ public class StorageTestApiImpl implements StorageTestApi {
     return null;
   }
 
+
+  @Override
+  public Boolean getRemovableItems(Object object, Object object2) {
+    return Boolean.TRUE;
+  }
+
+
   @Override
   @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
   public void doSomething() {

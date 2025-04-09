@@ -203,10 +203,11 @@ public class SearchIndexReferenceTest {
     Assertions.assertEquals("TeszDepartment1 department of the TeszCompany1 company.",
         departmentSummary);
 
-    Assertions.assertEquals(6, result.columns().size());
+    // result columns size should equal executeSearch.fields size
+    Assertions.assertEquals(5, result.columns().size());
+    // calculated property's source property won't be in search result
     assertThat(Arrays.asList(SampleEmployee.NAME, departmentIdColumn, companyNameColumn,
-        departmentSummaryColumn, companyUri,
-        joinDot(SampleEmployee.DEPARTMENT, SampleDepartment.NAME)))
+        departmentSummaryColumn, companyUri))
             .hasSameElementsAs(result.columns().stream()
                 .map(DataColumn::getName)
                 .collect(Collectors.toList()));

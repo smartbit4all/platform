@@ -36,4 +36,6 @@ public interface ApplicationRuntimeApi {
 
   void setApis(List<URI> apiDataUris);
 
+  boolean isActive(UUID runtime);
+
 }

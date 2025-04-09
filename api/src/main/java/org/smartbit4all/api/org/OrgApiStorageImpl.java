@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -60,7 +61,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import static java.util.stream.Collectors.toList;
@@ -256,7 +256,7 @@ public class OrgApiStorageImpl implements OrgApi {
             if (StringUtils.isEmpty(oldName)) {
               log.warn("SecurityGroup.name is empty on initialization, will be {}", name);
             }
-            if (!Objects.equal(name, oldName)) {
+            if (!Objects.equals(name, oldName)) {
               log.error("SecurityGroup.name mismatch on initialization, was {}, will be {}",
                   oldName, name);
             }
@@ -305,10 +305,10 @@ public class OrgApiStorageImpl implements OrgApi {
               .builtIn(securityGroup.isbuiltIn());
       saveGroup(newGroup);
       return newGroup;
-    } else if (!(Objects.equal(group.getName(), securityGroup.getName())
-        && Objects.equal(group.getTitle(), securityGroup.getTitle())
-        && Objects.equal(group.getDescription(), securityGroup.getDescription())
-        && Objects.equal(group.getBuiltIn(), securityGroup.isbuiltIn()))) {
+    } else if (!(Objects.equals(group.getName(), securityGroup.getName())
+        && Objects.equals(group.getTitle(), securityGroup.getTitle())
+        && Objects.equals(group.getDescription(), securityGroup.getDescription())
+        && Objects.equals(group.getBuiltIn(), securityGroup.isbuiltIn()))) {
       group
           .name(securityGroup.getName())
           .title(securityGroup.getTitle())
@@ -511,13 +511,129 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
+    Objects.requireNonNull(userUri, "userUri must be specified");
     return getGroupsOfUser(userUri, groupsOfUserCache, false);
   }
 
   @Override
   public List<Group> getDirectGroupsOfUser(URI userUri) {
-    return getGroupsOfUser(userUri, directGroupsOfUserCache, true);
+    Objects.requireNonNull(userUri, "userUri must be specified");
+    return getGroupsOfUser(userUri, groupsOfUserCache, true);
   }
+
+  @Override
+  public List<List<Group>> getDirectGroupsOfUsers(List<URI> userUris) {
+    Objects.requireNonNull(userUris, "userUris must be specified");
+    return getGroupsOfUserDirect(userUris, directGroupsOfUserCache);
+  }
+
+  protected List<List<Group>> getGroupsOfUserDirect(List<URI> userUris,
+      Cache<URI, List<Group>> cache
+  // , boolean directGroupsOnly // TODO support this flag, other implementation can be deleted
+  ) {
+
+    // use latest uris
+    List<URI> userUrisLatest = userUris.stream()
+        .map(objectApi::getLatestUri)
+        .collect(toList());
+    List<List<Group>> result = new ArrayList<>(userUrisLatest.size());
+    Set<URI> missingUserUris = new HashSet<>();
+    // fill result where found in cache by userUri, otherwise add to missing
+    for (URI userUri : userUrisLatest) {
+      List<Group> groups = cache.getIfPresent(userUri);
+      if (groups != null) {
+        result.add(groups);
+      } else if (userUri == null) {
+        result.add(new ArrayList<>());
+      } else {
+        result.add(null);
+        missingUserUris.add(userUri);
+      }
+    }
+    Map<URI, Group> groupByUri = new HashMap<>();
+    if (!missingUserUris.isEmpty()) {
+      // determine groups to load, ie. groups this user is in
+      Set<URI> groupsToLoad = new HashSet<>();
+      GroupsOfUserCollection collection =
+          readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE,
+              GroupsOfUserCollection.class);
+      List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
+      Map<URI, List<URI>> groupsUrisByUserUri = new HashMap<>();
+      for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
+        URI currentUserUri = objectApi.getLatestUri(groupsOfUser.getUserUri());
+        if (missingUserUris.contains(currentUserUri)) {
+          List<URI> groups = groupsOfUser.getGroups().stream()
+              .map(objectApi::getLatestUri)
+              .distinct()
+              .collect(toList());
+          groupsToLoad.addAll(groups);
+          groupsUrisByUserUri.put(currentUserUri, groups);
+        }
+      }
+      // if any group need to be loaded, load it
+      if (!groupsToLoad.isEmpty()) {
+        objectApi.loadLatestBatch(new ArrayList<>(groupsToLoad))
+            .forEach(groupNode -> {
+              Group group = groupNode.getObject(Group.class);
+              groupByUri.put(objectApi.getLatestUri(group.getUri()), group);
+            });
+      }
+      // Map<URI, List<URI>> subgroupUrisByGroupUri = new HashMap<>();
+      // if (!directGroupsOnly) {
+      // // recursively add subgroups to loadable list
+      // // load all missing lists
+      // // add to groupUrisByUserUri subgroupUris recursively
+      // }
+      // add loaded groups to cache and result
+      int i = 0;
+      for (URI userUri : userUrisLatest) {
+        List<Group> groups = cache.getIfPresent(userUri);
+        if (groups == null) {
+          // this was the missing branch in first for loop
+          List<URI> groupUris = groupsUrisByUserUri.get(userUri);
+          if (groupUris != null) {
+            List<Group> groupList = groupUris.stream()
+                .map(objectApi::getLatestUri)
+                .map(groupByUri::get)
+                .collect(toList());
+            cache.put(userUri, groupList);
+            result.set(i, groupList);
+          } else {
+            result.set(i, new ArrayList<>());
+          }
+        }
+        i++;
+      }
+
+    }
+    return result;
+  }
+
+  // TODO finish this method which should effectively find and load subgroups of groups
+  // private void findSubgroups(Set<URI> groups, Map<URI, List<URI>> subgroupUrisByGroupUri,
+  // Map<URI, Group> groupByUri) {
+  // Set<URI> childGroups = groups.stream()
+  // .map(groupByUri::get)
+  // .filter(Objects::nonNull)
+  // .filter(group -> !ObjectUtils.isEmpty(group.getChildren()))
+  // .flatMap(group -> {
+  // List<URI> subgroupUris = subgroupUrisByGroupUri
+  // .computeIfAbsent(objectApi.getLatestUri(group.getUri()), u -> new ArrayList<>());
+  // subgroupUris.addAll(group.getChildren());
+  // return group.getChildren().stream();
+  // })
+  // .collect(toSet());
+  // if (childGroups.isEmpty()) {
+  // // no child group found for groups
+  // return;
+  // }
+  // objectApi.loadLatestBatch(new ArrayList<>(childGroups))
+  // .forEach(groupNode -> {
+  // Group group = groupNode.getObject(Group.class);
+  // groupByUri.put(group.getUri(), group);
+  // });
+  // findSubgroups(childGroups, subgroupUrisByGroupUri, groupByUri);
+  // }
 
   protected List<Group> getGroupsOfUser(URI userUri, Cache<URI, List<Group>> cache,
       boolean directGroupsOnly) {

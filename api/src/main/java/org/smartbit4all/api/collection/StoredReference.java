@@ -10,7 +10,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T>
  */
-public interface StoredReference<T> {
+public interface StoredReference<T> extends StoredContainer {
 
   void set(T object);
 

@@ -58,6 +58,7 @@ smartbit4all {
         "Session"                       : "org.smartbit4all.api.session.bean.Session",
         "ViewConstraint"                : "org.smartbit4all.api.view.bean.ViewConstraint",
         "InvocationError"               : "org.smartbit4all.api.invocation.bean.InvocationError",
+        "StoredCollectionDescriptor"    : "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
     ]
   }
 }

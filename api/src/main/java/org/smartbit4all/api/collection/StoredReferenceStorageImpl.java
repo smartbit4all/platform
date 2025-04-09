@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
@@ -17,11 +18,14 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   private ObjectDefinition<T> def;
 
-  protected StoredReferenceStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+  protected StoredReferenceStorageImpl(String logicalSchema, String storageSchema, URI uri,
+      String name, URI scopeUri,
       ObjectDefinition<T> def, ObjectApi objectApi,
       BranchApi branchApi) {
-    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
-        .collectionType(CollectionTypeEnum.REFERENCE), uri);
+    super(logicalSchema,
+        new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+            .collectionType(CollectionTypeEnum.REFERENCE),
+        uri);
     this.def = def;
     this.objectApi = objectApi;
     this.branchApi = branchApi;
@@ -72,6 +76,11 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
   @Override
   public void clear() {
     set(null);
+  }
+
+  @Override
+  public boolean removeAll(Collection<URI> uris) {
+    throw new IllegalArgumentException();
   }
 
 }

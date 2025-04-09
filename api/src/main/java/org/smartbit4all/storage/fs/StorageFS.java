@@ -399,7 +399,7 @@ public class StorageFS extends ObjectStorageImpl {
     // object.
     // TODO Inject transaction!
     newVersion.transactionId(object.getTransactionId().toString())
-        .createdAt(OffsetDateTime.now());
+        .createdAt(object.getCreatedAt() == null ? OffsetDateTime.now() : object.getCreatedAt());
     newVersion.setCreatedBy(versionCreatedBy.get());
     Map<String, ObjectAspect> aspects = object.getAspects();
     if (aspects != null) {

@@ -389,6 +389,7 @@ components:
         the archival (deletion) process itself. The archival batch defined by the first phase is saved for the configuration
         as scoped object. If a server fails to execute the archival batch then later on another server can retry to execute it.
         So the batch must be implemented in a way to be able to continue whereever it was interrupted.
+      required: [storage, typeClassNames, collections]
       properties:
         uri:
           type: string
@@ -397,6 +398,16 @@ components:
           description: |
             The unique identifier of the configuration to avoid registering the same logic again and again. 
           type: string
+        mode:
+          description: |
+            The operation mode of the archival process.
+            OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be
+            archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not.
+            LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list<URI> to the
+            function. The result is the List<URI to remove from the list. The removal is executed by the archival framework within a
+            StoredList.update operation.
+          enum: [OBJECTS_BY_CREATION_TIME, COLLECTION_BY_PREDICATE]
+          default: OBJECTS_BY_CREATION_TIME
         storage:
           description: |
             The name of the storage to archive. All the storages should be managed by individual configuration so
@@ -421,15 +432,7 @@ components:
             collections and decide if the given object should be deleted or not. The collections itself is never archived.
           type: array
           items:
-            type: string
-            format: uri
-        archiveVersionsOnly:
-          description: |
-            If the flag is true then only the versions of the relevant objects are going to included in the archival batch.
-            By default we delete the whole object not only its versions. If we delete the versions then the process collects
-            the objects and then identify the versions to delete.
-          type: boolean
-          default: false
+            type: StoredCollectionDescriptor
         objectPredicate:
           description: |
             If this invocation request is set then the invocation is called for every object to decide if it can be archived or not.
@@ -441,6 +444,49 @@ components:
             archive during the batch. If it is set then it returns a StorageVersionRangeList object. If it is null then the given object is
             not included in the archival batch.
           type: InvocationRequest
+        cronExpression:
+          description: |
+            The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object.
+            The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going 
+            to be executed when the next run arrives.
+          type: string
+        execution:
+          description: |
+            Reference to the execution of the given configuration. It contains the current execution state and refer to the
+            object batch archived.
+          type: string
+          format: uri
+    StorageArchiveProcessExecution:
+      type: object
+      description: |
+        This object belongs to the archive configuration and represents the execution of the configuration. The execution instances are the 
+        versions of this object. The state machine is the following: READY - ready to execute by the time of the next execution. COLLECTING -
+        when the process is under execution and collecting the objects to archive. ARCHIVING - when the objects to archive are saved into a
+        StorageArchiveBatch and this batch is about to archive (delete all the relevant contents).
+      properties:
+        uri:
+          type: string
+          format: uri
+        config:
+          description: Reference to the StorageArchiveProcessConfig the execution belongs to.
+          type: string
+          format: uri
+        runtime:
+          description: Reference to the application runtime the given archival is executed by.
+          type: string
+          format: uuid
+        state:
+          description: |
+            The state of the archival execution.
+          enum: [READY, COLLECTING, ARCHIVING]
+        nextRunAt:
+          description: The computed time of the next run.
+          type: string
+          format: date-time
+        archiveBatch:
+          description: Reference to the last batch executed by the configuration.
+          type: string
+          format: uri
     StorageArchiveBatch:
       type: object
       description: |
@@ -450,6 +496,11 @@ components:
         uri:
           type: string
           format: uri
+        storage:
+          description: |
+            The name of the storage to archive. All the storages should be managed by individual configuration so
+            there can be only one storage denoted. If we archive type classes then this is mandatory to set. 
+          type: string
         entries:
           type: array
           items:
@@ -464,6 +515,15 @@ components:
           description: The latest uri of the object to remove.
           type: string
           format: uri
+        collection:
+          description: The collection to cleanup.
+          type: StoredCollectionDescriptor
+        toRemove:
+          description: The list of URI to remove from the collection to cleanup.
+          type: array
+          items:
+            type: string
+            format: uri
         versionRanges:
           description: The version ranges to include in the archival. Could be empty if the whole object should be archived.
           $ref: '#/components/schemas/StorageVersionRangeList'

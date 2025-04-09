@@ -33,12 +33,15 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   private StoredListCacheEntry cacheEntry;
 
-  StoredListStorageImpl(String storageSchema, URI uri, String name, URI scopeUri,
+  StoredListStorageImpl(String logicalSchema, String storageSchema, URI uri, String name,
+      URI scopeUri,
       ObjectApi objectApi,
       BranchApi branchApi,
       StoredListCacheEntry cacheEntry) {
-    super(new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
-        .collectionType(CollectionTypeEnum.LIST), uri);
+    super(logicalSchema,
+        new StoredCollectionDescriptor().schema(storageSchema).name(name).scopeUri(scopeUri)
+            .collectionType(CollectionTypeEnum.LIST),
+        uri);
     this.objectApi = objectApi;
     this.branchApi = branchApi;
     this.cacheEntry = cacheEntry;

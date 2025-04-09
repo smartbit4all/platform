@@ -15,4 +15,6 @@ public interface StorageTestApi {
 
   void doSomething();
 
+  Boolean getRemovableItems(Object object, Object object2);
+
 }

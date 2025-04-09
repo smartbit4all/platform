@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,13 +39,15 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   StorageArchiveProcessConfig.URI,
   StorageArchiveProcessConfig.CODE,
+  StorageArchiveProcessConfig.MODE,
   StorageArchiveProcessConfig.STORAGE,
   StorageArchiveProcessConfig.TYPE_CLASS_NAMES,
   StorageArchiveProcessConfig.BEFORE_DURATION_IN_MILLIS,
   StorageArchiveProcessConfig.COLLECTIONS,
-  StorageArchiveProcessConfig.ARCHIVE_VERSIONS_ONLY,
   StorageArchiveProcessConfig.OBJECT_PREDICATE,
-  StorageArchiveProcessConfig.VERSION_SELECTOR
+  StorageArchiveProcessConfig.VERSION_SELECTOR,
+  StorageArchiveProcessConfig.CRON_EXPRESSION,
+  StorageArchiveProcessConfig.EXECUTION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageArchiveProcessConfig {
@@ -53,6 +56,44 @@ public class StorageArchiveProcessConfig {
 
   public static final String CODE = "code";
   private String code;
+
+  /**
+   * The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list&lt;URI&gt; to the function. The result is the List&lt;URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. 
+   */
+  public enum ModeEnum {
+    OBJECTS_BY_CREATION_TIME("OBJECTS_BY_CREATION_TIME"),
+    
+    COLLECTION_BY_PREDICATE("COLLECTION_BY_PREDICATE");
+
+    private String value;
+
+    ModeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ModeEnum fromValue(String value) {
+      for (ModeEnum b : ModeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String MODE = "mode";
+  private ModeEnum mode = ModeEnum.OBJECTS_BY_CREATION_TIME;
 
   public static final String STORAGE = "storage";
   private String storage;
@@ -64,16 +105,19 @@ public class StorageArchiveProcessConfig {
   private Long beforeDurationInMillis;
 
   public static final String COLLECTIONS = "collections";
-  private List<URI> collections = new ArrayList<>();
-
-  public static final String ARCHIVE_VERSIONS_ONLY = "archiveVersionsOnly";
-  private Boolean archiveVersionsOnly = false;
+  private List<StoredCollectionDescriptor> collections = new ArrayList<>();
 
   public static final String OBJECT_PREDICATE = "objectPredicate";
   private InvocationRequest objectPredicate = null;
 
   public static final String VERSION_SELECTOR = "versionSelector";
   private InvocationRequest versionSelector = null;
+
+  public static final String CRON_EXPRESSION = "cronExpression";
+  private String cronExpression;
+
+  public static final String EXECUTION = "execution";
+  private URI execution;
 
   public StorageArchiveProcessConfig() {
   }
@@ -133,6 +177,33 @@ public class StorageArchiveProcessConfig {
     this.code = code;
   }
 
+  public StorageArchiveProcessConfig mode(ModeEnum mode) {
+    
+    this.mode = mode;
+    return this;
+  }
+
+  /**
+   * The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list&lt;URI&gt; to the function. The result is the List&lt;URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. 
+   * @return mode
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The operation mode of the archival process. OBJECTS_BY_CREATION_TIME - The objects created before the time interval set by the beforeDurationInMillis are going to be archived. If the objectPredicate is not empty then we call it for every object to decide if it can be removed or not. LIST_BY_PREDICATE - We call the objectPredicate for the content of the whole list. We pass the loaded list<URI> to the function. The result is the List<URI to remove from the list. The removal is executed by the archival framework within a StoredList.update operation. ")
+  @JsonProperty(MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ModeEnum getMode() {
+    return mode;
+  }
+
+
+  @JsonProperty(MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMode(ModeEnum mode) {
+    this.mode = mode;
+  }
+
   public StorageArchiveProcessConfig storage(String storage) {
     
     this.storage = storage;
@@ -143,11 +214,12 @@ public class StorageArchiveProcessConfig {
    * The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  
    * @return storage
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  ")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the storage to archive. All the storages should be managed by individual configuration so there can be only one storage denoted. If we archive type classes then this is mandatory to set.  ")
   @JsonProperty(STORAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getStorage() {
     return storage;
@@ -155,7 +227,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(STORAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStorage(String storage) {
     this.storage = storage;
   }
@@ -178,11 +250,12 @@ public class StorageArchiveProcessConfig {
    * A list of object types can be set. These types are archived in this process. 
    * @return typeClassNames
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A list of object types can be set. These types are archived in this process. ")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "A list of object types can be set. These types are archived in this process. ")
   @JsonProperty(TYPE_CLASS_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getTypeClassNames() {
     return typeClassNames;
@@ -190,7 +263,7 @@ public class StorageArchiveProcessConfig {
 
 
   @JsonProperty(TYPE_CLASS_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTypeClassNames(List<String> typeClassNames) {
     this.typeClassNames = typeClassNames;
   }
@@ -222,13 +295,13 @@ public class StorageArchiveProcessConfig {
     this.beforeDurationInMillis = beforeDurationInMillis;
   }
 
-  public StorageArchiveProcessConfig collections(List<URI> collections) {
+  public StorageArchiveProcessConfig collections(List<StoredCollectionDescriptor> collections) {
     
     this.collections = collections;
     return this;
   }
 
-  public StorageArchiveProcessConfig addCollectionsItem(URI collectionsItem) {
+  public StorageArchiveProcessConfig addCollectionsItem(StoredCollectionDescriptor collectionsItem) {
     if (this.collections == null) {
       this.collections = new ArrayList<>();
     }
@@ -240,49 +313,23 @@ public class StorageArchiveProcessConfig {
    * A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. 
    * @return collections
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. ")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "A list of collection uri. These collection should be explored to identify the objects to archive in the gathering phase of the archival. If these collections are defined then the process will examine the referred uris of these  collections and decide if the given object should be deleted or not. The collections itself is never archived. ")
   @JsonProperty(COLLECTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<URI> getCollections() {
+  public List<StoredCollectionDescriptor> getCollections() {
     return collections;
   }
 
 
   @JsonProperty(COLLECTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCollections(List<URI> collections) {
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setCollections(List<StoredCollectionDescriptor> collections) {
     this.collections = collections;
-  }
-
-  public StorageArchiveProcessConfig archiveVersionsOnly(Boolean archiveVersionsOnly) {
-    
-    this.archiveVersionsOnly = archiveVersionsOnly;
-    return this;
-  }
-
-  /**
-   * If the flag is true then only the versions of the relevant objects are going to included in the archival batch. By default we delete the whole object not only its versions. If we delete the versions then the process collects the objects and then identify the versions to delete. 
-   * @return archiveVersionsOnly
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the flag is true then only the versions of the relevant objects are going to included in the archival batch. By default we delete the whole object not only its versions. If we delete the versions then the process collects the objects and then identify the versions to delete. ")
-  @JsonProperty(ARCHIVE_VERSIONS_ONLY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getArchiveVersionsOnly() {
-    return archiveVersionsOnly;
-  }
-
-
-  @JsonProperty(ARCHIVE_VERSIONS_ONLY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setArchiveVersionsOnly(Boolean archiveVersionsOnly) {
-    this.archiveVersionsOnly = archiveVersionsOnly;
   }
 
   public StorageArchiveProcessConfig objectPredicate(InvocationRequest objectPredicate) {
@@ -341,6 +388,61 @@ public class StorageArchiveProcessConfig {
     this.versionSelector = versionSelector;
   }
 
+  public StorageArchiveProcessConfig cronExpression(String cronExpression) {
+    
+    this.cronExpression = cronExpression;
+    return this;
+  }
+
+  /**
+   * The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object. The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going  to be executed when the next run arrives. 
+   * @return cronExpression
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The scheduling of the execution is defined by a cron expression. It is used to compute the next run time of the execution object. The first run is scheduled when the archival scheduling is reading and evaluating the configuration object. The archival is going  to be executed when the next run arrives. ")
+  @JsonProperty(CRON_EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCronExpression() {
+    return cronExpression;
+  }
+
+
+  @JsonProperty(CRON_EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCronExpression(String cronExpression) {
+    this.cronExpression = cronExpression;
+  }
+
+  public StorageArchiveProcessConfig execution(URI execution) {
+    
+    this.execution = execution;
+    return this;
+  }
+
+  /**
+   * Reference to the execution of the given configuration. It contains the current execution state and refer to the object batch archived. 
+   * @return execution
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Reference to the execution of the given configuration. It contains the current execution state and refer to the object batch archived. ")
+  @JsonProperty(EXECUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getExecution() {
+    return execution;
+  }
+
+
+  @JsonProperty(EXECUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExecution(URI execution) {
+    this.execution = execution;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -352,18 +454,20 @@ public class StorageArchiveProcessConfig {
     StorageArchiveProcessConfig storageArchiveProcessConfig = (StorageArchiveProcessConfig) o;
     return Objects.equals(this.uri, storageArchiveProcessConfig.uri) &&
         Objects.equals(this.code, storageArchiveProcessConfig.code) &&
+        Objects.equals(this.mode, storageArchiveProcessConfig.mode) &&
         Objects.equals(this.storage, storageArchiveProcessConfig.storage) &&
         Objects.equals(this.typeClassNames, storageArchiveProcessConfig.typeClassNames) &&
         Objects.equals(this.beforeDurationInMillis, storageArchiveProcessConfig.beforeDurationInMillis) &&
         Objects.equals(this.collections, storageArchiveProcessConfig.collections) &&
-        Objects.equals(this.archiveVersionsOnly, storageArchiveProcessConfig.archiveVersionsOnly) &&
         Objects.equals(this.objectPredicate, storageArchiveProcessConfig.objectPredicate) &&
-        Objects.equals(this.versionSelector, storageArchiveProcessConfig.versionSelector);
+        Objects.equals(this.versionSelector, storageArchiveProcessConfig.versionSelector) &&
+        Objects.equals(this.cronExpression, storageArchiveProcessConfig.cronExpression) &&
+        Objects.equals(this.execution, storageArchiveProcessConfig.execution);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, code, storage, typeClassNames, beforeDurationInMillis, collections, archiveVersionsOnly, objectPredicate, versionSelector);
+    return Objects.hash(uri, code, mode, storage, typeClassNames, beforeDurationInMillis, collections, objectPredicate, versionSelector, cronExpression, execution);
   }
 
   @Override
@@ -372,13 +476,15 @@ public class StorageArchiveProcessConfig {
     sb.append("class StorageArchiveProcessConfig {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
     sb.append("    storage: ").append(toIndentedString(storage)).append("\n");
     sb.append("    typeClassNames: ").append(toIndentedString(typeClassNames)).append("\n");
     sb.append("    beforeDurationInMillis: ").append(toIndentedString(beforeDurationInMillis)).append("\n");
     sb.append("    collections: ").append(toIndentedString(collections)).append("\n");
-    sb.append("    archiveVersionsOnly: ").append(toIndentedString(archiveVersionsOnly)).append("\n");
     sb.append("    objectPredicate: ").append(toIndentedString(objectPredicate)).append("\n");
     sb.append("    versionSelector: ").append(toIndentedString(versionSelector)).append("\n");
+    sb.append("    cronExpression: ").append(toIndentedString(cronExpression)).append("\n");
+    sb.append("    execution: ").append(toIndentedString(execution)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +25,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.collection.StoredMap;
+import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -36,6 +42,8 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig.ModeEnum;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.core.object.ObjectApi;
@@ -45,13 +53,13 @@ import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageArchiveApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Disabled
@@ -117,6 +125,15 @@ public class StorageTest {
 
   @Autowired
   protected StorageTestApi testApi;
+
+  @Autowired
+  protected StorageArchiveApi archiveApi;
+
+  @Autowired
+  protected CollectionApi collectionApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   protected URI collectionsTestUri;
 
@@ -741,6 +758,124 @@ public class StorageTest {
     List<URI> currentOldests = storage.readOldests(null, SampleTimeBasedData.class.getName());
     org.assertj.core.api.Assertions.assertThat(currentOldests)
         .containsExactlyInAnyOrderElementsOf(oldests);
+  }
+
+  @Test
+  void archiveOldestObjectsDays() throws Exception {
+    List<URI> oldests = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusDays(i);
+      for (int j = 0; j < 5; j++) {
+        URI uri = objectApi.saveAsNew(storageScheme,
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds));
+        if (i == 10) {
+          oldests.add(objectApi.getLatestUri(uri));
+        }
+      }
+    }
+    StorageArchiveProcessConfig config = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
+        .cronExpression("0 0 0 * * *");
+    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+
+    Storage storage = storageApi.get(storageScheme);
+    {
+      List<SampleTimeBasedData> all = storage.readAll(SampleTimeBasedData.class);
+      org.assertj.core.api.Assertions.assertThat(all)
+          .hasSize(50);
+    }
+
+    int executeArchive = archiveApi.executeArchive(configUri);
+    Assertions.assertEquals(50, executeArchive);
+
+    {
+      List<SampleTimeBasedData> all = storage.readAll(SampleTimeBasedData.class);
+      org.assertj.core.api.Assertions.assertThat(all)
+          .isEmpty();
+    }
+  }
+
+  @Test
+  void archiveObjectsFromCollectionList() throws Exception {
+    List<URI> uris = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusDays(i);
+      for (int j = 0; j < 5; j++) {
+        uris.add(objectApi.saveAsNew(storageScheme,
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds)));
+      }
+    }
+    StoredList testList = collectionApi.list(storageScheme, "testList");
+    testList.addAll(uris);
+    StoredCollectionDescriptor descriptor = testList.getDescriptor();
+    descriptor.schema(storageScheme);
+    StorageArchiveProcessConfig config = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .mode(ModeEnum.COLLECTION_BY_PREDICATE)
+        .objectPredicate(invocationApi.builder(StorageTestApi.class)
+            .build(api -> api.getRemovableItems(null, null)))
+        .addCollectionsItem(descriptor)
+        .cronExpression("0 0 0 * * *");
+    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+
+    int executeArchive = archiveApi.executeArchive(configUri);
+    Assertions.assertEquals(50, executeArchive);
+    StoredList list = collectionApi.list(storageScheme, "testList");
+    assertEquals(0, list.uris().size());
+
+    StorageArchiveProcessConfig newConfig = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
+        .cronExpression("0 0 0 * * *");
+    URI newConfigUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, newConfig);
+    archiveApi.executeArchive(newConfigUri);
+  }
+
+
+  @Test
+  void archiveObjectsFromCollectionMap() throws Exception {
+    Map<String, URI> uriMapByCounter = new HashMap<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
+    for (int i = 1; i <= 10; i++) {
+      OffsetDateTime minusSeconds = now.minusDays(i);
+      for (int j = 0; j < 5; j++) {
+        uriMapByCounter.put("" + i + "" + j, objectApi.saveAsNew(storageScheme,
+            new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
+                .timeOf(minusSeconds)));
+      }
+    }
+    StoredMap map = collectionApi.map(storageScheme, "testMap");
+    map.putAll(uriMapByCounter);
+    StoredCollectionDescriptor descriptor = map.getDescriptor();
+    descriptor.schema(storageScheme);
+    StorageArchiveProcessConfig config = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .mode(ModeEnum.COLLECTION_BY_PREDICATE)
+        .objectPredicate(invocationApi.builder(StorageTestApi.class)
+            .build(api -> api.getRemovableItems(null, null)))
+        .addCollectionsItem(descriptor)
+        .cronExpression("0 0 0 * * *");
+    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+
+    int executeArchive = archiveApi.executeArchive(configUri);
+    Assertions.assertEquals(50, executeArchive);
+    StoredMap updatedMap = collectionApi.map(storageScheme, "testMap");
+    assertEquals(0, updatedMap.uris().size());
+
+    StorageArchiveProcessConfig newConfig = new StorageArchiveProcessConfig().storage(storageScheme)
+        .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
+        .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
+        .cronExpression("0 0 0 * * *");
+    URI newConfigUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, newConfig);
+    archiveApi.executeArchive(newConfigUri);
   }
 
   private List<Object> attachAndLoadMap(Storage storage, URI uri) {
