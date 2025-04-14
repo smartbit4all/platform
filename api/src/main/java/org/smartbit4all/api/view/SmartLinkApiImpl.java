@@ -1,11 +1,16 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,9 +28,12 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import com.google.common.base.Strings;
 
 public class SmartLinkApiImpl implements SmartLinkApi {
 
@@ -40,6 +48,9 @@ public class SmartLinkApiImpl implements SmartLinkApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private StorageApi storageApi;
 
   private final Map<String, SmartLinkMigrationStatus> migrationsByChannel = new HashMap<>();
 
@@ -63,6 +74,12 @@ public class SmartLinkApiImpl implements SmartLinkApi {
       // In this case there is no wait for migration.
       return null;
     }
+
+    StoredMap map = collectionApi.map(ViewContextService.SCHEMA, channel);
+    if (!map.exists() || map.uris().isEmpty()) {
+      return null;
+    }
+
     lockMigrationsByChannel.lock();
     try {
       SmartLinkMigrationStatus migrationStatus = migrationsByChannel.get(channel);
@@ -92,6 +109,11 @@ public class SmartLinkApiImpl implements SmartLinkApi {
 
   @Override
   public URI publishView(String channel, View view, URI aclUri) {
+    return publishView(channel, view, aclUri, null);
+  }
+
+  @Override
+  public URI publishView(String channel, View view, URI aclUri, UUID smartLinkId) {
     Objects.requireNonNull(view, "view cannot be null!");
     Objects.requireNonNull(channel, "channel cannot be null!");
 
@@ -100,7 +122,7 @@ public class SmartLinkApiImpl implements SmartLinkApi {
     view.putParametersItem(PARAM_OPENED_FROM_SMART_LINK, Boolean.TRUE);
     // TODO sanitize channel name
     // TODO basePath in url?
-    UUID uuid = UUID.randomUUID();
+    UUID uuid = smartLinkId == null ? UUID.randomUUID() : smartLinkId;
     SmartLinkData smartLinkData = new SmartLinkData()
         .uuid(uuid)
         .view(view)
@@ -192,6 +214,39 @@ public class SmartLinkApiImpl implements SmartLinkApi {
         migrationLock.unlock();
       }
       log.info("Migrating finished for smartLinks in channel {}", channel);
+    }
+  }
+
+  @Override
+  public List<URI> remove(Collection<? extends UUID> smartLinkUuids) {
+    if (smartLinkUuids == null || smartLinkUuids.isEmpty()) {
+      log.debug("remove - no UUIDs supplied, terminating early.");
+      return Collections.emptyList();
+    }
+
+    final Storage smartLinkStorage = storageApi.get(SCHEMA);
+    final Set<URI> urisToRemove = smartLinkUuids.stream()
+        .filter(Objects::nonNull)
+        .map(String::valueOf)
+        .map(uuid -> smartLinkStorage.constructUriForId(referenceDefinition, uuid))
+        .collect(toSet());
+    return smartLinkStorage.remove(urisToRemove);
+  }
+
+  @Override
+  public void removeLegacyChannels(Collection<? extends String> channels) {
+    if (channels == null || channels.isEmpty()) {
+      log.debug("removeLegacyChannels - no channel names supplied, terminating early.");
+      return;
+    }
+
+    for (final String channel : channels) {
+      if (Strings.isNullOrEmpty(channel)) {
+        log.warn("Encountered null/empty channel name, skipping...");
+        continue;
+      }
+
+      collectionApi.map(SCHEMA, channel).update(it -> new HashMap<>());
     }
   }
 

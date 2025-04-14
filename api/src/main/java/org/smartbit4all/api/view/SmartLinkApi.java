@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
@@ -45,8 +47,11 @@ public interface SmartLinkApi {
    * The published {@link View} shall carry the value {@link Boolean#TRUE} under the
    * {@link View#PARAMETERS} named {@link #PARAM_OPENED_FROM_SMART_LINK}.
    *
-   * @param channel
-   * @param view
+   * @param channel the {@code String} logical grouping where the {@link SmartLinkData} is inserted
+   *        into persistent storage, not null
+   * @param view the {@link View} to publish, not null
+   * @return the {@link URI} uniquely identifying the newly created {@link SmartLinkData} in
+   *         persistent storage
    */
   URI publishView(String channel, View view);
 
@@ -57,11 +62,34 @@ public interface SmartLinkApi {
    * The published {@link View} shall carry the value {@link Boolean#TRUE} under the
    * {@link View#PARAMETERS} named {@link #PARAM_OPENED_FROM_SMART_LINK}.
    *
-   * @param channel
-   * @param view
-   * @param aclUri
+   * @param channel the {@code String} logical grouping where the {@link SmartLinkData} is inserted
+   *        into persistent storage, not null
+   * @param view the {@link View} to publish, not null
+   * @param aclUri the {@code ACL} {@link URI} to set for the created {@link SmartLinkData}, if
+   *        provided; nullable
+   * @return the {@link URI} uniquely identifying the newly created {@link SmartLinkData} in
+   *         persistent storage
    */
   URI publishView(String channel, View view, URI aclUri);
+
+  /**
+   * Publishes the provided {@link View} as a smart link.
+   * 
+   * <p>
+   * The published {@link View} shall carry the value {@link Boolean#TRUE} under the
+   * {@link View#PARAMETERS} named {@link #PARAM_OPENED_FROM_SMART_LINK}.
+   * 
+   * @param channel the {@code String} logical grouping where the {@link SmartLinkData} is inserted
+   *        into persistent storage, not null
+   * @param view the {@link View} to publish, not null
+   * @param aclUri the {@code ACL} {@link URI} to set for the created {@link SmartLinkData}, if
+   *        provided; nullable
+   * @param smartLinkId the {@link UUID} uniquely identifying the created {@link SmartLinkData};
+   *        nullable: if unspecified, a new random value shall be generated
+   * @return the {@link URI} uniquely identifying the newly created {@link SmartLinkData} in
+   *         persistent storage
+   */
+  URI publishView(String channel, View view, URI aclUri, UUID smartLinkId);
 
   /**
    * Finds the SmartLinkData in the channel, identified by it's UUID, and returns it as an
@@ -79,5 +107,25 @@ public interface SmartLinkApi {
    * @param channel The name of the channel to migrate.
    */
   void migrate(String channel);
+
+
+  /**
+   * Deletes the {@link SmartLinkData} identified by the provided {@link UUID}s from persistent
+   * storage.
+   * 
+   * @param smartLinkUuids a {@link Collection} of {@link UUID}s belonging to {@link SmartLinkData},
+   *        nullable
+   * @return the {@link List} of {@link URI}s of operation managed to remove from persistent
+   *         storage, never null
+   */
+  List<URI> remove(Collection<? extends UUID> smartLinkUuids);
+
+  /**
+   * Deletes the stored collections backing the provided channel's legacy persistence implementation
+   * 
+   * @param channels the {@link String} names of the channels to clear, nullable
+   */
+  void removeLegacyChannels(Collection<? extends String> channels);
+
 
 }
