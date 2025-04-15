@@ -40,8 +40,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   GeoMapServerModel.SELECTED_ITEMS,
   GeoMapServerModel.SELECTED_LAYERS,
-  GeoMapServerModel.DATA_SOURCES,
-  GeoMapServerModel.PENDING_ITEMS
+  GeoMapServerModel.DATA_SOURCES
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapServerModel {
@@ -53,9 +52,6 @@ public class GeoMapServerModel {
 
   public static final String DATA_SOURCES = "dataSources";
   private Map<String, GeoMapDataSourceDescriptor> dataSources = new HashMap<>();
-
-  public static final String PENDING_ITEMS = "pendingItems";
-  private Map<String, List<@Valid GeoMapItem>> pendingItems = new HashMap<>();
 
   public GeoMapServerModel() {
   }
@@ -164,40 +160,6 @@ public class GeoMapServerModel {
     this.dataSources = dataSources;
   }
 
-  public GeoMapServerModel pendingItems(Map<String, List<@Valid GeoMapItem>> pendingItems) {
-    
-    this.pendingItems = pendingItems;
-    return this;
-  }
-
-  public GeoMapServerModel putPendingItemsItem(String key, List<@Valid GeoMapItem> pendingItemsItem) {
-    this.pendingItems.put(key, pendingItemsItem);
-    return this;
-  }
-
-  /**
-   * Get pendingItems
-   * @return pendingItems
-   */
-  @jakarta.annotation.Nonnull
-  @NotNull
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
-  @JsonProperty(PENDING_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Map<String, List<@Valid GeoMapItem>> getPendingItems() {
-    return pendingItems;
-  }
-
-
-  @JsonProperty(PENDING_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPendingItems(Map<String, List<@Valid GeoMapItem>> pendingItems) {
-    this.pendingItems = pendingItems;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -209,13 +171,12 @@ public class GeoMapServerModel {
     GeoMapServerModel geoMapServerModel = (GeoMapServerModel) o;
     return Objects.equals(this.selectedItems, geoMapServerModel.selectedItems) &&
         Objects.equals(this.selectedLayers, geoMapServerModel.selectedLayers) &&
-        Objects.equals(this.dataSources, geoMapServerModel.dataSources) &&
-        Objects.equals(this.pendingItems, geoMapServerModel.pendingItems);
+        Objects.equals(this.dataSources, geoMapServerModel.dataSources);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectedItems, selectedLayers, dataSources, pendingItems);
+    return Objects.hash(selectedItems, selectedLayers, dataSources);
   }
 
   @Override
@@ -225,7 +186,6 @@ public class GeoMapServerModel {
     sb.append("    selectedItems: ").append(toIndentedString(selectedItems)).append("\n");
     sb.append("    selectedLayers: ").append(toIndentedString(selectedLayers)).append("\n");
     sb.append("    dataSources: ").append(toIndentedString(dataSources)).append("\n");
-    sb.append("    pendingItems: ").append(toIndentedString(pendingItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

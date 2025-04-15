@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.geomap.bean.GeoMapEditingSession;
 import org.smartbit4all.api.geomap.bean.GeoMapLayerDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,7 +43,8 @@ import jakarta.validation.Valid;
   GeoMapViewState.FIT_TO_INITIAL_ITEMS,
   GeoMapViewState.CENTER_ON_ITEM_CLICK,
   GeoMapViewState.OPERATION_MODE,
-  GeoMapViewState.SELECTED_ITEMS
+  GeoMapViewState.SELECTED_ITEMS,
+  GeoMapViewState.EDITING_SESSION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapViewState {
@@ -66,6 +68,9 @@ public class GeoMapViewState {
 
   public static final String SELECTED_ITEMS = "selectedItems";
   private List<String> selectedItems = new ArrayList<>();
+
+  public static final String EDITING_SESSION = "editingSession";
+  private GeoMapEditingSession editingSession;
 
   public GeoMapViewState() {
   }
@@ -290,6 +295,34 @@ public class GeoMapViewState {
     this.selectedItems = selectedItems;
   }
 
+  public GeoMapViewState editingSession(GeoMapEditingSession editingSession) {
+    
+    this.editingSession = editingSession;
+    return this;
+  }
+
+  /**
+   * Get editingSession
+   * @return editingSession
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapEditingSession getEditingSession() {
+    return editingSession;
+  }
+
+
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditingSession(GeoMapEditingSession editingSession) {
+    this.editingSession = editingSession;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -305,12 +338,13 @@ public class GeoMapViewState {
         Objects.equals(this.fitToInitialItems, geoMapViewState.fitToInitialItems) &&
         Objects.equals(this.centerOnItemClick, geoMapViewState.centerOnItemClick) &&
         Objects.equals(this.operationMode, geoMapViewState.operationMode) &&
-        Objects.equals(this.selectedItems, geoMapViewState.selectedItems);
+        Objects.equals(this.selectedItems, geoMapViewState.selectedItems) &&
+        Objects.equals(this.editingSession, geoMapViewState.editingSession);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, layerDescriptors, visibleLayers, fitToInitialItems, centerOnItemClick, operationMode, selectedItems);
+    return Objects.hash(label, layerDescriptors, visibleLayers, fitToInitialItems, centerOnItemClick, operationMode, selectedItems, editingSession);
   }
 
   @Override
@@ -324,6 +358,7 @@ public class GeoMapViewState {
     sb.append("    centerOnItemClick: ").append(toIndentedString(centerOnItemClick)).append("\n");
     sb.append("    operationMode: ").append(toIndentedString(operationMode)).append("\n");
     sb.append("    selectedItems: ").append(toIndentedString(selectedItems)).append("\n");
+    sb.append("    editingSession: ").append(toIndentedString(editingSession)).append("\n");
     sb.append("}");
     return sb.toString();
   }

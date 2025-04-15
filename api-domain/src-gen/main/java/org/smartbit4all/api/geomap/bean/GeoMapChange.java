@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.geomap.bean.GeoMapEditingSession;
 import org.smartbit4all.api.geomap.bean.GeoMapLayerChange;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -36,7 +37,8 @@ import jakarta.validation.Valid;
 @Schema(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GeoMapChange.CODE,
-  GeoMapChange.ITEMS
+  GeoMapChange.ITEMS,
+  GeoMapChange.EDITING_SESSION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GeoMapChange {
@@ -45,6 +47,9 @@ public class GeoMapChange {
 
   public static final String ITEMS = "items";
   private List<@Valid GeoMapLayerChange> items = new ArrayList<>();
+
+  public static final String EDITING_SESSION = "editingSession";
+  private GeoMapEditingSession editingSession;
 
   public GeoMapChange() {
   }
@@ -113,6 +118,34 @@ public class GeoMapChange {
     this.items = items;
   }
 
+  public GeoMapChange editingSession(GeoMapEditingSession editingSession) {
+    
+    this.editingSession = editingSession;
+    return this;
+  }
+
+  /**
+   * Get editingSession
+   * @return editingSession
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapEditingSession getEditingSession() {
+    return editingSession;
+  }
+
+
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditingSession(GeoMapEditingSession editingSession) {
+    this.editingSession = editingSession;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -123,12 +156,13 @@ public class GeoMapChange {
     }
     GeoMapChange geoMapChange = (GeoMapChange) o;
     return Objects.equals(this.code, geoMapChange.code) &&
-        Objects.equals(this.items, geoMapChange.items);
+        Objects.equals(this.items, geoMapChange.items) &&
+        Objects.equals(this.editingSession, geoMapChange.editingSession);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, items);
+    return Objects.hash(code, items, editingSession);
   }
 
   @Override
@@ -137,6 +171,7 @@ public class GeoMapChange {
     sb.append("class GeoMapChange {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    editingSession: ").append(toIndentedString(editingSession)).append("\n");
     sb.append("}");
     return sb.toString();
   }

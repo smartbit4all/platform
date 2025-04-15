@@ -30,9 +30,7 @@ public enum GeoMapOperationMode {
   
   ACTION("ACTION"),
   
-  SELECTION("SELECTION"),
-  
-  PLACEMENT("PLACEMENT");
+  SELECTION("SELECTION");
 
   private String value;
 
