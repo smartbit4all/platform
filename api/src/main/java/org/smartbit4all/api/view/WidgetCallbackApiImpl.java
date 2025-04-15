@@ -7,6 +7,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
 public class WidgetCallbackApiImpl implements WidgetCallbackApi {
@@ -50,12 +51,19 @@ public class WidgetCallbackApiImpl implements WidgetCallbackApi {
   }
 
   @Override
-  public Object executeObjectCallback(InvocationRequest request, Object parameter) {
+  public Object executeObjectCallback(InvocationRequest request, Object parameter,
+      Object... parameters) {
     if (request == null) {
       return parameter;
     }
     try {
       request.getParameters().get(0).setValue(parameter);
+
+      if (parameters != null && !ObjectUtils.isEmpty(parameters)) {
+        for (int i = 1; i < parameters.length + 1; i++) {
+          request.getParameters().get(i).setValue(parameters[i - 1]);
+        }
+      }
       InvocationParameter result = invocationApi.invoke(request);
       if (result == null || result.getValue() == null) {
         throw new IllegalArgumentException("Action returned nothing");
@@ -70,12 +78,20 @@ public class WidgetCallbackApiImpl implements WidgetCallbackApi {
     }
   }
 
+
+
   @Override
-  public Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter) {
+  public Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter,
+      Object... parameters) {
     for (InvocationRequest request : requests) {
-      parameter = executeObjectCallback(request, parameter);
+      parameter = executeObjectCallback(request, parameter, parameters);
     }
     return parameter;
+  }
+
+  @Override
+  public Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter) {
+    return executeObjectCallbacks(requests, parameter, null);
   }
 
   @Override

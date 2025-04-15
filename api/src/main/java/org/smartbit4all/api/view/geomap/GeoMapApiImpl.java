@@ -8,12 +8,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -22,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.geomap.bean.GeoMapChange;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
+import org.smartbit4all.api.geomap.bean.GeoMapEditingSession;
 import org.smartbit4all.api.geomap.bean.GeoMapInteraction;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapLayer;
@@ -35,8 +34,10 @@ import org.smartbit4all.api.geomap.bean.GeoMapViewport;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.WidgetCallbackApi;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.geomap.datasource.GeoMapDataLoadingStrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
 public class GeoMapApiImpl implements GeoMapApi {
@@ -47,7 +48,7 @@ public class GeoMapApiImpl implements GeoMapApi {
   private static final String POSTFIX_LAYER_REMOVED = "_mapLayerRemovedCallback";
   private static final String POSTFIX_ITEM = "_mapItemAddedCallback";
   private static final String POSTFIX_SELECTION = "_mapSelectionChangedCallback";
-  private static final String POSTFIX_PLACEMENT = "_mapPlacementChangedCallback";
+  private static final String POSTFIX_EDIITNG_SESSION = "_mapEditingSessionClosedCallback";
 
   @Autowired(required = false) // FIXME (viewApi is not present everywhere)
   private ViewApi viewApi;
@@ -111,16 +112,6 @@ public class GeoMapApiImpl implements GeoMapApi {
   }
 
   @Override
-  public void clearPendingItems(UUID viewUuid, String mapId) {
-    executeMapCall(viewUuid, mapId, model -> {
-      final GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
-      serverModel.setPendingItems(new HashMap<>());
-      model.setPendingItems(new ArrayList<>());
-      return model;
-    });
-  }
-
-  @Override
   public GeoMapChange refreshMap(UUID viewUuid, String mapId) {
     return executeMapCall(viewUuid, mapId, model -> {
       // THIS IS A VERY NAIVE, RUDIMENTARY IMPLEMENTATION:
@@ -141,25 +132,10 @@ public class GeoMapApiImpl implements GeoMapApi {
                   .code(mapId)
                   .items(layerChanges)));
 
-      // always include pending items:
-      serverModel.getPendingItems().entrySet().stream()
-          .filter(e -> visibleLayers.contains(e.getKey()))
-          .forEach(e -> {
-            final String layerId = e.getKey();
-            final List<GeoMapItem> pendingItems = e.getValue();
-            final Optional<GeoMapLayerChange> pertainingLayerChange = change.getItems().stream()
-                .filter(layerChange -> layerId.equals(layerChange.getCode()))
-                .findFirst();
-            if (pertainingLayerChange.isPresent()) {
-              pertainingLayerChange.get().getToAdd().addAll(pendingItems);
-            } else {
-              change.addItemsItem(new GeoMapLayerChange()
-                  .code(layerId)
-                  .toAdd(new ArrayList<>(pendingItems)));
-            }
-            layersToShow.computeIfAbsent(layerId, k -> new GeoMapLayer().code(k))
-                .getItems().addAll(pendingItems);
-          });
+      if (!ObjectUtils.isEmpty(model.getViewState().getEditingSession())) {
+        change.editingSession(model.getViewState().getEditingSession());
+      }
+
       model.setLayers(new ArrayList<>(layersToShow.values()));
       return change;
     });
@@ -214,14 +190,6 @@ public class GeoMapApiImpl implements GeoMapApi {
     Objects.requireNonNull(interaction, "interaction cannot be null!");
 
     switch (interaction.getOperationMode()) {
-      case PLACEMENT:
-        placeItem(
-            viewUuid,
-            mapId,
-            interaction.getTargetLayer(),
-            interaction.getTargetItem(),
-            !interaction.getInverse());
-        break;
       case SELECTION:
         selectItem(
             viewUuid,
@@ -240,51 +208,23 @@ public class GeoMapApiImpl implements GeoMapApi {
   }
 
   @Override
-  public void selectItem(
-      UUID viewUuid, String mapId, String layerId, String itemId, boolean select) {
-    final GeoMapModel model = getModel(viewUuid, mapId);
-    final GeoMapViewState viewState = model.getViewState();
-    final boolean selectionSupported;
-    final GeoMapLayer targetLayer;
-    if (Strings.isNullOrEmpty(layerId)) {
+  public void selectItem(UUID viewUuid, String mapId, String layerId, String itemId,
+      boolean select) {
+    GeoMapModel model = getModel(viewUuid, mapId);
+    GeoMapViewState viewState = model.getViewState();
+    GeoMapLayer targetLayer = findTargetLayer(model, viewState, layerId);
 
-      final List<String> visibleLayers = viewState.getVisibleLayers();
-      targetLayer = viewState.getLayerDescriptors().stream()
-          .filter(it -> GeoMapSelectionMode.NONE != it.getSelectionMode())
-          .filter(it -> Boolean.TRUE.equals(it.getPreserveSelection()
-              || visibleLayers.contains(it.getCode())))
-          .map(GeoMapLayerDescriptor::getCode)
-          .filter(Objects::nonNull)
-          .flatMap(it -> model.getLayers().stream()
-              .filter(layer -> it.equals(layer.getCode()))
-              .findFirst()
-              .map(Stream::of)
-              .orElseGet(Stream::empty))
-          .findFirst()
-          .orElse(null);
-    } else {
-      targetLayer = model.getLayers().stream()
-          .filter(it -> layerId.equals(it.getCode()))
-          .findFirst()
-          .orElse(null);
-    }
-    selectionSupported = targetLayer != null;
-    if (!selectionSupported) {
+    if (targetLayer == null)
       return;
-    }
 
-    final GeoMapLayerDescriptor targetLayerDescriptor = viewState
-        .getLayerDescriptors().stream()
-        .filter(it -> Objects.equals(it.getCode(), targetLayer.getCode()))
-        .findFirst()
-        .orElse(null);
-    if (targetLayerDescriptor == null) {
+    GeoMapLayerDescriptor descriptor = findLayerDescriptor(viewState, targetLayer);
+    if (descriptor == null)
       return;
-    }
 
-    final GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
-    final Map<String, GeoMapItem> selection = serverModel.getSelectedItems();
-    if (GeoMapSelectionMode.SINGLE == targetLayerDescriptor.getSelectionMode()) {
+    GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
+    Map<String, GeoMapItem> selection = serverModel.getSelectedItems();
+
+    if (descriptor.getSelectionMode() == GeoMapSelectionMode.SINGLE) {
       selection.clear();
     }
 
@@ -293,17 +233,10 @@ public class GeoMapApiImpl implements GeoMapApi {
       return;
     }
 
-    final GeoMapItem selectedItem = targetLayer.getItems().stream()
-        .filter(it -> itemId.equals(it.getId()))
-        .findFirst()
-        .orElseGet(() -> getPendingItems(serverModel).stream()
-            .filter(it -> itemId.equals(it.getId()))
-            .findFirst()
-            .orElse(null));
+    GeoMapItem selectedItem = findItemById(targetLayer, itemId);
     if (selectedItem == null) {
       throw new IllegalArgumentException(
-          "GeoMap Item [ " + itemId + " ] not found on layer [ "
-              + targetLayer.getCode() + " ]!");
+          "GeoMap Item [" + itemId + "] not found on layer [" + targetLayer.getCode() + "]!");
     }
 
     if (Boolean.TRUE.equals(selectedItem.getSelectable())) {
@@ -312,76 +245,79 @@ public class GeoMapApiImpl implements GeoMapApi {
 
     serverModel.putSelectedItemsItem(itemId, selectedItem);
     selectedItem.setSelected(true);
+
     widgetCallbackApi.executeVoidCallbacks(
         widgetCallbackApi.getCallbacks(viewUuid, mapId, POSTFIX_SELECTION),
         viewUuid, mapId);
   }
 
-  private void placeItem(
-      UUID viewUuid, String mapId, String layerId, GeoMapItem item, boolean place) {
-    final GeoMapModel model = getModel(viewUuid, mapId);
-    final Set<String> pendingItemIds = new HashSet<>(model.getPendingItems() == null
-        ? Collections.emptySet()
-        : model.getPendingItems());
-    final GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
 
-    final String targetLayer;
-    if (Strings.isNullOrEmpty(layerId)) {
-      targetLayer = LAYER_DEFAULT;
-    } else {
-      targetLayer = layerId;
-    }
 
-    final boolean modified; // this sentinel is only here until every branch is implemented...
-    if (Strings.isNullOrEmpty(item.getId())) {
-      // we are trying to place a new element:
-      if (place && model.getViewState().getLayerDescriptors().stream()
-          .filter(it -> targetLayer.equals(it.getCode()))
-          .findFirst()
-          .map(GeoMapLayerDescriptor::getSelectionMode)
-          .map(selectionMode -> GeoMapSelectionMode.MULTIPLE != selectionMode)
-          .orElse(true)) {
-        // the targeted layer is not explicitly multi-select -> clear its pending items:
-        pendingItemIds.clear();
-        serverModel.getPendingItems()
-            .computeIfAbsent(targetLayer, k -> new ArrayList<>())
-            .clear();
-      }
+  @Override
+  public void startEditingSession(UUID viewUuid, String mapId, GeoMapItem selectedItem) {
+    GeoMapModel model = getModel(viewUuid, mapId);
 
-      final String newItemId = UUID.randomUUID().toString();
-      pendingItemIds.add(newItemId);
-      serverModel.getPendingItems()
-          .computeIfAbsent(targetLayer, k -> new ArrayList<>())
-          .add(item.id(newItemId));
+    ArrayList<GeoMapItem> selectedItems = new ArrayList<>();
+    selectedItems.add(selectedItem.style(new Style().addClassesToAddItem("selectedGeoMapItem")));
+    model.getViewState().editingSession(
+        new GeoMapEditingSession().putPendingItemsItem(selectedItem.getId(), selectedItems));
+    setModel(viewUuid, mapId, model);
+  }
 
-      final List<String> visibleLayers = model.getViewState().getVisibleLayers();
-      if (!visibleLayers.contains(targetLayer)) {
-        visibleLayers.add(targetLayer);
-      }
-      modified = true;
-    } else if (getPendingItems(serverModel).stream()
-        .map(GeoMapItem::getId)
-        .anyMatch(item.getId()::equals)) {
-      // we are interacting with a pending element, let's remove it:
-      pendingItemIds.remove(item.getId());
-      serverModel.getPendingItems()
-          .computeIfAbsent(targetLayer, k -> new ArrayList<>())
-          .removeIf(it -> item.getId().equals(it.getId()));
-      modified = true;
-    } else {
-      modified = false;
-    }
 
-    // TODO: handle place=TRUE for existing item -> this is a drag:
-    // TODO: handle place=TRUE for existing item -> this is a pending removal:
-    if (!modified) {
-      return;
-    }
+  @Override
+  public void endEditingSession(UUID viewUuid, String mapId) {
+    GeoMapModel model = getModel(viewUuid, mapId);
 
-    model.setPendingItems(new ArrayList<>(pendingItemIds));
-    widgetCallbackApi.executeVoidCallbacks(
-        widgetCallbackApi.getCallbacks(viewUuid, mapId, POSTFIX_PLACEMENT),
+    Boolean isEditingEnd = (Boolean) widgetCallbackApi.executeObjectCallbacks(
+        widgetCallbackApi.getCallbacks(viewUuid, mapId, POSTFIX_EDIITNG_SESSION),
         viewUuid, mapId);
+    if (Boolean.TRUE.equals(isEditingEnd)) {
+      model.getViewState().editingSession(null);
+      setModel(viewUuid, mapId, model);
+      refreshMap(viewUuid, mapId);
+    }
+  }
+
+
+  private GeoMapLayer findTargetLayer(GeoMapModel model, GeoMapViewState viewState,
+      String layerId) {
+    if (Strings.isNullOrEmpty(layerId)) {
+      List<String> visibleLayers = viewState.getVisibleLayers();
+      return viewState.getLayerDescriptors().stream()
+          .filter(d -> GeoMapSelectionMode.NONE != d.getSelectionMode())
+          .filter(d -> Boolean.TRUE.equals(d.getPreserveSelection())
+              || visibleLayers.contains(d.getCode()))
+          .map(GeoMapLayerDescriptor::getCode)
+          .filter(Objects::nonNull)
+          .flatMap(code -> model.getLayers().stream()
+              .filter(layer -> code.equals(layer.getCode()))
+              .findFirst()
+              .map(Stream::of)
+              .orElseGet(Stream::empty))
+          .findFirst()
+          .orElse(null);
+    } else {
+      return model.getLayers().stream()
+          .filter(layer -> layerId.equals(layer.getCode()))
+          .findFirst()
+          .orElse(null);
+    }
+  }
+
+  private GeoMapLayerDescriptor findLayerDescriptor(GeoMapViewState viewState,
+      GeoMapLayer targetLayer) {
+    return viewState.getLayerDescriptors().stream()
+        .filter(d -> Objects.equals(d.getCode(), targetLayer.getCode()))
+        .findFirst()
+        .orElse(null);
+  }
+
+  private GeoMapItem findItemById(GeoMapLayer layer, String itemId) {
+    return layer.getItems().stream()
+        .filter(item -> itemId.equals(item.getId()))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
@@ -415,9 +351,10 @@ public class GeoMapApiImpl implements GeoMapApi {
   }
 
   @Override
-  public void addMapItemPlacementListener(UUID viewUuid, String mapId,
+  public void addEditingSessionClosedListener(UUID viewUuid, String mapId,
       InvocationRequest onMapItemPlaced) {
-    widgetCallbackApi.addCallback(viewUuid, mapId, onMapItemPlaced, POSTFIX_PLACEMENT);
+    widgetCallbackApi.addCallback(viewUuid, mapId, onMapItemPlaced, POSTFIX_EDIITNG_SESSION);
+
   }
 
   @Override
@@ -428,22 +365,6 @@ public class GeoMapApiImpl implements GeoMapApi {
     final GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
     return (serverModel != null)
         ? new ArrayList<>(serverModel.getSelectedItems().values())
-        : Collections.emptyList();
-  }
-
-  @Override
-  public List<GeoMapItem> getPendingItems(UUID viewUuid, String mapId) {
-    Objects.requireNonNull(viewUuid, "viewUuid cannot be null!");
-    Objects.requireNonNull(mapId, "mapId cannot be null!");
-    final GeoMapServerModel serverModel = getServerModel(viewUuid, mapId);
-    return getPendingItems(serverModel);
-  }
-
-  private List<GeoMapItem> getPendingItems(GeoMapServerModel serverModel) {
-    return (serverModel != null)
-        ? serverModel.getPendingItems().values().stream()
-            .flatMap(List::stream)
-            .collect(toList())
         : Collections.emptyList();
   }
 

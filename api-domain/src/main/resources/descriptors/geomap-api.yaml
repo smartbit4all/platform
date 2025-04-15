@@ -197,10 +197,6 @@ components:
           type: array
           items:
             type: string
-        pendingItems:
-          type: array
-          items:
-            type: string
     GeoMapServerModel:
       type: object
       description: |
@@ -219,6 +215,9 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/GeoMapDataSourceDescriptor'
+    GeoMapEditingSession:
+      type: object
+      properties:
         pendingItems:
           type: object
           additionalProperties:
@@ -275,10 +274,6 @@ components:
           $ref: '#/components/schemas/GPSPosition'
         route:
           $ref: '#/components/schemas/GPSRoute'
-        bounds:
-          type: array
-          items:
-            $ref: '#/components/schemas/GPSPosition'
     GeoMapItemKind:
       enum: [MARKER, POLYGON, LINE]
     GeoMapViewState:
@@ -316,8 +311,10 @@ components:
           type: array
           items:
             type: string
+        editingSession:
+          $ref: '#/components/schemas/GeoMapEditingSession'
     GeoMapOperationMode:
-      enum: [ACTION, SELECTION, PLACEMENT]
+      enum: [ACTION, SELECTION]
     GeoMapLayerDescriptor:
       type: object
       description: How the layer behaves.
@@ -370,6 +367,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GeoMapLayerChange'
+        editingSession:
+          $ref: '#/components/schemas/GeoMapEditingSession'
     GeoMapLayerChange:
       type: object
       description: |
@@ -478,4 +477,6 @@ components:
           type: boolean
           default: false
           description: Marks inverse operations (unselect, remove pending placement)
+        editingSession:
+          $ref: '#/components/schemas/GeoMapEditingSession'
       required: [operationMode, targetLayer, targetItem, inverse]

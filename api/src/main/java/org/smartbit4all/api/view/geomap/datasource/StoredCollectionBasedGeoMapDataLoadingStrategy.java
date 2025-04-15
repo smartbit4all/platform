@@ -14,6 +14,7 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.geomap.bean.GPSPosition;
+import org.smartbit4all.api.geomap.bean.GPSRoute;
 import org.smartbit4all.api.geomap.bean.GeoMapDataSourceDescriptor;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapItemKind;
@@ -120,7 +121,9 @@ final class StoredCollectionBasedGeoMapDataLoadingStrategy extends GeoMapDataLoa
             .label((titlePath == null) ? null : it.getValueAsString(titlePath))
             .description((descPath == null) ? null : it.getValueAsString(descPath))
             .position((posPath == null) ? null : it.getValue(GPSPosition.class, posPath))
-            .bounds((boundsPath == null) ? null : it.getValueAsList(GPSPosition.class, boundsPath)))
+            .route(new GPSRoute().points((boundsPath == null)
+                ? null
+                : it.getValueAsList(GPSPosition.class, boundsPath))))
         .collect(toList());
   }
 

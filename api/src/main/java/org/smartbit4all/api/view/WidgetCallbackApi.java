@@ -18,9 +18,12 @@ public interface WidgetCallbackApi {
 
   void clearCallbacks(UUID viewUuid);
 
-  Object executeObjectCallback(InvocationRequest request, Object parameter);
+  Object executeObjectCallback(InvocationRequest request, Object parameter, Object... parameters);
 
   Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter);
+
+  Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter,
+      Object... parameters);
 
   void executeVoidCallbacks(List<InvocationRequest> requests, Object... parameters);
 

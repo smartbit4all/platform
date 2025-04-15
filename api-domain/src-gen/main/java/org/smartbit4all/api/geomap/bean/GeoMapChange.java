@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.geomap.bean.GeoMapEditingSession;
 import org.smartbit4all.api.geomap.bean.GeoMapLayerChange;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -36,7 +37,8 @@ import javax.validation.Valid;
 @ApiModel(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
   GeoMapChange.CODE,
-  GeoMapChange.ITEMS
+  GeoMapChange.ITEMS,
+  GeoMapChange.EDITING_SESSION
 })
 @JsonTypeName("GeoMapChange")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +48,9 @@ public class GeoMapChange {
 
   public static final String ITEMS = "items";
   private List<GeoMapLayerChange> items = new ArrayList<>();
+
+  public static final String EDITING_SESSION = "editingSession";
+  private GeoMapEditingSession editingSession;
 
   public GeoMapChange() { 
   }
@@ -111,6 +116,34 @@ public class GeoMapChange {
   }
 
 
+  public GeoMapChange editingSession(GeoMapEditingSession editingSession) {
+    
+    this.editingSession = editingSession;
+    return this;
+  }
+
+   /**
+   * Get editingSession
+   * @return editingSession
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapEditingSession getEditingSession() {
+    return editingSession;
+  }
+
+
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditingSession(GeoMapEditingSession editingSession) {
+    this.editingSession = editingSession;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -121,12 +154,13 @@ public class GeoMapChange {
     }
     GeoMapChange geoMapChange = (GeoMapChange) o;
     return Objects.equals(this.code, geoMapChange.code) &&
-        Objects.equals(this.items, geoMapChange.items);
+        Objects.equals(this.items, geoMapChange.items) &&
+        Objects.equals(this.editingSession, geoMapChange.editingSession);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, items);
+    return Objects.hash(code, items, editingSession);
   }
 
   @Override
@@ -135,6 +169,7 @@ public class GeoMapChange {
     sb.append("class GeoMapChange {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    editingSession: ").append(toIndentedString(editingSession)).append("\n");
     sb.append("}");
     return sb.toString();
   }

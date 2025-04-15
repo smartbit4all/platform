@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.geomap.bean.GeoMapEditingSession;
 import org.smartbit4all.api.geomap.bean.GeoMapItem;
 import org.smartbit4all.api.geomap.bean.GeoMapOperationMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,7 +37,8 @@ import javax.validation.Valid;
   GeoMapInteraction.OPERATION_MODE,
   GeoMapInteraction.TARGET_LAYER,
   GeoMapInteraction.TARGET_ITEM,
-  GeoMapInteraction.INVERSE
+  GeoMapInteraction.INVERSE,
+  GeoMapInteraction.EDITING_SESSION
 })
 @JsonTypeName("GeoMapInteraction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -52,6 +54,9 @@ public class GeoMapInteraction {
 
   public static final String INVERSE = "inverse";
   private Boolean inverse = false;
+
+  public static final String EDITING_SESSION = "editingSession";
+  private GeoMapEditingSession editingSession;
 
   public GeoMapInteraction() { 
   }
@@ -170,6 +175,34 @@ public class GeoMapInteraction {
   }
 
 
+  public GeoMapInteraction editingSession(GeoMapEditingSession editingSession) {
+    
+    this.editingSession = editingSession;
+    return this;
+  }
+
+   /**
+   * Get editingSession
+   * @return editingSession
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GeoMapEditingSession getEditingSession() {
+    return editingSession;
+  }
+
+
+  @JsonProperty(EDITING_SESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditingSession(GeoMapEditingSession editingSession) {
+    this.editingSession = editingSession;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -182,12 +215,13 @@ public class GeoMapInteraction {
     return Objects.equals(this.operationMode, geoMapInteraction.operationMode) &&
         Objects.equals(this.targetLayer, geoMapInteraction.targetLayer) &&
         Objects.equals(this.targetItem, geoMapInteraction.targetItem) &&
-        Objects.equals(this.inverse, geoMapInteraction.inverse);
+        Objects.equals(this.inverse, geoMapInteraction.inverse) &&
+        Objects.equals(this.editingSession, geoMapInteraction.editingSession);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operationMode, targetLayer, targetItem, inverse);
+    return Objects.hash(operationMode, targetLayer, targetItem, inverse, editingSession);
   }
 
   @Override
@@ -198,6 +232,7 @@ public class GeoMapInteraction {
     sb.append("    targetLayer: ").append(toIndentedString(targetLayer)).append("\n");
     sb.append("    targetItem: ").append(toIndentedString(targetItem)).append("\n");
     sb.append("    inverse: ").append(toIndentedString(inverse)).append("\n");
+    sb.append("    editingSession: ").append(toIndentedString(editingSession)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -32,9 +32,6 @@ public interface GeoMapApi {
       final UUID viewUuid,
       final String mapId,
       final GeoMapDataSourceDescriptor dataSourceDescriptor);
-
-  void clearPendingItems(final UUID viewUuid, final String mapId);
-
   // -----------------------------------------------------------------------------------------------
   // CLIENT FACING BEHAVIOUR
 
@@ -45,6 +42,10 @@ public interface GeoMapApi {
   void interact(final UUID viewUuid, final String mapId, final GeoMapInteraction interaction);
 
   void selectItem(UUID viewUuid, String mapId, String layerId, String itemId, boolean select);
+
+  void startEditingSession(UUID viewUuid, String mapId, GeoMapItem selectedItem);
+
+  void endEditingSession(UUID viewUuid, String mapId);
 
   // -----------------------------------------------------------------------------------------------
   // CALLBACKS
@@ -58,7 +59,10 @@ public interface GeoMapApi {
   void addSelectionChangeListener(UUID viewUuid, String mapId,
       InvocationRequest onSelectionChanged);
 
-  void addMapItemPlacementListener(UUID viewUuid, String mapId, InvocationRequest onMapItemPlaced);
+
+  void addEditingSessionClosedListener(UUID viewUuid, String mapId,
+      InvocationRequest onMapItemPlaced);
+
 
 
   // -----------------------------------------------------------------------------------------------
@@ -66,6 +70,5 @@ public interface GeoMapApi {
 
   List<GeoMapItem> getSelectedItems(UUID viewUuid, String mapId);
 
-  List<GeoMapItem> getPendingItems(UUID viewUuid, String mapId);
 
 }

@@ -53,8 +53,7 @@ import javax.validation.Valid;
   GeoMapItem.ICONS,
   GeoMapItem.STYLE,
   GeoMapItem.POSITION,
-  GeoMapItem.ROUTE,
-  GeoMapItem.BOUNDS
+  GeoMapItem.ROUTE
 })
 @JsonTypeName("GeoMapItem")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -94,9 +93,6 @@ public class GeoMapItem {
 
   public static final String ROUTE = "route";
   private GPSRoute route;
-
-  public static final String BOUNDS = "bounds";
-  private List<GPSPosition> bounds = new ArrayList<>();
 
   public GeoMapItem() { 
   }
@@ -443,40 +439,6 @@ public class GeoMapItem {
   }
 
 
-  public GeoMapItem bounds(List<GPSPosition> bounds) {
-    
-    this.bounds = bounds;
-    return this;
-  }
-
-  public GeoMapItem addBoundsItem(GPSPosition boundsItem) {
-    this.bounds.add(boundsItem);
-    return this;
-  }
-
-   /**
-   * Get bounds
-   * @return bounds
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<GPSPosition> getBounds() {
-    return bounds;
-  }
-
-
-  @JsonProperty(BOUNDS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBounds(List<GPSPosition> bounds) {
-    this.bounds = bounds;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -497,13 +459,12 @@ public class GeoMapItem {
         Objects.equals(this.icons, geoMapItem.icons) &&
         Objects.equals(this.style, geoMapItem.style) &&
         Objects.equals(this.position, geoMapItem.position) &&
-        Objects.equals(this.route, geoMapItem.route) &&
-        Objects.equals(this.bounds, geoMapItem.bounds);
+        Objects.equals(this.route, geoMapItem.route);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, kind, actions, data, selectable, selected, label, description, icons, style, position, route, bounds);
+    return Objects.hash(id, kind, actions, data, selectable, selected, label, description, icons, style, position, route);
   }
 
   @Override
@@ -522,7 +483,6 @@ public class GeoMapItem {
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    position: ").append(toIndentedString(position)).append("\n");
     sb.append("    route: ").append(toIndentedString(route)).append("\n");
-    sb.append("    bounds: ").append(toIndentedString(bounds)).append("\n");
     sb.append("}");
     return sb.toString();
   }
