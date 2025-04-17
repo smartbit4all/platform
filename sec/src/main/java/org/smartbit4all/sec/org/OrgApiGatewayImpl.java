@@ -158,4 +158,16 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
     return secGatewayService.updateUser(user);
   }
 
+  @Override
+  public List<User> getUsersOfPrimaryAccount(URI userUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void setPrimaryAccount(URI userUri, URI primaryAccountUserUri) {
+    // TODO Auto-generated method stub
+
+  }
+
 }

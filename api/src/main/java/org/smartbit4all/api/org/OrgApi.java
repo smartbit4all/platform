@@ -250,7 +250,7 @@ public interface OrgApi {
     return new OrgState();
   }
 
-  /*
+  /**
    * Retrieve primary user if it exists
    * 
    * @param userUri
@@ -270,4 +270,19 @@ public interface OrgApi {
         .collect(toList());
   }
 
+  /**
+   * Returns the users which primary accounts' is the given user.
+   * 
+   * @param userUri
+   * @return
+   */
+  List<User> getUsersOfPrimaryAccount(URI userUri);
+
+  /**
+   * Sets the primary account to the given user.
+   * 
+   * @param userUri
+   * @param primaryAccountUserUri
+   */
+  void setPrimaryAccount(URI userUri, URI primaryAccountUserUri);
 }

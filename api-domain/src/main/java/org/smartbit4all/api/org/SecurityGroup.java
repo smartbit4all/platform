@@ -41,6 +41,11 @@ public final class SecurityGroup {
    */
   private boolean builtIn;
 
+  /**
+   * If set to true group should be unmodifiable.
+   */
+  private boolean checkForPrimaryAccount;
+
   private BiFunction<SecurityGroup, URI, Boolean> securityPredicate;
 
   /**
@@ -136,6 +141,10 @@ public final class SecurityGroup {
 
   public void setSecurityPredicate(BiFunction<SecurityGroup, URI, Boolean> securityPredicate) {
     this.securityPredicate = securityPredicate;
+  }
+
+  public void setCheckForPrimaryAccount(boolean checkForPrimaryAccount) {
+    this.checkForPrimaryAccount = checkForPrimaryAccount;
   }
 
 }

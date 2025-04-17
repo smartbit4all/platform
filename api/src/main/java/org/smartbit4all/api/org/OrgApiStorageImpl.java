@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.gateway.SecurityGateways;
 import org.smartbit4all.api.org.bean.BulkUpdateOperation;
@@ -57,6 +58,7 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
@@ -77,6 +79,7 @@ public class OrgApiStorageImpl implements OrgApi {
   private final String USER_OBJECTMAP_REFERENCE = "userList";
   private final String INACTIVE_USER_OBJECTMAP_REFERENCE = "inactiveUserList";
   private final String GROUP_OBJECTMAP_REFERENCE = "groupList";
+  private final String USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE = "usersOfPrimaryAccountList";
 
   private final String USERS_OF_GROUP_LIST_REFERENCE = "usersOfGroupList";
   private final String GROUPS_OF_USER_LIST_REFERENCE = "groupsOfUserList";
@@ -119,6 +122,9 @@ public class OrgApiStorageImpl implements OrgApi {
   @Autowired(required = false)
   private SessionApi sessionApi;
 
+  @Value("${org.checkForPrimaryAccount:false}")
+  private boolean checkForPrimaryAccount;
+
   public OrgApiStorageImpl() {}
 
   public OrgApiStorageImpl(StorageApi storageApi, List<SecurityOption> securityOptions)
@@ -150,6 +156,12 @@ public class OrgApiStorageImpl implements OrgApi {
    * The cache for users of the groups and parent groups.
    */
   private Cache<URI, List<User>> usersOfGroupAndParentGroupsCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
+   * The cache for users of the primary account.
+   */
+  private Cache<URI, List<User>> usersOfPrimaryAccountCache =
       CacheBuilder.newBuilder().concurrencyLevel(10).build();
 
   /**
@@ -210,6 +222,7 @@ public class OrgApiStorageImpl implements OrgApi {
     usersOfGroupCache.invalidateAll();
     usersOfGroupAndParentGroupsCache.invalidateAll();
     groupByNameCache.invalidateAll();
+    usersOfPrimaryAccountCache.invalidateAll();
     allGroups = null;
   }
 
@@ -243,6 +256,7 @@ public class OrgApiStorageImpl implements OrgApi {
         try {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
+            securityGroup.setCheckForPrimaryAccount(checkForPrimaryAccount);
             securityGroup.setSecurityPredicate(
                 (sg, uri) -> OrgUtils.securityPredicate(
                     self,
@@ -1680,4 +1694,59 @@ public class OrgApiStorageImpl implements OrgApi {
         .collect(toList());
   }
 
+  @Override
+  public List<User> getUsersOfPrimaryAccount(URI userUri) {
+    URI uri = objectApi.getLatestUri(userUri);
+    try {
+      return new ArrayList<>(usersOfPrimaryAccountCache.get(
+          uri,
+          () -> {
+            List<URI> relatedUsers = collectionApi
+                .list(userUri, ORG_SCHEME, USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE).uris();
+            if (!relatedUsers.isEmpty()) {
+              return getUsers(relatedUsers);
+            }
+            return Collections.emptyList();
+          }));
+    } catch (ExecutionException e) {
+      log.error("Unable to retrieve the users of the primary account.", e);
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
+  public void setPrimaryAccount(URI userUri, URI primaryAccountUserUri) {
+    Objects.nonNull(userUri);
+
+    // set primary account
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    URI latestPrimaryAccountUserUri = objectApi.getLatestUri(primaryAccountUserUri);
+    URI prevPrimaryAccount =
+        objectApi.getLatestUri(userNode.getValue(URI.class, User.PRIMARY_ACCOUNT));
+    userNode.setValue(latestPrimaryAccountUserUri, User.PRIMARY_ACCOUNT);
+    objectApi.save(userNode);
+
+    // add user to user list of primary account
+    if (latestPrimaryAccountUserUri != null) {
+      StoredList listOfNewPrimaryAccount = collectionApi
+          .list(latestPrimaryAccountUserUri, ORG_SCHEME, USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE);
+      URI latestUserUri = objectApi.getLatestUri(userUri);
+      listOfNewPrimaryAccount.update(list -> {
+        if (!list.contains(latestUserUri)) {
+          list.add(latestUserUri);
+        }
+        return list;
+      });
+    }
+
+    // remove user from user list of previous primary account
+    if (prevPrimaryAccount != null) {
+      StoredList listOfPrevPrimaryAccount = collectionApi
+          .list(prevPrimaryAccount, ORG_SCHEME, USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE);
+
+      listOfPrevPrimaryAccount.remove(prevPrimaryAccount);
+    }
+
+    invalidateCache();
+  }
 }
