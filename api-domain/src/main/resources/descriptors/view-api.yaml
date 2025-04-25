@@ -1219,6 +1219,9 @@ components:
           description: If the user who clicked the link, is not part of the acl, an error page will open.
           type: string
           format: uri
+        suspended:
+          type: boolean
+          default: false
     SmartLinkMigrationStatus:
       description: |
         A reference object to store if the given application is already updated the storage schema of the smartlink.

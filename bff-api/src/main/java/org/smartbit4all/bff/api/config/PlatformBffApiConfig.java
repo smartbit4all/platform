@@ -26,6 +26,8 @@ import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridInvocationApi;
 import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridInvocationApiImpl;
 import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.generic.GenericPageApiImpl;
+import org.smartbit4all.bff.api.generic.InvalidSmartLinkPageApi;
+import org.smartbit4all.bff.api.generic.InvalidSmartLinkPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
@@ -153,6 +155,11 @@ public class PlatformBffApiConfig {
   }
 
   @Bean
+  public InvalidSmartLinkPageApi invalidSmartLinkPageApi() {
+    return new InvalidSmartLinkPageApiImpl();
+  }
+
+  @Bean
   public ProviderApiInvocationHandler<AclEditingPageApi> aclEditingPageApiProvider(
       AclEditingPageApi api) {
     return Invocations.asProvider(AclEditingPageApi.class, api);
@@ -218,22 +225,26 @@ public class PlatformBffApiConfig {
   }
 
   @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
   StorageArchiceProcessEditorPageApi storageArchiceProcessEditorPageApi() {
     return new StorageArchiceProcessEditorPageApiImpl();
   }
 
   @Bean
+  @ConditionalOnBean(StorageArchiceProcessEditorPageApi.class)
   public ProviderApiInvocationHandler<StorageArchiceProcessEditorPageApi> storageArchiceProcessEditorPageApiProvider(
       StorageArchiceProcessEditorPageApi api) {
     return Invocations.asProvider(StorageArchiceProcessEditorPageApi.class, api);
   }
 
   @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
   MDMValueTransformationEditorPageApi valueTransformationEditorPageApi() {
     return new MDMValueTransformationEditorPageApiImpl();
   }
 
   @Bean
+  @ConditionalOnBean(MDMValueTransformationEditorPageApi.class)
   public ProviderApiInvocationHandler<MDMValueTransformationEditorPageApi> mdmValueTransformationEditorPageApiProvider(
       MDMValueTransformationEditorPageApi api) {
     return Invocations.asProvider(MDMValueTransformationEditorPageApi.class, api);

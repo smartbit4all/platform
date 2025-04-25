@@ -27,6 +27,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -56,6 +57,9 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Value("${org.checkForPrimaryAccount:false}")
+  private boolean checkForPrimaryAccount;
 
   public OrgApiImpl(Environment env) {
 
@@ -101,9 +105,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
         try {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
-
-
-
+            securityGroup.setCheckForPrimaryAccount(checkForPrimaryAccount);
             securityGroup.setSecurityPredicate(
                 (sg, uri) -> OrgUtils.securityPredicate(this, getCurrentUserProvider(), null, sg,
                     uri));

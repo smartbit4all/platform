@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -160,7 +161,11 @@ public class SmartLinkApiImpl implements SmartLinkApi {
     if (linkUri == null) {
       return null;
     }
-    return objectApi.loadLatest(linkUri);
+    ObjectNode smartlinkNode = objectApi.loadLatest(linkUri);
+    if (Boolean.TRUE.equals(smartlinkNode.getValue(Boolean.class, SmartLinkData.SUSPENDED))) {
+      return null;
+    }
+    return smartlinkNode;
   }
 
   final ObjectDefinition<ObjectReferenceById> getReferenceDefinition() {
@@ -232,6 +237,34 @@ public class SmartLinkApiImpl implements SmartLinkApi {
         .collect(toSet());
     return smartLinkStorage.remove(urisToRemove);
   }
+
+
+
+  @Override
+  public List<URI> suspend(Collection<? extends URI> smartLinkUris) {
+    return setSmartlinkSuspendValue(smartLinkUris, Boolean.TRUE);
+  }
+
+  @Override
+  public List<URI> unsuspend(Collection<? extends URI> smartLinkUris) {
+    return setSmartlinkSuspendValue(smartLinkUris, Boolean.FALSE);
+  }
+
+  private List<URI> setSmartlinkSuspendValue(Collection<? extends URI> smartLinkUris,
+      Boolean isSuspend) {
+    return smartLinkUris.stream().map(smartLinkUri -> {
+      ObjectNode smartLinkNode = objectApi.loadLatest(smartLinkUri);
+      if (smartLinkNode.getValue(SmartLinkData.SUSPENDED) != null) {
+        smartLinkNode.setValue(isSuspend, SmartLinkData.SUSPENDED);
+        return objectApi.save(smartLinkNode);
+      }
+      // Handling previous smartlink versions without suspended property
+      log.warn("The smartlink's suspeded property can't be set, because it's null");
+      return smartLinkUri;
+    }).collect(Collectors.toList());
+  }
+
+
 
   @Override
   public void removeLegacyChannels(Collection<? extends String> channels) {
