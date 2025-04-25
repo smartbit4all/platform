@@ -18,6 +18,8 @@ public interface VectorCollection {
 
   static final String VECTOR_AUDIT_LOG = "vector.audit";
 
+  Boolean exists();
+
   void ensureExist();
 
   default String addObject(Object obj) {
