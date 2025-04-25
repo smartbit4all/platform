@@ -162,19 +162,19 @@ public class MDMEntryDescriptorPageApiImpl
         new SmartWidgetDefinition()
             .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
-            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+            .label(localeSettingApi.get(
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
             .type(SmartFormWidgetType.TEXT_FIELD),
         MDMVectorCollectionUtil.getEmbeddingConnectionWidget(
             ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION),
-            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+            localeSettingApi.get(
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION),
             masterDataManagementApi),
         MDMVectorCollectionUtil.getVectorDbConnectionWidget(
             ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
-            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+            localeSettingApi.get(
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
             masterDataManagementApi),
         ObjectLayoutBuilder.textfield(
