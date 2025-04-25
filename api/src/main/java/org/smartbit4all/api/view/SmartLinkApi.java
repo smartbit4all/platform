@@ -120,6 +120,14 @@ public interface SmartLinkApi {
    */
   List<URI> remove(Collection<? extends UUID> smartLinkUuids);
 
+
+  List<URI> suspend(Collection<? extends URI> smartLinkUris);
+
+
+  List<URI> unsuspend(Collection<? extends URI> smartLinkUris);
+
+
+
   /**
    * Deletes the stored collections backing the provided channel's legacy persistence implementation
    * 

@@ -436,15 +436,17 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public UUID showPublishedView(String channel, UUID smartLinkUuid) {
     ObjectNode linkNode = smartLinkApi.getSmartLink(channel, smartLinkUuid);
+    UUID uuid;
     if (linkNode == null) {
-      return null;
+      uuid = showView(new View()
+          .viewName(PlatformViewNames.INVALID_SMARTLINK_PAGE_NAME));
+      return uuid;
     }
     viewContextService
         .startServerRequest(new ServerRequestTrack().type(ServerRequestType.SHOW_SMARTLINK)
             .viewUuid(linkNode.getValue(UUID.class, SmartLinkData.VIEW, View.UUID))
             .viewName(linkNode.getValueAsString(SmartLinkData.VIEW, View.VIEW_NAME)));
 
-    UUID uuid;
     if (!ObjectUtils.isEmpty(linkNode.getValue(URI.class, SmartLinkData.ACL))
         && sessionApi != null
         && !accessControlApi.isSubjectOfAcl(

@@ -23,5 +23,6 @@ public class PlatformViewNames {
   public static final String OBJECT_DESCRIPTOR_PAGE = "ObjectDescriptorPage";
   public static final String OBJECT_PROPERTY_DESCRIPTOR_PAGE = "ObjectPropertyDescriptorPage";
   public static final String NO_PERRMISSION_PAGE_NAME = "noPermissionPageName";
+  public static final String INVALID_SMARTLINK_PAGE_NAME = "invalidSmartlinkPage";
 
 }

@@ -39,7 +39,8 @@ import javax.validation.Valid;
   SmartLinkData.UUID,
   SmartLinkData.VIEW,
   SmartLinkData.URL,
-  SmartLinkData.ACL
+  SmartLinkData.ACL,
+  SmartLinkData.SUSPENDED
 })
 @JsonTypeName("SmartLinkData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -58,6 +59,9 @@ public class SmartLinkData {
 
   public static final String ACL = "acl";
   private URI acl;
+
+  public static final String SUSPENDED = "suspended";
+  private Boolean suspended = false;
 
   public SmartLinkData() { 
   }
@@ -201,6 +205,33 @@ public class SmartLinkData {
   }
 
 
+  public SmartLinkData suspended(Boolean suspended) {
+    
+    this.suspended = suspended;
+    return this;
+  }
+
+   /**
+   * Get suspended
+   * @return suspended
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SUSPENDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSuspended() {
+    return suspended;
+  }
+
+
+  @JsonProperty(SUSPENDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSuspended(Boolean suspended) {
+    this.suspended = suspended;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -214,12 +245,13 @@ public class SmartLinkData {
         Objects.equals(this.uuid, smartLinkData.uuid) &&
         Objects.equals(this.view, smartLinkData.view) &&
         Objects.equals(this.url, smartLinkData.url) &&
-        Objects.equals(this.acl, smartLinkData.acl);
+        Objects.equals(this.acl, smartLinkData.acl) &&
+        Objects.equals(this.suspended, smartLinkData.suspended);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, view, url, acl);
+    return Objects.hash(uri, uuid, view, url, acl, suspended);
   }
 
   @Override
@@ -231,6 +263,7 @@ public class SmartLinkData {
     sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("    acl: ").append(toIndentedString(acl)).append("\n");
+    sb.append("    suspended: ").append(toIndentedString(suspended)).append("\n");
     sb.append("}");
     return sb.toString();
   }
