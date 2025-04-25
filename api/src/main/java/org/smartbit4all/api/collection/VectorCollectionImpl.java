@@ -55,8 +55,13 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
+  public Boolean exists() {
+    return vectorDBApi.collectionExists(vectorDBService, collectionName);
+  }
+
+  @Override
   public void ensureExist() {
-    if (!vectorDBApi.collectionExists(vectorDBService, collectionName)) {
+    if (!exists()) {
       vectorDBApi.createCollection(vectorDBService, collectionName);
     }
   }
