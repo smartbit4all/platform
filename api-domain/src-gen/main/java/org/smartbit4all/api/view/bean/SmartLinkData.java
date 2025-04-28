@@ -13,20 +13,13 @@
 
 package org.smartbit4all.api.view.bean;
 
+import java.net.URI;
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.net.URI;
-import java.util.UUID;
-import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 
 /**
@@ -214,7 +207,6 @@ public class SmartLinkData {
    * @return suspended
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
   @JsonProperty(SUSPENDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
