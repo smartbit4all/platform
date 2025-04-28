@@ -1122,10 +1122,6 @@ public class ViewContextServiceImpl implements ViewContextService {
       result = viewCall.run();
     } catch (Throwable tr) {
       log.error("Error when calling method " + methodName, tr);
-      log.error("StackTrace length: {}", tr.getStackTrace().length); // explicit print stacktrace
-      for (StackTraceElement element : tr.getStackTrace()) {
-        log.error("  at {}", element);
-      }
       throw tr;
     }
     List<ViewComparisonResult> comparisons = afterInvoke(null, before, methodName);
