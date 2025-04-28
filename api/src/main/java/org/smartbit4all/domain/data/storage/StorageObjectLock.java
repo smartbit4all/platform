@@ -42,7 +42,7 @@ public final class StorageObjectLock implements Lock {
   /**
    * The unique identifier inside the {@link #entry}.
    */
-  private Long id;
+  private volatile Long id;
 
   private final URI objectUri;
 

@@ -285,9 +285,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
       newEntry.setLockRemover(uri -> {
         lockMutex.lock();
         try {
-          if (newEntry.isEmpty()) {
-            locks.remove(uri);
-          }
+          locks.remove(uri);
         } finally {
           lockMutex.unlock();
         }
