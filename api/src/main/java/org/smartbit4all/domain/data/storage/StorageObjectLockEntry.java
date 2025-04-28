@@ -47,7 +47,7 @@ final class StorageObjectLockEntry {
    * The id sequence is used to generate unique identifier for the given lock. No need for the
    * {@link AtomicLong} because it's guarded by the {@link #mutexInstanceRegister}.
    */
-  private long idSequence = 0;
+  private volatile long idSequence = 0;
 
   /**
    * The mutex to ensure the exclusive execution lock on an object.
