@@ -1154,6 +1154,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public final VectorCollection getVectorCollection(
       VectorCollectionDescriptor vectorCollectionDescriptor) {
+    if (vectorCollectionDescriptor == null) {
+      return null;
+    }
     MDMEntryApi vectorDBEntryApi =
         getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
             PlatformApiConfig.VECTOR_DB_CONNECTIONS);

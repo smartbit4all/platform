@@ -17,8 +17,6 @@ import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
-import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
-import org.smartbit4all.api.object.bean.ObjectPropertySet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 
@@ -55,8 +53,13 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
+  public Boolean exists() {
+    return vectorDBApi.collectionExists(vectorDBService, collectionName);
+  }
+
+  @Override
   public void ensureExist() {
-    if (!vectorDBApi.collectionExists(vectorDBService, collectionName)) {
+    if (!exists()) {
       vectorDBApi.createCollection(vectorDBService, collectionName);
     }
   }
@@ -142,8 +145,7 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public ObjectLookup lookup(ObjectPropertySet searchProperties,
-      ObjectMappingDefinition copyBackMapping) {
+  public ObjectLookup lookup() {
     return new ObjectLookupVector(objectApi);
   }
 
@@ -176,9 +178,12 @@ public class VectorCollectionImpl implements VectorCollection {
         }
       }
 
+      Float relevanceLimitPercent =
+          parameter.getRelevanceLimitPercent() != null ? parameter.getRelevanceLimitPercent() : 0;
+
       ObjectLookupResult lookupResult = new ObjectLookupResult().items(resultList
           .stream()
-          .filter(si -> parameter.getRelevanceLimitPercent() <= si.getScore() * 100)
+          .filter(si -> relevanceLimitPercent <= si.getScore() * 100)
           .map(si -> new ObjectLookupResultItem()
               .scoreInPercent(si.getScore()).objectAsMap(si.getValue()))
           .collect(toList()));

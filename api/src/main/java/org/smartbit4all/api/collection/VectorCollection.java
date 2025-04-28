@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
-import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
-import org.smartbit4all.api.object.bean.ObjectPropertySet;
 
 /**
  * This collection is a vector db collection that provides an api based on the
@@ -17,6 +15,8 @@ import org.smartbit4all.api.object.bean.ObjectPropertySet;
 public interface VectorCollection {
 
   static final String VECTOR_AUDIT_LOG = "vector.audit";
+
+  Boolean exists();
 
   void ensureExist();
 
@@ -66,6 +66,6 @@ public interface VectorCollection {
    * @param copyBackMapping The mapping for copying back the properties of the most relevant result.
    * @return
    */
-  ObjectLookup lookup(ObjectPropertySet searchProperties, ObjectMappingDefinition copyBackMapping);
+  ObjectLookup lookup();
 
 }
