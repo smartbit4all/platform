@@ -1717,6 +1717,7 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public void setPrimaryAccount(URI userUri, URI primaryAccountUserUri) {
     Objects.nonNull(userUri);
+    URI latestUserUri = objectApi.getLatestUri(userUri);
 
     // set primary account
     ObjectNode userNode = objectApi.loadLatest(userUri);
@@ -1730,7 +1731,6 @@ public class OrgApiStorageImpl implements OrgApi {
     if (latestPrimaryAccountUserUri != null) {
       StoredList listOfNewPrimaryAccount = collectionApi
           .list(latestPrimaryAccountUserUri, ORG_SCHEME, USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE);
-      URI latestUserUri = objectApi.getLatestUri(userUri);
       listOfNewPrimaryAccount.update(list -> {
         if (!list.contains(latestUserUri)) {
           list.add(latestUserUri);
@@ -1744,7 +1744,7 @@ public class OrgApiStorageImpl implements OrgApi {
       StoredList listOfPrevPrimaryAccount = collectionApi
           .list(prevPrimaryAccount, ORG_SCHEME, USERS_OF_PRIMARY_ACCOUNT_LIST_REFERENCE);
 
-      listOfPrevPrimaryAccount.remove(prevPrimaryAccount);
+      listOfPrevPrimaryAccount.remove(latestUserUri);
     }
 
     invalidateCache();
