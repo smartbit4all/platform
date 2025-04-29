@@ -26,4 +26,16 @@ public interface UserListPageApi extends PageApi<Object> {
   void openAddUserDialog(UUID viewUuid,
       UiActionRequest request);
 
+  String ACTIVATE_USER = "ACTIVATE_USER";
+
+  @WidgetActionHandler(ACTIVATE_USER)
+  void activateUser(UUID viewUuid, String gridId, String rowId,
+      UiActionRequest request);
+
+  String DEACTIVATE_USER = "DEACTIVATE_USER";
+
+  @WidgetActionHandler(DEACTIVATE_USER)
+  void deactivateUser(UUID viewUuid, String gridId, String rowId,
+      UiActionRequest request);
+
 }

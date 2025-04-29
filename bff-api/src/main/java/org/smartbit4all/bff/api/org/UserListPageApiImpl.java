@@ -19,21 +19,19 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserListPageApiImpl extends PageApiImpl<Object> implements UserListPageApi {
 
   @Autowired
-  GridModelApi gridModelApi;
-
+  protected GridModelApi gridModelApi;
   @Autowired
-  InvocationApi invocationApi;
-
+  protected InvocationApi invocationApi;
   @Autowired
-  SearchIndex<User> userSearch;
-
+  protected SearchIndex<User> userSearch;
   @Autowired
-  OrgApi orgApi;
+  protected OrgApi orgApi;
 
   public UserListPageApiImpl() {
     super(Object.class);
@@ -44,9 +42,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     ObjectContainer pageModel = new ObjectContainer();
 
     initGrid(view);
-    gridModelApi.setDataFromUris(view.getUuid(), USER_GRID, userSearch,
-        orgApi.getAllUsers().stream().map(User::getUri));
-
+    refreshGrid(view.getUuid());
     view.actions(getUserListActions());
 
     return pageModel;
@@ -101,18 +97,44 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected List<String> getGridColumns() {
-    return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
+    return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL, User.INACTIVE);
   }
 
   protected List<UiAction> getUserRowActions(GridRow row) {
+    UiAction stateAction = Boolean.TRUE.equals(GridModels.getValueFromGridRow(row, User.INACTIVE))
+        ? new UiAction().code(ACTIVATE_USER).confirm(true)
+        : new UiAction().code(DEACTIVATE_USER).confirm(true);
+
     return Arrays.asList(
-        new UiAction().code(OPEN_USER_EDITOR_PAGE));
+        new UiAction().code(OPEN_USER_EDITOR_PAGE), stateAction);
   }
 
   protected List<UiAction> getUserListActions() {
     List<UiAction> actions = new ArrayList<>();
     actions.add(new UiAction().code(ADD_USER));
     return actions;
+  }
+
+  @Override
+  public void activateUser(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
+    URI userUri = objectApi.asType(URI.class,
+        GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    userNode.setValue(false, User.INACTIVE);
+    objectApi.save(userNode);
+    refreshGrid(viewUuid);
+  }
+
+  @Override
+  public void deactivateUser(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
+    URI userUri = objectApi.asType(URI.class,
+        GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
+    ObjectNode userNode = objectApi.loadLatest(userUri);
+    userNode.setValue(true, User.INACTIVE);
+    objectApi.save(userNode);
+    refreshGrid(viewUuid);
   }
 
 }

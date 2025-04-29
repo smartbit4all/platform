@@ -61,7 +61,6 @@ public abstract class ObjectLookup {
    * @param parameter The lookup parameters.
    * @param mapping The mapping parameters for copying the result back to the original object.
    */
-  @SuppressWarnings("unchecked")
   public final List<Object> fillObjects(List<? extends Object> objects,
       ObjectLookupParameter parameter, ObjectMappingDefinition mapping) {
     Objects.requireNonNull(objects);
@@ -78,7 +77,7 @@ public abstract class ObjectLookup {
       } else if (object instanceof String) {
         toMap = new HashMap<>();
       } else {
-        toMap = (Map<String, Object>) object;
+        toMap = objectApi.create(StringConstant.EMPTY, object).getObjectAsMap();
       }
       if (!lookupResult.getItems().isEmpty()) {
         // Now we set the most relevant result item without any further examination.
@@ -92,20 +91,61 @@ public abstract class ObjectLookup {
         if (parameter.getValuesForUpdate() != null) {
           toMap.putAll(parameter.getValuesForUpdate());
         }
-        resultList.add(object);
+        resultList.add(toMap);
       } else {
         // Set the default creation values.
         if (parameter.getValuesForCreation() != null) {
           toMap.putAll(parameter.getValuesForCreation());
-          resultList.add(object);
+          resultList.add(toMap);
         }
       }
     }
     return resultList;
   }
 
+  public final Object fillObject(Object object, String lookupString,
+      ObjectLookupParameter parameter,
+      ObjectMappingDefinition mapping) {
+    Objects.requireNonNull(object);
+    Objects.requireNonNull(lookupString);
+    Objects.requireNonNull(parameter);
+    Objects.requireNonNull(mapping);
+    ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
+    ObjectLookupResult lookupResult = lookup(lookupString, parameter);
+    Map<String, Object> toMap;
+    if (object instanceof ObjectNode) {
+      toMap = ((ObjectNode) object).getObjectAsMap();
+    } else if (object instanceof String) {
+      toMap = new HashMap<>();
+    } else {
+      toMap = objectApi.create(StringConstant.EMPTY, object).getObjectAsMap();
+    }
+    if (!lookupResult.getItems().isEmpty()) {
+      // Now we set the most relevant result item without any further examination.
+      final ObjectLookupResultItem lookupResultItem = lookupResult.getItems().stream()
+          .max((a, b) -> Float.compare(a.getScoreInPercent(), b.getScoreInPercent()))
+          .orElse(null);
+      if (lookupResultItem == null) {
+        throw new IllegalArgumentException("LookUp resulted in no items!");
+      }
+      mapper.copyAllValues(lookupResultItem.getObjectAsMap(), toMap);
+      if (parameter.getValuesForUpdate() != null) {
+        toMap.putAll(parameter.getValuesForUpdate());
+      }
+    } else {
+      // Set the default creation values.
+      if (parameter.getValuesForCreation() != null) {
+        toMap.putAll(parameter.getValuesForCreation());
+      }
+    }
+    return toMap;
+  }
+
   public Map<String, Object> findByUnique(ObjectPropertyValue value) {
     ObjectLookupResult lookupResult = findByUniqueResult(value);
+    if (lookupResult == null) {
+      return null;
+    }
     return lookupResult.getItems().isEmpty() ? null
         : lookupResult.getItems().get(0).getObjectAsMap();
   }
