@@ -206,7 +206,7 @@ public class SmartLinkData {
    * Get suspended
    * @return suspended
   **/
-  @javax.annotation.Nullable
+  @jakarta.annotation.Nullable
   @JsonProperty(SUSPENDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
