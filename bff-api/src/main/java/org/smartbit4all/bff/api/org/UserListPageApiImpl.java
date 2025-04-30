@@ -131,9 +131,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
     URI userUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
-    ObjectNode userNode = objectApi.loadLatest(userUri);
-    userNode.setValue(true, User.INACTIVE);
-    objectApi.save(userNode);
+    orgApi.removeUser(userUri);
     refreshGrid(viewUuid);
   }
 
