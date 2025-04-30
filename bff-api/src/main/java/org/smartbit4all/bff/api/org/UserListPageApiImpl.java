@@ -19,7 +19,6 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
-import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserListPageApiImpl extends PageApiImpl<Object> implements UserListPageApi {
@@ -120,9 +119,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
     URI userUri = objectApi.asType(URI.class,
         GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
-    ObjectNode userNode = objectApi.loadLatest(userUri);
-    userNode.setValue(false, User.INACTIVE);
-    objectApi.save(userNode);
+    orgApi.restoreDeletedUser(userUri);
     refreshGrid(viewUuid);
   }
 
