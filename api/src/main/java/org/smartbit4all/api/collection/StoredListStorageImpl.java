@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +22,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import static java.util.stream.Collectors.toList;
 
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
@@ -60,11 +60,17 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
 
   @Override
   public Stream<ObjectNode> nodesFromCache() {
-    if (!objectApi.exists(uri)) {
-      return Stream.empty();
-    }
     return cacheEntry.cacheRef.updateAndGet(cache -> {
-      if (cache == null || objectApi.getLastModified(uri) > cacheEntry.lastCacheRefreshmentTime) {
+      boolean load = false;
+      if (cache == null) {
+        load = true;
+      } else {
+        Long lastModified = objectApi.getLastModified(uri);
+        if (lastModified != null && lastModified > cacheEntry.lastCacheRefreshmentTime) {
+          load = true;
+        }
+      }
+      if (load) {
         cacheEntry.lastCacheRefreshmentTime = System.currentTimeMillis();
         return nodes().collect(toList());
       }
