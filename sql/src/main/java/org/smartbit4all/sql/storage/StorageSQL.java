@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -84,9 +87,6 @@ import org.springframework.util.ObjectUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
-import static org.smartbit4all.core.utility.StringConstant.HYPHEN;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
@@ -310,8 +310,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * @param object
    * @return
    */
-  private final Long saveObject(StorageObject<?> object) {
-    return saveObject(object, null);
+  private final Long saveObject(StorageObject<?> object, TableData<ObjectEntryDef> objectEntry) {
+    return saveObject(object, null, objectEntry);
   }
 
   /**
@@ -322,20 +322,22 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * @param relationBinaryData
    * @return The version number of the newly saved object.
    */
-  private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData) {
+  private final Long saveObject(StorageObject<?> object, BinaryData relationBinaryData,
+      TableData<ObjectEntryDef> objectEntry) {
     // Identify the object record. If it exists then lock it. If doesn't exist then we insert int
     // (it locks the record by the unique index)
     if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
       // no transactionManager or already in transaction
-      return saveObjectInTransaction(null, object, relationBinaryData);
+      return saveObjectInTransaction(null, object, relationBinaryData, objectEntry);
     }
     TransactionTemplate transaction = new TransactionTemplate(transactionManager);
     return transaction
-        .execute(status -> saveObjectInTransaction(status, object, relationBinaryData));
+        .execute(
+            status -> saveObjectInTransaction(status, object, relationBinaryData, objectEntry));
   }
 
   private Long saveObjectInTransaction(TransactionStatus status, StorageObject<?> object,
-      BinaryData relationBinaryData) {
+      BinaryData relationBinaryData, TableData<ObjectEntryDef> objectEntry) {
     StorageSQLExtensionApi extensionApi =
         getExtensionApi(object.getStorage().getScheme(), object.definition().getQualifiedName());
     if (extensionApi != null) {
@@ -343,7 +345,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     DataRow objectRow = null;
-    TableData<ObjectEntryDef> objectEntry = null;
     StorageCacheTransactionHandler trHandler =
         TransactionSynchronizationManager.isSynchronizationActive()
             ? getStorageCacheTransactionHandler()
@@ -353,7 +354,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("saveObject read: uriWithoutVersion={}", uriWithoutVersion);
       }
-      objectEntry = getOrQueryObjectEntry(trHandler, uriWithoutVersion, true, null);
+      if (objectEntry == null) {
+        objectEntry = getOrQueryObjectEntry(uriWithoutVersion, true, null);
+      }
       if (objectEntry.size() == 1) {
         objectRow = objectEntry.rows().get(0);
       }
@@ -513,8 +516,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       StoredReferenceData.class.getName(),
       StoredSequenceData.class.getName());
 
-  private TableData<ObjectEntryDef> getOrQueryObjectEntry(StorageCacheTransactionHandler trHandler,
+  private TableData<ObjectEntryDef> getOrQueryObjectEntry(
       String uriWithoutVersion, boolean lock, PropertySet properties) {
+    StorageCacheTransactionHandler trHandler =
+        TransactionSynchronizationManager.isSynchronizationActive()
+            ? getStorageCacheTransactionHandler()
+            : null;
     TableData<ObjectEntryDef> objectEntry = null;
     if (useTransactionCache && trHandler != null) {
       objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
@@ -557,7 +564,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    */
   @Override
   protected final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
-    saveObject(object);
+    saveObject(object, null);
     // File objectDataFile = getObjectDataFile(object.getUri());
     // StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
     // .className(object.definition().getClazz().getName());
@@ -580,7 +587,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     URI uriWithoutVersion = getUriWithoutVersion(object.getUri());
 
-    DataRow objectRow = queryObjectEntry(uriWithoutVersion, true, null);
+    TableData<ObjectEntryDef> objectEntry =
+        getOrQueryObjectEntry(getUriString(uriWithoutVersion), true, null);
+    DataRow objectRow;
+    if (objectEntry.size() == 1) {
+      objectRow = objectEntry.rows().get(0);
+    } else {
+      objectRow = null;
+    }
     StorageObjectData storageObjectData = null;
     if (objectRow != null) {
       storageObjectData = readObjectDataFromRow(uriWithoutVersion, objectRow)
@@ -659,7 +673,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
 
     // Write the version files
-    newVersion.setSerialNoData(saveObject(object, relationBinaryData));
+    newVersion.setSerialNoData(saveObject(object, relationBinaryData, objectEntry));
 
     // Set the current version, change it at the last point to be able to use earlier.
     storageObjectData.currentVersion(newVersion);
@@ -1523,13 +1537,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private final DataRow queryObjectEntry(URI objectUri, boolean lock, PropertySet properties) {
     DataRow objectRow;
-    StorageCacheTransactionHandler trHandler =
-        TransactionSynchronizationManager.isSynchronizationActive()
-            ? getStorageCacheTransactionHandler()
-            : null;
     String uriWithoutVersion = getUriString(getUriWithoutVersion(objectUri));
     TableData<ObjectEntryDef> objectEntry =
-        getOrQueryObjectEntry(trHandler, uriWithoutVersion, lock, properties);
+        getOrQueryObjectEntry(uriWithoutVersion, lock, properties);
     if (objectEntry.size() == 1) {
       objectRow = objectEntry.rows().get(0);
     } else {
@@ -1752,7 +1762,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
       @Override
       public Iterator<StorageObjectHistoryEntry> iterator() {
-        return new Iterator<StorageObjectHistoryEntry>() {
+        return new Iterator<>() {
 
           @Override
           public boolean hasNext() {
@@ -1800,7 +1810,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
       @Override
       public Iterator<StorageObjectHistoryEntry> iterator() {
-        return new Iterator<StorageObjectHistoryEntry>() {
+        return new Iterator<>() {
 
           @Override
           public boolean hasNext() {
