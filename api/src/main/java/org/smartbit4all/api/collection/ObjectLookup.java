@@ -141,6 +141,16 @@ public abstract class ObjectLookup {
     return toMap;
   }
 
+  public final List<Object> fillObjects(Map<String, ? extends Object> lookupMap,
+      ObjectLookupParameter parameter,
+      ObjectMappingDefinition mapping) {
+    return lookupMap.entrySet().stream()
+        .map(e -> fillObject(e.getValue(), e.getKey(),
+            parameter,
+            mapping))
+        .toList();
+  }
+
   public Map<String, Object> findByUnique(ObjectPropertyValue value) {
     ObjectLookupResult lookupResult = findByUniqueResult(value);
     if (lookupResult == null) {
