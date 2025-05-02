@@ -1362,18 +1362,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     Map<String, DataRow> objectEntriesFromTransactionCache = new HashMap<>();
     Set<String> urisToQueryFromDB =
         fillObjectEntriesFromTransactionCache(uniqueBaseUris, objectEntriesFromTransactionCache);
-    Map<String, DataRow> objectEntryRows = Crud.read(objectEntryDef)
-        .select(objectEntryDef.allProperties())
-        .where(objectEntryDef.uri().in(urisToQueryFromDB))
-        .listData()
-        .rows()
-        .stream()
-        .collect(Collectors.toMap(
-            row -> row.get(objectEntryDef.uri()),
-            row -> row));
-    if (!objectEntriesFromTransactionCache.isEmpty()) {
-      objectEntryRows.putAll(objectEntriesFromTransactionCache);
+    Map<String, DataRow> objectEntryRows;
+    if (!urisToQueryFromDB.isEmpty()) {
+      objectEntryRows = Crud.read(objectEntryDef)
+          .select(objectEntryDef.allProperties())
+          .where(objectEntryDef.uri().in(urisToQueryFromDB))
+          .listData()
+          .rows()
+          .stream()
+          .collect(Collectors.toMap(
+              row -> row.get(objectEntryDef.uri()),
+              row -> row));
+      if (!objectEntriesFromTransactionCache.isEmpty()) {
+        objectEntryRows.putAll(objectEntriesFromTransactionCache);
+      }
+    } else {
+      objectEntryRows = objectEntriesFromTransactionCache;
     }
+
     if (objectEntryRows.size() != uniqueBaseUris.size()) {
       throw new ObjectNotFoundException(uniqueBaseUris, null, "Object not found.");
     }
