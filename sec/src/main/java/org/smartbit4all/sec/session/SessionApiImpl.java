@@ -46,7 +46,7 @@ public class SessionApiImpl implements SessionApi {
   @Override
   public User getUser() {
     Session session = currentSession();
-    return session.getUser() == null ? null : orgApi.getUser(session.getUser());
+    return sessionManagementApi.getUserOfSession(session.getUri());
   }
 
   @Override

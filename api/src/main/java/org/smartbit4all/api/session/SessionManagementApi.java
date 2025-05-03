@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
@@ -108,6 +109,8 @@ public interface SessionManagementApi {
   void removeFromList(URI sessionUri, String sessionListName);
 
   List<Session> getActiveSessionsOfUser(URI orgUserUri);
+
+  User getUserOfSession(URI sessionUri);
 
   /**
    * Sets the duration of the session token.

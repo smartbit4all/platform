@@ -64,7 +64,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   private static final String ACTIVE_SESSIONS = "activeSessions";
 
-  private static final ThreadLocal<Session> currentSession = new ThreadLocal<>();
+  private static final ThreadLocal<SessionUserEntry> currentSession = new ThreadLocal<>();
 
   @Autowired
   private SessionTokenHandler tokenHandler;
@@ -258,15 +258,25 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Override
   public Session readSession(URI sessionUri) {
+    SessionUserEntry sessionUserEntry = getSession(sessionUri);
+    if (sessionUserEntry != null) {
+      return sessionUserEntry.getSession();
+    }
+
+    return null;
+  }
+
+  private SessionUserEntry getSession(URI sessionUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Session session = currentSession.get();
-    if (session != null && sessionUri.equals(session.getUri())) {
-      return session;
+    SessionUserEntry sessionUserEntry = currentSession.get();
+    if (sessionUserEntry != null && sessionUri.equals(sessionUserEntry.getSession().getUri())) {
+      return sessionUserEntry;
     }
     try {
-      session = storage.get().read(sessionUri, Session.class);
-      currentSession.set(session);
-      return session;
+      Session session = storage.get().read(sessionUri, Session.class);
+      sessionUserEntry = new SessionUserEntry().session(session);
+      currentSession.set(sessionUserEntry);
+      return sessionUserEntry;
     } catch (Exception e) {
       log.debug("Exception occured when reading session by uri", e);
       currentSession.remove();
@@ -275,12 +285,31 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
+  public User getUserOfSession(URI sessionUri) {
+    SessionUserEntry sessionUserEntry = getSession(sessionUri);
+    if (sessionUserEntry != null) {
+      if (sessionUserEntry.getUser() != null) {
+        return sessionUserEntry.getUser();
+      }
+
+      if (sessionUserEntry.getSession().getUser() != null) {
+        User user = orgApi.getUser(sessionUserEntry.getSession().getUser());
+        sessionUserEntry.setUser(user);
+        return user;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
   public URI updateSession(URI sessionUri, UnaryOperator<Session> update) {
-    Session prevSession = readSession(sessionUri);
+    boolean publishNeeded = sessionPublisherApi != null;
+    Session prevSession = publishNeeded ? readSession(sessionUri) : null;
     URI uri = storage.get().update(sessionUri, Session.class, update);
     currentSession.remove();
     Session nextSession = storage.get().read(uri, Session.class);
-    if (sessionPublisherApi != null) {
+    if (publishNeeded) {
       sessionPublisherApi.fireSessionModified(prevSession, nextSession);
     }
     return uri;
@@ -533,8 +562,10 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     storage.get().update(sessionUri, Session.class,
         s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
     // Update the current session if it is the same
-    Session session = currentSession.get();
-    if (session != null && session.getUri() != null && session.getUri().equals(sessionUri)) {
+    SessionUserEntry sessionUserEntry = currentSession.get();
+    if (sessionUserEntry != null && sessionUserEntry.getSession().getUri() != null
+        && sessionUserEntry.getSession().getUri().equals(sessionUri)) {
+      Session session = sessionUserEntry.getSession();
       session.putViewContextsItem(viewContextUuid.toString(), viewContextUri);
     }
   }
