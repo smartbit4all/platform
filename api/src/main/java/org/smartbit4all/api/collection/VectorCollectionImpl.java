@@ -185,6 +185,7 @@ public class VectorCollectionImpl implements VectorCollection {
           .stream()
           .filter(si -> relevanceLimitPercent <= si.getScore() * 100)
           .map(si -> new ObjectLookupResultItem()
+              .id(si.getId())
               .scoreInPercent(si.getScore()).objectAsMap(si.getValue()))
           .collect(toList()));
       lookupResult.numberOfRelevant(lookupResult.getItems().size());

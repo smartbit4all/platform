@@ -33,11 +33,15 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The vector search result items. ")
 @JsonPropertyOrder({
+  VectorSearchResultItem.ID,
   VectorSearchResultItem.SCORE,
   VectorSearchResultItem.VALUE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorSearchResultItem {
+  public static final String ID = "id";
+  private String id;
+
   public static final String SCORE = "score";
   private Float score;
 
@@ -45,6 +49,33 @@ public class VectorSearchResultItem {
   private Map<String, Object> value = new HashMap<>();
 
   public VectorSearchResultItem() {
+  }
+
+  public VectorSearchResultItem id(String id) {
+    
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(String id) {
+    this.id = id;
   }
 
   public VectorSearchResultItem score(Float score) {
@@ -118,19 +149,21 @@ public class VectorSearchResultItem {
       return false;
     }
     VectorSearchResultItem vectorSearchResultItem = (VectorSearchResultItem) o;
-    return Objects.equals(this.score, vectorSearchResultItem.score) &&
+    return Objects.equals(this.id, vectorSearchResultItem.id) &&
+        Objects.equals(this.score, vectorSearchResultItem.score) &&
         Objects.equals(this.value, vectorSearchResultItem.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(score, value);
+    return Objects.hash(id, score, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class VectorSearchResultItem {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    score: ").append(toIndentedString(score)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");

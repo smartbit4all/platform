@@ -158,6 +158,8 @@ components:
       type: object
       required: [inputType, inputObject, vector]
       properties:
+        id:
+          type: string
         score:
           type: number
           format: float
