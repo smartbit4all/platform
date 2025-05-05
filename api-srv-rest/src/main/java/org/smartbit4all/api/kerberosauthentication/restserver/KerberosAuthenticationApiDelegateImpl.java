@@ -1,5 +1,7 @@
 package org.smartbit4all.api.kerberosauthentication.restserver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.kerberosauthentication.bean.KerberosAuthenticationLoginRequest;
 import org.smartbit4all.sec.kerberos.KerberosAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.ObjectUtils;
 
 public class KerberosAuthenticationApiDelegateImpl implements KerberosAuthenticationApiDelegate {
+
+  private static final Logger log =
+      LoggerFactory.getLogger(KerberosAuthenticationApiDelegateImpl.class);
 
   @Autowired
   private KerberosAuthenticationService kerberosAuthentication;
@@ -28,6 +33,7 @@ public class KerberosAuthenticationApiDelegateImpl implements KerberosAuthentica
     } catch (BadCredentialsException e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
