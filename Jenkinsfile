@@ -52,7 +52,7 @@ pipeline {
         }
         // TODO egyelőre minden menjen fel automatikusan a nexus-ba a feature/jdk21 branchről. Ezen majd finomítani kell
         stage('Deploy to Nexus') {
-            when { branch 'feature/jdk21' }
+            when { branch 'master' }
             steps {
                 script {
                     withMaven (maven: "${maven}") {
