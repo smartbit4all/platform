@@ -50,13 +50,13 @@ pipeline {
                 }
             }
         }
-        // TODO egyelőre minden menjen fel automatikusan a nexus-ba a feature/jdk21 branchről. Ezen majd finomítani kell
-        stage('Deploy to Nexus') {
-            when { branch 'master' }
+        stage('Release') {
+            when { tag "release-*" }
             steps {
                 script {
+                    def releaseVersion = env.BRANCH_NAME.replaceAll("^release-", "")
                     withMaven (maven: "${maven}") {
-                        sh "mvn clean deploy -DskipTests"
+                        sh "mvn clean deploy -DskipTests -Drevision=${releaseVersion}"
                     }
                 }
             }
