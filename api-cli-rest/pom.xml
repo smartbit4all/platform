@@ -11,7 +11,7 @@
       <parent>
         <groupId>org.smartbit4all.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>${platform.version}</version>
+        <version>${revision}</version>
     </parent>  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
