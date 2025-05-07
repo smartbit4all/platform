@@ -21,6 +21,7 @@ import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModels;
@@ -75,6 +76,15 @@ public class UserSubscriptionListPageApiImpl extends SearchPageApiImpl
         invocationApi.builder(UserSubscriptionListPageApi.class)
             .build(api -> api.onPageRender(null)));
     SearchPageModel model = super.initModel(view);
+    view.getActions().forEach(a -> {
+      UiActionDescriptor descriptor = a.getDescriptor();
+      if (a.getDescriptor() == null) {
+        descriptor = new UiActionDescriptor();
+        a.descriptor(descriptor);
+      }
+
+      descriptor.title(localeSettingApi.get(PREFIX, a.getCode()));
+    });
     model.setPageTitle(localeSettingApi.get("subject.subscription.title"));
     GridModel gridModel =
         viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(), WIDGET_RESULT_GRID);
