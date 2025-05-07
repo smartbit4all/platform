@@ -11,7 +11,7 @@
       <parent>
         <groupId>org.smartbit4all.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>${platform.version}</version>
+        <version>${revision}</version>
     </parent>
 
   <properties>
@@ -80,19 +80,19 @@
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>api</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>bff-domain</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>sec</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

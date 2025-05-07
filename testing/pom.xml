@@ -11,7 +11,7 @@
       <parent>
         <groupId>org.smartbit4all.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>${platform.version}</version>
+        <version>${revision}</version>
     </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -77,13 +77,13 @@
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>bff-api</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>api-srv-rest</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -101,7 +101,7 @@
     <dependency>
       <groupId>org.smartbit4all.platform</groupId>
       <artifactId>sec</artifactId>
-      <version>${platform.version}</version>
+      <version>${revision}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
