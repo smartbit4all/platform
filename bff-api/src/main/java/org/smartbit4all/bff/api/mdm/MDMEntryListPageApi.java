@@ -62,6 +62,9 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
 
   static final String PARAM_ACTION_CODE = "action-code";
 
+  String PARAM_MANAGED_RELATIONS = "managed-relations";
+
+  String LAYOUT_EDITOR_FORM = "layout";
   /**
    * Run the query and update the content of the grid.
    */

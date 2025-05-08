@@ -10,6 +10,7 @@ import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
@@ -19,6 +20,8 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
 
   @Autowired
   protected MDMEntryListPageApi listPageApi;
+  @Autowired
+  MDMRelationEditorService mdmRelationEditorService;
 
   public MDMEntryEditPageApiImpl() {
     super(Object.class);
@@ -31,7 +34,9 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
       disablePage(view);
     }
 
-    return parameters(view).require(MDMEntryListPageApi.PARAM_RAW_MODEL, Map.class);
+    final var viewModel = parameters(view).require(MDMEntryListPageApi.PARAM_RAW_MODEL, Map.class);
+    mdmRelationEditorService.addRelationsToViewModel(view, viewModel);
+    return viewModel;
   }
 
   protected void disablePage(View view) {

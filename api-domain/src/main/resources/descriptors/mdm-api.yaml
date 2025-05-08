@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: MasterDataManagement api
   description:
-  termsOfService: ""
+  termsOfService: ''
   contact:
     email: info@it4all.hu
   version: 1.0.0
@@ -45,15 +45,15 @@ components:
           description: |
             Branching strategy of this MDMDefinition. This will be the default for all contained MDMEntityDescriptors,
             but can be overriden if needed. If not set, NONE will be used.
-          $ref: "#/components/schemas/MDMBranchingStrategy"
+          $ref: '#/components/schemas/MDMBranchingStrategy'
         descriptors:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/MDMEntryDescriptor"
+            $ref: '#/components/schemas/MDMEntryDescriptor'
         templates:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/MDMEntryDescriptor"
+            $ref: '#/components/schemas/MDMEntryDescriptor'
         updateRequest:
           description: |
             Used for updating the master data inside the MDMDefinition.
@@ -92,7 +92,7 @@ components:
             entry. The security group of the entry is named like mdm.definition.entry.
         typeQualifiedName:
           type: string
-          default: "org.smartbit4all.api.value.bean.GenericValue"
+          default: 'org.smartbit4all.api.value.bean.GenericValue'
           description: |
             The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
             GenericValue object is used.
@@ -120,14 +120,14 @@ components:
           description: |
             The new or edited entryies should comply the constraints.
           items:
-            $ref: "#/components/schemas/MDMEntryConstraint"
+            $ref: '#/components/schemas/MDMEntryConstraint'
         tableColumns:
           type: array
           description: |
             The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be
             hidden and the order is the default column order on the screen.
           items:
-            $ref: "#/components/schemas/MDMTableColumnDescriptor"
+            $ref: '#/components/schemas/MDMTableColumnDescriptor'
         editorViewName:
           type: string
           description: The name of the view editor view to open. If empty then we use the default in the application.
@@ -164,7 +164,7 @@ components:
             Indicates if this entry is treated as a generic value set (it's not necessary for the type 
             to be a GenericValue, but usually it will be)
         branchingStrategy:
-          $ref: "#/components/schemas/MDMBranchingStrategy"
+          $ref: '#/components/schemas/MDMBranchingStrategy'
         selfContainedRefList:
           type: string
           description: |
@@ -184,10 +184,10 @@ components:
           additionalProperties:
             type: string
         filterModel:
-          description: "If null, the list cannot be searched in published mode, and there are no filters."
+          description: 'If null, the list cannot be searched in published mode, and there are no filters.'
           type: FilterExpressionBuilderModel
         filterModelAdmin:
-          description: "if null, but filterModel is present, filterModel is applied."
+          description: 'if null, but filterModel is present, filterModel is applied.'
           type: FilterExpressionBuilderModel
         importable:
           description: Tells if the records in the entry are importable from a file or not.
@@ -243,14 +243,14 @@ components:
           description: |
             The global branch modification if the branchng startegy is global. If it is active then there shouldn't be any
             item in the active modification list.
-          $ref: "#/components/schemas/MDMModification"
+          $ref: '#/components/schemas/MDMModification'
         activeModifications:
           description: |
             The active modification list is used if the branchng startegy is paralel (strict or whatever). If it is not empty then
             the global modification should be empty.
           type: array
           items:
-            $ref: "#/components/schemas/MDMModification"
+            $ref: '#/components/schemas/MDMModification'
         archive:
           description: |
             This is a reference to the archived object. It refers always to the last archived modification and
@@ -312,23 +312,23 @@ components:
             state is the valid. If we set the disposed then the modification is cancelled, disposed so it will be moved 
             into the  archival immediately. If the final state is rejected or approved then the modification canb be moved 
             into the archival also to see the proper final state.
-          $ref: "#/components/schemas/MDMModificationState"
+          $ref: '#/components/schemas/MDMModificationState'
         notes:
           type: list
           items:
-            $ref: "#/components/schemas/MDMModificationNote"
+            $ref: '#/components/schemas/MDMModificationNote'
         descriptors:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/MDMEntryDescriptor"
+            $ref: '#/components/schemas/MDMEntryDescriptor'
         templates:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/MDMEntryDescriptor"
+            $ref: '#/components/schemas/MDMEntryDescriptor'
         modificationItems:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/MDMModificationItem"
+            $ref: '#/components/schemas/MDMModificationItem'
     MDMModificationItem:
       description: |
         This inline object is hold information about modification state and notes to one entry.
@@ -343,7 +343,7 @@ components:
         notes:
           type: array
           items:
-            $ref: "#/components/schemas/MDMModificationNote"
+            $ref: '#/components/schemas/MDMModificationNote'
     MDMModificationNote:
       description: |
         This inline object is the comment on the MDM modification. It can be global for the whole notification and
@@ -379,7 +379,7 @@ components:
         modification:
           description: |
             The modification that was archived from the active modification list.
-          $ref: "#/components/schemas/MDMModification"
+          $ref: '#/components/schemas/MDMModification'
         archival:
           description: The user and the time of the archival.
           type: UserActivityLog
@@ -411,7 +411,7 @@ components:
           description: The uri of the object.
         data:
           description: .
-          $ref: "#/components/schemas/MDMModificationRequestData"
+          $ref: '#/components/schemas/MDMModificationRequestData'
     MDMModificationRequestData:
       type: object
       description: .
@@ -435,7 +435,7 @@ components:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/MDMErrorLogData"
+            $ref: '#/components/schemas/MDMErrorLogData'
     MDMErrorLogData:
       type: object
       description: Import and export operation error log data.
@@ -471,14 +471,14 @@ components:
         data:
           description: |
             The data of the application setup.
-          $ref: "#/components/schemas/ApplicationSetupData"
+          $ref: '#/components/schemas/ApplicationSetupData'
     ApplicationSetupData:
       type: object
       required: [kind, name]
       properties:
         kind:
-          $ref: "#/components/schemas/ApplicationSetupKind"
-          default: "API"
+          $ref: '#/components/schemas/ApplicationSetupKind'
+          default: 'API'
         name:
           description: |
             The unique name of the application setup.
@@ -510,7 +510,7 @@ components:
             The entries with their changes.
           type: array
           items:
-            $ref: "#/components/schemas/MDMEntryChange"
+            $ref: '#/components/schemas/MDMEntryChange'
     MDMEntryChange:
       description: |
         The entry change contains all the changeed items of an MDMEntry.
@@ -524,7 +524,7 @@ components:
           description: The chnages items of the entry.
           type: array
           items:
-            $ref: "#/components/schemas/MDMEntryChangeItem"
+            $ref: '#/components/schemas/MDMEntryChangeItem'
     MDMEntryChangeItem:
       description: |
         The change item defines the operation and refers to the related versioned uris of the chnaged object.
@@ -533,7 +533,7 @@ components:
       properties:
         operation:
           description: The operation of the change. Could be NEW, MODIFIED, INACTIVATED, REACTIVATED.
-          $ref: "#/components/schemas/MDMEntryChangeOperation"
+          $ref: '#/components/schemas/MDMEntryChangeOperation'
         uri:
           description: |
             The uri refers to the actual state of the new or changed object. It is versioned object uri points to
@@ -546,3 +546,44 @@ components:
           format: uri
     MDMEntryChangeOperation:
       enum: [NEW, MODIFIED, INACTIVATED, REACTIVATED]
+    MDMRelationDefinition:
+      type: object
+      description: |
+        Defines a one-way relation between two value sets governed my MDM.
+      properties:
+        uri:
+          type: string
+          format: uri
+        code:
+          type: string
+          description: |
+            Unique identifier for this instance, enabling lookup.
+        name:
+          type: string
+          description: |
+            Human readable name of this instance.
+        propertyName:
+          type: string
+          description: |
+            The name of the property under the `relation` Aspect of host objects where the related
+            object URI(s) may be found.
+        propertyKind:
+          type: ReferencePropertyKind
+          description: |
+            Defines the arity of the relation. Interpreted values are REFERENCE and LIST
+        fromDefinition:
+          type: string
+          description: |
+            Specifies the MDM definition governing the host objects.
+        fromEntryName:
+          type: string
+          description: |
+            Specifies the MDM entry containing the host objects.
+        toDefinition:
+          type: string
+          description: |
+            Specifies the MDM definition governing the related objects.
+        toEntryName:
+          type: string
+          description: |
+            Specifies the MDM entry containing the related objects.

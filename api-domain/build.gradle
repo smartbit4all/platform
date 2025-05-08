@@ -59,6 +59,7 @@ smartbit4all {
         "ViewConstraint"                : "org.smartbit4all.api.view.bean.ViewConstraint",
         "InvocationError"               : "org.smartbit4all.api.invocation.bean.InvocationError",
         "StoredCollectionDescriptor"    : "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
+        "ReferencePropertyKind"         : "org.smartbit4all.api.object.bean.ReferencePropertyKind",
     ]
   }
 }

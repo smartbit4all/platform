@@ -79,6 +79,7 @@ import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -156,6 +157,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private ViewPublisherApi viewPublisherApi;
+
+  @Autowired
+  private MDMRelationEditorService mdmRelationEditorService;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -647,7 +651,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         .type(ViewType.DIALOG)
         .objectUri(modelNode.getObjectUri())
         .branchUri(branchUri)
-        .putLayoutsItem("layout", layout)
+        .putLayoutsItem(LAYOUT_EDITOR_FORM, layout)
         .putParametersItem(PARAM_MDM_DEFINITION, ctx.getDefinition())
         .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.getEntryDescriptor())
         .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
@@ -805,6 +809,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectNode objectNode = createObjectNodeToSave(objectUri, editingObject, context);
+
     saveObjectInternal(context, objectNode, editorView, request);
   }
 
@@ -847,6 +852,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected void saveObjectInternal(PageContext context, ObjectNode objectNode, View editorView,
       UiActionRequest request) {
+    mdmRelationEditorService.setRelationsInHost(editorView, objectNode);
     context.getEntryApi().save(objectNode);
     if (editorView == null || request == null) {
       log.warn("cannot fire action performed on save [{}] type entry",

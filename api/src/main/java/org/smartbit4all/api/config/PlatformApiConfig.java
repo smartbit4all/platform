@@ -1,5 +1,6 @@
 package org.smartbit4all.api.config;
 
+import static java.util.Collections.singletonList;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
@@ -37,6 +38,8 @@ import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
+import org.smartbit4all.api.mdm.MDMRelationApi;
+import org.smartbit4all.api.mdm.MDMRelationApiImpl;
 import org.smartbit4all.api.mdm.MDMSearchIndexApi;
 import org.smartbit4all.api.mdm.MDMSearchIndexApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -46,6 +49,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint;
 import org.smartbit4all.api.mdm.bean.MDMEntryConstraint.KindEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMRelationDefinition;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.mimetype.ContentConversionApi;
 import org.smartbit4all.api.mimetype.config.MimeTypeConfig;
@@ -419,6 +423,11 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public MDMRelationApi mdmRelationApi() {
+    return new MDMRelationApiImpl();
+  }
+
+  @Bean
   MDMDefinitionOption systemIntegrationPlatformMdmOption(LocaleSettingApi localeSettingApi) {
     MDMDefinition mdmDefinition =
         new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
@@ -602,6 +611,29 @@ public class PlatformApiConfig {
                   .name("ActionCode")
                   .addPathItem(ActionDefinition.ACTION)
                   .addPathItem(UiAction.CODE));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(MDMRelationApi.MDM_RELATIONS)
+          .name(MDMRelationApi.MDM_RELATIONS)
+          .uniquePropertyPaths(singletonList(singletonList(MDMRelationDefinition.CODE)))
+          .adminGroupName(PlatformSecurityOption.actionDefinitionEditor.getName())
+          .displayNameList(new LangString().defaultValue("Relations")
+              .putValueByLocaleItem("hu", "Törzsadatrelációk")
+              .putValueByLocaleItem("en", "Master Data Relations"))
+          .displayNameForm(new LangString().defaultValue("Relation")
+              .putValueByLocaleItem("hu", "Törzsadatreláció")
+              .putValueByLocaleItem("en", "Master Data Relation"))
+          .order(200L)
+          .typeQualifiedName(MDMRelationDefinition.class.getName())
+          .addTableColumnsItem(new MDMTableColumnDescriptor()
+              .name("Name")
+              .addPathItem(MDMRelationDefinition.NAME))
+          .addTableColumnsItem(new MDMTableColumnDescriptor()
+              .name("Code")
+              .addPathItem(MDMRelationDefinition.CODE));
       result.addDescriptor(entry);
     }
     {

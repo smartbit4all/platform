@@ -13,13 +13,20 @@
 
 package org.smartbit4all.api.view.bean;
 
-import java.net.URI;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.net.URI;
+import java.util.UUID;
+import org.smartbit4all.api.view.bean.View;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
@@ -202,11 +209,13 @@ public class SmartLinkData {
     return this;
   }
 
-   /**
+  /**
    * Get suspended
    * @return suspended
-  **/
+   */
   @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(SUSPENDED)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -220,7 +229,6 @@ public class SmartLinkData {
   public void setSuspended(Boolean suspended) {
     this.suspended = suspended;
   }
-
 
   @Override
   public boolean equals(Object o) {

@@ -1520,3 +1520,23 @@ components:
           type: array
           items:
             type: string
+
+    MultiComboBoxModel:
+      type: object
+      properties:
+        viewKey:
+          type: string
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultiComboBoxElement'
+      required: [elements]
+    MultiComboBoxElement:
+      type: object
+      properties:
+        widgetKey:
+          type: string
+        valueSet:
+          type: string
+        relation:
+          type: string

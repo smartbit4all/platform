@@ -35,6 +35,10 @@ import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPa
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorServiceImpl;
+import org.smartbit4all.bff.api.mdm.relation.RelationManagedMultiComboBoxService;
+import org.smartbit4all.bff.api.mdm.relation.RelationManagedMultiComboBoxServiceImpl;
 import org.smartbit4all.bff.api.mdm.usersecurity.UserSecurityPolicyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.usersecurity.UserSecurityPolicyEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.valuemapping.MDMValueTransformationEditorPageApi;
@@ -294,6 +298,16 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<AttachmentGridInvocationApi> attachmentGridInvocationApiProvider(
       AttachmentGridInvocationApi api) {
     return Invocations.asProvider(AttachmentGridInvocationApi.class, api);
+  }
+
+  @Bean
+  MDMRelationEditorService mdmRelationEditorService() {
+    return new MDMRelationEditorServiceImpl();
+  }
+
+  @Bean
+  RelationManagedMultiComboBoxService relationManagedMultiComboBoxService() {
+    return new RelationManagedMultiComboBoxServiceImpl();
   }
 
 }
