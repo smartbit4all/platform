@@ -256,6 +256,12 @@ components:
             The true value of the indicator implies that the ssesion uri set is used by the invocation framework.
             Should be used when the upcoming execution of the request is relatively close to the initiation point. So
             the session will be still valid.
+        stack:
+          description: |
+            The stack can be set but optional. If it is set then the InvocationApi initiate the stack as ThreadLocal variable
+            and the invocation and its cascaded invocation can access the given parameter. This stack is tranferred to the remote
+            invocations also.
+          $ref: '#/components/schemas/InvocationStackItem'
     InvocationParameter:
       type: object
       required: [name, typeClass]

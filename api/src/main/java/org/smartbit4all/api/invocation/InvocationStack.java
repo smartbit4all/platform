@@ -53,11 +53,23 @@ public final class InvocationStack {
     this.uri = stackUri;
   }
 
+  /**
+   * Constructs an in memory invocation stack that can not be saved in the commit!
+   * 
+   * @param objectApi
+   * @param rootItem
+   */
+  public InvocationStack(ObjectApi objectApi, InvocationStackItem rootItem) {
+    super();
+    this.objectApi = objectApi;
+    this.rootItem = rootItem;
+  }
+
   public final URI getUri() {
     return uri;
   }
 
-  final InvocationStackItem getRootItem() {
+  public final InvocationStackItem getRootItem() {
     return rootItem;
   }
 

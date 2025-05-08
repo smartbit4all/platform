@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.smartbit4all.api.collection.StoredReference;
+import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 
 /**
  * This api is reponsible for the access and modification of the ProcessInstance. It can manage the
@@ -16,6 +17,14 @@ public interface InvocationStackApi {
    * @return The {@link InvocationStack} assiciated with the current thread.
    */
   InvocationStack get();
+
+  /**
+   * Set a new unsaved, not persisted stack with the values passed in stack item.
+   * 
+   * @param stackItem
+   * @return The newly initiated stack itself.
+   */
+  InvocationStack set(InvocationStackItem stackItem);
 
   /**
    * Initiate an active stack for the current thread.
@@ -46,7 +55,7 @@ public interface InvocationStackApi {
    * 
    * @param stackUri
    * @param path
-   * @return
+   * @return The loaded stack.
    */
   InvocationStack loadStack(URI stackUri, List<String> path);
 
@@ -54,6 +63,13 @@ public interface InvocationStackApi {
    * Finalize the {@link InvocationStack} associated with the current thread.
    */
   void commit();
+
+  /**
+   * Remove the invocation stack and restore the previous one if any.
+   * 
+   * @return The removed stack or null if there was no stack.
+   */
+  InvocationStack remove();
 
   /**
    * Rollback the {@link InvocationStack} associated with the current thread without saving its

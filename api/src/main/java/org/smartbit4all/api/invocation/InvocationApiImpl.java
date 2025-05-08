@@ -104,6 +104,10 @@ public class InvocationApiImpl implements InvocationApi {
   @Lazy
   private InvocationApi self;
 
+  @Autowired
+  @Lazy
+  private InvocationStackApi stackApi;
+
   /**
    * By default the platform uses the rest client to access and call the api of a module over the
    * same storage.
@@ -189,7 +193,16 @@ public class InvocationApiImpl implements InvocationApi {
   private final InvocationParameter invokeLocalApi(InvocationRequest request, ApiData apiData) {
     Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
     Method method = Invocations.getMethodToCall(apiInstance, request);
-    return Invocations.invokeMethod(objectApi, request, apiInstance, method);
+    if (request.getStack() != null) {
+      stackApi.set(request.getStack());
+    }
+    try {
+      return Invocations.invokeMethod(objectApi, request, apiInstance, method);
+    } finally {
+      if (request.getStack() != null) {
+        stackApi.remove();
+      }
+    }
   }
 
   private final ServiceConnection getServiceConnectionOfRuntime(UUID runtimeUuid) {

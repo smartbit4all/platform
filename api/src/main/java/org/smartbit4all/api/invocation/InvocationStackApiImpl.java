@@ -46,6 +46,19 @@ public class InvocationStackApiImpl implements InvocationStackApi {
     stackList.addLast(processStack);
   }
 
+  @Override
+  public InvocationStack set(InvocationStackItem stackItem) {
+    Deque<InvocationStack> stackList = stack.get();
+    if (stackList == null) {
+      stackList = new ArrayDeque<>();
+      stack.set(stackList);
+    }
+    InvocationStack invocationStack = new InvocationStack(objectApi, stackItem);
+    stackList.addLast(invocationStack);
+    return invocationStack;
+  }
+
+  @Override
   public InvocationStack remove() {
     Deque<InvocationStack> stackList = stack.get();
     if (stackList != null) {

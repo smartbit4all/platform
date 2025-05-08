@@ -14,12 +14,15 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
+import org.smartbit4all.api.invocation.InvocationStack;
+import org.smartbit4all.api.invocation.InvocationStackApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -58,9 +61,18 @@ public class InvocationExecutionApiRestclient implements InvocationExecutionApi 
   @Autowired(required = false)
   private RestInvocationRequestCustApi customizer;
 
+  @Autowired
+  @Lazy
+  private InvocationStackApi stackApi;
+
   @Override
   public InvocationParameter invoke(ServiceConnection serviceConnection,
       InvocationRequest request) throws ApiNotFoundException {
+
+    InvocationStack invocationStack = stackApi.get();
+    if (invocationStack != null) {
+      request.setStack(invocationStack.getRootItem());
+    }
 
     String url = serviceConnection.getEndpoint();
 

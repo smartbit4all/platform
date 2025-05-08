@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -45,7 +46,8 @@ import jakarta.validation.Valid;
   InvocationRequest.RETURN_TYPE_CLASS,
   InvocationRequest.RETURN_INNER_TYPE_CLASS,
   InvocationRequest.SESSION_URI,
-  InvocationRequest.INHERIT_SESSION
+  InvocationRequest.INHERIT_SESSION,
+  InvocationRequest.STACK
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequest {
@@ -78,6 +80,9 @@ public class InvocationRequest {
 
   public static final String INHERIT_SESSION = "inheritSession";
   private Boolean inheritSession = false;
+
+  public static final String STACK = "stack";
+  private InvocationStackItem stack;
 
   public InvocationRequest() {
   }
@@ -365,6 +370,34 @@ public class InvocationRequest {
     this.inheritSession = inheritSession;
   }
 
+  public InvocationRequest stack(InvocationStackItem stack) {
+    
+    this.stack = stack;
+    return this;
+  }
+
+  /**
+   * Get stack
+   * @return stack
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(STACK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationStackItem getStack() {
+    return stack;
+  }
+
+
+  @JsonProperty(STACK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStack(InvocationStackItem stack) {
+    this.stack = stack;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -383,12 +416,13 @@ public class InvocationRequest {
         Objects.equals(this.returnTypeClass, invocationRequest.returnTypeClass) &&
         Objects.equals(this.returnInnerTypeClass, invocationRequest.returnInnerTypeClass) &&
         Objects.equals(this.sessionUri, invocationRequest.sessionUri) &&
-        Objects.equals(this.inheritSession, invocationRequest.inheritSession);
+        Objects.equals(this.inheritSession, invocationRequest.inheritSession) &&
+        Objects.equals(this.stack, invocationRequest.stack);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, returnTypeClass, returnInnerTypeClass, sessionUri, inheritSession);
+    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, returnTypeClass, returnInnerTypeClass, sessionUri, inheritSession, stack);
   }
 
   @Override
@@ -405,6 +439,7 @@ public class InvocationRequest {
     sb.append("    returnInnerTypeClass: ").append(toIndentedString(returnInnerTypeClass)).append("\n");
     sb.append("    sessionUri: ").append(toIndentedString(sessionUri)).append("\n");
     sb.append("    inheritSession: ").append(toIndentedString(inheritSession)).append("\n");
+    sb.append("    stack: ").append(toIndentedString(stack)).append("\n");
     sb.append("}");
     return sb.toString();
   }
