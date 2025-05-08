@@ -960,6 +960,10 @@ public final class Storage {
     return objectStorage.getSequence(schema, name);
   }
 
+  public StoredSequence getSequence(URI scopeObjectUri, String schema, String name) {
+    return objectStorage.getSequence(scopeObjectUri, schema, name);
+  }
+
   public final Boolean getUseSecondInUri() {
     return useSecondInUri;
   }

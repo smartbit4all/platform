@@ -136,6 +136,12 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
+  public StoredSequence getSequence(URI scopeObjectUri, String schema, String name) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
     // TODO Auto-generated method stub
     return null;

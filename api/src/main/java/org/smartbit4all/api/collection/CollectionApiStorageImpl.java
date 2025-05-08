@@ -259,8 +259,12 @@ public class CollectionApiStorageImpl implements CollectionApi {
   public StoredSequence sequence(String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return storageApi.getSequence(schema, name);
-    // return new StoredSequenceStorageImpl(constructGlobalUri(schema, name, STOREDSEQ), name,
-    // sequenceApi);
+  }
+
+  @Override
+  public StoredSequence sequence(URI scopeObjectUri, String logicalSchema, String name) {
+    String schema = constructCollectionShemaName(logicalSchema);
+    return storageApi.getSequence(scopeObjectUri, schema, name);
   }
 
   /**

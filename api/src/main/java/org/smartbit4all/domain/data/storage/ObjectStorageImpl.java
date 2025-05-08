@@ -1009,4 +1009,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         name);
   }
 
+  @Override
+  public StoredSequence getSequence(URI scopeObjectUri, String schema, String name) {
+    return new StoredSequenceStorageImpl(transactionManager, storageApi,
+        CollectionApiStorageImpl.constructScopedUri(schema, name,
+            ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), CollectionApi.STOREDSEQ),
+        name);
+  }
+
 }
