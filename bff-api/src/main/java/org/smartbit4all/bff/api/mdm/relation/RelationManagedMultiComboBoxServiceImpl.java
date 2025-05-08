@@ -218,7 +218,7 @@ public class RelationManagedMultiComboBoxServiceImpl
         return !permittedChildUris.contains(objectApi.getLatestUri(value.getObjectUri()));
       });
       view.getValueSets().put(cachedVsCopy.getValueSetName(), cachedVsCopy);
-      final boolean mandatory = permittedChildUris.isEmpty();
+      final boolean mandatory = !permittedChildUris.isEmpty();
       view.getConstraint().getComponentConstraints().stream()
           .filter(c -> c.getDataName().contains(nextElement.getWidgetKey()))
           .filter(c -> Boolean.TRUE.equals(c.getMandatory()))
