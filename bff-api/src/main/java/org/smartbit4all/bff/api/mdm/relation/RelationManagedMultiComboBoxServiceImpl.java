@@ -144,7 +144,7 @@ public class RelationManagedMultiComboBoxServiceImpl
       }
     }
 
-    public Optional<MultiComboBoxModel> get(final String widgetKey) {
+    public List<MultiComboBoxModel> get(final String widgetKey) {
       Object o = view.getVariables().get(VIEW_VAR_MULTI_COMBO_BOX_MODEL);
       if (o instanceof Map<?, ?> m) {
         return m.values().stream()
@@ -152,9 +152,9 @@ public class RelationManagedMultiComboBoxServiceImpl
             .filter(it -> it.getElements().stream()
                 .map(MultiComboBoxElement::getWidgetKey)
                 .anyMatch(widgetKey::equals))
-            .findFirst();
+            .toList();
       } else {
-        return Optional.empty();
+        return Collections.emptyList();
       }
     }
 
@@ -206,7 +206,7 @@ public class RelationManagedMultiComboBoxServiceImpl
       }
 
       final var nextElement = elements.get(i + 1);
-      Set<URI> permittedChildUris = getPermittedNextValues(
+      final Set<URI> permittedChildUris = getPermittedNextValues(
           view,
           element,
           accessor.get(widgetKey),
@@ -218,6 +218,11 @@ public class RelationManagedMultiComboBoxServiceImpl
         return !permittedChildUris.contains(objectApi.getLatestUri(value.getObjectUri()));
       });
       view.getValueSets().put(cachedVsCopy.getValueSetName(), cachedVsCopy);
+      final boolean mandatory = permittedChildUris.isEmpty();
+      view.getConstraint().getComponentConstraints().stream()
+          .filter(c -> c.getDataName().contains(nextElement.getWidgetKey()))
+          .filter(c -> Boolean.TRUE.equals(c.getMandatory()))
+          .forEach(c -> c.setMandatory(mandatory));
       acceptableValues.clear();
       acceptableValues.addAll(permittedChildUris);
 
@@ -273,7 +278,7 @@ public class RelationManagedMultiComboBoxServiceImpl
     final String widgetKey = actionRequest.getCode();
     cache(view)
         .get(widgetKey)
-        .ifPresent(model -> enforceValueSets(view, model, accessor, widgetKey, false));
+        .forEach(model -> enforceValueSets(view, model, accessor, widgetKey, false));
   }
 
 }

@@ -32,6 +32,8 @@ import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewContextServiceImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
+import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorServiceImpl;
 import org.smartbit4all.bff.api.search.SearchPageApi;
 import org.smartbit4all.bff.api.search.SearchPageApiImplTest;
 import org.smartbit4all.core.io.TestFSCleaner;
@@ -154,6 +156,11 @@ public class MDMApiTestConfig extends TestFSCleaner {
   @Bean
   MDMEntryEditPageApi mdmEntryEditPageApi() {
     return new MEMEntryEditingPageApiImplTest();
+  }
+
+  @Bean
+  MDMRelationEditorService mdmRelationEditorService() {
+    return new MDMRelationEditorServiceImpl();
   }
 
   @Bean
