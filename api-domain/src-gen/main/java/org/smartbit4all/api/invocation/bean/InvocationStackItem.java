@@ -72,12 +72,11 @@ public class InvocationStackItem {
    * Get code
    * @return code
    */
-  @jakarta.annotation.Nonnull
-  @NotNull
+  @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public String getCode() {
     return code;
@@ -85,7 +84,7 @@ public class InvocationStackItem {
 
 
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCode(String code) {
     this.code = code;
   }
@@ -100,12 +99,11 @@ public class InvocationStackItem {
    * Get name
    * @return name
    */
-  @jakarta.annotation.Nonnull
-  @NotNull
+  @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public String getName() {
     return name;
@@ -113,7 +111,7 @@ public class InvocationStackItem {
 
 
   @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(String name) {
     this.name = name;
   }

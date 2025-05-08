@@ -1052,5 +1052,4 @@ components:
         refObjectUri:
           type: string
           format: uri
-	
     

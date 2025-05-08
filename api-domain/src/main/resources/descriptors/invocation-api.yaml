@@ -836,7 +836,7 @@ components:
           $ref: '#/components/schemas/InvocationStackItem'
     InvocationStackItem:
       type: object
-      required: [code, name, subItems, inputParameters, variables]
+      required: [subItems, inputParameters, variables]
       description: |
         The stack item that is an identified by a code and a name that denotes the invocation currently active.
       properties:
