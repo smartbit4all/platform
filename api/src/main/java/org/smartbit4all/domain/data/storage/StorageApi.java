@@ -86,4 +86,14 @@ public interface StorageApi {
    */
   StoredSequence getSequence(String schema, String name);
 
+  /**
+   * Get a {@link StoredSequence} adequate for the given storage.
+   *
+   * @param scopeObjectUri The scope object defines the object the container belongs to.
+   * @param schema The schema for the sequence
+   * @param name The name of the sequence
+   * @return The {@link StoredSequence} instance.
+   */
+  StoredSequence getSequence(URI scopeObjectUri, String schema, String name);
+
 }

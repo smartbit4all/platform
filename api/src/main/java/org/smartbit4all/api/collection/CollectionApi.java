@@ -214,6 +214,17 @@ public interface CollectionApi {
   StoredSequence sequence(String logicalSchema, String name);
 
   /**
+   * This object provides an atomic sequence that provides globally unique incrementing value. Can
+   * be used as the classic database sequence.
+   * 
+   * @param scopeObjectUri The scope object defines the object the container belongs to.
+   * @param logicalSchema
+   * @param name The unique name of the sequence inside the logical schema.
+   * @return
+   */
+  StoredSequence sequence(URI scopeObjectUri, String logicalSchema, String name);
+
+  /**
    * Provides a vector collection that refers to a {@link VectorDBContibutionApi} and an
    * {@link EmbeddingContributionApi} named by the two {@link ServiceConnection}.
    * 

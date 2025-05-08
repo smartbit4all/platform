@@ -824,6 +824,28 @@ public class CollectionApiTestBase {
 
     assertEquals(0, sequence2.current());
 
+
+    List<URI> uriList = new ArrayList<>();
+    List<StoredSequence> sequences = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      ObjectNode datasheet1 =
+          objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
+      URI uri = objectApi.save(datasheet1);
+      uriList.add(uri);
+      sequences.add(collectionApi.sequence(uri, SCHEMA, "sequence"));
+    }
+
+    for (int i = 0; i < count; i++) {
+      StoredSequence storedSequence = sequences.get(i);
+      for (int j = 0; j < count + 1; j++) {
+        storedSequence.next();
+      }
+    }
+    for (int i = 0; i < count; i++) {
+      StoredSequence storedSequence = sequences.get(i);
+      assertEquals(count + 1, storedSequence.current());
+    }
+
   }
 
   @Test
