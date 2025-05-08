@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm.relation;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
-import io.jsonwebtoken.lang.Collections;
 
 public class RelationManagedMultiComboBoxServiceImpl
     implements RelationManagedMultiComboBoxService {
@@ -45,7 +45,7 @@ public class RelationManagedMultiComboBoxServiceImpl
     if (multiComboBoxModel == null || multiComboBoxModel.getElements().isEmpty()) {
       return;
     }
-    
+
     final var cache = cache(view);
     if (cache.present(multiComboBoxModel)) {
       return;
@@ -92,7 +92,7 @@ public class RelationManagedMultiComboBoxServiceImpl
     if (key == null) {
       return Optional.empty();
     }
-    
+
     Object o = view.getVariables().get(VIEW_VAR_PERMITTED_EXTRA_REL);
     if (o instanceof Map m) {
       Object v = m.get(objectApi.getLatestUri(key).toString());
