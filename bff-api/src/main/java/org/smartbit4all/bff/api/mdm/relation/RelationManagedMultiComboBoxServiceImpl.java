@@ -56,6 +56,10 @@ public class RelationManagedMultiComboBoxServiceImpl
         .map(view.getValueSets()::get)
         .filter(Objects::nonNull)
         .toList();
+    if (valueSets.size() != multiComboBoxModel.getElements().size()) {
+      return;
+    }
+
     cacheInitialValueSets(view, valueSets);
     cache.set(multiComboBoxModel);
     cacheInitialValuesAsPermitted(view, multiComboBoxModel, accessor);
