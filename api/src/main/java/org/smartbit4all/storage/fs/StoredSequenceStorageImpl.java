@@ -98,4 +98,29 @@ public class StoredSequenceStorageImpl implements StoredSequence {
     return START_VALUE;
   }
 
+  @Override
+  public Long set(Long newValue) {
+    Storage storage = storageApi.getStorage(uri);
+    Objects.requireNonNull(storage,
+        "Unable to identify the storage for the " + uri + " sequence.");
+
+
+    StorageObjectLock objectLock = storage.getLock(uri);
+    objectLock.lock();
+    try {
+      if (storage.exists(uri)) {
+        storage.update(uri, StoredSequenceData.class, s -> {
+          return s.current(newValue);
+        });
+      } else {
+        StoredSequenceData s = new StoredSequenceData().current(START_VALUE).uri(uri);
+        s.current(newValue);
+        storage.saveAsNew(s);
+      }
+    } finally {
+      objectLock.unlock();
+    }
+    return newValue;
+  }
+
 }

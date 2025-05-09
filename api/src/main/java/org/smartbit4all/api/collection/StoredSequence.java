@@ -28,4 +28,12 @@ public interface StoredSequence {
    */
   List<Long> next(int count);
 
+  /**
+   * Set the value of the sequence.
+   * 
+   * @param newValue The new value that will be the result of the next current value.
+   * @return The current value that is the new value if the set operation succeeded.
+   */
+  Long set(Long newValue);
+
 }
