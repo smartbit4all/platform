@@ -846,6 +846,15 @@ public class CollectionApiTestBase {
       assertEquals(count + 1, storedSequence.current());
     }
 
+    for (int i = 0; i < count; i++) {
+      StoredSequence storedSequence = sequences.get(i);
+      storedSequence.set(Long.valueOf(i));
+    }
+    for (int i = 0; i < count; i++) {
+      StoredSequence storedSequence = sequences.get(i);
+      assertEquals(i, storedSequence.current());
+    }
+
   }
 
   @Test
