@@ -233,6 +233,12 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
         filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
             filterExpressionBuilderUiModel);
       }
+    } else {
+      FilterExpressionBuilderUiModel filterExpressionBuilderUiModel =
+          new FilterExpressionBuilderUiModel();
+      filterExpressionBuilderUiModel.setType(TypeEnum.SIMPLE);
+      filterExpressionBuilderApi.initFilterBuilderInView(view.getUuid(), FILTER_BUILDER_WIDGET_ID,
+          filterExpressionBuilderUiModel);
     }
 
     if (!Boolean.TRUE.equals(ctx.pageConfig.getSkipInitialQuery())) {
