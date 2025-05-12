@@ -71,14 +71,15 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
   private void logResponse(HttpRequest req, ClientHttpResponse response, String requestId,
       long startTime) throws IOException {
     StringBuilder logBuilder = new StringBuilder();
-    // End time
-    long endTime = System.currentTimeMillis();
-    // Calculate duration and log
-    long duration = endTime - startTime;
     // Log method and URI
     logBuilder.append("Incoming HTTP Response - ").append(requestId).append("\n");
     logBuilder.append("URI: ").append(req.getURI()).append(", ");
     logBuilder.append("Status: ").append(response.getStatusCode().value()).append(", ");
+
+    // End time
+    long endTime = System.currentTimeMillis();
+    // Calculate duration and log
+    long duration = endTime - startTime;
     logBuilder.append("Execution time (ms): ").append(duration).append(", ");
 
     // Log body
