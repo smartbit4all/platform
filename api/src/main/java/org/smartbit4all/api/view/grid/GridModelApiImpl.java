@@ -62,6 +62,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.base.Strings;
 import jakarta.validation.constraints.NotNull;
@@ -822,7 +823,7 @@ public class GridModelApiImpl implements GridModelApi {
         }
       }
       for (GridRow row : page.getRows()) {
-        if (row.getChildren() == null) {
+        if (ObjectUtils.isEmpty(row.getChildren())) {
           // We need to draw the tree but the children not set. So we try to fill from the collected
           // childrenByParent map.
           List<String> list = childrenByParent.get(row.getId());
