@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.session.SessionApi;
-import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.core.utility.StringConstant;
@@ -60,9 +59,6 @@ public final class LocaleSettingApi implements InitializingBean {
 
   @Autowired
   private StorageApi storageApi;
-
-  @Autowired(required = false)
-  private UserSessionApi userSessionApi;
 
   @Autowired(required = false)
   private SessionApi sessionApi;
@@ -195,15 +191,8 @@ public final class LocaleSettingApi implements InitializingBean {
     Locale sessionLocale = null;
     if (sessionApi != null) {
       sessionLocale = sessionApi.getLocale();
-    } else {
-      try {
-        if (userSessionApi != null && userSessionApi.currentSession() != null) {
-          sessionLocale = userSessionApi.currentSession().getCurrentLocale();
-        }
-      } catch (Exception e) {
-        // no authentication yet
-      }
     }
+
     Locale defaultLocaleTmp = defaultLocale != null ? defaultLocale : Locales.HUNGARIAN;
     return sessionLocale != null ? sessionLocale : defaultLocaleTmp;
   }

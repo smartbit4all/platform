@@ -78,7 +78,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   private Disposable subscription;
 
-  public UINavigationApiCommon(UserSessionApi userSessionApi) {
+  public UINavigationApiCommon(UserSessionApi UserSessionApi) {
     this.userSessionApi = userSessionApi;
     this.uuid = UUID.randomUUID();
     navigationTargetsByUUID = new HashMap<>();
