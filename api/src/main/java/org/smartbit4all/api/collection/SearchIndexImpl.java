@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionPropertyCollector;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -218,6 +220,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     separateCalculatedFieldsInQueryInput(queryInput, calculators);
 
     queryInput = process(queryInput, queryInputPreProcessors);
+    List<SortOrderProperty> orderBys = checkAndCleanCalculatedOrderBys(queryInput, calculators);
+
     boolean executeSearchInMemory =
         (!crudApi.isExecutionApiExists(queryInput.getEntityDef()) && !isUseDatabase())
             || readFromStorage;
@@ -237,6 +241,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       }
       TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
       processCalculators(result, calculators);
+      runOrderBysOnResult(queryInput, orderBys, result);
       removeUnnecessaryColumns(currentProperties, result);
       return result;
 
@@ -253,6 +258,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
     processCalculators(result, calculators);
 
+    runOrderBysOnResult(queryInput, orderBys, result);
     result = process(result, postProcessor);
 
     removeUnnecessaryColumns(currentProperties, result);
@@ -260,6 +266,33 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return result;
   }
 
+
+  private List<SortOrderProperty> checkAndCleanCalculatedOrderBys(QueryInput queryInput,
+      List<SearchIndexFieldCalculator> calculators) {
+    List<SortOrderProperty> orderBys = null;
+    if (!ObjectUtils.isEmpty(queryInput.orderBys())) {
+      Set<String> calculatedFields = calculators.stream()
+          .map(calc -> (ObjectUtils.isEmpty(calc.prefix) ? "" : calc.prefix + ".")
+              + calc.propertyName)
+          .collect(Collectors.toSet());
+      if (queryInput.orderBys().stream()
+          .map(order -> order.property.getName())
+          .anyMatch(calculatedFields::contains)) {
+        // sort on calculated columns -> only after processCalc, make a copy here
+        orderBys = new ArrayList<>(queryInput.orderBys());
+        queryInput.orderBys().clear();
+      }
+    }
+    return orderBys;
+  }
+
+  private void runOrderBysOnResult(QueryInput queryInput, List<SortOrderProperty> orderBys,
+      TableData<?> result) {
+    if (!ObjectUtils.isEmpty(orderBys)) {
+      queryInput.orderBys().addAll(orderBys);
+      tableDataApi.sort(result, orderBys);
+    }
+  }
 
   private void removeUnnecessaryColumns(Set<String> currentProperties, TableData<?> result) {
     List<String> columnsToRemove = result.columns().stream()
