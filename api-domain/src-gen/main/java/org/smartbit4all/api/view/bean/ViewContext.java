@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +52,8 @@ import jakarta.validation.Valid;
   ViewContext.CLIPBOARD_DATA,
   ViewContext.OPEN_PENDING_DATA,
   ViewContext.CURRENT_REQUEST,
-  ViewContext.DEVICE_INFO
+  ViewContext.DEVICE_INFO,
+  ViewContext.TIME_OF_LAST_REQUEST
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewContext {
@@ -81,6 +83,9 @@ public class ViewContext {
 
   public static final String DEVICE_INFO = "deviceInfo";
   private DeviceInfo deviceInfo;
+
+  public static final String TIME_OF_LAST_REQUEST = "timeOfLastRequest";
+  private OffsetDateTime timeOfLastRequest;
 
   public ViewContext() {
   }
@@ -373,6 +378,34 @@ public class ViewContext {
     this.deviceInfo = deviceInfo;
   }
 
+  public ViewContext timeOfLastRequest(OffsetDateTime timeOfLastRequest) {
+    
+    this.timeOfLastRequest = timeOfLastRequest;
+    return this;
+  }
+
+  /**
+   * Get timeOfLastRequest
+   * @return timeOfLastRequest
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(TIME_OF_LAST_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getTimeOfLastRequest() {
+    return timeOfLastRequest;
+  }
+
+
+  @JsonProperty(TIME_OF_LAST_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTimeOfLastRequest(OffsetDateTime timeOfLastRequest) {
+    this.timeOfLastRequest = timeOfLastRequest;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -390,12 +423,13 @@ public class ViewContext {
         Objects.equals(this.clipboardData, viewContext.clipboardData) &&
         Objects.equals(this.openPendingData, viewContext.openPendingData) &&
         Objects.equals(this.currentRequest, viewContext.currentRequest) &&
-        Objects.equals(this.deviceInfo, viewContext.deviceInfo);
+        Objects.equals(this.deviceInfo, viewContext.deviceInfo) &&
+        Objects.equals(this.timeOfLastRequest, viewContext.timeOfLastRequest);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, links, downloads, clipboardData, openPendingData, currentRequest, deviceInfo);
+    return Objects.hash(uri, uuid, views, links, downloads, clipboardData, openPendingData, currentRequest, deviceInfo, timeOfLastRequest);
   }
 
   @Override
@@ -411,6 +445,7 @@ public class ViewContext {
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("    currentRequest: ").append(toIndentedString(currentRequest)).append("\n");
     sb.append("    deviceInfo: ").append(toIndentedString(deviceInfo)).append("\n");
+    sb.append("    timeOfLastRequest: ").append(toIndentedString(timeOfLastRequest)).append("\n");
     sb.append("}");
     return sb.toString();
   }

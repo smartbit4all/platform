@@ -1,6 +1,8 @@
 package org.smartbit4all.sec.localauth;
 
-public interface LocalAuthenticationService {
+import org.smartbit4all.api.authentication.AuthenticationService;
+
+public interface LocalAuthenticationService extends AuthenticationService {
 
   public static final String KIND = "localAuthentication";
 

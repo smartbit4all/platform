@@ -457,7 +457,7 @@ paths:
           description: Smartlink's unique identifier
       responses:
         '200':
-          description: ''
+          description: ''     
 components:
   schemas:
     ViewContext:
@@ -493,6 +493,9 @@ components:
           $ref: '#/components/schemas/ServerRequestTrack'
         deviceInfo:
           $ref: '#/components/schemas/DeviceInfo'
+        timeOfLastRequest:
+          type: string
+          format: date-time
     ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.

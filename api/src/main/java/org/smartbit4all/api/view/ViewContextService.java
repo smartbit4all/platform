@@ -61,10 +61,11 @@ public interface ViewContextService {
    * @param readOnly
    * @throws Exception
    */
-  void execute(UUID uuid, ViewContextCommand process, boolean readOnly) throws Exception;
+  void execute(UUID uuid, ViewContextCommand process, boolean readOnly, boolean userAction)
+      throws Exception;
 
   default void execute(UUID uuid, ViewContextCommand process) throws Exception {
-    execute(uuid, process, false);
+    execute(uuid, process, false, false);
   }
 
   /**

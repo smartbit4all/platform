@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -34,6 +30,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This request filter tries to catch a JWT token passed as an 'Authentication: Bearer' header or as
@@ -59,6 +59,9 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
 
   @Value("${openapi.session.base-path:}")
   private String sessionPath;
+
+  @Value("${viewcontext.not-user-action-request-path-regexes:}")
+  private List<String> notActionRequestPathRegexes;
 
   private List<SessionBasedAuthTokenProvider> authTokenProviders =
       Arrays.asList(new DefaultAuthTokenProvider());
@@ -154,9 +157,15 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
           boolean isGridLoad =
               HttpMethod.POST.name().equals(request.getMethod())
                   && request.getRequestURI().matches("/api/grid/[^/]+/[^/]+/load");
+          boolean isComponentLoad =
+              HttpMethod.GET.name().equals(request.getMethod())
+                  && request.getRequestURI().matches("/api/component/[^/]+/load");
+
           viewContextService.execute(
               UUID.fromString(uuid),
-              () -> filterChain.doFilter(request, response), isGridLoad);
+              () -> filterChain.doFilter(request, response),
+              isGridLoad,
+              !(isGridLoad || isComponentLoad || notActionRequestPath(request.getRequestURI())));
         } catch (Exception e) {
           throw new ServletException("Error when executing viewContext process", e);
         }
@@ -167,6 +176,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
     } else {
       filterChain.doFilter(request, response);
     }
+  }
+
+  private boolean notActionRequestPath(String requestURI) {
+    if (notActionRequestPathRegexes == null) {
+      return false;
+    }
+
+    for (String regex : notActionRequestPathRegexes) {
+      if (requestURI.matches(regex)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void setAuthToken(HttpServletRequest request, String sessionUriTxt) {

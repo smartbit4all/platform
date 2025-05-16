@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.authentication.AuthenticationService;
 import org.smartbit4all.api.cache.CacheService;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
@@ -33,6 +35,8 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.session.exception.ExpiredSessionException;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.BeforeClose;
@@ -73,6 +77,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -151,6 +156,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
 
+  @Value("${session.refresh-timeout-min:120}")
+  private int refreshTimeoutMins;
+
   @Autowired
   private ObjectApi objectApi;
 
@@ -159,6 +167,12 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Autowired
   private SessionApi sessionApi;
+
+  @Autowired
+  private SessionManagementApi sessionManagementApi;
+
+  @Autowired
+  private AuthenticationService authenticationService;
 
   @Autowired
   private ApplicationContext ctx;
@@ -584,7 +598,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void execute(UUID uuid, ViewContextCommand command, boolean readOnly) throws Exception {
+  public void execute(UUID uuid, ViewContextCommand command, boolean readOnly, boolean userAction)
+      throws Exception {
     Objects.requireNonNull(uuid, "currentViewContextUuid is not set");
     Objects.requireNonNull(command, "command is not set");
     URI viewContextUri = sessionApi.getViewContexts().get(uuid.toString());
@@ -601,6 +616,19 @@ public class ViewContextServiceImpl implements ViewContextService {
       // clear links & downloads on load
       contextNode.modify(ViewContext.class,
           c -> {
+            if (c.getTimeOfLastRequest() != null
+                && Duration.between(c.getTimeOfLastRequest(), OffsetDateTime.now())
+                    .toSeconds() > refreshTimeoutMins * 60) {
+              sessionManagementApi.updateSession(sessionApi.getSessionUri(),
+                  s -> s.expiration(null).refreshExpiration(null));
+              authenticationService.logout();
+              throw new ExpiredSessionException();
+            }
+
+            if (userAction) {
+              c.timeOfLastRequest(OffsetDateTime.now());
+            }
+
             if (c.getLinks() != null) {
               c.getLinks().clear();
             }

@@ -163,7 +163,8 @@ public class SessionManagementApiImpl implements SessionManagementApi {
         tokenHandler.getSubject(refreshToken).substring(REFRESHTOKEN_PREFIX.length());
 
     Session session = readSession(URI.create(sessionUriTxt));
-    if (session == null) {
+    if (session == null
+        || (session.getRefreshExpiration() == null && session.getExpiration() == null)) {
       throw new InvalidRefreshTokenException();
     }
 
