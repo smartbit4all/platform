@@ -17,6 +17,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -266,13 +267,13 @@ public class MDMEntryDescriptorPageApiImpl
 
   protected void validateDescriptorProperties(String code, String name) {
     if (Strings.isBlank(name)) {
-      throw new IllegalArgumentException(
+      throw new BusinessLogicException(
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
               "emptyname"));
     }
 
     if (!StringConstant.isValidCode(code)) {
-      throw new IllegalArgumentException(
+      throw new BusinessLogicException(
           localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
               "invalidcharacters"));
     }
@@ -304,7 +305,7 @@ public class MDMEntryDescriptorPageApiImpl
       return descriptor;
     } catch (IllegalArgumentException e) {
       log.debug("Trying to create entry descriptor with invalid code", e);
-      throw new IllegalArgumentException(localeSettingApi
+      throw new BusinessLogicException(localeSettingApi
           .get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error.usedcode"));
     }
   }

@@ -28,6 +28,7 @@ import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.object.AccessControlInternalApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
@@ -446,7 +447,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         message = MessageFormat.format(
             message,
             localeSettingApi.get(PREFIX, gridId), maxNoOfRows);
-        throw new IllegalStateException(message);
+        throw new BusinessLogicException(message);
       }
     }
     SelectionTypeEnum selectionType = gridConfig.getSelectionType();
@@ -664,7 +665,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
         message = MessageFormat.format(
             message,
             name, localeSettingApi.get(PREFIX, getGridId(gridConfig)));
-        throw new IllegalStateException(message);
+        throw new BusinessLogicException(message);
       }
     }
   }

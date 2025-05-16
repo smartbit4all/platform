@@ -7,6 +7,7 @@ import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -59,7 +60,7 @@ public class JsonParserPageApiImpl extends PageApiImpl<Object> implements JsonPa
         String writtenValue = objectMapper.writeValueAsString(object);
         model.put(OBJECT, writtenValue);
       } catch (JsonProcessingException e) {
-        throw new IllegalArgumentException(localeSettingApi.get("error.jsonProcessing"));
+        throw new BusinessLogicException(localeSettingApi.get("error.jsonProcessing"));
       }
     } else {
       model.put(OBJECT, StringConstant.EMPTY);
@@ -89,7 +90,7 @@ public class JsonParserPageApiImpl extends PageApiImpl<Object> implements JsonPa
     try {
       value = objectReader.readTree(jsonString);
     } catch (JsonProcessingException e) {
-      throw new IllegalArgumentException(localeSettingApi.get("error.jsonProcessing"));
+      throw new BusinessLogicException(localeSettingApi.get("error.jsonProcessing"));
     }
 
     InvocationRequest callback = objectApi.asType(InvocationRequest.class,
@@ -98,7 +99,7 @@ public class JsonParserPageApiImpl extends PageApiImpl<Object> implements JsonPa
     try {
       invocationApi.invoke(callback);
     } catch (ApiNotFoundException e) {
-      throw new IllegalArgumentException(localeSettingApi.get("error.apiNotFoundException.simple"));
+      throw new BusinessLogicException(localeSettingApi.get("error.apiNotFoundException.simple"));
     }
   }
 

@@ -13,6 +13,7 @@ import org.smartbit4all.api.filterexpression.bean.SearchPageConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -213,7 +214,7 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
   private String getNameFromRequest(UiActionRequest request) {
     String name = (String) request.getParams().get(UiActions.INPUT);
     if (Strings.isNullOrEmpty(name)) {
-      throw new IllegalArgumentException("A név kitöltése kötelező!");
+      throw new BusinessLogicException("A név kitöltése kötelező!");
     }
     return name;
   }
@@ -236,7 +237,7 @@ public class MDMSessionsPageApiImpl extends SearchPageApiImpl
     MDMModificationApi modificationApi =
         masterDataManagementApi.getModificationApi(ctx.definition.getName(), modificationId);
     if (modificationApi == null) {
-      throw new IllegalStateException("Modification is not available");
+      throw new BusinessLogicException("Modification is not available");
     }
     return modificationApi;
   }

@@ -16,6 +16,7 @@ import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -249,10 +250,10 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
   public void openList(UUID viewUuid, UiActionRequest request) {
     String code = request.getCode();
     if (Strings.isNullOrEmpty(code)) {
-      throw new IllegalArgumentException("Missing code");
+      throw new BusinessLogicException("Missing code");
     }
     if (!code.startsWith(OPEN_LIST_PREFIX)) {
-      throw new IllegalArgumentException("Invalid code");
+      throw new BusinessLogicException("Invalid code");
     }
 
     String descriptorName = code.substring(OPEN_LIST_PREFIX.length());
@@ -299,7 +300,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
     if (!(context.isAdmin() || context.isAdminApprover())) {
-      throw new IllegalAccessError("Only admins can view MDM changes!");
+      throw new BusinessLogicException("Only admins can view MDM changes!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_CHANGES)
         .putParametersItem(MDMEntryChangesPageApi.PARAM_MDM_DEFINITION,
@@ -314,7 +315,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
     if (!(context.isAdmin() || context.isAdminApprover())) {
-      throw new IllegalAccessError("Only admins can view MDM sessions!");
+      throw new BusinessLogicException("Only admins can view MDM sessions!");
     }
     viewApi.showView(new View().viewName(MDMConstants.MDM_SESSIONS)
         .putParametersItem(MDMSessionsPageApi.PARAM_MDM_DEFINITION,
@@ -328,7 +329,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     View view = viewApi.getView(viewUuid);
     PageContext context = getContextByView(view);
     if (!(context.isAdmin() || context.isAdminApprover())) {
-      throw new IllegalAccessError("Only admins can add MDM descriptors!");
+      throw new BusinessLogicException("Only admins can add MDM descriptors!");
     }
 
     List<Value> descriptorValueSet = context.definition.getTemplates().values().stream()

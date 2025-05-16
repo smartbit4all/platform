@@ -32,6 +32,7 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.mdm.MDMApprovalApi;
 import org.smartbit4all.api.mdm.MDMConstants;
@@ -502,7 +503,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void cancelChanges(UUID viewUuid, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.modificationApi == null) {
-      throw new IllegalStateException("Trying to cancel changes without active modification!");
+      throw new BusinessLogicException("Trying to cancel changes without active modification!");
     }
     ctx.modificationApi.cancel();
 
@@ -563,7 +564,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.getModificationApi() == null) {
-      throw new IllegalStateException("Trying to finalize changes without active modification!");
+      throw new BusinessLogicException("Trying to finalize changes without active modification!");
     }
     ctx.modificationApi.merge();
     fireActionPerformed(request, ctx);
@@ -574,12 +575,12 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void sendForApproval(UUID viewUuid, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, false);
     if (mdmApprovalApi == null) {
-      throw new IllegalStateException("Az admin jóváhagyó nem elérhető!");
+      throw new BusinessLogicException("Az admin jóváhagyó nem elérhető!");
     }
     String definition = ctx.getDefinition().getName();
     List<URI> approvers = mdmApprovalApi.getApprovers(definition);
     if (approvers == null || approvers.size() != 1) {
-      throw new IllegalStateException("Az admin jóváhagyó nincs beállítva!");
+      throw new BusinessLogicException("Az admin jóváhagyó nincs beállítva!");
     }
     sendForApproval(viewUuid, approvers.get(0), request);
   }
@@ -587,7 +588,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   protected void sendForApproval(UUID viewUuid, URI approverUri, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.getModificationApi() == null) {
-      throw new IllegalStateException("Trying to cancel changes without active modification!");
+      throw new BusinessLogicException("Trying to cancel changes without active modification!");
     }
     ctx.getModificationApi().sendForApproval(approverUri);
     ctx.getModificationApi().stopEditing();
@@ -602,7 +603,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void adminApproveOk(UUID viewUuid, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.getModificationApi() == null) {
-      throw new IllegalStateException("Trying to approve changes without active modification!");
+      throw new BusinessLogicException("Trying to approve changes without active modification!");
     }
     ctx.getModificationApi().approvalAccepted();
 
@@ -614,7 +615,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
   public void adminApproveNotOk(UUID viewUuid, UiActionRequest request) {
     PageContext ctx = getContextByViewUUID(viewUuid, true);
     if (ctx.getModificationApi() == null) {
-      throw new IllegalStateException("Trying to reject changes without active modification!");
+      throw new BusinessLogicException("Trying to reject changes without active modification!");
     }
     String reason = actionRequestHelper(request).get(UiActions.INPUT2, String.class);
     ctx.getModificationApi().approvalRejected(reason);
@@ -859,7 +860,7 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       state = StateEnum.REJECTED;
       comment = actionRequestHelper(request).require(UiActions.INPUT, String.class);
       if (StringUtils.isBlank(comment)) {
-        throw new IllegalStateException(
+        throw new BusinessLogicException(
             localeSettingApi.get(MDMEntryChangesPageApi.class.getSimpleName(), "emptyreason"));
       }
     } else if (MDMActions.ACTION_FIX_ENTRY.equals(request.getCode())) {
