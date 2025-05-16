@@ -75,11 +75,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.dao.DataAccessException;
-import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1176,6 +1174,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     private Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
 
     boolean isCompleted = false;
+    boolean isCommit = false;
 
     public void addVersionToCachedInTransaction(String versionId, String className) {
       cachedKeysPerClass
@@ -1186,9 +1185,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     public void addObjectEntryToInsert(String uri, TableData<ObjectEntryDef> objectEntry) {
       if (isCompleted || !useTransactionCache) {
         // after completion there won't be another completion, must execute now
-        if (!isRollback()) {
-          Crud.create(objectEntry);
-        }
+        Crud.create(objectEntry);
       } else {
         objectEntriesToInsert.put(uri, objectEntry);
       }
@@ -1197,9 +1194,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     public void addObjectEntryToUpdate(String uri, TableData<ObjectEntryDef> objectEntry) {
       if (isCompleted || !useTransactionCache) {
         // after completion there won't be another completion, must execute now
-        if (!isRollback()) {
-          Crud.update(objectEntry);
-        }
+        Crud.update(objectEntry);
       } else {
         objectEntriesToUpdate.put(uri, objectEntry);
       }
@@ -1208,9 +1203,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     public void addObjectVersionToInsert(String uri, TableData<ObjectVersionDef> objectVersion) {
       if (isCompleted || !useTransactionCache) {
         // after completion there won't be another completion, must execute now
-        if (!isRollback()) {
-          Crud.create(objectVersion);
-        }
+        Crud.create(objectVersion);
       } else {
         objectVersionsToInsert.put(uri, objectVersion);
       }
@@ -1219,9 +1212,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     public void addObjectVersionToUpdate(String uri, TableData<ObjectVersionDef> objectVersion) {
       if (isCompleted || !useTransactionCache) {
         // after completion there won't be another completion, must execute now
-        if (!isRollback()) {
-          Crud.update(objectVersion);
-        }
+        Crud.update(objectVersion);
       } else {
         objectVersionsToUpdate.put(uri, objectVersion);
       }
@@ -1262,6 +1253,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     @Override
     public void beforeCommit(boolean readOnly) {
       // after beforeCommit async request can be created, we should execute in beforeCompletion
+      isCommit = true;
+
     }
 
     private <T extends EntityDefinition> TableData<T> append(
@@ -1280,8 +1273,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     @Override
     public void beforeCompletion() {
-      boolean rollback = isRollback();
-      if (!rollback) {
+      if (isCommit) {
         if (!objectEntriesToInsert.isEmpty()) {
           Crud.create(append(objectEntryDef, objectEntriesToInsert));
           objectEntriesToInsert.clear();
@@ -1304,16 +1296,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       clearIfEmpty(objectVersionsToInsert, "objectVersionsToInsert");
       clearIfEmpty(objectVersionsToUpdate, "objectVersionsToUpdate");
       isCompleted = true;
-    }
-
-    private boolean isRollback() {
-      try {
-        return TransactionSynchronizationManager.isActualTransactionActive() &&
-            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
-      } catch (NoTransactionException e) {
-        // on startup it might happen
-        return false;
-      }
     }
 
     private void clearIfEmpty(Map<?, ?> map, String mapName) {

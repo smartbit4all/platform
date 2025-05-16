@@ -123,12 +123,7 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
   public SearchPageModel initModel(View view) {
     PageContext ctx = new PageContext(view.getUuid());
 
-    GridModel gridModel = gridModelApi.createGridModel(
-        ctx.searchIndex.getDefinition().getDefinition(),
-        ctx.searchIndex.getDefinition().getDefinition().allProperties().stream()
-            .map(Property::getName)
-            .collect(toList()),
-        ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
+    GridModel gridModel = createGridModel(ctx);
 
     if (ctx.pageConfig.getDefaultRowActions() != null) {
       gridModel.setDefaultRowActions(ctx.pageConfig.getDefaultRowActions());
@@ -248,6 +243,16 @@ public class SearchPageApiImpl extends PageApiImpl<SearchPageModel>
     return model
         .pageTitle(pageTitle)
         .filters(filters);
+  }
+
+  protected GridModel createGridModel(PageContext ctx) {
+    GridModel gridModel = gridModelApi.createGridModel(
+        ctx.searchIndex.getDefinition().getDefinition(),
+        ctx.searchIndex.getDefinition().getDefinition().allProperties().stream()
+            .map(Property::getName)
+            .collect(toList()),
+        ctx.searchIndex.logicalSchema(), ctx.searchIndex.name());
+    return gridModel;
   }
 
   /**

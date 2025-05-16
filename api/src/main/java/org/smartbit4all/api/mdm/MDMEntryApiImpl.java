@@ -752,18 +752,19 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   private Map<MDMEntryConstraint, ConstraintEntry> getUniqueMapsByconstraints() {
     List<MDMEntryConstraint> uniqueConstraints = Collections.emptyList();
 
-    if (descriptor.getConstraints() != null) {
+    if (!ObjectUtils.isEmpty(descriptor.getConstraints())) {
       uniqueConstraints = descriptor.getConstraints().stream()
           .filter(
               c -> c.getKind() == KindEnum.UNIQUE || c.getKind() == KindEnum.UNIQUECASEINSENSITIVE)
           .collect(toList());
-    } else if (descriptor.getUniquePropertyPaths() != null) {
+    } else if (!ObjectUtils.isEmpty(descriptor.getUniquePropertyPaths().isEmpty())) {
       uniqueConstraints = descriptor.getUniquePropertyPaths().stream()
           .map(path -> new MDMEntryConstraint().path(path).kind(KindEnum.UNIQUE))
           .collect(toList());
     }
 
-    if (descriptor.getConstraints() != null && descriptor.getUniquePropertyPaths() != null) {
+    if (ObjectUtils.isEmpty(descriptor.getConstraints())
+        && !ObjectUtils.isEmpty(descriptor.getUniquePropertyPaths())) {
       log.warn(
           "Constraints and uniquePropertyPaths defined in the [{}] entry descriptor. The uniqueness will be calculated by the constraints property only.",
           descriptor.getName());

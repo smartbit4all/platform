@@ -69,9 +69,7 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
     final var relationProp = (Map<String, Object>) viewModel.computeIfAbsent(
         TEMP_PROP_RELATIONS,
         k -> new HashMap<String, Object>());
-    final RelatedObjectHolder relations = mdmRelationApi.getRelations(
-        objectApi.loadLatest(view.getObjectUri(), view.getBranchUri()),
-        relationDefinition);
+    final RelatedObjectHolder relations = extractCurrentRelations(view, relationDefinition);
 
     // 1. set the property:
     switch (relations) {
@@ -90,6 +88,31 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
         relations.asList(),
         view.getBranchUri(),
         GenericValue.NAME);
+    valueSet.getValueSetData().getValues().sort((a, b) -> {
+      if (!(a instanceof Value v1)) {
+        return 1;
+      }
+
+      if (!(b instanceof Value v2)) {
+        return -1;
+      }
+
+      final String aDisplayVal = v1.getDisplayValue();
+      final String bDisplayVal = v2.getDisplayValue();
+      if (aDisplayVal == null && bDisplayVal == null) {
+        return 0;
+      }
+
+      if (aDisplayVal == null) {
+        return 1;
+      }
+
+      if (bDisplayVal == null) {
+        return -1;
+      }
+
+      return String.CASE_INSENSITIVE_ORDER.compare(aDisplayVal, bDisplayVal);
+    });
     view.putValueSetsItem(valueSet.getValueSetName(), valueSet);
 
     // 3. set the widget:
@@ -109,6 +132,17 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
           selectionDef);
     };
     view.getLayouts().get(MDMEntryListPageApi.LAYOUT_EDITOR_FORM).addWidgetsItem(widget);
+  }
+
+  private RelatedObjectHolder extractCurrentRelations(final View view,
+      final MDMRelationDefinition relationDefinition) {
+    if (view.getObjectUri() == null) {
+      return RelatedObjectHolder.of(relationDefinition, null);
+    }
+
+    return mdmRelationApi.getRelations(
+        objectApi.loadLatest(view.getObjectUri(), view.getBranchUri()),
+        relationDefinition);
   }
 
   @Override
