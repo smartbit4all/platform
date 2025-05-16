@@ -483,7 +483,7 @@ public class PlatformApiConfig {
           .addConstraintsItem(new MDMEntryConstraint()
               .kind(KindEnum.UNIQUECASEINSENSITIVE)
               .addPathItem(ServiceConnection.NAME))
-          .editorViewName(MDMConstants.MDM_EDIT)
+          .editorViewName(PlatformViewNames.SERVICE_CONNECTION_EDITOR)
           .displayNameList(new LangString().defaultValue("Vector database connections")
               .putValueByLocaleItem("hu", "Vektor adatbázis kapcsolatok")
               .putValueByLocaleItem("en", "Vector database connections"))
