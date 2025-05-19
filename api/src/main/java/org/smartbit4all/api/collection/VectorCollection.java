@@ -52,7 +52,7 @@ public interface VectorCollection {
 
   void clear();
 
-  List<VectorSearchResultItem> search(Object obj, int limit);
+  List<VectorSearchResultItem> search(Object obj, int limit, Map<String, Object> parameters);
 
   /**
    * Constructs a lookup based on the collection. It is searching with the

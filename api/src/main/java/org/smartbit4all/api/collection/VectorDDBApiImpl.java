@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,12 +82,12 @@ public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionAp
 
   @Override
   public List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
-      VectorValue searchVector, int limit) {
+      VectorValue searchVector, int limit, Map<String, Object> parameters) {
     Objects.requireNonNull(dbConnection);
     VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     return contributionApi.search(dbConnection, collectionName,
-        searchVector, limit);
+        searchVector, limit, parameters);
   }
 
 }

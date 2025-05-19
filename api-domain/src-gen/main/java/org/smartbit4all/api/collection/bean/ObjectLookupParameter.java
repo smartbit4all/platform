@@ -37,7 +37,8 @@ import jakarta.validation.Valid;
   ObjectLookupParameter.RELEVANCE_LIMIT_PERCENT,
   ObjectLookupParameter.RELEVANCE_LIMIT_RANGE,
   ObjectLookupParameter.VALUES_FOR_UPDATE,
-  ObjectLookupParameter.VALUES_FOR_CREATION
+  ObjectLookupParameter.VALUES_FOR_CREATION,
+  ObjectLookupParameter.ADDITIONAL_PARAMETERS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectLookupParameter {
@@ -55,6 +56,9 @@ public class ObjectLookupParameter {
 
   public static final String VALUES_FOR_CREATION = "valuesForCreation";
   private Map<String, Object> valuesForCreation = new HashMap<>();
+
+  public static final String ADDITIONAL_PARAMETERS = "additionalParameters";
+  private Map<String, Object> additionalParameters = new HashMap<>();
 
   public ObjectLookupParameter() {
   }
@@ -210,6 +214,41 @@ public class ObjectLookupParameter {
     this.valuesForCreation = valuesForCreation;
   }
 
+  public ObjectLookupParameter additionalParameters(Map<String, Object> additionalParameters) {
+    
+    this.additionalParameters = additionalParameters;
+    return this;
+  }
+
+  public ObjectLookupParameter putAdditionalParametersItem(String key, Object additionalParametersItem) {
+    if (this.additionalParameters == null) {
+      this.additionalParameters = new HashMap<>();
+    }
+    this.additionalParameters.put(key, additionalParametersItem);
+    return this;
+  }
+
+  /**
+   * Get additionalParameters
+   * @return additionalParameters
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(ADDITIONAL_PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getAdditionalParameters() {
+    return additionalParameters;
+  }
+
+
+  @JsonProperty(ADDITIONAL_PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdditionalParameters(Map<String, Object> additionalParameters) {
+    this.additionalParameters = additionalParameters;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -223,12 +262,13 @@ public class ObjectLookupParameter {
         Objects.equals(this.relevanceLimitPercent, objectLookupParameter.relevanceLimitPercent) &&
         Objects.equals(this.relevanceLimitRange, objectLookupParameter.relevanceLimitRange) &&
         Objects.equals(this.valuesForUpdate, objectLookupParameter.valuesForUpdate) &&
-        Objects.equals(this.valuesForCreation, objectLookupParameter.valuesForCreation);
+        Objects.equals(this.valuesForCreation, objectLookupParameter.valuesForCreation) &&
+        Objects.equals(this.additionalParameters, objectLookupParameter.additionalParameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(limit, relevanceLimitPercent, relevanceLimitRange, valuesForUpdate, valuesForCreation);
+    return Objects.hash(limit, relevanceLimitPercent, relevanceLimitRange, valuesForUpdate, valuesForCreation, additionalParameters);
   }
 
   @Override
@@ -240,6 +280,7 @@ public class ObjectLookupParameter {
     sb.append("    relevanceLimitRange: ").append(toIndentedString(relevanceLimitRange)).append("\n");
     sb.append("    valuesForUpdate: ").append(toIndentedString(valuesForUpdate)).append("\n");
     sb.append("    valuesForCreation: ").append(toIndentedString(valuesForCreation)).append("\n");
+    sb.append("    additionalParameters: ").append(toIndentedString(additionalParameters)).append("\n");
     sb.append("}");
     return sb.toString();
   }

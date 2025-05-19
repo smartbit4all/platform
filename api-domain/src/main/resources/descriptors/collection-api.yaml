@@ -200,6 +200,9 @@ components:
             into the given object after the result values from the lookup was copied into. It contains some default values.
           type: object
           additionalProperties: true
+        additionalParameters:
+          type: object
+          additionalProperties: true
     ObjectLookupResult:
       description: |
         The result an Object lookup.

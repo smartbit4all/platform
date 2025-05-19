@@ -132,12 +132,13 @@ public class VectorCollectionImpl implements VectorCollection {
   }
 
   @Override
-  public List<VectorSearchResultItem> search(Object obj, int limit) {
+  public List<VectorSearchResultItem> search(Object obj, int limit,
+      Map<String, Object> parameters) {
     if (log_audit.isInfoEnabled()) {
       log_audit.info(">>>>LOOKUP: {} collection for {}", collectionName, obj);
     }
     List<VectorSearchResultItem> result =
-        vectorDBApi.search(vectorDBService, collectionName, embed(obj), limit);
+        vectorDBApi.search(vectorDBService, collectionName, embed(obj), limit, parameters);
     if (log_audit.isInfoEnabled()) {
       log_audit.info(">>>>LOOKUP RESULT: {}", result);
     }
@@ -158,7 +159,8 @@ public class VectorCollectionImpl implements VectorCollection {
     @Override
     public ObjectLookupResult lookup(Object values,
         ObjectLookupParameter parameter) {
-      List<VectorSearchResultItem> resultList = search(values, parameter.getLimit());
+      List<VectorSearchResultItem> resultList =
+          search(values, parameter.getLimit(), parameter.getAdditionalParameters());
 
       if (parameter.getRelevanceLimitRange() != null) {
         // We cut the end of the list if needed
