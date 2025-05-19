@@ -56,14 +56,12 @@ public interface VectorCollection {
 
   /**
    * Constructs a lookup based on the collection. It is searching with the
-   * {@link #search(Object, int)} similarity search by passing a constructing simple string from the
-   * property values from the input object with the following format:
+   * {@link #search(Object, int, Map)} similarity search by passing a constructing simple string
+   * from the property values from the input object with the following format:
    * <p>
    * Property name1: property value, Property name2: property value.
    * </p>
    * 
-   * @param searchProperties The properties to use for the lookup as search parameters.
-   * @param copyBackMapping The mapping for copying back the properties of the most relevant result.
    * @return
    */
   ObjectLookup lookup();
