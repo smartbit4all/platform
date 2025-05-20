@@ -49,4 +49,5 @@ public interface UINavigationApi {
 
   void registerContainer(UUID navigationTargetUuid, Container view);
 
+  void sessionParameterChanged(UUID navigationTargetUuid, String parameterName);
 }

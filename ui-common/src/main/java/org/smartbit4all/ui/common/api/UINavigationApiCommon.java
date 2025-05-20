@@ -357,4 +357,12 @@ public class UINavigationApiCommon implements UINavigationApi {
   public void registerContainer(UUID navigationTargetUuid, Container view) {
     putContainerByUuidInternal(navigationTargetUuid, view);
   }
+
+  @Override
+  public void sessionParameterChanged(UUID navigationTargetUuid, String parameterName) {
+    ViewModel vm = getViewModelByUuid(navigationTargetUuid);
+    if (vm != null) {
+      vm.sessionParameterChanged(parameterName);
+    }
+  }
 }
