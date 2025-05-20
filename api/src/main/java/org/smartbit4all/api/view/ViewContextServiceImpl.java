@@ -79,6 +79,7 @@ import org.smartbit4all.storage.fs.StoragePerformanceRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -172,6 +173,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   private SessionManagementApi sessionManagementApi;
 
   @Autowired
+  @Lazy
   private AuthenticationService authenticationService;
 
   @Autowired
