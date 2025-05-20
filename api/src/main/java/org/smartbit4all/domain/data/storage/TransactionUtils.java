@@ -9,7 +9,7 @@ public class TransactionUtils {
   private TransactionUtils() {}
 
   @SuppressWarnings("unchecked")
-  public static <T extends TransactionSynchronization> T getTransactionHandler(
+  public static <T extends TransactionSynchronization> T getOrRegisterTransactionHandler(
       String handlerId, Class<T> clazz, Supplier<T> handlerSupplier) {
     if (!TransactionSynchronizationManager.hasResource(handlerId)) {
       TransactionSynchronizationManager

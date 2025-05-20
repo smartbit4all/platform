@@ -75,9 +75,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -185,9 +184,36 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return schema + StringConstant.COLON + qualifiedName;
   }
 
+  private boolean isUriInInsertCache(URI objectUri) {
+    StorageCacheTransactionHandler trHandler = getStorageTransactionHandlerIfExists();
+    if (trHandler != null) {
+      String uriWithoutVersion = getUriString(getUriWithoutVersion(objectUri));
+      // this uri insertion is deferred to the end of this transaction, we can skip physical lock
+      // and pretend it succeeded
+      return trHandler.objectEntriesToInsert.containsKey(uriWithoutVersion);
+    }
+    return false;
+  }
+
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil) {
+    if (isUriInInsertCache(objectUri)) {
+      return new StorageObjectPhysicalLock(objectUri, true);
+    }
+    if (transactionManager == null) {
+      // if no transactionManager just do it (won't happen, sql always have trManager)
+      return lockPhysicalObjectInNewTransaction(objectUri, waitUntil);
+    }
+    // if there's a trManager, physical lock should be acquired in a separate transaction
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    return transaction
+        .execute(
+            status -> lockPhysicalObjectInNewTransaction(objectUri, waitUntil));
+  }
+
+  private StorageObjectPhysicalLock lockPhysicalObjectInNewTransaction(URI objectUri,
+      long waitUntil) {
     String objectUriString = objectUri.toString();
     UUID currentRuntime = runtimeApi().self().getUuid();
     DataRow objectLockRow;
@@ -245,19 +271,31 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
-    if (lock != null) {
-      try {
-        Crud.delete(TableDatas
-            .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
-            .addRow()
-            .set(objectEntryLockDef.objectUri(),
-                getUriString(getUriWithoutVersion(lock.getObjectUri())))
-            .build());
-      } catch (Exception e) {
-        throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
+    if (lock != null && !lock.isInMemory()) {
+      if (transactionManager == null) {
+        // no transactionManager or already in transaction
+        unlockPhysicalObjectInTransaction(lock);
+        return;
       }
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+      transaction
+          .executeWithoutResult(
+              status -> unlockPhysicalObjectInTransaction(lock));
+    }
+  }
+
+  private void unlockPhysicalObjectInTransaction(StorageObjectPhysicalLock lock) {
+    try {
+      Crud.delete(TableDatas
+          .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
+          .addRow()
+          .set(objectEntryLockDef.objectUri(),
+              getUriString(getUriWithoutVersion(lock.getObjectUri())))
+          .build());
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
     }
   }
 
@@ -343,10 +381,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     DataRow objectRow = null;
-    StorageCacheTransactionHandler trHandler =
-        TransactionSynchronizationManager.isSynchronizationActive()
-            ? getStorageCacheTransactionHandler()
-            : null;
+    StorageCacheTransactionHandler trHandler = getStorageTransactionHandlerIfExists();
     String uriWithoutVersion = getUriString(getUriWithoutVersion(object.getUri()));
     try {
       if (log.isTraceEnabled()) {
@@ -508,6 +543,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  private StorageCacheTransactionHandler getStorageTransactionHandlerIfExists() {
+    return TransactionSynchronizationManager.isSynchronizationActive()
+        ? getOrRegisterStorageCacheTransactionHandler()
+        : null;
+  }
+
   private final List<String> classesToSkipInsertCache = Arrays.asList(
       StoredListData.class.getName(),
       StoredMapData.class.getName(),
@@ -516,10 +557,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private TableData<ObjectEntryDef> getOrQueryObjectEntry(
       String uriWithoutVersion, boolean lock, PropertySet properties) {
-    StorageCacheTransactionHandler trHandler =
-        TransactionSynchronizationManager.isSynchronizationActive()
-            ? getStorageCacheTransactionHandler()
-            : null;
+    StorageCacheTransactionHandler trHandler = getStorageTransactionHandlerIfExists();
     TableData<ObjectEntryDef> objectEntry = null;
     if (useTransactionCache && trHandler != null) {
       objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
@@ -1078,10 +1116,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (!useTransactionCache) {
       return allIdsToQuery;
     }
-    StorageCacheTransactionHandler trHandler =
-        TransactionSynchronizationManager.isSynchronizationActive()
-            ? getStorageCacheTransactionHandler()
-            : null;
+    StorageCacheTransactionHandler trHandler = getStorageTransactionHandlerIfExists();
     Set<String> allIdsToQueryFromDB;
     if (trHandler != null) {
       allIdsToQueryFromDB = new HashSet<>();
@@ -1104,10 +1139,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (!useTransactionCache) {
       return allUrisToQuery;
     }
-    StorageCacheTransactionHandler trHandler =
-        TransactionSynchronizationManager.isSynchronizationActive()
-            ? getStorageCacheTransactionHandler()
-            : null;
+    StorageCacheTransactionHandler trHandler = getStorageTransactionHandlerIfExists();
     Set<String> allUrisToQueryFromDB;
     if (trHandler != null) {
       allUrisToQueryFromDB = new HashSet<>();
@@ -1140,7 +1172,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   private void addedToCache(String versionId, String className) {
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
-      getStorageCacheTransactionHandler().addVersionToCachedInTransaction(versionId, className);
+      getOrRegisterStorageCacheTransactionHandler().addVersionToCachedInTransaction(versionId,
+          className);
     }
   }
 
@@ -1157,11 +1190,11 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
-  private StorageCacheTransactionHandler getStorageCacheTransactionHandler() {
-    return TransactionUtils.getTransactionHandler(
+  private StorageCacheTransactionHandler getOrRegisterStorageCacheTransactionHandler() {
+    return TransactionUtils.getOrRegisterTransactionHandler(
         STORAGE_CACHE_HANDLER,
         StorageCacheTransactionHandler.class,
-        () -> new StorageCacheTransactionHandler());
+        StorageCacheTransactionHandler::new);
   }
 
   protected final class StorageCacheTransactionHandler implements TransactionSynchronization {

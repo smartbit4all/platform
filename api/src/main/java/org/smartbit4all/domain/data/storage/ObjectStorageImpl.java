@@ -807,10 +807,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
   protected SaveEventTransactionHandler getSaveEventTransactionHandler() {
-    return TransactionUtils.getTransactionHandler(
+    return TransactionUtils.getOrRegisterTransactionHandler(
         STORAGE_SAVE_EVENTS_HANDLER,
         SaveEventTransactionHandler.class,
-        () -> new SaveEventTransactionHandler());
+        SaveEventTransactionHandler::new);
   }
 
   protected final class SaveEventTransactionHandler implements TransactionSynchronization {
@@ -949,10 +949,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
   protected UnlockTransactionHandler getUnlockTransactionHandler() {
-    return TransactionUtils.getTransactionHandler(
+    return TransactionUtils.getOrRegisterTransactionHandler(
         UNLOCK_HANDLER,
         UnlockTransactionHandler.class,
-        () -> new UnlockTransactionHandler());
+        UnlockTransactionHandler::new);
   }
 
   protected final class UnlockTransactionHandler implements TransactionSynchronization {
