@@ -180,9 +180,13 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     if (model == null) {
       return null;
     }
-    FilterExpressionList filterList =
-        filterExpressionApi.of(model.getWorkplaceList());
-    if (filterList != null) {
+
+    FilterExpressionList filterList = new FilterExpressionList();
+    FilterExpressionList workplaceFilters = filterExpressionApi.of(model.getWorkplaceList());
+    if (workplaceFilters != null) {
+      filterList.addExpressionsItem(
+          new FilterExpressionData().currentOperation(FilterExpressionOperation.EXPRESSION)
+              .boolOperator(FilterExpressionBoolOperator.AND).subExpression(workplaceFilters));
       if (model.getDefaultFilters() != null) {
         // Append the default filters to the
         filterList.getExpressions()
