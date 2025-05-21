@@ -620,7 +620,8 @@ public class ViewContextServiceImpl implements ViewContextService {
           c -> {
             if (c.getTimeOfLastRequest() != null
                 && Duration.between(c.getTimeOfLastRequest(), OffsetDateTime.now())
-                    .toSeconds() > refreshTimeoutMins * 60) {
+                    .toSeconds() > refreshTimeoutMins * 60
+                && refreshTimeoutMins >= 0) {
               sessionManagementApi.updateSession(sessionApi.getSessionUri(),
                   s -> s.expiration(null).refreshExpiration(null));
               authenticationService.logout();
