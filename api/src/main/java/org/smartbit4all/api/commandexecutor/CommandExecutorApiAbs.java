@@ -48,7 +48,7 @@ public abstract class CommandExecutorApiAbs implements CommandExecutorApi {
       while (inputStream.read(buffer) != -1) {
         String outputString = new String(buffer);
         if (log.isDebugEnabled()) {
-          log.info(outputString);
+          log.debug(outputString);
         }
       }
     }
