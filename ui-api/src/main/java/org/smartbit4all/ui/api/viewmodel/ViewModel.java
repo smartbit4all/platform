@@ -39,4 +39,8 @@ public interface ViewModel extends ObjectEditing {
 
   // TODO finish, finishEditing?
 
+  default void sessionParameterChanged(String parameterName) {
+    // NOP
+  }
+
 }
