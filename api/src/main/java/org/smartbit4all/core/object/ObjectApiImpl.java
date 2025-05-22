@@ -191,8 +191,8 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public ObjectNode create(String storageScheme, Object object) {
-    ObjectDefinition<Object> definition = (ObjectDefinition<Object>) definition(object.getClass());
+  public <T> ObjectNode create(String storageScheme, T object) {
+    ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
     boolean hasUri = definition.getUriGetter() != null;
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(hasUri ? definition.getUri(object) : null)
@@ -272,7 +272,7 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri) {
     java.util.Objects.requireNonNull(objectUri, "objectUri can not be null!");
-    
+
     final ObjectNode node = loadLatest(objectUri, branchUri);
     return objectHistoryReverse(node);
   }
@@ -287,7 +287,7 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public Iterator<ObjectNode> objectHistoryReverse(final ObjectNode node) {
     Objects.requireNonNull(node, "node cannot be null!");
-    
+
     final URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(node.getObjectUri());
     final URI branchUri = node.getBranchUri();
     final long lastVersion = node.getVersionNr();

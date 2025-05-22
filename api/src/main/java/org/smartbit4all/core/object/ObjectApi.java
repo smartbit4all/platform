@@ -229,7 +229,7 @@ public interface ObjectApi {
    * @param object the object data
    * @return
    */
-  ObjectNode create(String storageScheme, Object object);
+  <T> ObjectNode create(String storageScheme, T object);
 
   /**
    * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
@@ -291,11 +291,11 @@ public interface ObjectApi {
    * @see ObjectApi#objectHistoryReverse(URI)
    */
   Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri);
-  
+
   Iterator<ObjectNode> objectHistoryReverse(ObjectNode node);
-  
+
   Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri, URI branchUri);
-  
+
   default Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri) {
     return objectHistoryReverseExact(objectUri, null);
   }
