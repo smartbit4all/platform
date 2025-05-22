@@ -115,7 +115,7 @@ components:
   schemas:
     Session:
       type: object
-      required: [authentications, parameters, viewContexts]
+      required: [authentications, parameters, viewContexts, subscriptions]
       properties:
         uri:
           type: string
@@ -150,6 +150,12 @@ components:
         createdAt:
           type: string
           format: date-time
+        subscriptions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/SessionSubscription'
 
     SessionInfoData:
       type: object
@@ -256,6 +262,20 @@ components:
         timestamp:
           type: string
           format: date-time
+    SessionSubscription:
+      type: object
+      required: [invocationRequest, viewUuid]
+      properties:
+        viewContextUuid:
+          type: string
+          format: uuid
+        viewUuid:
+          type: string
+          format: uuid
+        invocationRequest:
+          type: InvocationRequest
+        checkViewsBeforeRunCallback:
+          type: boolean
   responses:
     JwtTokenError:
       description: 'Missing or expired JWT token'

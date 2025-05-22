@@ -2,24 +2,29 @@ package org.smartbit4all.sec.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.session.bean.SessionSubscription;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +47,9 @@ public class SessionApiImpl implements SessionApi {
 
   @Autowired
   private TimeManagementService timeService;
+
+  @Value("${session.checkViewsBeforeRunSubscriptionCallback:true}")
+  private boolean checkViewsBeforeRunSubscriptionCallback;
 
   @Override
   public User getUser() {
@@ -161,6 +169,24 @@ public class SessionApiImpl implements SessionApi {
     // TODO manage the zone from the session...
     result.timestamp(OffsetDateTime.now());
     return result;
+  }
+
+  @Override
+  public void subscribeForParameterChange(String key, UUID viewContextUuid, UUID viewUuid,
+      InvocationRequest callback) {
+    Objects.nonNull(callback);
+
+    sessionManagementApi.updateSession(getSessionUri(),
+        session -> {
+          List<SessionSubscription> subscriptions =
+              session.getSubscriptions().getOrDefault(key, new ArrayList<>());
+          subscriptions.add(new SessionSubscription()
+              .viewContextUuid(viewContextUuid)
+              .viewUuid(viewUuid)
+              .invocationRequest(callback)
+              .checkViewsBeforeRunCallback(checkViewsBeforeRunSubscriptionCallback));
+          return session.putSubscriptionsItem(key, subscriptions);
+        });
   }
 
 }

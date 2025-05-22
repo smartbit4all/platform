@@ -1,7 +1,9 @@
 package org.smartbit4all.ui.api.navigation.restserver.config;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.restserver.ViewModelApiController;
 import org.smartbit4all.ui.api.navigation.restserver.ViewModelApiDelegate;
@@ -33,7 +35,13 @@ public class UIApiSrvRestConfig {
 
   @Bean
   @Primary
-  UINavigationApi uiNavigationApi(@Autowired(required = false) UserSessionApi userSessionApi) {
-    return new UINavigationApiHeadless(userSessionApi);
+  UINavigationApi uiNavigationApi(@Autowired(required = false) SessionApi sessionApi) {
+    return new UINavigationApiHeadless(sessionApi);
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<UINavigationApi> uiNavigationApiProvider(
+      UINavigationApi api) {
+    return Invocations.asProvider(UINavigationApi.class, api);
   }
 }

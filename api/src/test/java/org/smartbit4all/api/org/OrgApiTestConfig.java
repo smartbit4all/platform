@@ -1,8 +1,8 @@
 package org.smartbit4all.api.org;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.api.session.UserSessionApiLocal;
+import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionApiTestImpl;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Import;
 public class OrgApiTestConfig {
 
   @Bean
-  public UserSessionApi userSessionApi() {
-    return new UserSessionApiLocal();
+  public SessionApi userSessionApi() {
+    return new SessionApiTestImpl();
   }
 
   @Bean

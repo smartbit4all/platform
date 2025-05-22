@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.api.session.bean.SessionSubscription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -46,7 +47,8 @@ import javax.validation.Valid;
   Session.USER,
   Session.PARAMETERS,
   Session.VIEW_CONTEXTS,
-  Session.CREATED_AT
+  Session.CREATED_AT,
+  Session.SUBSCRIPTIONS
 })
 @JsonTypeName("Session")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -77,6 +79,9 @@ public class Session {
 
   public static final String CREATED_AT = "createdAt";
   private OffsetDateTime createdAt;
+
+  public static final String SUBSCRIPTIONS = "subscriptions";
+  private Map<String, List<SessionSubscription>> subscriptions = new HashMap<>();
 
   public Session() { 
   }
@@ -349,6 +354,40 @@ public class Session {
   }
 
 
+  public Session subscriptions(Map<String, List<SessionSubscription>> subscriptions) {
+    
+    this.subscriptions = subscriptions;
+    return this;
+  }
+
+  public Session putSubscriptionsItem(String key, List<SessionSubscription> subscriptionsItem) {
+    this.subscriptions.put(key, subscriptionsItem);
+    return this;
+  }
+
+   /**
+   * Get subscriptions
+   * @return subscriptions
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(SUBSCRIPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, List<SessionSubscription>> getSubscriptions() {
+    return subscriptions;
+  }
+
+
+  @JsonProperty(SUBSCRIPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSubscriptions(Map<String, List<SessionSubscription>> subscriptions) {
+    this.subscriptions = subscriptions;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -366,12 +405,13 @@ public class Session {
         Objects.equals(this.user, session.user) &&
         Objects.equals(this.parameters, session.parameters) &&
         Objects.equals(this.viewContexts, session.viewContexts) &&
-        Objects.equals(this.createdAt, session.createdAt);
+        Objects.equals(this.createdAt, session.createdAt) &&
+        Objects.equals(this.subscriptions, session.subscriptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts, createdAt);
+    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts, createdAt, subscriptions);
   }
 
   @Override
@@ -387,6 +427,7 @@ public class Session {
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    viewContexts: ").append(toIndentedString(viewContexts)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    subscriptions: ").append(toIndentedString(subscriptions)).append("\n");
     sb.append("}");
     return sb.toString();
   }
