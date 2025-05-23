@@ -477,4 +477,22 @@ public interface ObjectApi {
    */
   <T> T fromString(String s, Class<T> clazz);
 
+  /**
+   * Enable read cache for the current thread. When enabled, all object loads and
+   * lastModified/exists checks will be cached until the cache is disabled or a save operation
+   * occurs. The cache is thread-local, so each thread has its own cache.
+   */
+  void enableReadCache();
+
+  /**
+   * Disable read cache for the current thread and clear all cached data.
+   */
+  void disableReadCache();
+
+  /**
+   * Check if read cache is enabled for the current thread.
+   * 
+   * @return true if read cache is enabled, false otherwise
+   */
+  boolean isReadCacheEnabled();
 }

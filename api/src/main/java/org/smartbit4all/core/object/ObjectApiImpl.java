@@ -39,6 +39,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,6 +49,9 @@ import com.google.common.cache.CacheBuilder;
 public class ObjectApiImpl implements ObjectApi {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectApiImpl.class);
+
+  @Value("${smartbit4all.objectapi.useReadCache:false}")
+  private boolean useReadCache;
 
   @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
@@ -68,8 +72,171 @@ public class ObjectApiImpl implements ObjectApi {
   /**
    * The already initialized {@link ObjectCacheEntry}s in the application.
    */
-  private Cache<Class, ObjectCacheEntry<?>> cacheByClass =
+  private Cache<Class<?>, ObjectCacheEntry<?>> cacheByClass =
       CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
+
+  // Read cache implementation
+  private final ThreadLocal<ReadCache> readCache = ThreadLocal.withInitial(() -> null);
+
+  /**
+   * Thread-local read cache storage
+   */
+  private static class ReadCache {
+    private final Map<CacheKey, ObjectNodeData> cache = new HashMap<>();
+    private final Map<URI, URI> latestUriMapping = new HashMap<>();
+    private final Map<CacheKey, Boolean> existsCache = new HashMap<>();
+    private final Map<URI, Long> lastModifiedCache = new HashMap<>();
+
+    // Debug statistics
+    private final long createdAt = System.currentTimeMillis();
+    private int cacheHits = 0;
+    private int cacheMisses = 0;
+    private int existsHits = 0;
+    private int existsMisses = 0;
+    private int lastModifiedHits = 0;
+    private int lastModifiedMisses = 0;
+
+    ObjectNodeData get(CacheKey key) {
+      ObjectNodeData data = cache.get(key);
+      if (data != null) {
+        cacheHits++;
+      }
+      return data;
+    }
+
+    void put(CacheKey key, ObjectNodeData data) {
+      cache.put(key, data);
+    }
+
+    void recordCacheMiss() {
+      cacheMisses++;
+    }
+
+    URI getLatestMapping(URI latestUri) {
+      return latestUriMapping.get(latestUri);
+    }
+
+    void putLatestMapping(URI latestUri, URI versionedUri) {
+      latestUriMapping.put(latestUri, versionedUri);
+    }
+
+    Boolean getExists(CacheKey key) {
+      Boolean exists = existsCache.get(key);
+      if (exists != null) {
+        existsHits++;
+      }
+      return exists;
+    }
+
+    void putExists(CacheKey key, boolean exists) {
+      existsCache.put(key, exists);
+    }
+
+    void recordExistsMiss() {
+      existsMisses++;
+    }
+
+    Long getLastModified(URI latestUri) {
+      Long lastModified = lastModifiedCache.get(latestUri);
+      if (lastModified != null) {
+        lastModifiedHits++;
+      }
+      return lastModified;
+    }
+
+    void putLastModified(URI latestUri, Long lastModified) {
+      lastModifiedCache.put(latestUri, lastModified);
+    }
+
+    void recordLastModifiedMiss() {
+      lastModifiedMisses++;
+    }
+
+    ObjectNodeData getLoadedObject(URI latestUri, URI branchUri) {
+      // Try to get the object from cache
+      URI versionedUri = latestUriMapping.get(latestUri);
+      if (versionedUri != null) {
+        ObjectNodeData data = cache.get(new CacheKey(versionedUri, branchUri));
+        if (data != null) {
+          return data;
+        }
+      }
+      // Also check with the latest URI directly
+      return cache.get(new CacheKey(latestUri, branchUri));
+    }
+
+    String getDebugInfo() {
+      long duration = System.currentTimeMillis() - createdAt;
+      int totalHits = cacheHits + existsHits + lastModifiedHits;
+      int totalMisses = cacheMisses + existsMisses + lastModifiedMisses;
+      int totalRequests = totalHits + totalMisses;
+      double hitRate = totalRequests > 0 ? (double) totalHits / totalRequests * 100 : 0;
+
+      return String.format(
+          "ReadCache stats - Duration: %dms, Total requests: %d, Hit rate: %.1f%%, " +
+              "Objects(hits/misses): %d/%d, Exists(hits/misses): %d/%d, " +
+              "LastModified(hits/misses): %d/%d, Cached objects: %d",
+          duration, totalRequests, hitRate,
+          cacheHits, cacheMisses,
+          existsHits, existsMisses,
+          lastModifiedHits, lastModifiedMisses,
+          cache.size());
+    }
+  }
+
+  /**
+   * Cache key for storing ObjectNodeData
+   */
+  private record CacheKey(URI uri, URI branchUri) {
+  }
+
+  /**
+   * Enable read cache for the current thread.
+   */
+  @Override
+  public void enableReadCache() {
+    if (useReadCache) {
+      readCache.set(new ReadCache());
+      log.debug("Read cache enabled for thread: {}", Thread.currentThread().getName());
+    }
+  }
+
+  /**
+   * Disable read cache for the current thread.
+   */
+  @Override
+  public void disableReadCache() {
+    if (useReadCache) {
+      ReadCache cache = readCache.get();
+      if (cache != null) {
+        log.debug("Read cache disabled for thread: {} - {}",
+            Thread.currentThread().getName(), cache.getDebugInfo());
+        readCache.remove();
+      }
+    }
+  }
+
+  /**
+   * Check if read cache is enabled for the current thread.
+   */
+  @Override
+  public boolean isReadCacheEnabled() {
+    return useReadCache && readCache.get() != null;
+  }
+
+  /**
+   * Clear the read cache for the current thread.
+   */
+  private void clearReadCache() {
+    if (useReadCache) {
+      ReadCache cache = readCache.get();
+      if (cache != null) {
+        log.warn("Read cache is being cleared due to a save operation. Disabling read cache. {}",
+            cache.getDebugInfo());
+        disableReadCache();
+      }
+    }
+  }
 
   @SuppressWarnings("unchecked")
   @Override
@@ -131,15 +298,126 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode load(RetrievalRequest request, URI objectUri, URI branchUri) {
-    return node(retrievalApi.load(request, objectUri, getBranchEntry(branchUri)))
-        .branchUri(branchUri);
+    ReadCache cache = readCache.get();
+    if (cache == null) {
+      // Normal behavior when cache is not enabled
+      return node(retrievalApi.load(request, objectUri, getBranchEntry(branchUri)))
+          .branchUri(branchUri);
+    }
+
+    // Read cache is enabled
+    URI effectiveUri = objectUri;
+    boolean shouldLoadLatest = request.isLoadLatest() || isLatestUri(objectUri);
+
+    // If we should load latest, check if we have a cached mapping
+    if (shouldLoadLatest) {
+      URI latestUri = getLatestUri(objectUri);
+      URI cachedVersionedUri = cache.getLatestMapping(latestUri);
+      if (cachedVersionedUri != null) {
+        effectiveUri = cachedVersionedUri;
+        log.trace("Using cached versioned URI {} for latest URI {}", cachedVersionedUri, latestUri);
+      }
+    }
+
+    CacheKey key = new CacheKey(effectiveUri, branchUri);
+    ObjectNodeData cachedData = cache.get(key);
+
+    if (cachedData != null) {
+      log.trace("Cache hit for URI: {} with branch: {}", effectiveUri, branchUri);
+      return node(cachedData).branchUri(branchUri);
+    }
+
+    // Cache miss - load from storage
+    log.trace("Cache miss for URI: {} with branch: {}", effectiveUri, branchUri);
+    cache.recordCacheMiss();
+    ObjectNodeData data = retrievalApi.load(request, objectUri, getBranchEntry(branchUri));
+
+    if (data != null) {
+      // Store in cache with the actual versioned URI
+      CacheKey versionedKey = new CacheKey(data.getObjectUri(), branchUri);
+      cache.put(versionedKey, data);
+
+      // If we loaded latest, also store the mapping
+      if (shouldLoadLatest) {
+        URI latestUri = getLatestUri(objectUri);
+        cache.putLatestMapping(latestUri, data.getObjectUri());
+        log.trace("Cached latest URI mapping: {} -> {}", latestUri, data.getObjectUri());
+      }
+    }
+
+    return node(data).branchUri(branchUri);
   }
 
   @Override
   public List<ObjectNode> loadBatch(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
-    return retrievalApi.loadBatch(request, objectUris, getBranchEntry(branchUri)).stream()
-        .map(this::node).map(node -> node.branchUri(branchUri))
-        .collect(toList());
+    ReadCache cache = readCache.get();
+    if (cache == null) {
+      // Normal behavior when cache is not enabled
+      return retrievalApi.loadBatch(request, objectUris, getBranchEntry(branchUri)).stream()
+          .map(this::node).map(node -> node.branchUri(branchUri))
+          .collect(toList());
+    }
+
+    // With read cache enabled, check cache for each URI
+    List<ObjectNode> results = new ArrayList<>();
+    List<URI> uncachedUris = new ArrayList<>();
+    Map<URI, Integer> uriToIndex = new HashMap<>();
+
+    for (int i = 0; i < objectUris.size(); i++) {
+      URI uri = objectUris.get(i);
+      URI effectiveUri = uri;
+      boolean shouldLoadLatest = request.isLoadLatest() || isLatestUri(uri);
+
+      // If we should load latest, check if we have a cached mapping
+      if (shouldLoadLatest) {
+        URI latestUri = getLatestUri(uri);
+        URI cachedVersionedUri = cache.getLatestMapping(latestUri);
+        if (cachedVersionedUri != null) {
+          effectiveUri = cachedVersionedUri;
+        }
+      }
+
+      CacheKey key = new CacheKey(effectiveUri, branchUri);
+      ObjectNodeData cachedData = cache.get(key);
+
+      if (cachedData != null) {
+        results.add(node(cachedData).branchUri(branchUri));
+      } else {
+        uncachedUris.add(uri);
+        uriToIndex.put(uri, i);
+        results.add(null); // Placeholder
+        cache.recordCacheMiss();
+      }
+    }
+
+    // Load uncached URIs
+    if (!uncachedUris.isEmpty()) {
+      List<ObjectNodeData> loadedData =
+          retrievalApi.loadBatch(request, uncachedUris, getBranchEntry(branchUri));
+
+      for (int i = 0; i < loadedData.size(); i++) {
+        ObjectNodeData data = loadedData.get(i);
+        URI originalUri = uncachedUris.get(i);
+        Integer index = uriToIndex.get(originalUri);
+
+        if (data != null) {
+          // Store in cache
+          CacheKey versionedKey = new CacheKey(data.getObjectUri(), branchUri);
+          cache.put(versionedKey, data);
+
+          // If we loaded latest, also store the mapping
+          boolean shouldLoadLatest = request.isLoadLatest() || isLatestUri(originalUri);
+          if (shouldLoadLatest) {
+            URI latestUri = getLatestUri(originalUri);
+            cache.putLatestMapping(latestUri, data.getObjectUri());
+          }
+
+          results.set(index, node(data).branchUri(branchUri));
+        }
+      }
+    }
+
+    return results.stream().filter(Objects::nonNull).collect(toList());
   }
 
   @Override
@@ -228,6 +506,9 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public URI save(ObjectNode node, URI branchUri) {
+    // Clear read cache on any save operation
+    clearReadCache();
+
     // TODO lock the branch if exists
     BranchEntry branchEntry = getBranchEntry(branchUri);
     URI result = applyChangeApi.applyChanges(node, branchEntry);
@@ -622,7 +903,8 @@ public class ObjectApiImpl implements ObjectApi {
   public List<Lock> lockAll(List<URI> uris) {
     Objects.requireNonNull(uris);
     List<Lock> locks = uris.stream()
-        .map(u -> getLock(u)).collect(toList());
+        .map(this::getLock)
+        .collect(toList());
     // Try to retrieve all the locks but release the already retrieved ones if there is any lock
     // that is unavailable. Wait a little bit and try again.
     List<Lock> result = new ArrayList<>();
@@ -669,7 +951,59 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public Long getLastModified(URI uri) {
-    return retrievalApi.getLastModified(uri);
+    ReadCache cache = readCache.get();
+    if (cache == null) {
+      // Normal behaviour when cache is not enabled
+      return retrievalApi.getLastModified(uri);
+    }
+
+    // Always use latest URI for last modified
+    URI latestUri = getLatestUri(uri);
+
+    // Check lastModified cache first
+    Long cachedLastModified = cache.getLastModified(latestUri);
+    if (cachedLastModified != null) {
+      log.trace("Cache hit for getLastModified: {}", latestUri);
+      return cachedLastModified;
+    }
+
+    // Check if we have already loaded this object - if yes, get lastModified from it
+    ObjectNodeData loadedData = cache.getLoadedObject(latestUri, null);
+    if (loadedData != null && loadedData.getLastModified() != null) {
+      log.trace("Getting lastModified from already loaded object: {}", latestUri);
+      Long lastModified = loadedData.getLastModified();
+      cache.putLastModified(latestUri, lastModified);
+      return lastModified;
+    }
+
+    // Object not in cache - load the latest version to get lastModified
+    // This is an optimization since getLastModified is often followed by a load
+    log.trace("Loading object to get lastModified (and cache for future use): {}", latestUri);
+    cache.recordLastModifiedMiss();
+
+    try {
+      ObjectNode node = loadLatest(uri);
+      if (node != null) {
+        Long lastModified = node.getLastModified();
+        // The object is now cached through the load operation
+        // Also cache the lastModified separately
+        if (lastModified != null) {
+          cache.putLastModified(latestUri, lastModified);
+        }
+        return lastModified;
+      }
+    } catch (Exception e) {
+      log.trace("Failed to load object for lastModified, falling back to retrievalApi: {}",
+          latestUri, e);
+      // Fallback to direct retrievalApi call if load fails
+      Long lastModified = retrievalApi.getLastModified(uri);
+      if (lastModified != null) {
+        cache.putLastModified(latestUri, lastModified);
+      }
+      return lastModified;
+    }
+
+    return null;
   }
 
   @SuppressWarnings("unchecked")
@@ -685,12 +1019,45 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public boolean exists(URI uri) {
-    return retrievalApi.exists(uri, null);
+    return exists(uri, null);
   }
 
   @Override
   public boolean exists(URI uri, URI branchUri) {
-    return retrievalApi.exists(uri, getBranchEntry(branchUri));
+    ReadCache cache = readCache.get();
+    if (cache == null) {
+      // Normal behaviour when cache is not enabled
+      return retrievalApi.exists(uri, getBranchEntry(branchUri));
+    }
+
+    // Always use latest URI for exists check
+    URI latestUri = getLatestUri(uri);
+    CacheKey key = new CacheKey(latestUri, branchUri);
+
+    // Check exists cache first
+    Boolean cachedExists = cache.getExists(key);
+    if (cachedExists != null) {
+      log.trace("Cache hit for exists check: {} with branch: {}", latestUri, branchUri);
+      return cachedExists;
+    }
+
+    // Check if we have already loaded this object - if yes, it exists
+    if (cache.getLoadedObject(latestUri, branchUri) != null) {
+      log.trace("Object already loaded in cache, marking as exists: {} with branch: {}", latestUri,
+          branchUri);
+      cache.putExists(key, true);
+      return true;
+    }
+
+    // Cache miss - check storage
+    log.trace("Cache miss for exists check: {} with branch: {}", latestUri, branchUri);
+    cache.recordExistsMiss();
+    boolean exists = retrievalApi.exists(uri, getBranchEntry(branchUri));
+
+    // Cache the result
+    cache.putExists(key, exists);
+
+    return exists;
   }
 
   @Override

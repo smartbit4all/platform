@@ -212,58 +212,66 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
-    List<SearchIndexFieldCalculator> calculators = new ArrayList<>();
-    Set<String> currentProperties = queryInput.properties()
-        .stream()
-        .map(Property::getName)
-        .collect(toSet());
-    separateCalculatedFieldsInQueryInput(queryInput, calculators);
+    objectApi.enableReadCache();
+    long startTimestamp = System.currentTimeMillis();
+    try {
+      List<SearchIndexFieldCalculator> calculators = new ArrayList<>();
+      Set<String> currentProperties = queryInput.properties()
+          .stream()
+          .map(Property::getName)
+          .collect(toSet());
+      separateCalculatedFieldsInQueryInput(queryInput, calculators);
 
-    queryInput = process(queryInput, queryInputPreProcessors);
-    List<SortOrderProperty> orderBys = checkAndCleanCalculatedOrderBys(queryInput, calculators);
+      queryInput = process(queryInput, queryInputPreProcessors);
+      List<SortOrderProperty> orderBys = checkAndCleanCalculatedOrderBys(queryInput, calculators);
 
-    boolean executeSearchInMemory =
-        (!crudApi.isExecutionApiExists(queryInput.getEntityDef()) && !isUseDatabase())
-            || readFromStorage;
-    if (executeSearchInMemory) {
-      Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
-      // TODO check if expression contains detail related properties, and query only those
-      SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
-          propertiesToQuery, true);
-      allObjects.result = process(allObjects.result, postProcessor);
-      setupExists(queryInput, allObjects, Collections.emptyList());
-      queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+      boolean executeSearchInMemory =
+          (!crudApi.isExecutionApiExists(queryInput.getEntityDef()) && !isUseDatabase())
+              || readFromStorage;
+      if (executeSearchInMemory) {
+        Collection<Property<?>> propertiesToQuery = getPropertiesToQueryInMemory(queryInput);
+        // TODO check if expression contains detail related properties, and query only those
+        SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes,
+            propertiesToQuery, true);
+        allObjects.result = process(allObjects.result, postProcessor);
+        setupExists(queryInput, allObjects, Collections.emptyList());
+        queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+        if (queryInput.where() == null) {
+          queryInput.where(Expression.TRUE());
+        }
+        if (log.isTraceEnabled()) {
+          log.trace("Executing query...: {}", queryInput.where());
+        }
+        TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+        processCalculators(result, calculators);
+        runOrderBysOnResult(queryInput, orderBys, result);
+        removeUnnecessaryColumns(currentProperties, result);
+        return result;
+
+      }
       if (queryInput.where() == null) {
         queryInput.where(Expression.TRUE());
       }
+
       if (log.isTraceEnabled()) {
         log.trace("Executing query...: {}", queryInput.where());
       }
+
       TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
+
       processCalculators(result, calculators);
+
       runOrderBysOnResult(queryInput, orderBys, result);
+      result = process(result, postProcessor);
+
       removeUnnecessaryColumns(currentProperties, result);
+
       return result;
-
+    } finally {
+      objectApi.disableReadCache();
+      log.debug("Search index {} took {} ms", objectMapping.getName(),
+          System.currentTimeMillis() - startTimestamp);
     }
-    if (queryInput.where() == null) {
-      queryInput.where(Expression.TRUE());
-    }
-
-    if (log.isTraceEnabled()) {
-      log.trace("Executing query...: {}", queryInput.where());
-    }
-
-    TableData<?> result = crudApi.executeQuery(queryInput).getTableData();
-
-    processCalculators(result, calculators);
-
-    runOrderBysOnResult(queryInput, orderBys, result);
-    result = process(result, postProcessor);
-
-    removeUnnecessaryColumns(currentProperties, result);
-
-    return result;
   }
 
 
