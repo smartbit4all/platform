@@ -339,13 +339,14 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
             if (runCallBack) {
               invocationApi.invoke(subscription.getInvocationRequest(),
-                  SessionSubscription.VIEW_UUID, key);
+                  subscription.getViewUuid(), key);
             }
           } catch (ApiNotFoundException e) {
             log.error("Unable to invoke session parameter callback.", e);
           } catch (Exception e) {
             log.warn(
-                "Session parameter changed but the viewContext is not match or the view is not exists.");
+                "Session parameter changed but the viewContext is not match or the view is not exists.",
+                e);
           }
 
         });
