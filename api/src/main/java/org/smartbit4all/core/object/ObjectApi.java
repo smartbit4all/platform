@@ -229,7 +229,7 @@ public interface ObjectApi {
    * @param object the object data
    * @return
    */
-  ObjectNode create(String storageScheme, Object object);
+  <T> ObjectNode create(String storageScheme, T object);
 
   /**
    * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
@@ -291,11 +291,11 @@ public interface ObjectApi {
    * @see ObjectApi#objectHistoryReverse(URI)
    */
   Iterator<ObjectNode> objectHistoryReverse(URI objectUri, URI branchUri);
-  
+
   Iterator<ObjectNode> objectHistoryReverse(ObjectNode node);
-  
+
   Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri, URI branchUri);
-  
+
   default Iterator<ObjectNode> objectHistoryReverseExact(URI objectUri) {
     return objectHistoryReverseExact(objectUri, null);
   }
@@ -477,4 +477,22 @@ public interface ObjectApi {
    */
   <T> T fromString(String s, Class<T> clazz);
 
+  /**
+   * Enable read cache for the current thread. When enabled, all object loads and
+   * lastModified/exists checks will be cached until the cache is disabled or a save operation
+   * occurs. The cache is thread-local, so each thread has its own cache.
+   */
+  void enableReadCache();
+
+  /**
+   * Disable read cache for the current thread and clear all cached data.
+   */
+  void disableReadCache();
+
+  /**
+   * Check if read cache is enabled for the current thread.
+   * 
+   * @return true if read cache is enabled, false otherwise
+   */
+  boolean isReadCacheEnabled();
 }

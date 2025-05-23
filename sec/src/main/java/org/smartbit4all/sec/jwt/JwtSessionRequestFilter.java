@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.exception.ExpiredSessionException;
@@ -160,15 +161,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
           boolean isComponentLoad =
               HttpMethod.GET.name().equals(request.getMethod())
                   && request.getRequestURI().matches("/api/component/[^/]+/load");
-
+          MasterDataManagementApiImpl.MdmDefinitionCache.init();
           viewContextService.execute(
               UUID.fromString(uuid),
               () -> filterChain.doFilter(request, response),
               isGridLoad,
               !(isGridLoad || isComponentLoad || notActionRequestPath(request.getRequestURI())));
+
         } catch (Exception e) {
           throw new ServletException("Error when executing viewContext process", e);
+        } finally {
+          MasterDataManagementApiImpl.MdmDefinitionCache.clear();
         }
+
       } else {
         log.debug("viewContextUUid not received!");
         filterChain.doFilter(request, response);

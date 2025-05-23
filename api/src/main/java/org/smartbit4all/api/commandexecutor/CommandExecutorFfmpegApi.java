@@ -181,7 +181,7 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
   }
 
   public Long getDuration(BinaryContentData inputContentData)
-      throws IOException, InterruptedException {
+      throws IOException {
     ProcessBuilder processBuilder = getProcessBuilder();
 
     // Using StringBuilder

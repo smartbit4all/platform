@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -74,6 +75,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
@@ -82,6 +85,58 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   public static final String MAP_DEFINITIONS = "definitions";
 
   private static final Logger log = LoggerFactory.getLogger(MasterDataManagementApiImpl.class);
+
+  private static final ThreadLocal<MdmDefinitionCache> MDM_DEF_CACHE =
+      ThreadLocal.withInitial(() -> Absent.INSTANCE);
+
+  public sealed interface MdmDefinitionCache {
+
+    static void init() {
+      MDM_DEF_CACHE.set(new Present());
+    }
+
+    static void invalidate() {
+      if (MDM_DEF_CACHE.get() instanceof Present p) {
+        p.cache.invalidateAll();
+      }
+    }
+
+    static void clear() {
+      MDM_DEF_CACHE.set(Absent.INSTANCE);
+    }
+
+    static MDMDefinition get(final String definition, final Callable<MDMDefinition> supplier) {
+      final MdmDefinitionCache cache = MDM_DEF_CACHE.get();
+
+      try {
+
+        return switch (cache) {
+          case Present p -> p.cache.get(definition, supplier);
+          default -> supplier.call();
+        };
+
+      } catch (Exception e) {
+        if (e instanceof RuntimeException rte) {
+          throw rte;
+        }
+
+        throw new IllegalArgumentException("Could not retrieve definition " + definition, e);
+      }
+
+    }
+
+  }
+
+  private static final class Present implements MdmDefinitionCache {
+    private final Cache<String, MDMDefinition> cache = CacheBuilder.newBuilder().build();
+  }
+
+  private static record Absent() implements MdmDefinitionCache {
+
+    private static final Absent INSTANCE = new Absent();
+
+  }
+
 
   @Autowired(required = false)
   private List<MDMDefinitionOption> options;
@@ -221,22 +276,24 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @Override
   public MDMDefinition getDefinition(String definition) {
     synchronizeOptions();
-    ObjectCacheEntry<MDMDefinition> cacheEntry = objectApi.getCacheEntry(MDMDefinition.class);
+    return MdmDefinitionCache.get(definition, () -> {
+      ObjectCacheEntry<MDMDefinition> cacheEntry = objectApi.getCacheEntry(MDMDefinition.class);
 
-    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+      StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
 
-    MDMDefinition result = null;
-    URI definitionUri = map.uris().get(definition);
-    if (definitionUri != null) {
-      // result = cacheEntry.get(definitionUri);
-      result = objectApi.loadLatest(definitionUri).getObject(MDMDefinition.class);
-    }
-    if (result == null) {
-      throw new IllegalArgumentException(MessageFormat.format(
-          localeSettingApi.get("mdm.definition.notfound"),
-          definition));
-    }
-    return result;
+      MDMDefinition result = null;
+      URI definitionUri = map.uris().get(definition);
+      if (definitionUri != null) {
+        result = cacheEntry.get(definitionUri);
+        // result = objectApi.loadLatest(definitionUri).getObject(MDMDefinition.class);
+      }
+      if (result == null) {
+        throw new IllegalArgumentException(MessageFormat.format(
+            localeSettingApi.get("mdm.definition.notfound"),
+            definition));
+      }
+      return result;
+    });
   }
 
   /**
@@ -282,6 +339,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         }
       }
     }
+
+    MdmDefinitionCache.invalidate();
   }
 
   @Override
@@ -303,6 +362,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     synchronizeObjectDefinitions();
     synchronizeValueSets();
     synchronizeSearchIndices();
+    MdmDefinitionCache.invalidate();
 
     return definitionUri;
   }
