@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Import;
 public class OrgApiTestConfig {
 
   @Bean
-  public SessionApi userSessionApi() {
-    return new SessionApiTestImpl();
+  public SessionApi userSessionApi(OrgApi orgApi) {
+    return new SessionApiTestImpl(orgApi);
   }
 
   @Bean

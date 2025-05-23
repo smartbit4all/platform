@@ -15,18 +15,21 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.UserActivityLog;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class SessionApiTestImpl implements SessionApi {
 
+  private OrgApi orgApi;
+
   URI userUri;
+
+  public SessionApiTestImpl(OrgApi orgApi) {
+    this.orgApi = orgApi;
+  }
 
   public void setCurrentUser(URI userUri) {
     this.userUri = userUri;
   }
 
-  @Autowired
-  private OrgApi orgApi;
 
   @Override
   public User getUser() {
