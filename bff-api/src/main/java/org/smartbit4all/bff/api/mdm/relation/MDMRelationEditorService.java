@@ -1,7 +1,9 @@
 package org.smartbit4all.bff.api.mdm.relation;
 
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.mdm.bean.MDMRelationDefinition;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectNode;
@@ -25,6 +27,10 @@ public interface MDMRelationEditorService {
    */
   @SuppressWarnings("unchecked")
   void addRelationsToViewModel(final View view, final Map viewModel);
+
+  @SuppressWarnings("unchecked")
+  void addRelationsToViewModel(final View view, final Map viewModel,
+      final UnaryOperator<Value> postProcessValue);
 
   /**
    * Sets the host objects relations defined by the user.

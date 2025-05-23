@@ -1,8 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -85,6 +82,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 

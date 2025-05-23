@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
@@ -43,6 +44,11 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
 
   @Override
   public void addRelationsToViewModel(final View view, final Map viewModel) {
+    addRelationsToViewModel(view, viewModel, value -> value);
+  }
+
+  @Override
+  public void addRelationsToViewModel(View view, Map viewModel, UnaryOperator<Value> postProcess) {
     final Map<String, Object> parameters = view.getParameters();
     final String definition = objectApi
         .asType(MDMDefinition.class, parameters.get(MDMEntryListPageApi.PARAM_MDM_DEFINITION))
@@ -59,13 +65,15 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
       return;
     }
 
-    managedRelations.forEach(rel -> addRelationToViewModel(view, viewModel, rel));
+    managedRelations.forEach(rel -> addRelationToViewModel(view, viewModel, rel, postProcess));
   }
 
   private void addRelationToViewModel(
       final View view,
       final Map viewModel,
-      final MDMRelationDefinition relationDefinition) {
+      final MDMRelationDefinition relationDefinition,
+      final UnaryOperator<Value> postProcessValue) {
+
     final var relationProp = (Map<String, Object>) viewModel.computeIfAbsent(
         TEMP_PROP_RELATIONS,
         k -> new HashMap<String, Object>());
@@ -88,31 +96,37 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
         relations.asList(),
         view.getBranchUri(),
         GenericValue.NAME);
-    valueSet.getValueSetData().getValues().sort((a, b) -> {
-      if (!(a instanceof Value v1)) {
-        return 1;
-      }
 
-      if (!(b instanceof Value v2)) {
-        return -1;
-      }
+    // Post process
+    valueSet.getValueSetData().getValues()
+        .forEach(object -> postProcessValue.apply(objectApi.asType(Value.class, object)));
 
-      final String aDisplayVal = v1.getDisplayValue();
-      final String bDisplayVal = v2.getDisplayValue();
-      if (aDisplayVal == null && bDisplayVal == null) {
-        return 0;
-      }
+    valueSet.getValueSetData().getValues()
+        .sort((a, b) -> {
+          if (!(a instanceof Value v1)) {
+            return 1;
+          }
 
-      if (aDisplayVal == null) {
-        return 1;
-      }
+          if (!(b instanceof Value v2)) {
+            return -1;
+          }
 
-      if (bDisplayVal == null) {
-        return -1;
-      }
+          final String aDisplayVal = v1.getDisplayValue();
+          final String bDisplayVal = v2.getDisplayValue();
+          if (aDisplayVal == null && bDisplayVal == null) {
+            return 0;
+          }
 
-      return String.CASE_INSENSITIVE_ORDER.compare(aDisplayVal, bDisplayVal);
-    });
+          if (aDisplayVal == null) {
+            return 1;
+          }
+
+          if (bDisplayVal == null) {
+            return -1;
+          }
+
+          return String.CASE_INSENSITIVE_ORDER.compare(aDisplayVal, bDisplayVal);
+        });
     view.putValueSetsItem(valueSet.getValueSetName(), valueSet);
 
     // 3. set the widget:
@@ -134,6 +148,7 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
     view.getLayouts().get(MDMEntryListPageApi.LAYOUT_EDITOR_FORM).addWidgetsItem(widget);
   }
 
+
   private RelatedObjectHolder extractCurrentRelations(final View view,
       final MDMRelationDefinition relationDefinition) {
     if (view.getObjectUri() == null) {
@@ -151,7 +166,7 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
     if (relationProp == null) {
       return;
     }
-    
+
     relationProp.forEach((relation, relatedObj) -> {
       final List<URI> relatedObjectUris = switch (relatedObj) {
         case null -> Collections.emptyList();
@@ -163,6 +178,4 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
 
     host.setValue(null, TEMP_PROP_RELATIONS);
   }
-
-
 }
