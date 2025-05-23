@@ -96,6 +96,13 @@ public class ObjectApiImpl implements ObjectApi {
     private int lastModifiedHits = 0;
     private int lastModifiedMisses = 0;
 
+    private void clear() {
+      cache.clear();
+      latestUriMapping.clear();
+      existsCache.clear();
+      lastModifiedCache.clear();
+    }
+
     ObjectNodeData get(CacheKey key) {
       ObjectNodeData data = cache.get(key);
       if (data != null) {
@@ -106,10 +113,6 @@ public class ObjectApiImpl implements ObjectApi {
 
     void put(CacheKey key, ObjectNodeData data) {
       cache.put(key, data);
-    }
-
-    void recordCacheMiss() {
-      cacheMisses++;
     }
 
     URI getLatestMapping(URI latestUri) {
@@ -124,6 +127,8 @@ public class ObjectApiImpl implements ObjectApi {
       Boolean exists = existsCache.get(key);
       if (exists != null) {
         existsHits++;
+      } else {
+        existsMisses++;
       }
       return exists;
     }
@@ -132,24 +137,18 @@ public class ObjectApiImpl implements ObjectApi {
       existsCache.put(key, exists);
     }
 
-    void recordExistsMiss() {
-      existsMisses++;
-    }
-
     Long getLastModified(URI latestUri) {
       Long lastModified = lastModifiedCache.get(latestUri);
       if (lastModified != null) {
         lastModifiedHits++;
+      } else {
+        lastModifiedMisses++;
       }
       return lastModified;
     }
 
     void putLastModified(URI latestUri, Long lastModified) {
       lastModifiedCache.put(latestUri, lastModified);
-    }
-
-    void recordLastModifiedMiss() {
-      lastModifiedMisses++;
     }
 
     ObjectNodeData getLoadedObject(URI latestUri, URI branchUri) {
@@ -211,6 +210,7 @@ public class ObjectApiImpl implements ObjectApi {
       if (cache != null) {
         log.debug("Read cache disabled for thread: {} - {}",
             Thread.currentThread().getName(), cache.getDebugInfo());
+        cache.clear();
         readCache.remove();
       }
     }
@@ -329,7 +329,6 @@ public class ObjectApiImpl implements ObjectApi {
 
     // Cache miss - load from storage
     log.trace("Cache miss for URI: {} with branch: {}", effectiveUri, branchUri);
-    cache.recordCacheMiss();
     ObjectNodeData data = retrievalApi.load(request, objectUri, getBranchEntry(branchUri));
 
     if (data != null) {
@@ -386,7 +385,6 @@ public class ObjectApiImpl implements ObjectApi {
         uncachedUris.add(uri);
         uriToIndex.put(uri, i);
         results.add(null); // Placeholder
-        cache.recordCacheMiss();
       }
     }
 
@@ -979,7 +977,6 @@ public class ObjectApiImpl implements ObjectApi {
     // Object not in cache - load the latest version to get lastModified
     // This is an optimization since getLastModified is often followed by a load
     log.trace("Loading object to get lastModified (and cache for future use): {}", latestUri);
-    cache.recordLastModifiedMiss();
 
     try {
       ObjectNode node = loadLatest(uri);
@@ -1051,7 +1048,6 @@ public class ObjectApiImpl implements ObjectApi {
 
     // Cache miss - check storage
     log.trace("Cache miss for exists check: {} with branch: {}", latestUri, branchUri);
-    cache.recordExistsMiss();
     boolean exists = retrievalApi.exists(uri, getBranchEntry(branchUri));
 
     // Cache the result
