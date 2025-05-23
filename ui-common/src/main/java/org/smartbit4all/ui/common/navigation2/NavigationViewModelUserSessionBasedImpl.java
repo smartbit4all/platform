@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
@@ -17,7 +16,8 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationPath;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationView;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.Session;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -32,7 +32,7 @@ import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
+public class NavigationViewModelUserSessionBasedImpl extends ViewModelImpl<TreeModel>
     implements NavigationViewModel {
 
   /**
@@ -62,7 +62,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
   private UINavigationApi uiNavigationApi;
 
-  private SessionApi sessionApi;
+  private UserSessionApi userSessionApi;
 
   private URI objecUriToSelect;
 
@@ -70,25 +70,25 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
   private boolean selectSameNodeDeselectsIt = true;
 
-  public NavigationViewModelImpl(
+  public NavigationViewModelUserSessionBasedImpl(
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
-      SessionApi sessionApi,
-      InvocationApi invocationApi) {
+      UserSessionApi userSessionApi) {
     super(publisherWrapper, NavigationViewModelHelper.NAVIGATION_DESCRIPTORS, TreeModel.class);
     this.uiNavigationApi = uiNavigationApi;
-    this.sessionApi = sessionApi;
+    this.userSessionApi = userSessionApi;
 
     treeNodesById = new HashMap<>();
     treeNodeWrappersById = new HashMap<>();
     treeNodesByObjectUri = new HashMap<>();
     parentNodesByNode = new HashMap<>();
     subscriptionsById = new HashMap<>();
-
-    sessionApi.subscribeForParameterChange(OBJECT_URI_TO_SELECT, null,
-        navigationTargetUUID,
-        invocationApi.builder(UINavigationApi.class).build(api -> api
-            .sessionParameterChanged(navigationTargetUUID, OBJECT_URI_TO_SELECT)));
+    if (this.userSessionApi != null && this.userSessionApi.currentSession() != null) {
+      subscriptionsById.put(
+          OBJECT_URI_TO_SELECT,
+          this.userSessionApi.currentSession()
+              .subscribeForParameterChange(OBJECT_URI_TO_SELECT, this::sessionParameterChange));
+    }
   }
 
   protected void setNavigation(Navigation navigation) {
@@ -474,7 +474,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
   private void sessionParameterChange(String paramKey) {
     if (OBJECT_URI_TO_SELECT.equals(paramKey)) {
-      objecUriToSelect = sessionApi.getParameterObject(OBJECT_URI_TO_SELECT, URI.class);
+      Session session = userSessionApi.currentSession();
+      objecUriToSelect = (URI) session.getParameter(OBJECT_URI_TO_SELECT);
       if (objecUriToSelect != null) {
         TreeNode treeNode = treeNodesByObjectUri.get(objecUriToSelect);
         if (treeNode != null) {
@@ -512,7 +513,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
         if (treeNode != null) {
           select(treeNode);
           objecUriToSelect = null;
-          sessionApi.removeParameter(OBJECT_URI_TO_SELECT);
+          userSessionApi.currentSession().clearParameter(OBJECT_URI_TO_SELECT);
           return true;
         }
       }
@@ -725,15 +726,14 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
    * @param navigation
    * @param publisherWrapper
    * @param uiNavigationApi
-   * @param sessionApi
+   * @param userSessionApi
    * @return
    */
   public static NavigationViewModel createForUI(Navigation navigation,
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
-      SessionApi sessionApi,
-      InvocationApi invocationApi) {
-    return createForUI(navigation, publisherWrapper, uiNavigationApi, sessionApi, invocationApi);
+      UserSessionApi userSessionApi) {
+    return createForUI(navigation, publisherWrapper, uiNavigationApi, userSessionApi, null);
   }
 
   /**
@@ -746,18 +746,16 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
    * @param navigation
    * @param publisherWrapper
    * @param uiNavigationApi
-   * @param sessionApi
+   * @param userSessionApi
    * @return
    */
   public static NavigationViewModel createForUI(Navigation navigation,
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
-      SessionApi sessionApi,
-      InvocationApi invocationApi,
+      UserSessionApi userSessionApi,
       ViewTargetEnhancer enhancer) {
-    NavigationViewModelImpl result =
-        new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, sessionApi,
-            invocationApi);
+    NavigationViewModelUserSessionBasedImpl result =
+        new NavigationViewModelUserSessionBasedImpl(publisherWrapper, uiNavigationApi, userSessionApi);
     result.setViewTargetEnhancer(enhancer);
     result.initByNavigationTarget(null);
     result.setNavigation(navigation);
@@ -779,8 +777,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     NavigationViewModel result =
         uiNavigationApi.createAndAddChildViewModel(parent, path, NavigationViewModel.class, null);
     Object impl = ReflectionUtility.getProxyTarget(result);
-    if (impl instanceof NavigationViewModelImpl) {
-      NavigationViewModelImpl viewModelImpl = (NavigationViewModelImpl) impl;
+    if (impl instanceof NavigationViewModelUserSessionBasedImpl) {
+      NavigationViewModelUserSessionBasedImpl viewModelImpl = (NavigationViewModelUserSessionBasedImpl) impl;
       viewModelImpl.setNavigation(navigation);
       viewModelImpl.setViewTargetEnhancer(enhancer);
     } else {

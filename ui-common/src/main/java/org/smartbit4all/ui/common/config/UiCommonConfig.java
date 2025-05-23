@@ -14,7 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.ui.common.config;
 
-import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
@@ -56,8 +57,10 @@ public class UiCommonConfig {
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   NavigationViewModel navigationViewModel(ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
-      UserSessionApi userSessionApi) {
-    return new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
+      SessionApi userSessionApi,
+      InvocationApi invocationApi) {
+    return new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi,
+        invocationApi);
   }
 
 }

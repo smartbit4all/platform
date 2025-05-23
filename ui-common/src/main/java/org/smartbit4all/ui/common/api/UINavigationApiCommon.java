@@ -297,7 +297,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected NavigationTarget getNavigationTargetByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_NAV_TARGETS,
-        navigationTargetsByUUID);
+        navigationTargetsByUUID, NavigationTarget.class);
   }
 
   @Override
@@ -312,7 +312,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected ViewModel getViewModelByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS,
-        viewModelsByUuid);
+        viewModelsByUuid, ViewModel.class);
   }
 
   protected void putContainerByUuidInternal(UUID uuid, Container container) {
@@ -321,7 +321,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected Container getContainerByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CONTAINERS,
-        containersByUUID);
+        containersByUUID, Container.class);
   }
 
   private <T> void putValueToSessionMap(UUID uuid, T value, String parameterName,
@@ -329,26 +329,33 @@ public class UINavigationApiCommon implements UINavigationApi {
     Session session = getCurrentSession();
     if (session != null) {
       session.putValueToMap(uuid, value, parameterName);
-    } else if (sessionApi != null) {
-      Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
-      if (parameterMap != null) {
-        parameterMap.put(uuid, value);
-      }
-    } else {
+    }
+    // else if (sessionApi != null) {
+    // sessionApi.setParameterObject(parameterName + uuid.toString(), value);
+    // Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+    // if (parameterMap == null) {
+    // parameterMap = new HashMap<>();
+    // }
+    // parameterMap.put(uuid, value);
+    // sessionApi.setParameterObject(parameterName, parameterMap);
+    // }
+    else {
       globalMap.put(uuid, value);
     }
   }
 
-  private <T> T getValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, T> globalMap) {
+  private <T> T getValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, T> globalMap,
+      Class<?> clazz) {
     Session session = getCurrentSession();
     if (session != null) {
       return session.getValueFromMap(uuid, parameterName);
-    } else if (sessionApi != null) {
-      Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
-      if (parameterMap != null) {
-        return parameterMap.get(uuid);
-      }
     }
+    // } else if (sessionApi != null) {
+    // Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+    // if (parameterMap != null) {
+    // return parameterMap.get(uuid);
+    // }
+    // return (T) sessionApi.getParameterObject(parameterName + uuid.toString(), clazz);
     return globalMap.get(uuid);
   }
 
@@ -356,12 +363,13 @@ public class UINavigationApiCommon implements UINavigationApi {
     Session session = getCurrentSession();
     if (session != null) {
       session.removeEntryFromMap(uuid, parameterName);
-    } else if (sessionApi != null) {
-      Map<UUID, ?> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
-      if (parameterMap != null) {
-        parameterMap.remove(uuid);
-      }
     } else {
+      // } else if (sessionApi != null) {
+      // Map<UUID, ?> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+      // if (parameterMap != null) {
+      // parameterMap.remove(uuid);
+      // }
+      // sessionApi.removeParameter(parameterName + uuid.toString());
       globalMap.remove(uuid);
     }
   }
