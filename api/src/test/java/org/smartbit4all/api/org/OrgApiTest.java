@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.SessionApiTestImpl;
+import org.smartbit4all.api.session.UserSessionApiLocal;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -38,7 +38,7 @@ class OrgApiTest {
   private ObjectApi objectApi;
 
   @Autowired
-  private SessionApiTestImpl sessionApi;
+  private UserSessionApiLocal userSessionApi;
 
   @AfterAll
   static void tearDownAfterClass() throws Exception {}
@@ -63,7 +63,7 @@ class OrgApiTest {
     orgApi.addUserToGroup(testUserUri, viewerGroup.getUri());
 
     // Set the current user - we logged in with this user.
-    sessionApi.setCurrentUser(testUserUri);
+    userSessionApi.setCurrentUser(orgApi.getUser(testUserUri));
 
     // We already have this group --> we have the right to view
     Assertions.assertTrue(security.viewer.check());
