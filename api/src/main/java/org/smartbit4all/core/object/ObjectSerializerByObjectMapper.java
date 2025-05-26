@@ -36,16 +36,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class ObjectSerializerByObjectMapper implements ObjectSerializer {
 
   public static final TypeReference<Map<String, Object>> MAP_OF_STRING_OBJECT_TYPE_REFERENCE =
-      new TypeReference<Map<String, Object>>() {};
+      new TypeReference<>() {};
 
   public static final TypeReference<List<Float>> LIST_OF_FLOAT_TYPE_REFERENCE =
-      new TypeReference<List<Float>>() {};
+      new TypeReference<>() {};
 
   public static final TypeReference<Map<String, String>> MAP_OF_STRING_STRING_TYPE_REFERENCE =
-      new TypeReference<Map<String, String>>() {};
+      new TypeReference<>() {};
 
   public static final TypeReference<List<Map<String, Object>>> LIST_OF_MAP_OF_STRING_OBJECT =
-      new TypeReference<List<Map<String, Object>>>() {};
+      new TypeReference<>() {};
+
+  public static final TypeReference<List<String>> LIST_OF_STRING_TYPE_REFERENCE =
+      new TypeReference<>() {};
 
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
