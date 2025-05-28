@@ -67,6 +67,7 @@ import org.smartbit4all.core.object.ObjectHistoryIterator;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
@@ -1261,7 +1262,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         UUID.randomUUID().toString().replaceAll(StringConstant.HYPHEN, StringConstant.EMPTY);
     ObjectReferenceById ref = new ObjectReferenceById().id(token)
         .refObjectUri(uri);
-    objectApi.saveAsNew(SCHEMA, ref);
+    objectApi.saveAsNew(UriUtils.getSchema(uri), ref);
     return token;
   }
 
