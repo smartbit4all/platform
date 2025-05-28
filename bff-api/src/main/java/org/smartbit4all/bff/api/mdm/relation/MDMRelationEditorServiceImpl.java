@@ -26,6 +26,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
 
@@ -97,7 +98,18 @@ public class MDMRelationEditorServiceImpl implements MDMRelationEditorService {
         view.getBranchUri(),
         GenericValue.NAME);
 
-    // Post process
+    // Remove the same object from value set:
+    if (relationDefinition.getFromDefinition().equals(relationDefinition.getToDefinition()) &&
+        relationDefinition.getFromEntryName().equals(relationDefinition.getToEntryName()) &&
+        !ObjectUtils.isEmpty(view.getObjectUri())) {
+
+      valueSet.getValueSetData().getValues().removeIf(
+          object -> objectApi.equalsIgnoreVersion(
+              view.getObjectUri(),
+              objectApi.getValueFromObject(URI.class, object, Value.OBJECT_URI)));
+    }
+
+    // Post process:
     valueSet.getValueSetData().getValues()
         .forEach(object -> postProcessValue.apply(objectApi.asType(Value.class, object)));
 
