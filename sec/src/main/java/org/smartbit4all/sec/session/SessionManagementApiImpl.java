@@ -218,7 +218,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
           "Authentication token has been created by the configured authenticationTokenProvider!");
     } else {
       authenticationToken = createAnonymousAuthToken(sessionUri);
-      log.debug("Anonymous atuhentication token has been created!");
+      log.debug("Anonymous authentication token has been created!");
     }
 
     SecurityContextHolder.getContext().setAuthentication(authenticationToken);

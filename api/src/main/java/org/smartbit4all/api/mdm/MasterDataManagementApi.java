@@ -265,4 +265,6 @@ public interface MasterDataManagementApi {
 
   MDMModification getModificationFromState(MDMDefinitionState state, URI branch);
 
+  String getAccessToken(String definitionName, String entryName, String entryId);
+
 }

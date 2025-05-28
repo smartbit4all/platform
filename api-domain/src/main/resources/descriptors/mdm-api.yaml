@@ -9,7 +9,44 @@ info:
 tags:
   - name: MasterDataManagement
     description:
-paths: {}
+paths:
+  /mdm/{definition}/{entry}/{id}/getAccessToken:
+    get:
+      tags:
+        - MasterDataManagement
+      summary: |
+        Returns a unique token that identifies the MDM entry.
+      operationId : "getAccessToken"
+      parameters:
+        - in: path
+          name: definition
+          schema:
+            type: string
+          required: true
+          description: Unique identifier of the MDM namespace.
+        - in: path
+          name: entry
+          schema:
+            type: string
+          required: true
+          description: Unique identifier of the MDM entry list.
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Unique identifier of the MDM entry.
+      responses:
+        "200":
+          description: "Data fetch successful."
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Resource cannot be found."
+        "500":
+          description: "There was an error during the data fetch."
 components:
   schemas:
     MDMDefinition:

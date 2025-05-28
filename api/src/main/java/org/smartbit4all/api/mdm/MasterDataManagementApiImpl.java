@@ -49,6 +49,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
+import org.smartbit4all.api.object.bean.ObjectReferenceById;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.OrgApi;
@@ -88,6 +89,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   private static final ThreadLocal<MdmDefinitionCache> MDM_DEF_CACHE =
       ThreadLocal.withInitial(() -> Absent.INSTANCE);
+
+  private final String URI = "uri";
 
   public sealed interface MdmDefinitionCache {
 
@@ -1237,6 +1240,29 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     }
     return collectionApi.vectorCollection(vectorCollectionDescriptor.getVectorCollectionName(),
         vectorDBConnection, embeddingConnection);
+  }
+
+  @Override
+  public String getAccessToken(String definitionName, String entryName, String entryId) {
+    MDMEntryApi entryApi = getApi(definitionName, entryName);
+    List<List<String>> uniquePropertyPaths = entryApi.getDescriptor().getUniquePropertyPaths();
+    if (ObjectUtils.isEmpty(uniquePropertyPaths)) {
+      throw new IllegalArgumentException(
+          "The entry " + entryName + " does not have a unique property path!");
+    }
+    Map<String, Object> data = entryApi.lookup().findByUnique(new ObjectPropertyValue()
+        .path(uniquePropertyPaths.get(0))
+        .value(entryId));
+    if (ObjectUtils.isEmpty(data)) {
+      return null;
+    }
+    URI uri = objectApi.asType(URI.class, data.get(URI));
+    String token =
+        UUID.randomUUID().toString().replaceAll(StringConstant.HYPHEN, StringConstant.EMPTY);
+    ObjectReferenceById ref = new ObjectReferenceById().id(token)
+        .refObjectUri(uri);
+    objectApi.saveAsNew(SCHEMA, ref);
+    return token;
   }
 
 }
