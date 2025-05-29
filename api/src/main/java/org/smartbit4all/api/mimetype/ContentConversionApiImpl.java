@@ -1,15 +1,17 @@
 package org.smartbit4all.api.mimetype;
 
-import static java.util.stream.Collectors.toList;
+import static java.lang.Long.MAX_VALUE;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
@@ -18,9 +20,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.graph.EndpointPair;
-import com.google.common.graph.MutableValueGraph;
-import com.google.common.graph.ValueGraphBuilder;
+import org.springframework.util.ObjectUtils;
 
 public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionContributionApi>
     implements ContentConversionApi {
@@ -54,62 +54,140 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
         .collect(Collectors.toList());
   }
 
+
   @Override
   public List<String> getConversionPath(String fromMimeType, String toMimeType) {
-    if (fromMimeType.equals(toMimeType)) {
-      return Collections.emptyList();
+    List<String> path = aStar(fromMimeType, toMimeType, it -> 1L, (s1, s2) -> 1L);
+    // The return value of the A* algorithm includes the starting vertex, which we do not need, so
+    // we remove it
+    if (!ObjectUtils.isEmpty(path)) {
+      path.remove(0);
     }
-    MutableValueGraph<String, ContentConversionContributionApi> conversionGraph =
-        ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+    return path;
+  }
+
+  public List<String> aStar(String start, String goal, ToLongFunction<String> h,
+      BiFunction<String, String, Long> d) {
+    Map<String, Set<String>> neighborMap = new HashMap<>();
     for (ContentConversionContributionApi api : getContributionApis().values()) {
       for (String acceptedMimeType : api.getAcceptedMimeTypes()) {
         for (String targetMimeType : api.getTargetMimeTypes()) {
-          conversionGraph.putEdgeValue(acceptedMimeType, targetMimeType, api);
+          Set<String> list = neighborMap.get(acceptedMimeType);
+          if (list == null) {
+            neighborMap.put(acceptedMimeType, new HashSet<>(Set.of(targetMimeType)));
+          } else {
+            list.add(targetMimeType);
+          }
         }
       }
     }
-    // Now we shell find the shortest path on the conversion graph and execute it.
-    Set<String> alreadyVisited = new HashSet<>();
-    alreadyVisited.add(fromMimeType);
-    Set<EndpointPair<String>> incidentEdges = conversionGraph.incidentEdges(fromMimeType);
-    List<EndpointPair<String>> shortestPath =
-        pathRecursive(conversionGraph, incidentEdges, fromMimeType, toMimeType, alreadyVisited);
-    return shortestPath.stream().map(ep -> ep.target()).collect(toList());
+
+    Set<String> openSet = new HashSet<>();
+    openSet.add(start);
+
+    Map<String, String> cameFrom = new HashMap<>();
+
+    Map<String, Long> gScore = new HashMap<>();
+    gScore.put(start, 0L);
+
+    Map<String, Long> fScore = new HashMap<>();
+    fScore.put(start, h.applyAsLong(start));
+
+    String current = null;
+    Long tentaitiveGScore = null;
+    while (!openSet.isEmpty()) {
+      current =
+          openSet.stream()
+              .min((s1, s2) -> Long.compare(fScore.getOrDefault(s1, MAX_VALUE),
+                  fScore.getOrDefault(s2, MAX_VALUE)))
+              .orElse(null);
+      if (Objects.equals(current, goal)) {
+        return reconstructPath(cameFrom, current);
+      }
+      openSet.remove(current);
+      for (String neighbor : neighborMap.get(current)) {
+        Long temp = gScore.getOrDefault(current, MAX_VALUE);
+        tentaitiveGScore = temp == MAX_VALUE ? MAX_VALUE
+            : gScore.getOrDefault(current, MAX_VALUE) + d.apply(current, neighbor);
+        if (tentaitiveGScore < gScore.getOrDefault(neighbor, MAX_VALUE))
+          cameFrom.put(neighbor, current);
+        gScore.put(neighbor, tentaitiveGScore);
+        temp = gScore.getOrDefault(neighbor, MAX_VALUE);
+        fScore.put(neighbor,
+            temp == MAX_VALUE ? MAX_VALUE : gScore.get(neighbor) + h.applyAsLong(neighbor));
+        openSet.add(neighbor);
+      }
+    }
+    return Collections.emptyList();
   }
 
-  private final List<EndpointPair<String>> pathRecursive(
-      MutableValueGraph<String, ContentConversionContributionApi> conversionGraph,
-      Set<EndpointPair<String>> incidentEdges,
-      String fromMimeType, String toMimeType, Set<String> alreadyVisited) {
-    // If the toMimeType is included then we arrived and we can return the last EnpointPair as
-    // result.
-    if (fromMimeType.equals(toMimeType)) {
-      return Collections.emptyList();
+  private List<String> reconstructPath(Map<String, String> cameFrom, String current) {
+    List<String> totalPath = new LinkedList<>();
+    totalPath.add(current);
+    Set<String> cameFromKeys = cameFrom.keySet();
+    while (cameFromKeys.contains(current)) {
+      current = cameFrom.remove(current);
+      totalPath.addFirst(current);
     }
-    List<EndpointPair<String>> result = new ArrayList<>();
-    Optional<EndpointPair<String>> toOption =
-        incidentEdges.stream()
-            .filter(ep -> ep.source().equals(fromMimeType) && ep.target().equals(toMimeType))
-            .findFirst();
-    if (toOption.isPresent()) {
-      result.add(toOption.get());
-      return result;
-    }
-    // Go further to find the toMimeType.
-    return incidentEdges.stream().filter(ep -> !alreadyVisited.contains(ep.target())).map(ep -> {
-      alreadyVisited.add(ep.target());
-      List<EndpointPair<String>> pathRecursive =
-          pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
-              ep.target(), toMimeType, alreadyVisited);
-      if (!pathRecursive.isEmpty()) {
-        List<EndpointPair<String>> tmp = new ArrayList<>();
-        tmp.add(ep);
-        tmp.addAll(pathRecursive);
-        pathRecursive = tmp;
-      }
-      return pathRecursive;
-    }).filter(l -> !l.isEmpty()).findFirst().orElse(Collections.emptyList());
+    return totalPath;
   }
+
+  // @Override
+  // public List<String> getConversionPath(String fromMimeType, String toMimeType) {
+  // if (fromMimeType.equals(toMimeType)) {
+  // return Collections.emptyList();
+  // }
+  // MutableValueGraph<String, ContentConversionContributionApi> conversionGraph =
+  // ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+  // for (ContentConversionContributionApi api : getContributionApis().values()) {
+  // for (String acceptedMimeType : api.getAcceptedMimeTypes()) {
+  // for (String targetMimeType : api.getTargetMimeTypes()) {
+  // conversionGraph.putEdgeValue(acceptedMimeType, targetMimeType, api);
+  // }
+  // }
+  // }
+  // // Now we shell find the shortest path on the conversion graph and execute it.
+  // Set<String> alreadyVisited = new HashSet<>();
+  // alreadyVisited.add(fromMimeType);
+  // Set<EndpointPair<String>> incidentEdges = conversionGraph.incidentEdges(fromMimeType);
+  // List<EndpointPair<String>> shortestPath =
+  // pathRecursive(conversionGraph, incidentEdges, fromMimeType, toMimeType, alreadyVisited);
+  // return shortestPath.stream().map(ep -> ep.target()).collect(toList());
+  // }
+
+  // private final List<EndpointPair<String>> pathRecursive(
+  // MutableValueGraph<String, ContentConversionContributionApi> conversionGraph,
+  // Set<EndpointPair<String>> incidentEdges,
+  // String fromMimeType, String toMimeType, Set<String> alreadyVisited) {
+  // // If the toMimeType is included then we arrived and we can return the last EnpointPair as
+  // // result.
+  // if (fromMimeType.equals(toMimeType)) {
+  // return Collections.emptyList();
+  // }
+  // List<EndpointPair<String>> result = new ArrayList<>();
+  // Optional<EndpointPair<String>> toOption =
+  // incidentEdges.stream()
+  // .filter(ep -> ep.source().equals(fromMimeType) && ep.target().equals(toMimeType))
+  // .findFirst();
+  // if (toOption.isPresent()) {
+  // result.add(toOption.get());
+  // return result;
+  // }
+  // // Go further to find the toMimeType.
+  // return incidentEdges.stream().filter(ep -> !alreadyVisited.contains(ep.target())).map(ep -> {
+  // alreadyVisited.add(ep.target());
+  // List<EndpointPair<String>> pathRecursive =
+  // pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
+  // ep.target(), toMimeType, alreadyVisited);
+  // if (!pathRecursive.isEmpty()) {
+  // List<EndpointPair<String>> tmp = new ArrayList<>();
+  // tmp.add(ep);
+  // tmp.addAll(pathRecursive);
+  // pathRecursive = tmp;
+  // }
+  // return pathRecursive;
+  // }).filter(l -> !l.isEmpty()).findFirst().orElse(Collections.emptyList());
+  // }
 
   private final ContentConversionContributionApi getConverterApi(String fromMimeType,
       String toMimeType) {

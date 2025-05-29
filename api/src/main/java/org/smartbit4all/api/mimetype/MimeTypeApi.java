@@ -263,6 +263,10 @@ public class MimeTypeApi implements InitializingBean {
   public static final String RTF_EXT = "rtf";
   public static final String FB2_EXT = "fb2";
 
+  public final Map<String, String> getExtensionsByMimeType() {
+    return new HashMap<>(extensionsByMimeType);
+  }
+
   /**
    * Includes the mimeTypes that can be recognized by the {@link MimetypesFileTypeMap}.
    */

@@ -23,7 +23,9 @@ public class ContentConversionContributionApiTextToText extends ContentConversio
         MimeTypeApi.HTML_MIMETYPE,
         MimeTypeApi.XML_MIMETYPE,
         MimeTypeApi.JSON_MIMETYPE,
-        MimeTypeApi.CSV_MIMETYPE);
+        MimeTypeApi.CSV_MIMETYPE,
+        MimeTypeApi.JAVA_MIMETYPE,
+        MimeTypeApi.GROOVY_MIMETYPE);
   }
 
   @Override
