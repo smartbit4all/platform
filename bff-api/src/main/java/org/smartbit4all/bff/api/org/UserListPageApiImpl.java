@@ -3,9 +3,11 @@ package org.smartbit4all.bff.api.org;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -19,6 +21,7 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserListPageApiImpl extends PageApiImpl<Object> implements UserListPageApi {
@@ -73,8 +76,11 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected void refreshGrid(UUID viewUuid) {
-    gridModelApi.setDataFromUris(viewUuid, USER_GRID, userSearch,
-        orgApi.getAllUsers().stream().map(User::getUri));
+    TableData<?> tableData =
+        userSearch.executeSearch(new FilterExpressionList(), Collections.emptyList());
+    gridModelApi.setData(viewUuid, USER_GRID, tableData);
+    // gridModelApi.setDataFromUris(viewUuid, USER_GRID, userSearch,
+    // orgApi.getAllUsers().stream().map(User::getUri));
   }
 
   @Override
@@ -100,12 +106,13 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected List<UiAction> getUserRowActions(GridRow row) {
-    UiAction stateAction = Boolean.TRUE.equals(GridModels.getValueFromGridRow(row, User.INACTIVE))
-        ? new UiAction().code(ACTIVATE_USER).confirm(true)
-        : new UiAction().code(DEACTIVATE_USER).confirm(true);
-
-    return Arrays.asList(
-        new UiAction().code(OPEN_USER_EDITOR_PAGE), stateAction);
+    boolean isInactive = Boolean.TRUE.equals(GridModels.getValueFromGridRow(row, User.INACTIVE));
+    if (isInactive) {
+      return Arrays.asList(new UiAction().code(ACTIVATE_USER).confirm(true));
+    } else {
+      return Arrays.asList(new UiAction().code(OPEN_USER_EDITOR_PAGE),
+          new UiAction().code(DEACTIVATE_USER).confirm(true));
+    }
   }
 
   protected List<UiAction> getUserListActions() {
