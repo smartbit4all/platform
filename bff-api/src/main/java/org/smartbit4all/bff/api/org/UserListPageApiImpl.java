@@ -21,6 +21,8 @@ import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
+import org.smartbit4all.core.object.ObjectLayoutApi;
+import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.domain.data.TableData;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,11 +44,11 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   @Override
   public Object initModel(View view) {
     ObjectContainer pageModel = new ObjectContainer();
-
     initGrid(view);
     refreshGrid(view.getUuid());
-    view.actions(getUserListActions());
-
+    view.actions(getUserListActions(view.getUuid()));
+    view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT,
+        ObjectLayoutBuilder.grid(USER_GRID));
     return pageModel;
   }
 
@@ -55,6 +57,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     GridModel userGridModel = gridModelApi.createGridModel(
         userSearch.getDefinition().getDefinition(), getGridColumns(),
         User.class.getSimpleName());
+    GridModels.hideColumns(userGridModel, List.of(User.URI));
     gridModelApi.initGridInView(view.getUuid(), USER_GRID, userGridModel);
     gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
         invocationApi.builder(UserListPageApi.class)
@@ -102,7 +105,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   }
 
   protected List<String> getGridColumns() {
-    return Arrays.asList(User.NAME, User.USERNAME, User.EMAIL, User.INACTIVE);
+    return Arrays.asList(User.URI, User.NAME, User.USERNAME, User.EMAIL, User.INACTIVE);
   }
 
   protected List<UiAction> getUserRowActions(GridRow row) {
@@ -115,7 +118,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     }
   }
 
-  protected List<UiAction> getUserListActions() {
+  protected List<UiAction> getUserListActions(UUID viewUuid) {
     List<UiAction> actions = new ArrayList<>();
     actions.add(new UiAction().code(ADD_USER));
     return actions;
