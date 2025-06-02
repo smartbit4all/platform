@@ -87,6 +87,9 @@ public class ObjectApiImpl implements ObjectApi {
     private final Map<CacheKey, Boolean> existsCache = new HashMap<>();
     private final Map<URI, Long> lastModifiedCache = new HashMap<>();
 
+    // cache enable count, indicating how many times the cache has been enabled
+    int enabledCount = 0;
+
     // Debug statistics
     private final long createdAt = System.currentTimeMillis();
     private int cacheHits = 0;
@@ -195,8 +198,15 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public void enableReadCache() {
     if (useReadCache) {
-      readCache.set(new ReadCache());
-      log.debug("Read cache enabled for thread: {}", Thread.currentThread().getName());
+      ReadCache cache = readCache.get();
+      if (cache != null) {
+        cache.enabledCount++;
+        log.debug("Read cache already enabled for thread: {} - increasing level to {}",
+            Thread.currentThread().getName(), cache.enabledCount);
+      } else {
+        readCache.set(new ReadCache());
+        log.debug("Read cache enabled for thread: {}", Thread.currentThread().getName());
+      }
     }
   }
 
@@ -208,10 +218,17 @@ public class ObjectApiImpl implements ObjectApi {
     if (useReadCache) {
       ReadCache cache = readCache.get();
       if (cache != null) {
-        log.debug("Read cache disabled for thread: {} - {}",
-            Thread.currentThread().getName(), cache.getDebugInfo());
-        cache.clear();
-        readCache.remove();
+        if (cache.enabledCount > 0) {
+          cache.enabledCount--;
+          log.debug("Read cache level decreased for thread: {} - new level: {}",
+              Thread.currentThread().getName(), cache.enabledCount);
+        } else {
+          // Clear the cache and remove the thread-local reference
+          cache.clear();
+          readCache.remove();
+          log.debug("Read cache disabled for thread: {} - {}",
+              Thread.currentThread().getName(), cache.getDebugInfo());
+        }
       }
     }
   }
