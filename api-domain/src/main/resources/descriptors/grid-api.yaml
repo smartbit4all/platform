@@ -14,10 +14,10 @@ paths:
   /grid/{uuid}/{gridIdentifier}/load:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'load'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -40,10 +40,10 @@ paths:
   /grid/{uuid}/{gridIdentifier}/update:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'update'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -72,10 +72,10 @@ paths:
   /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit}:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'setPage'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -106,10 +106,10 @@ paths:
   /grid/{uuid}/{gridId}/{rowId}/expand:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'expand'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -138,10 +138,10 @@ paths:
   /grid/{uuid}/{gridId}/{rowId}/select:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'select'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -174,10 +174,10 @@ paths:
   /grid/{uuid}/{gridId}/selects:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'selectRows'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -206,10 +206,10 @@ paths:
   /grid/{uuid}/{gridId}/select:
     post:
       tags:
-      - grid
+        - grid
       summary: ''
       operationId: 'selectAll'
-      parameters: 
+      parameters:
         - in: path
           name: uuid
           schema:
@@ -253,7 +253,7 @@ components:
             type: string
           description: The path to access the identifier GridRow.data
         idProperty:
-          description: If presented as TREE, this property will be used as id property. 
+          description: If presented as TREE, this property will be used as id property.
           type: string
         parentIdProperty:
           description: If presented as TREE, this property will be used as parentId property.
@@ -344,7 +344,7 @@ components:
       type: object
       description: |
         This object is a grid row containening the identifier and actions releted with the row.
-      required: [actions,icons]
+      required: [actions, icons]
       properties:
         id:
           type: string
@@ -364,6 +364,14 @@ components:
             type: array
             items:
               type: ImageResource
+        columnActions:
+          description: |
+            The key shoud be the column's name, while the value is a list of actions codes.
+          type: string
+          additionalProperties:
+            type: array
+            items:
+              type: string
         parent:
           description: |
             If the grid can be hierarchical then the parent contains the identifiers of the
@@ -386,7 +394,7 @@ components:
       description: |
         The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
         has one or more view option to render the content.
-      required: [orderedColumnNames,orderByList]
+      required: [orderedColumnNames, orderByList]
       properties:
         descriptor:
           $ref: '#/components/schemas/GridViewDescriptor'
@@ -419,9 +427,9 @@ components:
           items:
             $ref: '#/components/schemas/GridColumnMeta'
         selectionMode:
-            $ref: '#/components/schemas/GridSelectionMode'
+          $ref: '#/components/schemas/GridSelectionMode'
         selectionType:
-            $ref: '#/components/schemas/GridSelectionType'
+          $ref: '#/components/schemas/GridSelectionType'
         preserveSelectionOnPageChange:
           type: boolean
         showEditColumns:
@@ -438,11 +446,11 @@ components:
       properties:
         isExportable:
           type: boolean
-          default: true    
+          default: true
         exportMimeType:
-          type: string 
+          type: string
         columnsToExport:
-          type: array 
+          type: array
           items:
             type: string
         buttonColor:
@@ -485,7 +493,7 @@ components:
           type: boolean
           default: false
         hideLabel:
-          description: Hide column header label. 
+          description: Hide column header label.
           type: boolean
           default: false
         contentType:
@@ -498,14 +506,14 @@ components:
       type: object
       description: |
         This object contains all information about a grid's selection change.
-      required: [selected,unselected]
+      required: [selected, unselected]
       properties:
         selected:
-          type: array 
+          type: array
           items:
             type: string
         unselected:
-          type: array 
+          type: array
           items:
             type: string
     GridColumnContentType:
@@ -517,7 +525,7 @@ components:
       type: object
       description: |
         Update request for grid's current view's behaviour.
-      required: [orderedColumnNames,orderByList]
+      required: [orderedColumnNames, orderByList]
       properties:
         orderedColumnNames:
           type: array

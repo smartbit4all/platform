@@ -45,6 +45,7 @@ import javax.validation.Valid;
   GridRow.SELECTABLE,
   GridRow.SELECTED,
   GridRow.ICONS,
+  GridRow.COLUMN_ACTIONS,
   GridRow.PARENT,
   GridRow.CHILDREN,
   GridRow.STYLE
@@ -69,6 +70,9 @@ public class GridRow {
 
   public static final String ICONS = "icons";
   private Map<String, List<ImageResource>> icons = new HashMap<>();
+
+  public static final String COLUMN_ACTIONS = "columnActions";
+  private Map<String, List<String>> columnActions = null;
 
   public static final String PARENT = "parent";
   private String parent;
@@ -258,6 +262,42 @@ public class GridRow {
   }
 
 
+  public GridRow columnActions(Map<String, List<String>> columnActions) {
+    
+    this.columnActions = columnActions;
+    return this;
+  }
+
+  public GridRow putColumnActionsItem(String key, List<String> columnActionsItem) {
+    if (this.columnActions == null) {
+      this.columnActions = new HashMap<>();
+    }
+    this.columnActions.put(key, columnActionsItem);
+    return this;
+  }
+
+   /**
+   * The key shoud be the column&#39;s name, while the value is a list of actions codes. 
+   * @return columnActions
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The key shoud be the column's name, while the value is a list of actions codes. ")
+  @JsonProperty(COLUMN_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, List<String>> getColumnActions() {
+    return columnActions;
+  }
+
+
+  @JsonProperty(COLUMN_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setColumnActions(Map<String, List<String>> columnActions) {
+    this.columnActions = columnActions;
+  }
+
+
   public GridRow parent(String parent) {
     
     this.parent = parent;
@@ -363,6 +403,7 @@ public class GridRow {
         Objects.equals(this.selectable, gridRow.selectable) &&
         Objects.equals(this.selected, gridRow.selected) &&
         Objects.equals(this.icons, gridRow.icons) &&
+        Objects.equals(this.columnActions, gridRow.columnActions) &&
         Objects.equals(this.parent, gridRow.parent) &&
         Objects.equals(this.children, gridRow.children) &&
         Objects.equals(this.style, gridRow.style);
@@ -370,7 +411,7 @@ public class GridRow {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, actions, data, selectable, selected, icons, parent, children, style);
+    return Objects.hash(id, actions, data, selectable, selected, icons, columnActions, parent, children, style);
   }
 
   @Override
@@ -383,6 +424,7 @@ public class GridRow {
     sb.append("    selectable: ").append(toIndentedString(selectable)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
     sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
+    sb.append("    columnActions: ").append(toIndentedString(columnActions)).append("\n");
     sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
