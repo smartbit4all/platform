@@ -481,6 +481,11 @@ public interface ObjectApi {
    * Enable read cache for the current thread. When enabled, all object loads and
    * lastModified/exists checks will be cached until the cache is disabled or a save operation
    * occurs. The cache is thread-local, so each thread has its own cache.
+   * 
+   * On subsequent calls to enableReadCache, the cache mechanism will not clear the existing cache,
+   * but keeps a count of how many times it has been enabled, and only clears the cache when
+   * disableReadCache is called the same number of times, or a save occurs.
+   * 
    */
   void enableReadCache();
 

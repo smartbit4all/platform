@@ -192,9 +192,6 @@ public class ObjectApiImpl implements ObjectApi {
   private record CacheKey(URI uri, URI branchUri) {
   }
 
-  /**
-   * Enable read cache for the current thread.
-   */
   @Override
   public void enableReadCache() {
     if (useReadCache) {
@@ -210,15 +207,21 @@ public class ObjectApiImpl implements ObjectApi {
     }
   }
 
-  /**
-   * Disable read cache for the current thread.
-   */
   @Override
   public void disableReadCache() {
+    disableReadCacheInternal(false);
+  }
+
+  /**
+   * Disable read cache for the current thread, with force option.
+   * 
+   * @param force whether to forcefully disable the read cache, ignoring the enabled count.
+   */
+  private void disableReadCacheInternal(boolean force) {
     if (useReadCache) {
       ReadCache cache = readCache.get();
       if (cache != null) {
-        if (cache.enabledCount > 0) {
+        if (cache.enabledCount > 0 && !force) {
           cache.enabledCount--;
           log.debug("Read cache level decreased for thread: {} - new level: {}",
               Thread.currentThread().getName(), cache.enabledCount);
@@ -233,16 +236,13 @@ public class ObjectApiImpl implements ObjectApi {
     }
   }
 
-  /**
-   * Check if read cache is enabled for the current thread.
-   */
   @Override
   public boolean isReadCacheEnabled() {
     return useReadCache && readCache.get() != null;
   }
 
   /**
-   * Clear the read cache for the current thread.
+   * Clear the read cache for the current thread, with force option.
    */
   private void clearReadCache() {
     if (useReadCache) {
@@ -250,12 +250,11 @@ public class ObjectApiImpl implements ObjectApi {
       if (cache != null) {
         log.warn("Read cache is being cleared due to a save operation. Disabling read cache. {}",
             cache.getDebugInfo());
-        disableReadCache();
+        disableReadCacheInternal(true);
       }
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> ObjectDefinition<T> definition(Class<T> clazz) {
     return objectDefinitionApi.definition(clazz);
@@ -485,6 +484,7 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public <T> ObjectNode create(String storageScheme, T object) {
+    @SuppressWarnings("unchecked")
     ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
     boolean hasUri = definition.getUriGetter() != null;
     ObjectNodeData data = new ObjectNodeData()
