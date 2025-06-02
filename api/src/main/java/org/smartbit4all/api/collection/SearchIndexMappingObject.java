@@ -438,89 +438,95 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   final void readObjects(Stream<SearchIndexObject> objects,
       SearchEntityTableDataResult result, Map<String, Object> defaultValues, boolean useLength) {
-
-    // Create detail TableDatas
-    if (result.manageDetails) {
-      for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
-          .entrySet()) {
-        TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
-        detailData.addColumns(entry.getValue().detail.definition.allProperties());
-        SearchEntityTableDataResult detailResult = new SearchEntityTableDataResult()
-            .searchEntityDefinition(entry.getValue().detail)
-            .result(detailData);
-
-        result.detailResults.put(entry.getKey(), detailResult);
-      }
-    }
-
-    // Fill the TableDatas
-    TableData<?> tableData = result.result;
-    SearchIndexContext context = new SearchIndexContext();
-    objects.forEach(o -> {
-      ObjectNode n = o.getObjectNode();
-      context.rowNode(n);
-      context.getRowVariables().clear();
-      DataRow row = tableData.addRow();
-      Map<String, ObjectNode> referenceObjects = new HashMap<>();
-      for (DataColumn<?> col : tableData.columns()) {
-
-        if (!isCalculatedProperty(col.getName())) {
-          Object value =
-              readValue(context, o, col.getProperty(), referenceObjects, defaultValues, useLength);
-          tableData.setObject(col, row, value);
-        }
-      }
-      // Read all the details also.
+    // reading object nodes should use the read cache
+    objectApi.enableReadCache();
+    try {
+      // Create detail TableDatas
       if (result.manageDetails) {
         for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
             .entrySet()) {
-          SearchEntityTableDataResult detailResult = result.detailResults.get(entry.getKey());
-          SearchIndexMappingObject detailObjectMapping =
-              ((SearchIndexMappingObject) mappingsByPropertyName
-                  .get(entry.getKey()));
-          if (detailObjectMapping.isInlineValueObjects()) {
-            TableData<?> tableDataDetail = detailResult.result;
-            Map<DataColumn<?>, Object> masterIdValues =
-                entry.getValue().masterJoin.getReferences().get(0)
-                    .joins().stream()
-                    .collect(toMap(
-                        j -> tableDataDetail
-                            .getColumn(detailObjectMapping.getDefinition().definition
-                                .getProperty(j.getSourceProperty().getName())),
-                        j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
+          TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
+          detailData.addColumns(entry.getValue().detail.definition.allProperties());
+          SearchEntityTableDataResult detailResult = new SearchEntityTableDataResult()
+              .searchEntityDefinition(entry.getValue().detail)
+              .result(detailData);
 
-            List<?> valueAsList = null;
-            if (detailObjectMapping.path != null && detailObjectMapping.complexProcessor == null) {
-              valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
-                  detailObjectMapping.path);
-            } else if (detailObjectMapping.complexProcessor != null) {
-              valueAsList = detailObjectMapping.complexProcessor.apply(n);
-            }
-            if (valueAsList != null) {
-              DataColumn<?> valueColumn = tableDataDetail.getColumn(
-                  detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
-              for (Object valueObject : valueAsList) {
-                DataRow detailRow = tableDataDetail.addRow();
-                // Set the master ids
-                masterIdValues.entrySet().stream().forEach(e -> {
-                  tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
-                });
-                tableDataDetail.setObject(valueColumn, detailRow, valueObject);
-              }
-            }
-          } else {
-            detailObjectMapping.readObjectNodes(
-                n.list(detailObjectMapping.path).nodes(),
-                detailResult,
-                entry.getValue().masterJoin.getReferences().get(0).joins().stream()
-                    .collect(toMap(j -> j.getSourceProperty().getName(),
-                        j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
-                useLength);
-          }
+          result.detailResults.put(entry.getKey(), detailResult);
         }
       }
-    });
 
+      // Fill the TableDatas
+      TableData<?> tableData = result.result;
+      SearchIndexContext context = new SearchIndexContext();
+      objects.forEach(o -> {
+        ObjectNode n = o.getObjectNode();
+        context.rowNode(n);
+        context.getRowVariables().clear();
+        DataRow row = tableData.addRow();
+        Map<String, ObjectNode> referenceObjects = new HashMap<>();
+        for (DataColumn<?> col : tableData.columns()) {
+
+          if (!isCalculatedProperty(col.getName())) {
+            Object value =
+                readValue(context, o, col.getProperty(), referenceObjects, defaultValues,
+                    useLength);
+            tableData.setObject(col, row, value);
+          }
+        }
+        // Read all the details also.
+        if (result.manageDetails) {
+          for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+              .entrySet()) {
+            SearchEntityTableDataResult detailResult = result.detailResults.get(entry.getKey());
+            SearchIndexMappingObject detailObjectMapping =
+                ((SearchIndexMappingObject) mappingsByPropertyName
+                    .get(entry.getKey()));
+            if (detailObjectMapping.isInlineValueObjects()) {
+              TableData<?> tableDataDetail = detailResult.result;
+              Map<DataColumn<?>, Object> masterIdValues =
+                  entry.getValue().masterJoin.getReferences().get(0)
+                      .joins().stream()
+                      .collect(toMap(
+                          j -> tableDataDetail
+                              .getColumn(detailObjectMapping.getDefinition().definition
+                                  .getProperty(j.getSourceProperty().getName())),
+                          j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
+
+              List<?> valueAsList = null;
+              if (detailObjectMapping.path != null
+                  && detailObjectMapping.complexProcessor == null) {
+                valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
+                    detailObjectMapping.path);
+              } else if (detailObjectMapping.complexProcessor != null) {
+                valueAsList = detailObjectMapping.complexProcessor.apply(n);
+              }
+              if (valueAsList != null) {
+                DataColumn<?> valueColumn = tableDataDetail.getColumn(
+                    detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
+                for (Object valueObject : valueAsList) {
+                  DataRow detailRow = tableDataDetail.addRow();
+                  // Set the master ids
+                  masterIdValues.entrySet().stream().forEach(e -> {
+                    tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
+                  });
+                  tableDataDetail.setObject(valueColumn, detailRow, valueObject);
+                }
+              }
+            } else {
+              detailObjectMapping.readObjectNodes(
+                  n.list(detailObjectMapping.path).nodes(),
+                  detailResult,
+                  entry.getValue().masterJoin.getReferences().get(0).joins().stream()
+                      .collect(toMap(j -> j.getSourceProperty().getName(),
+                          j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))),
+                  useLength);
+            }
+          }
+        }
+      });
+    } finally {
+      objectApi.disableReadCache();
+    }
   }
 
   Object readValue(SearchIndexContext context, Map<String, ObjectNode> referenceObjects,

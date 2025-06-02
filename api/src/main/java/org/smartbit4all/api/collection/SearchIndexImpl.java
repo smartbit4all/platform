@@ -423,20 +423,24 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
 
-      SearchEntityTableDataResult updateResult = createUpdateResult();
-      // TODO SQL here
-      objectMapping.readObjects(changeList.stream().map(u -> {
-        if (u.getObjectNode() == null) {
-          u.objectNode(objectApi.load(u.getObjectUri()));
-        }
+      objectApi.enableReadCache();
+      try {
+        SearchEntityTableDataResult updateResult = createUpdateResult();
+        // TODO SQL here
+        objectMapping.readObjects(changeList.stream().map(u -> {
+          if (u.getObjectNode() == null) {
+            u.objectNode(objectApi.load(u.getObjectUri()));
+          }
 
-        return u;
-      }), updateResult,
-          Collections.emptyMap(),
-          true);
-      // Update the entity definitions by the table data in the result.
-      objectMapping.merge(updateResult, Collections.emptyList());
-
+          return u;
+        }), updateResult,
+            Collections.emptyMap(),
+            true);
+        // Update the entity definitions by the table data in the result.
+        objectMapping.merge(updateResult, Collections.emptyList());
+      } finally {
+        objectApi.disableReadCache();
+      }
     }
   }
 
@@ -489,14 +493,19 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     }
     if (crudApi.isExecutionApiExists(getDefinition().getDefinition())
         || isUseDatabase()) {
-      SearchEntityTableDataResult updateResult = createUpdateResult(columns);
-      objectMapping.readObjectNodes(
-          objectApi.loadBatch(changeList),
-          updateResult,
-          Collections.emptyMap(),
-          true);
-      // Update the entity definitions by the table data in the result.
-      objectMapping.merge(updateResult, Collections.emptyList());
+      objectApi.enableReadCache();
+      try {
+        SearchEntityTableDataResult updateResult = createUpdateResult(columns);
+        objectMapping.readObjectNodes(
+            objectApi.loadBatch(changeList),
+            updateResult,
+            Collections.emptyMap(),
+            true);
+        // Update the entity definitions by the table data in the result.
+        objectMapping.merge(updateResult, Collections.emptyList());
+      } finally {
+        objectApi.disableReadCache();
+      }
     }
   }
 
