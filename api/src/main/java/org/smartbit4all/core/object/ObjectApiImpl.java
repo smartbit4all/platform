@@ -376,7 +376,7 @@ public class ObjectApiImpl implements ObjectApi {
     // With read cache enabled, check cache for each URI
     List<ObjectNode> results = new ArrayList<>();
     List<URI> uncachedUris = new ArrayList<>();
-    Map<URI, Integer> uriToIndex = new HashMap<>();
+    Map<URI, List<Integer>> uriToIndex = new HashMap<>();
 
     for (int i = 0; i < objectUris.size(); i++) {
       URI uri = objectUris.get(i);
@@ -399,7 +399,9 @@ public class ObjectApiImpl implements ObjectApi {
         results.add(node(cachedData).branchUri(branchUri));
       } else {
         uncachedUris.add(uri);
-        uriToIndex.put(uri, i);
+        uriToIndex
+            .computeIfAbsent(effectiveUri, k -> new ArrayList<>())
+            .add(i);
         results.add(null); // Placeholder
       }
     }
@@ -412,7 +414,7 @@ public class ObjectApiImpl implements ObjectApi {
       for (int i = 0; i < loadedData.size(); i++) {
         ObjectNodeData data = loadedData.get(i);
         URI originalUri = uncachedUris.get(i);
-        Integer index = uriToIndex.get(originalUri);
+        List<Integer> indexes = uriToIndex.get(originalUri);
 
         if (data != null) {
           // Store in cache
@@ -425,8 +427,14 @@ public class ObjectApiImpl implements ObjectApi {
             URI latestUri = getLatestUri(originalUri);
             cache.putLatestMapping(latestUri, data.getObjectUri());
           }
-
-          results.set(index, node(data).branchUri(branchUri));
+          indexes.forEach(index -> {
+            if (index < results.size()) {
+              results.set(index, node(data).branchUri(branchUri));
+            } else {
+              log.warn("Index {} out of bounds for results size {}. Data: {}", index,
+                  results.size(), data);
+            }
+          });
         }
       }
     }
