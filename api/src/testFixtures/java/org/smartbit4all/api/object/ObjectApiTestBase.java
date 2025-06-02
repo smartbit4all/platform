@@ -1,5 +1,13 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -65,13 +73,6 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class ObjectApiTestBase {
 
@@ -877,19 +878,51 @@ public class ObjectApiTestBase {
     node = objectApi.load(uri1);
     node.setValue("Root2", SampleCategory.NAME);
     URI uri2 = objectApi.save(node);
-    List<ObjectNode> nodes = objectApi.loadBatch(Arrays.asList(uri0, uri1, uri2));
-    assertNotNull(nodes);
-    assertEquals(3, nodes.size());
-    assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
-    assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
-    assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
+
+    objectApi.enableReadCache();
+    assertTrue(objectApi.isReadCacheEnabled());
+
+    // read several times to ensure cache is working
+    List<ObjectNode> nodes;
+    for (int i = 0; i < 3; i++) {
+      nodes = objectApi.loadBatch(Arrays.asList(uri0, uri1, uri2));
+      assertTrue(objectApi.isReadCacheEnabled());
+      assertNotNull(nodes);
+      assertEquals(3, nodes.size());
+      assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
+      assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
+      assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
+    }
 
     URI uriLatest = objectApi.getLatestUri(uri2);
 
     URI uriOther = objectApi.saveAsNew(SCHEMA_ASPECTS, new SampleCategory().name("RootOther"));
+    assertFalse(objectApi.isReadCacheEnabled());
+    objectApi.enableReadCache();
+    objectApi.enableReadCache();
+    objectApi.enableReadCache();
+    assertTrue(objectApi.isReadCacheEnabled());
+    nodes = objectApi
+        .loadBatch(Arrays.asList(uri0, uri1, uri2, uriLatest, uri1, uri0, uriLatest, uriOther));
+
+    assertTrue(objectApi.isReadCacheEnabled());
+    objectApi.disableReadCache();
+
+    assertNotNull(nodes);
+    assertEquals(8, nodes.size());
+    assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root1", nodes.get(1).getValueAsString(SampleCategory.NAME));
+    assertEquals("Root2", nodes.get(2).getValueAsString(SampleCategory.NAME));
 
     nodes = objectApi
         .loadBatch(Arrays.asList(uri0, uri1, uri2, uriLatest, uri1, uri0, uriLatest, uriOther));
+
+    assertTrue(objectApi.isReadCacheEnabled());
+    objectApi.disableReadCache();
+    assertTrue(objectApi.isReadCacheEnabled());
+    objectApi.disableReadCache();
+    assertFalse(objectApi.isReadCacheEnabled());
+
     assertNotNull(nodes);
     assertEquals(8, nodes.size());
     assertEquals("Root0", nodes.get(0).getValueAsString(SampleCategory.NAME));
