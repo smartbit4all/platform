@@ -1,529 +1,537 @@
 openapi: 3.0.1
 info:
-    title: Grid api
-    description: |
-        The grid api is resposible for the grid components that shows a list of item.
-    termsOfService: ""
-    contact:
-        email: info@it4all.hu
-    version: 1.0.0
+  title: Grid api
+  description: |
+    The grid api is resposible for the grid components that shows a list of item.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
 tags:
-    - name: Grid
-      description: Grid
+  - name: Grid
+    description: Grid
 paths:
-    /grid/{uuid}/{gridIdentifier}/load:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "load"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridIdentifier
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/GridModel"
-    /grid/{uuid}/{gridIdentifier}/update:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "update"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridIdentifier
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/GridUpdateData"
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/GridModel"
-    /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit}:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "setPage"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridIdentifier
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: path
-                  name: offset
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: path
-                  name: limit
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-            responses:
-                "200":
-                    description: ""
-    /grid/{uuid}/{gridId}/{rowId}/expand:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "expand"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: path
-                  name: rowId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-    /grid/{uuid}/{gridId}/{rowId}/select:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "select"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: path
-                  name: rowId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: header
-                  name: selected
-                  schema:
-                      type: boolean
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                type: ViewContextChange
-    /grid/{uuid}/{gridId}/selects:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "selectRows"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/GridSelectionChange"
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                type: ViewContextChange
-    /grid/{uuid}/{gridId}/select:
-        post:
-            tags:
-                - grid
-            summary: ""
-            operationId: "selectAll"
-            parameters:
-                - in: path
-                  name: uuid
-                  schema:
-                      type: string
-                      format: uuid
-                  required: true
-                - in: path
-                  name: gridId
-                  schema:
-                      type: string
-                  required: true
-                  description: ""
-                - in: header
-                  name: selected
-                  schema:
-                      type: boolean
-            responses:
-                "200":
-                    description: ""
-                    content:
-                        application/json:
-                            schema:
-                                type: ViewContextChange
+  /grid/{uuid}/{gridIdentifier}/load:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'load'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridIdentifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GridModel'
+  /grid/{uuid}/{gridIdentifier}/update:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'update'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridIdentifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GridUpdateData'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GridModel'
+  /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit}:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'setPage'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridIdentifier
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: offset
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: limit
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+  /grid/{uuid}/{gridId}/{rowId}/expand:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'expand'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: rowId
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+  /grid/{uuid}/{gridId}/{rowId}/select:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'select'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: rowId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: header
+          name: selected
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
+  /grid/{uuid}/{gridId}/selects:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'selectRows'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GridSelectionChange'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
+  /grid/{uuid}/{gridId}/select:
+    post:
+      tags:
+        - grid
+      summary: ''
+      operationId: 'selectAll'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: header
+          name: selected
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
 components:
-    schemas:
-        GridDataAccessConfig:
-            type: object
-            description: |
-                This is the backend object to setup the grid access api. The parameterization contain all the possible
-                parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the
-                parameters of the View parameters as grid.identifier.config
-            required: []
-            properties:
-                dataUri:
-                    type: string
-                    format: uri
-                    description: The uri of the table data that contains the data of the list.
-                identifierPath:
-                    type: array
-                    items:
-                        type: string
-                    description: The path to access the identifier GridRow.data
-                idProperty:
-                    description: If presented as TREE, this property will be used as id property.
-                    type: string
-                parentIdProperty:
-                    description: If presented as TREE, this property will be used as parentId property.
-                    type: string
-                apiClass:
-                    type: string
-                kind:
-                    enum: [TABLEDATA, OBJECTLIST, APIBASED, INVOCATIONS]
-        GridModel:
-            type: object
-            description: |
-                This object represents the client model of a grid component.
-            required: [viewOptions, page]
-            properties:
-                viewUuid:
-                    type: string
-                    format: uuid
-                identifier:
-                    type: string
-                qualifier:
-                    type: string
-                availableViews:
-                    type: array
-                    items:
-                        $ref: "#/components/schemas/GridView"
-                view:
-                    $ref: "#/components/schemas/GridView"
-                accessConfig:
-                    $ref: "#/components/schemas/GridDataAccessConfig"
-                page:
-                    $ref: "#/components/schemas/GridPage"
-                totalRowCount:
-                    type: integer
-                    format: int32
-                selectedRowCount:
-                    type: integer
-                    format: int32
-                allRowsSelected:
-                    type: boolean
-                pageIndex:
-                    type: integer
-                    format: int32
-                pageSize:
-                    type: integer
-                    format: int32
-                pageSizeOptions:
-                    type: array
-                    items:
-                        type: integer
-                        format: int32
-                defaultRowActions:
-                    type: array
-                    items:
-                        type: string
-                paginator:
-                    type: boolean
-        GridServerModel:
-            type: object
-            description: |
-                This object represents the server model of a grid component.
-            required: [selectedRows]
-            properties:
-                selectedRows:
-                    type: string
-                    additionalProperties:
-                        $ref: "#/components/schemas/GridRow"
-                defaultGridData:
-                    $ref: "#/components/schemas/GridUpdateData"
-        GridPage:
-            type: object
-            description: |
-                This object containt the page information of the content. The currently seen row range, the total row cont and other options.
-            required: [columns]
-            properties:
-                lowerBound:
-                    type: integer
-                    format: int32
-                    description: The index of the first row in the current page. Startes from 1 and inclusive.
-                upperBound:
-                    type: integer
-                    format: int32
-                    description: The index of the last row in the current page inclusive.
-                rows:
-                    type: array
-                    items:
-                        $ref: "#/components/schemas/GridRow"
-        GridRow:
-            type: object
-            description: |
-                This object is a grid row containening the identifier and actions releted with the row.
-            required: [actions, icons]
-            properties:
-                id:
-                    type: string
-                actions:
-                    type: array
-                    items:
-                        type: UiAction
-                data:
-                    type: object
-                selectable:
-                    type: boolean
-                selected:
-                    type: boolean
-                icons:
-                    type: string
-                    additionalProperties:
-                        type: array
-                        items:
-                            type: ImageResource
-                parent:
-                    description: |
-                        If the grid can be hierarchical then the parent contains the identifiers of the
-                        parent row.
-                    type: string
-                children:
-                    description: |
-                        If the grid can be hierarchical then the children list contains the identifiers of the
-                        children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not
-                        required to see if it is empty or not set.
-                    type: array
-                    items:
-                        type: string
-                style:
-                    description: |
-                        If present, this Style will be applied to the row.
-                    type: Style
-        GridView:
-            type: object
-            description: |
-                The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
-                has one or more view option to render the content.
-            required: [orderedColumnNames, orderByList]
-            properties:
-                descriptor:
-                    $ref: "#/components/schemas/GridViewDescriptor"
-                orderedColumnNames:
-                    type: array
-                    items:
-                        type: string
-                orderByList:
-                    type: array
-                    items:
-                        type: FilterExpressionOrderBy
-        GridViewDescriptor:
-            type: object
-            description: |
-                The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
-                has one or more view option to render the content.
-            required: [columns]
-            properties:
-                label:
-                    type: string
-                icon:
-                    type: string
-                kind:
-                    enum: [TABLE, CARDS, TREE]
-                columns:
-                    description: |
-                        In the table the columns are the columns of the table. In the tree the columns can be used to append the
-                        title of a tree node.
-                    type: array
-                    items:
-                        $ref: "#/components/schemas/GridColumnMeta"
-                selectionMode:
-                    $ref: "#/components/schemas/GridSelectionMode"
-                selectionType:
-                    $ref: "#/components/schemas/GridSelectionType"
-                preserveSelectionOnPageChange:
-                    type: boolean
-                showEditColumns:
-                    type: boolean
-                highlightProperty:
-                    type: string
-                highlightClass:
-                    type: string
-                exportDescriptor:
-                    $ref: "#/components/schemas/GridExportDescriptor"
-        GridExportDescriptor:
-            type: object
-            required: [columnsToExport]
-            properties:
-                isExportable:
-                    type: boolean
-                    default: true
-                exportMimeType:
-                    type: string
-                columnsToExport:
-                    type: array
-                    items:
-                        type: string
-                buttonToolbar:
-                    type: string
-                uiActionDescriptor:
-                    type: UiActionDescriptor
-        GridSelectionMode:
+  schemas:
+    GridDataAccessConfig:
+      type: object
+      description: |
+        This is the backend object to setup the grid access api. The parameterization contain all the possible
+        parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the
+        parameters of the View parameters as grid.identifier.config
+      required: []
+      properties:
+        dataUri:
+          type: string
+          format: uri
+          description: The uri of the table data that contains the data of the list.
+        identifierPath:
+          type: array
+          items:
             type: string
-            enum:
-                - none
-                - single
-                - multiple
-        GridSelectionType:
+          description: The path to access the identifier GridRow.data
+        idProperty:
+          description: If presented as TREE, this property will be used as id property.
+          type: string
+        parentIdProperty:
+          description: If presented as TREE, this property will be used as parentId property.
+          type: string
+        apiClass:
+          type: string
+        kind:
+          enum: [TABLEDATA, OBJECTLIST, APIBASED, INVOCATIONS]
+    GridModel:
+      type: object
+      description: |
+        This object represents the client model of a grid component.
+      required: [viewOptions, page]
+      properties:
+        viewUuid:
+          type: string
+          format: uuid
+        identifier:
+          type: string
+        qualifier:
+          type: string
+        availableViews:
+          type: array
+          items:
+            $ref: '#/components/schemas/GridView'
+        view:
+          $ref: '#/components/schemas/GridView'
+        accessConfig:
+          $ref: '#/components/schemas/GridDataAccessConfig'
+        page:
+          $ref: '#/components/schemas/GridPage'
+        totalRowCount:
+          type: integer
+          format: int32
+        selectedRowCount:
+          type: integer
+          format: int32
+        allRowsSelected:
+          type: boolean
+        pageIndex:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        pageSizeOptions:
+          type: array
+          items:
+            type: integer
+            format: int32
+        defaultRowActions:
+          type: array
+          items:
             type: string
-            enum:
-                - row
-                - checkbox
-        GridColumnMeta:
-            type: object
-            required: [label, propertyName]
-            properties:
-                label:
-                    type: string
-                propertyName:
-                    type: string
-                sortOrderPropertyName:
-                    type: string
-                typeClass:
-                    type: string
-                typeFormat:
-                    description: The format instruction for the column. This format string must be JavaScript format stringh for Angular.
-                    type: string
-                alwaysHidden:
-                    type: boolean
-                    default: false
-                alwaysShow:
-                    type: boolean
-                    default: false
-                hideLabel:
-                    description: Hide column header label.
-                    type: boolean
-                    default: false
-                contentType:
-                    $ref: "#/components/schemas/GridColumnContentType"
-                style:
-                    description: |
-                        If present, this Style will be applied to the column.
-                    type: Style
-        GridSelectionChange:
-            type: object
-            description: |
-                This object contains all information about a grid's selection change.
-            required: [selected, unselected]
-            properties:
-                selected:
-                    type: array
-                    items:
-                        type: string
-                unselected:
-                    type: array
-                    items:
-                        type: string
-        GridColumnContentType:
+        paginator:
+          type: boolean
+    GridServerModel:
+      type: object
+      description: |
+        This object represents the server model of a grid component.
+      required: [selectedRows]
+      properties:
+        selectedRows:
+          type: string
+          additionalProperties:
+            $ref: '#/components/schemas/GridRow'
+        defaultGridData:
+          $ref: '#/components/schemas/GridUpdateData'
+    GridPage:
+      type: object
+      description: |
+        This object containt the page information of the content. The currently seen row range, the total row cont and other options.
+      required: [columns]
+      properties:
+        lowerBound:
+          type: integer
+          format: int32
+          description: The index of the first row in the current page. Startes from 1 and inclusive.
+        upperBound:
+          type: integer
+          format: int32
+          description: The index of the last row in the current page inclusive.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/GridRow'
+    GridRow:
+      type: object
+      description: |
+        This object is a grid row containening the identifier and actions releted with the row.
+      required: [actions, icons]
+      properties:
+        id:
+          type: string
+        actions:
+          type: array
+          items:
+            type: UiAction
+        data:
+          type: object
+        selectable:
+          type: boolean
+        selected:
+          type: boolean
+        icons:
+          type: string
+          additionalProperties:
+            type: array
+            items:
+              type: ImageResource
+        columnActions:
+          description: |
+            The key shoud be the column's name, while the value is a list of actions codes.
+          type: string
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        parent:
+          description: |
+            If the grid can be hierarchical then the parent contains the identifiers of the
+            parent row.
+          type: string
+        children:
+          description: |
+            If the grid can be hierarchical then the children list contains the identifiers of the
+            children rows. The rows are not necessarily included in the page but the client can ask for this. The children is not
+            required to see if it is empty or not set.
+          type: array
+          items:
             type: string
-            enum:
-                - text
-                - html
-        GridUpdateData:
-            type: object
-            description: |
-                Update request for grid's current view's behaviour.
-            required: [orderedColumnNames, orderByList]
-            properties:
-                orderedColumnNames:
-                    type: array
-                    items:
-                        type: string
-                orderByList:
-                    type: array
-                    items:
-                        type: FilterExpressionOrderBy
-                pageSize:
-                    type: integer
-                    format: int32
+        style:
+          description: |
+            If present, this Style will be applied to the row.
+          type: Style
+    GridView:
+      type: object
+      description: |
+        The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
+        has one or more view option to render the content.
+      required: [orderedColumnNames, orderByList]
+      properties:
+        descriptor:
+          $ref: '#/components/schemas/GridViewDescriptor'
+        orderedColumnNames:
+          type: array
+          items:
+            type: string
+        orderByList:
+          type: array
+          items:
+            type: FilterExpressionOrderBy
+    GridViewDescriptor:
+      type: object
+      description: |
+        The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
+        has one or more view option to render the content.
+      required: [columns]
+      properties:
+        label:
+          type: string
+        icon:
+          type: string
+        kind:
+          enum: [TABLE, CARDS, TREE]
+        columns:
+          description: |
+            In the table the columns are the columns of the table. In the tree the columns can be used to append the
+            title of a tree node.
+          type: array
+          items:
+            $ref: '#/components/schemas/GridColumnMeta'
+        selectionMode:
+          $ref: '#/components/schemas/GridSelectionMode'
+        selectionType:
+          $ref: '#/components/schemas/GridSelectionType'
+        preserveSelectionOnPageChange:
+          type: boolean
+        showEditColumns:
+          type: boolean
+        highlightProperty:
+          type: string
+        highlightClass:
+          type: string
+        exportDescriptor:
+          $ref: '#/components/schemas/GridExportDescriptor'
+    GridExportDescriptor:
+      type: object
+      required: [columnsToExport]
+      properties:
+        isExportable:
+          type: boolean
+          default: true
+        exportMimeType:
+          type: string
+        columnsToExport:
+          type: array
+          items:
+            type: string
+        buttonToolbar:
+          type: string
+        uiActionDescriptor:
+          type: UiActionDescriptor
+    GridSelectionMode:
+      type: string
+      enum:
+        - none
+        - single
+        - multiple
+    GridSelectionType:
+      type: string
+      enum:
+        - row
+        - checkbox
+    GridColumnMeta:
+      type: object
+      required: [label, propertyName]
+      properties:
+        label:
+          type: string
+        propertyName:
+          type: string
+        sortOrderPropertyName:
+          type: string
+        typeClass:
+          type: string
+        typeFormat:
+          description: The format instruction for the column. This format string must be JavaScript format stringh for Angular.
+          type: string
+        alwaysHidden:
+          type: boolean
+          default: false
+        alwaysShow:
+          type: boolean
+          default: false
+        hideLabel:
+          description: Hide column header label.
+          type: boolean
+          default: false
+        contentType:
+          $ref: '#/components/schemas/GridColumnContentType'
+        style:
+          description: |
+            If present, this Style will be applied to the column.
+          type: Style
+    GridSelectionChange:
+      type: object
+      description: |
+        This object contains all information about a grid's selection change.
+      required: [selected, unselected]
+      properties:
+        selected:
+          type: array
+          items:
+            type: string
+        unselected:
+          type: array
+          items:
+            type: string
+    GridColumnContentType:
+      type: string
+      enum:
+        - text
+        - html
+    GridUpdateData:
+      type: object
+      description: |
+        Update request for grid's current view's behaviour.
+      required: [orderedColumnNames, orderByList]
+      properties:
+        orderedColumnNames:
+          type: array
+          items:
+            type: string
+        orderByList:
+          type: array
+          items:
+            type: FilterExpressionOrderBy
+        pageSize:
+          type: integer
+          format: int32
