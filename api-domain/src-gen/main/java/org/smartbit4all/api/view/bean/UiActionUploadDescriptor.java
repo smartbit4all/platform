@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.view.bean.UploadWidgetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +39,8 @@ import javax.validation.Valid;
   UiActionUploadDescriptor.FORMATS,
   UiActionUploadDescriptor.UPLOAD_BUTTON_TITLE,
   UiActionUploadDescriptor.BACKGROUND_COLOUR,
-  UiActionUploadDescriptor.TEXT_COLOUR
+  UiActionUploadDescriptor.TEXT_COLOUR,
+  UiActionUploadDescriptor.UPLOAD_WIDGET_TYPE
 })
 @JsonTypeName("UiActionUploadDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -63,6 +65,9 @@ public class UiActionUploadDescriptor {
 
   public static final String TEXT_COLOUR = "textColour";
   private String textColour;
+
+  public static final String UPLOAD_WIDGET_TYPE = "uploadWidgetType";
+  private UploadWidgetType uploadWidgetType = UploadWidgetType.NORMAL;
 
   public UiActionUploadDescriptor() { 
   }
@@ -257,6 +262,34 @@ public class UiActionUploadDescriptor {
   }
 
 
+  public UiActionUploadDescriptor uploadWidgetType(UploadWidgetType uploadWidgetType) {
+    
+    this.uploadWidgetType = uploadWidgetType;
+    return this;
+  }
+
+   /**
+   * Get uploadWidgetType
+   * @return uploadWidgetType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(UPLOAD_WIDGET_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UploadWidgetType getUploadWidgetType() {
+    return uploadWidgetType;
+  }
+
+
+  @JsonProperty(UPLOAD_WIDGET_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUploadWidgetType(UploadWidgetType uploadWidgetType) {
+    this.uploadWidgetType = uploadWidgetType;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -272,12 +305,13 @@ public class UiActionUploadDescriptor {
         Objects.equals(this.formats, uiActionUploadDescriptor.formats) &&
         Objects.equals(this.uploadButtonTitle, uiActionUploadDescriptor.uploadButtonTitle) &&
         Objects.equals(this.backgroundColour, uiActionUploadDescriptor.backgroundColour) &&
-        Objects.equals(this.textColour, uiActionUploadDescriptor.textColour);
+        Objects.equals(this.textColour, uiActionUploadDescriptor.textColour) &&
+        Objects.equals(this.uploadWidgetType, uiActionUploadDescriptor.uploadWidgetType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour);
+    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour, uploadWidgetType);
   }
 
   @Override
@@ -291,6 +325,7 @@ public class UiActionUploadDescriptor {
     sb.append("    uploadButtonTitle: ").append(toIndentedString(uploadButtonTitle)).append("\n");
     sb.append("    backgroundColour: ").append(toIndentedString(backgroundColour)).append("\n");
     sb.append("    textColour: ").append(toIndentedString(textColour)).append("\n");
+    sb.append("    uploadWidgetType: ").append(toIndentedString(uploadWidgetType)).append("\n");
     sb.append("}");
     return sb.toString();
   }
