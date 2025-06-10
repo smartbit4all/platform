@@ -1321,6 +1321,12 @@ components:
           type: string
         textColour:
           type: string
+        uploadWidgetType:
+          $ref: '#/components/schemas/UploadWidgetType'
+    UploadWidgetType:
+      type: string
+      enum: [ALL, NORMAL, SOUND, IMAGE]
+      default: NORMAL
     UiActionDialogDescriptor:
       type: object
       description: |
