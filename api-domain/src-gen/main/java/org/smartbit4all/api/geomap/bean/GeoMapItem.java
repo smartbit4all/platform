@@ -82,7 +82,7 @@ public class GeoMapItem {
   private String color;
 
   public static final String PERMANENT_LABEL = "permanentLabel";
-  private Boolean permanentLabel = false;
+  private Boolean permanentLabel;
 
   public static final String LABEL = "label";
   private String label;

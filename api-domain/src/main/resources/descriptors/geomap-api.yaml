@@ -260,7 +260,6 @@ components:
           type: string
         permanentLabel:
           type: boolean
-          default: false
         label:
           type: string
         description:
