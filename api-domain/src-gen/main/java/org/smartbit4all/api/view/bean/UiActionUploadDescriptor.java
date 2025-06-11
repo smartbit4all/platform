@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.smartbit4all.api.view.bean.UploadWidgetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -39,7 +42,7 @@ import jakarta.validation.Valid;
   UiActionUploadDescriptor.UPLOAD_BUTTON_TITLE,
   UiActionUploadDescriptor.BACKGROUND_COLOUR,
   UiActionUploadDescriptor.TEXT_COLOUR,
-  UiActionUploadDescriptor.UPLOAD_WIDGET_TYPE
+  UiActionUploadDescriptor.UPLOAD_WIDGETS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionUploadDescriptor {
@@ -64,8 +67,8 @@ public class UiActionUploadDescriptor {
   public static final String TEXT_COLOUR = "textColour";
   private String textColour;
 
-  public static final String UPLOAD_WIDGET_TYPE = "uploadWidgetType";
-  private UploadWidgetType uploadWidgetType = UploadWidgetType.NORMAL;
+  public static final String UPLOAD_WIDGETS = "uploadWidgets";
+  private List<UploadWidgetType> uploadWidgets = new ArrayList<>();
 
   public UiActionUploadDescriptor() {
   }
@@ -260,32 +263,40 @@ public class UiActionUploadDescriptor {
     this.textColour = textColour;
   }
 
-  public UiActionUploadDescriptor uploadWidgetType(UploadWidgetType uploadWidgetType) {
+  public UiActionUploadDescriptor uploadWidgets(List<UploadWidgetType> uploadWidgets) {
     
-    this.uploadWidgetType = uploadWidgetType;
+    this.uploadWidgets = uploadWidgets;
+    return this;
+  }
+
+  public UiActionUploadDescriptor addUploadWidgetsItem(UploadWidgetType uploadWidgetsItem) {
+    if (this.uploadWidgets == null) {
+      this.uploadWidgets = new ArrayList<>();
+    }
+    this.uploadWidgets.add(uploadWidgetsItem);
     return this;
   }
 
   /**
-   * Get uploadWidgetType
-   * @return uploadWidgetType
+   * Get uploadWidgets
+   * @return uploadWidgets
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(UPLOAD_WIDGET_TYPE)
+  @JsonProperty(UPLOAD_WIDGETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UploadWidgetType getUploadWidgetType() {
-    return uploadWidgetType;
+  public List<UploadWidgetType> getUploadWidgets() {
+    return uploadWidgets;
   }
 
 
-  @JsonProperty(UPLOAD_WIDGET_TYPE)
+  @JsonProperty(UPLOAD_WIDGETS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUploadWidgetType(UploadWidgetType uploadWidgetType) {
-    this.uploadWidgetType = uploadWidgetType;
+  public void setUploadWidgets(List<UploadWidgetType> uploadWidgets) {
+    this.uploadWidgets = uploadWidgets;
   }
 
   @Override
@@ -304,12 +315,12 @@ public class UiActionUploadDescriptor {
         Objects.equals(this.uploadButtonTitle, uiActionUploadDescriptor.uploadButtonTitle) &&
         Objects.equals(this.backgroundColour, uiActionUploadDescriptor.backgroundColour) &&
         Objects.equals(this.textColour, uiActionUploadDescriptor.textColour) &&
-        Objects.equals(this.uploadWidgetType, uiActionUploadDescriptor.uploadWidgetType);
+        Objects.equals(this.uploadWidgets, uiActionUploadDescriptor.uploadWidgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour, uploadWidgetType);
+    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour, uploadWidgets);
   }
 
   @Override
@@ -323,7 +334,7 @@ public class UiActionUploadDescriptor {
     sb.append("    uploadButtonTitle: ").append(toIndentedString(uploadButtonTitle)).append("\n");
     sb.append("    backgroundColour: ").append(toIndentedString(backgroundColour)).append("\n");
     sb.append("    textColour: ").append(toIndentedString(textColour)).append("\n");
-    sb.append("    uploadWidgetType: ").append(toIndentedString(uploadWidgetType)).append("\n");
+    sb.append("    uploadWidgets: ").append(toIndentedString(uploadWidgets)).append("\n");
     sb.append("}");
     return sb.toString();
   }
