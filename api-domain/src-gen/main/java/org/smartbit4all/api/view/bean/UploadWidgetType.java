@@ -30,8 +30,6 @@ public enum UploadWidgetType {
   
   ALL("ALL"),
   
-  NORMAL("NORMAL"),
-  
   SOUND("SOUND"),
   
   IMAGE("IMAGE");
