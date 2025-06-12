@@ -124,12 +124,8 @@ components:
           type: string
           description: |
             The name of the embedding connection that must match with the ServiceConnection.name property of the SystemIntegration MDMDefinition.
-        restrictedProperties:
-          type: array
-          items:
-            type: string
-          description: |
-            A list of the properties that will be left out during the creaton of vector indexes
+        formatter:
+          type: ObjectPropertyFormatter
     VectorValue:
       description: |
         The vector value is the result of an embedding operation of any kind. It can be the result of a text or a picture 

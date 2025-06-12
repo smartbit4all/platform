@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -37,7 +35,7 @@ import jakarta.validation.Valid;
   VectorCollectionDescriptor.VECTOR_COLLECTION_NAME,
   VectorCollectionDescriptor.VECTOR_D_B_CONNECTION,
   VectorCollectionDescriptor.EMBEDDING_CONNECTION,
-  VectorCollectionDescriptor.RESTRICTED_PROPERTIES
+  VectorCollectionDescriptor.FORMATTER
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class VectorCollectionDescriptor {
@@ -50,8 +48,8 @@ public class VectorCollectionDescriptor {
   public static final String EMBEDDING_CONNECTION = "embeddingConnection";
   private String embeddingConnection;
 
-  public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
-  private List<String> restrictedProperties = new ArrayList<>();
+  public static final String FORMATTER = "formatter";
+  private ObjectPropertyFormatter formatter = null;
 
   public VectorCollectionDescriptor() {
   }
@@ -137,40 +135,32 @@ public class VectorCollectionDescriptor {
     this.embeddingConnection = embeddingConnection;
   }
 
-  public VectorCollectionDescriptor restrictedProperties(List<String> restrictedProperties) {
+  public VectorCollectionDescriptor formatter(ObjectPropertyFormatter formatter) {
     
-    this.restrictedProperties = restrictedProperties;
-    return this;
-  }
-
-  public VectorCollectionDescriptor addRestrictedPropertiesItem(String restrictedPropertiesItem) {
-    if (this.restrictedProperties == null) {
-      this.restrictedProperties = new ArrayList<>();
-    }
-    this.restrictedProperties.add(restrictedPropertiesItem);
+    this.formatter = formatter;
     return this;
   }
 
   /**
-   * A list of the properties that will be left out during the creaton of vector indexes 
-   * @return restrictedProperties
+   * Get formatter
+   * @return formatter
    */
-  @jakarta.annotation.Nonnull
-  @NotNull
+  @jakarta.annotation.Nullable
+  @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "A list of the properties that will be left out during the creaton of vector indexes ")
-  @JsonProperty(RESTRICTED_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(FORMATTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getRestrictedProperties() {
-    return restrictedProperties;
+  public ObjectPropertyFormatter getFormatter() {
+    return formatter;
   }
 
 
-  @JsonProperty(RESTRICTED_PROPERTIES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRestrictedProperties(List<String> restrictedProperties) {
-    this.restrictedProperties = restrictedProperties;
+  @JsonProperty(FORMATTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFormatter(ObjectPropertyFormatter formatter) {
+    this.formatter = formatter;
   }
 
   @Override
@@ -185,12 +175,12 @@ public class VectorCollectionDescriptor {
     return Objects.equals(this.vectorCollectionName, vectorCollectionDescriptor.vectorCollectionName) &&
         Objects.equals(this.vectorDBConnection, vectorCollectionDescriptor.vectorDBConnection) &&
         Objects.equals(this.embeddingConnection, vectorCollectionDescriptor.embeddingConnection) &&
-        Objects.equals(this.restrictedProperties, vectorCollectionDescriptor.restrictedProperties);
+        Objects.equals(this.formatter, vectorCollectionDescriptor.formatter);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(vectorCollectionName, vectorDBConnection, embeddingConnection, restrictedProperties);
+    return Objects.hash(vectorCollectionName, vectorDBConnection, embeddingConnection, formatter);
   }
 
   @Override
@@ -200,7 +190,7 @@ public class VectorCollectionDescriptor {
     sb.append("    vectorCollectionName: ").append(toIndentedString(vectorCollectionName)).append("\n");
     sb.append("    vectorDBConnection: ").append(toIndentedString(vectorDBConnection)).append("\n");
     sb.append("    embeddingConnection: ").append(toIndentedString(embeddingConnection)).append("\n");
-    sb.append("    restrictedProperties: ").append(toIndentedString(restrictedProperties)).append("\n");
+    sb.append("    formatter: ").append(toIndentedString(formatter)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -3,9 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
@@ -39,9 +38,12 @@ import org.smartbit4all.bff.api.mdm.bean.MDMEntryDescriptorPageModel;
 import org.smartbit4all.bff.api.mdm.util.MDMVectorCollectionUtil;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MDMEntryDescriptorPageApiImpl
     extends PageApiImpl<MDMEntryDescriptorPageModel>
@@ -60,6 +62,7 @@ public class MDMEntryDescriptorPageApiImpl
   @Autowired
   protected SessionApi sessionApi;
 
+  private ObjectMapper objectMapper = ObjectSerializerByObjectMapper.getObjectMapper();
 
   private static final Logger log =
       LoggerFactory.getLogger(MDMEntryDescriptorPageApiImpl.class);
@@ -135,18 +138,25 @@ public class MDMEntryDescriptorPageApiImpl
     view.putLayoutsItem(LAYOUT, getLayout());
     view.constraint(getViewConstraint(view.getUuid()));
 
-    // already existing entry descriptors do not contain the list
-    String restrictedProperties = ctx.getEntryDescriptor().getVectorCollection() != null
-        && ctx.getEntryDescriptor().getVectorCollection().getRestrictedProperties() != null
-            ? ctx.getEntryDescriptor().getVectorCollection().getRestrictedProperties().stream()
-                .collect(Collectors.joining(","))
-            : StringConstant.EMPTY;
+    VectorCollectionDescriptor vectorCollection = ctx.getEntryDescriptor().getVectorCollection();
+    if (vectorCollection == null) {
+      vectorCollection = new VectorCollectionDescriptor();
+    }
+    String formatter;
+    try {
+      formatter =
+          vectorCollection.getFormatter() != null ? objectMapper.writerWithDefaultPrettyPrinter()
+              .writeValueAsString(vectorCollection.getFormatter()) : StringConstant.EMPTY;
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage(), e);
+      formatter = StringConstant.EMPTY;
+    }
 
     return new MDMEntryDescriptorPageModel()
         .name(Boolean.TRUE.equals(ctx.isNewEntry) ? StringConstant.EMPTY
             : ctx.getEntryDescriptor().getDisplayNameForm().getDefaultValue())
-        .vectorCollection(ctx.getEntryDescriptor().getVectorCollection())
-        .restrictedProperties(restrictedProperties)
+        .vectorCollection(vectorCollection)
+        .formatter(formatter)
         .importable(Boolean.TRUE.equals(ctx.getEntryDescriptor().getImportable()));
   }
 
@@ -178,10 +188,10 @@ public class MDMEntryDescriptorPageApiImpl
             localeSettingApi.get(
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
             masterDataManagementApi),
-        ObjectLayoutBuilder.textfield(
-            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES),
+        ObjectLayoutBuilder.textbox(
+            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.FORMATTER),
             localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                VectorCollectionDescriptor.RESTRICTED_PROPERTIES)),
+                VectorCollectionDescriptor.FORMATTER)),
         ObjectLayoutBuilder.toggle(MDMEntryDescriptorPageModel.IMPORTABLE, LAYOUT)
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 MDMEntryDescriptorPageModel.IMPORTABLE))));
@@ -197,7 +207,7 @@ public class MDMEntryDescriptorPageApiImpl
                   MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
                   .enabled(false).visible(false).mandatory(false))
           .addComponentConstraintsItem(
-              new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES)
+              new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.FORMATTER)
                   .enabled(false).visible(false).mandatory(false));
     }
 
@@ -228,14 +238,20 @@ public class MDMEntryDescriptorPageApiImpl
 
     validateDescriptorProperties(code, name);
 
-    List<String> restrictedProperties =
-        Arrays.asList(clientModel.getRestrictedProperties().split(",")).stream()
-            .filter(s -> s != null && !s.trim().isEmpty()).collect(Collectors.toList());
-
     VectorCollectionDescriptor vectorCollectionDescriptor =
-        clientModel.getVectorCollection() != null
-            ? clientModel.getVectorCollection().restrictedProperties(restrictedProperties)
-            : ctx.getEntryDescriptor().getVectorCollection();
+        clientModel.getVectorCollection();
+
+    if (!ObjectUtils.isEmpty(clientModel.getFormatter())) {
+      try {
+        ObjectPropertyFormatter formatter =
+            objectMapper.readValue(clientModel.getFormatter(), ObjectPropertyFormatter.class);
+        vectorCollectionDescriptor.setFormatter(formatter);
+      } catch (Exception e) {
+        throw new BusinessLogicException(
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error",
+                "malformedFormatterJson"));
+      }
+    }
 
     if (Boolean.TRUE.equals(ctx.isNewEntry)) {
       MDMDefinitionOption option = new MDMDefinitionOption(ctx.getDefinition());

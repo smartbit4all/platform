@@ -35,7 +35,7 @@ import jakarta.validation.Valid;
   MDMEntryDescriptorPageModel.NAME,
   MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
   MDMEntryDescriptorPageModel.IMPORTABLE,
-  MDMEntryDescriptorPageModel.RESTRICTED_PROPERTIES
+  MDMEntryDescriptorPageModel.FORMATTER
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptorPageModel {
@@ -51,8 +51,8 @@ public class MDMEntryDescriptorPageModel {
   public static final String IMPORTABLE = "importable";
   private Boolean importable = false;
 
-  public static final String RESTRICTED_PROPERTIES = "restrictedProperties";
-  private String restrictedProperties;
+  public static final String FORMATTER = "formatter";
+  private String formatter;
 
   public MDMEntryDescriptorPageModel() {
   }
@@ -166,31 +166,31 @@ public class MDMEntryDescriptorPageModel {
     this.importable = importable;
   }
 
-  public MDMEntryDescriptorPageModel restrictedProperties(String restrictedProperties) {
+  public MDMEntryDescriptorPageModel formatter(String formatter) {
     
-    this.restrictedProperties = restrictedProperties;
+    this.formatter = formatter;
     return this;
   }
 
   /**
-   * Get restrictedProperties
-   * @return restrictedProperties
+   * Get formatter
+   * @return formatter
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonProperty(FORMATTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getRestrictedProperties() {
-    return restrictedProperties;
+  public String getFormatter() {
+    return formatter;
   }
 
 
-  @JsonProperty(RESTRICTED_PROPERTIES)
+  @JsonProperty(FORMATTER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRestrictedProperties(String restrictedProperties) {
-    this.restrictedProperties = restrictedProperties;
+  public void setFormatter(String formatter) {
+    this.formatter = formatter;
   }
 
   @Override
@@ -206,12 +206,12 @@ public class MDMEntryDescriptorPageModel {
         Objects.equals(this.name, mdMEntryDescriptorPageModel.name) &&
         Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection) &&
         Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable) &&
-        Objects.equals(this.restrictedProperties, mdMEntryDescriptorPageModel.restrictedProperties);
+        Objects.equals(this.formatter, mdMEntryDescriptorPageModel.formatter);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, vectorCollection, importable, restrictedProperties);
+    return Objects.hash(code, name, vectorCollection, importable, formatter);
   }
 
   @Override
@@ -222,7 +222,7 @@ public class MDMEntryDescriptorPageModel {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
-    sb.append("    restrictedProperties: ").append(toIndentedString(restrictedProperties)).append("\n");
+    sb.append("    formatter: ").append(toIndentedString(formatter)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -26,7 +26,7 @@ components:
         importable:
           type: boolean
           default: false
-        restrictedProperties:
+        formatter:
           type: string
     MDMEntryChangesPageModel:
       type: object

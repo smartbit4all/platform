@@ -48,6 +48,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
@@ -61,6 +62,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.util.ObjectUtils;
 
@@ -884,16 +886,17 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
         throw new IllegalArgumentException(
             "A frissítéshez érvényes vektoradatbázis kapcsolat és érvényes beágyazó kapcsolat szükséges.");
       }
-      Set<String> restrictedProperties =
-          new HashSet<>(vectorCollectionDescriptor.getRestrictedProperties());
-      vectorCollection.clear();
+      if (vectorCollection.exists()) {
+        vectorCollection.clear();
+      } else {
+        vectorCollection.ensureExist();
+      }
+      ObjectPropertyFormatter formatter = vectorCollectionDescriptor.getFormatter();
       getList().nodesFromCache().forEach(n -> {
-        vectorCollection.addObject(n.getObjectAsMap().entrySet().stream()
-            .filter(e -> !excludedProperties.contains(e.getKey()))
-            .filter(e -> e.getValue() != null)
-            .filter(e -> !restrictedProperties.contains(e.getKey()))
-            .collect(
-                Collectors.toMap(Entry::getKey, Entry::getValue, (value1, value2) -> value1)));
+        ObjectPropertyResolver resolver = objectApi.resolver();
+        resolver.addContextObject("object", n);
+        String formattedString = resolver.resolve(formatter);
+        vectorCollection.add(formattedString, n.getObjectAsMap());
       });
     }
   }
