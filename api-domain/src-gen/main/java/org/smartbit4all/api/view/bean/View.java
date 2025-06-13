@@ -70,7 +70,8 @@ import javax.validation.Valid;
   View.LAYOUTS,
   View.COMPONENT_LAYOUTS,
   View.STYLE,
-  View.PARENT_STYLE
+  View.PARENT_STYLE,
+  View.MODULE
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -146,6 +147,9 @@ public class View {
 
   public static final String PARENT_STYLE = "parentStyle";
   private Style parentStyle;
+
+  public static final String MODULE = "module";
+  private String module;
 
   public View() { 
   }
@@ -890,6 +894,33 @@ public class View {
   }
 
 
+  public View module(String module) {
+    
+    this.module = module;
+    return this;
+  }
+
+   /**
+   * Get module
+   * @return module
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODULE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getModule() {
+    return module;
+  }
+
+
+  @JsonProperty(MODULE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModule(String module) {
+    this.module = module;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -922,12 +953,13 @@ public class View {
         Objects.equals(this.layouts, view.layouts) &&
         Objects.equals(this.componentLayouts, view.componentLayouts) &&
         Objects.equals(this.style, view.style) &&
-        Objects.equals(this.parentStyle, view.parentStyle);
+        Objects.equals(this.parentStyle, view.parentStyle) &&
+        Objects.equals(this.module, view.module);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style, parentStyle);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style, parentStyle, module);
   }
 
   @Override
@@ -958,6 +990,7 @@ public class View {
     sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    parentStyle: ").append(toIndentedString(parentStyle)).append("\n");
+    sb.append("    module: ").append(toIndentedString(module)).append("\n");
     sb.append("}");
     return sb.toString();
   }

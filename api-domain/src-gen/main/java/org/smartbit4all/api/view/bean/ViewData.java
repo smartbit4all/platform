@@ -40,7 +40,8 @@ import javax.validation.Valid;
   ViewData.MESSAGE,
   ViewData.STATE,
   ViewData.TYPE,
-  ViewData.CONTAINER_UUID
+  ViewData.CONTAINER_UUID,
+  ViewData.MODULE
 })
 @JsonTypeName("ViewData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -62,6 +63,9 @@ public class ViewData {
 
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
+
+  public static final String MODULE = "module";
+  private String module;
 
   public ViewData() { 
   }
@@ -237,6 +241,33 @@ public class ViewData {
   }
 
 
+  public ViewData module(String module) {
+    
+    this.module = module;
+    return this;
+  }
+
+   /**
+   * Get module
+   * @return module
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODULE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getModule() {
+    return module;
+  }
+
+
+  @JsonProperty(MODULE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModule(String module) {
+    this.module = module;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -251,12 +282,13 @@ public class ViewData {
         Objects.equals(this.message, viewData.message) &&
         Objects.equals(this.state, viewData.state) &&
         Objects.equals(this.type, viewData.type) &&
-        Objects.equals(this.containerUuid, viewData.containerUuid);
+        Objects.equals(this.containerUuid, viewData.containerUuid) &&
+        Objects.equals(this.module, viewData.module);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, message, state, type, containerUuid);
+    return Objects.hash(uuid, viewName, message, state, type, containerUuid, module);
   }
 
   @Override
@@ -269,6 +301,7 @@ public class ViewData {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
+    sb.append("    module: ").append(toIndentedString(module)).append("\n");
     sb.append("}");
     return sb.toString();
   }
