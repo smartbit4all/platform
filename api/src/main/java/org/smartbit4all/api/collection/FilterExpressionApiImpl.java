@@ -231,6 +231,10 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
       values.addAll(valuesOf(fed.getOperand2(), type));
       values.addAll(valuesOf(fed.getOperand3(), type));
       return values;
+    } else if (fed.getCurrentOperation() == FilterExpressionOperation.BETWEEN) {
+      values.add(valueOf(fed.getOperand2(), type));
+      values.add(valueOf(fed.getOperand3(), type));
+      return values;
     } else {
       values.add(valueOf(fed.getOperand1(), type));
       values.add(valueOf(fed.getOperand2(), type));
