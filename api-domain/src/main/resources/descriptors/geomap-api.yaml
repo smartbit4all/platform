@@ -256,6 +256,10 @@ components:
           type: boolean
         selected:
           type: boolean
+        color:
+          type: string
+        permanentLabel:
+          type: boolean
         label:
           type: string
         description:

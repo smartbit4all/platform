@@ -230,6 +230,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .uuid(view.getUuid())
         .containerUuid(view.getContainerUuid())
         .viewName(view.getViewName())
+        .module(view.getModule())
         .type(view.getType())
         .state(view.getState())
         .message(objectApi.asType(

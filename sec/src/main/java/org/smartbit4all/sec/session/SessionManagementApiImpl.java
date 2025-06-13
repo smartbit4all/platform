@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.org.bean.User;
@@ -26,7 +28,12 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.api.session.bean.SessionSubscription;
 import org.smartbit4all.api.session.exception.InvalidRefreshTokenException;
+import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -37,6 +44,7 @@ import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.smartbit4all.sec.utils.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -83,6 +91,18 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Autowired(required = false)
   private SessionPublisherApi sessionPublisherApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private ViewApi viewApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private ViewContextService viewContextService;
+
+  @Autowired
+  @Lazy
+  private InvocationApi invocationApi;
 
   @Value("${session.timeout-min:60}")
   private int timeoutMins;
@@ -343,9 +363,47 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       Class<?> clazz) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(key, EXPMSG_MISSING_KEY);
-    updateSession(sessionUri, s -> s
-        .putParametersItem(key, value)
-        .putParameterClassesItem(key, clazz.getName()));
+    updateSession(sessionUri, s -> {
+      String oldValue = s.getParameters().get(key);
+      s.putParametersItem(key, value)
+          .putParameterClassesItem(key, clazz.getName());
+
+      List<SessionSubscription> subscriptions = s.getSubscriptions().get(key);
+      if (subscriptions != null && !Objects.equals(oldValue, value)) {
+        subscriptions.forEach(subscription -> {
+          try {
+            boolean runCallBack =
+                !Boolean.TRUE.equals(subscription.getCheckViewsBeforeRunCallback());
+            if (!runCallBack && viewApi != null && viewContextService != null) {
+              ViewContextData viewContext =
+                  viewContextService.getViewContext(subscription.getViewContextUuid());
+              UUID currentViewContextUuid = viewApi.currentViewContextUuid();
+              View view =
+                  viewApi.getView(subscription.getViewUuid());
+              if (viewContext != null && viewContext.getUuid().equals(currentViewContextUuid)
+                  && view != null) {
+                runCallBack = true;
+              } else {
+                log.warn(
+                    "Session parameter changed but the viewContext is not match or the view is not exists.");
+              }
+            }
+
+            if (runCallBack) {
+              invocationApi.invoke(subscription.getInvocationRequest(),
+                  SessionSubscription.VIEW_UUID, key);
+            }
+          } catch (ApiNotFoundException e) {
+            log.error("Unable to invoke session parameter callback.", e);
+          } catch (Exception e) {
+            log.warn(
+                "Session parameter changed but the viewContext is not match or the view is not exists.");
+          }
+
+        });
+      }
+      return s;
+    });
   }
 
   private void setSessionParametersInternal(URI sessionUri, Map<String, String> parameters,
@@ -375,8 +433,13 @@ public class SessionManagementApiImpl implements SessionManagementApi {
         if (s.getParameters() != null) {
           s.getParameters().remove(key);
         }
+
         if (s.getParameterClasses() != null) {
           s.getParameterClasses().remove(key);
+        }
+
+        if (s.getSubscriptions() != null) {
+          s.getSubscriptions().remove(key);
         }
         return s;
       });

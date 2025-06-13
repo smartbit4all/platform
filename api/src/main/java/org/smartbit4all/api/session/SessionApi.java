@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.UserActivityLog;
@@ -134,6 +135,15 @@ public interface SessionApi {
    * @return UserActivityLog instance for the current session's user activity.
    */
   UserActivityLog createActivityLog();
+
+  /**
+   * TODO define callback signature callback(UUID viewUuid, String parameterName)
+   *
+   * @param key
+   * @param callback
+   */
+  void subscribeForParameterChange(String key, UUID viewContextUuid, UUID viewUuid,
+      InvocationRequest callback);
 
   // Constants defining standard HTTP header names for session parameters.
   static final String FULLURL = "HTTP-FULLURL";

@@ -82,13 +82,13 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
     return new ArrayList<>(Arrays.asList(new SmartWidgetDefinition()
         .key(EXPRESSION_DATA_OPERAND2)
         .type(getLayoutTypeFromField(field))
-        .label(field.getLabel())
-        .placeholder(field.getLabel()),
+        .label(field.getLabel2() != null ? field.getLabel2() : field.getLabel())
+        .placeholder(field.getLabel2() != null ? field.getLabel2() : field.getLabel()),
         new SmartWidgetDefinition()
             .key("expressionData.operand3.valueAsString")
             .type(getLayoutTypeFromField(field))
-            .label(field.getLabel())
-            .placeholder(field.getLabel())));
+            .label(field.getLabel3() != null ? field.getLabel3() : field.getLabel())
+            .placeholder(field.getLabel3() != null ? field.getLabel3() : field.getLabel())));
   }
 
   private List<SmartWidgetDefinition> convertSelectMultipleFilter(FilterExpressionField field) {

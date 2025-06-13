@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.Session;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
@@ -31,6 +32,8 @@ public class UINavigationApiCommon implements UINavigationApi {
 
 
   private static final Logger log = LoggerFactory.getLogger(UINavigationApiCommon.class);
+
+  protected SessionApi sessionApi;
 
   protected UserSessionApi userSessionApi;
 
@@ -78,8 +81,12 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   private Disposable subscription;
 
-  public UINavigationApiCommon(UserSessionApi userSessionApi) {
-    this.userSessionApi = userSessionApi;
+  public UINavigationApiCommon(SessionApi sessionApi) {
+    this();
+    this.sessionApi = sessionApi;
+  }
+
+  private UINavigationApiCommon() {
     this.uuid = UUID.randomUUID();
     navigationTargetsByUUID = new HashMap<>();
     containersByUUID = new HashMap<>();
@@ -87,6 +94,11 @@ public class UINavigationApiCommon implements UINavigationApi {
     navigableViewsByType = new HashMap<>();
     securityGroupByView = new HashMap<>();
     viewModelsByUuid = new HashMap<>();
+  }
+
+  public UINavigationApiCommon(UserSessionApi userSessionApi) {
+    this();
+    this.userSessionApi = userSessionApi;
   }
 
   protected void initSessionParameterListener() {
@@ -285,7 +297,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected NavigationTarget getNavigationTargetByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_NAV_TARGETS,
-        navigationTargetsByUUID);
+        navigationTargetsByUUID, NavigationTarget.class);
   }
 
   @Override
@@ -300,7 +312,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected ViewModel getViewModelByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS,
-        viewModelsByUuid);
+        viewModelsByUuid, ViewModel.class);
   }
 
   protected void putContainerByUuidInternal(UUID uuid, Container container) {
@@ -309,7 +321,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected Container getContainerByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CONTAINERS,
-        containersByUUID);
+        containersByUUID, Container.class);
   }
 
   private <T> void putValueToSessionMap(UUID uuid, T value, String parameterName,
@@ -317,16 +329,33 @@ public class UINavigationApiCommon implements UINavigationApi {
     Session session = getCurrentSession();
     if (session != null) {
       session.putValueToMap(uuid, value, parameterName);
-    } else {
+    }
+    // else if (sessionApi != null) {
+    // sessionApi.setParameterObject(parameterName + uuid.toString(), value);
+    // Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+    // if (parameterMap == null) {
+    // parameterMap = new HashMap<>();
+    // }
+    // parameterMap.put(uuid, value);
+    // sessionApi.setParameterObject(parameterName, parameterMap);
+    // }
+    else {
       globalMap.put(uuid, value);
     }
   }
 
-  private <T> T getValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, T> globalMap) {
+  private <T> T getValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, T> globalMap,
+      Class<?> clazz) {
     Session session = getCurrentSession();
     if (session != null) {
       return session.getValueFromMap(uuid, parameterName);
     }
+    // } else if (sessionApi != null) {
+    // Map<UUID, T> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+    // if (parameterMap != null) {
+    // return parameterMap.get(uuid);
+    // }
+    // return (T) sessionApi.getParameterObject(parameterName + uuid.toString(), clazz);
     return globalMap.get(uuid);
   }
 
@@ -335,6 +364,12 @@ public class UINavigationApiCommon implements UINavigationApi {
     if (session != null) {
       session.removeEntryFromMap(uuid, parameterName);
     } else {
+      // } else if (sessionApi != null) {
+      // Map<UUID, ?> parameterMap = sessionApi.getParameterObject(parameterName, Map.class);
+      // if (parameterMap != null) {
+      // parameterMap.remove(uuid);
+      // }
+      // sessionApi.removeParameter(parameterName + uuid.toString());
       globalMap.remove(uuid);
     }
   }
@@ -356,5 +391,13 @@ public class UINavigationApiCommon implements UINavigationApi {
   @Override
   public void registerContainer(UUID navigationTargetUuid, Container view) {
     putContainerByUuidInternal(navigationTargetUuid, view);
+  }
+
+  @Override
+  public void sessionParameterChanged(UUID navigationTargetUuid, String parameterName) {
+    ViewModel vm = getViewModelByUuid(navigationTargetUuid);
+    if (vm != null) {
+      vm.sessionParameterChanged(parameterName);
+    }
   }
 }

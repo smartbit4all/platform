@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
@@ -21,15 +21,15 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
   static final ThreadLocal<Message> messageToOpen = new ThreadLocal<>();
   static final ThreadLocal<Consumer<MessageResult>> messageToOpenHandler = new ThreadLocal<>();
 
-  public UINavigationApiHeadless(UserSessionApi userSessionApi) {
-    super(userSessionApi);
+  public UINavigationApiHeadless(SessionApi sessionApi) {
+    super(sessionApi);
   }
 
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     if ("logout".equals(navigationTarget.getViewName())) {
-      // TODO ???
-      clearAndRemoveSession();
+      // TODO authentication.logout
+
 
       UINavigationApiHeadless.uiToOpen.set(navigationTarget);
       return;

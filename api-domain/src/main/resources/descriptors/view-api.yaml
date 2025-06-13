@@ -661,6 +661,8 @@ components:
           $ref: '#/components/schemas/Style'
         parentStyle:
           $ref: '#/components/schemas/Style'
+        module:
+          type: string
     ViewEventHandler:
       type: object
       description: |
@@ -701,6 +703,8 @@ components:
         containerUuid:
           type: string
           format: uuid
+        module:
+          type: string
     ViewConstraint:
       type: object
       description: |

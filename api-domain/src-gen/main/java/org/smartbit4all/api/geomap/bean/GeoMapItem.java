@@ -48,6 +48,8 @@ import jakarta.validation.Valid;
   GeoMapItem.DATA,
   GeoMapItem.SELECTABLE,
   GeoMapItem.SELECTED,
+  GeoMapItem.COLOR,
+  GeoMapItem.PERMANENT_LABEL,
   GeoMapItem.LABEL,
   GeoMapItem.DESCRIPTION,
   GeoMapItem.ICONS,
@@ -74,6 +76,12 @@ public class GeoMapItem {
 
   public static final String SELECTED = "selected";
   private Boolean selected;
+
+  public static final String COLOR = "color";
+  private String color;
+
+  public static final String PERMANENT_LABEL = "permanentLabel";
+  private Boolean permanentLabel;
 
   public static final String LABEL = "label";
   private String label;
@@ -269,6 +277,60 @@ public class GeoMapItem {
     this.selected = selected;
   }
 
+  public GeoMapItem color(String color) {
+    
+    this.color = color;
+    return this;
+  }
+
+  /**
+   * Get color
+   * @return color
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getColor() {
+    return color;
+  }
+
+
+  @JsonProperty(COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setColor(String color) {
+    this.color = color;
+  }
+
+  public GeoMapItem permanentLabel(Boolean permanentLabel) {
+    
+    this.permanentLabel = permanentLabel;
+    return this;
+  }
+
+  /**
+   * Get permanentLabel
+   * @return permanentLabel
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(PERMANENT_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getPermanentLabel() {
+    return permanentLabel;
+  }
+
+
+  @JsonProperty(PERMANENT_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPermanentLabel(Boolean permanentLabel) {
+    this.permanentLabel = permanentLabel;
+  }
+
   public GeoMapItem label(String label) {
     
     this.label = label;
@@ -456,6 +518,8 @@ public class GeoMapItem {
         Objects.equals(this.data, geoMapItem.data) &&
         Objects.equals(this.selectable, geoMapItem.selectable) &&
         Objects.equals(this.selected, geoMapItem.selected) &&
+        Objects.equals(this.color, geoMapItem.color) &&
+        Objects.equals(this.permanentLabel, geoMapItem.permanentLabel) &&
         Objects.equals(this.label, geoMapItem.label) &&
         Objects.equals(this.description, geoMapItem.description) &&
         Objects.equals(this.icons, geoMapItem.icons) &&
@@ -466,7 +530,7 @@ public class GeoMapItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, kind, actions, data, selectable, selected, label, description, icons, style, position, route);
+    return Objects.hash(id, kind, actions, data, selectable, selected, color, permanentLabel, label, description, icons, style, position, route);
   }
 
   @Override
@@ -479,6 +543,8 @@ public class GeoMapItem {
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    selectable: ").append(toIndentedString(selectable)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
+    sb.append("    color: ").append(toIndentedString(color)).append("\n");
+    sb.append("    permanentLabel: ").append(toIndentedString(permanentLabel)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    icons: ").append(toIndentedString(icons)).append("\n");
