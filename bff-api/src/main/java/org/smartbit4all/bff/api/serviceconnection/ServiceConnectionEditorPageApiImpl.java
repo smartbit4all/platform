@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.serviceconnection;
 
-import static java.util.stream.Collectors.toList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,7 +10,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.setting.LocaleSettingApi;
-import org.smartbit4all.api.value.bean.KeyValuePair;
+import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -22,12 +21,14 @@ import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
 import org.smartbit4all.bff.api.utils.BffUtilsApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements ServiceConnectionEditorPageApi {
 
-  private static final List<String> ORDERED_COLUMNS =
-      Arrays.asList(KeyValuePair.KEY, KeyValuePair.VALUE);
+  private static final List<String> ORDERED_COLUMNS = Arrays.asList(
+      GenericValue.CODE,
+      GenericValue.NAME);
 
   @Autowired
   GridModelApi gridModelApi;
@@ -56,7 +57,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
 
   private void initGrid(UUID viewUuid) {
     GridModel gridModel =
-        gridModelApi.createGridModel(KeyValuePair.class, ORDERED_COLUMNS,
+        gridModelApi.createGridModel(GenericValue.class, ORDERED_COLUMNS,
             GRID_ID);
     gridModel.setPageSize(5);
     gridModel.setPageSizeOptions(Arrays.asList(5, 10));
@@ -67,9 +68,10 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
   }
 
   private void setGridData(UUID viewUuid, ServiceConnection serviceConnection) {
-    List<KeyValuePair> gridData = serviceConnection.getParameters().entrySet().stream()
-        .map(e -> new KeyValuePair().key(e.getKey()).value(e.getValue())).collect(toList());
-    gridModelApi.setData(viewUuid, GRID_ID, KeyValuePair.class, gridData);
+    List<GenericValue> gridData = serviceConnection.getParameters().entrySet().stream()
+        .map(e -> new GenericValue().code(e.getKey()).name(e.getValue().toString()))
+        .collect(toList());
+    gridModelApi.setData(viewUuid, GRID_ID, GenericValue.class, gridData);
   }
 
   @Override
@@ -83,7 +85,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
   @Override
   public void addParameter(UUID viewUuid, UiActionRequest request) {
     setModel(viewUuid, extractClientModel(request));
-    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID, new KeyValuePair(), true,
+    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID, new GenericValue(), true,
         saveInvocationRequest(viewUuid));
   }
 
@@ -93,9 +95,10 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     ServiceConnection serviceConnection =
         objectApi.asType(ServiceConnection.class, extractClientModel(request));
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
-    String key = GridModels.getValueFromGridRow(gridModel, nodeId, KeyValuePair.KEY).toString();
+    String key = GridModels.getValueFromGridRow(gridModel, nodeId, GenericValue.CODE).toString();
     Object value = serviceConnection.getParameters().get(key);
-    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID, new KeyValuePair().key(key).value(value),
+    bffUtilsApi.showMapEntryEditor(viewUuid, GRID_ID,
+        new GenericValue().code(key).name(value.toString()),
         false, saveInvocationRequest(viewUuid));
     setModel(viewUuid, serviceConnection);
   }
@@ -111,7 +114,7 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     ServiceConnection serviceConnection =
         objectApi.asType(ServiceConnection.class, extractClientModel(request));
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
-    String key = GridModels.getValueFromGridRow(gridModel, nodeId, KeyValuePair.KEY).toString();
+    String key = GridModels.getValueFromGridRow(gridModel, nodeId, GenericValue.CODE).toString();
     serviceConnection.getParameters().remove(key);
     setModel(viewUuid, serviceConnection);
     setGridData(viewUuid, serviceConnection);
@@ -119,9 +122,9 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
 
   @Override
   public void saveParameterCallback(UUID dialogUuid, UiActionRequest request, UUID viewUuid) {
-    KeyValuePair entry = actionRequestHelper(request).get(UiActions.MODEL, KeyValuePair.class);
+    GenericValue entry = actionRequestHelper(request).get(UiActions.MODEL, GenericValue.class);
     ServiceConnection model = objectApi.asType(ServiceConnection.class, getModel(viewUuid));
-    model.putParametersItem(entry.getKey(), entry.getValue());
+    model.putParametersItem(entry.getCode(), entry.getName());
     setModel(viewUuid, model);
     setGridData(viewUuid, model);
     viewApi.closeView(dialogUuid);

@@ -10,6 +10,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
+import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.KeyValuePair;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewEventApi;
@@ -61,6 +62,47 @@ public class BffUtilsApiImpl implements BffUtilsApi {
             .addPathItem(ViewEventApi.ACTION)
             .addPathItem("SAVE")
             .invocationRequest(saveRequest))));
+  }
+
+
+  @Override
+  public void showMapEntryEditor(UUID viewUuid, String gridId, GenericValue pageModel,
+      boolean keyEditable, InvocationRequest saveRequest) {
+    SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.form(LayoutDirection.VERTICAL,
+        ObjectLayoutBuilder.textfield(GenericValue.CODE,
+            localeSettingApi.get(gridId, GenericValue.CODE)),
+        ObjectLayoutBuilder.textfield(GenericValue.NAME,
+            localeSettingApi.get(gridId, GenericValue.NAME)));
+    List<UiAction> dialogActions = Arrays.asList(new UiAction().code("SAVE").submit(true),
+        new UiAction().code(GenericPageApi.ACTION_CLOSE_VIEW));
+    viewApi.showView(new View()
+        .viewName(PlatformViewNames.GENERIC_PAGE)
+        .type(ViewType.DIALOG)
+        .putParametersItem(GenericPageApi.PARAM_MODEL, pageModel)
+        .putComponentLayoutsItem(DEFAULT_LAYOUT,
+            layout)
+        .constraint(new ViewConstraint()
+            .componentConstraints(
+                Arrays.asList(
+                    new ComponentConstraint().dataName(GenericValue.CODE).mandatory(true)
+                        .enabled(keyEditable),
+                    new ComponentConstraint().dataName(GenericValue.NAME).mandatory(true))))
+        .actions(dialogActions)
+        .eventHandlers(Arrays.asList(new ViewEventHandler()
+            .viewEventType(ViewEventTypeEnum.INSTEAD)
+            .addPathItem(ViewEventApi.ACTION)
+            .addPathItem("SAVE")
+            .invocationRequest(saveRequest))));
+
+  }
+
+  @Override
+  public <T> T getValueFromGridRow(UUID viewUuid, String widgetId, String nodeId, String key,
+      Class<T> clazz) {
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, widgetId);
+    return objectApi
+        .asType(clazz,
+            GridModels.getValueFromGridRow(gridModel, nodeId, key));
   }
 
 }
