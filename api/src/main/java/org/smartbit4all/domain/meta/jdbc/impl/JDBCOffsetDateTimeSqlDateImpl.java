@@ -40,8 +40,9 @@ public class JDBCOffsetDateTimeSqlDateImpl implements JDBCOffsetDateTimeSqlDate 
 
   @Override
   public OffsetDateTime ext2app(Timestamp extValue) {
-    return extValue == null ? null
-        : OffsetDateTime.from(extValue.toLocalDateTime().atZone(ZoneId.systemDefault()));
+    return extValue == null
+        ? null
+        : extValue.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
   }
 
 }

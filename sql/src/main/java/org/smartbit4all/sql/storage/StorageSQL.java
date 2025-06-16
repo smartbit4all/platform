@@ -461,7 +461,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
-            .set(objectVersionDef.createdAt(), objectRow.get(objectVersionDef.createdAt()))
+            .set(objectVersionDef.createdAt(), now)
             .set(objectVersionDef.objectContent(), object.serializeMapAware())
             .set(objectVersionDef.refContent(), relationBinaryData)
             .set(objectVersionDef.aspectContent(), object.serializeAspects())
