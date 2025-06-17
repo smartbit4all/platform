@@ -596,6 +596,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   private final void saveAndEnqueueInvocationRequest(
       AsyncInvocationChannel asyncInvocationChannel, List<URI> requestUris) {
+    if (CollectionUtils.isEmpty(requestUris)) {
+      return;
+    }
     if (applicationRuntimeApi != null) {
       // Save the request to remember to execute if this runtime fails. We set the runtime
       // identifier
